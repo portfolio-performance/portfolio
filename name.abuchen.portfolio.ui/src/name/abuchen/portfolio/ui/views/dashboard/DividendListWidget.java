@@ -6,13 +6,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
 
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
@@ -20,6 +23,9 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+import com.google.common.annotations.VisibleForTesting;
+
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.model.Security;
@@ -27,6 +33,8 @@ import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LogoManager;
 
@@ -56,7 +64,7 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
         FROM_TODAY(Messages.LabelToday, d -> d), //
         FROM_ONE_WEEK(Messages.LabelReportingDialogWeek, d -> d.minus(1, ChronoUnit.WEEKS)), //
         FROM_ONE_MONTH(Messages.LabelReportingDialogMonth, d -> d.minus(1, ChronoUnit.MONTHS)), //
-        FROM_YTD(Messages.LabelReportingDialogYearYTD, d -> LocalDate.of(d.getYear(), 1, 1)), //
+        FROM_QUARTER(Messages.LabelReportingDialogQuarter, d -> d.minus(3, ChronoUnit.MONTHS)), //
         ;
 
         private DateStartRange(String label, UnaryOperator<LocalDate> dateStartProvider)
@@ -91,6 +99,7 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
 
     public enum DateEndRange
     {
+        UNTIL_ALL(Messages.LabelAllAttributes, d -> null), //
         UNTIL_EOY(Messages.LabelReportingDialogYear, d -> LocalDate.of(d.getYear(), 12, 31)), //
         UNTIL_ONE_MONTH(Messages.LabelReportingDialogMonth, d -> d.plus(1, ChronoUnit.MONTHS)), //
         UNTIL_ONE_WEEK(Messages.LabelReportingDialogWeek, d -> d.plus(1, ChronoUnit.WEEKS)), //
@@ -165,10 +174,10 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
     }
 
     /**
-     * @deprecated This constructor is only used for testing, don't use it for
+     * This constructor is only used for testing, don't use it for
      *             anything else
      */
-    @Deprecated
+    @VisibleForTesting
     DividendListWidget() // needed for testing
     {
         super(null, null);
@@ -178,58 +187,76 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
     {
         super(widget, data);
 
+        addConfig(new ClientFilterConfig(this));
         addConfig(new DateTypeConfig(this));
         addConfig(new DateStartRangeConfig(this));
-        addConfig(new DateEndRangeConfig(this));
-        addConfig(new ChartHeightConfig(this));
     }
 
     @Override
     public Supplier<List<DividendItem>> getUpdateTask()
     {
-        return getUpdateTask(LocalDate.now());
+        return () -> getUpdateTask(LocalDate.now());
     }
 
-    Supplier<List<DividendItem>> getUpdateTask(LocalDate now)
+    List<DividendItem> getUpdateTask(LocalDate now)
     {
-        return () -> {
+        DateType dateType = getDateTypeValue();
+        ClientFilterConfig clientFilter = getClientFilterConfig();
+        LocalDate fromDate = getStartRangeValue().getDate(now);
+        LocalDate untilDate = getEndRangeValue().getDate(now);
 
-            DateType dateType = getDateTypeValue();
+        // get all securities to show and put them into a map to benefit
+        // from O(1)
+        Set<Security> secSet = getSecuritiesToShow(clientFilter);
 
-            List<DividendItem> items = new ArrayList<>();
-            LocalDate fromDate = getStartRangeValue().getDate(now);
-            LocalDate untilDate = getEndRangeValue().getDate(now);
-            for (Security security : getSecurities())
+        List<DividendItem> items = new ArrayList<>();
+        getSecurities().forEach(security -> handleSecurity(security, items, dateType, fromDate, untilDate, secSet));
+        groupListEntries(items);
+
+        return items;
+    }
+
+    void groupListEntries(List<DividendItem> items)
+    {
+        Collections.sort(items, new DividendItemComparator());
+        LocalDate prevDate = null;
+        for (DividendItem item : items)
+        {
+            LocalDate currDate = item.getFirstType().getDate(item.div);
+            if (prevDate == null || !currDate.isEqual(prevDate))
             {
-                for (SecurityEvent se : security.getEvents())
-                {
-                    if (!(se instanceof DividendEvent de))
-                    {
-                        continue;
-                    }
-                    DividendItem added = checkAndAdd(items, security, de, dateType, DateType.EX_DIVIDEND_DATE, fromDate,
-                                    untilDate, null);
-                    checkAndAdd(items, security, de, dateType, DateType.PAYMENT_DATE, fromDate, untilDate, added);
-                }
+                item.hasNewDate = true;
+                prevDate = currDate;
             }
+        }
+    }
 
-            Collections.sort(items, new DividendItemComparator());
-            LocalDate prevDate = null;
-            DividendItem prevItem = null;
-            for (DividendItem item : items)
+    void handleSecurity(Security security, List<DividendItem> items, DateType dateType, LocalDate fromDate,
+                    LocalDate untilDate, Set<Security> activeSecurities)
+    {
+        if (!activeSecurities.contains(security))
+        {
+            return;
+        }
+
+        for (SecurityEvent se : security.getEvents())
+        {
+            if (!(se instanceof DividendEvent de))
             {
-                prevItem = item;
-                LocalDate currDate = item.getFirstType().getDate(item.div);
-                if (prevDate == null || !currDate.isEqual(prevDate))
-                {
-                    item.hasNewDate = true;
-                    prevDate = currDate;
-                    continue;
-                }
+                continue;
             }
+            DividendItem added = checkAndAdd(items, security, de, dateType, DateType.EX_DIVIDEND_DATE, fromDate,
+                            untilDate, null);
+            checkAndAdd(items, security, de, dateType, DateType.PAYMENT_DATE, fromDate, untilDate, added);
+        }
+    }
 
-            return items;
-        };
+    Set<Security> getSecuritiesToShow(ClientFilterConfig clientFilter)
+    {
+        Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
+        HashSet<Security> secSet = new HashSet<>();
+        secSet.addAll(filteredClient.getActiveSecurities());
+        return secSet;
     }
 
     static class DividendItemComparator implements Comparator<DividendItem>
@@ -254,6 +281,11 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
         }
     }
 
+    ClientFilterConfig getClientFilterConfig()
+    {
+        return get(ClientFilterConfig.class);
+    }
+
     DateStartRange getStartRangeValue()
     {
         return get(DateStartRangeConfig.class).getValue();
@@ -261,7 +293,7 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
 
     DateEndRange getEndRangeValue()
     {
-        return get(DateEndRangeConfig.class).getValue();
+        return DateEndRange.UNTIL_ALL;
     }
 
     DateType getDateTypeValue()
@@ -288,7 +320,7 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
             return null; //
         }
 
-        if (checkDate.isAfter(endRange))
+        if (endRange != null && checkDate.isAfter(endRange))
         {
             return null; //
         }
@@ -306,43 +338,81 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
     }
 
     @Override
+    public Composite createControl(Composite parent, DashboardResources resources)
+    {
+        Composite ret = super.createControl(parent, resources);
+        GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(ret);
+        GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 2).applyTo(list);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(list);
+
+        return ret;
+    }
+
+    @Override
+    protected void createTitleArea(Composite container)
+    {
+        super.createTitleArea(container);
+
+        Composite cmp = new Composite(container, SWT.NONE);
+        cmp.setLayout(new FormLayout());
+        Label exDate = createLabel(cmp, DateType.EX_DIVIDEND_DATE.label);
+        exDate.setForeground(Colors.DARK_RED);
+        Label paymDate = createLabel(cmp, DateType.PAYMENT_DATE.label);
+        paymDate.setForeground(Colors.DARK_GREEN);
+        Label exPaymDate = createLabel(cmp, DateType.EX_DIVIDEND_DATE.label + "," + DateType.PAYMENT_DATE.label); //$NON-NLS-1$
+        exPaymDate.setForeground(container.getDisplay().getSystemColor(SWT.COLOR_DARK_YELLOW));
+
+        FormDataFactory.startingWith(exDate).thenRight(paymDate, 10).thenRight(exPaymDate, 10);
+
+    }
+
+    @Override
     protected Composite createItemControl(Composite parent, DividendItem item)
     {
         Security sec = item.getSecurity();
+
+        if (item.hasNewDate)
+        {
+            Composite dtCmp = new Composite(parent, SWT.NONE);
+            dtCmp.setLayout(new FormLayout());
+            Label date = createLabel(dtCmp, Values.Date.format(item.getFirstType().getDate(item.div)));
+            date.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
+        }
+
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new FormLayout());
 
         Image image = LogoManager.instance().getDefaultColumnImage(sec, getClient().getSettings());
         Label logo = createLabel(composite, image);
         Label name = createLabel(composite, sec.getName());
-        String typeStr = item.types.stream() //
-                        .map(dt -> dt.label) //
-                        .collect(Collectors.joining(", "));
-        Label amtAndType = createLabel(composite,
-                        "   " + Values.Money.format(item.div.getAmount()) + " " + typeStr); //$NON-NLS-1$ //$NON-NLS-2$
+        Label amt = createLabel(composite, Values.Money.format(item.div.getAmount()), SWT.RIGHT);
+        setForegroundColor(item, amt);
 
+        addListener(mouseUpAdapter, composite, name, amt);
 
-        Label date = null;
-
-        if (item.hasNewDate)
-        {
-            date = createLabel(composite, Values.Date.format(item.getFirstType().getDate(item.div)));
-        }
-
-        addListener(mouseUpAdapter, composite, name, date, amtAndType);
-
-        FormDataFactory start;
-        if (date != null)
-        {
-            start = FormDataFactory.startingWith(date).thenBelow(logo);
-        }
-        else
-        {
-            start = FormDataFactory.startingWith(logo);
-        }
-        start.thenRight(name).right(new FormAttachment(100)).thenBelow(amtAndType);
-
+        FormDataFactory.startingWith(logo).thenRight(name).right(new FormAttachment(amt, -5, SWT.LEFT));
+        FormDataFactory.startingWith(amt).right(new FormAttachment(100));
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(composite);
         return composite;
+    }
+
+    void setForegroundColor(DividendItem item, Label label)
+    {
+        if (item.types.contains(DateType.EX_DIVIDEND_DATE))
+        {
+            if (item.types.contains(DateType.PAYMENT_DATE))
+            {
+                label.setForeground(label.getDisplay().getSystemColor(SWT.COLOR_DARK_YELLOW));
+            }
+            else
+            {
+                label.setForeground(Colors.DARK_RED);
+            }
+        }
+        else if (item.types.contains(DateType.PAYMENT_DATE))
+        {
+            label.setForeground(Colors.DARK_GREEN);
+        }
     }
 
     @Override
@@ -351,4 +421,9 @@ public class DividendListWidget extends AbstractSecurityListWidget<DividendListW
         // nothing to do
     }
 
+    @Override
+    protected boolean hasHeightSetting()
+    {
+        return false;
+    }
 }

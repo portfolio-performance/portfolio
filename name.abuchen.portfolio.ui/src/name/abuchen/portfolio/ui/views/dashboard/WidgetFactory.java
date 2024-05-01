@@ -215,7 +215,7 @@ public enum WidgetFactory
 
     HEATMAP_EARNINGS(Messages.LabelHeatmapEarnings, Messages.LabelEarnings, EarningsHeatmapWidget::new),
 
-    EARNINGS_DIVIDEND_LIST(Messages.LabelEarningsDividendList, Messages.LabelEarnings, DividendListWidget::new),
+    DIVIDEND_EVENT_LIST(Messages.LabelEarningsDividendList, Messages.LabelEarnings, DividendListWidget::new),
 
     EARNINGS_PER_YEAR_CHART(Messages.LabelEarningsPerYear, Messages.LabelEarnings, EarningsChartWidget::perYear),
 

@@ -13,6 +13,7 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -90,6 +91,32 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
         container.setBackground(parent.getBackground());
         GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
 
+        createTitleArea(container);
+
+        list = new Composite(container, SWT.NONE);
+        RowLayout layout = new RowLayout(SWT.VERTICAL);
+        layout.marginLeft = 0;
+        layout.marginRight = 0;
+        layout.marginTop = 0;
+        layout.marginBottom = 0;
+        layout.spacing = 10;
+        layout.wrap = false;
+        layout.fill = true;
+        list.setLayout(layout);
+
+        GridDataFactory lgdf = GridDataFactory.fillDefaults();
+        if (hasHeightSetting())
+        {
+            int yHint = get(ChartHeightConfig.class).getPixel();
+            lgdf.hint(SWT.DEFAULT, yHint);
+        }
+        lgdf.grab(true, false).applyTo(list);
+
+        return container;
+    }
+
+    protected void createTitleArea(Composite container)
+    {
         title = new StyledLabel(container, SWT.NONE);
         title.setBackground(container.getBackground());
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
@@ -106,36 +133,24 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
         });
 
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
-
-        list = new Composite(container, SWT.NONE);
-        RowLayout layout = new RowLayout(SWT.VERTICAL);
-        layout.marginLeft = 0;
-        layout.marginRight = 0;
-        layout.marginTop = 0;
-        layout.marginBottom = 0;
-        layout.spacing = 10;
-        layout.wrap = false;
-        layout.fill = true;
-        list.setLayout(layout);
-        int yHint = get(ChartHeightConfig.class).getPixel();
-        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, yHint).grab(true, false).applyTo(list);
-
-        return container;
     }
 
     @Override
     public void update(List<T> items)
     {
-        GridData data = (GridData) list.getLayoutData();
-
-        int oldHeight = data.heightHint;
-        int newHeight = get(ChartHeightConfig.class).getPixel();
-
-        if (oldHeight != newHeight)
+        if (hasHeightSetting())
         {
-            data.heightHint = newHeight;
-            title.getParent().layout(true);
-            title.getParent().getParent().layout(true);
+            GridData data = (GridData) list.getLayoutData();
+
+            int oldHeight = data.heightHint;
+            int newHeight = get(ChartHeightConfig.class).getPixel();
+
+            if (oldHeight != newHeight)
+            {
+                data.heightHint = newHeight;
+                title.getParent().layout(true);
+                title.getParent().getParent().layout(true);
+            }
         }
 
         if (items.isEmpty())
@@ -157,18 +172,41 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
             int count = 0;
             for (T item : items)
             {
-                // limit the number of securities listed on the dashboard to 25
-                if (count >= 25)
+                // limit the number of securities listed on the dashboard
+                if (count >= getMaxNumberOfSecurities())
                     break;
 
                 Composite child = createItemControl(list, item);
                 child.setData(item);
                 count++;
             }
+            if (count < items.size())
+            {
+                createMaxSecuritiesExceededControl(list);
+            }
         }
 
         list.setData(items);
         list.layout(true);
+        list.getParent().layout(true);
+        list.getParent().getParent().layout();
+    }
+
+    protected void createMaxSecuritiesExceededControl(Composite parent)
+    {
+        Composite composite = new Composite(parent, SWT.NONE);
+        composite.setLayout(new FormLayout());
+        createLabel(composite, "..."); //$NON-NLS-1$
+    }
+
+    protected int getMaxNumberOfSecurities()
+    {
+        return 25;
+    }
+
+    protected boolean hasHeightSetting()
+    {
+        return true;
     }
 
     protected abstract void createEmptyControl(Composite parent);
@@ -183,7 +221,12 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
 
     protected Label createLabel(Composite composite, String text)
     {
-        Label ret = new Label(composite, SWT.NONE);
+        return createLabel(composite, text, SWT.NONE);
+    }
+
+    protected Label createLabel(Composite composite, String text, int style)
+    {
+        Label ret = new Label(composite, style);
         ret.setText(TextUtil.tooltip(Objects.toString(text, ""))); //$NON-NLS-1$
         return ret;
     }

@@ -7,10 +7,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.junit.AfterClass;
@@ -28,6 +31,7 @@ import name.abuchen.portfolio.ui.views.dashboard.DividendListWidget.DateStartRan
 import name.abuchen.portfolio.ui.views.dashboard.DividendListWidget.DateType;
 import name.abuchen.portfolio.ui.views.dashboard.DividendListWidget.DividendItem;
 
+@SuppressWarnings("nls")
 public class DividendListWidgetTest
 {
     private static Locale defaultLocale;
@@ -97,7 +101,7 @@ public class DividendListWidgetTest
     @Test
     public void testDateStartRange()
     {
-        assertEquals("FROM_TODAY,FROM_ONE_WEEK,FROM_ONE_MONTH,FROM_YTD", //
+        assertEquals("FROM_TODAY,FROM_ONE_WEEK,FROM_ONE_MONTH,FROM_QUARTER", //
                         Arrays.stream(DateStartRange.values())
                         .map(DateStartRange::name).collect(Collectors.joining(",")));
 
@@ -105,13 +109,13 @@ public class DividendListWidgetTest
         assertThat(DateStartRange.FROM_TODAY.getDate(now), is(now));
         assertThat(DateStartRange.FROM_ONE_WEEK.getDate(now), is(LocalDate.of(2024, 4, 1)));
         assertThat(DateStartRange.FROM_ONE_MONTH.getDate(now), is(LocalDate.of(2024, 3, 8)));
-        assertThat(DateStartRange.FROM_YTD.getDate(now), is(LocalDate.of(2024, 1, 1)));
+        assertThat(DateStartRange.FROM_QUARTER.getDate(now), is(LocalDate.of(2024, 1, 8)));
     }
 
     @Test
     public void testDateEndRange()
     {
-        assertEquals("UNTIL_EOY,UNTIL_ONE_MONTH,UNTIL_ONE_WEEK,UNTIL_TODAY", //
+        assertEquals("UNTIL_ALL,UNTIL_EOY,UNTIL_ONE_MONTH,UNTIL_ONE_WEEK,UNTIL_TODAY", //
                         Arrays.stream(DateEndRange.values()).map(DateEndRange::name).collect(Collectors.joining(",")));
 
         LocalDate now = LocalDate.of(2024, 4, 8);
@@ -119,6 +123,7 @@ public class DividendListWidgetTest
         assertThat(DateEndRange.UNTIL_ONE_WEEK.getDate(now), is(LocalDate.of(2024, 4, 15)));
         assertThat(DateEndRange.UNTIL_ONE_MONTH.getDate(now), is(LocalDate.of(2024, 5, 8)));
         assertThat(DateEndRange.UNTIL_EOY.getDate(now), is(LocalDate.of(2024, 12, 31)));
+        assertThat(DateEndRange.UNTIL_ALL.getDate(now), nullValue());
     }
 
     @Test
@@ -136,17 +141,16 @@ public class DividendListWidgetTest
     public void testGetUpdateTask() throws Exception
     {
         LocalDate testnow = LocalDate.now();
-        @SuppressWarnings("deprecation")
         AbstractSecurityListWidget<DividendItem> widget = new DividendListWidget()
         {
             @Override
-            public Supplier<List<DividendItem>> getUpdateTask(LocalDate now)
+            public List<DividendItem> getUpdateTask(LocalDate now)
             {
                 assertThat(now, is(testnow));
                 return null;
             }
         };
-        assertThat(widget.getUpdateTask(), nullValue());
+        assertThat(widget.getUpdateTask().get(), nullValue());
     }
 
     @Test
@@ -156,8 +160,8 @@ public class DividendListWidgetTest
         AtomicReference<DateStartRange> dateStart = new AtomicReference<>(DateStartRange.FROM_TODAY);
         AtomicReference<DateEndRange> dateEnd = new AtomicReference<>(DateEndRange.UNTIL_TODAY);
         AtomicReference<DateType> dateType = new AtomicReference<>(DateType.ALL_DATES);
+        AtomicBoolean showSecurities = new AtomicBoolean(true);
 
-        @SuppressWarnings("deprecation")
         DividendListWidget widget = new DividendListWidget()
         {
             @Override
@@ -183,19 +187,37 @@ public class DividendListWidgetTest
             {
                 return Arrays.asList(sec1, sec2);
             }
-        };
 
+            @Override
+            ClientFilterConfig getClientFilterConfig()
+            {
+                return null;
+            }
+
+            @Override
+            Set<Security> getSecuritiesToShow(ClientFilterConfig clientFilter)
+            {
+                if (showSecurities.get())
+                {
+                    HashSet<Security> ret = new HashSet<>();
+                    ret.addAll(getSecurities());
+                    return ret;
+                }
+                return Collections.emptySet();
+            }
+        };
+        
         LocalDate now = LocalDate.of(2024, 4, 9);
-        list = widget.getUpdateTask(now).get();
+        list = widget.getUpdateTask(now);
         assertEquals("2024-04-09 Security 1 EUR 0,55 [" + Messages.ColumnExDate + "]\r\n" //
                         + "Security 2 USD 0,55 [" + Messages.ColumnPaymentDate + "]", getListAsString(list));
 
         now = LocalDate.of(2024, 4, 8);
-        list = widget.getUpdateTask(now).get();
+        list = widget.getUpdateTask(now);
         assertEquals("", getListAsString(list));
 
-        dateStart.set(DateStartRange.FROM_YTD);
-        list = widget.getUpdateTask(now).get();
+        dateStart.set(DateStartRange.FROM_QUARTER);
+        list = widget.getUpdateTask(now);
         assertEquals("2024-02-04 Security 1 EUR 0,33 [" + Messages.ColumnExDate + "]\r\n" //
                         + "2024-02-05 Security 2 USD 13,33 [" + Messages.ColumnExDate + "]\r\n" //
                         + "2024-03-05 Security 1 EUR 0,33 [" + Messages.ColumnPaymentDate + "]\r\n" //
@@ -203,7 +225,7 @@ public class DividendListWidgetTest
                         + "2024-04-05 Security 2 USD 0,55 [" + Messages.ColumnExDate + "]", getListAsString(list));
 
         dateEnd.set(DateEndRange.UNTIL_EOY);
-        list = widget.getUpdateTask(now).get();
+        list = widget.getUpdateTask(now);
         assertEquals("2024-02-04 Security 1 EUR 0,33 [" + Messages.ColumnExDate + "]\r\n" //
                         + "2024-02-05 Security 2 USD 13,33 [" + Messages.ColumnExDate + "]\r\n" //
                         + "2024-03-05 Security 1 EUR 0,33 [" + Messages.ColumnPaymentDate + "]\r\n" //
@@ -218,7 +240,7 @@ public class DividendListWidgetTest
                         + "2024-08-11 Security 1 EUR 0,22 [" + Messages.ColumnPaymentDate + "]", getListAsString(list));
         
         dateType.set(DateType.EX_DIVIDEND_DATE);
-        list = widget.getUpdateTask(now).get();
+        list = widget.getUpdateTask(now);
         assertEquals("2024-02-04 Security 1 EUR 0,33 [" + Messages.ColumnExDate + "]\r\n" //
                         + "2024-02-05 Security 2 USD 13,33 [" + Messages.ColumnExDate + "]\r\n" //
                         + "2024-04-05 Security 2 USD 0,55 [" + Messages.ColumnExDate + "]\r\n" //
@@ -227,7 +249,7 @@ public class DividendListWidgetTest
                         + "Security 2 USD 1,22 [" + Messages.ColumnExDate + "]", getListAsString(list));
 
         dateType.set(DateType.PAYMENT_DATE);
-        list = widget.getUpdateTask(now).get();
+        list = widget.getUpdateTask(now);
         assertEquals("2024-03-05 Security 1 EUR 0,33 [" + Messages.ColumnPaymentDate + "]\r\n" //
                         + "Security 2 USD 13,33 [" + Messages.ColumnPaymentDate + "]\r\n" //
                         + "2024-04-09 Security 2 USD 0,55 [" + Messages.ColumnPaymentDate + "]\r\n" //
@@ -238,15 +260,19 @@ public class DividendListWidgetTest
         sec1.getEvents().clear();
         sec2.getEvents().clear();
         sec1.addEvent(de1_5);
-        list = widget.getUpdateTask(now).get();
+        list = widget.getUpdateTask(now);
         assertEquals("2024-08-01 Security 1 EUR 0,33 [" + Messages.ColumnPaymentDate + "]", getListAsString(list));
         dateType.set(DateType.EX_DIVIDEND_DATE);
-        list = widget.getUpdateTask(now).get();
+        list = widget.getUpdateTask(now);
         assertEquals("2024-08-01 Security 1 EUR 0,33 [" + Messages.ColumnExDate + "]", getListAsString(list));
         dateType.set(DateType.ALL_DATES);
-        list = widget.getUpdateTask(now).get();
+        list = widget.getUpdateTask(now);
         assertEquals("2024-08-01 Security 1 EUR 0,33 [" + Messages.ColumnExDate + ", " + Messages.ColumnPaymentDate
                         + "]", getListAsString(list));
+
+        showSecurities.set(false);
+        list = widget.getUpdateTask(now);
+        assertEquals("", getListAsString(list));
     }
 
     private String getListAsString(List<DividendItem> list)
