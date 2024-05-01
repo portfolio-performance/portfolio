@@ -118,7 +118,7 @@ public class BasicDataSeriesConfigurator
         for (DataSeries s : selectedSeries)
             list.remove(s);
 
-        DataSeriesSelectionDialog dialog = new DataSeriesSelectionDialog(Display.getDefault().getActiveShell());
+        DataSeriesSelectionDialog dialog = new DataSeriesSelectionDialog(Display.getDefault().getActiveShell(), client);
         dialog.setElements(list);
 
         if (dialog.open() != DataSeriesSelectionDialog.OK)

@@ -1442,6 +1442,37 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf26()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf26.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS2343822842"), hasWkn("A2YN0C"), hasTicker(null), //
+                        hasName("0,375 % VOLKSWAGEN LEASING 21/26 20.JULI"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-07-07T13:38:16"), hasShares(70.00), //
+                        hasSource("Kauf26.txt"), //
+                        hasNote("269730691.001 | Stückzins 356 Tage 25,60 EUR"), //
+                        hasAmount("EUR", 6241.78), hasGrossValue("EUR", 6240.83), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.95))));
+    }
+
+    @Test
     public void testWertpapierBezug01()
     {
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
