@@ -177,6 +177,7 @@ public class Messages extends NLS
     public static String LabelSuffixEntryCorrected;
     public static String LabelSum;
     public static String LabelTradeCalendarDefault;
+    public static String LabelTradeCalendarASX;
     public static String LabelTradeCalendarEuronext;
     public static String LabelTradeCalendarGermany;
     public static String LabelTradeCalendarIBOV;
