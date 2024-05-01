@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.util;
 
 import static name.abuchen.portfolio.util.HolidayName.ALL_SOULS_DAY;
+import static name.abuchen.portfolio.util.HolidayName.ANZAC_DAY;
 import static name.abuchen.portfolio.util.HolidayName.ASCENSION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.ASSUMPTION_DAY;
+import static name.abuchen.portfolio.util.HolidayName.AUSTRALIA_DAY;
 import static name.abuchen.portfolio.util.HolidayName.BERCHTOLDSTAG;
 import static name.abuchen.portfolio.util.HolidayName.BOXING_DAY;
 import static name.abuchen.portfolio.util.HolidayName.CARNIVAL;
@@ -23,6 +25,7 @@ import static name.abuchen.portfolio.util.HolidayName.HURRICANE_SANDY;
 import static name.abuchen.portfolio.util.HolidayName.INDEPENDENCE;
 import static name.abuchen.portfolio.util.HolidayName.INTERNATION_WOMENS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.JUNETEENTH;
+import static name.abuchen.portfolio.util.HolidayName.KINGS_BIRTHDAY;
 import static name.abuchen.portfolio.util.HolidayName.LABOUR_DAY;
 import static name.abuchen.portfolio.util.HolidayName.MARTIN_LUTHER_KING;
 import static name.abuchen.portfolio.util.HolidayName.MEMORIAL;
@@ -195,6 +198,20 @@ public class TradeCalendarManager
         tc.add(fixed(NEW_YEARS_EVE, Month.DECEMBER, 31));
         // one-time holidays
         tc.add(fixed(EXTRA_HOLIDAY, Month.JANUARY, 3).onlyIn(2000));
+        CACHE.put(tc.getCode(), tc);
+
+        // see Australian Stock Exchange trading days on their official website:
+        // https://www.asx.com.au/markets/market-resources/trading-hours-calendar/cash-market-trading-hours/trading-calendar
+        tc = new TradeCalendar("asx", Messages.LabelTradeCalendarASX, STANDARD_WEEKEND); //$NON-NLS-1$
+        tc.add(fixed(NEW_YEAR, Month.JANUARY, 1).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
+        tc.add(fixed(AUSTRALIA_DAY, Month.JANUARY, 26));
+        tc.add(easter(GOOD_FRIDAY, -2));
+        tc.add(easter(EASTER_MONDAY, 1));
+        tc.add(fixed(ANZAC_DAY, Month.APRIL, 25));
+        tc.add(weekday(KINGS_BIRTHDAY, 2, DayOfWeek.MONDAY, Month.JUNE));
+        tc.add(fixed(CHRISTMAS, Month.DECEMBER, 25).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 2));
+        // strange but true: if 25th+26th is Sun+Mon, Christmas Day is moved *beyond* Boxing Day, to Tue
+        tc.add(fixed(BOXING_DAY, Month.DECEMBER, 26).moveIf(DayOfWeek.SUNDAY, 2).moveIf(DayOfWeek.SATURDAY, 2));
         CACHE.put(tc.getCode(), tc);
 
         // see Brazilian Stock Exchange trading days on their official website:
