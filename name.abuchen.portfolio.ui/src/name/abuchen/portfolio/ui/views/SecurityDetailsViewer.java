@@ -85,7 +85,7 @@ public class SecurityDetailsViewer
         {
             Composite composite = new Composite(parent, SWT.NONE);
 
-            Label heading = createHeading(composite, Messages.ClientEditorLabelClientMasterData);
+            Label heading = createHeading(composite, Messages.ColumnSecurity);
 
             valueName = new Label(composite, SWT.NONE);
             valueISIN = new Label(composite, SWT.NONE);
