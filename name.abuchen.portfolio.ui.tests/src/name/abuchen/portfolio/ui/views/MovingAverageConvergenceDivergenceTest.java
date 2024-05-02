@@ -17,7 +17,6 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.hamcrest.core.IsNull;
 import org.junit.Test;
 
 import com.google.common.base.Charsets;
@@ -40,10 +39,10 @@ public class MovingAverageConvergenceDivergenceTest
     {
         ChartInterval interval = new ChartInterval(LocalDate.of(2017, 1, 1), LocalDate.now());
         MovingAverageConvergenceDivergence macd = new MovingAverageConvergenceDivergence(new Security(), interval);
-        ChartLineSeriesAxes macdLine = macd.getMacdLine();
-        ChartLineSeriesAxes signalLine = macd.getSignalLine();
-        assertThat(macdLine.getDates(), is(IsNull.nullValue()));
-        assertThat(signalLine.getDates(), is(IsNull.nullValue()));
+        var macdLine = macd.getMacdLine();
+        var signalLine = macd.getSignalLine();
+        assertThat(macdLine.isPresent(), is(false));
+        assertThat(signalLine.isPresent(), is(false));
     }
 
     @Test
@@ -53,10 +52,10 @@ public class MovingAverageConvergenceDivergenceTest
         security.addPrice(new SecurityPrice(LocalDate.of(2017, 1, 1), 0));
         ChartInterval interval = new ChartInterval(LocalDate.of(2017, 1, 1), LocalDate.now());
         MovingAverageConvergenceDivergence macd = new MovingAverageConvergenceDivergence(security, interval);
-        ChartLineSeriesAxes macdLine = macd.getMacdLine();
-        ChartLineSeriesAxes signalLine = macd.getSignalLine();
-        assertThat(macdLine.getDates(), Matchers.arrayWithSize(0));
-        assertThat(signalLine.getDates(), Matchers.arrayWithSize(0));
+        var macdLine = macd.getMacdLine();
+        var signalLine = macd.getSignalLine();
+        assertThat(macdLine.isPresent(), is(false));
+        assertThat(signalLine.isPresent(), is(false));
     }
 
     @SuppressWarnings("unchecked")
@@ -73,8 +72,8 @@ public class MovingAverageConvergenceDivergenceTest
 
         ChartInterval interval = new ChartInterval(LocalDate.of(2016, 3, 1), LocalDate.of(2016, 5, 31));
         MovingAverageConvergenceDivergence macd = new MovingAverageConvergenceDivergence(security, interval);
-        ChartLineSeriesAxes macdLine = macd.getMacdLine();
-        ChartLineSeriesAxes signalLine = macd.getSignalLine();
+        ChartLineSeriesAxes macdLine = macd.getMacdLine().get();
+        ChartLineSeriesAxes signalLine = macd.getSignalLine().get();
         assertThat(boxDoublesArray(macdLine.getValues()),
                         Matchers.arrayContaining(Collections.nCopies(92, is(0.0)).toArray(new Matcher[0])));
         assertThat(boxDoublesArray(signalLine.getValues()),
@@ -94,12 +93,10 @@ public class MovingAverageConvergenceDivergenceTest
 
         ChartInterval interval = new ChartInterval(LocalDate.of(2015, 3, 1), LocalDate.of(2015, 5, 31));
         MovingAverageConvergenceDivergence macd = new MovingAverageConvergenceDivergence(security, interval);
-        ChartLineSeriesAxes macdLine = macd.getMacdLine();
-        ChartLineSeriesAxes signalLine = macd.getSignalLine();
-        assertThat(macdLine.getDates(), Matchers.arrayWithSize(0));
-        assertThat(signalLine.getDates(), Matchers.arrayWithSize(0));
-        assertThat(macdLine.getValues().length, is(0));
-        assertThat(signalLine.getValues().length, is(0));
+        var macdLine = macd.getMacdLine();
+        assertThat(macdLine.isPresent(), is(false));
+        var signalLine = macd.getSignalLine();
+        assertThat(signalLine.isPresent(), is(false));
     }
 
     @Test
@@ -115,12 +112,10 @@ public class MovingAverageConvergenceDivergenceTest
 
         ChartInterval interval = new ChartInterval(LocalDate.of(2017, 3, 1), LocalDate.of(2017, 5, 31));
         MovingAverageConvergenceDivergence macd = new MovingAverageConvergenceDivergence(security, interval);
-        ChartLineSeriesAxes macdLine = macd.getMacdLine();
-        ChartLineSeriesAxes signalLine = macd.getSignalLine();
-        assertThat(macdLine.getDates(), is(IsNull.nullValue()));
-        assertThat(signalLine.getDates(), is(IsNull.nullValue()));
-        assertThat(macdLine.getValues(), is(IsNull.nullValue()));
-        assertThat(signalLine.getValues(), is(IsNull.nullValue()));
+        var macdLine = macd.getMacdLine();
+        assertThat(macdLine.isPresent(), is(false));
+        var signalLine = macd.getSignalLine();
+        assertThat(signalLine.isPresent(), is(false));
     }
 
     @Test
@@ -142,8 +137,8 @@ public class MovingAverageConvergenceDivergenceTest
 
         ChartInterval interval = new ChartInterval(prices.getPrices().get(0).getDate(), LocalDate.now());
         MovingAverageConvergenceDivergence macd = new MovingAverageConvergenceDivergence(prices, interval);
-        ChartLineSeriesAxes macdLine = macd.getMacdLine();
-        ChartLineSeriesAxes signalLine = macd.getSignalLine();
+        ChartLineSeriesAxes macdLine = macd.getMacdLine().get();
+        ChartLineSeriesAxes signalLine = macd.getSignalLine().get();
 
         assertThat(macdLine.getDates(), Matchers.arrayContaining(expectedMacd.getDates()));
         assertThat(boxDoublesArray(macdLine.getValues()),

@@ -310,24 +310,30 @@ public class TradesTableViewer
         column = new Column("note", Messages.ColumnNote, SWT.LEFT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
-            @Override
-            public String getText(Object e)
+            private String getRawText(Object e)
             {
                 Trade t = (Trade) e;
                 return t.getLastTransaction().getTransaction().getNote();
             }
 
             @Override
+            public String getText(Object e)
+            {
+                String note = getRawText(e);
+                return note == null || note.isEmpty() ? null : TextUtil.toSingleLine(note);
+            }
+
+            @Override
             public Image getImage(Object e)
             {
-                String note = getText(e);
+                String note = getRawText(e);
                 return note != null && note.length() > 0 ? Images.NOTE.image() : null;
             }
 
             @Override
             public String getToolTipText(Object e)
             {
-                String note = getText(e);
+                String note = getRawText(e);
                 return note == null || note.isEmpty() ? null : TextUtil.wordwrap(note);
             }
         });

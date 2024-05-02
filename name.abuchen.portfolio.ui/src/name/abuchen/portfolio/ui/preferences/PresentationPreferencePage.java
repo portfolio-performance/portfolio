@@ -21,7 +21,7 @@ public class PresentationPreferencePage extends FieldEditorPreferencePage
         addField(new BooleanFieldEditor(UIConstants.Preferences.USE_INDIRECT_QUOTATION, //
                         Messages.PrefLabelUseIndirectQuotation, getFieldEditorParent()));
 
-        createNoteComposite(getFieldEditorParent().getFont(), getFieldEditorParent(), //
+        PreferenceDialogUtil.createNoteComposite(getFieldEditorParent().getFont(), getFieldEditorParent(),
                         Messages.PrefLabelNote, Messages.PrefNoteIndirectQuotation);
 
         addField(new BooleanFieldEditor(UIConstants.Preferences.ALWAYS_DISPLAY_CURRENCY_CODE, //

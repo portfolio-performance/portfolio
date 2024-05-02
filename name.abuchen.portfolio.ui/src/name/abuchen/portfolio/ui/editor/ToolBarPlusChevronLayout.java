@@ -172,7 +172,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                 return toolBar;
         }
 
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("no toolbar found in list of childs"); //$NON-NLS-1$
     }
 
     @Override

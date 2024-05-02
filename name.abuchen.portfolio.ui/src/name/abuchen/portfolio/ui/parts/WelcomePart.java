@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.ui.parts;
 
+import java.text.MessageFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
@@ -16,6 +18,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
@@ -23,14 +26,15 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.ui.forms.events.IHyperlinkListener;
+import org.eclipse.ui.forms.widgets.ImageHyperlink;
 
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -42,6 +46,7 @@ import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.RecentFilesCache;
 import name.abuchen.portfolio.util.BuildInfo;
 
+@SuppressWarnings("restriction")
 public class WelcomePart
 {
     private static final String OPEN = "open:"; //$NON-NLS-1$
@@ -57,14 +62,17 @@ public class WelcomePart
     private EPartService partService;
 
     @Inject
+    private IThemeEngine themeEngine;
+
+    @Inject
     private RecentFilesCache recentFiles;
 
-    private Composite recentFilesComposite;
+    private Composite container;
 
     @PostConstruct
     public void createComposite(Composite parent)
     {
-        Composite container = new Composite(parent, SWT.NONE);
+        container = new Composite(parent, SWT.NONE);
         container.setBackground(Colors.WHITE);
         GridLayoutFactory.fillDefaults().margins(20, 20).applyTo(container);
 
@@ -75,6 +83,7 @@ public class WelcomePart
     private void createHeader(Composite container)
     {
         Composite composite = new Composite(container, SWT.NONE);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).grab(true, false).applyTo(composite);
         composite.setBackground(container.getBackground());
         composite.setLayout(new FormLayout());
 
@@ -91,7 +100,7 @@ public class WelcomePart
         // version
         Label version = new Label(composite, SWT.NONE);
         version.setText(PortfolioPlugin.getDefault().getBundle().getVersion().toString() + " (" //$NON-NLS-1$
-                        + DateTimeFormatter.ofPattern("MMM yyyy").format(BuildInfo.INSTANCE.getBuildTime()) //$NON-NLS-1$
+                        + DateTimeFormatter.ofPattern("MMMM yyyy").format(BuildInfo.INSTANCE.getBuildTime()) //$NON-NLS-1$
                         + ")"); //$NON-NLS-1$
 
         FormDataFactory.startingWith(image) //
@@ -102,63 +111,55 @@ public class WelcomePart
     private void createContent(Composite container)
     {
         Composite composite = new Composite(container, SWT.NONE);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(composite);
         composite.setBackground(container.getBackground());
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(composite);
 
-        GridLayoutFactory.fillDefaults().numColumns(3).spacing(20, 20).applyTo(composite);
+        GridLayoutFactory.fillDefaults().numColumns(3).equalWidth(true).spacing(20, 20).applyTo(composite);
 
-        createLinks(composite);
-        createSettingsInfo(composite);
-        createRecentFilesComposite(composite);
+        var children = new Composite[] { //
+                        createOpenLinks(composite), //
+                        createHelpSection(composite), //
+                        createMobileAppSection(composite) //
+        };
+
+        for (Composite child : children)
+        {
+            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).hint(300, SWT.DEFAULT).applyTo(child);
+        }
+
     }
 
-    private void createLinks(Composite composite)
+    private Composite createOpenLinks(Composite composite)
     {
-        Composite links = new Composite(composite, SWT.NONE);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(links);
+        Composite section = new Composite(composite, SWT.NONE);
+        GridLayoutFactory.fillDefaults().margins(5, 5).applyTo(section);
 
-        GridLayoutFactory.fillDefaults().margins(5, 5).applyTo(links);
+        addSectionLabel(section, Messages.IntroLabelActions);
+        addLink(section, "action:open", Messages.IntroOpenFile, Messages.IntroOpenFileText); //$NON-NLS-1$
+        addLink(section, "action:new", Messages.IntroNewFile, Messages.IntroNewFileText); //$NON-NLS-1$
 
-        addSectionLabel(links, Messages.IntroLabelActions);
-        addLink(links, "action:open", Messages.IntroOpenFile, Messages.IntroOpenFileText); //$NON-NLS-1$
-        addLink(links, "action:new", Messages.IntroNewFile, Messages.IntroNewFileText); //$NON-NLS-1$
-
-        addSectionLabel(links, Messages.IntroLabelSamples);
-        addLink(links, "action:sample", Messages.IntroOpenSample, Messages.IntroOpenSampleText); //$NON-NLS-1$
-        addLink(links, "action:daxsample", Messages.IntroOpenDaxSample, Messages.IntroOpenDaxSampleText); //$NON-NLS-1$
-    }
-
-    private void createRecentFilesComposite(Composite actions)
-    {
-        recentFilesComposite = new Composite(actions, SWT.NONE);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(recentFilesComposite);
-
-        GridLayoutFactory.fillDefaults().margins(5, 5).applyTo(recentFilesComposite);
-
-        addSectionLabel(recentFilesComposite, Messages.IntroLabelRecentlyUsedFiles);
+        addSectionLabel(section, Messages.IntroLabelRecentlyUsedFiles);
 
         for (String file : recentFiles.getRecentFiles())
         {
             String name = Path.fromOSString(file).lastSegment();
-            addLink(recentFilesComposite, OPEN + file, name, null);
+            addLink(section, OPEN + file, name, null);
         }
+
+        return section;
     }
 
-    private void createSettingsInfo(Composite composite)
+    private Composite createHelpSection(Composite composite)
     {
         Composite section = new Composite(composite, SWT.NONE);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).applyTo(section);
-        GridLayoutFactory.fillDefaults().margins(5, 5).numColumns(1).applyTo(section);
+        GridLayoutFactory.fillDefaults().margins(5, 5).applyTo(section);
 
-        addSectionLabel(section, Messages.LabelSettings);
-
-        addLink(section, OPEN_PREFERENCES + "language", Messages.PrefTitleLanguage, null); //$NON-NLS-1$
-        addLink(section, OPEN_PREFERENCES + "theme", Messages.LabelTheme + " / " + Messages.LabelFontSize, null); //$NON-NLS-1$ //$NON-NLS-2$
-        addLink(section, OPEN_PREFERENCES + "api", Messages.PrefTitleAPIKeys, null); //$NON-NLS-1$
+        addSectionLabel(section, Messages.IntroLabelSamples);
+        addLink(section, "action:sample", Messages.IntroOpenSample, Messages.IntroOpenSampleText); //$NON-NLS-1$
 
         addSectionLabel(section, Messages.IntroLabelHelp);
-        addLink(section, "https://forum.portfolio-performance.info/t/sunny-neues-nennenswertes/23/last", //$NON-NLS-1$
-                        Messages.SystemMenuNewAndNoteworthy, Messages.IntroNewAndNoteworthyText);
+        addLink(section, Messages.SiteNewAndNoteworthy, Messages.SystemMenuNewAndNoteworthy,
+                        Messages.IntroNewAndNoteworthyText);
 
         addLink(section, "https://forum.portfolio-performance.info", //$NON-NLS-1$
                         Messages.IntroOpenForum, Messages.IntroOpenForumText);
@@ -166,6 +167,34 @@ public class WelcomePart
                         Messages.IntroOpenHowtos, Messages.IntroOpenHowtosText);
         addLink(section, "https://forum.portfolio-performance.info/c/faq", //$NON-NLS-1$
                         Messages.IntroOpenFAQ, Messages.IntroOpenFAQText);
+
+        return section;
+    }
+
+    private Composite createMobileAppSection(Composite composite)
+    {
+        Composite section = new Composite(composite, SWT.NONE);
+        GridLayoutFactory.fillDefaults().margins(5, 5).applyTo(section);
+
+        addSectionLabel(section, Messages.LabelMobileApp);
+        addLink(section, Messages.SiteAppLandingpage, Messages.LabelMobileApp, Messages.IntroMobileApp);
+
+        // pick the qr code image that fits the language (en, de) and the theme
+        // (dark, light) as we do not want to introduce a dependency to generate
+        // qr codes
+
+        var isDark = themeEngine.getActiveTheme().getId().contains("dark"); //$NON-NLS-1$
+        var isGerman = Locale.getDefault().getLanguage().equals("de"); //$NON-NLS-1$
+
+        var qrcode = new ImageHyperlink(section, SWT.NONE);
+        qrcode.setImage(Images.resolve(MessageFormat.format("qr/app_{0}_{1}.png", //$NON-NLS-1$
+                        isGerman ? "de" : "en", //$NON-NLS-1$ //$NON-NLS-2$
+                        isDark ? "dark" : "light"))); //$NON-NLS-1$ //$NON-NLS-2$
+
+        qrcode.addHyperlinkListener(
+                        IHyperlinkListener.linkActivatedAdapter(e -> linkActivated(Messages.SiteAppLandingpage)));
+
+        return section;
     }
 
     private void addSectionLabel(Composite actions, String label)
@@ -180,20 +209,13 @@ public class WelcomePart
     {
         Link link = new Link(container, SWT.UNDERLINE_LINK);
         link.setText("<a>" + label + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
-        link.addSelectionListener(new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                linkActivated(target);
-            }
-        });
+        link.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> linkActivated(target)));
 
         if (subtext != null)
         {
             Label l = new Label(container, SWT.WRAP);
             l.setText(subtext);
-            GridDataFactory.fillDefaults().indent(0, -3).applyTo(l);
+            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).grab(true, false).applyTo(l);
         }
     }
 
@@ -228,12 +250,6 @@ public class WelcomePart
             executeCommand("name.abuchen.portfolio.ui.command.openSample", //$NON-NLS-1$
                             UIConstants.Parameter.SAMPLE_FILE, //
                             "/" + getClass().getPackage().getName().replace('.', '/') + "/kommer.xml"); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-        else if ("action:daxsample".equals(target)) //$NON-NLS-1$
-        {
-            executeCommand("name.abuchen.portfolio.ui.command.openSample", //$NON-NLS-1$
-                            UIConstants.Parameter.SAMPLE_FILE, //
-                            "/" + getClass().getPackage().getName().replace('.', '/') + "/dax.xml"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         else if (target.startsWith(OPEN_PREFERENCES))
         {
@@ -276,14 +292,20 @@ public class WelcomePart
 
     @Inject
     @Optional
-    public void subscribeFileTopic(@UIEventTopic(UIConstants.Event.File.ALL_SUB_TOPICS) String file)
+    public void subscribeFileTopic(@UIEventTopic(UIConstants.Event.RecentFiles.UPDATED) Object event)
     {
-        if (recentFilesComposite == null)
+        if (container == null)
             return;
 
-        Composite parent = recentFilesComposite.getParent();
-        recentFilesComposite.dispose();
-        createRecentFilesComposite(parent);
-        recentFilesComposite.getParent().layout(true);
+        // dispose all children
+        var controls = container.getChildren();
+        for (int ii = 0; ii < controls.length; ii++)
+            controls[ii].dispose();
+
+        // recreate the content
+        createHeader(container);
+        createContent(container);
+
+        container.layout(true);
     }
 }

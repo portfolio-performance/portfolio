@@ -115,7 +115,7 @@ public class DeltaPercentageIndicatorLabelProvider extends OwnerDrawLabelProvide
         else if (widget instanceof TreeItem treeItem)
             return treeItem.getBounds(index);
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unsupported widget type " + widget); //$NON-NLS-1$
     }
 
     @Override

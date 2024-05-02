@@ -355,12 +355,14 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     public void setDate(LocalDate date)
     {
         firePropertyChange(Properties.date.name(), this.date, this.date = date);
+        updateSharesAndQuote();
         updateExchangeRate();
     }
 
     public void setTime(LocalTime time)
     {
         firePropertyChange(Properties.time.name(), this.time, this.time = time);
+        updateSharesAndQuote();
         updateExchangeRate();
     }
 
@@ -394,12 +396,15 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     public void setQuote(BigDecimal quote)
     {
-        firePropertyChange(Properties.quote.name(), this.quote, this.quote = quote);
+        var newValue = quote == null ? BigDecimal.ZERO : quote;
 
-        triggerGrossValue(Math.round(shares * quote.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
+        firePropertyChange(Properties.quote.name(), this.quote, this.quote = newValue); // NOSONAR
+
+        triggerGrossValue(
+                        Math.round(shares * newValue.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
-                        this.calculationStatus = calculateStatus());
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public long getGrossValue()

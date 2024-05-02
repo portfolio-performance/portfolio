@@ -1,0 +1,50 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Smartbroker AG
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Ritterstraße 11
+10969 Berlin
+Seite 1/1
+Berlin
+jvbtTA qRQJHbL 19.04.2024
+pzOIZA-vzOCxYthS-fsI. 78
+HAsBIN WIXPRnt
+00977 jjiW vV 29
+Stamm-Nr.: 8248906    Portfolio: 3
+Depot-Nr.: 7035206359
+Vorgangs-Nr.: 138151585
+Referenz-Nr.: 174017842
+Wertpapierabrechnung: Kauf
+Auftragsdatum: 18.04.2024 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 15:50:39:00
+Nominale ISIN: DE0001141802 WKN: 114180 Kurs 
+EUR   50.800,00 Bundesrep.Deutschland 98,273 %
+Bundesobl.Ser.180 v.2019(24)
+Auftraggeber: Depotinhaber
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 49.922,68
+Zu Lasten Konto 1603794693 Valuta: 22.04.2024 EUR 49.922,68
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung:
+Handels- Handels- 
+Nominale Kurs Ausführungsplatz datum uhrzeit 
+EUR   50.800,00 98,273 % GETTEX - MM Munich 18.04.2024 15:50:39:748
+Verwahrart: Girosammelverwahrung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 100 MIC des Ausführungsplatzes: MUNC
+Lagerland: Deutschland
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und Vollständigkeit. Etwaige 
+Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden. 
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der Gesellschaft: 
+Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+WPABRECHNUNG-060.114

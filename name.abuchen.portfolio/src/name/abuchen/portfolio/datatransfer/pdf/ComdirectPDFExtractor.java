@@ -1163,7 +1163,26 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                                                                 t.setCurrencyCode(asCurrencyCode(stripBlanksAndUnderscores(v.get("currencyRefundedTaxes"))));
                                                                 t.setAmount(asAmount(stripBlanksAndUnderscores(v.get("refundedTaxes"))));
-                                                            }))
+                                                        }),
+                                        // @formatter:off
+                                        // Z u  Ih r e n G u n s t e n v o r S te u e r n :                                                                                                    E U R               1,4 0
+                                        // S  te u e rb e m  e ss u n g s g r u n d la g e n a c h V e r lu s t ve r r ec h n u n g  (8 )         E  U  R                                 -  0 , 1 0
+                                        // K  ap i ta le r tr a gs t e ue r  ( 8 )                                                                   E  U   R                                  0 , 0 3
+                                        // S ol id a ri tä t sz u s c hl a g                                                                      E  U   R                                  0 , 0 0
+                                        // K irc h e n s te u e r                                                                              _E  _U   R_  _  _  _   _  _  _   _  _  _  _   _  _  _   _  0_ _, 0_ 0_
+                                        // e r s ta t te t e S t e ue r n                                                                                                                     _E _U _R _ _ _ _ _ _ _  __  __  _ _ _0_,__0 _3
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currencyRefundedTaxes", "refundedTaxes") //
+                                                        .match("^([\\s]+)?Z([\\s]+)?u([\\s]+)?I([\\s]+)?h([\\s]+)?r([\\s]+)?e([\\s]+)?n([\\s]+)?(G([\\s]+)?u([\\s]+)?n([\\s]+)?s([\\s]+)?t([\\s]+)?e([\\s]+)?n|L([\\s]+)?a([\\s]+)?s([\\s]+)?t([\\s]+)?e([\\s]+)?n)([\\s]+)?v([\\s]+)?o([\\s]+)?r([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n([\\s]+)?: [\\s]{1,}[A-Z\\s]+ [\\s]{1,}(\\-)?[\\.,\\d\\s]+.*$") //
+                                                        .match("^([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?b([\\s]+)?e([\\s]+)?m([\\s]+)?e([\\s]+)?s([\\s]+)?s([\\s]+)?u([\\s]+)?n([\\s]+)?g([\\s]+)?s([\\s]+)?g([\\s]+)?r([\\s]+)?u([\\s]+)?n([\\s]+)?d([\\s]+)?l([\\s]+)?a([\\s]+)?g([\\s]+)?e([\\s]+)?n([\\s]+)?a([\\s]+)?c([\\s]+)?h([\\s]+)?V([\\s]+)?e([\\s]+)?r([\\s]+)?l([\\s]+)?u([\\s]+)?s([\\s]+)?t([\\s]+)?v([\\s]+)?e([\\s]+)?r([\\s]+)?r([\\s]+)?e([\\s]+)?c([\\s]+)?h([\\s]+)?n([\\s]+)?u([\\s]+)?n([\\s]+)?g([\\(\\s\\d\\)]+)? [\\s]{1,}[A-Z\\s]+ [\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
+                                                        .match("^([\\s]+)?e([\\s]+)?r([\\s]+)?s([\\s]+)?t([\\s]+)?a([\\s]+)?t([\\s]+)?t([\\s]+)?e([\\s]+)?t([\\s]+)?e([\\s]+)?S([\\s]+)?t([\\s]+)?e([\\s]+)?u([\\s]+)?e([\\s]+)?r([\\s]+)?n [\\s]{1,}[A-Z_\\s]+ [\\-_\\s]{1,}[\\.,\\d_\\s]+ [\\s]{1,}(?<currencyRefundedTaxes>[A-Z_\\s]+) [\\-_\\s]{1,}(?<refundedTaxes>[\\.,\\d_\\s]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                                                            t.setCurrencyCode(asCurrencyCode(stripBlanksAndUnderscores(v.get("currencyRefundedTaxes"))));
+                                                            t.setAmount(asAmount(stripBlanksAndUnderscores(v.get("refundedTaxes"))));
+                                                        }))
 
                         // @formatter:off
                         // Z  u     I h  r e   n    G  u   n   s  t e   n   v  o  r    S  t e  u   e   r n  :                                                         E  U   R                      1   0  .  5   8  3 , 9 9  U S D           11  .9 5 8 ,  8 5
@@ -1785,7 +1804,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
      * @formatter:on
      */
     @Override
-    public List<Item> postProcessing(List<Item> items)
+    public void postProcessing(List<Item> items)
     {
         // Filter transactions by taxes treatment's
         List<Item> taxesTreatmentList = items.stream() //
@@ -1901,8 +1920,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                 ExtractorUtils.fixGrossValue().accept(dividendTransaction);
             }
         }
-
-        return items;
     }
 
     /**

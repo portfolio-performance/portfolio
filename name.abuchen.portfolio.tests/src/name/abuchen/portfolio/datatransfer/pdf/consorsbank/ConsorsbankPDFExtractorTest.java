@@ -1442,6 +1442,37 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf26()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf26.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("XS2343822842"), hasWkn("A2YN0C"), hasTicker(null), //
+                        hasName("0,375 % VOLKSWAGEN LEASING 21/26 20.JULI"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-07-07T13:38:16"), hasShares(70.00), //
+                        hasSource("Kauf26.txt"), //
+                        hasNote("269730691.001 | Stückzins 356 Tage 25,60 EUR"), //
+                        hasAmount("EUR", 6241.78), hasGrossValue("EUR", 6240.83), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.95))));
+    }
+
+    @Test
     public void testWertpapierBezug01()
     {
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
@@ -3504,7 +3535,7 @@ public class ConsorsbankPDFExtractorTest
                         hasName("ComStage Vermoeg.str.UCITS ETF Inhaber-Anteile I"), //
                         hasCurrencyCode("EUR"))));
 
-        // check dividende transaction
+        // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2017-10-13T00:00"), hasShares(27.47377), //
                         hasSource("Dividende18.txt"), //
@@ -3535,7 +3566,7 @@ public class ConsorsbankPDFExtractorTest
                         hasName("GLADSTONE CAPITAL CORP. Registered Shares o.N."), //
                         hasCurrencyCode("USD"))));
 
-        // check dividende transaction
+        // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2018-09-28T00:00"), hasShares(1000.00), //
                         hasSource("Dividende19.txt"), //
@@ -3606,13 +3637,329 @@ public class ConsorsbankPDFExtractorTest
                         hasName("Allianz SE vink.Namens-Aktien o.N."), //
                         hasCurrencyCode("EUR"))));
 
-        // check dividende transaction
+        // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2019-05-13T00:00"), hasShares(80.00), //
                         hasSource("Dividende20.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 518.44), hasGrossValue("EUR", 720.00), //
                         hasTaxes("EUR", 176.04 + 9.68 + 15.84), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende21()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende21.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0292096186"), hasWkn("DBX1DG"), hasTicker(null), //
+                        hasName("Xtr.Stoxx Gbl Sel.Div.100 Swap Inhaber-Anteile 1D o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-03-07T00:00"), hasShares(100.4205), //
+                        hasSource("Dividende21.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 45.68), hasGrossValue("EUR", 56.02), //
+                        hasTaxes("EUR", 9.80 + 0.54), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende22()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende22.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US49456B1017"), hasWkn("A1H6GK"), hasTicker(null), //
+                        hasName("Kinder Morgan Inc. Registered Shares P DL -,01"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-02-28T00:00"), hasShares(290.00), //
+                        hasSource("Dividende22.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 56.33), hasGrossValue("EUR", 56.33), //
+                        hasForexGrossValue("USD", 61.45), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende22WithSecurityInEUR()
+    {
+        Security security = new Security("Kinder Morgan Inc. Registered Shares P DL -,01", CurrencyUnit.EUR);
+        security.setIsin("US49456B1017");
+        security.setWkn("A1H6GK");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende22.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-02-28T00:00"), hasShares(290.00), //
+                        hasSource("Dividende22.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 56.33), hasGrossValue("EUR", 56.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende23()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US3026352068"), hasWkn("A2P6TH"), hasTicker(null), //
+                        hasName("FS KKR Capital Corp. Registered Shares DL -,001"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-02-28T00:00"), hasShares(42.27894), //
+                        hasSource("Dividende23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1.44), hasGrossValue("EUR", 1.94), //
+                        hasForexGrossValue("USD", 2.11), //
+                        hasTaxes("EUR", 0.29 + 0.19 + 0.01 + 0.01), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende23WithSecurityInEUR()
+    {
+        Security security = new Security("FS KKR Capital Corp. Registered Shares DL -,001", CurrencyUnit.EUR);
+        security.setIsin("US3026352068");
+        security.setWkn("A2P6TH");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-02-28T00:00"), hasShares(42.27894), //
+                        hasSource("Dividende23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1.44), hasGrossValue("EUR", 1.94), //
+                        hasTaxes("EUR", 0.29 + 0.19 + 0.01 + 0.01), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende24()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7561581015"), hasWkn("A0YCXM"), hasTicker(null), //
+                        hasName("Reaves Utility Income Fund Reg. Shs of Benef. Int. DL-,01"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-02-29T00:00"), hasShares(70.00), //
+                        hasSource("Dividende24.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 10.38), hasGrossValue("EUR", 12.22), //
+                        hasForexGrossValue("USD", 13.30), //
+                        hasTaxes("EUR", 1.84), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende24WithSecurityInEUR()
+    {
+        Security security = new Security("FS KKR Capital Corp. Registered Shares DL -,001", CurrencyUnit.EUR);
+        security.setIsin("US7561581015");
+        security.setWkn("A0YCXM");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-02-29T00:00"), hasShares(70.00), //
+                        hasSource("Dividende24.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 10.38), hasGrossValue("EUR", 12.22), //
+                        hasTaxes("EUR", 1.84), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende25()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BK1PV551"), hasWkn("A1XEY2"), hasTicker(null), //
+                        hasName("Xtr.(IE) - MSCI World Registered Shares 1D o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-03-07T00:00"), hasShares(80.43549), //
+                        hasSource("Dividende25.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 41.99), hasGrossValue("EUR", 41.99), //
+                        hasForexGrossValue("USD", 46.03), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende25WithSecurityInEUR()
+    {
+        Security security = new Security("Xtr.(IE) - MSCI World Registered Shares 1D o.N.", CurrencyUnit.EUR);
+        security.setIsin("IE00BK1PV551");
+        security.setWkn("A1XEY2");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-03-07T00:00"), hasShares(80.43549), //
+                        hasSource("Dividende25.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 41.99), hasGrossValue("EUR", 41.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test

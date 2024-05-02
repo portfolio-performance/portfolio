@@ -1,0 +1,31 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+ 26.03.2024
+tedj yGBqfR MusjIylOz
+pnLTPRWhlvLQRQip 06
+2242 PyWc
+vBRjZIShrz
+Tagesgeldvertrag SD-ATC-55443596
+Kontoauszug von 01.03.2024 bis 25.03.2024
+IBAN: EE123456789101112131
+Anfangssaldo 01.03.2024 0,00
+Datum Gegenkonto Buchung Name  Betrag in EUR
+20.03.2024 AT123456789101112131 Einzahlung ffIpWotyu  dJMdyU +10,12
+21.03.2024 AT123456789101112131 Einzahlung oDkoRVZEb  TxDUxE +1 500,34
+25.03.2024 AT123456789101112131 Auszahlung sUBHAKqzf  vNNKxT -10,12
+Endsaldo 25.03.2024 1 500,00
+Anfangssaldo 01.03.2024 0,00
+Summe Belastungen -10,12
+Summe Gutschriften +1 510,46
+Endsaldo 25.03.2024 1 500,34
+Dies ist ein automatisch generierter Kontoauszug.
+BIGBANK AS Telefon 0810 900 629
+Riia 2, Tartu E-mail kundenservice@bigbank.at
+51004 Reg. Nr. 10183757
+www.bigbank.at VAT. Nr. EE100041383
+1 / 1
+Powered by TCPDF (www.tcpdf.org)
+
+```

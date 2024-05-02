@@ -93,7 +93,8 @@ public abstract class AbstractPDFExtractor implements Extractor
         List<Item> results = new ArrayList<>();
 
         if (!(inputFile instanceof PDFInputFile))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("input file doesn't seem to be a PDF-file but is of type " //$NON-NLS-1$
+                            + inputFile.getClass().getName());
 
         String text = ((PDFInputFile) inputFile).getText();
         results.addAll(extract(inputFile.getFile().getName(), text, errors));
@@ -169,7 +170,7 @@ public abstract class AbstractPDFExtractor implements Extractor
     private void checkBankIdentifier(String filename, String text)
     {
         if (bankIdentifier.isEmpty())
-            bankIdentifier.add(getLabel());
+            return;
 
         for (String identifier : bankIdentifier)
             if (text.contains(identifier))

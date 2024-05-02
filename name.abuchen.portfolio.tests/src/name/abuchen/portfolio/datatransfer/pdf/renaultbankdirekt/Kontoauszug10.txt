@@ -1,0 +1,83 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.2
+-----------------------------------------
+Tagesgeld
+EUR-Konto Kontonummer 470700100
+Renault Bank direkt - Postfach 269 - 45952 Gladbeck
+Kontoauszug Nr.  8/2022
+erstellt am 31.08.2022 22:28 Blatt  1 von 1
+IBAN: DE38 3052 0037 0480 8002 00 BIC: RCIDDE3NPAY
+Herrn
+Max Muster
+Musterstr. 2
+04668 Musterhausen
+Bu-Tag Wert Vorgang
+alter Kontostand vom 29.07.2022                      15.029,22 H
+01.08. 01.08. Überweisungsauftrag                                               1.500,00 S
+              Max Muster
+              Auszahlung 092 RenaultBank TAN1:704073 IBAN: DE3012030
+              0000054446078 BIC: BYLADEM1001
+05.08. 05.08. Überweisungsauftrag                                                 600,00 S
+              Max Muster
+              Auszahlung 093 RenaultBank TAN1:068790 IBAN: DE3012030
+              0000054446078 BIC: BYLADEM1001
+05.08. 31.07. Storno Abschluss                                                      3,59 S
+05.08. 31.07. Abschluss                                                                       1,62 H
+               0,05000% Habenzins                   2007       0,40H
+               0,30000% Habenzins                   3107       1,22H
+              Abschluss vom 01.07.2022 bis 31.07.2022
+              für Konto  470700100
+              Rechnung Nr.  0470700100.20220731.001
+              USt. IdNr. - DE 812212244
+              USt.-befreite Finanzdienstleistung
+12.08. 12.08. Überweisungsgutschr.                                                        4.250,00 H
+              Max Muster
+              Einzahlung 032 RenaultBank
+23.08. 23.08. Überweisungsauftrag                                               1.500,00 S
+              Max Muster
+              Auszahlung 094 RenaultBank TAN1:221199 IBAN: DE3012030
+              0000054446078 BIC: BYLADEM1001
+30.08. 30.08. Überweisungsauftrag                                               3.500,00 S
+              Max Muster
+              Auszahlung 095 RenaultBank TAN1:137558 IBAN: DE3012030
+              0000054446078 BIC: BYLADEM1001
+31.08. 31.08. Abschluss                                                                       3,82 H
+               0,30000% Habenzins                   3108       3,82H
+              Abschluss vom 01.08.2022 bis 31.08.2022
+              für Konto  470700100
+              Rechnung Nr.  0470700100.20220831.001
+              USt. IdNr. - DE 812212244
+              USt.-befreite Finanzdienstleistung
+                                    neuer Kontostand vom 31.08.2022                      12.181,07 H
+3724
+000
+K00187279
+5M Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Allgemeiner Hinweis:
+Bitte prüfen Sie die vorstehenden Angaben auf ihre Vollständigkeit und Richtigkeit des Saldos und beachten Sie
+dabei die nachfolgenden Anmerkungen. Für die Zinsabrechnung verwenden wir, wie für alle Umsätze, das Datum
+der Wertstellung. Wird keine Wertstellung ausgewiesen, so gilt das Buchungsdatum als Wertstellungsdatum.
+Gegebenenfalls ausgewiesene Bankdienstleistungen sind steuerfrei, sofern nichts Abweichendes angegeben ist.
+Soweit die vorstehende Aufstellung mit dem Hinweis "Rechnungsabschluss" gekennzeichnet ist, haben wir für Ihr
+Konto einen Rechnungsabschluss durchgeführt. Dabei werden die in dem Abrechnungszeitraum ggf. entstandenen
+beiderseitigen Ansprüche (einschließlich Zinsen und Entgelte) verrechnet. Umsätze, die nach dem Erstellungsdatum
+anfallen und sich auf den Abrechnungssaldo des abgelaufenen Abrechnungszeitraums auswirken, werden erst in der
+folgenden Abrechnung berücksichtigt. Korrekturen, die sich auf Zinsen beziehen, werden entsprechend gekennzeichnet.
+Einwendungen gegen Angaben im Kontoauszug oder den ausgewiesenen Saldo sind unverzüglich, spätestens
+jedoch innerhalb von sechs Wochen nach Zugang des Kontoauszugs ausschließlich der Innenrevision der
+Renault Bank direkt (Postfach 269, 45952 Gladbeck) schriftlich zur Kenntnis zu geben. Nach Ablauf dieser Frist gehen
+wir davon aus, dass Sie mit der Vollständigkeit und Richtigkeit der Angaben und des Saldos einverstanden sind.
+Vom Kunden erteilte Einzugsaufträge betreffend Lastschriften von seinem Referenzkonto werden unter dem
+Vorbehalt des Eingangs gutgeschrieben.
+Bitte beachten Sie: Kapitalerträge sind einkommensteuerpflichtig.
+Wichtiger Hinweis zur Einlagensicherung
+Einlagensicherung ist die Bezeichnung für die gesetzlichen und freiwilligen Maßnahmen zum Schutz der
+Einlagen (Guthaben) von Kunden bei Kreditinstituten im Falle der Insolvenz. Die Renault Bank direkt ist dem
+französischen Einlagensicherungsfonds angeschlossen. Die französische Einlagensicherung sichert Einlagen in
+derselben Höhe ab wie die gesetzliche deutsche Einlagensicherung. Bis 100.000 EUR pro Person sind zu 100 
+Prozent abgesichert.
+Nähere Informationen können Sie dem "Informationsbogen für den Einleger" entnehmen. Diesen finden sie auf unserer 
+Website unter dem Menüpunkt: AGB.
+
+```

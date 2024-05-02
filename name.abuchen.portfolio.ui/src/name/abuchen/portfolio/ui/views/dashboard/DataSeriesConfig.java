@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.action.IMenuManager;
@@ -60,6 +59,18 @@ public class DataSeriesConfig implements WidgetConfig
         return dataSeries;
     }
 
+    public void setDataSeries(DataSeries dataSeries)
+    {
+        this.dataSeries = dataSeries;
+
+        delegate.getWidget().getConfiguration().put(configurationKey.name(), dataSeries.getUUID());
+
+        delegate.onWidgetConfigEdited(this.getClass());
+
+        delegate.update();
+        delegate.getClient().touch();
+    }
+
     @Override
     public void menuAboutToShow(IMenuManager manager)
     {
@@ -85,9 +96,10 @@ public class DataSeriesConfig implements WidgetConfig
         if (predicate != null)
             stream = stream.filter(predicate);
 
-        List<DataSeries> list = stream.collect(Collectors.toList());
+        List<DataSeries> list = stream.toList();
 
-        DataSeriesSelectionDialog dialog = new DataSeriesSelectionDialog(Display.getDefault().getActiveShell());
+        DataSeriesSelectionDialog dialog = new DataSeriesSelectionDialog(Display.getDefault().getActiveShell(),
+                        delegate.getClient());
         dialog.setElements(list);
         dialog.setMultiSelection(false);
 
@@ -98,13 +110,7 @@ public class DataSeriesConfig implements WidgetConfig
         if (result.isEmpty())
             return;
 
-        dataSeries = result.get(0);
-        delegate.getWidget().getConfiguration().put(configurationKey.name(), dataSeries.getUUID());
-
-        delegate.onWidgetConfigEdited(this.getClass());
-
-        delegate.update();
-        delegate.getClient().touch();
+        setDataSeries(result.get(0));
     }
 
     @Override

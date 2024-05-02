@@ -107,6 +107,6 @@ public class ReadingHistoricClientFilesTest
                 return fullPath.get().toFile();
         }
 
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("entry with name '" + name + "' not found");
     }
 }

@@ -1,0 +1,32 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+Signor
+jkStRODK SosCGeIjaaXA
+Xgc ScO zPRGXAAvt 13b
+94912 VEWrGy
+Italia
+Conto k7597
+Nota Informativa per l'ordine P9417565891845
+Vi Confermiamo il Vs. ordine sopra riportato del 12.04.2024 Data scadenza 10.04.2025
+per l'acquisto di: 7 VANGUARD FTSE ALL-WORLD UCITS ISIN IE00BK5BQT80
+Scadenza 00/00/0000
+eseguito per: 7
+tramite l'intermediario DIRECTA SIM.p.A.
+Tipo di Operazione: Acquisto     Mercato di esecuzione: Borsa - Euronext Milan
+Modalità di liquidazione:  Per consegna e pagamento in contanti
+                                                  Quantita'                 Euro               Prezzo      Valuta
+12.04.2024  09:03:49  Richiesta Immissione                7                                  118,5000
+12.04.2024  09:03:49  Inoltro
+12.04.2024  09:03:49  In negoziazione
+12.04.2024  09:04:21  Eseguito                            7               829,15             118,4500  16.04.2024
+                      Controvalore:                                       829,15             118,4500
+                      Commissioni:
+                      Ritenuta:
+                      Totale a Vs. Debito                                 829,15
+Gli effetti fiscali saranno disponibili a data valuta nel menu Info -  2b.Capital Gain
+Torino, 12.04.2024
+       DIRECTA SIM
+
+```

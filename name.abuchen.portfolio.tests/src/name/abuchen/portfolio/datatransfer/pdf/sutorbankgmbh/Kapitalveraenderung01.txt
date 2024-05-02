@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.0
+-----------------------------------------
+justTRADE
+Ein Service der Sutor Bank GmbH
+JT Technologies GmbH
+Herr Hamburger Allee 14
+Vor Name 60486 Frankfurt am Main
+Straße 1 E-Mail: service@justtrade.com
+11111 Ort Web: www.justtrade.com
+Name des Kunden: Vor Name
+Depotnummer: 111111111
+08. Juni 2023
+Kapitalveränderung - Bezugsrechtsemission
+Produktbezeichnung - OXFORD SQUARE CAP. DL-,01
+Internationale Wertpapierkennnummer US69181V1070
+(ISIN)
+Anzahl/Nominale 500,00
+Referenz 11111
+Ex Datum - Tag 25. Mai 2023
+Verhältnis Neu/ Alt 1 : 3,00
+Neues Wertpapier Oxford Square Capital Corp. Anrechte
+Neue ISIN US69181V1153
+Einbuchung Anzahl/Nominale 166,67
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an unseren Kundenservice. Sie
+finden die Kontaktdetails im Briefkopf dieses Schreibens.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+SUTOR BANK GmbH TELEFON 040-8090685-0 GESCHÄFTSFÜHRUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 222721000896 HRB 178357
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX

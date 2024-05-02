@@ -2,10 +2,10 @@ This product includes software developed by the
 
 [Eclipse Foundation](http://eclipse.org/)
 [Apache Software Foundation](http://apache.org/)
-[SWT Chart Project](http://www.swtchart.org/)
-[Tree Map Library](http://code.google.com/p/treemaplib/)
+[SWT Chart Project](https://projects.eclipse.org/projects/science.swtchart)
+[Tree Map Library](https://github.com/smurf667/treemaplib)
 [jsoup Java HTML Parser](http://jsoup.org)
-[JSON.simple](https://code.google.com/p/json-simple/)
+[JSON.simple](https://github.com/fangyidong/json-simple)
 [Protobuf](https://github.com/protocolbuffers/protobuf)
 [Guava](https://github.com/google/guava)
 [JsonPath](https://github.com/json-path/JsonPath)

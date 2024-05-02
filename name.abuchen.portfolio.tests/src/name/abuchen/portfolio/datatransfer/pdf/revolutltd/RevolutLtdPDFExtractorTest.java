@@ -66,7 +66,7 @@ public class RevolutLtdPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.1451261)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
         assertNull(entry.getNote());
-        
+
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1166.12))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
@@ -82,7 +82,7 @@ public class RevolutLtdPDFExtractorTest
     {
         RevolutLtdPDFExtractor extractor = new RevolutLtdPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement01.txt"), errors);
 

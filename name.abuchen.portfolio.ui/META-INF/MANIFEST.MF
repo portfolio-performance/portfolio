@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Portfolio Platform UI
 Bundle-SymbolicName: name.abuchen.portfolio.ui;singleton:=true
-Bundle-Version: 0.67.2.qualifier
+Bundle-Version: 0.68.5.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: name.abuchen.portfolio.ui.PortfolioPlugin
@@ -41,9 +41,12 @@ Import-Package: com.google.common.base,
  org.eclipse.e4.core.di.extensions,
  org.eclipse.e4.core.services.events,
  org.eclipse.e4.core.services.log,
+ org.eclipse.e4.core.services.translation,
  org.eclipse.e4.ui.css.swt.dom,
  org.eclipse.e4.ui.css.swt.dom.definition,
+ org.eclipse.e4.ui.css.swt.engine,
  org.eclipse.e4.ui.css.swt.helpers,
+ org.eclipse.e4.ui.css.swt.internal.theme,
  org.eclipse.e4.ui.css.swt.properties,
  org.eclipse.e4.ui.css.swt.theme,
  org.eclipse.e4.ui.di,
@@ -113,11 +116,12 @@ Import-Package: com.google.common.base,
  org.osgi.service.event,
  org.osgi.service.prefs,
  org.swtchart
-Require-Bundle: name.abuchen.portfolio;bundle-version="0.67.2",
+Require-Bundle: name.abuchen.portfolio;bundle-version="0.68.5",
  org.eclipse.nebula.cwt,
  org.eclipse.ui.forms,
  org.eclipse.e4.ui.css.core,
  org.eclipse.ui.themes,
  org.eclipse.jface
 Automatic-Module-Name: name.abuchen.portfolio.ui
-Service-Component: OSGI-INF/name.abuchen.portfolio.ui.util.theme.ColorAndFontProviderImpl.xml
+Service-Component: OSGI-INF/name.abuchen.portfolio.ui.util.theme.ColorAndFontProviderImpl.xml,
+ OSGI-INF/name.abuchen.portfolio.ui.theme.CustomThemeEngineManager.xml

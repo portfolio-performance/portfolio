@@ -21,6 +21,7 @@ public class DescriptionWidget extends WidgetDelegate<Object>
         super(widget, data);
         
         get(LabelConfig.class).setMultiLine(true);
+        get(LabelConfig.class).setContainsTags(true);
     }
 
     @Override

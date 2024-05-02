@@ -318,7 +318,7 @@ public class ReportingPeriodDialog extends Dialog
         else if (template instanceof ReportingPeriod.PreviousYear)
             radioPreviousYear.setSelection(true);
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("no radio button available for template " + template); //$NON-NLS-1$
 
         Interval interval = template.toInterval(LocalDate.now());
 

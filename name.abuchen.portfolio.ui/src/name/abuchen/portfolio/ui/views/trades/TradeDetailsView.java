@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.trades;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,16 +13,22 @@ import jakarta.inject.Named;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -162,6 +169,8 @@ public class TradeDetailsView extends AbstractFinanceView
     private MutableBoolean onlyProfitable = new MutableBoolean(false);
     private MutableBoolean onlyLossMaking = new MutableBoolean(false);
 
+    private Pattern filterPattern;
+
     @Inject
     @Optional
     public void setTrades(@Named(UIConstants.Parameter.VIEW_PARAMETER) Input input)
@@ -195,6 +204,10 @@ public class TradeDetailsView extends AbstractFinanceView
     @Override
     protected void addButtons(ToolBarManager toolBarManager)
     {
+        addSearchButton(toolBarManager);
+
+        toolBarManager.add(new Separator());
+
         addFilterButton(toolBarManager);
 
         toolBarManager.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE,
@@ -214,9 +227,59 @@ public class TradeDetailsView extends AbstractFinanceView
         dropDown.setImage(isOn ? Images.FILTER_ON : Images.FILTER_OFF);
     }
 
+    private void addSearchButton(ToolBarManager toolBar)
+    {
+        toolBar.add(new ControlContribution("searchbox") //$NON-NLS-1$
+        {
+            @Override
+            protected Control createControl(Composite parent)
+            {
+                final Text search = new Text(parent, SWT.SEARCH | SWT.ICON_CANCEL);
+                search.setMessage(Messages.LabelSearch);
+                search.setSize(300, SWT.DEFAULT);
+
+                search.addModifyListener(e -> {
+                    String filterText = Pattern.quote(search.getText().trim());
+                    if (filterText.length() == 0)
+                    {
+                        filterPattern = null;
+                        table.getTableViewer().refresh(false);
+                    }
+                    else
+                    {
+                        filterPattern = Pattern.compile(".*" + filterText + ".*", //$NON-NLS-1$ //$NON-NLS-2$
+                                        Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+                        table.getTableViewer().refresh(false);
+                    }
+                });
+
+                return search;
+            }
+
+            @Override
+            protected int computeWidth(Control control)
+            {
+                return control.computeSize(100, SWT.DEFAULT, true).x;
+            }
+        });
+    }
+
     private void addFilterButton(ToolBarManager manager)
     {
         boolean hasPreselectedTrades = input != null;
+
+        // retrieve existing filter
+        int savedFilters = 0;
+        IPreferenceStore preferenceStore = getPreferenceStore();
+        savedFilters = preferenceStore.getInt(this.getClass().getSimpleName() + "-filterSettingsTrade"); //$NON-NLS-1$
+        if ((savedFilters & (1 << 1)) != 0)
+            onlyOpen.setValue(true);
+        if ((savedFilters & (1 << 2)) != 0)
+            onlyClosed.setValue(true);
+        if ((savedFilters & (1 << 3)) != 0)
+            onlyProfitable.setValue(true);
+        if ((savedFilters & (1 << 4)) != 0)
+            onlyLossMaking.setValue(true);
 
         DropDown filterDropDowMenu = new DropDown(Messages.MenuFilterTrades, Images.FILTER_OFF, SWT.NONE);
         updateFilterButtonImage(filterDropDowMenu);
@@ -251,6 +314,19 @@ public class TradeDetailsView extends AbstractFinanceView
             mgr.add(onlyLossMakingAction);
         });
 
+        filterDropDowMenu.addDisposeListener(e -> {
+            int savedFilter = 0;
+            if (onlyOpen.isTrue())
+                savedFilter += (1 << 1);
+            if (onlyClosed.isTrue())
+                savedFilter += (1 << 2);
+            if (onlyProfitable.isTrue())
+                savedFilter += (1 << 3);
+            if (onlyLossMaking.isTrue())
+                savedFilter += (1 << 4);
+            preferenceStore.setValue(this.getClass().getSimpleName() + "-filterSettingsTrade", savedFilter); //$NON-NLS-1$
+        });
+
         manager.add(filterDropDowMenu);
     }
 
@@ -263,6 +339,32 @@ public class TradeDetailsView extends AbstractFinanceView
 
         table.getTableViewer().addSelectionChangedListener(
                         e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
+
+        table.getTableViewer().addFilter(new ViewerFilter()
+        {
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element)
+            {
+                if (filterPattern == null)
+                    return true;
+                Trade trade = (Trade) element;
+                Security security = trade.getSecurity();
+
+                String[] properties = new String[] { security.getName(), //
+                                security.getIsin(), //
+                                security.getTickerSymbol(), //
+                                security.getWkn() //
+                };
+
+                for (String property : properties)
+                {
+                    if (property != null && filterPattern.matcher(property).matches())
+                        return true;
+                }
+
+                return false;
+            }
+        });
 
         update();
 

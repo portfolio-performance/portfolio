@@ -224,7 +224,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
                 createTable(8);
                 break;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unsupported layout " + layout); //$NON-NLS-1$
         }
     }
 
@@ -314,7 +314,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
                 fillInOnlyRelevantValues(snapshot);
                 break;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unsupported layout " + layout); //$NON-NLS-1$
         }
 
         container.layout();
@@ -370,7 +370,8 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
 
         for (ClientPerformanceSnapshot.Category category : categories)
         {
-            switch (category.getSign())
+            String sign = category.getSign();
+            switch (sign)
             {
                 case "+": //$NON-NLS-1$
                     totalMoney.add(category.getValuation());
@@ -379,7 +380,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
                     totalMoney.subtract(category.getValuation());
                     break;
                 default:
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("unsupported sign " + sign); //$NON-NLS-1$
             }
         }
 

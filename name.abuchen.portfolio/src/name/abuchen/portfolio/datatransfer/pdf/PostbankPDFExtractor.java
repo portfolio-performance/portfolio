@@ -6,11 +6,7 @@ import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.DocumentContext;
@@ -531,26 +527,10 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszug", (context, lines) -> {
-            Pattern pTransactionPeriod = Pattern.compile("^[\\d]{3} (?<year>[\\d]{4}) [\\d] [\\d]+ [A-Z]{2}(?:[\\s]?[0-9]){18,20} (?<baseCurrency>[\\w]{3}) ([\\-|\\+])? [\\.,\\d]+$");
+        var currencyAndYear = "^[\\d]{3} (?<year>[\\d]{4}) [\\d] [\\d]+ [A-Z]{2}(?:[\\s]?[0-9]){18,20} (?<baseCurrency>[\\w]{3}) ([\\-|\\+])? [\\.,\\d]+$";
 
-            PeriodicHelper periodicHelper = new PeriodicHelper();
-            context.putType(periodicHelper);
-
-            for (int i = 0; i < lines.length; i++)
-            {
-                Matcher mTransactionPeriod = pTransactionPeriod.matcher(lines[i]);
-                if (mTransactionPeriod.matches())
-                {
-                    PeriodicItem item = new PeriodicItem();
-                    item.periodicStartLine = i;
-                    item.year = Integer.parseInt(mTransactionPeriod.group("year"));
-                    item.baseCurrency = asCurrencyCode(mTransactionPeriod.group("baseCurrency"));
-
-                    periodicHelper.items.add(item);
-                }
-            }
-        });
+        final DocumentType type = new DocumentType("Kontoauszug", new Block(currencyAndYear)
+                        .asRange(section -> section.attributes("baseCurrency", "year").match(currencyAndYear)));
         this.addDocumentTyp(type);
 
         // @formatter:off
@@ -568,36 +548,25 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "note", "amount").optional() //
+                        .documentRange("baseCurrency", "year") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.)\\/[\\d]{2}\\.[\\d]{2}\\. (?<note>(D Gut SEPA|Gutschr\\.SEPA)) \\+ (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            DocumentContext context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("baseCurrency")));
+                            t.setAmount(asAmount(v.get("amount")));
 
-                            PeriodicHelper periodicHelper = context.getType(PeriodicHelper.class)
-                                            .orElseGet(PeriodicHelper::new);
+                            // Formatting some notes
+                            if ("D Gut SEPA".equals(v.get("note")))
+                                v.put("note", "Dauerauftrag");
 
-                            Optional<PeriodicItem> item = periodicHelper.findItem(v.getStartLineNumber());
+                            // Formatting some notes
+                            if ("Gutschr.SEPA".equals(v.get("note")))
+                                v.put("note", "SEPA Überweisungsgutschrift");
 
-                            if (item.isPresent())
-                            {
-                                t.setDateTime(asDate(v.get("date") + item.get().year));
-                                t.setCurrencyCode(asCurrencyCode(item.get().baseCurrency));
-                                t.setAmount(asAmount(v.get("amount")));
-
-                                // Formatting some notes
-                                if ("D Gut SEPA".equals(v.get("note")))
-                                    v.put("note", "Dauerauftrag");
-
-                                // Formatting some notes
-                                if ("Gutschr.SEPA".equals(v.get("note")))
-                                    v.put("note", "SEPA Überweisungsgutschrift");
-
-                                t.setNote(v.get("note"));
-                            }
+                            t.setNote(v.get("note"));
                         })
 
                         .wrap(t -> {
-                            type.getCurrentContext().removeType(PeriodicItem.class);
-
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
                             return null;
@@ -617,32 +586,21 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "note", "amount").optional() //
+                        .documentRange("baseCurrency", "year") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.)\\/[\\d]{2}\\.[\\d]{2}\\. (?<note>SEPA Überw\\. Einzel) \\- (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            DocumentContext context = type.getCurrentContext();
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("baseCurrency")));
+                            t.setAmount(asAmount(v.get("amount")));
 
-                            PeriodicHelper periodicHelper = context.getType(PeriodicHelper.class)
-                                            .orElseGet(PeriodicHelper::new);
+                            // Formatting some notes
+                            if ("SEPA Überw. Einzel".equals(v.get("note")))
+                                v.put("note", "SEPA Überweisungslastschrift");
 
-                            Optional<PeriodicItem> item = periodicHelper.findItem(v.getStartLineNumber());
-
-                            if (item.isPresent())
-                            {
-                                t.setDateTime(asDate(v.get("date") + item.get().year));
-                                t.setCurrencyCode(asCurrencyCode(item.get().baseCurrency));
-                                t.setAmount(asAmount(v.get("amount")));
-
-                                // Formatting some notes
-                                if ("SEPA Überw. Einzel".equals(v.get("note")))
-                                    v.put("note", "SEPA Überweisungslastschrift");
-
-                                t.setNote(v.get("note"));
-                            }
+                            t.setNote(v.get("note"));
                         })
 
                         .wrap(t -> {
-                            type.getCurrentContext().removeType(PeriodicItem.class);
-
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
                             return null;
@@ -873,43 +831,5 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                 checkAndSetFee(fee, t, type.getCurrentContext());
                             }
                         });
-    }
-
-
-    private static class PeriodicHelper
-    {
-        private List<PeriodicItem> items = new ArrayList<>();
-
-        public Optional<PeriodicItem> findItem(int lineNumber)
-        {
-            // search backwards for the first items _before_ the given line
-            // number
-
-            for (int ii = items.size() - 1; ii >= 0; ii--) // NOSONAR
-            {
-                PeriodicItem item = items.get(ii);
-                if (item.periodicStartLine > lineNumber)
-                    continue;
-                else
-                    return Optional.of(item);
-            }
-
-            return Optional.empty();
-        }
-    }
-
-    private static class PeriodicItem
-    {
-        int periodicStartLine;
-        int year;
-
-        String baseCurrency;
-
-        @Override
-        public String toString()
-        {
-            return "PeriodicItem [periodicStartLine=" + periodicStartLine + ", year=" + year + ", baseCurrency="
-                            + baseCurrency + "]";
-        }
     }
 }

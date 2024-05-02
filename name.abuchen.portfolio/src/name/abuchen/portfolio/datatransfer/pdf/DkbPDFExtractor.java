@@ -527,7 +527,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Vorabpauschale Investmentfonds$");
+        Block firstRelevantLine = new Block("^Abrechnungsnr.*$", "^Keine Steuerbescheinigung\\.$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -572,22 +572,43 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        // @formatter:off
-                        // Den Betrag buchen wir mit Wertstellung 06.01.2021 zu Lasten des Kontos 1234567890 (IBAN DE99 9999 9999 9999 9999
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Den Betrag buchen wir mit Wertstellung 06.01.2021 zu Lasten des Kontos 1234567890 (IBAN DE99 9999 9999 9999 9999
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Herrn Datum 15.01.2024
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^.* Datum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
-                        // @formatter:off
-                        // Ausmachender Betrag 0,08- EUR
-                        // @formatter:on
-                        .section("amount", "currency") //
-                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Ausmachender Betrag 0,08- EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Berechnungsgrundlage für die Kapitalertragsteuer 0,00+ EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Berechnungsgrundlage f.r die Kapitalertrags(s)?teuer (?<amount>[\\.,\\d]+)\\+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
                         // @formatter:off
                         // Abrechnungsnr. 12345678901
@@ -596,7 +617,14 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("^.*(?<note>Abrechnungsnr\\. [\\d]+).*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        .wrap(TransactionItem::new);
+                        .wrap(t -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                            return item;
+                        });
     }
 
     private void addBuyTransactionFundsSavingsPlan()
@@ -1603,6 +1631,13 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("fee", "currency").optional() //
                         .match("^Maklercourtage .* (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Eigene Spesen 20,00- EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Eigene Spesen (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off

@@ -1,0 +1,46 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+justTRADE
+Ein Service der Sutor Bank GmbH
+JT Technologies GmbH
+Herr Hamburger Allee 14
+DJmOvA txdR 60486 Frankfurt am Main
+HBaHaMxkZGPXgi 41 E-Mail: service@justtrade.com
+32521 GWlQhgSHqUDb Web: www.justtrade.com
+Name des Kunden: cwjwfV KpdM
+Depotnummer: 123456789
+01. März 2024
+Übernahme - Vergleichsplan
+Produktbezeichnung - Ares Management Corp.
+Internationale Wertpapierkennnummer US03990B1017
+(ISIN)
+Anzahl/Nominale 50,00
+Referenz 12345
+Zahlbarkeitstag 14. Dezember 2023
+Ex Datum - Tag 14. Dezember 2023
+Bestandsstichtag 15. Dezember 2023
+Valutadatum 14. Dezember 2023
+Verhältnis Neu/ Alt 1,00 : 1,00
+Altes Wertpapier Ares Management Corp.
+Alte ISIN US03990B1017
+Ausbuchung Stück/Nominal 50,00
+Neues Wertpapier Ares Management Corp.
+Neue ISIN US03990B1017
+Einbuchung Stück/Nominal 50,00
+Rückzahlungskurs EUR 0,47
+Rückzahlungsbetrag EUR 23,72
+Berechnungsgrundlage EUR 23,70
+Kapitalertragssteuer
+Kapitalertragssteuer EUR 5,93
+Solidaritätszuschlag EUR 0,32
+Ausmachender Betrag EUR 17,47
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an unseren Kundenservice. Sie
+finden die Kontaktdetails im Briefkopf dieses Schreibens.
+Der Gegenwert der Transaktion wird per Valutatag gebucht. Dies ist keine Steuerbescheinigung.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+SUTOR BANK GmbH TELEFON 040-8090685-0 GESCHÄFTSFÜHRUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 222721000896 HRB 178357
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX

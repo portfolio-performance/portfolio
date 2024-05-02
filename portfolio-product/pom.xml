@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.67.2-SNAPSHOT</version>
+		<version>0.68.5-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -101,7 +101,7 @@
 						</property>
 						<property>
 							<name>CFBundleGetInfoString</name>
-							<value>Copyright 2012 - 2023 Andreas Buchen. All rights reserved.</value>
+							<value>Copyright 2012 - 2024 Andreas Buchen. All rights reserved.</value>
 						</property>
 						<property>
 							<name>Eclipse</name>
@@ -212,7 +212,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
-						<version>3.1.1</version>
+						<version>3.2.0</version>
 						<executions>
 							<execution>
 								<id>check-p2-inf-files</id>

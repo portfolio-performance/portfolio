@@ -1,15 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf.postfinance;
 
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
-import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
-
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -25,6 +17,14 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -368,7 +368,8 @@ public class PostfinancePDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-07-31T00:00"), hasShares(1.216), //
-                        hasSource("Kauf05.txt"), hasNote("Auftrag 15186945"), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote("Auftrag 15186945"), //
                         hasAmount("CHF", 200.00), hasGrossValue("CHF", 198.02), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 1.98))));
     }
@@ -591,7 +592,7 @@ public class PostfinancePDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-03T00:00")));
         assertThat(transaction.getSource(), is("Jahresgebuehr01.txt"));
-        assertThat(transaction.getNote(), is("Jahresgebühr - Referenz: 161333839"));
+        assertThat(transaction.getNote(), is("Jahresgebühr | Referenz: 161333839"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(90.00))));
@@ -601,6 +602,28 @@ public class PostfinancePDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testGiroKontoauszug10()
+    {
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotgebuehr01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2024-01-01"), hasAmount("CHF", 18.00), //
+                        hasSource("Depotgebuehr01.txt"), hasNote("Depotgebühr | Referenz: 464973467"))));
     }
 
     @Test

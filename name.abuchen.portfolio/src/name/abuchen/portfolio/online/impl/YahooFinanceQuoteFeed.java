@@ -98,7 +98,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         }
         catch (IOException | ParseException e)
         {
-            PortfolioLog.error(e);
+            PortfolioLog.abbreviated(e);
             return Optional.empty();
         }
     }

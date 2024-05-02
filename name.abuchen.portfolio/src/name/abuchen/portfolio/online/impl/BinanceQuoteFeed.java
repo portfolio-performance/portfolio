@@ -47,7 +47,7 @@ public final class BinanceQuoteFeed implements QuoteFeed
         QuoteFeedData data = getHistoricalQuotes(security, false, LocalDate.now());
 
         if (!data.getErrors().isEmpty())
-            PortfolioLog.error(data.getErrors());
+            PortfolioLog.abbreviated(data.getErrors());
 
         List<LatestSecurityPrice> prices = data.getLatestPrices();
 

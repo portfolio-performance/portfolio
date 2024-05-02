@@ -4,54 +4,35 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.LatestSecurityPrice;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.util.WebAccess;
 
 /**
- * This class provides a feed for Credit Suisse Quotes. Probably all quotes
- * provided by Credit Suisse can be downloaded but it is only tested with Credit
- * Suisse institutional funds which are normally not offered to the general
- * public except in special scenarios like via the Swiss third pillar provider
- * VIAC (third pillar = "Säule 3a", a tax-exempt retirement saving scheme). The
- * challenge of downloading these quotes are: 1) there is a HTML page where the
- * user has to state his/her country of residence plus investor status (private,
- * professional). This page can be avoided by using "curl" as user agent. -
- * there are header titles that are specific to Credit Suisse and 2) Credit
- * Suisse returns the quotes with Excel mime-type which are in fact HTML tables
- * but would be converted upon opening Excel. This is a little bit of a hack on
- * CS' part.
- * 
- * For testing ==>
- * https://amfunds.credit-suisse.com/ch/de/institutional/fund/history/CH0209106761?currency=USD
+ * This class provides a feed for Credit Suisse Quotes of institutional funds
+ * which are normally not offered to the general public except in special
+ * scenarios like via the Swiss third pillar provider VIAC (third pillar =
+ * "Säule 3a", a tax-exempt retirement saving scheme for residents of
+ * Switzerland).
  */
-public class CSQuoteFeed extends HTMLTableQuoteFeed
+public class CSQuoteFeed implements QuoteFeed
 {
+    // The ID still contains "HTML" even though the format has changed. The ID
+    // is not changed though so that users don't have to save a new feed but can
+    // still use the old one (they have to change the URL though)
     public static final String ID = "CREDITSUISSE_HTML_TABLE"; //$NON-NLS-1$
-    public static final String USERAGENT = "curl/7.58.0"; //$NON-NLS-1$
-
-    protected static class CSDateColumn extends DateColumn
-    {
-        public CSDateColumn()
-        {
-            super(new String[] { "NAV Date" }); //$NON-NLS-1$
-        }
-    }
-
-    protected static class CSCloseColumn extends CloseColumn
-    {
-        public CSCloseColumn()
-        {
-            super(new String[] { "NAV" }); //$NON-NLS-1$
-        }
-    }
-
-    private static final Column[] COLUMNS = new Column[] { new CSDateColumn(), new CSCloseColumn() };
-
-    public CSQuoteFeed()
-    {
-        // EMPTY
-    }
+    private static final DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy"); //$NON-NLS-1$
+    private static final Pattern OLDURLPATTERN = Pattern.compile("^.*(CH[\\d|A-Z]{9}\\d).*"); //$NON-NLS-1$
 
     @Override
     public String getId()
@@ -66,29 +47,97 @@ public class CSQuoteFeed extends HTMLTableQuoteFeed
     }
 
     @Override
-    protected Column[] getColumns()
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
-        return COLUMNS;
+        return internalGetQuotes(security, security.getFeedURL(), collectRawResponse);
     }
 
-    @Override
-    protected String getUserAgent()
+    private QuoteFeedData internalGetQuotes(Security security, String feedURL, boolean collectRawResponse)
     {
-        return USERAGENT;
+        try
+        {
+            if (feedURL == null || feedURL.length() == 0)
+                throw new IOException(MessageFormat.format(Messages.MsgMissingFeedURL, security.getName()));
+
+            QuoteFeedData result = new QuoteFeedData();
+
+            String urlToUse;
+            if (feedURL.startsWith("https://amfunds.credit")) //$NON-NLS-1$
+            {
+                urlToUse = getNewURLfromOldURL(security, feedURL);
+            }
+            else
+            {
+                urlToUse = feedURL;
+            }
+
+            String content = new WebAccess(urlToUse).get();
+            boolean dataLine = false;
+
+            if (collectRawResponse)
+            {
+                result.addResponse(feedURL, content);
+            }
+
+            for (String line : content.lines().toArray(String[]::new))
+            {
+                if (dataLine)
+                {
+                    if (line.isBlank())
+                    {
+                        dataLine = false;
+                    }
+                    else
+                    {
+                        result.addPrice(getPrice(line));
+                    }
+                }
+                else if (line.startsWith("Currency")) //$NON-NLS-1$
+                {
+                    checkCurrency(security, line);
+                }
+                else if (line.startsWith("NAV Date")) //$NON-NLS-1$
+                {
+                    dataLine = true;
+                }
+            }
+            return result;
+        }
+        catch (Exception e)
+        {
+            return QuoteFeedData.withError(e);
+        }
     }
 
-    /**
-     * Test method to parse HTML tables
-     * 
-     * @param args
-     *            list of URLs and/or local files
-     */
-    public static void main(String[] args) throws IOException
+    private String getNewURLfromOldURL(Security security, String oldURL)
     {
-        PrintWriter writer = new PrintWriter(System.out); // NOSONAR
-        for (String arg : args)
-            if (arg.charAt(0) != '#')
-                new CSQuoteFeed().doLoad(arg, writer);
-        writer.flush();
+        Matcher m = OLDURLPATTERN.matcher(oldURL);
+        if (!m.find() || m.groupCount() != 1)
+        {
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorSecurityHasMalformedURL,
+                            security.getName(), oldURL));
+        }
+
+        String isin = m.group(1);
+        return "https://am.credit-suisse.com/content/dam/fund-related-documents/nav-history/NAVHistory_" + isin //$NON-NLS-1$
+                        + ".csv"; //$NON-NLS-1$
+    }
+
+    private void checkCurrency(Security security, String line)
+    {
+        String feedCurrency = line.split(" ")[1].trim(); //$NON-NLS-1$
+        if (!security.getCurrencyCode().equals(feedCurrency))
+        {
+            throw new IllegalStateException(MessageFormat.format(Messages.MsgErrorFeedCurrencyMismatch,
+                            security.getName(), feedCurrency, security.getCurrencyCode()));
+        }
+    }
+
+    private LatestSecurityPrice getPrice(String line)
+    {
+        String[] tokens = line.split(","); //$NON-NLS-1$
+        LocalDate localDate = LocalDate.parse(tokens[0], DATEFORMATTER);
+        long price = Values.Quote.factorize(Double.parseDouble(tokens[1]));
+        return new LatestSecurityPrice(localDate, price);
     }
 }

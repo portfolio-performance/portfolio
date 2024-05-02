@@ -1,0 +1,43 @@
+﻿PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+10919 Berlin Seite 1 von 2
+Depotnummer 123456789
+Kundennummer 1234567890
+Vor Name
+Auftragsnummer 123456/31.01
+Herrn Datum 28.02.2024
+Vor Name Rechnungsnummer W00000-0000000000/24
+Strasse 1 Umsatzsteuer-ID DE137178746
+01234 Ort 
+Wertpapier Abrechnung Kauf
+Mischkursabrechnung
+Auftrag vom 27.02.2024 19:42:47 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 2.000 SOCIETAL CDMO INC. US75629F1093 (A1XFAV)
+REGISTERED SHARES DL -,01
+Handels-/Ausführungsplatz NY Nasdaq (SM) (gemäß Weisung)
+Börsensegment XNCM
+Limit-Order
+Limit 0,54 USD
+Schlusstag/-Zeit 27.02.2024 19:42:48 Auftraggeber Vor Name
+Ortszeit 27.02.2024 13:42:48 Auftragserteilung/ -ort Online-Banking
+Ausführungskurs 0,5395 USD
+Wertpapierrechnung Lagerland USA
+Devisenkurs (EUR/USD) 1,0783 vom 28.02.2024
+Kurswert 1.000,65- EUR
+Provision 10,00- EUR
+Fremde Auslagen 6,49- EUR
+Eigene Spesen 20,00- EUR
+Ausmachender Betrag 1.037,14- EUR
+Den Gegenwert buchen wir mit Valuta 29.02.2024 zu Lasten des Kontos 1234567890
+(IBAN DE95 1203 0000 1234 5678 90), BLZ 12030000 (BIC BYLADEM1001).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Der Abrechnungsmischkurs/-preis ergibt sich wie folgt:
+0883.02281709.0000890OR07
+Seite 2 von 2
+Depotnummer 123456789
+Kundennummer 1234567890
+Auftragsnummer 123456/31.01
+Datum 28.02.2024

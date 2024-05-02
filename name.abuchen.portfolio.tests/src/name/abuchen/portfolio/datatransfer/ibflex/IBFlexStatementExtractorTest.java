@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.ibflex;
 
+import java.nio.file.Files;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,7 +48,7 @@ public class IBFlexStatementExtractorTest
 {
     private Extractor.InputFile createTempFile(InputStream input) throws IOException
     {
-        File tempFile = File.createTempFile("IBFlexStatementExtractorTest", null);
+        File tempFile = Files.createTempFile("IBFlexStatementExtractorTest", null).toFile();
         tempFile.deleteOnExit();
         FileOutputStream fos = new FileOutputStream(tempFile);
 

@@ -1,0 +1,50 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.1
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=1234567890
+Gesamtfälligkeit DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+ADRESSZEILE2=Vorname Nachname
+ADRESSZEILE3=Musterstr. 10
+ADRESSZEILE4=12345 Stadt
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+1234567890 12345678 / 14.03.2024 ADRESSZEILE6=
+BELEGNUMMER=123
+Herr SEITENNUMMER=1
+Vorname Nachname STEUERERSTATTUNG=N
+Musterstr. 10 Depotinhaber
+12345 Stadt Vorname Nachname
+München, 14.03.2024
+Gutschriftsanzeige
+Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+Bundesrep.Deutschland Bundesschatzanw. 15.03.2024 DE0001104875
+v.22(24)
+Nominal Einlösung zu:
+EUR 10.000,000 100,0000 %
+Verwahrart Girosammelverwahrung Kurswert EUR 10.000,00 
+Kapitalertragsteuer EUR 100,00-
+Solidaritätszuschlag EUR 10,00-
+Kirchensteuer EUR 10,00-
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+15.03.2024 1234567890 EUR 9.880,00
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsgewinn Sonstige EUR 800,00
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 800,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 100,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 10,00
+im laufenden Jahr einbehaltene Kirchensteuer EUR 10,00
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Frankfurt/M. V-Höchst, Steuernummer 012/345/67890.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Postadresse: DAB BNP Paribas > Postfach 2547 >
+90011 Nürnberg > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens
+> 75009 Paris > Frankreich > Registergericht: R.C.S. Paris 662 042 449 > Président du Conseil d‘Administration: Jean Lemierre > Directeur Général: Jean-Laurent Bonnafé
+3.18/ABREEREITILG/GDBTILAN/000429/140324/235925

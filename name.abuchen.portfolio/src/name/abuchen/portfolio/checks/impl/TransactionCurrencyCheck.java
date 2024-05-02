@@ -208,7 +208,8 @@ public class TransactionCurrencyCheck implements Check
             }
             else
             {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(
+                                "unsupported transaction entry " + t.getClass() + ": " + t.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
 

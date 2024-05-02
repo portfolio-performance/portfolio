@@ -98,9 +98,9 @@ import name.abuchen.portfolio.money.Money;
         byte[] signature = new byte[SIGNATURE.length];
         int read = input.read(signature);
         if (read != SIGNATURE.length)
-            throw new IOException();
+            throw new IOException("tried to read " + SIGNATURE.length + " bytes but only got " + read); //$NON-NLS-1$ //$NON-NLS-2$
         if (!Arrays.equals(signature, SIGNATURE))
-            throw new IOException(Messages.MsgNotAPortflioFile);
+            throw new IOException(Messages.MsgNotAPortfolioFile);
 
         PClient newClient = PClient.parseFrom(input);
 
@@ -207,7 +207,8 @@ import name.abuchen.portfolio.money.Money;
                         ((DividendEvent) event).setSource(newEvent.getData(3).getString());
                         break;
                     default:
-                        throw new UnsupportedOperationException();
+                        throw new UnsupportedOperationException(
+                                        "unsupported type " + newEvent.getType() + "(" + newEvent.getTypeValue() + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 }
 
                 event.setDate(LocalDate.ofEpochDay(newEvent.getDate()));
@@ -314,6 +315,8 @@ import name.abuchen.portfolio.money.Money;
 
                     if (newTransaction.hasNote())
                         buysell.setNote(newTransaction.getNote());
+                    if (newTransaction.hasSource())
+                        buysell.setSource(newTransaction.getSource());
 
                     buysell.setShares(newTransaction.getShares());
 
@@ -347,6 +350,8 @@ import name.abuchen.portfolio.money.Money;
 
                     if (newTransaction.hasNote())
                         transfer.setNote(newTransaction.getNote());
+                    if (newTransaction.hasSource())
+                        transfer.setSource(newTransaction.getSource());
 
                     transfer.setShares(newTransaction.getShares());
 
@@ -397,6 +402,8 @@ import name.abuchen.portfolio.money.Money;
 
                     if (newTransaction.hasNote())
                         cashTransfer.setNote(newTransaction.getNote());
+                    if (newTransaction.hasSource())
+                        cashTransfer.setSource(newTransaction.getSource());
 
                     loadTransactionUnits(newTransaction, sourceATx);
 
@@ -875,6 +882,8 @@ import name.abuchen.portfolio.money.Money;
 
             Map<String, PMap.Builder> data = new HashMap<>();
             security.getProperties().forEach(p -> {
+                if (p == null)
+                    return;
                 PMap.Builder map = data.computeIfAbsent(p.getType().name(), k -> PMap.newBuilder());
                 map.addEntries(PKeyValue.newBuilder().setKey(p.getName())
                                 .setValue(PAnyValue.newBuilder().setString(p.getValue())).build());

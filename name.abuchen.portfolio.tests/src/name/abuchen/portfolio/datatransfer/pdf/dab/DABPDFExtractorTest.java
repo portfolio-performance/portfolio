@@ -17,6 +17,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
@@ -1670,6 +1672,37 @@ public class DABPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf13()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0001104875"), hasWkn(null), hasTicker(null), //
+                        hasName("Bundesrep.Deutschland Bundesschatzanw. v.22(24)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-03-15T00:00"), hasShares(100), //
+                        hasSource("Verkauf13.txt"), //
+                        hasNote("Abrechnungs-Nr. 12345678"), //
+                        hasAmount("EUR", 9880.00), hasGrossValue("EUR", 10000.00), //
+                        hasTaxes("EUR", 100.00 + 10.00 + 10.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testMultipleWertpapierKaufVerkauf01()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
@@ -3043,54 +3076,37 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testEinbuchung02()
+    public void testSplit01()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Einbuchung02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Split01.txt"),
+                        errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("LU1291106356"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("BNP P.Easy-MSCI Pac.x.Jap.x.CW Nam.-Ant.UCITS ETF CAP o.N"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1291106356"), hasWkn(null), hasTicker(null), //
+                        hasName("BNP P.Easy-MSCI Pac.x.Jap.x.CW Nam.-Ant.UCITS ETF CAP o.N"), //
+                        hasCurrencyCode("EUR"))));
 
-        // check delivery inbound (Einlieferung) transaction
-        PortfolioTransaction entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2018-12-04T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(1.5884)));
-        assertThat(entry.getSource(), is("Einbuchung02.txt"));
-        assertThat(entry.getNote(), is("Ausführungs-Nr. 12345678"));
-
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-
-        //  check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage(Messages.MsgErrorTransactionTypeNotSupported, //
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorSplitTransactionsNotSupported, //
                         inboundDelivery( //
-                                hasDate("2018-12-04T00:00"), hasShares(1.5884), //
-                                hasSource("Einbuchung02.txt"), hasNote("Ausführungs-Nr. 12345678"), //
-                                hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                hasTaxes("EUR", 0), hasFees("EUR", 0.00)))));
+                                        hasDate("2018-12-04T00:00"), hasShares(1.5884), //
+                                        hasSource("Split01.txt"), //
+                                        hasNote("Ausführungs-Nr. 12345678"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -3100,40 +3116,31 @@ public class DABPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ausbuchung01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ausbuchung01.txt"),
+                        errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getIsin(), is("AU000000CFU6"));
-        assertNull(security.getWkn());
-        assertNull(security.getTickerSymbol());
-        assertThat(security.getName(), is("Ceramic Fuel Cells Ltd. Registered Shares o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(results, hasItem(security( //
+                        hasIsin("AU000000CFU6"), hasWkn(null), hasTicker(null), //
+                        hasName("Ceramic Fuel Cells Ltd. Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
 
-        // check delivery outbound (Auslieferung) transaction
-        PortfolioTransaction entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
-
-        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
-
-        assertThat(entry.getDateTime(), is(LocalDateTime.parse("2022-02-04T00:00")));
-        assertThat(entry.getShares(), is(Values.Share.factorize(1000)));
-        assertThat(entry.getSource(), is("Ausbuchung01.txt"));
-        assertThat(entry.getNote(), is("Ausführungs-Nr. 62772656"));
-
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        outboundDelivery( //
+                                        hasDate("2022-02-04T00:00"), hasShares(1000.00), //
+                                        hasSource("Ausbuchung01.txt"), //
+                                        hasNote("Ausführungs-Nr. 62772656"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -3180,7 +3187,7 @@ public class DABPDFExtractorTest
                         hasName("iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N."), //
                         hasCurrencyCode("EUR"))));
 
-        // check dividends transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2024-01-15T00:00"), hasShares(50.00), //
                         hasSource("Vorabpauschale01.txt"), //

@@ -190,7 +190,7 @@ public class GenericJSONQuoteFeed implements QuoteFeed
         QuoteFeedData data = getHistoricalQuotes(security, security.getLatestFeedURL(), false, false, true);
 
         if (!data.getErrors().isEmpty())
-            PortfolioLog.error(data.getErrors());
+            PortfolioLog.abbreviated(data.getErrors());
 
         List<LatestSecurityPrice> prices = data.getLatestPrices();
         if (prices.isEmpty())

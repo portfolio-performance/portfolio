@@ -30,8 +30,8 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDelegate<HeatmapModel<N>>
 {
-    private Composite table;
-    private Label title;
+    protected Composite table;
+    protected Label title;
     private DashboardResources resources;
 
     public AbstractHeatmapWidget(Widget widget, DashboardData data)

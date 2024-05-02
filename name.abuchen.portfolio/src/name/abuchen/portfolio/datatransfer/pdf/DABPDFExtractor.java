@@ -90,9 +90,28 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                         // EUR 1.000,000 100,0000 %
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("isin", "name", "name1", "currency") //
+                                                        .attributes("name", "isin", "name1", "currency") //
                                                         .find("Gattungsbezeichnung F.lligkeit n.ch\\. Zinstermin ISIN") //
                                                         .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^(?<currency>[\\w]{3}) [\\.,\\d]+ [\\.,\\d]+ %$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Nominal"))
+                                                                v.put("name", v.get("name") + " " + trim(v.get("name1")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+                                        // Bundesrep.Deutschland Bundesschatzanw. 15.03.2024 DE0001104875
+                                        // v.22(24)
+                                        // Nominal Einlösung zu:
+                                        // EUR 10.000,000 100,0000 %
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "name1", "currency") //
+                                                        .find("Gattungsbezeichnung F.lligkeit n.ch\\. Zinstermin ISIN") //
+                                                        .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^(?<name1>.*)$") //
                                                         .match("^(?<currency>[\\w]{3}) [\\.,\\d]+ [\\.,\\d]+ %$") //
                                                         .assign((t, v) -> {
@@ -660,6 +679,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("type") //
                                                         .match("^(?<type>Freie Lieferung) .*$") //
                                                         .assign((t, v) -> {
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
                                                             t.setCurrencyCode(t.getSecurity().getCurrencyCode());
                                                             t.setAmount(0L);
                                                         }),
@@ -670,7 +690,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("type") //
                                                         .match("^Wir haben Ihrem Depot im (?<type>Verh.ltnis) [\\d]+ : [\\d]+ .*$") //
                                                         .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
                                                             t.setCurrencyCode(t.getSecurity().getCurrencyCode());
                                                             t.setAmount(0L);
                                                         }))
@@ -863,6 +883,25 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "name1", "currency") //
                                                         .find("Gattungsbezeichnung F.lligkeit n.ch\\. Zinstermin ISIN") //
                                                         .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{2,4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^(?<currency>[\\w]{3}) [\\.,\\d]+ [\\.,\\d]+ %$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Nominal"))
+                                                                v.put("name", v.get("name") + " " + trim(v.get("name1")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+                                        // Bundesrep.Deutschland Bundesschatzanw. 15.03.2024 DE0001104875
+                                        // v.22(24)
+                                        // Nominal Einlösung zu:
+                                        // EUR 10.000,000 100,0000 %
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "name1", "currency") //
+                                                        .find("Gattungsbezeichnung F.lligkeit n.ch\\. Zinstermin ISIN") //
+                                                        .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^(?<name1>.*)$") //
                                                         .match("^(?<currency>[\\w]{3}) [\\.,\\d]+ [\\.,\\d]+ %$") //
                                                         .assign((t, v) -> {

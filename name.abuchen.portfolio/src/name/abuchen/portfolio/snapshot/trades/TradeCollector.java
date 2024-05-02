@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
@@ -92,7 +93,8 @@ public class TradeCollector
             Portfolio portfolio = (Portfolio) txp.getOwner();
             PortfolioTransaction t = (PortfolioTransaction) txp.getTransaction();
 
-            switch (t.getType())
+            Type type = t.getType();
+            switch (type)
             {
                 case BUY:
                 case DELIVERY_INBOUND:
@@ -113,7 +115,7 @@ public class TradeCollector
                     break;
 
                 default:
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("unsupported type " + type); //$NON-NLS-1$
 
             }
         }

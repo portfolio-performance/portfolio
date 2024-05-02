@@ -1,0 +1,41 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+AVIS D'OPÉRATIONS
+M DUPONT PATRICE
+Au 4 juillet 2023
+77 AVENUE DU GENERAL DE GAULLE
+75000 PARIS
+VOTRE COMPTE PEA N° 952209239085 M DUPONT PATRICE
+Date
+Désignation Débit Crédit
+opération
+¢ ACTION : CREDIT AGRICOLE (FR0000045072)
+04-07-2023 Référence 94R6134018440989
+09:14:18 Sens Achat - Exécution unique
+Modalité Limité
+Marché Comptant
+Lieu d'exécution NYSE EURONEXT PARIS
+Quantité 460 Cours 10,996 €
+Montant Brut 5 058,16 €
+Courtage et Commission 10,12 €
+Montant NET 5 068,28 € 5 068,28 €
+¢ ACTION : ORANGE (FR0000133308)
+04-07-2023 Référence 94R6134018440989
+09:15:36 Sens Achat - Exécution unique
+Modalité Limité
+Marché Comptant
+Lieu d'exécution NYSE EURONEXT PARIS
+Quantité 450 Cours 10,706 €
+Montant Brut 4 817,70 €
+Courtage et Commission 9,64 €
+Montant NET 4 827,34 € 4 827,34 €
+Sous réserve de bonne fin.
+Lorsqu'elle s'applique, l'exonération de TVA relève de l'article 261 C du CGI.
+Sous réserve de son application à la présente transaction, la Taxe sur les Transactions Financières prévue par l'article 235 ter ZD du
+CGI est prélevée sur votre compte espèces et fait l'objet d'un avis récapitulatif spécifique.
+Duplicata Internet
+Page 1/1
+Fortuneo est une marque commerciale d'Arkéa Direct Bank. Arkéa Direct Bank, Société Anonyme à Directoire et Conseil de Surveillance
+au capital de 89 198 952 euros. RCS Nanterre 384 288 890. Siège social : Tour Ariane - 5, place de la Pyramide 92088 Paris La Défense.
+Courtier en assurance n°ORIAS 07 008 441. Adresse postale : Fortuneo - Service Clients - TSA41707 - 35917 RENNES CEDEX 9.

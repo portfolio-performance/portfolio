@@ -7,6 +7,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
+import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 import name.abuchen.portfolio.online.impl.DivvyDiaryDividendFeed;
 import name.abuchen.portfolio.online.impl.DivvyDiarySearchProvider;
 import name.abuchen.portfolio.online.impl.EODHistoricalDataQuoteFeed;
@@ -89,6 +90,13 @@ public class Preference2EnvAddon
         ((EODHistoricalDataQuoteFeed) Factory.getQuoteFeedProvider(EODHistoricalDataQuoteFeed.ID))
                         .setApiKey(eodhistoricialdataApiKey);
         Factory.getSearchProvider(EODHistoricalDataSearchProvider.class).setApiKey(eodhistoricialdataApiKey);
+    }
+
+    @Inject
+    @Optional
+    public void setCoingeckoApiKey(@Preference(value = UIConstants.Preferences.COINGECKO_API_KEY) String apiKey)
+    {
+        Factory.getQuoteFeed(CoinGeckoQuoteFeed.class).setApiKey(apiKey);
     }
 
     @Inject

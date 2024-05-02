@@ -1,0 +1,40 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+Sparkasse Gütersloh-TDPjegsF · 62900 GdlwVsioH
+Depotnummer 105542
+Kundennummer 584315326
+FaDNGGWAa yWkzrJehE
+Datum 31.12.2021
+Herrn Sparplannummer 3
+kXgazVjaW ixfXJlKMK Umsatzsteuer-ID gx329768716
+zEynQjWqk CrYo 3
+14080 SsupnpmuGM
+Halbjahresabrechnung Sparplan
+Wertpapierbezeichnung ISIN (WKN)
+DEKA-GLOBALCHAMPIONS DE000DK0ECU8 (DK0ECU)
+INHABER-ANTEILE CF
+Im Rahmen Ihres bestehenden Sparplans haben wir vereinbarungsgemäß nachstehende Käufe außerbörslich für Sie
+durchgeführt.
+Die Gegenwerte haben wir Ihnen belastet und die erworbenen Stücke Ihrem Depotkonto gutgeschrieben.
+(Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -)
+Umsatzart Sparrate in Ordernummer Preis je Stück Devise Anteilsumsatz Schlusstag Valuta Zwischengewinn Steuerausgleich
+EUR in EUR in Stück in EUR in EUR
+Kauf 145,00 172520/34.00 282,3348 1,0000 0,5269 02.07.2021 06.07.2021 0,00 0,00
++ Anlagerabatt 3,76 Summe 148,76
+Kauf 145,00 209798/72.00 281,9198 1,0000 0,5277 03.08.2021 05.08.2021 0,00 0,00
++ Anlagerabatt 3,76 Summe 148,76
+Kauf 145,00 242199/94.00 291,2055 1,0000 0,5108 02.09.2021 06.09.2021 0,00 0,00
++ Anlagerabatt 3,76 Summe 148,76
+Kauf 145,00 285851/23.00 283,8288 1,0000 0,5241 04.10.2021 06.10.2021 0,00 0,00
++ Anlagerabatt 3,76 Summe 148,76
+Im Abrechnungszeitraum angelegter Betrag EUR 595,04
+Im Abrechnungszeitraum erworbene Anteile Stück 2,0895
+Durchschnittspreis der erworbenen Anteile EUR 284,78
+Ausgabeaufschlag pro Anteil 3,75 %
+Verwaltungsvergütung pro Jahr 1,25 %
+Kundenbonifikation 70 % vom Ausgabeaufschlag.
+Evtl. anfallende Erträge werden Ihnen mit separater Abrechnung vergütet. Für evtl. Bestandsveränderungen aus
+zusätzlichen Käufen oder Verkäufen haben Sie separate Abrechnungen erhalten.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+1151.12312157.0000147OF01

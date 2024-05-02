@@ -77,7 +77,7 @@ public class DirectaSimPDFExtractor extends AbstractPDFExtractor
                         //  5.01.2024  14:02:36  Eseguito                           29             3.074,29             106,0100  09.01.2024
                         // @formatter:on
                         .section("date", "time") //
-                        .match("^.*(?<date>[\\d]{1,2}\\.[\\d]{2}\\.[\\d]{4})[\\s]{1,}(?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})[\\s]{1,}Eseguito.*$") //
+                        .match("^(\\s)*(?<date>[\\d]{1,2}\\.[\\d]{2}\\.[\\d]{4})[\\s]{1,}(?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2})[\\s]{1,}Eseguito.*$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off

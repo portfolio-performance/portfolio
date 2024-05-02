@@ -21,9 +21,10 @@ public final class TextUtil
     }
 
     /**
-     * Word-wraps the input text, ensuring that no line exceeds 80 characters in
-     * length. Inserts line breaks at appropriate spaces (whitespace,
-     * punctuation) to achieve a visually pleasing and readable format.
+     * Word-wraps the input text, sanitizing line boundaries and ensuring that
+     * no line exceeds 80 characters in length. Inserts line breaks at
+     * appropriate spaces (whitespace, punctuation) to achieve a visually
+     * pleasing and readable format as close to the original as possible.
      * Additionally, handles the escape of '&' characters to ensure they are
      * displayed correctly.
      */
@@ -32,29 +33,66 @@ public final class TextUtil
         if (text == null)
             return null;
 
-        // Add a space to correctly match a full line
-        String raw = text + " "; //$NON-NLS-1$
+        // Normalize all line boundaries (including line-separators) to LF,
+        // sanitizing, simplifying detection, and making it easier for
+        // line break manipulation. Add a line break to correctly match a full
+        // line
+        String t = normaliseLB(text) + "\n"; //$NON-NLS-1$
 
         StringBuilder wrapped = new StringBuilder();
-        Pattern p = Pattern.compile(".{0,80}[ \\t\\n\\x0b\\r\\f,.]+"); //$NON-NLS-1$
-        Matcher m = p.matcher(raw);
+        Matcher m = Pattern.compile(".{0,80}[ \\t\\n,\\.]++|.{0,80}+").matcher(t); //$NON-NLS-1$
         while (m.find())
         {
-            if (wrapped.length() > 0)
-                wrapped.append("\n"); //$NON-NLS-1$
+            String fragment = t.substring(m.start(), m.end());
 
-            String fragment = raw.substring(m.start(), m.end());
-
-            // If the fragment includes a line-break, do not add another one
-            if (fragment.length() > 0 && fragment.charAt(fragment.length() - 1) == '\n')
+            // Remove a trailing space
+            if (fragment.length() > 0 && fragment.charAt(fragment.length() - 1) == ' ')
                 fragment = fragment.substring(0, fragment.length() - 1);
 
             // Replace '&' with '&&' to handle escape for correct display
             wrapped.append(fragment.replace("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
+
+            // If the fragment does not include a line break, add it (LF)
+            if (fragment.length() > 0 && fragment.charAt(fragment.length() - 1) != '\n')
+                wrapped.append('\n');
         }
 
-        // Remove the added space used for line breaking
+        // Remove the added line-break
         return wrapped.substring(0, wrapped.length() - 1);
+    }
+
+    /**
+     * Sanitize line breaks replacing ALL them to LF, that plays well
+     * everywhere. NEL (U+0085), PARAGRAPH SEPARATOR (U+2029) and LINE SEPARATOR
+     * (U+2028) work fine, but we replace them to normalize/simplify the
+     * line-break manipulation. Appropriate for standardizing OS newlines, and
+     * for third-party tools and so on that want to match the original text
+     * (tool tips for instance).
+     * https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html#lt
+     * http://www.unicode.org/reports/tr18/#Line_Boundaries
+     */
+    public static final String normaliseLB(String text)
+    {
+        // Replace all line boundaries by line feed
+        return text == null ? null
+                        : Pattern.compile("\\r\\n|[\\r\\f\\u000B\\u0085\\u2028\\u2029]") //$NON-NLS-1$
+                                        .matcher(text).replaceAll("\n"); //$NON-NLS-1$
+    }
+
+    /**
+     * Convert, and sanitize, multi-line text into single-line text, by
+     * replacing consecutive line breaks with spaces, to fit into table cells
+     * without expanding them. Appropriate to, for instance, fit into table
+     * cells without expanding them (notes, etc).
+     */
+    public static final String toSingleLine(String text)
+    {
+        // Replace all (consecutive) line boundaries by (one) space/separator
+        // Maybe consider downleftwards_arrow+space ("intro"+sp) as separator to
+        // make it consistent with inline editing: "\u21B2 "
+        return text == null ? null
+                        : Pattern.compile("([ \\t]*?(\\r\\n|[\\n\\r\\f\\u000B\\u0085\\u2028\\u2029])+?)++") //$NON-NLS-1$
+                                        .matcher(text).replaceAll(" "); //$NON-NLS-1$
     }
 
     /**
@@ -182,6 +220,16 @@ public final class TextUtil
             len--;
 
         return ((start > 0) || (len < value.length())) ? value.substring(start, len) : value;
+    }
+
+    /**
+     * Removes all tags from the given input
+     */
+    public static String stripTags(String input)
+    {
+        if (input == null || input.isEmpty())
+            return input;
+        return input.replaceAll("<[^>]*>", ""); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**

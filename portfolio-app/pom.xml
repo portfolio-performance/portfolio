@@ -5,13 +5,13 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.67.2-SNAPSHOT</version>
+	<version>0.68.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>4.0.4</tycho-version>
+		<tycho-version>4.0.7</tycho-version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<applesigner.skip>true</applesigner.skip>
@@ -413,7 +413,7 @@
 						<storetype>PKCS11</storetype>
 						<providerClass>sun.security.pkcs11.SunPKCS11</providerClass>
 						<storepass>${jarsigner.storepass}</storepass>
-						<alias>e0f08454-41b5-4143-91d8-471c1d8004c3</alias>
+						<alias>Andreas Buchen</alias>
 						<providerArg>${jarsigner.providerArg}</providerArg>
 						<certchain>${project.basedir}/../portfolio-app/certchain.txt</certchain>
 						<tsa>http://time.certum.pl/</tsa>
@@ -422,7 +422,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-gpg-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.2.4</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -448,7 +448,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.10.0.2594</version>
+					<version>3.11.0.3922</version>
 				</plugin>
 				<plugin>
 					<groupId>name.abuchen</groupId>
@@ -458,12 +458,12 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
-					<version>3.1.1</version>
+					<version>3.2.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.11</version>
+					<version>0.8.12</version>
 				</plugin>
 				<plugin>
 					<groupId>com.github.os72</groupId>

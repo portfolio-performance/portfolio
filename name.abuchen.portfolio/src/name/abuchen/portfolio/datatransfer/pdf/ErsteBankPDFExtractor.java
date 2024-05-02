@@ -1,11 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
@@ -40,6 +42,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
         addSummaryStatementBuySellTransaction();
         addDividendeTransaction_DocFormat01();
         addDividendeTransaction_DocFormat02();
+        addCertificateOfLostAdjustmentTransaction();
     }
 
     @Override
@@ -69,7 +72,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^(IHR )?(?<type>(KAUF|VERKAUF))$") //
+                        .match("^(IHR )?(?<type>(KAUF|VERKAUF)).*$") //
                         .assign((t, v) -> {
                             if ("VERKAUF".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -130,6 +133,17 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("currency", "name", "isin") //
                                                         .match("^.* Kurswert: (?<currency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .match("^Wertpapier: (?<name>.*) .*: [\\w]{3} [\\.,\\d]+(\\-)?$") //
+                                                        .match("^WP\\-Kenn\\-Nr.*: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Ausserbörslich Kurswert: EUR 99,97
+                                        // Wertpapier: DWS TOP 50 WELT KESt II EUR 0,02-
+                                        // WP-Kenn-Nr. : DE0009769794
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "name", "isin") //
+                                                        .match("^.* Kurswert: (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                                        .match("^Wertpapier: (?<name>.*) KESt.* [\\w]{3} [\\.,\\d]+(\\-)?$") //
                                                         .match("^WP\\-Kenn\\-Nr.*: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -564,7 +578,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "currency", "isin") //
                                                         .match("^Wertpapier : (?<name>.*) Liquidationsbetrag : (?<currency>[\\w]{3}) [\\.',\\d]+$") //
                                                         .match("^WP\\-Kenn\\-Nr\\. : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))                                                   
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -818,6 +832,60 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
+    private void addCertificateOfLostAdjustmentTransaction()
+    {
+        final DocumentType type = new DocumentType("BESCHEINIGUNG .BER DEN VERLUSTAUSGLEICH", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Abcd Abcdefghijk Währung:  EUR
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^.*W.hrung:[\\s]{1,}(?<currency>[\\w]{3}).*$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^.*Depotkreis:.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Abcdefghijkl: 12.12.2012 Wien, 28.04.2013
+                        // @formatter:on
+                        .section("date") //
+                        .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .*, (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Es wurde Ihnen dieser Betrag gutgebucht: 198,21
+                        // @formatter:on
+                        .section("amount") //
+                        .documentContext("currency") //
+                        .match("^Es wurde Ihnen dieser Betrag gutgebucht: (?<amount>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        //  für den Zeitraum 01.04.2012 bis 31.12.2012
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*f.r den Zeitraum (?<note>.*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(TransactionItem::new);
+    }
+
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
@@ -827,6 +895,13 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "tax").optional() //
                         .match("^.* Fremde Steuer : (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Wertpapier: DWS TOP 50 WELT KESt II EUR 0,02-
+                        // @formatter:on
+                        .section("currency", "tax").multipleTimes().optional() //
+                        .match("^.* KESt( [A-Z]{1,3})? (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)(\\-)?$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -1020,7 +1095,38 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Summe der Dienstleistungskosten (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+) .*$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type));
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // If the market price is higher than the NAV, this is referred to as a "premium".
+                        // If the market price is below the NAV, this is referred to as a "discount".
+                        //
+                        // Stück: 1,363
+                        // NAV: EUR 72,04
+                        // Preis: EUR 73,339
+                        // @formatter:on
+                        .section("shares", "currencyNetAssetValue", "netAssetValue", "currencyPerShare", "amountPerShare")
+                        .optional() //
+                        .match("^St.ck: (?<shares>[\\.,\\d]+).*$") //
+                        .match("^NAV: (?<currencyNetAssetValue>[\\w]{3}) (?<netAssetValue>[\\.,\\d]+)$") //
+                        .match("^Preis: (?<currencyPerShare>[\\w]{3}) (?<amountPerShare>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                            Money amountNetAssetValue = Money.of(asCurrencyCode(v.get("currencyNetAssetValue")), asAmount(v.get("netAssetValue")));
+                            Money amountPerShare = Money.of(asCurrencyCode(v.get("currencyPerShare")), asAmount(v.get("amountPerShare")));
+
+                            // @formatter:off
+                            // fxAmount = amountNetAssetValue - amountPerShare
+                            // fee = shares * amountNetAssetValue - amountPerShare
+                            // @formatter:on
+                            Money fxAmount = amountPerShare.subtract(amountNetAssetValue);
+                            Money fee = Money.of(fxAmount.getCurrencyCode(), //
+                                            BigDecimal.valueOf(fxAmount.getAmount()) //
+                                                            .multiply(shares, Values.MC) //
+                                                            .setScale(0, RoundingMode.HALF_UP).longValue());
+
+                            checkAndSetFee(fee, t, type.getCurrentContext());
+                        });
     }
 
     @Override

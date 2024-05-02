@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.math.BigDecimal;
 import java.util.Locale;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
@@ -14,14 +13,21 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 
+/**
+ * @formatter:off
+ * @implNote Revolut Trading Ltd. is a dollar-based financial services company.
+ *           The currency of Revolut Trading Ltd. is always USD.
+ *
+ * @implNote We cannot import in the bank statement the purchases, sales, dividends, etc.
+ *           because the amounts of price and number of shares are not correctly reported.
+ *
+ * @implSpec The date format is Locale.UK
+ * @formatter:on
+ */
+
 @SuppressWarnings("nls")
 public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
 {
-    /***
-     * Information:
-     * The currency of Revolut Trading Ltd. is always USD.
-     */
-
     public RevolutLtdPDFExtractor(Client client)
     {
         super(client);
@@ -35,7 +41,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Revolut Trading Ltd.";
+        return "Revolut Trading Ltd";
     }
 
     private void addBuySellTransaction()
@@ -44,57 +50,67 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
 
         Block firstRelevantLine = new Block("^Order details$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        pdfTransaction
-                // Is type --> "Sell" change from BUY to SELL
-                .section("type").optional()
-                .match("^.* (?<type>Sell) .*$")
-                .assign((t, v) -> {
-                    if ("Sell".equals(v.get("type")))
-                        t.setType(PortfolioTransaction.Type.SELL);
-                })
+        pdfTransaction //
 
-                // Symbol Company Type Quantity Price Execution time Execution venue
-                // TSLA Tesla Sell 2 1,166.121 01 Nov 2021 15:51:47 GMT XOFF
-                .section("tickerSymbol", "name", "isin", "shares", "date")
-                .find("Symbol Company ISIN Type Quantity Price Settlement date")
-                .match("^(?<tickerSymbol>.*) (?<name>.*) (?<isin>[\\w]{12}) Sell (?<shares>[\\.,\\d]+) \\p{Sc}[\\.,\\d]+ (?<date>[\\d]{2} .* [\\d]{4})$")
-                .assign((t, v) -> {
-                    v.put("currency", CurrencyUnit.USD);
-                    t.setShares(asShares(v.get("shares")));
-                    t.setDate(asDate(v.get("date"), Locale.UK));
-                    t.setSecurity(getOrCreateSecurity(v));
-                })
+                        .subject(() -> {
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
 
-                // TSLA Tesla US88160R1014 Sell 2.1451261 $1,166.12 03 Nov 2021
-                .section("amount")
-                .find("Symbol Company ISIN Type Quantity Price Settlement date")
-                .match("^.* [\\.,\\d]+ \\p{Sc}(?<amount>[\\.,\\d]+) [\\d]{2} .* [\\d]{4}$")
-                .assign((t, v) -> {
-                    t.setAmount(asAmount(v.get("amount")));
-                    t.setCurrencyCode(CurrencyUnit.USD);
-                })
+                        // Is type --> "Sell" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^.* (?<type>Sell) .*$") //
+                        .assign((t, v) -> {
+                            if ("Sell".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
 
-                .wrap(BuySellEntryItem::new);
+                        // @formatter:off
+                        // TSLA Tesla US88160R1014 Sell 2.1451261 $1,166.12 03 Nov 2021
+                        // @formatter:on
+                        .section("tickerSymbol", "name", "isin") //
+                        .match("^(?<tickerSymbol>[A-Z0-9]{3,4}) (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Sell [\\.,\\d]+ \\p{Sc}[\\.,\\d]+ [\\d]{2} .* [\\d]{4}$") //
+                        .assign((t, v) -> {
+                            v.put("currency", CurrencyUnit.USD);
+
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        // @formatter:off
+                        // TSLA Tesla US88160R1014 Sell 2.1451261 $1,166.12 03 Nov 2021
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^[A-Z0-9]{3,4} .* [A-Z]{2}[A-Z0-9]{9}[0-9] Sell (?<shares>[\\.,\\d]+) \\p{Sc}[\\.,\\d]+ [\\d]{2} .* [\\d]{4}$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // TSLA Tesla US88160R1014 Sell 2.1451261 $1,166.12 03 Nov 2021
+                        // @formatter:on
+                        .section("date") //
+                        .match("^[A-Z0-9]{3,4} .* [A-Z]{2}[A-Z0-9]{9}[0-9] Sell [\\.,\\d]+ \\p{Sc}[\\.,\\d]+ (?<date>[\\d]{2} .* [\\d]{4})$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"), Locale.UK)))
+
+                        // @formatter:off
+                        // TSLA Tesla US88160R1014 Sell 2.1451261 $1,166.12 03 Nov 2021
+                        // @formatter:on
+                        .section("amount") //
+                        .match("^[A-Z0-9]{3,4} .* [A-Z]{2}[A-Z0-9]{9}[0-9] Sell [\\.,\\d]+ \\p{Sc}(?<amount>[\\.,\\d]+) [\\d]{2} .* [\\d]{4}$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(CurrencyUnit.USD);
+                        })
+
+                        .wrap(BuySellEntryItem::new);
 
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    /***
-     * Information:
-     * We cannot import in the bank statement the purchases,
-     * sales, dividends, etc. because the amounts of price and
-     * number of shares are not correctly reported.
-     */
     private void addAccountStatementTransaction()
     {
         DocumentType type = new DocumentType("Account Statement");
@@ -112,36 +128,36 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
         blockDeposit.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.DEPOSIT);
-                            return entry;
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
                         })
 
-                        .section("date", "currency", "amount")
-                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} (?<currency>[\\w]{3}) .* Cash Disbursement \\- Wallet \\([\\w]{3}\\) (?<amount>[\\.,\\d]+)$")
+                        .section("date", "currency", "amount") //
+                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} (?<currency>[\\w]{3}) .* Cash Disbursement \\- Wallet \\([\\w]{3}\\) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date"), Locale.UK));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
+                        .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
-        transaction
-                // Total Fee charged $0.02
-                .section("fee").optional()
-                .match("^Total Fee charged \\p{Sc}(?<fee>[\\.,\\d]+)$")
-                .assign((t, v) -> {
-                    v.put("currency", CurrencyUnit.USD);
-                    processFeeEntries(t, v, type);
-                });
+        transaction //
+
+                        // @formatter:off
+                        // Total Fee charged $0.02
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .match("^Total Fee charged \\p{Sc}(?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            v.put("currency", CurrencyUnit.USD);
+
+                            processFeeEntries(t, v, type);
+                        });
     }
 
     @Override
@@ -154,11 +170,5 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
     protected long asShares(String value)
     {
         return ExtractorUtils.convertToNumberLong(value, Values.Share, "en", "UK");
-    }
-
-    @Override
-    protected BigDecimal asExchangeRate(String value)
-    {
-        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "en", "UK");
     }
 }

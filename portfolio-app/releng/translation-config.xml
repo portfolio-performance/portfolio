@@ -61,6 +61,8 @@
 				<string>AboutTextOtherSoftware</string>
 				<string>AboutTextTranslationDevelopers</string>
 				<string>AboutTextDeveloped</string>
+				<!-- exclude labels starting with Site = language dependent URLs --> 
+				<string>^Site.*</string>
 			</excludes>
 		</artifact>
 		<artifact>

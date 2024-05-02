@@ -91,7 +91,7 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
                                 Values.Amount.divider());
                 break;
             case FEES:
-                values = toDouble(add(clientIndex.getFees(), clientIndex.getInterest()), Values.Amount.divider());
+                values = toDouble(clientIndex.getFees(), Values.Amount.divider());
                 break;
             case FEES_ACCUMULATED:
                 values = accumulateAndToDouble(clientIndex.getFees(), Values.Amount.divider());
@@ -117,7 +117,7 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
     private long[] add(long[] a, long[] b)
     {
         if (a.length != b.length)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("length mismatch " + a.length + " != " + b.length); //$NON-NLS-1$ //$NON-NLS-2$
 
         long[] result = new long[a.length];
         for (int ii = 0; ii < result.length; ii++)

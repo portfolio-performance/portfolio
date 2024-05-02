@@ -1,0 +1,45 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.2
+-----------------------------------------
+LGT Bank (Schweiz) AG
+Glärnischstrasse 36, Postfach, CH-8027 Zürich
+Tel. +41 44 250 81 81
+lgt.ch@lgt.com, www.lgt.ch, BIC BLFLCHBB
+CHE-109.346.830 MWST
+Securities dealer no. 647613
+____________________
+P.P. Post CH AGCH-8027 Zürich  PF 1909 -PRIORITY
+__________________________________________________A__________________
+Liberty Freizügigkeitsstiftung 
+bei Liberty Vorsorge AG 
+Postfach 733 
+6431 Schwyz
+1 / 1
+Zürich, 2. November 2023
+ 
+Abrechnung Verkauf Portfolio: 2024567.000
+Auftragsnummer: 219764567 Kundenportfolio
+Kunde: Liberty Freizügigkeitsstiftung XX - 1.1001.1234-01
+Titel Novartis AG
+Namen-Aktien
+ISIN CH0012005267
+Valorennummer 1200526
+Wertpapierkennnummer 904278
+Abschlussdatum 02.11.2023
+Ausführungsplatz SIX Swiss Exchange
+Auftragstyp Bestens
+Anzahl 260 Stück
+Kurs CHF 84.509301
+Kurswert CHF 21'972.42
+Eidg. Umsatzabgabe  CHF -16.48
+SIX Börsengebühr  CHF -1.43
+SIX Meldegebühr  CHF -0.20
+Gutschrift CHF Freizügigkeitskonto 2024567.031 CHF 21'954.31
+Valuta 06.11.2023
+Wir haben die Titel dem oben genannten Portfolio entnommen.
+Die Gutschrift erfolgt vorbehaltlich des effektiven Zahlungseinganges.
+Dieser Auftrag wurde als Gruppenauftrag ausgeführt.
+Weitere Details zum durchgeführten Auftrag stellen wir Ihnen auf Anfrage gerne zur Verfügung.
+1234457 00A T ZH I TRD1001 39509429 19:13 02.11.2023 %Media:XML-A4H
+____
+____

@@ -141,12 +141,12 @@ public class DashboardView extends AbstractHistoricView
 
             Dashboard.Widget droppedWidget = (Dashboard.Widget) droppedComposite.getData();
             if (droppedWidget == null)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("dropped widget is null"); //$NON-NLS-1$
 
             Composite oldParent = droppedComposite.getParent();
             Dashboard.Column oldColumn = (Dashboard.Column) oldParent.getData();
             if (oldColumn == null)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("old column is null"); //$NON-NLS-1$
 
             Composite newParent = dropTarget;
             while (!(newParent.getData() instanceof Dashboard.Column))
@@ -168,13 +168,14 @@ public class DashboardView extends AbstractHistoricView
         private void doDropCopy(Dashboard.Widget copiedWidget, Dashboard.Column newColumn, Composite newParent)
         {
             Composite elementToMoveAbove = null;
-            if (dropTarget.getData() instanceof Dashboard.Widget dropTargetWidget)
+            Object data = dropTarget.getData();
+            if (data instanceof Dashboard.Widget dropTargetWidget)
             {
                 // dropped on another widget, place above drop target
                 elementToMoveAbove = dropTarget;
                 newColumn.getWidgets().add(newColumn.getWidgets().indexOf(dropTargetWidget), copiedWidget);
             }
-            else if (dropTarget.getData() instanceof Dashboard.Column)
+            else if (data instanceof Dashboard.Column)
             {
                 // dropped on another column, place above filler
                 elementToMoveAbove = (Composite) newParent.getData(FILLER_KEY);
@@ -182,12 +183,13 @@ public class DashboardView extends AbstractHistoricView
             }
             else
             {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unsupported data " + data); //$NON-NLS-1$
             }
 
-            WidgetFactory factory = WidgetFactory.valueOf(copiedWidget.getType());
+            String type = copiedWidget.getType();
+            WidgetFactory factory = WidgetFactory.valueOf(type);
             if (factory == null)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("no widget factory for type " + type); //$NON-NLS-1$
 
             Pair<WidgetDelegate<?>, Composite> newDelegateWithComposite = dashboardView
                             .buildDelegateAndMoveAboveElement(newParent, factory, copiedWidget, elementToMoveAbove);
@@ -201,7 +203,8 @@ public class DashboardView extends AbstractHistoricView
         {
             droppedComposite.setParent(newParent);
 
-            if (dropTarget.getData() instanceof Dashboard.Widget dropTargetWidget)
+            Object data = dropTarget.getData();
+            if (data instanceof Dashboard.Widget dropTargetWidget)
             {
                 // dropped on another widget
                 droppedComposite.moveAbove(dropTarget);
@@ -209,7 +212,7 @@ public class DashboardView extends AbstractHistoricView
                 oldColumn.getWidgets().remove(droppedWidget);
                 newColumn.getWidgets().add(newColumn.getWidgets().indexOf(dropTargetWidget), droppedWidget);
             }
-            else if (dropTarget.getData() instanceof Dashboard.Column)
+            else if (data instanceof Dashboard.Column)
             {
                 // dropped on another column
                 Composite filler = (Composite) newParent.getData(FILLER_KEY);
@@ -220,7 +223,7 @@ public class DashboardView extends AbstractHistoricView
             }
             else
             {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unsuppoerted data type " + data); //$NON-NLS-1$
             }
         }
 
@@ -588,6 +591,7 @@ public class DashboardView extends AbstractHistoricView
         MenuManager applyToAll = new MenuManager(Messages.MenuApplyToAllWidgets);
         manager.add(applyToAll);
         new ReportingPeriodApplyToAll(this.dashboardData).menuAboutToShow(applyToAll, columnControl);
+        new DataSeriesApplyToAll(this.dashboardData).menuAboutToShow(applyToAll, columnControl);
 
         manager.add(new Separator());
         manager.add(new SimpleAction(Messages.MenuDeleteDashboardColumn, a -> deleteColumn(columnControl)));
@@ -644,13 +648,13 @@ public class DashboardView extends AbstractHistoricView
         manager.add(new SimpleAction(Messages.MenuDeleteWidget, a -> {
             Composite composite = findCompositeFor(delegate);
             if (composite == null)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("composite is null"); //$NON-NLS-1$
 
             Composite parent = composite.getParent();
             Dashboard.Column column = (Dashboard.Column) parent.getData();
 
             if (!column.getWidgets().remove(delegate.getWidget()))
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("column doesn't contain widget"); //$NON-NLS-1$
 
             composite.dispose();
             parent.layout();

@@ -1,0 +1,46 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+Kontakt Topbank
+Telefon 0844 850 820
+E-Mail topberater@topbank.ch
+Adresse Bahnhofstrasse 9
+8001 Zürich
+Briefadresse Postfach, 8010 Zürich
+Clearing-Nr. 700
+BIC (SWIFT) ZKBKCHZZ80A
+Postkonto 80-151-4
+Geschäfts-Nr. aaa-123456
+Produkt ZKB Wertschriftendepot
+Lautend auf Muster Peter
+Konto-Nr. 11bb-7112.9c1
+IBAN CH14 0070 011b b71 129c 1
+Produkt ZKB Beratungskonto
+Lautend auf Muster Peter
+Zürich, 8. Juni 2022
+Effektenabrechnung
+Ihr Kauf
+Abschluss per: 08.06.2022 / Buchungstag: 08.06.2022 / Börsenplatz: SIX SX
+Abwicklungs-Nr. 640981320 / Auftrags-Nr. ONBA-0005082331592022
+Namen-Akt Holcim AG
+Valor 1221405 / ISIN CH0012214059
+Stück CHF CHF
+150 zu 48.5822 7'287.33
+Eidg. Abgaben 5.47
+Ausführungsgebühr 1.50
+Total zu Ihren Lasten Valuta 10.06.2022 7'294.30
+Abschlüsse mit Zeitangaben in Klammer
+117 zu 48.58 (11:49; XSWX; 035B40DQIMF025ET), 33 zu 48.59 (11:49; XSWX; 035B40DQIMF025EU)
+Freundliche Grüsse
+Zürcher Kantonalbank
+Ohne manuelle Ergänzung
+gültig ohne Unterschrift
+ANAMHKENFKCJFLAJGKAIDJELGLHJGNGNEKEK
+AJCJFIGDAKLPNBNMBKAMPEMMAIFOMMGMHBLK
+AMJPMBPEACEHLLJGBKAOIDJBLNJHLHEHKAIK OY2015
+ACJAGFKGGDGIPNPABKAAOAADFGMFLFOPFLHK
+ADBKJDAKICIKBLICBKALIDBCJCALILICJCIK 202206080001291149425958625002 - Zürcher Kantonalbank
+ACAJOCMECBBCMMNDPKAGLILPKEDCIKIMFJPK
+ACLMMMFEOFEICIJNNKAGCHPGKHBMKFKFKMIK
+AGPHJFLKLPAFDBBLBKANBIOPNOAPHCCIOHFK 12133296256 1/1
+AIKAACIGCCMMKKMMOKAEKEIMGGCCIOCCEMGK

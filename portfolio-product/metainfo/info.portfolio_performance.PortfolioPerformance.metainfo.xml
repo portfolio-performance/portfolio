@@ -39,6 +39,140 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.68.4" date="2024-04-28">
+      <description>
+        <ul>
+          <li>New: Change data series for all widgets in a column at once</li>
+          <li>New: Added a search field in the list of trades</li>
+          <li>New: Introduced a new PDF importer for Bigbank, Arkea Direct Bank, and Radicant Bank AG (BLKB)</li>
+          <li>Improvements to the PDF importers for Consorsbank, Basellandschaftliche Kantonalbank (BLKB), ING DiBa, Bondora, SBroker, Baader Bank, OnVista, Swissquote, Merkur Privatbank, Santander Consumer Bank, Weberbank, Trade Republic, Unicredit, Sutor, Hypothekarbank Lenzburg, Erste Bank, Zürcher Kantonalbank, Simle SA, DAB, LLB, SLM, JustTrade, JTDirektbank, Merkur Privat Bank, UBS, and OLB Bank</li>
+          <li>Improvement: Security logos in the data series selection dialog</li>
+          <li>Improvement: Cache the DivvyDiary server response only when PP has received a valid JSON response</li>
+          <li>Improvement: An optional (paid) CoinGecko API key can be set</li>
+          <li>Fix: Resolves an issue with calculating the 'Fees' data series in the asset chart</li>
+          <li>Fix: Resolves an issue where the tooltip displayed the incorrect label for the aggregation</li>
+          <li>Fix: Resolves an issue with displaying the ampersand (&amp;) on the 'Date Reached' and 'Limit Exceeded' widgets</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Neu: Datenreihen für alle Widgets in einer Spalte gleichzeitig ändern</li>
+          <li>Neu: Suchfeld in der Liste der Trades</li>
+          <li>Neu: Neuer PDF-Importer für Bigbank, Arkea Direct Bank, und Radicant Bank AG (BLKB) eingeführt</li>
+          <li>Verbesserungen an den PDF-Importern für Consorsbank, Basellandschaftliche Kantonalbank (BLKB), ING DiBa, Bondora, SBroker, Baader Bank, OnVista, Swissquote, Merkur Privatbank, Santander Consumer Bank, Weberbank, Trade Republic, Unicredit, Sutor, Hypothekarbank Lenzburg, Erste Bank, Zürcher Kantonalbank, Simle SA, DAB, LLB, SLM, JustTrade, JTDirektbank, Merkur Privat Bank, UBS, und OLB Bank</li>
+          <li>Verbesserung: Logos der Wertpapiere im Dialog zur Auswahl von Datenreihen</li>
+          <li>Verbesserung: Cache der DivvyDiary-Server-Antwort nur, wenn PP eine gültige JSON-Antwort erhalten hat</li>
+          <li>Verbesserung: Ein optionaler (kostenpflichtiger) CoinGecko-API-Schlüssel kann hinterlegt werden</li>
+          <li>Fix: Behebt ein Problem bei der Berechnung der 'Gebühren'-Datenreihe im Vermögensdiagramm</li>
+          <li>Fix: Behebt ein Problem, bei dem im Tooltip die falsche Bezeichnung der Aggregation angezeigt wurde</li>
+          <li>Fix: Behebt ein Problem mit der Darstellung des kaufmännischen Unds (&amp;) auf den Widgets 'Termin erreicht' und 'Limit überschritten'</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.68.3" date="2024-03-24">
+      <description>
+        <ul>
+          <li>Introduced new PDF importer for Sunrise Securities and Advanzia Bank.</li>
+          <li>Enhanced PDF importers for LGT Bank, Trade Republic, KBC Group NV, Merkur Privatbank, OLB, Open Bank, DAB, Raiffeisenbank, AKF Bank, Barclay, Consorsbank, UBS, FlatEx, DKB.</li>
+          <li>Corrected dividend marker positioning in charts.</li>
+          <li>Adjusted stock split dialog layout for better translation support.</li>
+          <li>Improved readability by fixing selected tab color on Windows.</li>
+          <li>Added utility to merge 'source' attribute from an external file into the current file.</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Neuer PDF-Importer für Sunrise Securities und Advanzia Bank eingeführt.</li>
+          <li>Verbesserungen der PDF-Importer für LGT Bank, Trade Republic, KBC Group NV, Merkur Privatbank, OLB, Open Bank, DAB, Raiffeisenbank, AKF Bank, Barclay, Consorsbank, UBS, FlatEx, DKB.</li>
+          <li>Korrektur der Positionierung von Dividendenmarkern in Diagrammen.</li>
+          <li>Layoutanpassung des Aktiensplit-Dialogs für bessere Übersetzungsunterstützung.</li>
+          <li>Verbesserte Lesbarkeit der ausgewählten Registerkarten unter Windows.</li>
+          <li>Neues Tool zur Übernahme des 'source'-Attributs aus einer externen Datei in die aktuelle Datei.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.68.2" date="2024-03-14">
+      <description>
+        <ul>
+          <li>Fix: Fixes an issue where the 'source' information for purchase transactions was lost in the binary format.</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Fix: Behebt ein Problem, bei dem die Informationen zur 'Quelle' von Kaufbuchungen im binären Format verloren gehen konnten.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.68.1" date="2024-03-09">
+      <description>
+        <ul>
+          <li>Fix: Reverts the color changes in the dark theme back to the previous colors with better contrast.</li>
+          <li>Fix: Consorsbank PDF-Importer</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Fix: Macht die Farbänderungen im Dunkelmodus wieder zu den vorherigen Farben mit besserem Kontrast rückgängig.</li>
+          <li>Fix: Consorsbank PDF-Importer</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.68.0" date="2024-03-07">
+      <description>
+        <ul>
+          <li>New: Stacked area chart with the valuation of individual categories of a taxonomy</li>
+          <li>New: Bank11 PDF Importer</li>
+          <li>Improvement: Simplified definition of the number format in CSV import by simply selecting the decimal separator</li>
+          <li>Improvement: New bookmarks for aktien.guide and aktienfinder.net</li>
+          <li>Improvement of the PDF importers: Postbank, eBase, Trade Republic, AKF Bank, J&amp;T Direktbank, comdirect, Raiffeisenbank, ING DiBa, Renault Bank, Onvista, Merkurbank, Flatex, Bondora Go &amp; Grow, sBroker, DKB, PostFinance</li>
+          <li>Improvement: "Save" and "Save as" with simplified options</li>
+          <li>Fix: Fixes an issue with the display of the MACD when insufficient historical prices are available for calculation</li>
+          <li>Fix: Fixes a problem with the dark theme when the app starts in the operating system's dark mode</li>
+          <li>Fix: Fixes translation issues with terms containing an apostrophe</li>
+          <li>Fix: Fixes a problem with the line break of notes at 80 characters for display in the tooltip</li>
+          <li>Fix: Fixes an issue where transactions without a date were saved in the file</li>
+          <li>Fix: Respects the "Show labels" flag even when using vertical marker lines in the price chart</li>
+          <li>Fix: Improved localization of the Kommer example file</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Neu: Gestapeltes Flächendiagramm mit dem Wert der einzelnen Kategorien einer Klassifikation</li>
+          <li>Neu: Bank11 PDF-Importer</li>
+          <li>Verbesserung: Vereinfachte Definition des Zahlenformats beim CSV-Import durch einfache Auswahl des Dezimaltrennzeichens</li>
+          <li>Verbesserung: Neue Bookmarks für aktien.guide und aktienfinder.net</li>
+          <li>Verbesserung der PDF-Importer: Postbank, eBase, Trade Republic, AKF Bank, J&amp;T Direktbank, comdirect, Raiffeisenbank, ING DiBa, Renault Bank, Onvista, Merkurbank, Flatex, Bondora Go &amp; Grow, sBroker, DKB, PostFinance</li>
+          <li>Verbesserung: "Speichern" und "Speichern unter" mit vereinfachten Optionen</li>
+          <li>Fix: Behebt ein Problem bei der Anzeige vom MACD, wenn nicht genügend Kurse zur Berechnung zur Verfügung stehen</li>
+          <li>Fix: Behebt ein Problem mit dem dunklen Erscheinungsbild, wenn die App im Dunkelmodus des Betriebssystems startet</li>
+          <li>Fix: Behebt Probleme in der Übersetzung mit Begriffen, die ein Apostroph enthalten</li>
+          <li>Fix: Behebt ein Problem beim Umbruch von Notizen auf 80 Zeichen zur Darstellung im Tooltip</li>
+          <li>Fix: Behebt ein Problem, bei dem Buchungen ohne Datum in der Datei gespeichert wurden</li>
+          <li>Fix: Beachtet das Flag "Beschriftungen anzeigen" auch bei der Verwendung von vertikalen Markierungslinien im Kursdiagramm</li>
+          <li>Fix: Verbesserte Lokalisierung der Kommer-Beispieldatei</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.67.3" date="2024-02-01">
+      <description>
+        <ul>
+          <li>Fix: Adjustment of the Credit Suisse price feed to the new server API for historical prices</li>
+          <li>Improvement: Minor adjustment in determining the font color based on the background to improve readability</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Korrektur: Anpassung des Credit Suisse Kurslieferanten an die neue Server-API für historische Kurse</li>
+          <li>Verbesserung: Geringfügige Anpassung zur Bestimmung der Schriftfarbe basierend auf dem Hintergrund, um die Lesbarkeit zu verbessern</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.67.2" date="2024-01-28">
+      <description>
+        <ul>
+          <li>New: 2 new widgets with the heatmap of monthly taxes or fees</li>
+          <li>New: PDF importer for Computershare, J&amp;T Direktbank, AKF Bank</li>
+          <li>Improvement of the PDF importer: Barclays, Renault Bank, Raiffeisenbank, Gladbacher Bank, Baader Bank, sBroker, Vanguard, eBase, Postbank, ING DiBa, Trade Republic, Directa SIM, DAB, DADAT, JustTrade, Kreissparkasse, Quirin</li>
+          <li>Fix: Fixes a problem with deleting widgets of the type "Description"</li>
+          <li>Fix: Updates the CoinGecko call frequency to avoid hitting the limit of the free plan</li>
+        </ul>
+        <ul xml:lang="de">
+          <li>Neu: 2 neue Widgets mit der Heatmap der monatlichen Steuern bzw. Gebühren</li>
+          <li>Neu: PDF-Importer für Computershare, J&amp;T Direktbank, AKF Bank</li>
+          <li>Verbesserung der PDF-Importers: Barclays, Renault Bank, Raiffeisenbank, Gladbacher Bank, Baader Bank, sBroker, Vanguard, eBase, Postbank, ING DiBa, Trade Republic, Directa SIM, DAB, DADAT, JustTrade, Kreissparkasse, Quirin</li>
+          <li>Fix: Behebt ein Problem beim Löschen von Widgets vom Typ "Beschreibung"</li>
+          <li>Fix: Aktualisiert die CoinGecko-Aufrufhäufigkeit, um ein Überschreiten des Limits für die kostenlose Stufe zu vermeiden</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.67.1" date="2024-01-08">
       <description>
         <ul>

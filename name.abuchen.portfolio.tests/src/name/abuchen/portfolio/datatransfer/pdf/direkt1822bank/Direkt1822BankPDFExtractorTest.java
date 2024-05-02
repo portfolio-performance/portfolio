@@ -662,7 +662,7 @@ public class Direkt1822BankPDFExtractorTest
                         hasName("AIS AMUNDI DJ SWITZTIT30 UCITS ETF DIST INH ANTEILE"), //
                         hasCurrencyCode("EUR"))));
 
-        // check dividends transaction
+        // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2024-01-04T00:00"), hasShares(16.0871), //
                         hasSource("Vorabpauschale01.txt"), //

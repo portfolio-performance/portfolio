@@ -71,7 +71,7 @@ public class AddCustomEventPage extends AbstractWizardPage
         setControl(container);
         container.setLayout(new FormLayout());
 
-        Label labelSecurity = new Label(container, SWT.NONE);
+        Label labelSecurity = new Label(container, SWT.RIGHT);
         labelSecurity.setLayoutData(new FormData());
         labelSecurity.setText(Messages.ColumnSecurity);
 
@@ -114,7 +114,7 @@ public class AddCustomEventPage extends AbstractWizardPage
         // measuring the width requires that the font has been applied before
         stylingEngine.style(container);
 
-        int labelWidth = widest(labelSecurity, labelDate);
+        int labelWidth = widest(labelSecurity, labelDate, labelMessage);
 
         startingWith(comboSecurity.getControl(), labelSecurity) //
                         .thenBelow(boxDate.getControl()).label(labelDate) //

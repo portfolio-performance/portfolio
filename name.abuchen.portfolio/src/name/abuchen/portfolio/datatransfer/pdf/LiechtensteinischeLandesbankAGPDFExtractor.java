@@ -21,7 +21,7 @@ import name.abuchen.portfolio.money.Values;
  * @formatter:off
  * @implNote Liechtensteinische Landesbank AG
  *
- * @implSpec The Valorennumber number is the WKN number with 5 to 9 letters.
+ * @implSpec The VALOR number is the WKN number with 5 to 9 letters.
  * @formatter:on
  */
 
@@ -255,11 +255,42 @@ public class LiechtensteinischeLandesbankAGPDFExtractor extends AbstractPDFExtra
                                         // @formatter:off
                                         // Kontoauszug in EUR 01.12.2023 - 31.12.2023
                                         // @formatter:on
-                                        .section("currency") //
-                                        .match("^Kontoauszug in (?<currency>[\\w]{3}) .*$") //
-                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+                                        .section("currency", "year") //
+                                        .match("^Kontoauszug in (?<currency>[\\w]{3}) [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}).*$") //
+                                        .assign((ctx, v) -> {
+                                            ctx.put("currency", asCurrencyCode(v.get("currency")));
+                                            ctx.put("year", v.get("year"));
+                                        }));
 
         this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 01.02. Gutschrift 01.02. 465.86 10'522.58
+        // XXXXX XXXXX
+        // Auftragsnummer: XXXXXXXXX
+        // @formatter:on
+        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}. Gutschrift [\\d]{2}\\.[\\d]{2}.*$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "amount", "note") //
+                        .documentContext("currency", "year") //
+                        .match("^[\\d]{2}\\.[\\d]{2}. Gutschrift (?<date>[\\d]{2}\\.[\\d]{2}.) (?<amount>[\\.'\\d]+) [\\.'\\d]+$") //
+                        .match("^(?<note>Auftragsnummer: .*)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // Per 31. Dezember 2023
