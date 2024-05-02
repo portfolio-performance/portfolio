@@ -59,7 +59,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class AllTransactionsView extends AbstractFinanceView
 {
-    private enum TransactionFilter
+    public enum TransactionFilter
     {
         NONE(Messages.TransactionFilterNone, 0, tx -> true), //
         SECURITY_TRANSACTIONS(Messages.TransactionFilterSecurityRelated, 0, tx -> {
@@ -182,17 +182,17 @@ public class AllTransactionsView extends AbstractFinanceView
             this.predicate = predicate;
         }
 
-        boolean matches(Transaction tx)
+        public boolean matches(Transaction tx)
         {
             return predicate.test(tx);
         }
 
-        String getName()
+        public String getName()
         {
             return name;
         }
 
-        int getLevel()
+        public int getLevel()
         {
             return level;
         }
