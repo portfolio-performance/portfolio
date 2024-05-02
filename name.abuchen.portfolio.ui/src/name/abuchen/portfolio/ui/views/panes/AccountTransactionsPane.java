@@ -12,6 +12,7 @@ import java.util.function.Function;
 import jakarta.inject.Inject;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
@@ -32,6 +33,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -42,6 +44,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
@@ -92,7 +95,10 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
     private AbstractFinanceView view;
 
     private TableViewer transactions;
+
+    private String filter;
     private TransactionFilterDropDown transactionFilter;
+
     private ShowHideColumnHelper transactionsColumns;
     private AccountContextMenu accountMenu;
 
@@ -452,6 +458,41 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
         transactions.setContentProvider(ArrayContentProvider.getInstance());
 
+        List<Function<AccountTransaction, Object>> searchLabels = new ArrayList<>();
+        searchLabels.add(tx -> tx.getSecurity());
+        searchLabels.add(tx -> tx.getOptionalSecurity().map(Security::getIsin).orElse(null));
+        searchLabels.add(tx -> tx.getOptionalSecurity().map(Security::getWkn).orElse(null));
+        searchLabels.add(tx -> tx.getOptionalSecurity().map(Security::getTickerSymbol).orElse(null));
+        searchLabels.add(tx -> tx.getCrossEntry() != null ? tx.getCrossEntry().getCrossOwner(tx) : null);
+        searchLabels.add(tx -> tx.getType());
+        searchLabels.add(tx -> tx.getNote());
+        searchLabels.add(tx -> tx.getShares());
+        searchLabels.add(tx -> tx.getMonetaryAmount());
+
+        transactions.addFilter(new ViewerFilter()
+        {
+            @Override
+            public Object[] filter(Viewer viewer, Object parent, Object[] elements)
+            {
+                return filter == null ? elements : super.filter(viewer, parent, elements);
+            }
+
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element)
+            {
+                var tx = (AccountTransaction) element;
+
+                for (Function<AccountTransaction, Object> label : searchLabels)
+                {
+                    Object l = label.apply(tx);
+                    if (l != null && l.toString().toLowerCase().indexOf(filter) >= 0)
+                        return true;
+                }
+
+                return false;
+            }
+        });
+
         transactions.addFilter(new ViewerFilter()
         {
 
@@ -473,6 +514,10 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
     @Override
     public void addButtons(ToolBarManager toolBar)
     {
+        addSearchButton(toolBar);
+
+        toolBar.add(new Separator());
+
         toolBar.add(transactionFilter);
 
         toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
@@ -482,6 +527,42 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> transactionsColumns.menuAboutToShow(manager)));
 
+    }
+
+    private void addSearchButton(ToolBarManager toolBar)
+    {
+        toolBar.add(new ControlContribution("searchbox") //$NON-NLS-1$
+        {
+            @Override
+            protected Control createControl(Composite parent)
+            {
+                final Text search = new Text(parent, SWT.SEARCH | SWT.ICON_CANCEL);
+                search.setMessage(Messages.LabelSearch);
+                search.setSize(300, SWT.DEFAULT);
+
+                search.addModifyListener(e -> {
+                    String filterText = search.getText().trim();
+                    if (filterText.length() == 0)
+                    {
+                        filter = null;
+                        transactions.refresh(false);
+                    }
+                    else
+                    {
+                        filter = filterText.toLowerCase();
+                        transactions.refresh(false);
+                    }
+                });
+
+                return search;
+            }
+
+            @Override
+            protected int computeWidth(Control control)
+            {
+                return control.computeSize(100, SWT.DEFAULT, true).x;
+            }
+        });
     }
 
     public void notifyModelUpdated()
