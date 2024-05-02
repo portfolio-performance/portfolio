@@ -30,7 +30,12 @@ public final class LogoManager
 
     public Image getDefaultColumnImage(Object object, ClientSettings settings)
     {
-        Image logo = getLogoImage(object, settings);
+        return getDefaultColumnImage(object, settings, false);
+    }
+
+    public Image getDefaultColumnImage(Object object, ClientSettings settings, boolean disabled)
+    {
+        Image logo = getLogoImage(object, settings, disabled);
         return logo != null ? logo : getFallbackColumnImage(object);
     }
 
@@ -61,12 +66,12 @@ public final class LogoManager
         object.getAttributes().remove(logoAttr.get());
     }
 
-    private Image getLogoImage(Object object, ClientSettings settings)
+    private Image getLogoImage(Object object, ClientSettings settings, boolean disabled)
     {
         if (object instanceof Attributable target)
         {
             Optional<AttributeType> logoAttr = settings.getOptionalLogoAttributeType(target.getClass());
-            return logoAttr.isPresent() ? ImageManager.instance().getImage(target, logoAttr.get()) : null;
+            return logoAttr.isPresent() ? ImageManager.instance().getImage(target, logoAttr.get(), disabled) : null;
         }
         return null;
     }
