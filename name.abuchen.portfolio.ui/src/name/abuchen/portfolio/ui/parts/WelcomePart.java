@@ -189,7 +189,7 @@ public class WelcomePart
         var qrcode = new ImageHyperlink(section, SWT.NONE);
         qrcode.setImage(Images.resolve(MessageFormat.format("qr/app_{0}_{1}.png", //$NON-NLS-1$
                         isGerman ? "de" : "en", //$NON-NLS-1$ //$NON-NLS-2$
-                        isDark ? "dark" : "light"))); //$NON-NLS-1$ //$NON-NLS-2$
+                        isDark ? "dark" : "light"), false)); //$NON-NLS-1$ //$NON-NLS-2$
 
         qrcode.addHyperlinkListener(
                         IHyperlinkListener.linkActivatedAdapter(e -> linkActivated(Messages.SiteAppLandingpage)));

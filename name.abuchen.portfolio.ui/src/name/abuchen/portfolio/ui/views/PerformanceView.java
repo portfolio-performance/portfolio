@@ -274,9 +274,8 @@ public class PerformanceView extends AbstractHistoricView
                         boolean hasHoldings = snapshot.getEndClientSnapshot().getPositionsByVehicle()
                                         .get(security) != null;
 
-                        if (hasHoldings)
-                            return LogoManager.instance().getDefaultColumnImage(security, getClient().getSettings());
-                        return Images.SECURITY_RETIRED.image();
+                        return LogoManager.instance().getDefaultColumnImage(security, getClient().getSettings(),
+                                        !hasHoldings);
                     }
                     else
                     {
