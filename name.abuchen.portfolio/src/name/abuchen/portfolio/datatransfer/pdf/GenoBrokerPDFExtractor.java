@@ -397,11 +397,20 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Verrechnete anrechenbare ausländische Quellensteuer
                         // (Verhältnis 100/25) auf 3,96 EUR    15,87  -  EUR
+                        // Berechnungsgrundlage für die Kapitalertragsteuer                     584,13     EUR
+                        //
+                        // Verrechnete anrechenbare ausländische Quellensteuer
+                        // (Verhältnis 100/25) auf 2,44 EUR 9,76 - EUR
+                        // Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
                         // @formatter:on
-                        .section("creditableWithHoldingTax", "currency").optional() //
+                        .section("creditableWithHoldingTax", "currency", "amount").optional() //
                         .find("Verrechnete anrechenbare ausl.ndische Quellensteuer") //
-                        .match("^\\(Verh.ltnis .*\\) auf [\\.,\\d]+ [\\w]{3}[\\s]{1,}(?<creditableWithHoldingTax>[\\.,\\d]+)[\\s]{1,}(\\-)?[\\s]{1,}(?<currency>[\\w]{3}).*$") //
-                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
+                        .match("^\\(Verh.ltnis .*\\) auf [\\.,\\d]+ [\\w]{3}[\\s]{1,}(?<creditableWithHoldingTax>[\\.,\\d]+)([\\s]{1,})?(\\-)?[\\s]{1,}(?<currency>[\\w]{3}).*$") //
+                        .match("^Berechnungsgrundlage für die Kapitalertrags(s)?teuer[\\s]{1,}(?<amount>[\\.,\\d]+)([\\s]{1,})?(\\-)?[\\s]{1,}[\\w]{3}.*$")
+                        .assign((t, v) -> {
+                            if (asAmount(v.get("amount")) != 0)
+                                processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type);
+                        })
 
                         // @formatter:off
                         // Kapitalertragsteuer 25 % auf 584,13 EUR      146,03-    EUR
