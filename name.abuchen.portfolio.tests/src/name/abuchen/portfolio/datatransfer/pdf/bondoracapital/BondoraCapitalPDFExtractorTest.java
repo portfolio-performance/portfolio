@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -857,5 +858,31 @@ public class BondoraCapitalPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2024-01-01"), hasAmount("EUR", 0.54), //
                         hasSource("Kontoauszug15.txt"), hasNote("Go & Grow Zinsen"))));
+    }
+
+    @Test
+    public void testKontoauszug16()
+    {
+        BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug16.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-04-27"), hasAmount("EUR", 1500.00), //
+                        hasSource("Kontoauszug16.txt"), hasNote("Abheben auf Bankkonto"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-04-28"), hasAmount("EUR", 32.45), //
+                        hasSource("Kontoauszug16.txt"), hasNote("Go & Grow Zinsen"))));
     }
 }
