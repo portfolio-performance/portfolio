@@ -131,4 +131,36 @@ public class DirectaSimPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
     }
+
+    @Test
+    public void testSecurityBuy04()
+    {
+        DirectaSimPDFExtractor extractor = new DirectaSimPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BK5BQT80"), hasWkn(null), hasTicker(null), //
+                        hasName("VANGUARD FTSE ALL-WORLD UCITS"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-01-05T14:02:36"), hasShares(29), //
+                        hasSource("Buy04.txt"), //
+                        hasNote("Ordine T1673620593440"), //
+                        hasAmount("EUR", 3079.29), hasGrossValue("EUR", 3074.29), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.00))));
+
+    }
 }
