@@ -26,13 +26,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("TRADE REPUBLIC");
+        addBankIdentifier("Trade Republic Bank GmbH");
 
         addBuySellTransaction();
         addSellWithNegativeAmountTransaction();
         addBuySellCryptoTransaction();
         addDividendeTransaction();
         addAdvanceTaxTransaction();
-        addAccountStatementTransaction();
+        addAccountStatementTransaction_Format01();
+        addAccountStatementTransaction_Format02();
         addTaxesStatementTransaction();
         addTaxesCorrectionStatementTransaction();
         addDepositStatementTransaction();
@@ -1189,7 +1191,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         });
     }
 
-    private void addAccountStatementTransaction()
+    private void addAccountStatementTransaction_Format01()
     {
         final DocumentType type = new DocumentType("KONTOAUSZUG", //
                         documentContext -> documentContext //
@@ -1211,11 +1213,17 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
+        // @formatter:off
+        // 15.04.2020 Accepted PayIn:DE00000000000000 to DE0000000000000000 150,00
+        // 28.01.2021 Einzahlung akzeptiert: DE12345678912345678912 auf 123,45
+        // 01.04.2023 Customer c3e9411b-b0ab-4820-a3b3-48cd72f6963b inpayed net: 700,00
+        // @formatter:on
         Block depositBlock = new Block("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) " //
                         + "(Accepted PayIn" //
                         + "|Einzahlung akzeptiert" //
                         + "|Customer).*$");
         type.addBlock(depositBlock);
+        depositBlock.setMaxSize(1);
         depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
@@ -1226,10 +1234,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "amount") //
                         .documentContext("currency") //
-                        .match("(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) " //
+                        .match("^(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) " //
                                         + "(Accepted PayIn" //
                                         + "|Einzahlung akzeptiert" //
-                                        + "|Customer .* inpayed net):.* (?<amount>[\\.,\\d]+)") //
+                                        + "|Customer .* inpayed net):.* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -1238,9 +1246,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block removalBlock = new Block("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) " //
-                        + "(Auszahlung an Referenzkonto).*$");
+        // @formatter:off
+        // 01.01.2023 Auszahlung an Referenzkonto -11.111,11
+        // @formatter:on
+        Block removalBlock = new Block("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) Auszahlung an Referenzkonto.*$");
         type.addBlock(removalBlock);
+        removalBlock.setMaxSize(1);
         removalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
@@ -1251,8 +1262,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "amount") //
                         .documentContext("currency") //
-                        .match("(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) " //
-                                        + "(Auszahlung an Referenzkonto) \\-(?<amount>[\\.,\\d]+)") //
+                        .match("^(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) Auszahlung an Referenzkonto \\-(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -1261,8 +1271,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
+        // @formatter:off
+        // 04.11.2020 Steueroptimierung null 0000000000000000 4,20
+        // @formatter:on
         Block taxRefundBlock = new Block("([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) Steueroptimierung.*");
         type.addBlock(taxRefundBlock);
+        taxRefundBlock.setMaxSize(1);
         taxRefundBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
@@ -1273,7 +1287,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "amount") //
                         .documentContext("currency") //
-                        .match("(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2})) Steueroptimierung.* (?<amount>[\\.,\\d]+)") //
+                        .match("^(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2})) Steueroptimierung.* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -1282,8 +1296,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
+        // @formatter:off
+        // 01.04.2023 Your interest payment 00,01
+        // @formatter:on
         Block interestBlock = new Block("([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) Your interest payment.*");
         type.addBlock(interestBlock);
+        interestBlock.setMaxSize(1);
         interestBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
@@ -1294,7 +1312,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "amount") //
                         .documentContext("currency") //
-                        .match("(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2})) Your interest payment (?<amount>[\\.,\\d]+)") //
+                        .match("^(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}-[\\d]{2}-[\\d]{2})) Your interest payment (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -1302,6 +1320,173 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    private void addAccountStatementTransaction_Format02()
+    {
+        final DocumentType type = new DocumentType("KONTO.BERSICHT", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Erstellt am 29 Apr. 2024
+                                        // @formatter:on
+                                        .section("year") //
+                                        .match("^Erstellt am [\\d]{2} .* (?<year>[\\d]{4})$") //
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year"))));
+
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 02 Apr. Überweisung Einzahlung akzeptiert: DE7243872432 auf 2024 DE7243872432 1.200,00 € 51.352,41 €
+        // @formatter:on
+        Block depositBlock = new Block("^[\\d]{2} [\\w]{3,4}([\\.]{1})? .berweisung Einzahlung akzeptiert.*$");
+        type.addBlock(depositBlock);
+        depositBlock.setMaxSize(1);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "amount", "currency") //
+                        .documentContext("year") //
+                        .match("^(?<date>[\\d]{2} [\\w]{3,4}([\\.]{1})?) .berweisung Einzahlung akzeptiert:.* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        Block removalDepositBlock = new Block("^[\\d]{2} [\\w]{3,4}([\\.]{1})?[\\s]$");
+        type.addBlock(removalDepositBlock);
+        removalDepositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
+                            return accountTransaction;
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // 07 Apr.
+                                        // 2024 Kartentransaktion Backerei XAXRs 798 2,50 € 51.194,91 €
+                                        //
+                                        // 16 Apr.
+                                        // 2024 Kartentransaktion Visa Geld zurueck Aktion 0,08 € 18.584,55 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "currency") //
+                                                        .documentContext("year") //
+                                                        .match("^(?<date>[\\d]{2} [\\w]{3,4}([\\.]{1})?)[\\s]$")
+                                                        .match("^[\\d]{4} Kartentransaktion (?<note>.*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Is type is "Visa Geld zurueck Aktion" change from REMOVAL to DEPOSIT
+                                                            // @formatter:on
+                                                            if ("Visa Geld zurueck Aktion".equals(v.get("note")))
+                                                                t.setType(AccountTransaction.Type.DEPOSIT);
+
+                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // 30 Apr.
+                                        // 2024 Überweisung
+                                        // Einzahlung akzeptiert: DE00000000000000000000 auf
+                                        // DE00000000000000000000 1.200,00 € 18.514,32 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "currency") //
+                                                        .documentContext("year") //
+                                                        .match("^(?<date>[\\d]{2} [\\w]{3,4}([\\.]{1})?)[\\s]$")
+                                                        .match("^[\\d]{4} .berweisung$")
+                                                        .match("^(?<note>Einzahlung akzeptiert): .*$")
+                                                        .match("^.* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Is type is "Einzahlung akzeptiert" change from REMOVAL to DEPOSIT
+                                                            // @formatter:on
+                                                            if ("Einzahlung akzeptiert".equals(v.get("note")))
+                                                                t.setType(AccountTransaction.Type.DEPOSIT);
+
+                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
+        // @formatter:off
+        // 03 Apr.
+        // 024 Gebühren Trade Republic Card 5,00 € 49.997,41 €
+        // @formatter:on
+        Block feesBlock = new Block("^[\\d]{2} [\\w]{3,4}([\\.]{1})?[\\s]$");
+        type.addBlock(feesBlock);
+        feesBlock.setMaxSize(2);
+        feesBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "amount", "currency").optional() //
+                        .documentContext("year") //
+                        .match("^(?<date>[\\d]{2} [\\w]{3,4}([\\.]{1})?)[\\s]$")
+                        .match("^[\\d]{4} Geb.hren Trade Republic Card (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
+        // @formatter:off
+        // 01 Apr.
+        // 2024 Zinszahlung Your interest payment 147,34 € 50.152,41 €
+        // @formatter:on
+        Block interestBlock = new Block("^[\\d]{2} [\\w]{3,4}([\\.]{1})?[\\s]$");
+        type.addBlock(interestBlock);
+        interestBlock.setMaxSize(2);
+        interestBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "amount", "currency").optional() //
+                        .documentContext("year") //
+                        .match("^(?<date>[\\d]{2} [\\w]{3,4}([\\.]{1})?)[\\s]$")
+                        .match("^[\\d]{4} Zinszahlung Your interest payment (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
     }
 
     private void addTaxesStatementTransaction()
