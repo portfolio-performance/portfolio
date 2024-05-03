@@ -794,6 +794,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|BargAuszDebitFremdGA" //
                                         + "|Barumsatz" //
                                         + "|sonstige Buchung" //
+                                        + "|Buchung beleglos" //
                                         + "|sonstige Entgelte" //
                                         + "|entgeltfreie Buchung))" //
                                         + ".*$") //
