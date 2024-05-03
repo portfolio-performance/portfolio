@@ -1457,6 +1457,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         + "|CASH .*" //
                         + "|EINZAHLUNG .*" //
                         + "|AUSZAHLUNG .*" //
+                        + "|\\/REC\\/FC:.*" //
+                        + "|Pr.mie .*" //
                         + "|R\\-Transaktion) " //
                         + "[\\s]{1,}[\\-\\.,\\d]+[\\+|\\-]$");
         type.addBlock(depositRemovalblock);
@@ -1477,6 +1479,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         + "|CASH .*" //
                                         + "|EINZAHLUNG .*" //
                                         + "|AUSZAHLUNG .*" //
+                                        + "|\\/REC\\/FC:.*" //
+                                        + "|Pr.mie .*" //
                                         + "|R\\-Transaktion))" //
                                         + "[\\s]{1,}" //
                                         + "(?<amount>[\\-\\.,\\d]+)" //
