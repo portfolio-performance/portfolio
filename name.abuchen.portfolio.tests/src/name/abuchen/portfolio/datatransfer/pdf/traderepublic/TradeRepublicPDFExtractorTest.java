@@ -633,6 +633,37 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf15()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1681038243"), hasWkn(null), hasTicker(null), //
+                        hasName("AIS-Amundi NASDAQ-100 Namens-Anteile C Cap.EUR o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-05-02T00:00"), hasShares(0.016033), //
+                        hasSource("Kauf15.txt"), //
+                        hasNote("Execution: ab98-f9b9 | Saveback: 3765-0e2e"), //
+                        hasAmount("EUR", 2.97), hasGrossValue("EUR", 2.97), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testBuy01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
@@ -1105,8 +1136,7 @@ public class TradeRepublicPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug05.txt"),
-                        errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1163,8 +1193,7 @@ public class TradeRepublicPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug06.txt"),
-                        errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1261,8 +1290,7 @@ public class TradeRepublicPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug07.txt"),
-                        errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1304,7 +1332,23 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("Kontoauszug07.txt"), hasNote("Visa Geld zurueck Aktion"))));
 
         // assert transaction
-        assertThat(results, hasItem(removal(hasDate("2024-04-17"), hasAmount("EUR", 18.34), //
+        assertThat(results, hasItem(removal(hasDate("2024-04-16"), hasAmount("EUR", 18.34), //
+                        hasSource("Kontoauszug07.txt"), hasNote("ALIEXPRESS.COM"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-04-16"), hasAmount("EUR", 17.53), //
+                        hasSource("Kontoauszug07.txt"), hasNote("ALIEXPRESS.COM"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-04-16"), hasAmount("EUR", 19.40), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Lidl sagt Danke"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-04-16"), hasAmount("EUR", 0.08), //
+                        hasSource("Kontoauszug07.txt"), hasNote("Visa Geld zurueck Aktion"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-04-17"), hasAmount("EUR", 18.34), //
                         hasSource("Kontoauszug07.txt"), hasNote("ALIEXPRESS.COM"))));
 
         // assert transaction
@@ -1384,7 +1428,7 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("Kontoauszug07.txt"), hasNote("Lidl sagt Danke"))));
 
         // assert transaction
-        assertThat(results, hasItem(removal(hasDate("2024-04-29"), hasAmount("EUR", 7.59), //
+        assertThat(results, hasItem(deposit(hasDate("2024-04-29"), hasAmount("EUR", 7.59), //
                         hasSource("Kontoauszug07.txt"), hasNote("eBay"))));
 
         // assert transaction
@@ -1394,6 +1438,83 @@ public class TradeRepublicPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-04-30"), hasAmount("EUR", 1200.00), //
                         hasSource("Kontoauszug07.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testKontoauszug08()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(15L));
+        assertThat(results.size(), is(15));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-10-02"), hasAmount("EUR", 1200.00), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-10-02"), hasAmount("EUR", 3.81), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-10-25"), hasAmount("EUR", 1800.00), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-10-30"), hasAmount("EUR", 1000.00), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-10-30"), hasAmount("EUR", 1200.00), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-11-01"), hasAmount("EUR", 13.68), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-11-29"), hasAmount("EUR", 1500.00), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-11-30"), hasAmount("EUR", 1200.00), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-12-01"), hasAmount("EUR", 19.29), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-12-14"), hasAmount("EUR", 1000.00), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-12-14"), hasAmount("EUR", 1000.00), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-12-27"), hasAmount("EUR", 3000.00), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-12-29"), hasAmount("EUR", 25.50), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-02"), hasAmount("EUR", 1200.00), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-01-30"), hasAmount("EUR", 1200.00), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
     }
 
     @Test
