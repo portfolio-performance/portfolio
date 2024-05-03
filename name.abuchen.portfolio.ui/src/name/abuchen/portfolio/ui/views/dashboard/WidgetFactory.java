@@ -69,7 +69,6 @@ public enum WidgetFactory
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.AnnualizedPercent2) //
                                     .with((ds, period) -> data.calculate(ds, period).getPerformanceIRR()) //
-                                    .withBenchmarkDataSeries(false) //
                                     .build()),
 
     ABSOLUTE_CHANGE(Messages.LabelAbsoluteChange, Messages.LabelStatementOfAssets, //
