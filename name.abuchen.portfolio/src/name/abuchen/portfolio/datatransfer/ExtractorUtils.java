@@ -49,6 +49,8 @@ public class ExtractorUtils
                     createFormatter("d. MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
                     createFormatter("dd MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
                     createFormatter("d MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("dd MMM yyyy", Locale.GERMANY), //$NON-NLS-1$
+                    createFormatter("d MMM yyyy", Locale.GERMANY), //$NON-NLS-1$
                     createFormatter("dd/MM/yyyy", Locale.GERMANY) }; //$NON-NLS-1$
 
     // Date formatters with case-insensitive support for the United States
