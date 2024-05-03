@@ -116,6 +116,37 @@ public class ArkeaDirectBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf03()
+    {
+        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2655993207"), hasWkn(null), hasTicker(null), //
+                        hasName("AMUNDI MSCI WORLD UC.ETF EUR D"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-03-28T09:39:48"), hasShares(7.00), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Référence 50Z3117582492059"), //
+                        hasAmount("EUR", 212.42), hasGrossValue("EUR", 211.68), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.74))));
+    }
+
+    @Test
     public void testDividende01()
     {
         ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());

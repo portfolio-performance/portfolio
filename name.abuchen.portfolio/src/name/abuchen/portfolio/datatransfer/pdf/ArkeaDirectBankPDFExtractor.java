@@ -39,7 +39,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^.* ACTION : .* \\([A-Z]{2}[A-Z0-9]{9}[0-9]\\)$");
+        Block firstRelevantLine = new Block("^.* (ACTION|TRACKER) : .* \\([A-Z]{2}[A-Z0-9]{9}[0-9]\\)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -54,9 +54,12 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // ¢ ACTION : ORANGE (FR0000133308)
                         // Quantité 46 Cours 10,646 €
+                        //
+                        // ¢ TRACKER : AMUNDI MSCI WORLD UC.ETF EUR D (LU2655993207)
+                        // Quantité 7 Cours 30,24 €
                         // @formatter:on
                         .section("name", "isin", "currency") //
-                        .match("^.* ACTION : (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
+                        .match("^.* (ACTION|TRACKER) : (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
                         .match("^Quantit. [\\,\\d\\s]+ Cours [\\,\\d\\s]+ (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
