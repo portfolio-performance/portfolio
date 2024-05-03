@@ -523,6 +523,68 @@ public class GenoBrokerPDFExtractorTest
     }
 
     @Test
+    public void testDividende06()
+    {
+        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000BASF111"), hasWkn("BASF11"), hasTicker(null), //
+                        hasName("BASF SE NAMENS-AKTIEN O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-04-30T00:00"), hasShares(75), //
+                        hasSource("Dividende06.txt"), //
+                        hasNote("Abrechnungsnr.: 08172459718"), //
+                        hasAmount("EUR", 255.00), hasGrossValue("EUR", 255.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende07()
+    {
+        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0008430026"), hasWkn("843002"), hasTicker(null), //
+                        hasName("MUENCHENER RUECKVERS.-GES. AG VINK.NAMENS-AKTIEN O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-04-30T00:00"), hasShares(23), //
+                        hasSource("Dividende07.txt"), //
+                        hasNote("Abrechnungsnr.: 20967773045"), //
+                        hasAmount("EUR", 309.07), hasGrossValue("EUR", 345.00 + 216.60), //
+                        hasTaxes("EUR", 31.39 + 1.72 + 2.82 + 216.60), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testFusion01()
     {
         GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
