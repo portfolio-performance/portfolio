@@ -20,7 +20,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
     public BondoraCapitalPDFExtractor(Client client)
     {
         super(client);
-        
+
         addAccountStatementTransaction();
     }
 
@@ -56,14 +56,19 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                         + "|SEPA\\-Bank.berweisung" //
                                         + "|Transfer" //
                                         + "|Abheben" //
+                                        + "|Abheben auf Bankkonto" //
                                         + "|Go & Grow Zinsen" //
                                         + "|Go & Grow returns" //
                                         + "|Withdrawal)" //
                                         + ") .*$") //
                         .assign((t, v) -> {
-                            if ("Überweisen".equals(v.get("type")) || "Transfer".equals(v.get("type")) || "SEPA-Banküberweisung".equals(v.get("type")))
+                            if ("Überweisen".equals(v.get("type")) //
+                                            || "Transfer".equals(v.get("type")) //
+                                            || "SEPA-Banküberweisung".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.DEPOSIT);
-                            else if ("Abheben".equals(v.get("type")) || "Withdrawal".equals(v.get("type")))
+                            else if ("Abheben".equals(v.get("type")) //
+                                            || "Withdrawal".equals(v.get("type")) //
+                                            || "Abheben auf Bankkonto".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
                         })
 
@@ -72,6 +77,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                         // 06.02.2022 Go & Grow Zinsen 0,22 € 1.228,18 €
                                         // 07.02.2022 Überweisen 1.000 € 2.228,18 €
                                         // 27.11.2023 SEPA-Banküberweisung 50 € 1.064,4 €
+                                        // 27.04.2024 Abheben auf Bankkonto 1.500 € 181.295,79 €
                                         //
                                         // 25.10.2020 Go & Grow Zinsen 1 € 5'630,99 €
                                         // 26.10.2020 Go & Grow Zinsen 1,01 € 5'632 €
@@ -83,6 +89,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                                         + "|SEPA\\-Bank.berweisung" //
                                                                         + "|Transfer" //
                                                                         + "|Abheben" //
+                                                                        + "|Abheben auf Bankkonto" //
                                                                         + "|Go & Grow Zinsen" //
                                                                         + "|Go & Grow returns" //
                                                                         + "|Withdrawal)) " //
@@ -121,6 +128,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                                         + "|SEPA\\-Bank.berweisung" //
                                                                         + "|Transfer" //
                                                                         + "|Abheben" //
+                                                                        + "|Abheben auf Bankkonto" //
                                                                         + "|Go & Grow Zinsen" //
                                                                         + "|Go & Grow returns" //
                                                                         + "|Withdrawal)) " //
@@ -160,6 +168,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                                         + "|SEPA\\-Bank.berweisung" //
                                                                         + "|Transfer" //
                                                                         + "|Abheben" //
+                                                                        + "|Abheben auf Bankkonto" //
                                                                         + "|Go & Grow Zinsen" //
                                                                         + "|Go & Grow returns" //
                                                                         + "|Withdrawal)) " //
