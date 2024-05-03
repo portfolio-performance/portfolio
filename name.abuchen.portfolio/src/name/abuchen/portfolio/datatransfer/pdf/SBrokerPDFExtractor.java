@@ -794,7 +794,6 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "|BargAuszDebitFremdGA" //
                                         + "|Barumsatz" //
                                         + "|sonstige Buchung" //
-                                        + "|Buchung beleglos" //
                                         + "|sonstige Entgelte" //
                                         + "|entgeltfreie Buchung))" //
                                         + ".*$") //
@@ -1509,6 +1508,42 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                            return item;
+                        }));
+
+        Block taxReturnBlock_Format01 = new Block("^.* [\\-|\\+|\\s][\\.,\\d]+$");
+        taxReturnBlock_Format01.setMaxSize(3);
+        type.addBlock(taxReturnBlock_Format01);
+        taxReturnBlock_Format01.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return accountTransaction;
+                        })
+
+                        .section("type", "amount", "date", "note").optional() //
+                        .documentContext("currency") //
+                        .match("^.* (?<type>[\\-|\\+|\\s])(?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note>(Buchung beleglos)).*$") //
+                        .match("\\d+ Steuerausgleich Kapitalertragsteuer")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(t -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                            if (t.getDateTime() == null && t.getNote() == null)
+                                return null;
 
                             return item;
                         }));

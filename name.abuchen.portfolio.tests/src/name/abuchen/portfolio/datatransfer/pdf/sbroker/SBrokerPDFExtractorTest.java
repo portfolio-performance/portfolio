@@ -25,6 +25,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -4789,7 +4790,7 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug41.txt"), hasNote("Überweisung online"))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2024-04-08"), hasAmount("EUR", 0.02), //
+        assertThat(results, hasItem(taxRefund(hasDate("2024-04-08"), hasAmount("EUR", 0.02), //
                         hasSource("GiroKontoauszug41.txt"), hasNote("Buchung beleglos"))));
 
     }
