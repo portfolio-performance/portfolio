@@ -1530,6 +1530,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         + "(?<note>(Buchung beleglos)).*$") //
                         .match("\\d+ Steuerausgleich Kapitalertragsteuer")
                         .assign((t, v) -> {
+                            // Is type --> "-" change from TAX_REFUND to TAXES
+                            if ("-".equals(trim(v.get("type"))))
+                                t.setType(AccountTransaction.Type.TAXES);
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
