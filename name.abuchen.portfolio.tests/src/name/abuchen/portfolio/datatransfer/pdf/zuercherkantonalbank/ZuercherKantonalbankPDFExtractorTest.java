@@ -660,4 +660,35 @@ public class ZuercherKantonalbankPDFExtractorTest
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
+
+    @Test
+    public void testDividende04()
+    {
+        ZuercherKantonalbankPDFExtractor extractor = new ZuercherKantonalbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B02KXH56"), hasWkn("1965564"), hasTicker(null), //
+                        hasName("Shs USD iShares PLC - iShares MSCI Japan UCITS ETF USD (Dist)"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-01-24T00:00"), hasShares(930), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("Abwicklungs-Nr. 754899061"), //
+                        hasAmount("USD", 99.14), hasGrossValue("USD", 99.14), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
 }
