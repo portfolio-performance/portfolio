@@ -1,7 +1,25 @@
 package name.abuchen.portfolio.datatransfer.pdf.degiro;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
 
@@ -7317,6 +7335,86 @@ public class DegiroPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(78.21))));
     }
+    
+   
+    
+    @Test
+    public void testTransactions_french02()
+    {
+        DegiroPDFExtractor extractor = new DegiroPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transactions_french02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(5L));
+        assertThat(countBuySell(results), is(6L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(11));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check 1st security
+        
+        assertThat(results, hasItem(security( 
+                        hasIsin("US02319V1035"), 
+                        hasName("ADR ON AMBEV"), 
+                        hasCurrencyCode("USD"))));
+        assertThat(results, hasItem(security( 
+                        hasIsin("IE00B1FZSF77"), 
+                        hasName("ISHARES PROP US"), 
+                        hasCurrencyCode("EUR"))));
+        assertThat(results, hasItem(security( 
+                        hasIsin("US91324P1021"), 
+                        hasName("UNITEDHEALTH GROUP INC"), 
+                        hasCurrencyCode("USD"))));
+        assertThat(results, hasItem(security( 
+                        hasIsin("US0367521038"), 
+                        hasName("ELEVANCE HEALTH INC"), 
+                        hasCurrencyCode("USD"))));
+        assertThat(results, hasItem(security( 
+                        hasIsin("US5951121038"), 
+                        hasName("MICRON TECHNOLOGY INC"), 
+                        hasCurrencyCode("USD"))));
+                      
+        // check 1st buy transaction
+        
+        assertThat(results, hasItem(sale( 
+                        hasDate("2024-04-16T21:56"), hasShares(150.00), 
+                        hasSource("Transactions_french02.txt"), 
+                        hasAmount("EUR", 317.95), hasGrossValue("EUR", 319.95), 
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.00), 
+                        hasForexGrossValue("USD", 339.75))));
+        assertThat(results, hasItem(sale( 
+                        hasDate("2024-03-26T10:27"), hasShares(4.00), 
+                        hasSource("Transactions_french02.txt"), 
+                        hasAmount("EUR", 101.00), hasGrossValue("EUR", 101.00), 
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+        assertThat(results, hasItem(sale( 
+                        hasDate("2024-03-26T10:13"), hasShares(12.00), 
+                        hasSource("Transactions_french02.txt"), 
+                        hasAmount("EUR", 300.00), hasGrossValue("EUR", 303.00), 
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+        assertThat(results, hasItem(purchase( 
+                        hasDate("2024-01-22T16:51"), hasShares(1.00), 
+                        hasSource("Transactions_french02.txt"), 
+                        hasAmount("EUR", 468.94), hasGrossValue("EUR", 466.94), 
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.00), 
+                        hasForexGrossValue("USD", 508.40))));
+        assertThat(results, hasItem(sale( 
+                        hasDate("2024-01-22T16:31"), hasShares(1.00), 
+                        hasSource("Transactions_french02.txt"), 
+                        hasAmount("EUR", 428.59), hasGrossValue("EUR", 430.59), 
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.00), 
+                        hasForexGrossValue("USD", 469.00))));
+        assertThat(results, hasItem(sale( 
+                        hasDate("2024-01-22T16:30"), hasShares(4.00), 
+                        hasSource("Transactions_french02.txt"), 
+                        hasAmount("EUR", 322.22), hasGrossValue("EUR", 324.22), 
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.00), 
+                        hasForexGrossValue("USD", 353.24))));
+                
+    }
 
     @Test
     public void testTransakce01()
@@ -8758,4 +8856,5 @@ public class DegiroPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
+   
 }

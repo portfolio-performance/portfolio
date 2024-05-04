@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
-
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -1374,6 +1373,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 23-07-2019 15:30 RIO TINTO PLC COMMON S US7672041008 NSY -3 USD 61,04 USD 183,12 EUR 163,83 1,1177 EUR -0,51 EUR 163,32
                             // @formatter:on
                             section -> section
+                                .id("withExchangeRate-withFee-withoutStockExchangePlace")
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
@@ -1432,11 +1432,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // with stock exchange place
                             // -------------------------------------
                             // Formatting:
-                            // DateTime | Name | ISIN | Stock Exchange + Place | Shares | Quote | Amount in exchange rate | Local Market value | Exchange rate | Total amount
+                            // DateTime | Name | ISIN | Stock Exchange | Place | Shares | Quote | Amount in exchange rate | Local Market value | Exchange rate | Total amount
                             // -------------------------------------
                             // 03-02-2021 21:18 UPWORK INC. CMN US91688F1049 NDQ SOHO -1 47,00 USD 47,00 USD 39,00 EUR 1,2038 39,00 EUR
                             // @formatter:on
                             section -> section
+                                .id("withExchangeRate-withoutFee-withStockExchangePlace")
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
@@ -1491,6 +1492,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 14-08-2020 21:13 TESLA MOTORS INC. - C US88160R1014 NDQ 2 1'630.00 USD -3'260.00 USD -2'964.76 CHF 1.0996 -0.55 CHF -2'965.31 CHF
                             // @formatter:on
                             section -> section
+                                .id("withExchangeRate-withFee-withoutStockExchangePlace")
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
@@ -1500,8 +1502,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                                 + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} [\\w]{3} "
                                                 + "(\\-)?(?<amountFx>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currency>[\\w]{3}).* "
                                                 + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3} "
-                                                + "(?<exchangeRate>[\\.,'\\d\\s]+[\\.|,][\\d]{1,4}) "
-                                                + "(\\-)?(?<fee>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currencyFee>[\\w]{3}) "
+                                                + "(?<exchangeRate>[\\.,'\\d\\s]+[\\.|,][\\d]{1,4})"
+                                                + "( )?(\\-)?(?<fee>[\\.,'\\d\\s]*[\\.|,]?[\\d]{0,2}) (?<currencyFee>[\\w]{3}) "
                                                 + "([\\s]+)?(\\-)?(?<amount>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currencyAccount>[\\w]{3})([\\s]+)?$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
@@ -1519,7 +1521,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         t.setShares(asShares(v.get("shares")));
                                     }
 
-                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));
+                                    // At this stage, fee cannot be null
+                                    String fee = v.get("fee").isEmpty()?"0":v.get("fee");
+                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(fee));
                                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
 
                                     long amountFx = asAmount(v.get("amountFx"));
@@ -1554,6 +1558,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 22-07-2019 19:16 LPL FINANCIAL HOLDINGS US50212V1008 NDQ 1 USD 85,73 USD 85,73 EUR 76,42 1,1218 EUR 76,42
                             // @formatter:on
                             section -> section
+                                .id("withExchangeRate-withoutFee-withoutStockExchangePlace")
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
@@ -1606,6 +1611,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 14-12-2020 00:00 ASTON MARTIN GB00BN7CG237 LSE 51 1 417,00 GBX -72 267,00 GBX -791,47 EUR 91,3075 -791,47 EUR
                             // @formatter:on
                             section -> section
+                                .id("withExchangeRate-withoutFee-withoutStockExchangePlace")
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
@@ -1652,7 +1658,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // with stock exchange place
                             // -------------------------------------
                             // Formatting:
-                            // DateTime | Name | ISIN | Stock Exchange + Place | Shares | Quote | Amount in exchange rate | Local Market value | Exchange rate | Fee | Total amount
+                            // DateTime | Name | ISIN | Stock Exchange | Place | Shares | Quote | Amount in exchange rate | Local Market value | Exchange rate | Fee | Total amount
                             // -------------------------------------
                             // 27-01-2021 20:55 APPLE INC. - COMMON ST US0378331005 NDQ XNAS 9 141,70 USD -1.275,30 USD -1.053,79 EUR 1,209 -0,53 EUR -1.054,32 EUR
                             // 27-01-2021 20:54 NIKOLA CORP US6541101050 NDQ XNAS -48 28,00 USD 1.344,00 USD 1.108,34 EUR 1,2114 -0,66 EUR 1.107,68 EUR
@@ -1661,13 +1667,14 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 26-04-2021 15:35 GOODFOOD MARKET CORP CA38217M1005 TOR NEOE 100 8,20 CAD -820,00 CAD -546,67 EUR 1,5 -2,67 EUR -549,34 EUR
                             // @formatter:on
                             section -> section
+                                .id("withExchangeRate-withFee-withStockExchangePlace")
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
                                                 + "[\\w]{3} [\\w]{4} ([\\s]+)?"
                                                 + "(?<shares>[\\-\\.,'\\d]+) "
-                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} [\\w]{3} "
+                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,]?[\\d]{0,6} [\\w]{3} "
                                                 + "(\\-)?(?<amountFx>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currency>[\\w]{3}) "
                                                 + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3} "
                                                 + "(?<exchangeRate>[\\.,'\\d\\s]+[\\.|,][\\d]{1,4}) "
@@ -1725,6 +1732,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 09-07-2019 14:08 VANGUARD FTSE AW IE00B3RBWM25 EAM 3 EUR 77,10 EUR -231,30 EUR -231,30 EUR -231,30
                             // @formatter:on
                             section -> section
+                                .id("withoutExchangeRate-withoutFee-withoutStockExchangePlace")
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
@@ -1764,6 +1772,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 22-07-2020 00:00 PHARMA MAR SA ES0169501022 MAD 21 114,66 EUR -2 407,86 EUR -2 407,86 EUR -2 407,86 EUR
                             // @formatter:on
                             section -> section
+                                .id("withoutExchangeRate-withoutFee-withoutStockExchangePlace")
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
@@ -1804,6 +1813,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 01-04-2019 12:20 DEUTSCHE BANK AG NA O.N DE0005140008 XET 18 EUR 7,353 EUR -132,35 EUR -132,35 EUR -0,03 EUR -132,38
                             // @formatter:on
                             section -> section
+                                .id("withoutExchangeRate-withFee-withoutStockExchangePlace")
                                 .attributes("date", "time", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
@@ -1838,15 +1848,16 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // @formatter:off
                             // without exchange rate
                             // with fee
-                            // with stock exchange place
+                            // without stock exchange place
                             // -------------------------------------
                             // Formatting:
-                            // DateTime | Name | ISIN | Stock Exchange + Place | Shares | Quote | Market value | Local Market value | Fee | Total amount
+                            // DateTime | Name | ISIN | Stock Exchange | Shares | Quote | Market value | Local Market value | Fee | Total amount
                             // -------------------------------------
                             // 01-08-2017 17:21 DEUTSCHE TELEKOM AG DE0005557508 XET 50 15,61 EUR -780,50 EUR -780,50 EUR -2,06 EUR -782,56 EUR
                             // 01-08-2017 16:32 CECONOMY AG DE0007257503 XET 72 9,45 EUR -680,40 EUR -680,40 EUR -2,05 EUR -682,45 EUR
                             // @formatter:on
                             section -> section
+                                .id("withoutExchangeRate-withFee-withoutStockExchangePlace")
                                 .attributes("date", "time", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
@@ -1885,23 +1896,24 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // with stock exchange place
                             // -------------------------------------
                             // Formatting:
-                            // DateTime | Name | ISIN | Stock Exchange + Place | Shares | Quote | Market value | Local Market value | Fee | Total amount
+                            // DateTime | Name | ISIN | Stock Exchange | Place | Shares | Quote | Market value | Local Market value | Fee | Total amount
                             // -------------------------------------
                             // 07-01-2021 09:00 K&S AG DE000KSAG888 XET XETA 20 9,748 EUR -194,96 EUR -194,96 EUR -2,04 EUR -197,00 EUR
                             // 21-12-2020 10:33 VARTA AG DE000A0TGJ55 XET XETA -11 111,60 EUR 1.227,60 EUR 1.227,60 EUR -2,22 EUR 1.225,38 EUR
                             // 23-02-2021 15:56 INVESCO EQQQ NASDAQ-100 IE0032077012 XET XETA 8 260,00 EUR -2 080,00 EUR -2 080,00 EUR -2,62 EUR -2 082,62 EUR
                             // @formatter:on
                             section -> section
+                                .id("withoutExchangeRate-withFee-withStockExchangePlace")
                                 .attributes("date", "time", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
                                                 + "(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
                                                 + "[\\w]{3} [\\w]{4} ([\\s]+)?"
                                                 + "(?<shares>[\\-\\.,'\\d]+) "
-                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2,6} [\\w]{3} "
+                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,]?[\\d]{0,6} [\\w]{3} "
                                                 + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3} "
-                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3} "
-                                                + "(\\-)?(?<fee>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currencyFee>[\\w]{3}) "
+                                                + "(\\-)?[\\.,'\\d\\s]+[\\.|,][\\d]{2} [\\w]{3}"
+                                                + "( )?(\\-)?(?<fee>[\\.,'\\d\\s]*[\\.|,]?[\\d]{0,2}) (?<currencyFee>[\\w]{3}) "
                                                 + "([\\s]+)?(\\-)?(?<amount>[\\.,'\\d\\s]+[\\.|,][\\d]{2}) (?<currency>[\\w]{3})([\\s]+)?$")
                                 .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
@@ -1918,8 +1930,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     {
                                         t.setShares(asShares(v.get("shares")));
                                     }
-
-                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));
+                                    // At this stage, fee cannot be null
+                                    String fee = v.get("fee").isEmpty()?"0":v.get("fee");
+                                    Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(fee));
                                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
                             }),
 
@@ -1929,11 +1942,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // with stock exchange place
                             // -------------------------------------
                             // Formatting:
-                            // DateTime | Name | ISIN | Stock Exchange + Place | Shares | Quote | Market value | Local Market value | Total amount
+                            // DateTime | Name | ISIN | Stock Exchange | Place | Shares | Quote | Market value | Local Market value | Total amount
                             // -------------------------------------
                             // 28-02-2020 09:00 TOMTOM NL0013332471 EAM XAMS 1 8,933 EUR -8,93 EUR -8,93 EUR -8,93 EUR
                             // @formatter:on
                             section -> section
+                                .id("withoutExchangeRate-withoutFee-withStockExchangePlace")
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) "
