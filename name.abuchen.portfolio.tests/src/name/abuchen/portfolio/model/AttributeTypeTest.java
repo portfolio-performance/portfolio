@@ -198,7 +198,11 @@ public class AttributeTypeTest
     {
         IllegalArgumentException iae;
         iae = assertThrows(IllegalArgumentException.class, () -> sc.fromString(toParse));
-        assertThat(iae.getMessage(), is(MessageFormat.format(expectedResourceKey, toParse)));
+
+        var hasParameter = expectedResourceKey.contains("{");
+        var expectedMessage = hasParameter ? MessageFormat.format(expectedResourceKey, toParse) : expectedResourceKey;
+
+        assertThat(iae.getMessage(), is(expectedMessage));
         if (expectCause)
         {
             assertNotNull(iae.getCause());
