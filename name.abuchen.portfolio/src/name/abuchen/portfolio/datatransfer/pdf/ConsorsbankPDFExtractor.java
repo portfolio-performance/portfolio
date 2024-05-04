@@ -54,7 +54,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         addEncashmentTransaction();
         addAdvanceTaxTransaction();
         addTaxAdjustmentTransaction();
-        addDepotStatementTransaction();
+        addAccountStatementTransaction();
     }
 
     @Override
@@ -771,22 +771,42 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         });
     }
 
-    private void addDepotStatementTransaction()
+    private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Kontotyp Verrechnungskonto", //
+        final DocumentType type = new DocumentType("Kontotyp (Verrechnungskonto|Tagesgeldkonto)", //
                         documentContext -> documentContext //
-                                        // @formatter:off
-                                        // Datum 03.09.12 Bankleitzahl 760 300 80 Kontowährung EUR
-                                        // @formatter:on
-                                        .section("year", "currency") //
-                                        .match("^Datum [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{2}) .* Kontow.hrung (?<currency>[\\w]{3})$") //
-                                        .assign((ctx, v) -> {
-                                            ctx.put("year", v.get("year"));
-                                            ctx.put("currency", asCurrencyCode(v.get("currency")));
-                                        }));
+                                        .oneOf( //
+                                                        // @formatter:off
+                                                        // Datum 03.09.12 Bankleitzahl 760 300 80 Kontowährung EUR
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("year", "currency") //
+                                                                        .match("^Datum [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{2}) .* Kontow.hrung (?<currency>[\\w]{3})$") //
+                                                                        .assign((ctx, v) -> {
+                                                                            ctx.put("year", v.get("year"));
+                                                                            ctx.put("currency", asCurrencyCode(v.get("currency")));
+                                                                        }),
+                                                        // @formatter:off
+                                                        // ** ABSCHLUSS FÜR KONTO 0123 456 789 VOM 31.12.2023 BIS 31.03.2024/EUR **
+                                                        // RECHNUNGSABSCHLUSSSALDO PER 31.03.2024 192,58 H
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("currency", "date") //
+                                                                        .match("^.*ABSCHLUSS F.R KONTO.*\\/(?<currency>[\\w]{3}).*$")
+                                                                        .match("^RECHNUNGSABSCHLUSSSALDO PER (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                                        .assign((ctx, v) -> {
+                                                                            ctx.put("currency", asCurrencyCode(v.get("currency")));
+                                                                            ctx.put("date", v.get("date"));
+
+                                                                        })));
 
         this.addDocumentTyp(type);
 
+        // @formatter:off
+        // GUTSCHRIFT NR.99999999992 21.08. 8401 21.08. 6.500,00+
+        // D-GUTSCHRIFT NR.99999999999 03.09. 7998 03.09. 4.900,00+
+        // EURO-UEBERW. 11.08. 8420 11.08. 1.000,00+
+        // @formatter:on
         Block depositBlock = new Block("^(GUTSCHRIFT" //
                         + "|D\\-GUTSCHRIFT" //
                         + "|EURO\\-UEBERW\\.)" //
@@ -800,11 +820,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // GUTSCHRIFT NR.99999999992 21.08. 8401 21.08. 6.500,00+
-                        // D-GUTSCHRIFT NR.99999999999 03.09. 7998 03.09. 4.900,00+
-                        // EURO-UEBERW. 11.08. 8420 11.08. 1.000,00+
-                        // @formatter:on
                         .section("note", "date", "amount") //
                         .documentContext("year", "currency") //
                         .match("^(?<note>GUTSCHRIFT|D\\-GUTSCHRIFT|EURO\\-UEBERW\\.).* [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)\\+$") //
@@ -828,6 +843,11 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
+        // @formatter:off
+        // UEBERWEISUNG NR.99999999991 21.08. 8401 21.08. 25.308,00-
+        // EURO-UEBERW. 21.12. 8420 21.12. 6.000,00-
+        // DAUERAUFTRAG NR.0000001 12.12. 12346 12.12. 50,00-
+        // @formatter:on
         Block removalBlock = new Block("^(UEBERWEISUNG" //
                         + "|EURO\\-UEBERW\\." //
                         + "|DAUERAUFTRAG)" //
@@ -841,10 +861,6 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // UEBERWEISUNG NR.99999999991 21.08. 8401 21.08. 25.308,00-
-                        // EURO-UEBERW. 21.12. 8420 21.12. 6.000,00-
-                        // @formatter:on
                         .section("note", "date", "amount") //
                         .documentContext("year", "currency") //
                         .match("^(?<note>(UEBERWEISUNG|EURO\\-UEBERW\\.|DAUERAUFTRAG)).* [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)\\-$") //
@@ -865,32 +881,123 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block feeBlock = new Block("^ABSCHLUSS [\\d]{2}\\.[\\d]{2}\\. [\\d]+ [\\d]{2}\\.[\\d]{2}\\. [\\.,\\d]+\\-$");
-        type.addBlock(feeBlock);
-        feeBlock.set(new Transaction<AccountTransaction>()
+        // @formatter:off
+        // ABSCHLUSS 31.12. 8800 31.12. 1,22-
+        // ABSCHLUSS 28.03. 8800 31.03. 261,56+
+        // @formatter:on
+        Block interestBlock_Format01 = new Block("^ABSCHLUSS [\\d]{2}\\.[\\d]{2}\\. [\\d]+ [\\d]{2}\\.[\\d]{2}\\. [\\.,\\d]+[\\-|\\+]$");
+        type.addBlock(interestBlock_Format01);
+        interestBlock_Format01.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // ABSCHLUSS 31.12. 8800 31.12. 1,22-
-                        // @formatter:on
-                        .section("note", "date", "amount") //
+                        .section("date", "amount", "type") //
                         .documentContext("year", "currency") //
-                        .match("^(?<note>ABSCHLUSS) [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)\\-$") //
+                        .match("^ABSCHLUSS [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+])$") //
                         .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type --> "-" change from INTEREST to INTEREST_CHARGE
+                            // @formatter:on
+                            if ("-".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
+                        })
 
-                            // Formatting some notes
-                            if ("ABSCHLUSS".equals(v.get("note")))
-                                v.put("note", "Abschluss");
+                        .wrap(TransactionItem::new));
 
-                            t.setNote(v.get("note"));
+        // @formatter:off
+        // SUMME DER ABSCHLUSSPOSTEN 261,56 H
+        // @formatter:on
+        Block interestBlock_Format02 = new Block("^SUMME DER ABSCHLUSSPOSTEN [\\.,\\d]+ [H|S]$");
+        type.addBlock(interestBlock_Format02);
+        interestBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        .section("amount", "type") //
+                        .documentContext("currency", "date") //
+                        .match("^SUMME DER ABSCHLUSSPOSTEN (?<amount>[\\.,\\d]+) (?<type>[H|S])$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type --> "S" change from INTEREST to INTEREST_CHARGE
+                            // @formatter:on
+                            if ("S".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // STEUER 28.03. 8800 31.03. 68,98-
+        // @formatter:on
+        Block taxesBlock_Format01 = new Block("^STEUER [\\d]{2}\\.[\\d]{2}\\. [\\d]+ [\\d]{2}\\.[\\d]{2}\\. [\\.,\\d]+[\\-|\\+]$");
+        type.addBlock(taxesBlock_Format01);
+        taxesBlock_Format01.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "amount", "type") //
+                        .documentContext("year", "currency") //
+                        .match("^STEUER [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+])$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type --> "S" change from TAXES to TAX_REFUND
+                            // @formatter:on
+                            if ("+".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // SUMME STEUERN 68,98 S
+        // @formatter:on
+        Block taxesBlock_Format02 = new Block("^SUMME STEUERN [\\.,\\d]+ [H|S]$");
+        type.addBlock(taxesBlock_Format02);
+        taxesBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return accountTransaction;
+                        })
+
+                        .section("amount", "type") //
+                        .documentContext("currency", "date") //
+                        .match("^SUMME STEUERN (?<amount>[\\.,\\d]+) (?<type>[H|S])$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type --> "S" change from TAX_REFUND to TAXES
+                            // @formatter:on
+                            if ("S".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.TAXES);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
                         })
 
                         .wrap(TransactionItem::new));
