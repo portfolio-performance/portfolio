@@ -161,13 +161,13 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
                                         // Total Belastung Zeichnungen 99.98
                                         // @formatter:on
                                         section -> section //
-                                            .attributes("currency", "amount") //
-                                            .match("^Valor Bezeichnung Anzahl Kurs [\\w]{3} Datum Total (?<currency>[\\w]{3})$")
-                                            .match("^Total Belastung Zeichnungen (?<amount>[\\.'\\d]+)$") //
-                                            .assign((t, v) -> {
-                                                t.setAmount(asAmount(v.get("amount")));
-                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                            }),
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Valor Bezeichnung Anzahl Kurs [\\w]{3} Datum Total (?<currency>[\\w]{3})$")
+                                                        .match("^Total Belastung Zeichnungen (?<amount>[\\.'\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
                                         // @formatter:off
                                         // Stück CHF CHF
                                         // Total zu Ihren Lasten Valuta 10.06.2022 7'294.30
@@ -301,6 +301,20 @@ public class ZuercherKantonalbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("currency", "amount") //
                                                         .match("^zum[\\s]{1,}Kurs[\\s]{1,}von[\\s]{1,}[\\w]{3}([\\s|\\/]+)[\\w]{3}[\\s]{1,}[\\.'\\d]+[\\s]{1,}(?<currency>[\\w]{3})$") //
+                                                        .match("^Total zu Ihren Gunsten Valuta .* (?<amount>[\\.'\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // Zahlbar 24.01.2024
+                                        // USD
+                                        // Total zu Ihren Gunsten Valuta 24.01.2024 99.14
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .find("Zahlbar [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}")
+                                                        .match("^(?<currency>[\\w]{3})$") //
                                                         .match("^Total zu Ihren Gunsten Valuta .* (?<amount>[\\.'\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
