@@ -18,7 +18,7 @@ public class InvestmentPlanModel extends AbstractModel
 {
     public enum Properties
     {
-        calculationStatus, name, security, securityCurrencyCode, portfolio, account, accountCurrencyCode, start, interval, amount, fees, transactionCurrencyCode, autoGenerate; // NOSONAR
+        calculationStatus, name, security, securityCurrencyCode, portfolio, account, accountCurrencyCode, start, interval, amount, fees, taxes, transactionCurrencyCode, autoGenerate; // NOSONAR
     }
 
     public static final Account DELIVERY = new Account(Messages.InvestmentPlanOptionDelivery);
@@ -40,6 +40,7 @@ public class InvestmentPlanModel extends AbstractModel
     private int interval = 1;
     private long amount;
     private long fees;
+    private long taxes;
 
     private IStatus calculationStatus = ValidationStatus.ok();
 
@@ -51,7 +52,8 @@ public class InvestmentPlanModel extends AbstractModel
 
     private boolean isAccountPlan()
     {
-        return planType == InvestmentPlan.Type.DEPOSIT || planType == InvestmentPlan.Type.REMOVAL;
+        return planType == InvestmentPlan.Type.DEPOSIT || planType == InvestmentPlan.Type.REMOVAL
+                        || planType == InvestmentPlan.Type.INTEREST;
     }
 
     @Override
@@ -62,6 +64,8 @@ public class InvestmentPlanModel extends AbstractModel
             additionalText = ": " + Messages.InvestmentPlanTypeDeposit; //$NON-NLS-1$
         else if (planType == InvestmentPlan.Type.REMOVAL)
             additionalText = ": " + Messages.InvestmentPlanTypeRemoval; //$NON-NLS-1$
+        else if (planType == InvestmentPlan.Type.INTEREST)
+            additionalText = ": " + Messages.InvestmentPlanTypeInterest; //$NON-NLS-1$
         return (source != null ? Messages.InvestmentPlanTitleEditPlan : Messages.InvestmentPlanTitleNewPlan) + additionalText;
     }
 
@@ -84,6 +88,7 @@ public class InvestmentPlanModel extends AbstractModel
         }
 
         plan.setName(name);
+        plan.setType(planType);
         plan.setSecurity(isAccountPlan() ? null : security);
         plan.setPortfolio(isAccountPlan() ? null : portfolio);
         plan.setAccount(account.equals(DELIVERY) ? null : account);
@@ -92,6 +97,7 @@ public class InvestmentPlanModel extends AbstractModel
         plan.setInterval(interval);
         plan.setAmount((planType == Type.REMOVAL) ? -amount : amount);
         plan.setFees(fees);
+        plan.setTaxes(taxes);
     }
 
     @Override
@@ -132,6 +138,7 @@ public class InvestmentPlanModel extends AbstractModel
             this.amount = -this.amount;
         }
         this.fees = plan.getFees();
+        this.taxes = plan.getTaxes();
     }
 
     @Override
@@ -271,6 +278,16 @@ public class InvestmentPlanModel extends AbstractModel
     public void setFees(long fees)
     {
         firePropertyChange(Properties.fees.name(), this.fees, this.fees = fees); // NOSONAR
+    }
+
+    public long getTaxes()
+    {
+        return taxes;
+    }
+
+    public void setTaxes(long taxes)
+    {
+        firePropertyChange(Properties.taxes.name(), this.taxes, this.taxes = taxes); // NOSONAR
     }
 
     public String getSecurityCurrencyCode()

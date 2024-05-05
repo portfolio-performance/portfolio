@@ -119,6 +119,9 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
             manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeRemoval) //
                             .type(InvestmentPlanDialog.class) //
                             .parameters(InvestmentPlan.Type.REMOVAL));
+            manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeInterest) //
+                            .type(InvestmentPlanDialog.class) //
+                            .parameters(InvestmentPlan.Type.INTEREST));
         }));
     }
 
@@ -206,8 +209,12 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
                 {
                     if (plan.getPlanType() == Type.DEPOSIT)
                         return Messages.InvestmentPlanOptionDeposit;
-                    else
+                    else if (plan.getPlanType() == Type.REMOVAL)
                         return Messages.InvestmentPlanOptionRemoval;
+                    else if (plan.getPlanType() == Type.INTEREST)
+                        return Messages.InvestmentPlanOptionInterest;
+
+                    return Messages.LabelError;
                 }
             }
 

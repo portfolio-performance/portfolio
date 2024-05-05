@@ -21,7 +21,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 {
     public enum Type
     {
-        BUY_OR_DELIVERY, DEPOSIT, REMOVAL
+        BUY_OR_DELIVERY, DEPOSIT, REMOVAL, INTEREST
     }
 
     private String name;
@@ -43,6 +43,9 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
     private long amount;
     private long fees;
+    private long taxes;
+
+    private Type type;
 
     private List<Transaction> transactions = new ArrayList<>();
 
@@ -58,6 +61,9 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
     public Type getPlanType()
     {
+        if (type != null)
+            return type;
+
         if (portfolio != null)
         {
             if (security == null)
@@ -70,6 +76,11 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
             return (amount >= 0) ? Type.DEPOSIT : Type.REMOVAL;
         else
             throw new IllegalArgumentException("security is set with a set account for " + name); //$NON-NLS-1$
+    }
+
+    public void setType(Type type)
+    {
+        this.type = type;
     }
 
     @Override
@@ -179,6 +190,16 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     public void setFees(long fees)
     {
         this.fees = fees;
+    }
+
+    public long getTaxes()
+    {
+        return taxes;
+    }
+
+    public void setTaxes(long taxes)
+    {
+        this.taxes = taxes;
     }
 
     @Override
@@ -395,7 +416,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
         if (planType == Type.BUY_OR_DELIVERY)
             return createSecurityTx(converter, tDate);
-        else if (planType == Type.DEPOSIT || planType == Type.REMOVAL)
+        else if (planType == Type.DEPOSIT || planType == Type.REMOVAL || planType == Type.INTEREST)
             return createAccountTx(converter, tDate);
         else
             throw new IllegalArgumentException("unsupported plan type " + planType.name()); //$NON-NLS-1$
@@ -481,16 +502,22 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     {
         long txAmount = amount;
 
-        AccountTransaction.Type type;
+        AccountTransaction.Type transactionType;
         if (txAmount > 0)
         {
-            type = AccountTransaction.Type.DEPOSIT;
+            transactionType = AccountTransaction.Type.DEPOSIT;
         }
         else
         {
-            type = AccountTransaction.Type.REMOVAL;
+            transactionType = AccountTransaction.Type.REMOVAL;
             txAmount = -txAmount;
         }
+        if (type == Type.INTEREST)
+        {
+            transactionType = AccountTransaction.Type.INTEREST;
+            txAmount -= taxes;
+        }
+
         Money deposit = Money.of(getCurrencyCode(), txAmount);
 
         boolean needsCurrencyConversion = !getCurrencyCode().equals(account.getCurrencyCode());
@@ -500,10 +527,14 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         // create deposit transaction
         AccountTransaction transaction = new AccountTransaction();
         transaction.setDateTime(tDate.atStartOfDay());
-        transaction.setType(type);
+        transaction.setType(transactionType);
         transaction.setMonetaryAmount(deposit);
         transaction.setNote(MessageFormat.format(Messages.InvestmentPlanAutoNoteLabel,
                         Values.DateTime.format(LocalDateTime.now()), name));
+
+        if (taxes != 0)
+            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX,
+                            Money.of(account.getCurrencyCode(), taxes)));
 
         account.addTransaction(transaction);
         return new TransactionPair<>(account, transaction);
