@@ -530,6 +530,7 @@ import name.abuchen.portfolio.model.TypedMap;
 
     /* package */static class Section<T>
     {
+        private String id;
         private boolean isOptional = false;
         private boolean isMultipleTimes = false;
         private Transaction<T> transaction;
@@ -549,6 +550,11 @@ import name.abuchen.portfolio.model.TypedMap;
             this.attributes = attributes;
         }
 
+        public Section<T> id(String id)
+        {
+            this.id = id;
+            return this;
+        }
         public Section<T> attributes(String... attributes)
         {
             this.attributes = attributes;
