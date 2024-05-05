@@ -185,6 +185,13 @@ message PTransaction {
 }
 
 message PInvestmentPlan {
+  enum Type {
+    PURCHASE_OR_DELIVERY = 0;
+    DEPOSIT = 1;
+    REMOVAL = 2;
+    INTEREST = 3;
+  }
+
   string name = 1;
   optional string note = 2;
   optional string security = 3;
@@ -199,6 +206,9 @@ message PInvestmentPlan {
   int64 amount = 10;
   int64 fees = 11;
   repeated string transactions = 12; // uuids
+
+  int64 taxes = 13;
+  Type type = 14;
 }
 
 message PTaxonomy {

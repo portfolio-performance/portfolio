@@ -24,6 +24,7 @@ private static final long serialVersionUID = 0L;
     attributes_ = java.util.Collections.emptyList();
     transactions_ =
         com.google.protobuf.LazyStringArrayList.emptyList();
+    type_ = 0;
   }
 
   @java.lang.Override
@@ -44,6 +45,132 @@ private static final long serialVersionUID = 0L;
     return name.abuchen.portfolio.model.proto.v1.ClientProtos.internal_static_name_abuchen_portfolio_PInvestmentPlan_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
             name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.class, name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Builder.class);
+  }
+
+  /**
+   * Protobuf enum {@code name.abuchen.portfolio.PInvestmentPlan.Type}
+   */
+  public enum Type
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>PURCHASE_OR_DELIVERY = 0;</code>
+     */
+    PURCHASE_OR_DELIVERY(0),
+    /**
+     * <code>DEPOSIT = 1;</code>
+     */
+    DEPOSIT(1),
+    /**
+     * <code>REMOVAL = 2;</code>
+     */
+    REMOVAL(2),
+    /**
+     * <code>INTEREST = 3;</code>
+     */
+    INTEREST(3),
+    UNRECOGNIZED(-1),
+    ;
+
+    /**
+     * <code>PURCHASE_OR_DELIVERY = 0;</code>
+     */
+    public static final int PURCHASE_OR_DELIVERY_VALUE = 0;
+    /**
+     * <code>DEPOSIT = 1;</code>
+     */
+    public static final int DEPOSIT_VALUE = 1;
+    /**
+     * <code>REMOVAL = 2;</code>
+     */
+    public static final int REMOVAL_VALUE = 2;
+    /**
+     * <code>INTEREST = 3;</code>
+     */
+    public static final int INTEREST_VALUE = 3;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static Type valueOf(int value) {
+      return forNumber(value);
+    }
+
+    /**
+     * @param value The numeric wire value of the corresponding enum entry.
+     * @return The enum associated with the given numeric wire value.
+     */
+    public static Type forNumber(int value) {
+      switch (value) {
+        case 0: return PURCHASE_OR_DELIVERY;
+        case 1: return DEPOSIT;
+        case 2: return REMOVAL;
+        case 3: return INTEREST;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<Type>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        Type> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<Type>() {
+            public Type findValueByNumber(int number) {
+              return Type.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalStateException(
+            "Can't get the descriptor of an unrecognized enum value.");
+      }
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.getDescriptor().getEnumTypes().get(0);
+    }
+
+    private static final Type[] VALUES = values();
+
+    public static Type valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private Type(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:name.abuchen.portfolio.PInvestmentPlan.Type)
   }
 
   private int bitField0_;
@@ -423,6 +550,35 @@ private static final long serialVersionUID = 0L;
     return transactions_.getByteString(index);
   }
 
+  public static final int TAXES_FIELD_NUMBER = 13;
+  private long taxes_ = 0L;
+  /**
+   * <code>int64 taxes = 13;</code>
+   * @return The taxes.
+   */
+  @java.lang.Override
+  public long getTaxes() {
+    return taxes_;
+  }
+
+  public static final int TYPE_FIELD_NUMBER = 14;
+  private int type_ = 0;
+  /**
+   * <code>.name.abuchen.portfolio.PInvestmentPlan.Type type = 14;</code>
+   * @return The enum numeric value on the wire for type.
+   */
+  @java.lang.Override public int getTypeValue() {
+    return type_;
+  }
+  /**
+   * <code>.name.abuchen.portfolio.PInvestmentPlan.Type type = 14;</code>
+   * @return The type.
+   */
+  @java.lang.Override public name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Type getType() {
+    name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Type result = name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Type.forNumber(type_);
+    return result == null ? name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Type.UNRECOGNIZED : result;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -472,6 +628,12 @@ private static final long serialVersionUID = 0L;
     }
     for (int i = 0; i < transactions_.size(); i++) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 12, transactions_.getRaw(i));
+    }
+    if (taxes_ != 0L) {
+      output.writeInt64(13, taxes_);
+    }
+    if (type_ != name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Type.PURCHASE_OR_DELIVERY.getNumber()) {
+      output.writeEnum(14, type_);
     }
     getUnknownFields().writeTo(output);
   }
@@ -529,6 +691,14 @@ private static final long serialVersionUID = 0L;
       size += dataSize;
       size += 1 * getTransactionsList().size();
     }
+    if (taxes_ != 0L) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt64Size(13, taxes_);
+    }
+    if (type_ != name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Type.PURCHASE_OR_DELIVERY.getNumber()) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeEnumSize(14, type_);
+    }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
@@ -580,6 +750,9 @@ private static final long serialVersionUID = 0L;
         != other.getFees()) return false;
     if (!getTransactionsList()
         .equals(other.getTransactionsList())) return false;
+    if (getTaxes()
+        != other.getTaxes()) return false;
+    if (type_ != other.type_) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -631,6 +804,11 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + TRANSACTIONS_FIELD_NUMBER;
       hash = (53 * hash) + getTransactionsList().hashCode();
     }
+    hash = (37 * hash) + TAXES_FIELD_NUMBER;
+    hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+        getTaxes());
+    hash = (37 * hash) + TYPE_FIELD_NUMBER;
+    hash = (53 * hash) + type_;
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -779,6 +957,8 @@ private static final long serialVersionUID = 0L;
       fees_ = 0L;
       transactions_ =
           com.google.protobuf.LazyStringArrayList.emptyList();
+      taxes_ = 0L;
+      type_ = 0;
       return this;
     }
 
@@ -863,6 +1043,12 @@ private static final long serialVersionUID = 0L;
       if (((from_bitField0_ & 0x00000800) != 0)) {
         transactions_.makeImmutable();
         result.transactions_ = transactions_;
+      }
+      if (((from_bitField0_ & 0x00001000) != 0)) {
+        result.taxes_ = taxes_;
+      }
+      if (((from_bitField0_ & 0x00002000) != 0)) {
+        result.type_ = type_;
       }
       result.bitField0_ |= to_bitField0_;
     }
@@ -954,6 +1140,12 @@ private static final long serialVersionUID = 0L;
           transactions_.addAll(other.transactions_);
         }
         onChanged();
+      }
+      if (other.getTaxes() != 0L) {
+        setTaxes(other.getTaxes());
+      }
+      if (other.type_ != 0) {
+        setTypeValue(other.getTypeValue());
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -1050,6 +1242,16 @@ private static final long serialVersionUID = 0L;
               transactions_.add(s);
               break;
             } // case 98
+            case 104: {
+              taxes_ = input.readInt64();
+              bitField0_ |= 0x00001000;
+              break;
+            } // case 104
+            case 112: {
+              type_ = input.readEnum();
+              bitField0_ |= 0x00002000;
+              break;
+            } // case 112
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -1998,6 +2200,91 @@ private static final long serialVersionUID = 0L;
       ensureTransactionsIsMutable();
       transactions_.add(value);
       bitField0_ |= 0x00000800;
+      onChanged();
+      return this;
+    }
+
+    private long taxes_ ;
+    /**
+     * <code>int64 taxes = 13;</code>
+     * @return The taxes.
+     */
+    @java.lang.Override
+    public long getTaxes() {
+      return taxes_;
+    }
+    /**
+     * <code>int64 taxes = 13;</code>
+     * @param value The taxes to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTaxes(long value) {
+
+      taxes_ = value;
+      bitField0_ |= 0x00001000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>int64 taxes = 13;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearTaxes() {
+      bitField0_ = (bitField0_ & ~0x00001000);
+      taxes_ = 0L;
+      onChanged();
+      return this;
+    }
+
+    private int type_ = 0;
+    /**
+     * <code>.name.abuchen.portfolio.PInvestmentPlan.Type type = 14;</code>
+     * @return The enum numeric value on the wire for type.
+     */
+    @java.lang.Override public int getTypeValue() {
+      return type_;
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PInvestmentPlan.Type type = 14;</code>
+     * @param value The enum numeric value on the wire for type to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTypeValue(int value) {
+      type_ = value;
+      bitField0_ |= 0x00002000;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PInvestmentPlan.Type type = 14;</code>
+     * @return The type.
+     */
+    @java.lang.Override
+    public name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Type getType() {
+      name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Type result = name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Type.forNumber(type_);
+      return result == null ? name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Type.UNRECOGNIZED : result;
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PInvestmentPlan.Type type = 14;</code>
+     * @param value The type to set.
+     * @return This builder for chaining.
+     */
+    public Builder setType(name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Type value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      bitField0_ |= 0x00002000;
+      type_ = value.getNumber();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.name.abuchen.portfolio.PInvestmentPlan.Type type = 14;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearType() {
+      bitField0_ = (bitField0_ & ~0x00002000);
+      type_ = 0;
       onChanged();
       return this;
     }

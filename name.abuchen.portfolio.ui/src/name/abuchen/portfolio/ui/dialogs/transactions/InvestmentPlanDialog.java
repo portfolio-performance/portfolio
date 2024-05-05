@@ -92,7 +92,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         ComboInput securities = null;
         ComboInput portfolio = null;
-        if (planType == Type.BUY_OR_DELIVERY)
+        if (planType == Type.PURCHASE_OR_DELIVERY)
         {
             portfolio = new ComboInput(editArea, Messages.ColumnPortfolio);
             List<Portfolio> portfolios = including(client.getActivePortfolios(), model().getPortfolio());
@@ -109,7 +109,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         ComboInput account = new ComboInput(editArea, Messages.ColumnAccount);
         List<Account> accounts = including(client.getActiveAccounts(), model().getAccount());
-        if (planType == Type.BUY_OR_DELIVERY)
+        if (planType == Type.PURCHASE_OR_DELIVERY)
             accounts = including(accounts, InvestmentPlanModel.DELIVERY);
         account.value.setInput(accounts);
         account.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
@@ -160,10 +160,20 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         amount.bindValue(Properties.amount.name(), Messages.ColumnAmount, Values.Amount, true);
         amount.bindCurrency(Properties.transactionCurrencyCode.name());
 
+        // taxes
+
+        Input taxes = null;
+        if (planType == Type.INTEREST)
+        {
+            taxes = new Input(editArea, Messages.ColumnTaxes);
+            taxes.bindValue(Properties.taxes.name(), Messages.ColumnTaxes, Values.Amount, false);
+            taxes.bindCurrency(Properties.transactionCurrencyCode.name());
+        }
+
         // fees
 
         Input fees = null;
-        if (planType == Type.BUY_OR_DELIVERY)
+        if (planType == Type.PURCHASE_OR_DELIVERY)
         {
             fees = new Input(editArea, Messages.ColumnFees);
             fees.bindValue(Properties.fees.name(), Messages.ColumnAmount, Values.Amount, false);
@@ -195,7 +205,12 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         if (fees != null)
         {
-            factory.thenBelow(fees.value).width(amountWidth).label(fees.label).suffix(fees.currency, currencyWidth); //
+            factory.thenBelow(fees.value).width(amountWidth).label(fees.label).suffix(fees.currency, currencyWidth);
+        }
+
+        if (taxes != null)
+        {
+            factory.thenBelow(taxes.value).width(amountWidth).label(taxes.label).suffix(taxes.currency, currencyWidth);
         }
 
         startingWith(labelAutoGenerate).thenLeft(buttonAutoGenerate);
@@ -207,7 +222,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         int widest = widest(lblName, securities != null ? securities.label : null,
                         portfolio != null ? portfolio.label : null, account.label, lblDate, interval.label,
-                        amount.label, fees != null ? fees.label : null);
+                        amount.label, fees != null ? fees.label : null, taxes != null ? taxes.label : null);
         startingWith(lblName).width(widest);
 
         WarningMessages warnings = new WarningMessages(this);

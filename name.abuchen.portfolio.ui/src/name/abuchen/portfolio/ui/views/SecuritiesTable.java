@@ -1109,7 +1109,7 @@ public final class SecuritiesTable implements ModificationListener
 
         new OpenDialogAction(view, Messages.InvestmentPlanMenuCreate) //
                         .type(InvestmentPlanDialog.class) //
-                        .parameters(InvestmentPlan.Type.BUY_OR_DELIVERY) //
+                        .parameters(InvestmentPlan.Type.PURCHASE_OR_DELIVERY) //
                         .with(security) //
                         .addTo(manager);
 

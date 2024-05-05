@@ -43,6 +43,7 @@ public class InvestmentPlanModelTest
         investmentPlan.setStart(LocalDateTime.parse("2022-03-29T00:00:00"));
         investmentPlan.setAccount(new Account("Test Account"));
         investmentPlan.setAmount(-100L);
+        investmentPlan.setType(InvestmentPlan.Type.REMOVAL);
 
         InvestmentPlanModel model = new InvestmentPlanModel(new Client(), InvestmentPlan.Type.REMOVAL);
         model.setSource(investmentPlan);

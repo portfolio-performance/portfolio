@@ -181,4 +181,21 @@ public interface PInvestmentPlanOrBuilder extends
    */
   com.google.protobuf.ByteString
       getTransactionsBytes(int index);
+
+  /**
+   * <code>int64 taxes = 13;</code>
+   * @return The taxes.
+   */
+  long getTaxes();
+
+  /**
+   * <code>.name.abuchen.portfolio.PInvestmentPlan.Type type = 14;</code>
+   * @return The enum numeric value on the wire for type.
+   */
+  int getTypeValue();
+  /**
+   * <code>.name.abuchen.portfolio.PInvestmentPlan.Type type = 14;</code>
+   * @return The type.
+   */
+  name.abuchen.portfolio.model.proto.v1.PInvestmentPlan.Type getType();
 }

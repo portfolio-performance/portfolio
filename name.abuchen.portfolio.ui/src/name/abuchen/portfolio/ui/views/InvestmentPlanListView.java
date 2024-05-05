@@ -112,13 +112,16 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
 
             manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeBuyDelivery) //
                             .type(InvestmentPlanDialog.class) //
-                            .parameters(InvestmentPlan.Type.BUY_OR_DELIVERY));
+                            .parameters(InvestmentPlan.Type.PURCHASE_OR_DELIVERY));
             manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeDeposit) //
                             .type(InvestmentPlanDialog.class) //
                             .parameters(InvestmentPlan.Type.DEPOSIT));
             manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeRemoval) //
                             .type(InvestmentPlanDialog.class) //
                             .parameters(InvestmentPlan.Type.REMOVAL));
+            manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeInterest) //
+                            .type(InvestmentPlanDialog.class) //
+                            .parameters(InvestmentPlan.Type.INTEREST));
         }));
     }
 
@@ -206,8 +209,12 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
                 {
                     if (plan.getPlanType() == Type.DEPOSIT)
                         return Messages.InvestmentPlanOptionDeposit;
-                    else
+                    else if (plan.getPlanType() == Type.REMOVAL)
                         return Messages.InvestmentPlanOptionRemoval;
+                    else if (plan.getPlanType() == Type.INTEREST)
+                        return Messages.InvestmentPlanOptionInterest;
+
+                    return Messages.LabelError;
                 }
             }
 
@@ -295,10 +302,23 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
             public String getText(Object e)
             {
                 InvestmentPlan plan = (InvestmentPlan) e;
-                return Values.Money.format(Money.of(plan.getCurrencyCode(), plan.getFees()));
+                return Values.Money.formatNonZero(Money.of(plan.getCurrencyCode(), plan.getFees()));
             }
         });
         ColumnViewerSorter.create(InvestmentPlan.class, "fees").attachTo(column); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                InvestmentPlan plan = (InvestmentPlan) e;
+                return Values.Money.formatNonZero(Money.of(plan.getCurrencyCode(), plan.getTaxes()));
+            }
+        });
+        ColumnViewerSorter.create(InvestmentPlan.class, "taxes").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAutoGenerate, SWT.LEFT, 80);

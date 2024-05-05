@@ -833,10 +833,12 @@ public class ClientFactory
                 // remove securities in watchlists which are not present in "all
                 // securities", see #3452
                 removeWronglyAddedSecurities(client);
-            case 58:
+            case 58: // NOSONAR
                 fixDataSeriesLabelForAccumulatedTaxes(client);
-            case 59:
+            case 59: // NOSONAR
                 fixNullSecurityProperties(client);
+            case 60: // NOSONAR
+                addInvestmentPlanTypes(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1568,6 +1570,21 @@ public class ClientFactory
                 {
                     security.removeProperty(null);
                 }
+            }
+        }
+    }
+
+    private static void addInvestmentPlanTypes(Client client)
+    {
+        for (InvestmentPlan plan : client.getPlans())
+        {
+            if (plan.getPortfolio() != null)
+            {
+                plan.setType(InvestmentPlan.Type.PURCHASE_OR_DELIVERY);
+            }
+            else
+            {
+                plan.setType(plan.getAmount() >= 0 ? InvestmentPlan.Type.DEPOSIT : InvestmentPlan.Type.REMOVAL);
             }
         }
     }
