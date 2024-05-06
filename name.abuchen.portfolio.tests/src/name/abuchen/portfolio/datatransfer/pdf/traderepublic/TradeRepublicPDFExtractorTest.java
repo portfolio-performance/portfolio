@@ -581,8 +581,8 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
-        assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
@@ -592,8 +592,8 @@ public class TradeRepublicPDFExtractorTest
                         hasName("MUL Amundi MSCI AC World UCITS ETF Inh.Anteile Acc"), //
                         hasCurrencyCode("EUR"))));
 
-        // check delivery inbound (Einlieferung) transaction
-        assertThat(results, hasItem(inboundDelivery( //
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
                         hasDate("2024-03-04T00:00"), hasShares(0.032743), //
                         hasSource("Kauf13.txt"), //
                         hasNote("Ausführung: 5437-f7f5 | Saveback: B2C4-n64q"), //
@@ -643,8 +643,8 @@ public class TradeRepublicPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
-        assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
@@ -654,8 +654,8 @@ public class TradeRepublicPDFExtractorTest
                         hasName("AIS-Amundi NASDAQ-100 Namens-Anteile C Cap.EUR o.N."), //
                         hasCurrencyCode("EUR"))));
 
-        // check delivery inbound (Einlieferung) transaction
-        assertThat(results, hasItem(inboundDelivery( //
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
                         hasDate("2024-05-02T00:00"), hasShares(0.016033), //
                         hasSource("Kauf15.txt"), //
                         hasNote("Execution: ab98-f9b9 | Saveback: 3765-0e2e"), //
