@@ -54,6 +54,11 @@ public class HoldingsPieChartSWT implements IPieChart
         id2nodeData = new HashMap<>();
     }
 
+    public HoldingsPieChartSWT()
+    {
+        id2nodeData = new HashMap<>();
+    }
+
     @Override
     public Control createControl(Composite parent)
     {
@@ -70,11 +75,24 @@ public class HoldingsPieChartSWT implements IPieChart
 
             NodeData nodeData = id2nodeData.get(currentNode.getId());
 
-            if (nodeData == null)
+            if (nodeData == null) // center of the Pie Chart
             {
                 Label assetLabel = new Label(data, SWT.NONE);
+                GridDataFactory.fillDefaults().span(2, 1).applyTo(assetLabel);
                 assetLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
-                assetLabel.setText(currentNode.getId());
+                if (financeView != null) // from view : Statement of Assets
+                {
+                    assetLabel.setText(currentNode.getId());
+                }
+                else // from pane = single portfolio information pane
+                {
+                    assetLabel.setText(snapshot.getPortfolios().get(0).getPortfolio().getName());
+                }
+
+                Label info = new Label(data, SWT.NONE);
+                GridDataFactory.fillDefaults().span(2, 1).applyTo(info);
+                info.setText(Values.Money.format(snapshot.getMonetaryAssets()));
+
             }
             else
             {
@@ -93,14 +111,20 @@ public class HoldingsPieChartSWT implements IPieChart
         });
 
         // Listen on mouse clicks to update information pane
-        ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp,
-                        event -> chart.getNodeAt(event.x, event.y).ifPresent(node -> {
-                            NodeData nodeData = id2nodeData.get(node.getId());
-                            if (nodeData != null)
-                                financeView.setInformationPaneInput(nodeData.position.getInvestmentVehicle());
-                        }));
+        if (financeView != null)
+        {
+            ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp,
+                            event -> chart.getNodeAt(event.x, event.y).ifPresent(node -> {
+                                NodeData nodeData = id2nodeData.get(node.getId());
+                                if (nodeData != null)
+                                    financeView.setInformationPaneInput(nodeData.position.getInvestmentVehicle());
+                            }));
+        }
 
-        updateChart();
+        if (snapshot != null)
+        {
+            updateChart();
+        }
 
         return chart;
     }

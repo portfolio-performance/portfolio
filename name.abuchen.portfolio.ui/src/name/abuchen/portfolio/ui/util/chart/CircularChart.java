@@ -192,7 +192,8 @@ public class CircularChart extends Chart
             Point start = getPixelCoordinate(xAxis, yAxis, (level - 1), angleBounds.x);
             Point end = getPixelCoordinate(xAxis, yAxis, (level - 1), angleBounds.x + angleBounds.y);
             int size = (int) Math.sqrt(Math.pow((end.x - start.x), 2) + Math.pow((end.y - start.y), 2));
-            if (size < textSize.y - 6)
+
+            if ((size < textSize.y - 6) && (angleBounds.y < 350))
                 return;
 
             Font oldFont = gc.getFont();
@@ -242,7 +243,8 @@ public class CircularChart extends Chart
 
             Point start = getPixelCoordinate(xAxis, yAxis, (level - 1), angleBounds.x);
             Point end = getPixelCoordinate(xAxis, yAxis, (level - 1), angleBounds.x + angleBounds.y);
-            if (Math.abs(start.y - end.y) < 4)
+
+            if ((Math.abs(start.y - end.y) < 4) && (angleBounds.y < 350))
                 return;
 
             Point point = getPixelCoordinate(xAxis, yAxis, level * 1.03, angle);
