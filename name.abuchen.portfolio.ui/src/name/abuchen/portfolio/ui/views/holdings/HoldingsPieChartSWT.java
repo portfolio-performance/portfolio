@@ -29,6 +29,7 @@ import name.abuchen.portfolio.ui.util.chart.CircularChart;
 import name.abuchen.portfolio.ui.util.chart.CircularChart.RenderLabelsCenteredInPie;
 import name.abuchen.portfolio.ui.util.chart.CircularChart.RenderLabelsOutsidePie;
 import name.abuchen.portfolio.ui.views.IPieChart;
+import name.abuchen.portfolio.ui.views.panes.PortfolioHoldingsPane;
 
 public class HoldingsPieChartSWT implements IPieChart
 {
@@ -37,6 +38,7 @@ public class HoldingsPieChartSWT implements IPieChart
     private AbstractFinanceView financeView;
     private List<String> lastLabels;
     private Map<String, NodeData> id2nodeData;
+    private PortfolioHoldingsPane pane;
 
     private class NodeData
     {
@@ -51,6 +53,12 @@ public class HoldingsPieChartSWT implements IPieChart
     {
         this.snapshot = snapshot;
         this.financeView = view;
+        id2nodeData = new HashMap<>();
+    }
+
+    public HoldingsPieChartSWT(PortfolioHoldingsPane pane)
+    {
+        this.pane = pane;
         id2nodeData = new HashMap<>();
     }
 
@@ -93,15 +101,17 @@ public class HoldingsPieChartSWT implements IPieChart
         });
 
         // Listen on mouse clicks to update information pane
-        ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp,
+        if (financeView != null)
+        {
+            ((Composite) chart.getPlotArea()).addListener(SWT.MouseUp,
                         event -> chart.getNodeAt(event.x, event.y).ifPresent(node -> {
                             NodeData nodeData = id2nodeData.get(node.getId());
                             if (nodeData != null)
                                 financeView.setInformationPaneInput(nodeData.position.getInvestmentVehicle());
                         }));
 
-        updateChart();
-
+         updateChart();
+        }
         return chart;
     }
 

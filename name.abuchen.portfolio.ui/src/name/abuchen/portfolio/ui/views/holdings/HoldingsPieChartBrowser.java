@@ -15,6 +15,7 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser.ItemSelectedFunction;
 import name.abuchen.portfolio.ui.views.IPieChart;
+import name.abuchen.portfolio.ui.views.panes.PortfolioHoldingsPane;
 import name.abuchen.portfolio.util.ColorConversion;
 
 public class HoldingsPieChartBrowser implements IPieChart
@@ -22,7 +23,7 @@ public class HoldingsPieChartBrowser implements IPieChart
     private EmbeddedBrowser browser;
     private ClientSnapshot snapshot;
     private AbstractFinanceView view;
-
+    private PortfolioHoldingsPane pane;
 
     public HoldingsPieChartBrowser(EmbeddedBrowser browser, ClientSnapshot snapshot, AbstractFinanceView view)
     {
@@ -32,17 +33,31 @@ public class HoldingsPieChartBrowser implements IPieChart
         this.view = view;
     }
 
+    public HoldingsPieChartBrowser(EmbeddedBrowser browser, PortfolioHoldingsPane pane)
+    {
+        this.browser = browser;
+        this.browser.setHtmlpage("/META-INF/html/pie.html"); //$NON-NLS-1$
+        this.pane = pane;
+    }
+
     @Override
     public Control createControl(Composite parent)
     {
-        return browser.createControl(parent, LoadDataFunction::new,
-            b -> new ItemSelectedFunction(b, uuid -> snapshot.getAssetPositions()
+        if (view != null) // called from View
+        {
+            return browser.createControl(parent, LoadDataFunction::new,
+                            b -> new ItemSelectedFunction(b, uuid -> snapshot.getAssetPositions()
                 .filter(p -> uuid.equals(p.getInvestmentVehicle().getUUID())).findAny()
-                .ifPresent(p -> view.setInformationPaneInput(p.getInvestmentVehicle()))
-            )
-        );
+                .ifPresent(p -> view.setInformationPaneInput(p.getInvestmentVehicle()))));
+        }
+        else // then called from Pane
+        {
+            return browser.createControl(parent, LoadDataFunction::new,
+                            b -> new ItemSelectedFunction(b, uuid -> snapshot.getAssetPositions()
+                                .filter(p -> uuid.equals(p.getInvestmentVehicle().getUUID())).findAny()
+                                .ifPresent(p -> pane.setInput(p.getInvestmentVehicle()))));
+        }
     }
-
     @Override
     public void refresh(ClientSnapshot snapshot)
     {

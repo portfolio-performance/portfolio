@@ -1262,6 +1262,7 @@ public class Messages extends NLS
     public static String SystemMenuCheckForUpdates;
     public static String SystemMenuNewAndNoteworthy;
     public static String TabAccountBalanceChart;
+    public static String TabPortfolioHoldingsChart;
     public static String TabTransactions;
     public static String TitlePasswordDialog;
     public static String TooltipAllTimeHigh;
