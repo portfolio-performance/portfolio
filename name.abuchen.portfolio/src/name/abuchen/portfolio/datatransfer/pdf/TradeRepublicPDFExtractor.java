@@ -1417,7 +1417,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "note", "amount", "currency", "amountAfter", "currencyAfter") //
-                                                        .match("^(?<date>[\\d]{2} [\\w]{3,4}([\\.]{1})?)[\\s]$")
+                                                        .match("^(?<date>[\\d]{2} [\\w]{3,4}([\\.]{1})?)[\\s]$") //
                                                         .match("^(?<year>[\\d]{4}) Kartentransaktion (?<note>.*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .assign((t, v) -> {
                                                             DocumentContext context = type.getCurrentContext();
@@ -1447,9 +1447,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\w]{3,4}([\\.]{1})?)[\\s]$")
-                                                        .match("^(?<year>[\\d]{4}) .berweisung$")
-                                                        .match("^Einzahlung akzeptiert: .*$")
+                                                        .match("^(?<date>[\\d]{2} [\\w]{3,4}([\\.]{1})?)[\\s]$") //
+                                                        .match("^(?<year>[\\d]{4}) .berweisung$") //
+                                                        .match("^Einzahlung akzeptiert: .*$") //
                                                         .match("^.* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
@@ -1459,11 +1459,17 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // 02 Okt.
                                         // 2023 Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf DE00000000000000000000 1.200,00 € 5.427,30 €
+                                        //
+                                        // 02 Mai
+                                        // 2024 Prämie Your Saveback payment 4,94 € 18.524,98 €
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\w]{3,4}([\\.]{1})?)[\\s]$")
-                                                        .match("^(?<year>[\\d]{4}) .berweisung Einzahlung akzeptiert:.* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$")
+                                                        .match("^(?<date>[\\d]{2} [\\w]{3,4}([\\.]{1})?)[\\s]$") //
+                                                        .match("^(?<year>[\\d]{4}) " //
+                                                                        + "(.berweisung Einzahlung akzeptiert:"
+                                                                        + "|Pr.mie Your Saveback)" //
+                                                                        + ".* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));

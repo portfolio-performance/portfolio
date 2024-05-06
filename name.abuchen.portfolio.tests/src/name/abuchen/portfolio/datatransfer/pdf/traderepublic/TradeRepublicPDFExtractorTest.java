@@ -1518,6 +1518,47 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug09()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-05-01"), hasAmount("EUR", 58.71), //
+                        hasSource("Kontoauszug09.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-05-01"), hasAmount("EUR", 69.99), //
+                        hasSource("Kontoauszug09.txt"), hasNote("DETLEV LOUIS MOTORRAD"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-05-02"), hasAmount("EUR", 5.00), //
+                        hasSource("Kontoauszug09.txt"), hasNote("PAYPAL *VODAFONE"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-05-02"), hasAmount("EUR", 4.94), //
+                        hasSource("Kontoauszug09.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-05-03"), hasAmount("EUR", 40.31), //
+                        hasSource("Kontoauszug09.txt"), hasNote("Lidl sagt Danke"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-05-03"), hasAmount("EUR", 4.00), //
+                        hasSource("Kontoauszug09.txt"), hasNote("TooGoodT"))));
+    }
+
+    @Test
     public void testSteuerabrechnung01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
