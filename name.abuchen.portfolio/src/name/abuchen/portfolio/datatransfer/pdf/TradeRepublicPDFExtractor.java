@@ -39,7 +39,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addBuySellCryptoTransaction();
         addDividendeTransaction();
         addAdvanceTaxTransaction();
-        addDeliveryInOutBoundTransaction();
         addAccountStatementTransaction_Format01();
         addAccountStatementTransaction_Format02();
         addTaxesStatementTransaction();
@@ -68,10 +67,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|REGOLAMENTO TITOLI"
                         + "|ZWANGS.BERNAHME"
                         + "|TILGUNG)", //
-                        "(WERTPAPIERABRECHNUNG SAVEBACK" //
-                        + "|SECURITIES SETTLEMENT SAVEBACK" //
-                        + "|ABRECHNUNG CRYPTOGESCH.FT" //
-                        + "|CRYPTO SPARPLAN)");
+                        "(ABRECHNUNG CRYPTOGESCH.FT|CRYPTO SPARPLAN)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -242,17 +238,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Sparplanausführung am 18.11.2019 an der Lang & Schwarz Exchange.
                                         // Savings plan execution on 16.05.2023 on the Lang & Schwarz Exchange.
+                                        // Saveback execution on 02.05.2024 on the Lang & Schwarz Exchange.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^(Sparplanausf.hrung|Savings plan execution) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
+                                                        .match("^(Sparplanausf.hrung|(Savings plan|Saveback) execution) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Ausführung von Round up am 09.02.2024 an der Lang & Schwarz Exchange.
+                                        // Ausführung von Saveback am 04.03.2024 an der Lang & Schwarz Exchange.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Ausf.hrung von Round up .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
+                                                        .match("^Ausf.hrung von (Round up|Saveback) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))),
                                         // @formatter:off
                                         // This is for the reinvestment of dividends
@@ -458,6 +456,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setNote("Ordine: " + trim(v.get("note")))))
 
                         .optionalOneOf( //
+                                        // @formatter:off
+                                        // SAVEBACK B2C4-n64q
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^SAVEBACK (?<note>.*\\-.*)$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Saveback: "))),
                                         // @formatter:off
                                         // SPARPLAN y646-a753
                                         // @formatter:on
@@ -1191,153 +1196,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                             return item;
                         });
-    }
-
-    private void addDeliveryInOutBoundTransaction()
-    {
-        DocumentType type = new DocumentType("(WERTPAPIERABRECHNUNG SAVEBACK" //
-                        + "|SECURITIES SETTLEMENT SAVEBACK)");
-        this.addDocumentTyp(type);
-
-        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
-
-        Block firstRelevantLine = new Block("^TRADE REPUBLIC BANK GMBH .*$");
-        type.addBlock(firstRelevantLine);
-        firstRelevantLine.set(pdfTransaction);
-
-        pdfTransaction //
-
-                        .subject(() -> {
-                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
-                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                            return portfolioTransaction;
-                        })
-
-                        .oneOf( //
-                                        // @formatter:off
-                                        // MUL Amundi MSCI AC World 0,032743 Stk. 420,85 EUR 13,78 EUR
-                                        // UCITS ETF Inh.Anteile Acc
-                                        // ISIN: LU1829220216
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("name", "currency", "isin", "nameContinued") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
-                                                        .match("^(?<nameContinued>.*)$") //
-                                                        .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
-
-                        .oneOf( //
-                                        // @formatter:off
-                                        // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
-                                        // Tencent Holdings Ltd. 0,3773 titre(s) 53,00 EUR 20,00 EUR
-                                        // zjBAM Corp. 125 Pz. 29,75 EUR 3.718,75 EUR
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("shares") //
-                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|titre\\(s\\)|Pz\\.) .*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
-                                        // @formatter:off
-                                        // Berkshire Hathaway Inc. 0.3367 Pcs. 297.00 EUR 100.00 EUR
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("shares") //
-                                                        .match("^.* (?<shares>[\\.,\\d]+) Pcs\\. .*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))))
-
-                        .oneOf( //
-                                        // @formatter:off
-                                        // Saveback execution on 02.05.2024 on the Lang & Schwarz Exchange.
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date") //
-                                                        .match("^Saveback execution .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
-                                        // @formatter:off
-                                        // Ausführung von Saveback am 04.03.2024 an der Lang & Schwarz Exchange.
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date") //
-                                                        .match("^Ausf.hrung von Saveback .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
-
-                        // @formatter:off
-                        // GESAMT 13,78 EUR
-                        // @formatter:on
-                        .section("amount", "currency") //
-                        .match("^(GESAMT|TOTAL|TOTALE|) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        .optionalOneOf( //
-                                        // @formatter:off
-                                        // 1 Barausgleich 108,46 NOK
-                                        // Zwischensumme 11,370137 EUR/NOK 9,54 EUR
-                                        // @formatter:on
-                                        section -> section
-                                                .attributes("exchangeRate", "baseCurrency", "termCurrency", "gross")
-                                                .match("^Zwischensumme (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+) [\\w]{3}$")
-                                                .assign((t, v) -> {
-                                                    ExtrExchangeRate rate = asExchangeRate(v);
-                                                    type.getCurrentContext().putType(rate);
-
-                                                    Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                    Money fxGross = rate.convert(rate.getTermCurrency(), gross);
-
-                                                    checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                                }))
-
-                        .optionalOneOf( //
-                                        // @formatter:off
-                                        // D 12345 Stadt ORDER dead-beef
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("note") //
-                                                        .match("^.*ORDER (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote("Order: " + trim(v.get("note")))),
-                                        // @formatter:off
-                                        // 23537 DCrFCrYea AUSFÜHRUNG 5437-f7f5
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("note") //
-                                                        .match("^.*AUSF.HRUNG (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote("Ausführung: " + trim(v.get("note")))),
-                                        // @formatter:off
-                                        // [ZIP CODE] [CITY] EXÉCUTION cee1-2d00
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("note") //
-                                                        .match("^.*EXÉCUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote("Exécution : " + trim(v.get("note")))),
-                                        // @formatter:off
-                                        // 131 56 rwMMPGwX EXECUTION d008-0f58
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("note") //
-                                                        .match("^.*EXECUTION (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote("Execution: " + trim(v.get("note")))),
-                                        // @formatter:off
-                                        // 51670 cyuzKxpHr ORDINE cY43-6m6l
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("note") //
-                                                        .match("^.*ORDINE (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote("Ordine: " + trim(v.get("note")))))
-
-                        .optionalOneOf( //
-                                        // @formatter:off
-                                        // SAVEBACK B2C4-n64q
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("note") //
-                                                        .match("^SAVEBACK (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Saveback: "))))
-
-                        .wrap(TransactionItem::new);
-
-        addTaxesSectionsTransaction(pdfTransaction, type);
-        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addAccountStatementTransaction_Format01()
