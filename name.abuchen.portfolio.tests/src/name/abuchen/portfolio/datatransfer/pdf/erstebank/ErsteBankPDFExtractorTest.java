@@ -18,6 +18,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -89,7 +90,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-09-23T09:02:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(105)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3217.22))));
@@ -133,7 +134,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-10-05T12:39:27")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1584.19))));
@@ -177,16 +178,16 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-07-21T18:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.363)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.96))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(96.42))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(98.19))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.77 + 1.77))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.77))));
     }
 
     @Test
@@ -221,7 +222,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-11-23T18:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.004)));
         assertThat(entry.getSource(), is("Kauf04.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.97))));
@@ -265,7 +266,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-05-28T15:41:42")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(90)));
         assertThat(entry.getSource(), is("Kauf05.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1142.19))));
@@ -309,7 +310,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-11-20T16:28:24")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(90)));
         assertThat(entry.getSource(), is("Kauf06.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-2"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1049.40))));
@@ -353,7 +354,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-03-06T16:57:08")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
         assertThat(entry.getSource(), is("Kauf07.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(397.50))));
@@ -397,7 +398,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-12-23T16:18:07")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.671)));
         assertThat(entry.getSource(), is("Kauf08.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.82))));
@@ -441,7 +442,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-12-03T16:42:22")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(35)));
         assertThat(entry.getSource(), is("Kauf09.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1397.90))));
@@ -486,7 +487,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2009-12-03T16:42:22")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(35)));
         assertThat(entry.getSource(), is("Kauf09.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1397.90))));
@@ -536,20 +537,20 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-12-22T18:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12.536)));
         assertThat(entry.getSource(), is("Kauf10.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(149.94))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(142.27))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(146.44))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((0.44 / 1.2169) + 3.81 + (4.26 / 1.2169)))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.26 / 1.2169))));
 
         Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(173.13))));
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(178.20))));
     }
 
     @Test
@@ -581,16 +582,16 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-12-22T18:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12.536)));
         assertThat(entry.getSource(), is("Kauf10.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(149.94))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(142.27))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(146.44))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((0.44 / 1.2169) + 3.81 + (4.26 / 1.2169)))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.26 / 1.2169))));
 
         CheckCurrenciesAction c = new CheckCurrenciesAction();
         Account account = new Account();
@@ -631,20 +632,20 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-08-20T18:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11.787)));
         assertThat(entry.getSource(), is("Kauf11.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(149.87))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(141.92))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(146.09))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((0.41 / 1.1229) + 3.81 + (4.24 / 1.1229)))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.24 / 1.1229))));
 
         Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(159.36))));
+        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(163.60))));
     }
 
     @Test
@@ -676,16 +677,16 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-08-20T18:00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11.787)));
         assertThat(entry.getSource(), is("Kauf11.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(149.87))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(141.92))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(146.09))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((0.41 / 1.1229) + 3.81 + (4.24 / 1.1229)))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.24 / 1.1229))));
 
         CheckCurrenciesAction c = new CheckCurrenciesAction();
         Account account = new Account();
@@ -726,7 +727,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-03-25T09:15:13")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(45)));
         assertThat(entry.getSource(), is("Kauf12.txt"));
-        assertThat(entry.getNote(), is("Limit: Bestens"));
+        assertThat(entry.getNote(), is("Ref.-Nr.: XXXXXXXX | Limit: Bestens"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(866.05))));
@@ -770,7 +771,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-09-08T14:10:34")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
         assertThat(entry.getSource(), is("Kauf13.txt"));
-        assertThat(entry.getNote(), is("Limit: Bestens"));
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12003580 | Limit: Bestens"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1717.38))));
@@ -814,7 +815,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-09-08T18:32:23")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
         assertThat(entry.getSource(), is("Kauf14.txt"));
-        assertThat(entry.getNote(), is("Limit: Bestens"));
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12003586 | Limit: Bestens"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(750.95))));
@@ -859,7 +860,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-09-08T18:32:23")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
         assertThat(entry.getSource(), is("Kauf14.txt"));
-        assertThat(entry.getNote(), is("Limit: Bestens"));
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12003586 | Limit: Bestens"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(750.95))));
@@ -909,7 +910,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2023-01-16T09:31:02")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(500)));
         assertThat(entry.getSource(), is("Kauf15.txt"));
-        assertThat(entry.getNote(), is("Limit: EUR 30,15"));
+        assertThat(entry.getNote(), is("Ref.-Nr.: 13001070 | Limit: EUR 30,15"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15114.70))));
@@ -933,8 +934,8 @@ public class ErsteBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(0L));
-        assertThat(results.size(), is(2));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(3));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -947,9 +948,79 @@ public class ErsteBankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2009-07-21T18:00"), hasShares(2.214), //
                         hasSource("Kauf16.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 99.94), hasGrossValue("EUR", 98.39), //
-                        hasTaxes("EUR", 0.02), hasFees("EUR", 1.53))));
+                        hasNote("Ref.-Nr.: 12-1234567-1"), //
+                        hasAmount("EUR", 99.96), hasGrossValue("EUR", 98.43), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.53))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2009-07-21T18:00"), hasShares(2.214), //
+                        hasSource("Kauf16.txt"), //
+                        hasNote("Ref.-Nr.: 12-1234567-1"), //
+                        hasAmount("EUR", 0.02), hasGrossValue("EUR",  0.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf17()
+    {
+        ErsteBankPDFExtractor extractor = new ErsteBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf17.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0009769794"), hasWkn(null), hasTicker(null), //
+                        hasName("DWS TOP 50 WELT"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2009-11-23T18:00"), hasShares(2.004), //
+                        hasSource("Kauf17.txt"), //
+                        hasNote("Ref.-Nr.: 12-1234567-1"), //
+                        hasAmount("EUR", 99.97), hasGrossValue("EUR", 98.21), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.76))));
+    }
+
+    @Test
+    public void testWertpapierKauf18()
+    {
+        ErsteBankPDFExtractor extractor = new ErsteBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf18.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0009769794"), hasWkn(null), hasTicker(null), //
+                        hasName("DWS TOP 50 WELT"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2014-07-21T18:00"), hasShares(1.363), //
+                        hasSource("Kauf18.txt"), //
+                        hasNote("Ref.-Nr.: 12-12345678"), //
+                        hasAmount("EUR", 99.96), hasGrossValue("EUR", 98.19), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.77))));
     }
 
     @Test
@@ -984,7 +1055,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-10-23T16:46:47")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(343.85))));
@@ -1028,7 +1099,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-04-09T16:27:05")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1732.31))));
@@ -1072,7 +1143,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-04-16T15:27:19")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(90)));
         assertThat(entry.getSource(), is("Verkauf03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1154.61))));
@@ -1116,7 +1187,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-04-10T09:00:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29)));
         assertThat(entry.getSource(), is("Verkauf04.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1394.90))));
@@ -1160,7 +1231,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-12-06T16:52:18")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(50)));
         assertThat(entry.getSource(), is("Verkauf05.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1121.25))));
@@ -1204,7 +1275,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-04-30T14:32:40")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
         assertThat(entry.getSource(), is("Verkauf06.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-12345678"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(358.90))));
@@ -1248,7 +1319,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-12-03T15:30:14")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(60)));
         assertThat(entry.getSource(), is("Verkauf07.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1116.78))));
@@ -1293,7 +1364,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-12-03T15:30:14")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(60)));
         assertThat(entry.getSource(), is("Verkauf07.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12-1234567-1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1116.78))));
@@ -1343,7 +1414,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-06-08T19:30")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.40)));
         assertThat(entry.getSource(), is("Verkauf08.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 89628241"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.80))));
@@ -1387,7 +1458,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-06-13T17:10:18")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(35)));
         assertThat(entry.getSource(), is("Verkauf09.txt"));
-        assertThat(entry.getNote(), is("Limit: Bestens"));
+        assertThat(entry.getNote(), is("Ref.-Nr.: 27302059 | Limit: Bestens"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(613.10))));
@@ -1431,7 +1502,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-14T18:38:03")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15)));
         assertThat(entry.getSource(), is("Verkauf10.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 28170733"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1706.55))));
@@ -1475,7 +1546,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-11-23T20:54:28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(331)));
         assertThat(entry.getSource(), is("Verkauf11.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12345678"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5149.14))));
@@ -1519,7 +1590,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-11-23T17:24:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(158)));
         assertThat(entry.getSource(), is("Verkauf12.txt"));
-        assertThat(entry.getNote(), is("Limit: Bestens"));
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12345678 | Limit: Bestens"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2606.82))));
@@ -1563,7 +1634,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-11-23T17:24:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(89)));
         assertThat(entry.getSource(), is("Verkauf13.txt"));
-        assertThat(entry.getNote(), is("Limit: Bestens"));
+        assertThat(entry.getNote(), is("Ref.-Nr.: 12345678 | Limit: Bestens"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1471.94))));
@@ -1607,7 +1678,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2022-06-29T19:30")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.609)));
         assertThat(entry.getSource(), is("Verkauf14.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Ref.-Nr.: 82004481"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.95))));
@@ -1723,7 +1794,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-09-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(35)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ref.-Nr.: 12-123456789"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.40))));
@@ -1765,7 +1836,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-09-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(35)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ref.-Nr.: 12-123456789"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.40))));
@@ -1814,7 +1885,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-04-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(35)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ref.-Nr.: 12-12345"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(127.54))));
@@ -1857,7 +1928,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-01-29T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(90)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ref.-Nr.: 12-12345"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.97))));
@@ -1900,7 +1971,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-08-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(60)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ref.-Nr.: 12-123456"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.73))));
@@ -1942,7 +2013,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-08-13T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(60)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ref.-Nr.: 12-123456"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.73))));
@@ -1991,7 +2062,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-11-26T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(35.275)));
         assertThat(transaction.getSource(), is("Dividende05.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ref.-Nr.: 12-123456"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.84))));
@@ -2034,7 +2105,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-06-15T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(20.286)));
         assertThat(transaction.getSource(), is("Dividende06.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ref.-Nr.: 12-123456"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.85))));
@@ -2077,7 +2148,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2012-11-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(77.638)));
         assertThat(transaction.getSource(), is("Dividende07.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ref.-Nr.: 12-123456789"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.81))));
@@ -2120,7 +2191,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-11-22T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(96.324)));
         assertThat(transaction.getSource(), is("Dividende08.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("Ref.-Nr.: 12-123456789"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.70))));
@@ -2507,7 +2578,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(results, hasItem(dividend( //
                         hasDate("2009-04-23T00:00"), hasShares(35), //
                         hasSource("Dividende16.txt"), //
-                        hasNote(null), //
+                        hasNote("Ref.-Nr.: 12-12345"), //
                         hasAmount("EUR", 122.00), hasGrossValue("EUR", 192.50), //
                         hasTaxes("EUR", 50.77 + 19.25), hasFees("EUR", 0.48))));
     }
@@ -2538,7 +2609,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(results, hasItem(dividend( //
                         hasDate("2011-08-19T00:00"), hasShares(50), //
                         hasSource("Dividende17.txt"), //
-                        hasNote(null), //
+                        hasNote("Ref.-Nr.: 12-123456"), //
                         hasAmount("EUR", 52.47), hasGrossValue("EUR", 70.24), //
                         hasForexGrossValue("USD", 101.97), //
                         hasTaxes("EUR", (15.30 + 10.20) / 1.4490000), hasFees("EUR", 0.17))));
@@ -2570,7 +2641,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(results, hasItem(dividend( //
                         hasDate("2011-08-19T00:00"), hasShares(50), //
                         hasSource("Dividende17.txt"), //
-                        hasNote(null), //
+                        hasNote("Ref.-Nr.: 12-123456"), //
                         hasAmount("EUR", 52.47), hasGrossValue("EUR", 70.24), //
                         hasTaxes("EUR", (15.30 + 10.20) / 1.4490000), hasFees("EUR", 0.17), //
                         check(tx -> {
@@ -2608,7 +2679,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(results, hasItem(dividend( //
                         hasDate("2012-08-24T00:00"), hasShares(50), //
                         hasSource("Dividende18.txt"), //
-                        hasNote(null), //
+                        hasNote("Ref.-Nr.: 12-123456789"), //
                         hasAmount("EUR", 68.66), hasGrossValue("EUR", 116.78 * 0.788923), //
                         hasForexGrossValue("USD", 116.78), //
                         hasTaxes("EUR", (17.51 + 11.67) * 0.788923), hasFees("EUR", (0.35 + 0.22) * 0.788923))));
@@ -2640,7 +2711,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(results, hasItem(dividend( //
                         hasDate("2012-08-24T00:00"), hasShares(50), //
                         hasSource("Dividende18.txt"), //
-                        hasNote(null), //
+                        hasNote("Ref.-Nr.: 12-123456789"), //
                         hasAmount("EUR", 68.66), hasGrossValue("EUR", 116.78 * 0.788923), //
                         hasTaxes("EUR", (17.51 + 11.67) * 0.788923), hasFees("EUR", (0.35 + 0.22) * 0.788923), //
                         check(tx -> {
@@ -2678,7 +2749,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(results, hasItem(dividend( //
                         hasDate("2012-05-23T00:00"), hasShares(33), //
                         hasSource("Dividende19.txt"), //
-                        hasNote(null), //
+                        hasNote("Ref.-Nr.: 12-123456789"), //
                         hasAmount("EUR", 21.69), hasGrossValue("EUR", 36.30), //
                         hasTaxes("EUR", 10.89 + 3.63), hasFees("EUR", 0.09))));
     }
@@ -2709,7 +2780,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(results, hasItem(dividend( //
                         hasDate("2010-06-15T00:00"), hasShares(7.054), //
                         hasSource("Dividende20.txt"), //
-                        hasNote(null), //
+                        hasNote("Ref.-Nr.: 12-12345"), //
                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.14), //
                         hasTaxes("EUR", 0.14), hasFees("EUR", 0.00))));
     }
@@ -2740,7 +2811,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(results, hasItem(dividend( //
                         hasDate("2009-08-20T00:00"), hasShares(90.000), //
                         hasSource("Dividende21.txt"), //
-                        hasNote(null), //
+                        hasNote("Ref.-Nr.: 12-12345"), //
                         hasAmount("EUR", 75.94), hasGrossValue("EUR", 75.94), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -2771,7 +2842,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(results, hasItem(dividend( //
                         hasDate("2011-10-05T00:00"), hasShares(1750.000), //
                         hasSource("Dividende22.txt"), //
-                        hasNote(null), //
+                        hasNote("Ref.-Nr.: 12-123456"), //
                         hasAmount("EUR", 175.00), hasGrossValue("EUR", 175.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -2802,7 +2873,7 @@ public class ErsteBankPDFExtractorTest
         assertThat(results, hasItem(dividend( //
                         hasDate("2012-10-15T00:00"), hasShares(1750.000), //
                         hasSource("Dividende23.txt"), //
-                        hasNote(null), //
+                        hasNote("Ref.-Nr.: 12-123456789"), //
                         hasAmount("EUR", 262.50), hasGrossValue("EUR", 262.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
