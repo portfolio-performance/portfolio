@@ -78,11 +78,24 @@ public class HoldingsPieChartSWT implements IPieChart
 
             NodeData nodeData = id2nodeData.get(currentNode.getId());
 
-            if (nodeData == null)
+            if (nodeData == null) // center of the Pie Chart
             {
                 Label assetLabel = new Label(data, SWT.NONE);
                 assetLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
-                assetLabel.setText(currentNode.getId());
+                if (financeView != null) // from view : Statement of Assets
+                {
+                    assetLabel.setText(currentNode.getId());
+                }
+                else // from pane = single Portfolio pane
+                {
+                    assetLabel.setText(snapshot.getPortfolios().get(0).getPortfolio().getName());
+                }
+
+                Label info = new Label(data, SWT.NONE);
+                GridDataFactory.fillDefaults().span(2, 1).applyTo(info);                
+                info.setText(String.format("%s", //$NON-NLS-1$
+                                Values.Money.format(snapshot.getMonetaryAssets())));
+
             }
             else
             {
