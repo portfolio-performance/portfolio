@@ -249,7 +249,8 @@ public class TradeDetailsView extends AbstractFinanceView
                 String[] properties = new String[] { security.getName(), //
                                 security.getIsin(), //
                                 security.getTickerSymbol(), //
-                                security.getWkn() //
+                                security.getWkn(), //
+                                trade.getPortfolio().getName()
                 };
 
                 for (String property : properties)
