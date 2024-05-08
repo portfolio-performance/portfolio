@@ -63,7 +63,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|SECURITIES SETTLEMENT SAVINGS PLAN" //
                         + "|SECURITIES SETTLEMENT" //
                         + "|REINVESTIERUNG" //
-                        + "|INVESTISSEMENT"
+                        + "|CONFIRMATION DE L.INVESTISSEMENT PROGRAMM."
+                        + "|RELEV. DE TRANSACTION"
                         + "|REGOLAMENTO TITOLI"
                         + "|ZWANGS.BERNAHME"
                         + "|TILGUNG)", //
@@ -89,6 +90,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .match("(?i)^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?" //
                                         + "(?<type>(Kauf" //
                                         + "|Buy"
+                                        + "|Achat"
                                         + "|Acquisto" //
                                         + "|Verkauf"
                                         + "|Sell" //
@@ -226,10 +228,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Verkauf am 26.02.2021, um 11:44 Uhr.
                                         // Market-OrderAcquisto il 01.06.2023 alle 10:46 (Europe/Berlin) su Lang & Schwarz Exchange.
                                         // Market-Order Sell on 02.05.2023 at 18:18 (Europe/Berlin).
+                                        // Market-Order Achat le 10/04/2024 à 17:33 (Europe/Berlin).
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Buy|Acquisto|Kauf|Verkauf|Sell) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}))(,)? (um|at|alle) (?<time>[\\d]{2}:[\\d]{2}).*$") //
+                                                        .match("^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Buy|Achat|Acquisto|Kauf|Verkauf|Sell) .* " //
+                                                                        + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}" //
+                                                                        + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}" //
+                                                                        + "|[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}))" //
+                                                                        + "(,)? (um|at|alle|.) (?<time>[\\d]{2}:[\\d]{2}).*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
                                         // Exécution de l'investissement programmé le 17/01/2022 sur le Lang & Schwarz Exchange.
@@ -430,6 +437,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.*ORDER (?<note>.*\\-.*)$") //
                                                         .assign((t, v) -> t.setNote("Order: " + trim(v.get("note")))),
                                         // @formatter:off
+                                        // 75000 Paris ORDRE 69da-1c6f
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*ORDRE (?<note>.*\\-.*)$") //
+                                                        .assign((t, v) -> t.setNote("Ordre : " + trim(v.get("note")))),
+                                        // @formatter:off
                                         // 23537 DCrFCrYea AUSFÜHRUNG 5437-f7f5
                                         // @formatter:on
                                         section -> section //
@@ -609,7 +623,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // Market-Order Sell on 02.05.2023 at 18:18 (Europe/Berlin).
                         // @formatter:on
                         .section("date", "time") //
-                        .match("^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Verkauf|Sell) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}))(,)? (um|at|alle) (?<time>[\\d]{2}:[\\d]{2}).*$") //
+                        .match("^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Verkauf|Sell) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}))(,)? (um|at|alle|.) (?<time>[\\d]{2}:[\\d]{2}).*$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
@@ -634,9 +648,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Fremdkostenzuschlag -1,00 EUR
                         // External cost surcharge -1.00 EUR
+                        // Frais externes -1,00 EUR
                         // @formatter:on
                         .section("currency", "amount").optional() //
-                        .match("^(Fremdkostenzuschlag|External cost surcharge) \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^(Fremdkostenzuschlag|External cost surcharge|Frais externes) \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().getBoolean("negative"))
                             {
@@ -2058,10 +2073,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Limit-Order Buy on 28.04.2023 at 11:13 (Europe/Berlin).
                                         // Verkauf am 26.02.2021, um 11:44 Uhr.
                                         // Market-OrderAcquisto il 01.06.2023 alle 10:46 (Europe/Berlin) su Lang & Schwarz Exchange.
+                                        // Market-Order Achat le 10/04/2024 à 17:33 (Europe/Berlin).
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Buy|Acquisto|Kauf|Verkauf) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}))(,)? (um|at|alle) (?<time>[\\d]{2}:[\\d]{2}) .*$") //
+                                                        .match("^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Buy|Achat|Acquisto|Kauf|Verkauf|Sell) .* " //
+                                                                        + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}" //
+                                                                        + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}" //
+                                                                        + "|[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}))" //
+                                                                        + "(,)? (um|at|alle|.) (?<time>[\\d]{2}:[\\d]{2}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
                                         // Exécution de l'investissement programmé le 17/01/2022 sur le Lang & Schwarz Exchange.
@@ -2407,6 +2427,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("fee", "currency").optional() //
                         .match("^External cost surcharge \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative"))
+                                processFeeEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Frais externes -1,00 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Frais externes \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);
