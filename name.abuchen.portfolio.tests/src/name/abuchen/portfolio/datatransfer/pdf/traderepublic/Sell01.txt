@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KÖPENICKER STRASSE 40C  10179 BERLIN
+yEHn kQV jkslJw PAGE 1 from 1
+KebCKUwgH 7 DATE 02.05.2023
+17069 FuXVDJtQ ORDER 1778-101b
+EXECUTION eiX5-F5D7
+SECURITIES ACCOUNT 4510405687
+SECURITIES SETTLEMENT
+OVERVIEW
+Market-Order Sell on 02.05.2023 at 18:18 (Europe/Berlin).
+The counterparty to the transaction is Société Générale S.A.
+POSITION QUANTITY PRICE AMOUNT
+Société Générale Effekten GmbH 490 Pcs. 0.886 EUR 434.14 EUR
+MiniL O.End CBOE VIX 11,49
+ISIN: DE000SQ6QKU9
+TOTAL 434.14 EUR
+BILLING
+POSITION AMOUNT
+External cost surcharge -1.00 EUR
+TOTAL 433.14 EUR
+BOOKING
+CLEARING ACCOUNT VALUE DATE AMOUNT
+DE32502109007011423226 04.05.2023 433.14 EUR
+Société Générale Effekten GmbH MiniL O.End CBOE VIX 11,49 in giro collection storage in Germany.
+This statement is generated automatically and therefore not signed.
+If no VAT is shown, it is according to § 4 No. 8 UStG for a sales tax-free service.
+Trade Republic Bank GmbH www.traderepublic.com Headquarters: Berlin Directors
+Köpenicker Straße 40c service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10179 Berlin VAT-ID DE307510626 Gernot Mittendorfer
+ABRE / 02.05.2023 / 94116251 / nL30-3QHZ

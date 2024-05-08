@@ -86,11 +86,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?" //
+                        .match("(?i)^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?" //
                                         + "(?<type>(Kauf" //
                                         + "|Buy"
                                         + "|Acquisto" //
-                                        + "|Verkauf" //
+                                        + "|Verkauf"
+                                        + "|Sell" //
                                         + "|Sparplanausf.hrung" //
                                         + "|SAVINGS PLAN" //
                                         + "|Ex.cution de l.investissement programm." //
@@ -100,6 +101,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         + ".*$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")) //
+                                            || "Sell".equals(v.get("type")) //
                                             || "ZWANGSÜBERNAHME".equals(v.get("type")) //
                                             || "TILGUNG".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -223,10 +225,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Limit-Order Buy on 28.04.2023 at 11:13 (Europe/Berlin).
                                         // Verkauf am 26.02.2021, um 11:44 Uhr.
                                         // Market-OrderAcquisto il 01.06.2023 alle 10:46 (Europe/Berlin) su Lang & Schwarz Exchange.
+                                        // Market-Order Sell on 02.05.2023 at 18:18 (Europe/Berlin).
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Buy|Acquisto|Kauf|Verkauf) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}))(,)? (um|at|alle) (?<time>[\\d]{2}:[\\d]{2}) .*$") //
+                                                        .match("^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Buy|Acquisto|Kauf|Verkauf|Sell) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}))(,)? (um|at|alle) (?<time>[\\d]{2}:[\\d]{2}).*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
                                         // Exécution de l'investissement programmé le 17/01/2022 sur le Lang & Schwarz Exchange.
@@ -536,17 +539,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     private void addSellWithNegativeAmountTransaction()
     {
         DocumentType type = new DocumentType("(WERTPAPIERABRECHNUNG" //
-                        + "|WERTPAPIERABRECHNUNG SPARPLAN" //
-                        + "|SECURITIES SETTLEMENT SAVINGS PLAN" //
                         + "|SECURITIES SETTLEMENT" //
-                        + "|REINVESTIERUNG" //
-                        + "|INVESTISSEMENT)", //
+                        + "|REGOLAMENTO TITOLI)", //
                         "(ABRECHNUNG CRYPTOGESCH.FT|CRYPTO SPARPLAN)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(.*\\-Order )?Verkauf.*$");
+        Block firstRelevantLine = new Block("^(.*\\-Order )?(Verkauf|Sell).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -565,26 +565,51 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // ISIN: DE000A3H23V7
                         // @formatter:on
                         .section("name", "currency", "nameContinued", "isin") //
-                        .match("^(?<name>.*) [\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                         .match("^(?<nameContinued>.*)$") //
                         .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        // @formatter:off
-                        // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^.* (?<shares>[\\.,\\d]+) Stk\\. [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
+                                        // Tencent Holdings Ltd. 0,3773 titre(s) 53,00 EUR 20,00 EUR
+                                        // zjBAM Corp. 125 Pz. 29,75 EUR 3.718,75 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|titre\\(s\\)|Pz\\.) .*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Berkshire Hathaway Inc. 0.3367 Pcs. 297.00 EUR 100.00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) Pcs\\. .*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
+                                        // @formatter:off
+                                        // Bundesrep.Deutschland 1.019 EUR 98,05 % 999,13 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+ % [\\.,\\d]+ [\\w]{3}$")
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Percentage quotation, workaround for bonds
+                                                            // @formatter:on
+                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                        }))
 
                         // @formatter:off
                         // Market-Order Verkauf am 18.06.2019, um 17:50 Uhr an der Lang & Schwarz Exchange.
                         // Stop-Market-Order Verkauf am 10.06.2020, um 11:42 Uhr.
                         // Limit-Order Verkauf am 21.07.2020, um 09:30 Uhr an der Lang & Schwarz Exchange.
                         // Verkauf am 26.02.2021, um 11:44 Uhr.
+                        // Market-Order Sell on 02.05.2023 at 18:18 (Europe/Berlin).
                         // @formatter:on
                         .section("date", "time") //
-                        .match("^((Limit|Stop-Market|Market)-Order )?(Kauf|Verkauf) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})), um (?<time>[\\d]{2}:[\\d]{2}) .*$") //
+                        .match("^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Verkauf|Sell) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}))(,)? (um|at|alle) (?<time>[\\d]{2}:[\\d]{2}).*$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
@@ -592,15 +617,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // GESAMT -0,66 EUR
                         // @formatter:on
                         .section("negative").optional() //
-                        .match("^GESAMT [\\.,\\d]+ [\\w]{3}$") //
-                        .match("^GESAMT (?<negative>\\-)[\\.,\\d]+ [\\w]{3}$") //
+                        .match("^(GESAMT|TOTAL|TOTALE) [\\.,\\d]+ [\\w]{3}$") //
+                        .match("^(GESAMT|TOTAL|TOTALE) (?<negative>\\-)[\\.,\\d]+ [\\w]{3}$") //
                         .assign((t, v) -> type.getCurrentContext().putBoolean("negative", true))
 
                         // @formatter:off
                         // GESAMT -0,66 EUR
                         // @formatter:on
                         .section("negative").optional() //
-                        .match("^GESAMT (?<negative>\\-)[\\.,\\d]+ [\\w]{3}$") //
+                        .match("^(GESAMT|TOTAL|TOTALE) (?<negative>\\-)[\\.,\\d]+ [\\w]{3}$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative"))
                                 type.getCurrentContext().putBoolean("negative", true);
@@ -608,9 +633,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Fremdkostenzuschlag -1,00 EUR
+                        // External cost surcharge -1.00 EUR
                         // @formatter:on
                         .section("currency", "amount").optional() //
-                        .match("^Fremdkostenzuschlag \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^(Fremdkostenzuschlag|External cost surcharge) \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().getBoolean("negative"))
                             {
