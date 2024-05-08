@@ -2119,6 +2119,37 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testSell01()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sell01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000SQ6QKU9"), hasWkn(null), hasTicker(null), //
+                        hasName("Société Générale Effekten GmbH MiniL O.End CBOE VIX 11,49"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-05-02T18:18"), hasShares(490.00), //
+                        hasSource("Sell01.txt"), //
+                        hasNote("Order: 1778-101b | Execution: eiX5-F5D7"), //
+                        hasAmount("EUR", 433.14), hasGrossValue("EUR", 434.14), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
+    }
+
+    @Test
     public void testTilgung01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
