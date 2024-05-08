@@ -136,7 +136,9 @@ public class TradeDetailsView extends AbstractFinanceView
 
     private MutableBoolean onlyProfitable = new MutableBoolean(false);
     private MutableBoolean onlyLossMaking = new MutableBoolean(false);
+
     private boolean isOn;
+
     private Pattern filterPattern;
     private ClientFilter clientFilter;
 
@@ -384,9 +386,6 @@ public class TradeDetailsView extends AbstractFinanceView
 
             clientFilterMenu.trackSelectedFilterConfigurationKey(TradeDetailsView.class.getSimpleName());
             clientFilter = clientFilterMenu.getSelectedFilter();
-
-            if (!isOn && !clientFilterMenu.hasActiveFilter())
-                setImage(Images.FILTER_OFF);
 
             if (isOn || clientFilterMenu.hasActiveFilter())
                 setImage(Images.FILTER_ON);
