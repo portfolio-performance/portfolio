@@ -14,6 +14,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.ControlContribution;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
@@ -32,6 +33,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
 import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
@@ -39,8 +41,10 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.views.SecurityContextMenu;
@@ -112,42 +116,6 @@ public class TradeDetailsView extends AbstractFinanceView
         }
     }
 
-    private class FilterAction extends Action
-    {
-        private MutableBoolean criterion;
-
-        private DropDown theMenu;
-        private FilterAction counterpart;
-
-        public FilterAction(String label, MutableBoolean criterion, DropDown theMenu)
-        {
-            super(label);
-            this.criterion = criterion;
-            this.theMenu = theMenu;
-            this.setChecked(criterion.isTrue());
-        }
-
-        public void setCounterpart(FilterAction counterpart)
-        {
-            this.counterpart = counterpart;
-        }
-
-        @Override
-        public void run()
-        {
-            criterion.invert();
-
-            if (counterpart != null && criterion.isTrue())
-            {
-                counterpart.criterion.setValue(false);
-                counterpart.setChecked(false);
-            }
-
-            update();
-            updateFilterButtonImage(theMenu);
-        }
-    }
-
     private static final String ID_WARNING_TOOL_ITEM = "warning"; //$NON-NLS-1$
 
     private Input input;
@@ -168,8 +136,9 @@ public class TradeDetailsView extends AbstractFinanceView
 
     private MutableBoolean onlyProfitable = new MutableBoolean(false);
     private MutableBoolean onlyLossMaking = new MutableBoolean(false);
-
+    private boolean isOn;
     private Pattern filterPattern;
+    private ClientFilter clientFilter;
 
     @Inject
     @Optional
@@ -208,7 +177,7 @@ public class TradeDetailsView extends AbstractFinanceView
 
         toolBarManager.add(new Separator());
 
-        addFilterButton(toolBarManager);
+        toolBarManager.add(new FilterDropDown(getPreferenceStore()));
 
         toolBarManager.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE,
                         manager -> manager.add(new SimpleAction(Messages.LabelTrades + " (CSV)", //$NON-NLS-1$
@@ -218,13 +187,6 @@ public class TradeDetailsView extends AbstractFinanceView
 
         toolBarManager.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> table.getShowHideColumnHelper().menuAboutToShow(manager)));
-    }
-
-    private void updateFilterButtonImage(DropDown dropDown)
-    {
-        boolean isOn = usePreselectedTrades.isTrue() || onlyOpen.isTrue() || onlyClosed.isTrue()
-                        || onlyProfitable.isTrue() || onlyLossMaking.isTrue();
-        dropDown.setImage(isOn ? Images.FILTER_ON : Images.FILTER_OFF);
     }
 
     private void addSearchButton(ToolBarManager toolBar)
@@ -262,72 +224,6 @@ public class TradeDetailsView extends AbstractFinanceView
                 return control.computeSize(100, SWT.DEFAULT, true).x;
             }
         });
-    }
-
-    private void addFilterButton(ToolBarManager manager)
-    {
-        boolean hasPreselectedTrades = input != null;
-
-        // retrieve existing filter
-        int savedFilters = 0;
-        IPreferenceStore preferenceStore = getPreferenceStore();
-        savedFilters = preferenceStore.getInt(this.getClass().getSimpleName() + "-filterSettingsTrade"); //$NON-NLS-1$
-        if ((savedFilters & (1 << 1)) != 0)
-            onlyOpen.setValue(true);
-        if ((savedFilters & (1 << 2)) != 0)
-            onlyClosed.setValue(true);
-        if ((savedFilters & (1 << 3)) != 0)
-            onlyProfitable.setValue(true);
-        if ((savedFilters & (1 << 4)) != 0)
-            onlyLossMaking.setValue(true);
-
-        DropDown filterDropDowMenu = new DropDown(Messages.MenuFilterTrades, Images.FILTER_OFF, SWT.NONE);
-        updateFilterButtonImage(filterDropDowMenu);
-
-        filterDropDowMenu.setMenuListener(mgr -> {
-
-            if (hasPreselectedTrades)
-            {
-                mgr.add(new FilterAction(input.getInterval().toString(), usePreselectedTrades, filterDropDowMenu));
-                mgr.add(new Separator());
-            }
-
-            FilterAction onlyOpenAction = new FilterAction(Messages.FilterOnlyOpenTrades, onlyOpen, filterDropDowMenu);
-            FilterAction onlyClosedAction = new FilterAction(Messages.FilterOnlyClosedTrades, onlyClosed,
-                            filterDropDowMenu);
-
-            onlyOpenAction.setCounterpart(onlyClosedAction);
-            onlyClosedAction.setCounterpart(onlyOpenAction);
-
-            FilterAction onlyProfitableAction = new FilterAction(Messages.FilterOnlyProfitableTrades, onlyProfitable,
-                            filterDropDowMenu);
-            FilterAction onlyLossMakingAction = new FilterAction(Messages.FilterOnlyLossMakingTrades, onlyLossMaking,
-                            filterDropDowMenu);
-
-            onlyProfitableAction.setCounterpart(onlyLossMakingAction);
-            onlyLossMakingAction.setCounterpart(onlyProfitableAction);
-
-            mgr.add(onlyOpenAction);
-            mgr.add(onlyClosedAction);
-            mgr.add(new Separator());
-            mgr.add(onlyProfitableAction);
-            mgr.add(onlyLossMakingAction);
-        });
-
-        filterDropDowMenu.addDisposeListener(e -> {
-            int savedFilter = 0;
-            if (onlyOpen.isTrue())
-                savedFilter += (1 << 1);
-            if (onlyClosed.isTrue())
-                savedFilter += (1 << 2);
-            if (onlyProfitable.isTrue())
-                savedFilter += (1 << 3);
-            if (onlyLossMaking.isTrue())
-                savedFilter += (1 << 4);
-            preferenceStore.setValue(this.getClass().getSimpleName() + "-filterSettingsTrade", savedFilter); //$NON-NLS-1$
-        });
-
-        manager.add(filterDropDowMenu);
     }
 
     @Override
@@ -399,6 +295,8 @@ public class TradeDetailsView extends AbstractFinanceView
         Input data = usePreselectedTrades.isTrue() ? input : collectAllTrades();
 
         Stream<Trade> filteredTrades = data.getTrades().stream();
+        filteredTrades = filteredTrades.filter(t -> clientFilter.filter(getClient()).getPortfolios().toString()
+                        .contains(t.getPortfolio().getName()));
 
         if (onlyClosed.isTrue())
             filteredTrades = filteredTrades.filter(Trade::isClosed);
@@ -451,5 +349,129 @@ public class TradeDetailsView extends AbstractFinanceView
         });
 
         return new Input(null, trades, errors);
+    }
+
+    private class FilterDropDown extends DropDown implements IMenuListener
+    {
+        private ClientFilterMenu clientFilterMenu;
+
+        public FilterDropDown(IPreferenceStore preferenceStore)
+        {
+            super(Messages.MenuFilterTrades, Images.FILTER_OFF, SWT.NONE);
+
+            // retrieve existing filter
+            int savedFilters = 0;
+            savedFilters = preferenceStore.getInt(TradeDetailsView.class.getSimpleName() + "-filterSettingsTrade"); //$NON-NLS-1$
+            if ((savedFilters & (1 << 1)) != 0)
+                onlyOpen.setValue(true);
+            if ((savedFilters & (1 << 2)) != 0)
+                onlyClosed.setValue(true);
+            if ((savedFilters & (1 << 3)) != 0)
+                onlyProfitable.setValue(true);
+            if ((savedFilters & (1 << 4)) != 0)
+                onlyLossMaking.setValue(true);
+
+            isOn = usePreselectedTrades.isTrue() || onlyOpen.isTrue() || onlyClosed.isTrue()
+                            || onlyProfitable.isTrue() || onlyLossMaking.isTrue();
+
+            clientFilterMenu = new ClientFilterMenu(getClient(), preferenceStore, f -> {
+                setImage(!isOn && !clientFilterMenu.hasActiveFilter() ? Images.FILTER_OFF : Images.FILTER_ON);
+
+                clientFilter = f;
+                notifyModelUpdated();
+            });
+
+            clientFilterMenu.trackSelectedFilterConfigurationKey(TradeDetailsView.class.getSimpleName());
+            clientFilter = clientFilterMenu.getSelectedFilter();
+
+            if (!isOn && !clientFilterMenu.hasActiveFilter())
+                setImage(Images.FILTER_OFF);
+
+            if (isOn || clientFilterMenu.hasActiveFilter())
+                setImage(Images.FILTER_ON);
+
+            setMenuListener(this);
+
+            addDisposeListener(e -> {
+                int savedFilter = 0;
+                if (onlyOpen.isTrue())
+                    savedFilter += (1 << 1);
+                if (onlyClosed.isTrue())
+                    savedFilter += (1 << 2);
+                if (onlyProfitable.isTrue())
+                    savedFilter += (1 << 3);
+                if (onlyLossMaking.isTrue())
+                    savedFilter += (1 << 4);
+                preferenceStore.setValue(TradeDetailsView.class.getSimpleName() + "-filterSettingsTrade", savedFilter); //$NON-NLS-1$
+
+            });
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            FilterAction onlyOpenAction = new FilterAction(Messages.FilterOnlyOpenTrades, onlyOpen);
+            FilterAction onlyClosedAction = new FilterAction(Messages.FilterOnlyClosedTrades, onlyClosed);
+            FilterAction onlyProfitableAction = new FilterAction(Messages.FilterOnlyProfitableTrades, onlyProfitable);
+            FilterAction onlyLossMakingAction = new FilterAction(Messages.FilterOnlyLossMakingTrades, onlyLossMaking);
+
+            onlyOpenAction.setCounterpart(onlyClosedAction);
+            onlyClosedAction.setCounterpart(onlyOpenAction);
+            onlyProfitableAction.setCounterpart(onlyLossMakingAction);
+            onlyLossMakingAction.setCounterpart(onlyProfitableAction);
+
+            boolean hasPreselectedTrades = input != null;
+            if (hasPreselectedTrades)
+            {
+                manager.add(new FilterAction(input.getInterval().toString(), usePreselectedTrades));
+                manager.add(new Separator());
+            }
+
+            manager.add(onlyOpenAction);
+            manager.add(onlyClosedAction);
+            manager.add(new Separator());
+            manager.add(onlyProfitableAction);
+            manager.add(onlyLossMakingAction);
+
+            manager.add(new Separator());
+            manager.add(new LabelOnly(Messages.MenuChooseClientFilter));
+            clientFilterMenu.menuAboutToShow(manager);
+        }
+
+        private class FilterAction extends Action
+        {
+            private MutableBoolean criterion;
+            private FilterAction counterpart;
+
+            public FilterAction(String label, MutableBoolean criterion)
+            {
+                super(label);
+                this.criterion = criterion;
+                this.setChecked(criterion.isTrue());
+            }
+
+            public void setCounterpart(FilterAction counterpart)
+            {
+                this.counterpart = counterpart;
+            }
+
+            @Override
+            public void run()
+            {
+                criterion.invert();
+
+                if (counterpart != null && criterion.isTrue())
+                {
+                    counterpart.criterion.setValue(false);
+                    counterpart.setChecked(false);
+                }
+                TradeDetailsView.this.update();
+
+                isOn = usePreselectedTrades.isTrue() || onlyOpen.isTrue() || onlyClosed.isTrue()
+                                || onlyProfitable.isTrue() || onlyLossMaking.isTrue();
+                setImage(!isOn && !clientFilterMenu.hasActiveFilter() ? Images.FILTER_OFF : Images.FILTER_ON);
+
+            }
+        }
     }
 }
