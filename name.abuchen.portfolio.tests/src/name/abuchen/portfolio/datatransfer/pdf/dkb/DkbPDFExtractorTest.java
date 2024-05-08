@@ -4567,6 +4567,48 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testGiroKontoauszug28()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug28.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2024-01-15"), hasAmount("EUR", 11.88), //
+                        hasSource("GiroKontoauszug28.txt"), hasNote("sonstige Entgelte Girokarte"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-16"), hasAmount("EUR", 65.28), //
+                        hasSource("GiroKontoauszug28.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-17"), hasAmount("EUR", 52.33), //
+                        hasSource("GiroKontoauszug28.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-24"), hasAmount("EUR", 50.00), //
+                        hasSource("GiroKontoauszug28.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-01-26"), hasAmount("EUR", 4.75), //
+                        hasSource("GiroKontoauszug28.txt"), hasNote("Kartenzahlung (Fremdwährung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-02-01"), hasAmount("EUR", 2600.00), //
+                        hasSource("GiroKontoauszug28.txt"), hasNote("Zahlungseingang"))));
+    }
+
+    @Test
     public void testKreditKontoauszug01()
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
