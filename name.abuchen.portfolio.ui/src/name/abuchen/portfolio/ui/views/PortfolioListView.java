@@ -49,6 +49,7 @@ import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.DividendPaymentColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -260,6 +261,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
         portfolioColumns.addColumn(column);
 
         addAttributeColumns(portfolioColumns);
+        addDividendPaymentColumns(portfolioColumns);
 
         portfolioColumns.createColumns(true);
 
@@ -277,6 +279,14 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
         hookContextMenu(portfolios.getTable(), this::fillPortfolioContextMenu);
 
         return container;
+    }
+
+    private void addDividendPaymentColumns(ShowHideColumnHelper support)
+    {
+        DividendPaymentColumn.createFor(getClient()) //
+                        .forEach(column -> {
+                            support.addColumn(column);
+                        });
     }
 
     private void addAttributeColumns(ShowHideColumnHelper support)
