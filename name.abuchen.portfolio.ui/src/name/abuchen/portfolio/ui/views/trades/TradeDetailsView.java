@@ -382,7 +382,7 @@ public class TradeDetailsView extends AbstractFinanceView
 
                 clientFilter = f;
                 notifyModelUpdated();
-            });
+            }, false);
 
             clientFilterMenu.trackSelectedFilterConfigurationKey(TradeDetailsView.class.getSimpleName());
             clientFilter = clientFilterMenu.getSelectedFilter();
@@ -434,7 +434,7 @@ public class TradeDetailsView extends AbstractFinanceView
             manager.add(onlyLossMakingAction);
 
             manager.add(new Separator());
-            manager.add(new LabelOnly(Messages.MenuChooseClientFilter));
+            manager.add(new LabelOnly(Messages.MenuChooseClientFilterWithoutReferenceAccount));
             clientFilterMenu.menuAboutToShow(manager);
         }
 
