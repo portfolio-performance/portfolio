@@ -47,7 +47,7 @@ public class PortfolioBalancePane implements InformationPanePage
     @Override
     public String getLabel()
     {
-        return Messages.TabAccountBalanceChart;
+        return Messages.ClientEditorLabelChart;
     }
 
     @Override
