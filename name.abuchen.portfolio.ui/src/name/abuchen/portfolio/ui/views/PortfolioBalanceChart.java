@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.ui.views;
 
+import static name.abuchen.portfolio.util.ArraysUtil.accumulateAndToDouble;
+import static name.abuchen.portfolio.util.ArraysUtil.toDouble;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -272,26 +275,6 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
 
         ILineSeries lineSeries = addDateSeries(lineID, index.getDates(), values, colorFeesAccumulated, lineID);
         lineSeries.setAntialias(swtAntialias);
-    }
-
-    private double[] toDouble(long[] input, double divider)
-    {
-        double[] answer = new double[input.length];
-        for (int ii = 0; ii < answer.length; ii++)
-            answer[ii] = input[ii] / divider;
-        return answer;
-    }
-
-    private double[] accumulateAndToDouble(long[] input, double divider)
-    {
-        double[] answer = new double[input.length];
-        long current = 0;
-        for (int ii = 0; ii < answer.length; ii++)
-        {
-            current += input[ii];
-            answer[ii] = current / divider;
-        }
-        return answer;
     }
 
     private enum ChartDetails
