@@ -1165,6 +1165,7 @@ public class Messages extends NLS
     public static String SecurityListFilterDateReached;
     public static String SecurityListFilterDistanceFromAth;
     public static String SecurityListFilterHideInactive;
+    public static String SecurityListFilterOnlyInactive;
     public static String SecurityListFilterLimitPriceExceeded;
     public static String SecurityListFilterOnlyExchangeRates;
     public static String SecurityListFilterOnlySecurities;
