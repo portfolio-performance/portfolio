@@ -184,20 +184,18 @@ public class InformationPane
             return c;
         });
 
-        // update toolbar with pane controls
+        // important: refresh input when showing the page b/c pages
+        // currently not visible are not updated if data changes
+        page.setInput(currentInput);
+        pagebook.showPage(control);
 
+        // update toolbar with pane controls
         if (!toolBarPaneControls.getControl().isDisposed())
         {
             toolBarPaneControls.removeAll();
             page.addButtons(toolBarPaneControls);
             toolBarPaneControls.update(true);
         }
-
-        // important: refresh input when showing the page b/c pages
-        // currently not visible are not updated if data changes
-
-        page.setInput(currentInput);
-        pagebook.showPage(control);
 
         for (IContributionItem item : toolBarPaneSelection.getItems())
         {
