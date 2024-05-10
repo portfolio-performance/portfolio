@@ -23,7 +23,7 @@ import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 public class DividendPaymentColumn
 {
 
-    static Column createNextDividendExDateColumn(Client client)
+    static Column createNextDividendExDateColumn()
     {
         Column column = new Column("nextdivexdate", Messages.ColumnDividendsNextExDate, SWT.LEFT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnDividendsNextExDate_MenuLabel);
@@ -64,7 +64,7 @@ public class DividendPaymentColumn
         return column;
     }
 
-    static Column createNextDividendPaymentDateColumn(Client client)
+    static Column createNextDividendPaymentDateColumn()
     {
         Column column = new Column("nextdivpmtdate", Messages.ColumnDividendsNextPaymentDate, SWT.LEFT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnDividendsNextPaymentDate_MenuLabel);
@@ -131,16 +131,9 @@ public class DividendPaymentColumn
                 return Values.Money.format(amount, client.getBaseCurrency(), false);
             }
         });
-        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
-            Money m1 = getAmount(LocalDate.now(), (Security) o1);
-            Money m2 = getAmount(LocalDate.now(), (Security) o2);
-
-            if (m1 == null)
-                return m2 == null ? 0 : -1;
-            if (m2 == null)
-                return 1;
-
-            return m1.compareTo(m2);
+        column.setSorter(ColumnViewerSorter.create(element -> {
+            Security security = Adaptor.adapt(Security.class, element);
+            return security != null ? getAmount(LocalDate.now(), security) : null;
         }));
         return column;
     }
@@ -157,8 +150,8 @@ public class DividendPaymentColumn
 
     public static Stream<Column> createFor(Client client)
     {
-        return Stream.of(createNextDividendExDateColumn(client), //
-                        createNextDividendPaymentDateColumn(client), //
+        return Stream.of(createNextDividendExDateColumn(), //
+                        createNextDividendPaymentDateColumn(), //
                         createNextDividendPaymentAmount(client));
     }
 
