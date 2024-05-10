@@ -1450,7 +1450,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         // 10.02.     10.02.  CASH / 0/377366                                   1.300,00+
         // 01.10.     01.10.  EINZAHLUNG 4 FLATEX / 0/16765097                  2.000,00+
         // 19.11.     19.11.  R-Transaktion                                       -53,00-
+        // 07.04.     07.04.  /REC/FC:MAX                                       2.250,00+
+        //                    MUSTERMANN,//MUSTERSTR 2 MUSTERHAUSEN GERMANY /
+        //                    SOGEFRPPHCM/
+        // 10.12.     07.12.  Prämie für die Teilnahme an der Morgan                6,00+
+        //                    Stanley-Aktion
         // 02.08.     01.08.  3cb27cfd-0454-4dad-88bd-a60c6f1ba3f8                  0,11+
+        //                    ZINSPILOT Auszahlung FIMBank p.l.c.
         // @formatter:on
         Block depositRemovalblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?" //
                         + "(.berweisung" //
@@ -1499,10 +1505,15 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             t.setNote(trim(v.get("note")));
                         })
                         .section("note2").optional() //
-                        .match("^[\\s]+(?<note2>ZINSPILOT Auszahlung .*)")
+                        .match("^[\\s]+(?<note2>ZINSPILOT Auszahlung .*)$")
                         .assign((t, v) -> {
                             t.setNote(trim(v.get("note2")));
                             t.setType(AccountTransaction.Type.INTEREST);
+                        })
+                        .section("note2").optional() //
+                        .match("^[\\s]+(?<note2> .*\\-Aktion).*$")
+                        .assign((t, v) -> {
+                            t.setNote(t.getNote() + (v.get("note2")));
                         })
 
                         .wrap(TransactionItem::new));
