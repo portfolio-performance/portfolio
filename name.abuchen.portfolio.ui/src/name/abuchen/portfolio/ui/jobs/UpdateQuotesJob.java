@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.jobs;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -9,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -148,7 +149,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
     {
         monitor.beginTask(Messages.JobLabelUpdating, IProgressMonitor.UNKNOWN);
 
-        List<Security> securities = getClient().getSecurities().stream().filter(filter).collect(Collectors.toList());
+        List<Security> securities = getClient().getSecurities().stream().filter(filter).collect(toMutableList());
 
         Dirtyable dirtyable = new Dirtyable(getClient());
         List<Job> jobs = new ArrayList<>();

@@ -595,7 +595,7 @@ public class ClientInput
             regularJobs.add(job);
 
             new SyncOnlineSecuritiesJob(client).schedule(5000);
-            new UpdateDividendsJob(getClient()).schedule(7000);
+            new UpdateDividendsJob(getClient(), onlyActive).schedule(7000);
         }
     }
 
