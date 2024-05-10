@@ -36,7 +36,7 @@ public final class LogoManager
     public Image getDefaultColumnImage(Object object, ClientSettings settings, boolean disabled)
     {
         Image logo = getLogoImage(object, settings, disabled);
-        return logo != null ? logo : getFallbackColumnImage(object);
+        return logo != null ? logo : getFallbackColumnImage(object, disabled);
     }
 
     public boolean hasCustomLogo(Attributable object, ClientSettings settings)
@@ -76,18 +76,18 @@ public final class LogoManager
         return null;
     }
 
-    private Image getFallbackColumnImage(Object object)
+    private Image getFallbackColumnImage(Object object, boolean disabled)
     {
         if (object instanceof Account)
-            return Images.ACCOUNT.image();
+            return Images.ACCOUNT.image(disabled);
         else if (object instanceof Security security)
-            return security.isRetired() ? Images.SECURITY_RETIRED.image() : Images.SECURITY.image();
+            return security.isRetired() ? Images.SECURITY_RETIRED.image() : Images.SECURITY.image(disabled);
         else if (object instanceof Portfolio)
-            return Images.PORTFOLIO.image();
+            return Images.PORTFOLIO.image(disabled);
         else if (object instanceof InvestmentPlan)
-            return Images.INVESTMENTPLAN.image();
+            return Images.INVESTMENTPLAN.image(disabled);
         else if (object instanceof Classification)
-            return Images.CATEGORY.image();
+            return Images.CATEGORY.image(disabled);
         else
             return null;
     }

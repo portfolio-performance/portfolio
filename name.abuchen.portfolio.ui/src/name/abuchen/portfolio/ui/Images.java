@@ -12,6 +12,8 @@ import org.eclipse.swt.graphics.Image;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+import name.abuchen.portfolio.model.ImageManager;
+
 @SuppressWarnings("restriction")
 public enum Images
 {
@@ -138,15 +140,24 @@ public enum Images
         this.file = file;
     }
 
-    public static Image resolve(String file)
+    public static Image resolve(String file, boolean disabled)
     {
-        Image image = imageRegistry.get(file);
-        if (image == null)
+        String key = file + ":" + disabled; //$NON-NLS-1$
+        Image image = imageRegistry.get(key);
+        if (image != null)
         {
-            descriptor(file); // lazy loading
-            image = imageRegistry.get(file);
+            return image; //
         }
+        ImageDescriptor desc = descriptor(file); // lazy loading
+        image = imageRegistry.get(file);
+        if (!disabled)
+        {
+            return image; //
+        }
+        image = ImageManager.getDisabledVersion(image);
+        imageRegistry.put(key, image); // $NON-NLS-1$
         return image;
+
     }
 
     private static ImageDescriptor descriptor(String file)
@@ -170,7 +181,12 @@ public enum Images
 
     public Image image()
     {
-        return resolve(file);
+        return image(false);
+    }
+
+    public Image image(boolean disabled)
+    {
+        return resolve(file, disabled);
     }
 
     public String getImageURI()

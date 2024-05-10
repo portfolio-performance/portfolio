@@ -83,12 +83,17 @@ public final class ImageManager // NOSONAR
 
                 if (disabled)
                 {
-                    img = new Image(null, img, SWT.IMAGE_DISABLE);
+                    img = getDisabledVersion(img);
                 }
                 imageCache.put(imgKey, img);
                 return img;
             }
         }
         return null;
+    }
+
+    public static Image getDisabledVersion(Image img)
+    {
+        return new Image(null, img, SWT.IMAGE_DISABLE);
     }
 }
