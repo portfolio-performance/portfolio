@@ -1450,6 +1450,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         // 10.02.     10.02.  CASH / 0/377366                                   1.300,00+
         // 01.10.     01.10.  EINZAHLUNG 4 FLATEX / 0/16765097                  2.000,00+
         // 19.11.     19.11.  R-Transaktion                                       -53,00-
+        // 02.08.     01.08.  3cb27cfd-0454-4dad-88bd-a60c6f1ba3f8                  0,11+
         // @formatter:on
         Block depositRemovalblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?" //
                         + "(.berweisung" //
@@ -1457,10 +1458,11 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         + "|CASH .*" //
                         + "|EINZAHLUNG .*" //
                         + "|AUSZAHLUNG .*" //
-                        + "|\\/REC\\/FC:.*" //
+                        + "|\\/REC\\/.*" //
                         + "|Pr.mie .*" //
+                        + "|[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+" //
                         + "|R\\-Transaktion) " //
-                        + "[\\s]{1,}[\\-\\.,\\d]+[\\+|\\-]$");
+                        + "[\\s]{1,}[\\-\\.,\\d]+[\\+|\\-].*");
         type.addBlock(depositRemovalblock);
         depositRemovalblock.set(new Transaction<AccountTransaction>()
 
@@ -1479,8 +1481,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         + "|CASH .*" //
                                         + "|EINZAHLUNG .*" //
                                         + "|AUSZAHLUNG .*" //
-                                        + "|\\/REC\\/FC:.*" //
+                                        + "|\\/REC\\/.*" //
                                         + "|Pr.mie .*" //
+                                        + "|[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+" //
                                         + "|R\\-Transaktion))" //
                                         + "[\\s]{1,}" //
                                         + "(?<amount>[\\-\\.,\\d]+)" //
@@ -1494,6 +1497,12 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(trim(v.get("note")));
+                        })
+                        .section("note2").optional() //
+                        .match("^[\\s]+(?<note2>ZINSPILOT Auszahlung .*)")
+                        .assign((t, v) -> {
+                            t.setNote(trim(v.get("note2")));
+                            t.setType(AccountTransaction.Type.INTEREST);
                         })
 
                         .wrap(TransactionItem::new));
@@ -2009,7 +2018,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-        addTaxReturnBlockForOptions(type);
     }
 
     private void addAdvanceTaxTransaction()

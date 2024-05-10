@@ -2331,6 +2331,60 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFinTechWertpapierAusgang07()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechWertpapierAusgang07.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000CM35Z36"), hasWkn(null), hasTicker(null), //
+                        hasName("COMMERZBANK INLINE09EO/SF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2009-12-29"), hasShares(650.00), //
+                        hasSource("FinTechWertpapierAusgang07.txt"), //
+                        hasNote("Transaktion-Nr.: 203036888"), //
+                        hasAmount("EUR", 0.65), hasGrossValue("EUR", 0.65), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2009-12-29"), hasShares(650.00), //
+                        hasSource("FinTechWertpapierAusgang07.txt"), //
+                        hasNote("Transaktion-Nr.: 203036888"), //
+                        hasAmount("EUR", 382.12), hasGrossValue("EUR", 382.12), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000SG1JXM7"), hasWkn(null), hasTicker(null), //
+                        hasName("SG EFF. INLINE09 DAX"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2009-12-29"), hasShares(13.00), //
+                        hasSource("FinTechWertpapierAusgang07.txt"), //
+                        hasNote("Transaktion-Nr.: 203037029"), //
+                        hasAmount("EUR", 130.00), hasGrossValue("EUR", 130.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testFinTechWertpapierEingang01()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
@@ -3086,6 +3140,48 @@ public class FinTechGroupBankPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2018-12-12"), hasAmount("EUR", 6.00), //
                         hasSource("FinTechKontoauszug06.txt"), hasNote("Prämie für die Teilnahme an der Morgan"))));
+    }
+
+    @Test
+    public void testFinTechKontoauszug07()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKontoauszug07.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interestCharge(hasDate("2019-06-30"), hasAmount("EUR", 0.50), //
+                        hasSource("FinTechKontoauszug07.txt"), hasNote("Zinsabschluss 01.04.2019 - 30.06.2019"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2019-07-02"), hasAmount("EUR", 495.05), //
+                        hasSource("FinTechKontoauszug07.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2019-08-01"), hasAmount("EUR", 0.11), //
+                        hasSource("FinTechKontoauszug07.txt"), hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2019-08-16"), hasAmount("EUR", 0.09), //
+                        hasSource("FinTechKontoauszug07.txt"), hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2019-09-02"), hasAmount("EUR", 0.11), //
+                        hasSource("FinTechKontoauszug07.txt"), hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2019-09-16"), hasAmount("EUR", 0.09), //
+                        hasSource("FinTechKontoauszug07.txt"), hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."))));
     }
 
     @Test

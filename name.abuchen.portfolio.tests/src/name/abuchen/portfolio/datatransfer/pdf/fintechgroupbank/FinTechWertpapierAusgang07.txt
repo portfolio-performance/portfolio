@@ -1,0 +1,61 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.5.qualifier
+-----------------------------------------
+biw AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+biw AG -  Hausbroicher Str. 222 -  47877 Willich
+0003432000000126460600
+Herr 
+Max Mustermann 
+Musterstr. 2 
+54321 Musterhausen
+          Willich, den 30.12.2009
+Gutschrifts-/Belastungsanzeige
+Ihre Depotnummer: 1004322260
+Depotinhaber:     Max Mustermann
+------------------------------------------------------------------------------
+Depotausgang                          COMMERZBANK INLINE09EO/SF (DE000CM35Z36)
+------------------------------------------------------------------------------
+Stk./Nominale  : 650,000000 Stk         Einbeh. Steuer*:           -382,12 EUR
+Verwahrart     : GS-Verwahrung          Geldgegenwert**:            382,77 EUR
+Lagerstelle    : Clearstream Nat.
+Vermerk/Sperrschlüssel
+Transaktionsnr.  : 203036888                   Steuer    : -382,12         EUR
+Fälligkeitstag   : 29.12.2009                  Letzter Handelstag:  17.12.2009
+Rückzahlungsgrund: Opt.-Recht - vorz. KO       Betrag/Stk: 0,0010000000000 EUR
+*Einbehaltene Kapitalertragsteuer zuzüglich Solidaritätszuschlag und ggf.
+Kirchensteuer (negative Werte bedeuten Steuererstattung). Evtl. Details dazu
+finden Sie im Steuerreport unter der Transaktion-Nr.: 203036888.
+**Gutschrift auf Ihr Konto Nr. 1003232541
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Thomas J. Schmidt
+2000000126460600 00343000
+------------------------------------------------------------------------------
+Depotausgang                               SG EFF. INLINE09 DAX (DE000SG1JXM7)
+------------------------------------------------------------------------------
+Stk./Nominale  : 13,000000 Stk          Einbeh. Steuer*:              0,00 EUR
+Verwahrart     : GS-Verwahrung          Geldgegenwert**:            130,00 EUR
+Lagerstelle    : Clearstream Nat.
+Vermerk/Sperrschlüssel
+Transaktionsnr.  : 203037029                   Steuer    : 0,00            EUR
+Fälligkeitstag   : 29.12.2009                  Letzter Handelstag:  16.12.2009
+Rückzahlungsgrund: Ablauf der Optionsfrist     Betrag/Stk: 10,000000000000 EUR
+*Einbehaltene Kapitalertragsteuer zuzüglich Solidaritätszuschlag und ggf.
+Kirchensteuer (negative Werte bedeuten Steuererstattung). Evtl. Details dazu
+finden Sie im Steuerreport unter der Transaktion-Nr.: 203037029.
+**Gutschrift auf Ihr Konto Nr. 1003232541
+------------------------------------------------------------------------------
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Thomas J. Schmidt
+
+```
