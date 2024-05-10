@@ -469,6 +469,16 @@ public final class Security implements Attributable, InvestmentVehicle
         return isUpdated;
     }
 
+    /**
+     * Sets the prices of the security. Use only during protobuf deserialisation
+     * because a) the overwrite check is not needed and b) potential future
+     * prices should be included (see #3935).
+     */
+    /* protobuf only */ void protobufSetPrices(List<SecurityPrice> newPrices)
+    {
+        this.prices = newPrices;
+    }
+
     public void removePrice(SecurityPrice price)
     {
         prices.remove(price);
