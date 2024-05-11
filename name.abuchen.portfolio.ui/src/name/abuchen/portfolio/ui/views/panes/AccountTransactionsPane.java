@@ -12,8 +12,6 @@ import java.util.function.Function;
 import jakarta.inject.Inject;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
@@ -34,8 +32,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-
-import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -59,14 +55,13 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
-import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.searchfilter.TransactionFilterDropDown;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -81,7 +76,6 @@ import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.AccountContextMenu;
 import name.abuchen.portfolio.ui.views.AccountListView;
-import name.abuchen.portfolio.ui.views.AllTransactionsView.TransactionFilter;
 import name.abuchen.portfolio.ui.views.actions.ConvertTransferToDepositRemovalAction;
 import name.abuchen.portfolio.ui.views.columns.CalculatedQuoteColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
@@ -91,72 +85,6 @@ import name.abuchen.portfolio.ui.views.columns.WknColumn;
 
 public class AccountTransactionsPane implements InformationPanePage, ModificationListener
 {
-    private static final String TRANSACTION_FILTER_PREFERENCE_NAME = AccountTransactionsPane.class.getSimpleName()
-                    + "-transaction-type-filter"; //$NON-NLS-1$
-    private static final TransactionFilter DEFAULT_TYPE_FILTER = TransactionFilter.NONE;
-
-    private class FilterDropDown extends DropDown implements IMenuListener
-    {
-        public FilterDropDown(IPreferenceStore preferenceStore)
-        {
-            super(Messages.SecurityFilter, Images.FILTER_OFF, SWT.NONE);
-
-            preferenceStore.setDefault(TRANSACTION_FILTER_PREFERENCE_NAME, DEFAULT_TYPE_FILTER.name());
-            TransactionFilter transactionFilter = TransactionFilter
-                            .valueOf(preferenceStore.getString(TRANSACTION_FILTER_PREFERENCE_NAME));
-            typeFilter = transactionFilter;
-
-            setMenuListener(this);
-
-            updateIcon();
-
-            addDisposeListener(e -> preferenceStore.setValue(TRANSACTION_FILTER_PREFERENCE_NAME, typeFilter.name()));
-        }
-
-        private void updateIcon()
-        {
-            boolean hasActiveFilter = typeFilter != DEFAULT_TYPE_FILTER;
-            setImage(hasActiveFilter ? Images.FILTER_ON : Images.FILTER_OFF);
-        }
-
-        @Override
-        public void menuAboutToShow(IMenuManager manager)
-        {
-            manager.add(new LabelOnly(Messages.TransactionFilter));
-            for (TransactionFilter f : TransactionFilter.values())
-                manager.add(addTypeFilter(f));
-        }
-
-        private Action addTypeFilter(TransactionFilter filter)
-        {
-            Action action = new Action(Strings.repeat(" ", filter.getLevel() * 2) + filter.getName(), //$NON-NLS-1$
-                            IAction.AS_CHECK_BOX)
-            {
-                @Override
-                public void run()
-                {
-                    boolean isChecked = typeFilter == filter;
-
-                    // only one TransactionFilter can be selected at a time
-                    if (isChecked)
-                        typeFilter = DEFAULT_TYPE_FILTER;
-                    else
-                        typeFilter = filter;
-
-                    updateIcon();
-                    notifyModelUpdated();
-                }
-            };
-            action.setChecked(typeFilter == filter);
-            return action;
-        }
-    }
-
-    private TransactionFilter typeFilter;
-
-    @Inject
-    private PortfolioPart part;
-
     @Inject
     private Client client;
 
@@ -164,6 +92,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
     private AbstractFinanceView view;
 
     private TableViewer transactions;
+    private TransactionFilterDropDown transactionFilter;
     private ShowHideColumnHelper transactionsColumns;
     private AccountContextMenu accountMenu;
 
@@ -175,6 +104,14 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
      * balance in persistent AccountTransaction object.
      */
     private Map<AccountTransaction, Money> transaction2balance = new HashMap<>();
+
+    @Inject
+    public AccountTransactionsPane(IPreferenceStore preferenceStore)
+    {
+        transactionFilter = new TransactionFilterDropDown(preferenceStore,
+                        AccountTransactionsPane.class.getSimpleName() + "-transaction-type-filter", //$NON-NLS-1$
+                        criteria -> onRecalculationNeeded());
+    }
 
     @Override
     public String getLabel()
@@ -522,7 +459,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             public boolean select(Viewer viewer, Object parentElement, Object element)
             {
                 var tx = (AccountTransaction) element;
-                return typeFilter.matches(tx);
+                return transactionFilter.getFilterCriteria().matches(tx);
             }
         });
 
@@ -536,7 +473,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
     @Override
     public void addButtons(ToolBarManager toolBar)
     {
-        toolBar.add(new FilterDropDown(part.getPreferenceStore()));
+        toolBar.add(transactionFilter);
 
         toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
                         a -> new TableViewerCSVExporter(transactions).export(getLabel(),
