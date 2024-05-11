@@ -11,6 +11,8 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.LongStream;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+
 import name.abuchen.portfolio.math.AllTimeHigh;
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
@@ -22,6 +24,8 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.views.dashboard.charts.HoldingsChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.TaxonomyChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsByTaxonomyChartWidget;
@@ -176,6 +180,23 @@ public enum WidgetFactory
                                     .withTooltip((ds, period) -> Messages.TooltipVolatility) //
                                     .withColoredValues(false) //
                                     .build()),
+
+    SHARPE_RATIO(Messages.LabelSharpeRatio, Messages.LabelRiskIndicators, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data)
+                    .with(Values.PercentPlain)
+                    .withColoredValues(false)
+                    .with((ds,period) -> {
+                        IPreferenceStore store = PortfolioPlugin.getDefault().getPreferenceStore();
+                        PerformanceIndex index = data.calculate(ds,period);
+                        double r = index.getPerformanceIRR();
+                        double rf = store.getDouble(UIConstants.Preferences.SHARPE_RATIO_IRR)/10000;
+                        double volatility = index.getVolatility().getStandardDeviation();
+                        return (r-rf)/volatility;
+                    }) //
+                    .withTooltip((ds,period) -> {
+                        return Messages.TooltipSharpeRatio;
+                    }) //
+                    .build()),
 
     SEMIVOLATILITY(Messages.LabelSemiVolatility, Messages.LabelRiskIndicators, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //

@@ -250,6 +250,11 @@ public interface UIConstants
          */
         String CSV_EXPORT_PATH = "CSV_EXPORT_PATH"; //$NON-NLS-1$
 
+        /**
+         * Preference used to determine risk less deposit IRR in Sharp Ration
+         */
+        String SHARPE_RATIO_IRR = "SHARPE_RATIO_IRR"; //$NON-NLS-1$
+
     }
 
     interface Theme // NOSONAR
