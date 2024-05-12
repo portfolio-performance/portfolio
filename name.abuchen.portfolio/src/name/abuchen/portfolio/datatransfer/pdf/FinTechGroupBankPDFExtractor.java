@@ -1455,8 +1455,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         //                    SOGEFRPPHCM/
         // 10.12.     07.12.  Prämie für die Teilnahme an der Morgan                6,00+
         //                    Stanley-Aktion
-        // 02.08.     01.08.  3cb27cfd-0454-4dad-88bd-a60c6f1ba3f8                  0,11+
-        //                    ZINSPILOT Auszahlung FIMBank p.l.c.
         // @formatter:on
         Block depositRemovalblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?" //
                         + "(.berweisung" //
@@ -1466,9 +1464,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         + "|AUSZAHLUNG .*" //
                         + "|\\/REC\\/.*" //
                         + "|Pr.mie .*" //
-                        + "|[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+" //
                         + "|R\\-Transaktion) " //
-                        + "[\\s]{1,}[\\-\\.,\\d]+[\\+|\\-].*");
+                        + "[\\s]{1,}[\\-\\.,\\d]+[\\+|\\-].*$");
         type.addBlock(depositRemovalblock);
         depositRemovalblock.set(new Transaction<AccountTransaction>()
 
@@ -1505,15 +1502,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             t.setNote(trim(v.get("note")));
                         })
                         .section("note2").optional() //
-                        .match("^[\\s]+(?<note2>ZINSPILOT Auszahlung .*)$")
-                        .assign((t, v) -> {
-                            t.setNote(trim(v.get("note2")));
-                            t.setType(AccountTransaction.Type.INTEREST);
-                        })
-                        .section("note2").optional() //
                         .match("^[\\s]+(?<note2> .*\\-Aktion).*$")
                         .assign((t, v) -> {
-                            t.setNote(t.getNote() + (v.get("note2")));
+                            t.setNote(t.getNote().replace("für die Teilnahme an der ", "") + (v.get("note2")));
                         })
 
                         .wrap(TransactionItem::new));
@@ -1601,8 +1592,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 30.12.     31.12.  Zinsabschluss   01.10.2014 - 31.12.2014               7,89+
+        // 02.08.     01.08.  3cb27cfd-0454-4dad-88bd-a60c6f1ba3f8                  0,11+
+        //                    ZINSPILOT Auszahlung FIMBank p.l.c.
         // @formatter:on
-        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}Zinsabschluss .*$");
+        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]+" //
+                        + "(Zinsabschluss" //
+                        + "|[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+)" //
+                        + ".*$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -1614,10 +1610,11 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("year", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?" //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
-                                        + "(?<note>Zinsabschluss[\\s]{1,}([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\- ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))[\\s]{1,}" //
-                                        + "(?<amount>[\\.,\\d]+)" //
+                                        + "(?<note>Zinsabschluss[\\s]{1,}([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\- ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4})"
+                                        + "|[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+)[\\s]+" //
+                                        + "(?<amount>[\\-\\.,\\d]+)" //
                                         + "(?<type>[\\+|\\-])$") //
                         .assign((t, v) -> {
                             // Is type --> "+" change from INTEREST_CHARGE to INTEREST
@@ -1628,6 +1625,11 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(replaceMultipleBlanks(v.get("note")));
+                        })
+
+                        .section("note2").optional() //
+                        .match("^[\\s]+(?<note2>ZINSPILOT Auszahlung .*)$").assign((t, v) -> {
+                            t.setNote(trim(v.get("note2")));
                         })
 
                         .wrap(t -> {

@@ -3124,27 +3124,27 @@ public class FinTechGroupBankPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2018-12-06"), hasAmount("EUR", 12.00), //
                         hasSource("FinTechKontoauszug06.txt"),
-                        hasNote("Prämie für die Teilnahme an der Morgan Stanley-Aktion"))));
+                        hasNote("Prämie Morgan Stanley-Aktion"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2018-12-07"), hasAmount("EUR", 6.00), //
                         hasSource("FinTechKontoauszug06.txt"),
-                        hasNote("Prämie für die Teilnahme an der Morgan Stanley-Aktion"))));
+                        hasNote("Prämie Morgan Stanley-Aktion"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2018-12-10"), hasAmount("EUR", 2.00), //
                         hasSource("FinTechKontoauszug06.txt"),
-                        hasNote("Prämie für die Teilnahme an der Morgan Stanley-Aktion"))));
+                        hasNote("Prämie Morgan Stanley-Aktion"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2018-12-11"), hasAmount("EUR", 8.00), //
                         hasSource("FinTechKontoauszug06.txt"),
-                        hasNote("Prämie für die Teilnahme an der Morgan Stanley-Aktion"))));
+                        hasNote("Prämie Morgan Stanley-Aktion"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2018-12-12"), hasAmount("EUR", 6.00), //
                         hasSource("FinTechKontoauszug06.txt"),
-                        hasNote("Prämie für die Teilnahme an der Morgan Stanley-Aktion"))));
+                        hasNote("Prämie Morgan Stanley-Aktion"))));
     }
 
     @Test
