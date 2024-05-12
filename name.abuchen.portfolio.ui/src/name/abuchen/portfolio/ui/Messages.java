@@ -1334,6 +1334,8 @@ public class Messages extends NLS
     public static String OptionDateIsInTheFuture;
     public static String OptionDateIsInThePast;
     public static String YearlyPerformanceHeatmapToolTip;
+    public static String LabelExpandCurrentMonth;
+    public static String LabelTreeExpansionConfig;
     static
     {
         // initialize resource bundle
