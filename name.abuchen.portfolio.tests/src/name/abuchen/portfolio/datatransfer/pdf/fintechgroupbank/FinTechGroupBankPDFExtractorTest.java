@@ -895,6 +895,60 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testbiwAGWertpapierAusgang01()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "biwAGWertpapierAusgang01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000CM35Z36"), hasWkn(null), hasTicker(null), //
+                        hasName("COMMERZBANK INLINE09EO/SF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2009-12-29"), hasShares(650.00), //
+                        hasSource("biwAGWertpapierAusgang01.txt"), //
+                        hasNote("Transaktion-Nr.: 203036888"), //
+                        hasAmount("EUR", 0.65), hasGrossValue("EUR", 0.65), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2009-12-29"), hasShares(650.00), //
+                        hasSource("biwAGWertpapierAusgang01.txt"), //
+                        hasNote("Transaktion-Nr.: 203036888"), //
+                        hasAmount("EUR", 382.12), hasGrossValue("EUR", 382.12), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000SG1JXM7"), hasWkn(null), hasTicker(null), //
+                        hasName("SG EFF. INLINE09 DAX"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2009-12-29"), hasShares(13.00), //
+                        hasSource("biwAGWertpapierAusgang01.txt"), //
+                        hasNote("Transaktion-Nr.: 203037029"), //
+                        hasAmount("EUR", 130.00), hasGrossValue("EUR", 130.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testbiwAGKontoauszug01()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
@@ -2328,60 +2382,6 @@ public class FinTechGroupBankPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-    }
-
-    @Test
-    public void testFinTechWertpapierAusgang07()
-    {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechWertpapierAusgang07.txt"),
-                        errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(2L));
-        assertThat(countBuySell(results), is(2L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(5));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
-
-        // check security
-        assertThat(results, hasItem(security( //
-                        hasIsin("DE000CM35Z36"), hasWkn(null), hasTicker(null), //
-                        hasName("COMMERZBANK INLINE09EO/SF"), //
-                        hasCurrencyCode("EUR"))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(sale( //
-                        hasDate("2009-12-29"), hasShares(650.00), //
-                        hasSource("FinTechWertpapierAusgang07.txt"), //
-                        hasNote("Transaktion-Nr.: 203036888"), //
-                        hasAmount("EUR", 0.65), hasGrossValue("EUR", 0.65), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check tax refund transaction
-        assertThat(results, hasItem(taxRefund( //
-                        hasDate("2009-12-29"), hasShares(650.00), //
-                        hasSource("FinTechWertpapierAusgang07.txt"), //
-                        hasNote("Transaktion-Nr.: 203036888"), //
-                        hasAmount("EUR", 382.12), hasGrossValue("EUR", 382.12), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check security
-        assertThat(results, hasItem(security( //
-                        hasIsin("DE000SG1JXM7"), hasWkn(null), hasTicker(null), //
-                        hasName("SG EFF. INLINE09 DAX"), //
-                        hasCurrencyCode("EUR"))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(sale( //
-                        hasDate("2009-12-29"), hasShares(13.00), //
-                        hasSource("FinTechWertpapierAusgang07.txt"), //
-                        hasNote("Transaktion-Nr.: 203037029"), //
-                        hasAmount("EUR", 130.00), hasGrossValue("EUR", 130.00), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
