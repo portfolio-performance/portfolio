@@ -859,8 +859,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         //
         // . 16.08.2019 16.08.2019 Lastschrift               12,37-
         //  1 3.11.2017 13.11.2017 Zahlungseingang              289,00+
+        // . 1.TAN 00023613.06.2016 13.06.2016 Überweisung              161,00-
         // @formatter:on
-        Block depositRemovalBlock_Format02 = new Block("^([\\.\\s]+)?[\\d\\s]{1,3}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+        Block depositRemovalBlock_Format02 = new Block("^.*\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                                         + "(Lastschrift" //
                                         + "|.berweisung online" //
                                         + "|.berweisung" //
@@ -899,8 +900,8 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "type", "amount") //
                         .documentContext("currency") //
-                        .match("^([\\.\\s]+)?(?<date>[\\d\\s]{1,3}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        .match("^.*.[\\d]{2}\\.[\\d]{4} " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?<note>(Lastschrift" //
                                         + "|.berweisung online" //
                                         + "|.berweisung" //
@@ -992,7 +993,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "note", "amount", "type") //
                                                         .documentContext("currency") //
-                                                        .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                                                        .match("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                                                         .match("^(?<note>(Lastschrift" //
                                                                         + "|.berweisung online" //
                                                                         + "|.berweisung" //
@@ -1059,7 +1060,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "note", "amount", "type") //
                                                         .documentContext("currency") //
-                                                        .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                                                        .match("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                                                         .match("^(?<note>(Lastschrift" //
                                                                         + "|.berweisung online" //
                                                                         + "|.berweisung" //
@@ -1290,7 +1291,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("currency") //
-                        .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        .match("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?<note>(Lastschrift" //
                                         + "|.berweisung online" //
                                         + "|.berweisung" //
@@ -1527,12 +1528,13 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^.* (?<type>[\\-|\\+|\\s])(?<amount>[\\.,\\d]+)$") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>(Buchung beleglos)).*$") //
-                        .match("\\d+ Steuerausgleich Kapitalertragsteuer")
+                                        + "(?<note>Buchung beleglos).*$") //
+                        .match("[\\d]+ Steuerausgleich Kapitalertragsteuer") //
                         .assign((t, v) -> {
                             // Is type --> "-" change from TAX_REFUND to TAXES
                             if ("-".equals(trim(v.get("type"))))
                                 t.setType(AccountTransaction.Type.TAXES);
+
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
@@ -1540,15 +1542,9 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
-                            TransactionItem item = new TransactionItem(t);
-
-                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
-
-                            if (t.getDateTime() == null && t.getNote() == null)
-                                return null;
-
-                            return item;
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
                         }));
     }
 
@@ -1808,7 +1804,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         // einbehaltene Kapitalertragsteuer EUR 7,03
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^einbehaltene Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .match("^einbehaltene Kapitalertrags(s)?teuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative")
                                             && !type.getCurrentContext().getBoolean("noTax"))
@@ -1817,9 +1813,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Kapitalertragsteuer 24,51 % auf 11,00 EUR 2,70- EUR
+                        // Kapitalertragsteuer 25,00% auf 768,37 EUR 192,09- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kapitalertragsteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Kapitalertrags(s)?teuer [\\.,\\d]+([\\s])?% .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative")
                                             && !type.getCurrentContext().getBoolean("noTax"))
@@ -1830,7 +1827,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer EUR 70,16
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .match("^Kapitalertrags(s)?teuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative")
                                             && !type.getCurrentContext().getBoolean("noTax"))
@@ -1861,9 +1858,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Solidaritätszuschlag 5,5 % auf 2,70 EUR 0,14- EUR
+                        // Solidaritätszuschlag 5,50% auf 192,09 EUR 10,56- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Solidarit.tszuschlag [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s])?% .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative")
                                             && !type.getCurrentContext().getBoolean("noTax"))
@@ -1896,7 +1894,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         // Kirchensteuer 8 % auf 2,70 EUR 0,21- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kirchensteuer [\\.,\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Kirchensteuer [\\.,\\d]+([\\s])?% .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative")
                                             && !type.getCurrentContext().getBoolean("noTax"))
@@ -1940,7 +1938,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         // davon anrechenbare US-Quellensteuer 15% USD 13,13
                         // @formatter:on
                         .section("currency", "creditableWithHoldingTax").optional() //
-                        .match("^davon anrechenbare US\\-Quellensteuer [\\.,\\d]+% (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$") //
+                        .match("^davon anrechenbare US\\-Quellensteuer [\\.,\\d]+([\\s])?% (?<currency>[\\w]{3}) (?<creditableWithHoldingTax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative")
                                             && !type.getCurrentContext().getBoolean("noTax"))
@@ -1957,7 +1955,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         // Handelszeit 09:04 Orderentgelt EUR 9,97 -
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^.* Orderentgelt ([\\s]+)?(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$") //
+                        .match("^.* Orderentgelt[\\s]{1,}(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)([\\s]+)?\\-$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -2001,7 +1999,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         // Provision 2,5015 % vom Kurswert 1,25- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Provision [\\.,\\d]+ % vom Kurswert (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$") //
+                        .match("^Provision [\\.,\\d]+([\\s])?% vom Kurswert (?<fee>[\\.,\\d]+)([\\s]+)?\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -2027,7 +2025,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("amount", "currency", "discount", "discountCurrency", "percentageFee").optional() //
                         .match("^Kurswert (?<amount>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
-                        .match("^Kundenbonifikation [\\.,\\d]+ % vom (Ausgabeaufschlag|Kurswert) (?<discount>[\\.,\\d]+) (?<discountCurrency>[\\w]{3})$") //
+                        .match("^Kundenbonifikation [\\.,\\d]+([\\s])?% vom (Ausgabeaufschlag|Kurswert) (?<discount>[\\.,\\d]+) (?<discountCurrency>[\\w]{3})$") //
                         .match("^Ausgabeaufschlag pro Anteil (?<percentageFee>[\\.,\\d]+) %$") //
                         .assign((t, v) -> {
                             BigDecimal percentageFee = asBigDecimal(v.get("percentageFee"));
