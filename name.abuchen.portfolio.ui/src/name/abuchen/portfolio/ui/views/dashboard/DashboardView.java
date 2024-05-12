@@ -847,6 +847,7 @@ public class DashboardView extends AbstractHistoricView
         Dashboard.Widget widget = new Dashboard.Widget();
         widget.setLabel(widgetType.getLabel());
         widget.setType(widgetType.name());
+        widget.setNewWidget(true);
         column.getWidgets().add(widget);
 
         WidgetDelegate<?> delegate = buildDelegateAndMoveAboveFiller(columnControl, widgetType, widget).getLeft();

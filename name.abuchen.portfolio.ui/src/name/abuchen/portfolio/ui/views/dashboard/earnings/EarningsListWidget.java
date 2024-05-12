@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.dashboard.earnings;
 import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -11,11 +12,14 @@ import jakarta.inject.Inject;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.forms.HyperlinkSettings;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
@@ -34,6 +38,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
@@ -43,6 +48,7 @@ import name.abuchen.portfolio.ui.views.dashboard.ClientFilterConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardView;
+import name.abuchen.portfolio.ui.views.dashboard.EnumBasedConfig;
 import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsListWidget.Model;
 import name.abuchen.portfolio.util.Interval;
@@ -50,6 +56,37 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class EarningsListWidget extends WidgetDelegate<Model>
 {
+
+    public enum ExpansionSetting
+    {
+        EXPAND_ALL(Messages.ExpandAll), //
+        EXPAND_CURRENT_MONTH(Messages.ExpandCurrentMonth), //
+        COLLAPSE_ALL(Messages.CollapseAll), //
+        ;
+
+        private ExpansionSetting(String label)
+        {
+            this.label = label;
+        }
+
+        private String label;
+
+        @Override
+        public String toString()
+        {
+            return label;
+        }
+    }
+
+    static class ExpansionSettingConfig extends EnumBasedConfig<ExpansionSetting>
+    {
+        public ExpansionSettingConfig(WidgetDelegate<?> delegate)
+        {
+            super(delegate, Messages.LabelTreeExpansionConfig, ExpansionSetting.class, Dashboard.Config.LAYOUT,
+                            Policy.EXACTLY_ONE);
+        }
+    }
+
     public static class Model
     {
         private final GrossNetType grossNetType;
@@ -101,6 +138,8 @@ public class EarningsListWidget extends WidgetDelegate<Model>
     private Label labelYear;
     private Label labelSum;
     private Composite list;
+    private boolean[] collapsed;
+    private ExpansionSetting previousExpansion;
 
     public EarningsListWidget(Widget widget, DashboardData data)
     {
@@ -109,6 +148,11 @@ public class EarningsListWidget extends WidgetDelegate<Model>
         addConfig(new ClientFilterConfig(this));
         addConfig(new EarningTypeConfig(this));
         addConfig(new GrossNetTypeConfig(this));
+        if (widget.isNewWidget())
+        {
+            widget.getConfiguration().put(Dashboard.Config.LAYOUT.name(), ExpansionSetting.EXPAND_CURRENT_MONTH.name());
+        }
+        addConfig(new ExpansionSettingConfig(this));
 
         String year = widget.getConfiguration().get(Dashboard.Config.START_YEAR.name());
         if (year != null)
@@ -247,6 +291,12 @@ public class EarningsListWidget extends WidgetDelegate<Model>
         this.labelTitle.setText(getWidget().getLabel());
         this.labelYear.setText(String.valueOf(model.getYear()));
         this.labelSum.setText(Values.Money.format(model.sum, getClient().getBaseCurrency()));
+        ExpansionSetting expansion = get(ExpansionSettingConfig.class).getValue();
+        if (collapsed == null || previousExpansion != expansion)
+        {
+            createCollapsedArray();
+        }
+        previousExpansion = expansion;
 
         Control[] children = list.getChildren();
         for (Control child : children)
@@ -261,6 +311,10 @@ public class EarningsListWidget extends WidgetDelegate<Model>
             Label separator = new Label(list, SWT.SEPARATOR | SWT.HORIZONTAL);
             GridDataFactory.fillDefaults().grab(true, false).applyTo(separator);
 
+            if (collapsed[month.monthOfYear - 1])
+            {
+                continue; //
+            }
             for (TransactionPair<AccountTransaction> tx : month.transactions)
             {
                 Composite item = createItem(list, tx, model.grossNetType);
@@ -275,6 +329,25 @@ public class EarningsListWidget extends WidgetDelegate<Model>
         ((DashboardView) this.view).updateScrolledCompositeMinSize();
     }
 
+    private void createCollapsedArray()
+    {
+        ExpansionSetting expansion = get(ExpansionSettingConfig.class).getValue();
+        collapsed = new boolean[12];
+
+        if (expansion.equals(ExpansionSetting.EXPAND_ALL))
+        {
+            return; //
+        }
+        Arrays.fill(collapsed, true);
+        if (expansion.equals(ExpansionSetting.COLLAPSE_ALL))
+        {
+            return; //
+        }
+        LocalDate now = LocalDate.now();
+
+        collapsed[now.getMonthValue() - 1] = false;
+    }
+
     protected Composite createMonthHeader(Composite parent, MonthData month)
     {
         Composite composite = new Composite(parent, SWT.NONE);
@@ -282,7 +355,31 @@ public class EarningsListWidget extends WidgetDelegate<Model>
 
         Label label = new Label(composite, SWT.NONE);
         label.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
-        label.setText(monthLabels[month.monthOfYear - 1]);
+        int mVal = month.monthOfYear - 1;
+        label.setText(monthLabels[mVal]);
+        label.setCursor(new HyperlinkSettings(parent.getDisplay()).getHyperlinkCursor());
+        label.addMouseListener(new MouseListener()
+        {
+
+            @Override
+            public void mouseUp(MouseEvent e)
+            {
+                collapsed[mVal] = !collapsed[mVal];
+                update();
+            }
+
+            @Override
+            public void mouseDown(MouseEvent e)
+            {
+                // empty, we're waiting for mouse-up
+            }
+
+            @Override
+            public void mouseDoubleClick(MouseEvent e)
+            {
+                // maybe another time with another function behind it
+            }
+        });
 
         Label sum = new Label(composite, SWT.RIGHT);
         sum.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);

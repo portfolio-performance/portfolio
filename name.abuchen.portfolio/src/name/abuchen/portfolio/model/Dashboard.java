@@ -60,6 +60,7 @@ public final class Dashboard
         private String type;
         private String label;
         private Map<String, String> configuration;
+        private transient boolean newWidget;
 
         public String getType()
         {
@@ -79,6 +80,16 @@ public final class Dashboard
         public void setLabel(String label)
         {
             this.label = label;
+        }
+
+        public boolean isNewWidget()
+        {
+            return newWidget;
+        }
+
+        public void setNewWidget(boolean val)
+        {
+            this.newWidget = val;
         }
 
         public Map<String, String> getConfiguration()
