@@ -837,6 +837,9 @@ public class ClientFactory
                 fixDataSeriesLabelForAccumulatedTaxes(client);
             case 59:
                 fixNullSecurityProperties(client);
+            case 60:
+                // added type to investment plan
+                fixInvestmentPlanTypes(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1569,6 +1572,34 @@ public class ClientFactory
                     security.removeProperty(null);
                 }
             }
+        }
+    }
+
+    private static void fixInvestmentPlanTypes(Client client)
+    {
+        for (InvestmentPlan plan : client.getPlans())
+        {
+            InvestmentPlan.Type type;
+
+            if (plan.getPortfolio() != null)
+            {
+                if (plan.getSecurity() == null)
+                    throw new IllegalArgumentException("security is null with a set portfolio for" + plan.getName()); //$NON-NLS-1$
+
+                type = InvestmentPlan.Type.BUY_OR_DELIVERY;
+            }
+            else
+            {
+                if (plan.getAccount() == null)
+                    throw new IllegalArgumentException("portfolio and account are not set for " + plan.getName()); //$NON-NLS-1$
+
+                if (plan.getSecurity() == null)
+                    type = (plan.getAmount() >= 0) ? InvestmentPlan.Type.DEPOSIT : InvestmentPlan.Type.REMOVAL;
+                else
+                    throw new IllegalArgumentException("security is set with a set account for " + plan.getName()); //$NON-NLS-1$
+            }
+
+            plan.setType(type);
         }
     }
 

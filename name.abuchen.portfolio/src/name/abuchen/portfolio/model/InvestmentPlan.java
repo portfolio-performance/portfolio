@@ -61,21 +61,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
     public Type getPlanType()
     {
-        if (type != null)
-            return type;
-
-        if (portfolio != null)
-        {
-            if (security == null)
-                throw new IllegalArgumentException("security is null with a set portfolio for" + name); //$NON-NLS-1$
-            return Type.BUY_OR_DELIVERY;
-        }
-        if (account == null)
-            throw new IllegalArgumentException("portfolio and account are not set for " + name); //$NON-NLS-1$
-        if (security == null)
-            return (amount >= 0) ? Type.DEPOSIT : Type.REMOVAL;
-        else
-            throw new IllegalArgumentException("security is set with a set account for " + name); //$NON-NLS-1$
+        return type;
     }
 
     public void setType(Type type)
