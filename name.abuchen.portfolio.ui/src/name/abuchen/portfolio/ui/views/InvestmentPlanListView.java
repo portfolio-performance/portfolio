@@ -302,10 +302,23 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
             public String getText(Object e)
             {
                 InvestmentPlan plan = (InvestmentPlan) e;
-                return Values.Money.format(Money.of(plan.getCurrencyCode(), plan.getFees()));
+                return Values.Money.formatNonZero(Money.of(plan.getCurrencyCode(), plan.getFees()));
             }
         });
         ColumnViewerSorter.create(InvestmentPlan.class, "fees").attachTo(column); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                InvestmentPlan plan = (InvestmentPlan) e;
+                return Values.Money.formatNonZero(Money.of(plan.getCurrencyCode(), plan.getTaxes()));
+            }
+        });
+        ColumnViewerSorter.create(InvestmentPlan.class, "taxes").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAutoGenerate, SWT.LEFT, 80);
