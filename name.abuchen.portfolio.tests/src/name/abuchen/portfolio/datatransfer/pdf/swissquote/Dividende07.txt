@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 262273 - TRADING
+IBAN: CH9408781000050436600
+Herrn FKpoEY exXwkogSAs
+HnDzqnZDktBqYOzkgs 9
+CH-8465 kZwPyz
+Gland, 13.12.2023
+Dividende Unsere Referenz: 548895976 
+Im Hinblick auf folgenden Titel:
+Titel
+Bezeichnung Anzahl
+VanEck Global Real Estate ETF ISIN: NL0009690239NKN: 12740525 420
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben: 
+Kontonummer 35415138
+Ausführungsdatum 06.12.2023
+Valutadatum 13.12.2023
+Anzahl 420
+Dividende 0.32 EUR
+Betrag EUR 134.40
+Quellensteuer 15.00% (NL) EUR 20.16
+Total EUR 114.24
+Wechselkurs EUR / CHF : 0.94515
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland  Formular ohne Unterschrift | SE&O.
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+CHE-116.310.079 MwSt

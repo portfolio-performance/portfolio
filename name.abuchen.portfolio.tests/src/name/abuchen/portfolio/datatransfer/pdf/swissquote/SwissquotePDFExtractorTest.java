@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf.swissquote;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
@@ -801,6 +802,37 @@ public class SwissquotePDFExtractorTest
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testDividende07()
+    {
+        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0009690239"), hasWkn(null), hasTicker(null), //
+                        hasName("VanEck Global Real Estate ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-12-13T00:00"), hasShares(420.000), //
+                        hasSource("Dividende07.txt"), //
+                        hasNote("Referenz: 548895976"), //
+                        hasAmount("EUR", 114.24), hasGrossValue("EUR", 134.40), //
+                        hasTaxes("EUR", 20.16), hasFees("EUR", 0.00))));
     }
 
     @Test
