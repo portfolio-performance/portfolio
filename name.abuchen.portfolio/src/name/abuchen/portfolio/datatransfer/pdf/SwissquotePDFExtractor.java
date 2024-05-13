@@ -1,11 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -285,6 +287,23 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        // @formatter:off
+                        // Betrag EUR 134.40
+                        // Wechselkurs EUR / CHF : 0.94515
+                        // @formatter:on
+                        .section("fxGross", "termCurrency", "baseCurrency", "exchangeRate").optional()//
+                        .match("^Betrag [\\w]{3} (?<fxGross>[\\.'\\d]+)$") //
+                        .match("^Wechselkurs (?<termCurrency>[\\w]{3}) \\/ (?<baseCurrency>[\\w]{3}) : (?<exchangeRate>[\\.'\\d]+)$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
 
                         // @formatter:off
