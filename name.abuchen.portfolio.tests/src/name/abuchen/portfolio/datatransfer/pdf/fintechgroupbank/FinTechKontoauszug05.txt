@@ -1,0 +1,219 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.5.qualifier
+-----------------------------------------
+FinTech Group Bank AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+             Frankfurt, 02.07.2017
+0101012000000791927440
+Herr 
+Max Mustermann 
+Musterstr. 2 
+54321 Musterhausen
+Kontoauszug Nr:    002/2017                              Seite 1 von 4
+Kontonummer :      1003232541  dazugehörige IBAN:  DE31 1013 0800 1002 4598 75
+Kontenart   :      Kontokorrentkonto
+Kontowährung:      EUR
+Alter Saldo vom    31.03.2017                     in EUR             1.856,65+
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+01.04.     31.03.  Zinsabschluss   01.01.2017 - 31.03.2017               0,48-
+03.04.     05.04.  Ausführung ORDER Kauf   DE000VN7AXF3              1.003,90-
+                   94388911                                                   
+04.04.     06.04.  Ausführung ORDER Kauf   DE000VN7AXF3                405,90-
+                   94415630
+04.04.     06.04.  Ausführung ORDER Verkauf   DE000VN7AXF3           1.596,10+
+                   94415905                                                   
+07.04.     07.04.  /REC/FC:MAX                      2.250,00+
+                   MUSTERMANN,//MUSTERSTR 2 MUSTERHAUSEN GERMANY /
+                   SOGEFRPPHCM/
+12.04.     18.04.  Ausführung ORDER Kauf   DE000PS8WZ59              1.228,90-
+                   94559601                                                   
+12.04.     19.04.  Ausführung ORDER Verkauf   DE000PS8WZ59           1.746,10+
+                   94580752
+21.04.     25.04.  Ausführung ORDER Kauf   DE000GD335V6              1.880,90-
+                   94704165                                                   
+21.04.     26.04.  Ausführung ORDER Kauf   DE000PR3R1A2              1.383,90-
+                   94708633
+24.04.     26.04.  Ausführung ORDER Verkauf   DE000PR3R1A2           3.516,10+
+                   94711140                                                   
+24.04.     26.04.  Ausführung ORDER Verkauf   DE000GD335V6              69,10+
+                   94711154
+03.05.     05.05.  Ausführung ORDER Kauf   DE000SC2AUH4              1.493,40-
+                   94920039                                                   
+03.05.     05.05.  Ausführung ORDER Kauf   DE000SC2AZN1              1.493,40-
+                   94920013
+04.05.     08.05.  Ausführung ORDER Kauf   DE000DM2CJJ4              2.083,90-
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000791927440 0113101010000101
+Kontoauszug Nr:    002/2017                              Seite 2 von 4
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+                   94949804                                                   
+04.05.     09.05.  Ausführung ORDER Verkauf   DE000SC2AUH4             606,60+
+                   94934056
+04.05.     09.05.  Ausführung ORDER Verkauf   DE000SC2AZN1           2.969,10+
+                   94929866                                                   
+04.05.     09.05.  Ausführung ORDER Kauf   DE000GD0ZR06              1.261,40-
+                   94964087
+08.05.     10.05.  Ausführung ORDER Kauf   DE000GD0ZR06                935,90-
+                   95012443                                                   
+08.05.     10.05.  Ausführung ORDER Kauf   DE000TD84AE5                980,90-
+                   95014197
+08.05.     10.05.  Ausführung ORDER Verkauf   DE000TD84AE5           1.369,10+
+                   95014229                                                   
+09.05.     11.05.  Ausführung ORDER Kauf   DE000TD84997              1.055,90-
+                   95040890
+10.05.     10.05.  Ablauf der Optionsfrist  DE000DM2CJJ4             2.500,00+
+                   (mit Restwert)                                             
+15.05.     17.05.  Ausführung ORDER Kauf   DE000TD84997                419,90-
+                   95169371
+15.05.     17.05.  Ausführung ORDER Kauf   DE000DM3AK56              1.003,90-
+                   95172432                                                   
+16.05.     18.05.  Ausführung ORDER Kauf   DE000SC1V563              1.349,90-
+                   95185026
+17.05.     18.05.  Überweisung                                       2.500,00+
+                   EINZAHLUNG 15 FLATEX                                       
+                   BYLADEM1001                                                
+                   DE30120300000014442078                                     
+                   MAX MUSTER                                                
+                   KREF: BYLADEM1001E6F13703319666n8                          
+18.05.     22.05.  Ausführung ORDER Kauf   DE000SC1EVN4                855,90-
+                   95254797
+18.05.     22.05.  Ausführung ORDER Kauf   DE000SC14NT7                745,90-
+                   95256924                                                   
+18.05.     22.05.  Ausführung ORDER Kauf   DE000SC1EVN4                505,90-
+                   95262900
+18.05.     23.05.  Ausführung ORDER Verkauf   DE000SC14NT7             454,10+
+                   95272683                                                   
+19.05.     23.05.  Ausführung ORDER Kauf   DE000GD4Q487              1.000,90-
+                   95285671
+22.05.     22.05.  Opt.-Recht - vorz. KO  DE000DM3AK56 (mit              2,50+
+                   Restwert)                                                  
+22.05.     22.05.  Opt.-Recht - vorz. KO  DE000TD84997 (mit              3,30+
+                   Restwert)
+22.05.     24.05.  Ausführung ORDER Kauf   DE000GD4Q3H2                353,30-
+                   95313312                                                   
+23.05.     23.05.  Opt.-Recht - vorz. KO  DE000SC1V563 (mit              0,22+
+                   Restwert)
+23.05.     25.05.  Ausführung ORDER Verkauf   DE000GD4Q3H2             405,19+
+                   95313433                                                   
+23.05.     25.05.  Ausführung ORDER Kauf   DE000GD4Q3D1                404,90-
+                   95348648
+26.05.     26.05.  Ablauf der Optionsfrist  DE000SC1EVN4             2.600,00+
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000791927440
+Kontoauszug Nr:    002/2017                              Seite 3 von 4
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+                   (mit Restwert)                                             
+07.06.     09.06.  Ausführung ORDER Kauf   DE000GD4Z9G0                765,90-
+                   95618414
+07.06.     12.06.  Ausführung ORDER Kauf   DE000SC2ZEM5                805,90-
+                   95618455                                                   
+08.06.     12.06.  Ausführung ORDER Verkauf   DE000GD4Z9G0           1.036,10+
+                   95635566
+08.06.     12.06.  Ausführung ORDER Kauf   DE000PR55DS7                505,90-
+                   95641218                                                   
+08.06.     13.06.  Ausführung ORDER Verkauf   DE000SC2ZEM5             206,60+
+                   95638986
+08.06.     13.06.  Ausführung ORDER Kauf   DE000GD00909                568,40-
+                   95641256                                                   
+09.06.     13.06.  Ausführung ORDER Kauf   DE000VN5GDF6                405,90-
+                   95655573
+12.06.     14.06.  Ausführung ORDER Kauf   DE000SE48XD4                511,90-
+                   95699735                                                   
+12.06.     14.06.  Ausführung ORDER Kauf   DE000VN5GDF6                205,90-
+                   95699775
+12.06.     14.06.  Ausführung ORDER Verkauf   DE000SE48XD4             654,10+
+                   95702922                                                   
+13.06.     14.06.  Überweisung                                       3.500,00+
+                   EINZAHLUNG 16 FLATEX
+                   BYLADEM1001
+                   DE30120300000014442078
+                   MAX MUSTER
+                   KREF: BYLADEM1001E6F16405746541o9
+14.06.     16.06.  Ausführung ORDER Kauf   DE000SE4U5F8                905,90-
+                   95737521                                                   
+14.06.     16.06.  Ausführung ORDER Kauf   DE000DGF8YJ6              1.805,90-
+                   95755256
+14.06.     16.06.  Ausführung ORDER Kauf   DE000GD4Z9H8              1.505,90-
+                   95759671                                                   
+15.06.     15.06.  Ablauf der Optionsfrist  DE000PR55DS7                 2,50+
+                   (mit Restwert)
+15.06.     19.06.  Ausführung ORDER Verkauf   DE000GD4Z9H8           5.044,10+
+                   95761035                                                   
+19.06.     19.06.  Opt.-Recht - vorz. KO  DE000VN5GDF6 (mit              1,50+
+                   Restwert)
+19.06.     21.06.  Ausführung ORDER Kauf   DE000SC3MMN2              2.005,90-
+                   95838116                                                   
+21.06.     26.06.  Ausführung ORDER Kauf   DE000SC3L7U9              2.005,90-
+                   95867194
+22.06.     22.06.  Ablauf der Optionsfrist  DE000SE4U5F8             1.500,00+
+                   (mit Restwert)                                             
+22.06.     26.06.  Ausführung ORDER Kauf   DE000VL1NV05              1.003,90-
+                   95913907
+22.06.     27.06.  Ausführung ORDER Verkauf   DE000SC3MMN2             314,10+
+                   95838441                                                   
+23.06.     23.06.  Ablauf der Optionsfrist  DE000DGF8YJ6                10,00+
+                   (mit Restwert)
+23.06.     27.06.  Ausführung ORDER Verkauf   DE000VL1NV05           1.671,10+
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000791927440
+Kontoauszug Nr:    002/2017                              Seite 4 von 4
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+                   95914407                                                   
+23.06.     27.06.  Ausführung ORDER Kauf   DE000SC3L719              1.505,90-
+                   95931848
+27.06.     29.06.  Ausführung ORDER Kauf   DE000SC3L735                905,90-
+                   95978413                                                   
+28.06.     30.06.  Ausführung ORDER Kauf   DE000SC3MM00              1.121,90-
+                   96002369
+29.06.     03.07.  Ausführung ORDER Verkauf   DE000SC3L735             114,10+
+                   95981002                                                   
+29.06.     03.07.  Ausführung ORDER Verkauf   DE000SC3L719              94,10+
+                   95934625
+29.06.     03.07.  Ausführung ORDER Verkauf   DE000SC3MM00           2.536,10+
+                   96002433                                                   
+Neuer Saldo 30.06.2017 Nr. 002/2017         Währung EUR              2.742,38+
+Der ausgewiesene Kontosaldo kann durch abweichende Wertstellung (Valuta) vom
+wertmäßigen Kontostand abweichen. Die Wertstellung von Buchungen ist auch
+relevant für die Berechnung von Zinsen.
+Gemäß § 11 Außenwirtschaftsgesetz (AWG) in Verbindung mit §§ 67 ff. Außen-
+wirtschaftsverordnung (AWV) haben Inländer (in Deutschland ansässige
+natürliche und juristische Personen) Zahlungen von mehr als 12 500 Euro oder
+Gegenwert zu melden, die sie von Ausländern (im Ausland ansässige natürliche
+und juristische Personen) oder für deren Rechnung von Inländern entgegennehmen
+(eingehende Zahlungen) oder an Ausländer oder für deren Rechnung an Inländer
+leisten (ausgehende Zahlungen). Die Deutsche Bundesbank und ihre Fillialen
+erteilen dazu gern die notwendigen Auskünfte.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes
+entschädigungsfähig. Nähere Informationen können dem "Informationsbogen für
+den Einleger" entnommen werden.
+Der Rechnungsabschluss wird Ihnen als separates Dokument zur Verfügung
+gestellt.
+Beanstandungen  gegen Rechnungsabschlüsse sind unverzüglich und schriftlich zu
+senden an:
+      FinTech Group Bank AG
+      Revision
+      Hausbroicher Str. 222
+      47877 Willich.
+Der Abschlusssaldo gilt als genehmigt, wenn ihm nicht innerhalb von 6 Wochen
+ab Zugang schriftlich widersprochen  wird. Zur Fristwahrung genügt die
+rechtzeitige Absendung der Einwendung.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000791927440
+
+```
