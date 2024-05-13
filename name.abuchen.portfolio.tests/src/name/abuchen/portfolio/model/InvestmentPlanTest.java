@@ -47,6 +47,9 @@ public class InvestmentPlanTest
     @Test
     public void testGenerationOfBuyTransaction() throws IOException
     {
+        investmentPlan.setType(InvestmentPlan.Type.BUY_OR_DELIVERY); // explicit
+                                                                     // now
+
         investmentPlan.setAccount(account); // set both account and portfolio
         investmentPlan.setPortfolio(portfolio); // causes securities to be
                                                 // bought
@@ -98,6 +101,9 @@ public class InvestmentPlanTest
     @Test
     public void testGenerationOfDeliveryTransaction() throws IOException
     {
+        investmentPlan.setType(InvestmentPlan.Type.BUY_OR_DELIVERY); // explicit
+                                                                     // now
+
         // investmentPlan.setAccount(account); // set portfolio only
         investmentPlan.setPortfolio(portfolio); // causes securities to be
                                                 // delivered in
@@ -134,6 +140,8 @@ public class InvestmentPlanTest
     @Test
     public void testGenerationOfDepositTransaction() throws IOException
     {
+        investmentPlan.setType(InvestmentPlan.Type.DEPOSIT); // explicit now
+
         investmentPlan.setAccount(account);
         investmentPlan.setStart(LocalDateTime.parse("2016-01-31T00:00"));
 
@@ -170,6 +178,8 @@ public class InvestmentPlanTest
     @Test
     public void testGenerationOfRemovalTransaction() throws IOException
     {
+        investmentPlan.setType(InvestmentPlan.Type.REMOVAL); // explicit now
+
         // Negative amount => REMOVAL transaction
         investmentPlan.setAmount(Values.Amount.factorize(-100));
         
@@ -195,6 +205,8 @@ public class InvestmentPlanTest
     @Test
     public void testNoGenerationWithStartInFuture() throws IOException
     {
+        investmentPlan.setType(InvestmentPlan.Type.DEPOSIT); // explicit now
+
         investmentPlan.setAccount(account);
         investmentPlan.setStart(LocalDate.now().minusMonths(6));
         investmentPlan.setInterval(12);
@@ -234,6 +246,9 @@ public class InvestmentPlanTest
     public void testErrorMessageWhenNoQuotesExist() throws IOException
     {
         security.removeAllPrices();
+
+        investmentPlan.setType(InvestmentPlan.Type.BUY_OR_DELIVERY); // explicit
+                                                                     // now
 
         investmentPlan.setAccount(account);
         investmentPlan.setPortfolio(portfolio);
