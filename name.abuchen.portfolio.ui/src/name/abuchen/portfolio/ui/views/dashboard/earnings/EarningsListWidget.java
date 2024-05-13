@@ -405,7 +405,7 @@ public class EarningsListWidget extends WidgetDelegate<Model>
                         getClient().getSettings()));
 
         Label name = new Label(composite, SWT.NONE);
-        name.setText(security != null ? security.getName() : account.getName());
+        name.setText(TextUtil.tooltip(security != null ? security.getName() : account.getName()));
         name.addListener(SWT.MouseUp, event -> view.setInformationPaneInput(pair.getTransaction().getSecurity()));
 
         Label earning = new Label(composite, SWT.RIGHT);
