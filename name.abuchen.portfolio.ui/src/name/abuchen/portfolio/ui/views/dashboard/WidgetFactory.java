@@ -190,13 +190,13 @@ public enum WidgetFactory
                         PerformanceIndex index = data.calculate(ds,period);
                         double r = index.getPerformanceIRR();
                         double rf = store.getDouble(UIConstants.Preferences.SHARPE_RATIO_IRR)/10000;
-            double volatility = index.getVolatility().getStandardDeviation();
-            
-            if (Double.isNaN(rf))
-                return Double.NaN; // Handle invalid rf value
-            
-            double excessReturn = r - rf;
-            return excessReturn / volatility;
+                        double volatility = index.getVolatility().getStandardDeviation();
+
+                        if (Double.isNaN(rf))
+                            return Double.NaN; // Handle invalid rf value
+
+                        double excessReturn = r - rf;
+                        return excessReturn / volatility;
                     }) //
                     .withTooltip((ds,period) -> {
                         return Messages.TooltipSharpeRatio;
