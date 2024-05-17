@@ -4848,7 +4848,7 @@ public class TradeRepublicPDFExtractorTest
 
         // check interest transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2023-01-31T00:00"), //
+                        hasDate("2023-02-01T00:00"), //
                         hasSource("Zinsabrechnung01.txt"), //
                         hasNote("2,00%"), //
                         hasAmount("EUR", 0.88), hasGrossValue("EUR", 0.88), //
@@ -4874,7 +4874,7 @@ public class TradeRepublicPDFExtractorTest
 
         // check interest transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2023-01-31T00:00"), //
+                        hasDate("2023-02-01T00:00"), //
                         hasSource("Zinsabrechnung02.txt"), //
                         hasNote("2,00%"), //
                         hasAmount("EUR", 2.58), hasGrossValue("EUR", 2.58), //
@@ -4900,7 +4900,7 @@ public class TradeRepublicPDFExtractorTest
 
         // check interest transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2023-10-31T00:00"), //
+                        hasDate("2023-11-01T00:00"), //
                         hasSource("Zinsabrechnung03.txt"), //
                         hasNote("01.10.2023 - 31.10.2023 (4,00%)"), //
                         hasAmount("EUR", 112.40), hasGrossValue("EUR", 152.67), //
@@ -4927,7 +4927,7 @@ public class TradeRepublicPDFExtractorTest
 
         // check interest transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2023-05-31"), //
+                        hasDate("2023-06-01"), //
                         hasSource("RescontoInteressiMaturati01.txt"), //
                         hasNote("2,00%"), //
                         hasAmount("EUR", 0.12), hasGrossValue("EUR", 0.12), //
@@ -4954,7 +4954,7 @@ public class TradeRepublicPDFExtractorTest
 
         // check interest transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2023-09-30"), //
+                        hasDate("2023-10-02"), //
                         hasSource("InterestInvoice01.txt"), //
                         hasNote("2,00%"), //
                         hasAmount("EUR", 1.47), hasGrossValue("EUR", 1.47), //
