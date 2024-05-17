@@ -28,13 +28,15 @@ eclipse configuration PortfolioPerformance {
 	ignore org.junit;
 	ignore org.hamcrest.core;
 	ignore org.hamcrest.library;
-	
-    memory min=512M max=1G;
     
     execution-environment 'JavaSE-17';
     
     argument "-consoleLog";
     
+    vm-argument "-Xms2G";
+    vm-argument "-Xmx6G";
+    vm-argument "-Xss320k";
+
     vm-argument "-XX:+IgnoreUnrecognizedVMOptions";
     vm-argument "--add-modules=ALL-SYSTEM";
     vm-argument "-XX:+UseG1GC";
