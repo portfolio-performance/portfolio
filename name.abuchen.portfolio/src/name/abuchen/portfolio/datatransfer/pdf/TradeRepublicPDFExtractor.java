@@ -1801,15 +1801,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
-                        // zum 31.01.2023
-                        // alla data 31.05.2023
-                        // as of 30.09.2023
-                        // @formatter:on
-                        .section("date") //
-                        .match("^(zum|alla data|as of) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
-                        // @formatter:off
                         // IBAN BUCHUNGSDATUM GUTSCHRIFT NACH STEUERN
                         // DE10123456789123456789 01.02.2023 0,88 EUR
                         //
@@ -1819,10 +1810,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // IBAN BOOKING DATE TOTAL
                         // DE27502109007011534672 02.10.2023 1,47 EUR
                         // @formatter:on
-                        .section("currency", "amount") //
+                        .section("date", "amount", "currency") //
                         .find("IBAN (BUCHUNGSDATUM|DATA EMISSIONE|BOOKING DATE) (GUTSCHRIFT NACH STEUERN|TOTALE|TOTAL)") //
-                        .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
