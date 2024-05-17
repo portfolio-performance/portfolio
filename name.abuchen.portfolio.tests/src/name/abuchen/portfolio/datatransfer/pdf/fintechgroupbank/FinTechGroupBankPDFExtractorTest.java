@@ -3123,70 +3123,23 @@ public class FinTechGroupBankPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2018-12-06"), hasAmount("EUR", 12.00), //
-                        hasSource("FinTechKontoauszug06.txt"),
-                        hasNote("Prämie Morgan Stanley-Aktion"))));
+                        hasSource("FinTechKontoauszug06.txt"), hasNote("Prämie"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2018-12-07"), hasAmount("EUR", 6.00), //
-                        hasSource("FinTechKontoauszug06.txt"),
-                        hasNote("Prämie Morgan Stanley-Aktion"))));
+                        hasSource("FinTechKontoauszug06.txt"), hasNote("Prämie"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2018-12-10"), hasAmount("EUR", 2.00), //
-                        hasSource("FinTechKontoauszug06.txt"),
-                        hasNote("Prämie Morgan Stanley-Aktion"))));
+                        hasSource("FinTechKontoauszug06.txt"), hasNote("Prämie"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2018-12-11"), hasAmount("EUR", 8.00), //
-                        hasSource("FinTechKontoauszug06.txt"),
-                        hasNote("Prämie Morgan Stanley-Aktion"))));
+                        hasSource("FinTechKontoauszug06.txt"), hasNote("Prämie"))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2018-12-12"), hasAmount("EUR", 6.00), //
-                        hasSource("FinTechKontoauszug06.txt"),
-                        hasNote("Prämie Morgan Stanley-Aktion"))));
-    }
-
-    @Test
-    public void testFinTechKontoauszug07()
-    {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FinTechKontoauszug07.txt"),
-                        errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(6L));
-        assertThat(results.size(), is(6));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
-
-        // assert transaction
-        assertThat(results, hasItem(interestCharge(hasDate("2019-06-30"), hasAmount("EUR", 0.50), //
-                        hasSource("FinTechKontoauszug07.txt"), hasNote("Zinsabschluss 01.04.2019 - 30.06.2019"))));
-
-        // assert transaction
-        assertThat(results, hasItem(removal(hasDate("2019-07-02"), hasAmount("EUR", 495.05), //
-                        hasSource("FinTechKontoauszug07.txt"), hasNote("Überweisung"))));
-
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2019-08-01"), hasAmount("EUR", 0.11), //
-                        hasSource("FinTechKontoauszug07.txt"), hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."))));
-
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2019-08-16"), hasAmount("EUR", 0.09), //
-                        hasSource("FinTechKontoauszug07.txt"), hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."))));
-
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2019-09-02"), hasAmount("EUR", 0.11), //
-                        hasSource("FinTechKontoauszug07.txt"), hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."))));
-
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2019-09-16"), hasAmount("EUR", 0.09), //
-                        hasSource("FinTechKontoauszug07.txt"), hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."))));
+                        hasSource("FinTechKontoauszug06.txt"), hasNote("Prämie"))));
     }
 
     @Test
@@ -5705,6 +5658,48 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.05))));
         assertThat(transaction.getSource(), is("FlatExKontoauszug03.txt"));
         assertThat(transaction.getNote(), is("Zinsabschluss 01.04.2020 - 30.06.2020"));
+    }
+
+    @Test
+    public void testFlatExKontoauszug04()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExKontoauszug04.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interestCharge(hasDate("2019-06-30"), hasAmount("EUR", 0.50), //
+                        hasSource("FlatExKontoauszug04.txt"), hasNote("Zinsabschluss 01.04.2019 - 30.06.2019"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2019-07-02"), hasAmount("EUR", 495.05), //
+                        hasSource("FlatExKontoauszug04.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2019-08-01"), hasAmount("EUR", 0.11), //
+                        hasSource("FlatExKontoauszug04.txt"), hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2019-08-16"), hasAmount("EUR", 0.09), //
+                        hasSource("FlatExKontoauszug04.txt"), hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2019-09-02"), hasAmount("EUR", 0.11), //
+                        hasSource("FlatExKontoauszug04.txt"), hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2019-09-16"), hasAmount("EUR", 0.09), //
+                        hasSource("FlatExKontoauszug04.txt"), hasNote("ZINSPILOT Auszahlung FIMBank p.l.c."))));
     }
 
     @Test
