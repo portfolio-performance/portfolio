@@ -1,0 +1,41 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+Abrechnung Ereignis
+Nummer-30.4.2024
+Depot-Nr.: Depotnummer
+Vorname Nachname              
+01/5020
+DADAT-Bank                         
+Anrede
+Vorname Nachname
+Straße
+PLZ Ort                                                                                                                                                                                                        
+Wir haben für Sie am 30.4.2024 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+50 Stk
+Titel: US02209S1033  A l t r i a  G r o u p Inc.                  
+Registered Shares DL -,333         
+Dividende: 0,98 USD 
+Verwahrart: WR
+Positionsdaten: Loco: Zürich                             
+Zinsen/Dividenden: 49,-- USD 
+Quellensteuer: -7,35 USD 
+Auslands-KESt: -6,13 USD 
+35,52 USD 
+Devisenkurs: 1,077 (30.4.2024) 32,99 EUR 
+Zu Gunsten IBAN IBAN 32,99 EUR 
+Valuta 30.4.2024
+Extag: 22.3.2024
+Record-Tag: 25.3.2024
+QUSt pro Stück 15,00 %
+Es wurde Auslands-KESt in der Höhe von +12,5% berücksichtigt.
+Die KESt wird an das Finanzamt Wien 1/23 abgeführt.
+Devisenkurs: 1,077 (30.4.2024)
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 50 Stk
+Ertrag: 45,50 EUR
+30.4.2024 Seite 1
+DVR 0060011 ,HG WIEN ,FN58248i, Irrtum vorbehalten! Dieser Beleg wird von der Bank
+nicht unterschrieben!
+06895 Doknr.: BSG0-045-0000005981

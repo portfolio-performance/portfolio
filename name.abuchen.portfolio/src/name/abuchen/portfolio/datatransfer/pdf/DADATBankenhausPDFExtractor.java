@@ -215,42 +215,23 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .oneOf( //
-                                        // @formatter:off
-                                        // ZINSERTRAG: 12,39 USD
-                                        // Devisenkurs: 1,197 (22.3.2021) 7,51 EUR
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("fxGross", "termCurrency", "exchangeRate", "baseCurrency") //
-                                                        .match("^ZINSERTRAG: (?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$") //
-                                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}.\\d{4}\\) [\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$") //
-                                                        .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
-                                                            type.getCurrentContext().putType(rate);
+                        // @formatter:off
+                        // Devisenkurs: 1,077 (30.4.2024) 32,99 EUR 
+                        // Ertrag: 45,50 EUR
+                        // @formatter:on
+                        .section("termCurrency", "exchangeRate", "baseCurrency", "gross").optional() //
+                        .match("Dividende: [\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$") //
+                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}.\\d{4}\\) [\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$") //
+                        .match("^Ertrag: (?<gross>[\\.,\\d]+) [\\w]{3}$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
 
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
 
-                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                                        }),
-                                        // @formatter:off
-                                        // Zinsen/Dividenden: 27,50 USD
-                                        // Devisenkurs: 1,1082 (22.12.2023) 17,99 EUR
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("currency", "amount") //
-                                                        .attributes("fxGross", "termCurrency", "exchangeRate", "baseCurrency") //
-                                                        .match("^Zinsen\\/Dividenden: (?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$") //
-                                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}.\\d{4}\\) [\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$") //
-                                                        .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
-                                                            type.getCurrentContext().putType(rate);
-
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
-
-                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                                        }))
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
 
                         .wrap(TransactionItem::new);
 
