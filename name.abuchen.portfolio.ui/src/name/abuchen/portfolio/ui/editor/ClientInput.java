@@ -100,6 +100,9 @@ public class ClientInput
      */
     public void dispose()
     {
+        // list of listeners might be modified during onDisposed callback
+        new ArrayList<>(this.listeners).forEach(ClientInputListener::onDisposed);
+
         for (Job job : regularJobs)
             job.cancel();
 
