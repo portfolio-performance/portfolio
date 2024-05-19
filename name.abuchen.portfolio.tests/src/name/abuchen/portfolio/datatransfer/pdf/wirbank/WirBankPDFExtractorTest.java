@@ -2275,6 +2275,37 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
+    public void testSteuerrueckerstattung07()
+    {
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerrueckerstattung07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0030849613"), hasWkn(null), hasTicker(null), //
+                        hasName("CSIF Canada"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2024-04-19T00:00"), hasShares(0.431), //
+                        hasSource("Steuerrueckerstattung07.txt"), //
+                        hasNote("Rückerstattung Quellensteuer"), //
+                        hasAmount("CHF", 0.05), hasGrossValue("CHF", 0.05), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
     public void testDividendeStorno01()
     {
         WirBankPDFExtractor extractor = new WirBankPDFExtractor(new Client());

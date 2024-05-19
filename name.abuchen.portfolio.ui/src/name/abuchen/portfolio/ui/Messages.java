@@ -129,6 +129,12 @@ public class Messages extends NLS
     public static String ColumnConvertedAmount;
     public static String ColumnCount;
     public static String ColumnCountByYear;
+    public static String ColumnDividendsNextExDate;
+    public static String ColumnDividendsNextExDate_MenuLabel;
+    public static String ColumnDividendsNextPaymentDate;
+    public static String ColumnDividendsNextPaymentDate_MenuLabel;
+    public static String ColumnDividendsNextPaymentAmount;
+    public static String ColumnDividendsNextPaymentAmount_MenuLabel;
     public static String ColumnLatest_MenuLabel;
     public static String ColumnLatestDate_MenuLabel;
     public static String ColumnLatestHistoricalDate_MenuLabel;

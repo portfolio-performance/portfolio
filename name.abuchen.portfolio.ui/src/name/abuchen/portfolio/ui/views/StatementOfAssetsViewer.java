@@ -108,6 +108,7 @@ import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.DistanceFromAllTimeHighColumn;
 import name.abuchen.portfolio.ui.views.columns.DistanceFromMovingAverageColumn;
+import name.abuchen.portfolio.ui.views.columns.DividendPaymentColumns;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
@@ -749,6 +750,18 @@ public class StatementOfAssetsViewer
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
         support.addColumn(column);
+
+        addDividendPaymentColumns();
+    }
+
+    private void addDividendPaymentColumns()
+    {
+        DividendPaymentColumns.createFor(client) //
+                        .forEach(column -> {
+                            if (column.getSorter() != null)
+                                column.getSorter().wrap(ElementComparator::new);
+                            support.addColumn(column);
+                        });
     }
 
     private void addAttributeColumns()

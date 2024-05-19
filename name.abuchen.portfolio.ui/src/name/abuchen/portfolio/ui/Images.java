@@ -12,11 +12,13 @@ import org.eclipse.swt.graphics.Image;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+import name.abuchen.portfolio.model.ImageManager;
+
 @SuppressWarnings("restriction")
 public enum Images
 {
     // logos
-    
+
     LOGO_16("pp_16.png"), //$NON-NLS-1$
     LOGO_32("pp_32.png"), //$NON-NLS-1$
     LOGO_48("pp_48.png"), //$NON-NLS-1$
@@ -25,7 +27,7 @@ public enum Images
     LOGO_512("pp_512.png"), //$NON-NLS-1$
 
     // UX elements
-    
+
     BANNER("banner.png"), //$NON-NLS-1$
     HANDLE_NS("handle_ns.png"), //$NON-NLS-1$
     HANDLE_WE("handle_we.png"), //$NON-NLS-1$
@@ -96,7 +98,7 @@ public enum Images
 
     TEXT("text.png"), //$NON-NLS-1$
 
-    OK("ok.png"),  //$NON-NLS-1$
+    OK("ok.png"), //$NON-NLS-1$
     ERROR("error.png"), //$NON-NLS-1$
     WARNING("warning.png"), //$NON-NLS-1$
     INFO("info.png"), //$NON-NLS-1$
@@ -107,7 +109,7 @@ public enum Images
     GREEN_ARROW("green_arrow.png"), //$NON-NLS-1$
 
     // 3rd party logos
-    
+
     POEDITOR_LOGO("poeditor-logo.png"), //$NON-NLS-1$
     DIVVYDIARY_LOGO("divvydiary.com-logo.png"), //$NON-NLS-1$
     MYDIVIDENDS24_LOGO("mydividends24.de-logo.png"), //$NON-NLS-1$
@@ -138,14 +140,22 @@ public enum Images
         this.file = file;
     }
 
-    public static Image resolve(String file)
+    public static Image resolve(String file, boolean disabled)
     {
-        Image image = imageRegistry.get(file);
-        if (image == null)
+        String key = file + ":" + disabled; //$NON-NLS-1$
+        Image image = imageRegistry.get(key);
+        if (image != null)
+            return image;
+
+        descriptor(file); // lazy loading
+        image = imageRegistry.get(file);
+
+        if (disabled)
         {
-            descriptor(file); // lazy loading
-            image = imageRegistry.get(file);
+            image = ImageManager.getDisabledVersion(image);
+            imageRegistry.put(key, image); // $NON-NLS-1$
         }
+
         return image;
     }
 
@@ -170,7 +180,12 @@ public enum Images
 
     public Image image()
     {
-        return resolve(file);
+        return resolve(file, false);
+    }
+
+    public Image image(boolean disabled)
+    {
+        return resolve(file, disabled);
     }
 
     public String getImageURI()

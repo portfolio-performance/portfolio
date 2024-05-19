@@ -2,12 +2,14 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
@@ -58,9 +60,12 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(IHR )?(KAUF|VERKAUF).*$");
+        Block firstRelevantLine = new Block("^.*Referenz Nr.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
+
+        // Handshake for tax refund transaction
+        Map<String, String> context = type.getCurrentContext();
 
         pdfTransaction //
 
@@ -91,7 +96,17 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Wertpapier: (?<name>.*) .*: [\\w]{3} [\\.,\\d]+(\\-)?$") //
                                                         .match("^(?<nameContinued>.*) .*: [\\w]{3} [\\.,\\d]+(\\-)?$") //
                                                         .match("^WP\\-Kenn\\-Nr.*: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            // @formatter:off
+                                                            // Handshake for tax refund transaction
+                                                            // @formatter:on
+                                                            context.put("name", t.getPortfolioTransaction().getSecurity().getName());
+                                                            context.put("isin", t.getPortfolioTransaction().getSecurity().getIsin());
+                                                            context.put("currency", t.getPortfolioTransaction().getSecurity().getCurrencyCode());
+
+                                                        }),
                                         // @formatter:off
                                         // Börse: Vienna Stock Exchange Kurswert: EUR 3.207,23
                                         // Wertpapier: VOESTALPINE AG AKT. Tradinggebühren: EUR 9,99
@@ -110,6 +125,13 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                                 v.put("name", v.get("name") + " " + v.get("name1"));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
+
+                                                            // @formatter:off
+                                                            // Handshake for tax refund transaction
+                                                            // @formatter:on
+                                                            context.put("name", t.getPortfolioTransaction().getSecurity().getName());
+                                                            context.put("isin", t.getPortfolioTransaction().getSecurity().getIsin());
+                                                            context.put("currency", t.getPortfolioTransaction().getSecurity().getCurrencyCode());
                                                         }),
                                         // @formatter:off
                                         // Börse: Vienna Stock Exchange Kurswert: EUR 1.049,40
@@ -123,7 +145,17 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Wertpapier: (?<name>.*)$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^WP\\-Kenn\\-Nr.*: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*: [\\w]{3} [\\.,\\d]+(\\-)?$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            // @formatter:off
+                                                            // Handshake for tax refund transaction
+                                                            // @formatter:on
+                                                            context.put("name", t.getPortfolioTransaction().getSecurity().getName());
+                                                            context.put("isin", t.getPortfolioTransaction().getSecurity().getIsin());
+                                                            context.put("currency", t.getPortfolioTransaction().getSecurity().getCurrencyCode());
+
+                                                        }),
                                         // @formatter:off
                                         // Börse: Vienna Stock Exchange Kurswert: EUR 1.132,20
                                         // Wertpapier: EVN STAMMAKTIEN O.N. WP-Kommission: EUR 9,99
@@ -134,7 +166,17 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.* Kurswert: (?<currency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .match("^Wertpapier: (?<name>.*) .*: [\\w]{3} [\\.,\\d]+(\\-)?$") //
                                                         .match("^WP\\-Kenn\\-Nr.*: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            // @formatter:off
+                                                            // Handshake for tax refund transaction
+                                                            // @formatter:on
+                                                            context.put("name", t.getPortfolioTransaction().getSecurity().getName());
+                                                            context.put("isin", t.getPortfolioTransaction().getSecurity().getIsin());
+                                                            context.put("currency", t.getPortfolioTransaction().getSecurity().getCurrencyCode());
+
+                                                        }),
                                         // @formatter:off
                                         // Ausserbörslich Kurswert: EUR 99,97
                                         // Wertpapier: DWS TOP 50 WELT KESt II EUR 0,02-
@@ -145,7 +187,17 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.* Kurswert: (?<currency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .match("^Wertpapier: (?<name>.*) KESt.* [\\w]{3} [\\.,\\d]+(\\-)?$") //
                                                         .match("^WP\\-Kenn\\-Nr.*: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            // @formatter:off
+                                                            // Handshake for tax refund transaction
+                                                            // @formatter:on
+                                                            context.put("name", t.getPortfolioTransaction().getSecurity().getName());
+                                                            context.put("isin", t.getPortfolioTransaction().getSecurity().getIsin());
+                                                            context.put("currency", t.getPortfolioTransaction().getSecurity().getCurrencyCode());
+
+                                                        }),
                                         // @formatter:off
                                         // Ausserbörslich Kurswert: EUR 99,97
                                         // Wertpapier: DWS TOP 50 WELT
@@ -156,7 +208,17 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.* Kurswert: (?<currency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .match("^Wertpapier: (?<name>.*)$") //
                                                         .match("^WP\\-Kenn\\-Nr.*: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            // @formatter:off
+                                                            // Handshake for tax refund transaction
+                                                            // @formatter:on
+                                                            context.put("name", t.getPortfolioTransaction().getSecurity().getName());
+                                                            context.put("isin", t.getPortfolioTransaction().getSecurity().getIsin());
+                                                            context.put("currency", t.getPortfolioTransaction().getSecurity().getCurrencyCode());
+
+                                                        }))
 
                         // @formatter:off
                         // Stück: 105,00
@@ -164,7 +226,14 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("shares") //
                         .match("^St.ck: (?<shares>[\\.,\\d]+).*$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .assign((t, v) -> {
+                            t.setShares(asShares(v.get("shares")));
+
+                            // @formatter:off
+                            // Use number for that is also used to (later) convert it back to a number
+                            // @formatter:on
+                            context.put("shares", getNumberFormat().format(t.getPortfolioTransaction().getShares() / Values.Share.divider()));
+                        })
 
                         // @formatter:off
                         // Ausführungsdatum: 23.09.2015 Ausführungszeit: 09:02:20
@@ -232,9 +301,9 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("baseCurrency", "fxGross", "exchangeRate", "termCurrency") //
-                                                        .match("^Gesamtbetrag: (?<baseCurrency>[\\w]{3}) (?<fxGross>[\\.',\\d]+)$") //
+                                                        .match("^Gesamtbetrag: (?<baseCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$") //
                                                         .match("^.* Devisenkurs: (?<exchangeRate>[\\.,\\d]+)$") //
-                                                        .match("^.*Gesamtbetrag.*: (?<termCurrency>[\\w]{3}) [\\.',\\d]+$") //
+                                                        .match("^.*Gesamtbetrag.*: (?<termCurrency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
                                                             ExtrExchangeRate rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -251,9 +320,9 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency") //
-                                                        .match("^.* Kurswert: (?<termCurrency>[\\w]{3}) (?<fxGross>[\\.',\\d]+)$") //
+                                                        .match("^.* Kurswert: (?<termCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$") //
                                                         .match("^.* Devisenkurs: (?<exchangeRate>[\\.,\\d]+)$") //
-                                                        .match("^.* Gesamtbetrag.*: (?<baseCurrency>[\\w]{3}) [\\.',\\d]+$") //
+                                                        .match("^.* Gesamtbetrag.*: (?<baseCurrency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
                                                             ExtrExchangeRate rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -270,9 +339,9 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("baseCurrency", "fxGross", "exchangeRate", "termCurrency") //
-                                                        .match("^.* Kurswert: (?<baseCurrency>[\\w]{3}) (?<fxGross>[\\.',\\d]+)$") //
+                                                        .match("^.* Kurswert: (?<baseCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$") //
                                                         .match("^.*Devisenkurs: (?<exchangeRate>[\\.,\\d]+)$") //
-                                                        .match("^.*Gesamtbetrag : (?<termCurrency>[\\w]{3}) [\\.',\\d]+$") //
+                                                        .match("^.*Gesamtbetrag : (?<termCurrency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
                                                             ExtrExchangeRate rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -283,12 +352,38 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
 
+                        // @formatter:off
+                        // Wertpapier: DWS TOP 50 WELT KESt II EUR 0,02-
+                        // @formatter:on
+                        .section("currency", "tax").multipleTimes().optional() //
+                        .match("^.* KESt( [A-Z]{1,3})? (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)(\\-)?$") //
+                        .assign((t, v) -> {
+                            Money taxes = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().add(taxes));
+                        })
+
+                        // @formatter:off
+                        // Abcd Abcdefghijk Referenz Nr.: 12-12345678
+                        // Ihr Auftrag vom 24.03.2020, 22:34 Uhr                                              Auftragsnummer XXXXXXXX
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(Referenz Nr.*|Auftragsnummer) (?<note>.*)$") //
+                        .assign((t, v) -> {
+                            t.setNote("Ref.-Nr.: " + trim(v.get("note")));
+
+                            // @formatter:off
+                            // Handshake for tax refund transaction
+                            // @formatter:on
+                            context.put("note", t.getNote());
+                        })
+
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
                         .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
+        addTaxReturnBlock_DocFormat01(context, type);
     }
 
     private void addBuySellTransaction_DocFormat02()
@@ -433,13 +528,21 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
+                        // Abcd Abcdefghijk Referenz Nr.: 12-12345678
+                        // Ihr Auftrag vom 24.03.2020, 22:34 Uhr                                              Auftragsnummer XXXXXXXX
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(Referenz Nr.*|Auftragsnummer) (?<note>.*)$") //
+                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(replaceMultipleBlanks(v.get("note")))))
+
+                        // @formatter:off
                         // Limit:                                       Bestens                               Beratungsfreies Geschäft
                         // Limit: Bestens beratungsfreies Geschäft
                         // Limit:  EUR  30,15 Genaues Limit beratungsfreies Geschäft
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Limit:[\\s]{1,}([\\w]{3}[\\s]{1,}[\\.,\\d]+|Bestens))[\\s]{1,}.*$") //
-                        .assign((t, v) -> t.setNote(replaceMultipleBlanks(v.get("note"))))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(replaceMultipleBlanks(v.get("note"))), " | ")))
 
                         .wrap(BuySellEntryItem::new);
 
@@ -522,11 +625,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(BARDIVIDENDE" //
-                        + "|FONDS\\-AUSSCH.TTUNG" //
-                        + "|FONDS \\- AUSSCH.TTUNG" //
-                        + "|LIQUIDATIONSZAHLUNG" //
-                        + "|KAPITALAUSSCH.TTUNG)$");
+        Block firstRelevantLine = new Block("^.*Referenz.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -548,7 +647,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("isin", "name", "currency") //
                                                         .match("^ISIN : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^Wertpapierbezeichnung : (?<name>.*)$") // //
-                                                        .match("^Preis : (?<currency>[\\w]{3}) [\\.',\\d]+$")
+                                                        .match("^Preis : (?<currency>[\\w]{3}) [\\.,\\d]+$")
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Wertpapier : MUENCH.RUECKVERS.VNA O.N. Dividende Brutto : EUR 201,25
@@ -556,7 +655,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^Wertpapier : (?<name>.*) (Dividende|Aussch.ttung) Brutto : (?<currency>[\\w]{3}) [\\.',\\d]+$") //
+                                                        .match("^Wertpapier : (?<name>.*) (Dividende|Aussch.ttung) Brutto : (?<currency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .match("^WP\\-Kenn\\-Nr\\. : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -566,7 +665,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "nameContinued", "isin") //
-                                                        .match("^Wertpapier : (?<name>.*) Liquidationsbetrag : (?<currency>[\\w]{3}) [\\.',\\d]+$") //
+                                                        .match("^Wertpapier : (?<name>.*) Liquidationsbetrag : (?<currency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^WP\\-Kenn\\-Nr\\. : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -576,7 +675,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^Wertpapier : (?<name>.*) Liquidationsbetrag : (?<currency>[\\w]{3}) [\\.',\\d]+$") //
+                                                        .match("^Wertpapier : (?<name>.*) Liquidationsbetrag : (?<currency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .match("^WP\\-Kenn\\-Nr\\. : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -587,7 +686,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^Anspruchsberechtigter : (?<shares>[\\.',\\d]+)$") //
+                                                        .match("^Anspruchsberechtigter : (?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // WP-Bestand : 35,000 Dividendenbetrag : EUR 148,17
@@ -595,7 +694,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^WP\\-Bestand : (?<shares>[\\.',\\d]+).*$") //
+                                                        .match("^WP\\-Bestand : (?<shares>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         .oneOf( //
@@ -628,8 +727,8 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^.* Netto : [\\w]{3} [\\.',\\d]+$") //
-                                                        .match("^.* Netto : (?<currency>[\\w]{3}) (?<amount>[\\.',\\d]+)$") //
+                                                        .match("^.* Netto : [\\w]{3} [\\.,\\d]+$") //
+                                                        .match("^.* Netto : (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -640,7 +739,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^.* Netto : (?<currency>[\\w]{3}) (?<amount>[\\.',\\d]+)$") //
+                                                        .match("^.* Netto : (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -650,7 +749,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Gesamtbetrag .in : (?<currency>[\\w]{3}) (?<amount>[\\.',\\d]+)$") //
+                                                        .match("^Gesamtbetrag .in : (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -660,7 +759,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^.*Auszahlungsbetrag : (?<currency>[\\w]{3}) (?<amount>[\\.',\\d]+)$") //
+                                                        .match("^.*Auszahlungsbetrag : (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -674,9 +773,9 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("baseCurrency", "fxGross", "exchangeRate", "termCurrency") //
-                                                        .match("^Brutto\\-Betrag : (?<baseCurrency>[\\w]{3}) (?<fxGross>[\\.',\\d]+)$") //
+                                                        .match("^Brutto\\-Betrag : (?<baseCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$") //
                                                         .match("^Devisenkurs : (?<exchangeRate>[\\.,\\d]+)$") //
-                                                        .match("^Gesamtbetrag .in : (?<termCurrency>[\\w]{3}) [\\.',\\d]+$") //
+                                                        .match("^Gesamtbetrag .in : (?<termCurrency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
                                                             ExtrExchangeRate rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -693,9 +792,9 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency") //
-                                                        .match("^.* Dividende Brutto : (?<termCurrency>[\\w]{3}) (?<fxGross>[\\.',\\d]+)$") //
+                                                        .match("^.* Dividende Brutto : (?<termCurrency>[\\w]{3}) (?<fxGross>[\\.,\\d]+)$") //
                                                         .match("^.* Devisenkurs : (?<exchangeRate>[\\.,\\d]+)$") //
-                                                        .match("^Dividende Netto : (?<baseCurrency>[\\w]{3}) [\\.',\\d]+$") //
+                                                        .match("^Dividende Netto : (?<baseCurrency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
                                                             ExtrExchangeRate rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -705,6 +804,13 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
+
+                        // @formatter:off
+                        // Abcd Abcdefghijk Referenz: 12-123456789
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*Referenz.* (?<note>.*)$") //
+                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
 
                         .conclude(ExtractorUtils.fixGrossValueA())
 
@@ -886,6 +992,78 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new);
     }
 
+    private void addTaxReturnBlock_DocFormat01(Map<String, String> context, DocumentType type)
+    {
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^.* KESt( [A-Z]{1,3})? [\\w]{3} [\\.,\\d]+\\-$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Wertpapier: DWS TOP 50 WELT KESt II EUR 0,02-
+                        // @formatter:on
+                        .section("amount", "currency").optional() //
+                        .match("^.* KESt( [A-Z]{1,3})? (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)\\-$") //
+                        .assign((t, v) -> {
+                            t.setShares(asShares(context.get("shares")));
+                            t.setSecurity(getOrCreateSecurity(context));
+
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+
+                            t.setNote(context.get("note"));
+                        })
+
+                        // @formatter:off
+                        // Ausführungsdatum: 23.09.2015 Ausführungszeit: 09:02:20
+                        // Ausführungsdatum: 05. Oktober 2009 Ausführungszeit: 12:39:27
+                        // @formatter:on
+                        .section("time").optional() //
+                        .match("^.*Ausf.hrungszeit: (?<time>[\\d]{1,2}:[\\d]{1,2}:[\\d]{1,2})$") //
+                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Ausführungsdatum: 23.09.2015
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Ausf.hrungsdatum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().get("time") != null)
+                                                                t.setDateTime(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                            else
+                                                                t.setDateTime(asDate(v.get("date")));
+                                                        }),
+                                        // @formatter:off
+                                        // Ausführungsdatum: 05. Oktober 2009
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Ausf.hrungsdatum: (?<date>[\\d]{2}\\. .* [\\d]{4}).*$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().get("time") != null)
+                                                                t.setDateTime(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                            else
+                                                                t.setDateTime(asDate(v.get("date")));
+                                                        }))
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
+    }
+
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
@@ -895,13 +1073,6 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "tax").optional() //
                         .match("^.* Fremde Steuer : (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
-
-                        // @formatter:off
-                        // Wertpapier: DWS TOP 50 WELT KESt II EUR 0,02-
-                        // @formatter:on
-                        .section("currency", "tax").multipleTimes().optional() //
-                        .match("^.* KESt( [A-Z]{1,3})? (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)(\\-)?$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -988,6 +1159,13 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
+
+        transaction //
+
+                        .section("noFee").optional() //
+                        .match("^NAV: (?<noFee>[\\w]{3} [\\.,\\d]+)$") //
+                        .assign((t, v) -> type.getCurrentContext().putBoolean("noFee", true));
+
         transaction //
 
                         // @formatter:off
@@ -995,21 +1173,30 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^.* Zahlungsprovision : (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noFee"))
+                                processFeeEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Wertpapier: VOESTALPINE AG AKT. Tradinggebühren: EUR 9,99
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^.* Tradinggeb.hren: (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noFee"))
+                                processFeeEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Ex-Tag : 23. April 2009 Inkassogebühr : EUR 0,48
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^.* Inkassogeb.hr : (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noFee"))
+                                processFeeEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Art der Belastung : Transaktionsgebühr
@@ -1019,28 +1206,40 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").multipleTimes().optional() //
                         .match("^Spesen : (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noFee"))
+                                processFeeEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Wertpapier: BAY.MOTOREN WERKE AG WP-Kommission: EUR 9,99
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^.* WP\\-Kommission: (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noFee"))
+                                processFeeEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Wertpapier: CATERPILLAR INC. DL 1 FX-Kommission: USD 5,24
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^.* FX\\-Kommission: (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noFee"))
+                                processFeeEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Wertpapier: INVESCO ASIAN INF. A Devisenprovision: USD 0,44
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^.* Devisenprovision: (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)(\\-)?$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noFee"))
+                                processFeeEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Zahlungsprovision                                                                   -0,38
@@ -1048,35 +1247,50 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "fee").optional() //
                         .match("^.* Betr.ge in (?<currency>[\\w]{3}).*$") //
                         .match("^Zahlungsprovision[\\s]{1,}\\-(?<fee>[\\.,\\d]+).*$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noFee"))
+                                processFeeEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         //                                                                Fremde Spesen                     3,75- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
                         .match("^.* Fremde Spesen[\\s]{1,}(?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3}).*$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noFee"))
+                                processFeeEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         //                                                                Mindestspesen                     8,95- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
                         .match("^.* Mindestspesen[\\s]{1,}(?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3}).*$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noFee"))
+                                processFeeEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         //                                                            Inl. WP - Spesen                     1,51- EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
                         .match("^.* Inl\\. WP \\- Spesen[\\s]{1,}(?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3}).*$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noFee"))
+                                processFeeEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         //                                                   Gesamtkosten und -gebühren                    25,00+ EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
                         .match("^.* Gesamtkosten und \\-geb.hren[\\s]{1,}(?<fee>[\\.,\\d]+)\\+ (?<currency>[\\w]{3}).*$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noFee"))
+                                processFeeEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // 26.03.2020      Kauf                     23,008             -2.099,97                 0,00
@@ -1088,14 +1302,20 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} ([\\s]+)?Kauf .*$") //
                         .match("^.* [\\.,\\d]+[\\s]{1,}\\-(?<fee>[\\.,\\d]+)[\\s]{1,}[\\.,\\d]+.*$") //
                         .match("^.* [\\.,\\d]+[\\s]{1,}[\\.,\\d]+[\\s]{1,}[\\.,\\d]+.*$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noFee"))
+                                processFeeEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // Summe der Dienstleistungskosten EUR 48,78 2,92 %
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^Summe der Dienstleistungskosten (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+) .*$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noFee"))
+                                processFeeEntries(t, v, type);
+                        })
 
                         // @formatter:off
                         // If the market price is higher than the NAV, this is referred to as a "premium".
@@ -1135,23 +1355,14 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
         String language = "de";
         String country = "DE";
 
-        int apostrophe = value.indexOf("\'");
-        if (apostrophe >= 0)
-        {
-            language = "de";
-            country = "CH";
-        }
-        else
-        {
-            int lastDot = value.lastIndexOf(".");
-            int lastComma = value.lastIndexOf(",");
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
 
-            // returns the greater of two int values
-            if (Math.max(lastDot, lastComma) == lastDot)
-            {
-                language = "en";
-                country = "US";
-            }
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en";
+            country = "US";
         }
 
         return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
@@ -1163,23 +1374,14 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
         String language = "de";
         String country = "DE";
 
-        int apostrophe = value.indexOf("\'");
-        if (apostrophe >= 0)
-        {
-            language = "de";
-            country = "CH";
-        }
-        else
-        {
-            int lastDot = value.lastIndexOf(".");
-            int lastComma = value.lastIndexOf(",");
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
 
-            // returns the greater of two int values
-            if (Math.max(lastDot, lastComma) == lastDot)
-            {
-                language = "en";
-                country = "US";
-            }
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en";
+            country = "US";
         }
 
         return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
@@ -1191,23 +1393,14 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
         String language = "de";
         String country = "DE";
 
-        int apostrophe = value.indexOf("\'");
-        if (apostrophe >= 0)
-        {
-            language = "de";
-            country = "CH";
-        }
-        else
-        {
-            int lastDot = value.lastIndexOf(".");
-            int lastComma = value.lastIndexOf(",");
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
 
-            // returns the greater of two int values
-            if (Math.max(lastDot, lastComma) == lastDot)
-            {
-                language = "en";
-                country = "US";
-            }
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en";
+            country = "US";
         }
 
         return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);

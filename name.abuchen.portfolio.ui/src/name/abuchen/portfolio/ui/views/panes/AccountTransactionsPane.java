@@ -16,11 +16,14 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -41,6 +44,7 @@ import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Quote;
@@ -58,6 +62,8 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.searchfilter.TransactionSearchField;
+import name.abuchen.portfolio.ui.util.searchfilter.TransactionFilterDropDown;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -88,6 +94,10 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
     private AbstractFinanceView view;
 
     private TableViewer transactions;
+
+    private TransactionSearchField textFilter;
+    private TransactionFilterDropDown transactionFilter;
+
     private ShowHideColumnHelper transactionsColumns;
     private AccountContextMenu accountMenu;
 
@@ -99,6 +109,16 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
      * balance in persistent AccountTransaction object.
      */
     private Map<AccountTransaction, Money> transaction2balance = new HashMap<>();
+
+    @Inject
+    public AccountTransactionsPane(IPreferenceStore preferenceStore)
+    {
+        transactionFilter = new TransactionFilterDropDown(preferenceStore,
+                        AccountTransactionsPane.class.getSimpleName() + "-transaction-type-filter", //$NON-NLS-1$
+                        criteria -> onRecalculationNeeded());
+
+        textFilter = new TransactionSearchField(text -> onRecalculationNeeded());
+    }
 
     @Override
     public String getLabel()
@@ -218,7 +238,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             @Override
             public String getText(Object e)
             {
-                return Values.Money.format(getFees.apply((AccountTransaction) e), client.getBaseCurrency());
+                return Values.Money.formatNonZero(getFees.apply((AccountTransaction) e), client.getBaseCurrency());
             }
 
             @Override
@@ -246,7 +266,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             @Override
             public String getText(Object e)
             {
-                return Values.Money.format(getTaxes.apply((AccountTransaction) e), client.getBaseCurrency());
+                return Values.Money.formatNonZero(getTaxes.apply((AccountTransaction) e), client.getBaseCurrency());
             }
 
             @Override
@@ -439,6 +459,19 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
         transactions.setContentProvider(ArrayContentProvider.getInstance());
 
+        transactions.addFilter(textFilter
+                        .getViewerFilter(element -> new TransactionPair<>(account, (AccountTransaction) element)));
+
+        transactions.addFilter(new ViewerFilter()
+        {
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element)
+            {
+                var tx = (AccountTransaction) element;
+                return transactionFilter.getFilterCriteria().matches(tx);
+            }
+        });
+
         new ContextMenu(transactions.getTable(), this::fillTransactionsContextMenu).hook();
 
         hookKeyListener();
@@ -449,6 +482,12 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
     @Override
     public void addButtons(ToolBarManager toolBar)
     {
+        toolBar.add(textFilter);
+
+        toolBar.add(new Separator());
+
+        toolBar.add(transactionFilter);
+
         toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
                         a -> new TableViewerCSVExporter(transactions).export(getLabel(),
                                         account != null ? account.getName() : null)));
@@ -456,6 +495,11 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> transactionsColumns.menuAboutToShow(manager)));
 
+    }
+
+    public void notifyModelUpdated()
+    {
+        onRecalculationNeeded();
     }
 
     private Color colorFor(AccountTransaction t)

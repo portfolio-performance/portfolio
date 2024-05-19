@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -30,6 +31,11 @@ public final class UpdateDividendsJob extends AbstractClientJob
     public UpdateDividendsJob(Client client)
     {
         this(client, client.getSecurities());
+    }
+
+    public UpdateDividendsJob(Client client, Predicate<Security> filter)
+    {
+        this(client, client.getSecurities().stream().filter(filter).toList());
     }
 
     public UpdateDividendsJob(Client client, Security security)

@@ -39,6 +39,7 @@ public class AccountBalanceChart extends TimelineChart // NOSONAR
 
             if (account == null)
                 return;
+            getTitle().setText(account.getName());
 
             List<AccountTransaction> tx = account.getTransactions();
 

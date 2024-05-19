@@ -6,15 +6,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ControlContribution;
-import org.eclipse.jface.action.IAction;
+import jakarta.inject.Inject;
+
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -29,15 +24,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Text;
-
-import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.json.JClient;
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
@@ -50,6 +38,9 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.searchfilter.TransactionFilterCriteria;
+import name.abuchen.portfolio.ui.util.searchfilter.TransactionFilterDropDown;
+import name.abuchen.portfolio.ui.util.searchfilter.TransactionSearchField;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
@@ -59,174 +50,34 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class AllTransactionsView extends AbstractFinanceView
 {
-    private enum TransactionFilter
-    {
-        NONE(Messages.TransactionFilterNone, 0, tx -> true), //
-        SECURITY_TRANSACTIONS(Messages.TransactionFilterSecurityRelated, 0, tx -> {
-            if (tx instanceof PortfolioTransaction)
-                return true;
-            else if (tx instanceof AccountTransaction atx)
-                return atx.getType() == AccountTransaction.Type.DIVIDENDS
-                                || atx.getType() == AccountTransaction.Type.BUY
-                                || atx.getType() == AccountTransaction.Type.SELL;
-            else
-                return false;
-        }), //
-        BUY_AND_SELL(Messages.TransactionFilterBuyAndSell, 1, tx -> {
-            if (tx instanceof PortfolioTransaction ptx)
-                return ptx.getType() == PortfolioTransaction.Type.BUY
-                                || ptx.getType() == PortfolioTransaction.Type.SELL;
-            else if (tx instanceof AccountTransaction atx)
-                return atx.getType() == AccountTransaction.Type.BUY || atx.getType() == AccountTransaction.Type.SELL;
-            else
-                return false;
-        }), //
-        BUY(Messages.TransactionFilterBuy, 2, tx -> {
-            if (tx instanceof PortfolioTransaction ptx)
-                return ptx.getType() == PortfolioTransaction.Type.BUY;
-            else if (tx instanceof AccountTransaction atx)
-                return atx.getType() == AccountTransaction.Type.BUY;
-            else
-                return false;
-        }), //
-        SELL(Messages.TransactionFilterSell, 2, tx -> {
-            if (tx instanceof PortfolioTransaction ptx)
-                return ptx.getType() == PortfolioTransaction.Type.SELL;
-            else if (tx instanceof AccountTransaction atx)
-                return atx.getType() == AccountTransaction.Type.SELL;
-            else
-                return false;
-        }), //
-        DIVIDEND(Messages.TransactionFilterDividend, 1, tx -> {
-            if (tx instanceof AccountTransaction atx)
-                return atx.getType() == AccountTransaction.Type.DIVIDENDS;
-            else
-                return false;
-        }), //
-        DEPOSIT_AND_REMOVAL(Messages.TransactionFilterDepositAndRemoval, 0, tx -> {
-            if (tx instanceof AccountTransaction atx)
-                return atx.getType() == AccountTransaction.Type.DEPOSIT
-                                || atx.getType() == AccountTransaction.Type.REMOVAL;
-            else
-                return false;
-        }), //
-        DEPOSIT(Messages.TransactionFilterDeposit, 1, tx -> {
-            if (tx instanceof AccountTransaction atx)
-                return atx.getType() == AccountTransaction.Type.DEPOSIT;
-            else
-                return false;
-        }), //
-        REMOVAL(Messages.TransactionFilterRemoval, 1, tx -> {
-            if (tx instanceof AccountTransaction atx)
-                return atx.getType() == AccountTransaction.Type.REMOVAL;
-            else
-                return false;
-        }), //
-        INTEREST(Messages.TransactionFilterInterest, 0, tx -> {
-            if (tx instanceof AccountTransaction atx)
-                return atx.getType() == AccountTransaction.Type.INTEREST
-                                || atx.getType() == AccountTransaction.Type.INTEREST_CHARGE;
-            else
-                return false;
-        }), //
-        WITH_TAX(Messages.TransactionFilterTaxes, 0, tx -> {
-            if (tx instanceof AccountTransaction atx && (atx.getType() == AccountTransaction.Type.TAXES
-                            || atx.getType() == AccountTransaction.Type.TAX_REFUND))
-                return true;
-            return tx.getUnitSum(Transaction.Unit.Type.TAX).isPositive();
-        }), //
-        WITH_FEES(Messages.TransactionFilterFees, 0, tx -> {
-            if (tx instanceof AccountTransaction atx && (atx.getType() == AccountTransaction.Type.FEES
-                            || atx.getType() == AccountTransaction.Type.FEES_REFUND))
-                return true;
-            return tx.getUnitSum(Transaction.Unit.Type.FEE).isPositive();
-        }), //
-        TRANSFERS(Messages.TransactionFilterTransfers, 0, tx -> {
-            if (tx instanceof PortfolioTransaction ptx)
-                return ptx.getType() == PortfolioTransaction.Type.TRANSFER_IN
-                                || ptx.getType() == PortfolioTransaction.Type.TRANSFER_OUT;
-            else if (tx instanceof AccountTransaction atx)
-                return atx.getType() == AccountTransaction.Type.TRANSFER_IN
-                                || atx.getType() == AccountTransaction.Type.TRANSFER_OUT;
-            else
-                return false;
-        }), //
-        DELIVERIES(Messages.TransactionFilterDeliveries, 0, tx -> {
-            if (tx instanceof PortfolioTransaction ptx)
-                return ptx.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
-                                || ptx.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
-            else
-                return false;
-        }), //
-        DELIVERIES_INBOUND(PortfolioTransaction.Type.DELIVERY_INBOUND.toString(), 1, tx -> {
-            if (tx instanceof PortfolioTransaction ptx)
-                return ptx.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND;
-            else
-                return false;
-        }), //
-        DELIVERIES_OUTBOUND(PortfolioTransaction.Type.DELIVERY_OUTBOUND.toString(), 1, tx -> {
-            if (tx instanceof PortfolioTransaction ptx)
-                return ptx.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
-            else
-                return false;
-        });
-
-        private String name;
-        private int level;
-        private Predicate<Transaction> predicate;
-
-        TransactionFilter(String name, int level, Predicate<Transaction> predicate)
-        {
-            this.name = name;
-            this.level = level;
-            this.predicate = predicate;
-        }
-
-        boolean matches(Transaction tx)
-        {
-            return predicate.test(tx);
-        }
-
-        String getName()
-        {
-            return name;
-        }
-
-        int getLevel()
-        {
-            return level;
-        }
-    }
-
-    private static final String TRANSACTION_FILTER_PREFERENCE_NAME = AllTransactionsView.class.getSimpleName()
-                    + "-transaction-type-filter"; //$NON-NLS-1$
-    private static final TransactionFilter DEFAULT_TYPE_FILTER = TransactionFilter.NONE;
 
     private class FilterDropDown extends DropDown implements IMenuListener
     {
+        private TransactionFilterDropDown transactionFilterMenu;
         private ClientFilterMenu clientFilterMenu;
 
         public FilterDropDown(IPreferenceStore preferenceStore)
         {
             super(Messages.SecurityFilter, Images.FILTER_OFF, SWT.NONE);
 
-            preferenceStore.setDefault(TRANSACTION_FILTER_PREFERENCE_NAME, DEFAULT_TYPE_FILTER.name());
-            TransactionFilter transactionFilter = TransactionFilter
-                            .valueOf(preferenceStore.getString(TRANSACTION_FILTER_PREFERENCE_NAME));
-            typeFilter = transactionFilter;
-
             setMenuListener(this);
 
-            this.clientFilterMenu = new ClientFilterMenu(getClient(), getPreferenceStore());
+            transactionFilterMenu = new TransactionFilterDropDown(preferenceStore,
+                            AllTransactionsView.class.getSimpleName() + "-transaction-type-filter", //$NON-NLS-1$
+                            criteria -> {
+                                typeFilter = criteria;
+                                updateIcon();
+                                notifyModelUpdated();
+                            });
 
-            Consumer<ClientFilter> listener = f -> {
+            clientFilterMenu = new ClientFilterMenu(getClient(), getPreferenceStore());
+
+            clientFilterMenu.addListener(f -> {
                 setInformationPaneInput(null);
                 setupFilterInView(f);
                 notifyModelUpdated();
-            };
-
-            clientFilterMenu.addListener(listener);
-            clientFilterMenu.addListener(f -> updateIcon());
+                updateIcon();
+            });
 
             clientFilterMenu.trackSelectedFilterConfigurationKey(AllTransactionsView.class.getSimpleName());
 
@@ -234,8 +85,6 @@ public class AllTransactionsView extends AbstractFinanceView
             setupFilterInView(clientFilterMenu.getSelectedFilter());
 
             updateIcon();
-
-            addDisposeListener(e -> preferenceStore.setValue(TRANSACTION_FILTER_PREFERENCE_NAME, typeFilter.name()));
         }
 
         private void setupFilterInView(ClientFilter filter)
@@ -248,53 +97,33 @@ public class AllTransactionsView extends AbstractFinanceView
 
         private void updateIcon()
         {
-            boolean hasActiveFilter = clientFilterMenu.hasActiveFilter() || typeFilter != DEFAULT_TYPE_FILTER;
+            boolean hasActiveFilter = clientFilterMenu.hasActiveFilter() || transactionFilterMenu.hasActiveCriteria();
             setImage(hasActiveFilter ? Images.FILTER_ON : Images.FILTER_OFF);
         }
 
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
-            manager.add(new LabelOnly(Messages.TransactionFilter));
-            for (TransactionFilter f : TransactionFilter.values())
-                manager.add(addTypeFilter(f));
+            transactionFilterMenu.menuAboutToShow(manager);
 
             manager.add(new Separator());
             manager.add(new LabelOnly(Messages.MenuChooseClientFilter));
             clientFilterMenu.menuAboutToShow(manager);
         }
-
-        private Action addTypeFilter(TransactionFilter filter)
-        {
-            Action action = new Action(Strings.repeat(" ", filter.getLevel() * 2) + filter.getName(), //$NON-NLS-1$
-                            IAction.AS_CHECK_BOX)
-            {
-                @Override
-                public void run()
-                {
-                    boolean isChecked = typeFilter == filter;
-
-                    // only one TransactionFilter can be selected at a time
-                    if (isChecked)
-                        typeFilter = DEFAULT_TYPE_FILTER;
-                    else
-                        typeFilter = filter;
-
-                    updateIcon();
-                    notifyModelUpdated();
-                }
-            };
-            action.setChecked(typeFilter == filter);
-            return action;
-        }
     }
 
     private TransactionsViewer table;
 
-    private String filter;
+    private TransactionSearchField textFilter;
     private PortfolioClientFilter clientFilter;
-    private TransactionFilter typeFilter;
+    private TransactionFilterCriteria typeFilter = TransactionFilterCriteria.NONE;
 
+    @Inject
+    public AllTransactionsView(IPreferenceStore preferenceStore)
+    {
+        textFilter = new TransactionSearchField(text -> table.refresh(false));
+    }
+    
     @Override
     public void notifyModelUpdated()
     {
@@ -311,7 +140,7 @@ public class AllTransactionsView extends AbstractFinanceView
     @Override
     protected void addButtons(ToolBarManager toolBar)
     {
-        addSearchButton(toolBar);
+        toolBar.add(textFilter);
 
         toolBar.add(new Separator());
 
@@ -343,87 +172,13 @@ public class AllTransactionsView extends AbstractFinanceView
                         manager -> table.getColumnSupport().menuAboutToShow(manager)));
     }
 
-    private void addSearchButton(ToolBarManager toolBar)
-    {
-        toolBar.add(new ControlContribution("searchbox") //$NON-NLS-1$
-        {
-            @Override
-            protected Control createControl(Composite parent)
-            {
-                final Text search = new Text(parent, SWT.SEARCH | SWT.ICON_CANCEL);
-                search.setMessage(Messages.LabelSearch);
-                search.setSize(300, SWT.DEFAULT);
-
-                search.addModifyListener(e -> {
-                    String filterText = search.getText().trim();
-                    if (filterText.length() == 0)
-                    {
-                        filter = null;
-                        table.refresh(false);
-                    }
-                    else
-                    {
-                        filter = filterText.toLowerCase();
-                        table.refresh(false);
-                    }
-                });
-
-                return search;
-            }
-
-            @Override
-            protected int computeWidth(Control control)
-            {
-                return control.computeSize(100, SWT.DEFAULT, true).x;
-            }
-        });
-    }
-
     @Override
     protected Control createBody(Composite parent)
     {
         table = new TransactionsViewer(AllTransactionsView.class.getName(), parent, this);
         inject(table);
 
-        List<Function<TransactionPair<?>, Object>> searchLabels = new ArrayList<>();
-        searchLabels.add(tx -> tx.getTransaction().getSecurity());
-        searchLabels.add(tx -> tx.getTransaction().getOptionalSecurity().map(Security::getIsin).orElse(null));
-        searchLabels.add(tx -> tx.getTransaction().getOptionalSecurity().map(Security::getWkn).orElse(null));
-        searchLabels.add(tx -> tx.getTransaction().getOptionalSecurity().map(Security::getTickerSymbol).orElse(null));
-        searchLabels.add(TransactionPair::getOwner);
-        searchLabels.add(tx -> tx.getTransaction().getCrossEntry() != null
-                        ? tx.getTransaction().getCrossEntry().getCrossOwner(tx.getTransaction())
-                        : null);
-        searchLabels.add(tx -> tx.getTransaction() instanceof AccountTransaction
-                        ? ((AccountTransaction) tx.getTransaction()).getType()
-                        : ((PortfolioTransaction) tx.getTransaction()).getType());
-        searchLabels.add(tx -> tx.getTransaction().getNote());
-        searchLabels.add(tx -> tx.getTransaction().getShares());
-        searchLabels.add(tx -> tx.getTransaction().getMonetaryAmount());
-
-        table.addFilter(new ViewerFilter()
-        {
-            @Override
-            public Object[] filter(Viewer viewer, Object parent, Object[] elements)
-            {
-                return filter == null ? elements : super.filter(viewer, parent, elements);
-            }
-
-            @Override
-            public boolean select(Viewer viewer, Object parentElement, Object element)
-            {
-                TransactionPair<?> tx = (TransactionPair<?>) element;
-
-                for (Function<TransactionPair<?>, Object> label : searchLabels)
-                {
-                    Object l = label.apply(tx);
-                    if (l != null && l.toString().toLowerCase().indexOf(filter) >= 0)
-                        return true;
-                }
-
-                return false;
-            }
-        });
+        table.addFilter(textFilter.getViewerFilter(element -> (TransactionPair<?>) element));
 
         table.addFilter(new ViewerFilter()
         {
@@ -451,9 +206,8 @@ public class AllTransactionsView extends AbstractFinanceView
                     return true;
                 TransactionPair<?> tx = (TransactionPair<?>) element;
                 // check owner and cross owner
-                return clientFilter.hasElement(tx.getOwner())
-                                || (tx.getTransaction().getCrossEntry() != null && clientFilter.hasElement(tx
-                                                .getTransaction().getCrossEntry() //
+                return clientFilter.hasElement(tx.getOwner()) || (tx.getTransaction().getCrossEntry() != null
+                                && clientFilter.hasElement(tx.getTransaction().getCrossEntry() //
                                                 .getCrossOwner(tx.getTransaction())));
             }
         });

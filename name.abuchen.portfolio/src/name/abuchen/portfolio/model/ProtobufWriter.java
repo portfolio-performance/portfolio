@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.model;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
 import static name.abuchen.portfolio.util.ProtobufUtil.asDecimalValue;
 import static name.abuchen.portfolio.util.ProtobufUtil.asTimestamp;
 import static name.abuchen.portfolio.util.ProtobufUtil.asUpdatedAtTimestamp;
@@ -167,9 +168,9 @@ import name.abuchen.portfolio.money.Money;
             if (newSecurity.hasFeedURL())
                 security.setFeedURL(newSecurity.getFeedURL());
 
-            security.addAllPrices(newSecurity.getPricesList().stream()
+            security.protobufSetPrices(newSecurity.getPricesList().stream()
                             .map(p -> new SecurityPrice(LocalDate.ofEpochDay(p.getDate()), p.getClose()))
-                            .collect(Collectors.toList()));
+                            .collect(toMutableList()));
 
             if (newSecurity.hasLatestFeed())
                 security.setLatestFeed(newSecurity.getLatestFeed());

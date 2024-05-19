@@ -1,0 +1,61 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+~$~|OR07|253373||||||||ORDER.D240510.AFP||||20240510||2174|0000|||||~$~
+S Broker AG & Co. KG ´ Postfach 90 01 50 ´ 39133 Magdeburg Seite 1 von 2
+Depotnummer 7253373002
+NCckFY VNeYEp
+Auftragsnummer 188320/63.00
+Datum 10.05.2024
+Herrn Rechnungsnummer W05500-0001211733/24
+htVFYa iztUAR Umsatzsteuer-ID pL389852586
+Seestr. 892
+60682 IfxZdodRO XJ vqaKuzQp
+Wertpapier Abrechnung Verkauf Direkthandel
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 1.000 SIEMENS ENERGY AG DE000ENER6Y0 (ENER6Y)
+NAMENS-AKTIEN O.N.
+Handels-/Ausführungsplatz Auûerbörslich (gemäû Weisung)
+Handelspartner Baader Bank
+Limit-Order
+Limit 24,27 EUR
+Schlusstag/-Zeit 10.05.2024 17:37:13
+Ausführungskurs 24,27 EUR
+Girosammelverwahrung - Sammel-Urkunden in Namensaktien
+Kurswert 24.270,00 EUR
+Provision 6,95- EUR
+Ermittlung steuerrelevante Erträge
+Veräuûerungsgewinn 6.739,22 EUR
+Bemessungsgrundlage für die Kapitalertragsteuer 6.739,22 EUR
+Verrechnete sonstige negative Kapitalerträge 5.970,85- EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 768,37 EUR
+Steuerberechnung
+Kapitalertragsteuer 25,00% auf 768,37 EUR 192,09- EUR
+Solidaritätszuschlag 5,50% auf 192,09 EUR 10,56- EUR
+Ausmachender Betrag 24.060,40 EUR
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+5500.05102037.0003108OR07
+SBRO_OR07_v3.0P.ORDER.D240510.AFP_2174
+Seite 2 von 2
+Depotnummer 8663345219
+Auftragsnummer 188320/63.00
+Datum 10.05.2024
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2024 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 5.970,85 0,00 0,00 7.024,67
+Verkauf 0,00 5.970,85- 0,00 0,00 768,37
+Nachher 0,00 0,00 0,00 0,00 7.793,04
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös ant. Ergebnis
+Kauf 4518442500 23.06.2023 Stück 500,0000 9.252,55- 12.131,52 2.878,97 (D)
+Kauf 4519433200 23.06.2023 Stück 500,0000 8.271,28- 12.131,53 3.860,25 (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 6.739,22
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+5500.05102037.0003109OR07
+
+```

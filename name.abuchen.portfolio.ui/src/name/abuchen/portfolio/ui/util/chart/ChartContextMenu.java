@@ -252,6 +252,7 @@ import name.abuchen.portfolio.util.TextUtil;
                             chart.suspendUpdate(true);
                             chart.getTitle().setVisible(isChartTitleVisible);
                             chart.getLegend().setVisible(isChartLegendVisible);
+                            chart.redraw();
                             chart.suspendUpdate(false);
                         }
                     }

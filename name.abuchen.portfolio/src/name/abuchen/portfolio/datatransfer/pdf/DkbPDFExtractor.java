@@ -877,22 +877,22 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
 
                             // Formatting some notes
-                            if ("Kreditkartenabr.".equals(v.get("note")))
+                            if ("Kreditkartenabr.".equalsIgnoreCase(v.get("note")))
                                 v.put("note", "Kreditkartenabrechnung");
 
-                            if ("Verfügung Geldautomat".equals(v.get("note")))
+                            if ("Verfügung Geldautomat".equalsIgnoreCase(v.get("note")))
                                 v.put("note", "Geldautomat");
 
-                            if ("Verfüg. Geldautom. FW".equals(v.get("note")))
+                            if ("Verfüg. Geldautom. FW".equalsIgnoreCase(v.get("note")))
                                 v.put("note", "Geldautomat (Fremdwährung)");
 
-                            if ("Kartenzahlung onl".equals(v.get("note")))
+                            if ("Kartenzahlung onl".equalsIgnoreCase(v.get("note")))
                                 v.put("note", "Kartenzahlung online");
 
-                            if ("Überweis. entgeltfr.".equals(v.get("note")))
+                            if ("Überweis. entgeltfr.".equalsIgnoreCase(v.get("note")))
                                 v.put("note", "Überweisung entgeltfrei");
 
-                            if ("Kartenzahlung FW".equals(v.get("note")))
+                            if ("Kartenzahlung FW".equalsIgnoreCase(v.get("note")))
                                 v.put("note", "Kartenzahlung (Fremdwährung)");
 
                             t.setNote(v.get("note"));
@@ -946,10 +946,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
 
                             // Formatting some notes
-                            if ("Eingang Echtzeitüberw".equals(v.get("note")))
+                            if ("Eingang Echtzeitüberw".equalsIgnoreCase(v.get("note")))
                                 v.put("note", "Eingang Echtzeitüberweisung");
 
-                            if ("Bareinzahlung am GA".equals(v.get("note")))
+                            if ("Bareinzahlung am GA".equalsIgnoreCase(v.get("note")))
                                 v.put("note", "Bareinzahlung am Geldautomat");
 
                             t.setNote(v.get("note"));
@@ -957,7 +957,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block taxReturnBlock = new Block( "^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. [\\d]+ Steuerausgleich [\\.,\\d]+$");
+        Block taxReturnBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?i)Steuerausgleich [\\.,\\d]+$");
         type.addBlock(taxReturnBlock);
         taxReturnBlock.set(new Transaction<AccountTransaction>()
 
@@ -1013,7 +1013,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "|Buchung" //
                                         + "|sonstige Entgelte)) " //
                                         + "(?<amount>[\\.,\\d]+)$")
-                        .match("^.*" + "(?i)(?<note2>(Bargeldeinzahlung" //
+                        .match("^.*(?i)(?<note2>(Bargeldeinzahlung" //
                                         + "|R.ckruf\\/Nachforschung" //
                                         + "|Identifikationscode" //
                                         + "|Stornorechnung" //
@@ -1043,10 +1043,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note1") + " " + v.get("note2"));
 
                             // Formatting some notes
-                            if ("BUCHUNG IDENTIFIKATIONSCODE".equals(t.getNote()))
+                            if ("BUCHUNG IDENTIFIKATIONSCODE".equalsIgnoreCase(t.getNote()))
                                 t.setNote("Buchung Identifikationscode");
 
-                            if ("Rechnung Entgelt für Konto ohne".equals(t.getNote()))
+                            if ("Rechnung Entgelt für Konto ohne".equalsIgnoreCase(t.getNote()))
                                 t.setNote("Entgelt für Konto ohne mtl. Eingang");
                         })
 
@@ -1088,9 +1088,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .section("type", "amount", "date", "note").optional() //
                         .documentContext("currency") //
                         .match("^[\\s]+ (?<type>[\\-\\s])(?<amount>[\\.,\\d]+)$") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>"
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))" //
-                                        + "(Lohn, Gehalt, Rente" //
+                                        + "(?<note>(Lohn, Gehalt, Rente" //
                                         + "|Zahlungseingang" //
                                         + "|Storno Gutschrift" //
                                         + "|Bareinzahlung am GA" //
@@ -1143,6 +1143,57 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                 v.put("note", "Bareinzahlung am Geldautomat");
 
                             t.setNote(v.get("note"));
+                        })
+
+                        .wrap((t) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (t.getDateTime() != null)
+                                return item;
+
+                            return null;
+                        }));
+
+        Block feesBlock = new Block("^[\\s]+ (\\-)?[\\.,\\d]+$");
+        type.addBlock(feesBlock);
+        feesBlock.setMaxSize(3);
+        feesBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES_REFUND);
+                            return accountTransaction;
+                        })
+
+                        .section("type", "amount", "date", "note1", "note2").optional() //
+                        .documentContext("currency") //
+                        .match("^[\\s]+ (?<type>[\\-\\s])(?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))" //
+                                        + "(?<note1>(Rechnung" //
+                                        + "|Buchung" //
+                                        + "|sonstige Entgelte)).*$") //
+                        .match("^.* (?<note2>(Bargeldeinzahlung" //
+                                        + "|R.ckruf\\/Nachforschung" //
+                                        + "|Identifikationscode" //
+                                        + "|Stornorechnung" //
+                                        + "|Girokarte" //
+                                        + "|Entgelt f.r Konto ohne)).*$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type is "-" change from FEES_REFUND to FEES
+                            // @formatter:on
+                            if ("-".equals(trim(v.get("type"))))
+                                t.setType(AccountTransaction.Type.FEES);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(v.get("note1") + " " + v.get("note2"));
+
+                            // Formatting some notes
+                            if ("Rechnung Entgelt für Konto ohne".equals(t.getNote()))
+                                t.setNote("Entgelt für Konto ohne mtl. Eingang");
                         })
 
                         .wrap((t) -> {

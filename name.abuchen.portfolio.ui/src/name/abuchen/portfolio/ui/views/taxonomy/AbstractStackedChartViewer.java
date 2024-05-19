@@ -124,6 +124,7 @@ public abstract class AbstractStackedChartViewer extends AbstractChartPage imple
 
         chart = new StackedTimelineChart(composite, getDates());
         chart.getTitle().setVisible(false);
+        chart.getTitle().setText(getModel().getTaxonomy().getName());
 
         chart.getLegend().setPosition(SWT.BOTTOM);
         chart.getLegend().setVisible(true);
