@@ -7318,6 +7318,8 @@ public class DegiroPDFExtractorTest
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(78.21))));
     }
     
+   
+    
     @Test
     public void testTransactions_french02()
     {
@@ -7328,38 +7330,38 @@ public class DegiroPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transactions_french02.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(34));
+        assertThat(results.size(), is(11));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check 1st security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getName(), is("ADR ON AMBEV"));
-        assertThat(security.getIsin(), is("US02319V1035"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        List<Security> securities = results.stream()
+                        .filter(SecurityItem.class::isInstance)
+                        .map(Item::getSecurity)
+                        .collect(Collectors.toList());
+        
+        assertThat(securities.size(), is(5));
 
+        checkOneSecurity(securities.get(0), "ADR ON AMBEV", "US02319V1035", CurrencyUnit.USD);
+        checkOneSecurity(securities.get(1), "ISHARES PROP US", "IE00B1FZSF77", CurrencyUnit.EUR);
+        checkOneSecurity(securities.get(2), "UNITEDHEALTH GROUP INC", "US91324P1021", CurrencyUnit.USD);
+        checkOneSecurity(securities.get(3), "ELEVANCE HEALTH INC", "US0367521038", CurrencyUnit.USD);
+        checkOneSecurity(securities.get(4), "MICRON TECHNOLOGY INC", "US5951121038", CurrencyUnit.USD);
+        
         // check 1st buy transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        List<BuySellEntry> entries = results.stream()
+                        .filter(BuySellEntryItem.class::isInstance)
+                        .map(item -> (BuySellEntry)item.getSubject())
+                        .collect(Collectors.toList());
 
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+        assertThat(entries.size(), is(6));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2024-04-16T21:56")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(150)));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(317.95))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(319.95))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.00))));
-
-        Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
-                        .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(339.75))));
+        checkOneBuySellEntry(entries.get(0), PortfolioTransaction.Type.SELL, AccountTransaction.Type.SELL, "2024-04-16T21:56", 150, CurrencyUnit.EUR, 317.95, 319.95, 0, 2, CurrencyUnit.USD, 339.75);
+        checkOneBuySellEntry(entries.get(1), PortfolioTransaction.Type.SELL, AccountTransaction.Type.SELL, "2024-03-26T10:27", 4, CurrencyUnit.EUR, 101, 101, 0, 0, null, 0);
+        checkOneBuySellEntry(entries.get(2), PortfolioTransaction.Type.SELL, AccountTransaction.Type.SELL, "2024-03-26T10:13", 12, CurrencyUnit.EUR, 300, 303, 0, 3, null, 0);
+        checkOneBuySellEntry(entries.get(3), PortfolioTransaction.Type.BUY, AccountTransaction.Type.BUY, "2024-01-22T16:51", 1, CurrencyUnit.EUR, 468.94, 466.94, 0, 2, CurrencyUnit.USD, 508.4);
+        checkOneBuySellEntry(entries.get(4), PortfolioTransaction.Type.SELL, AccountTransaction.Type.SELL, "2024-01-22T16:31", 1, CurrencyUnit.EUR, 428.59, 430.59, 0, 2, CurrencyUnit.USD, 469);
+        checkOneBuySellEntry(entries.get(5), PortfolioTransaction.Type.SELL, AccountTransaction.Type.SELL, "2024-01-22T16:30", 4, CurrencyUnit.EUR, 322.22, 324.22, 0, 2, CurrencyUnit.USD, 353.24);
+        
     }
 
     @Test
@@ -8801,5 +8803,63 @@ public class DegiroPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+    
+    /**
+     * Utility function to check one security 
+     * 
+     * @param security
+     * @param expName
+     * @param expIsin
+     * @param expCurrency
+     */
+    private void checkOneSecurity( Security security, String expName, String expIsin, String expCurrency) {
+     
+        assertThat(security.getName(), is(expName));
+        assertThat(security.getIsin(), is(expIsin));
+        assertThat(security.getCurrencyCode(), is(expCurrency));
+    }
+    
+    /**
+     * Utility to check one Buy/Sell transaction
+     *  
+     * @param entry
+     * @param portfolioTransactionType
+     * @param accountTransactionType
+     * @param dateTime
+     * @param shares
+     * @param currency
+     * @param monetaryAmount
+     * @param grossValue
+     * @param taxSum
+     * @param feeSum
+     * @param forexCurrency
+     * @param forexValue
+     */
+    private void checkOneBuySellEntry( BuySellEntry entry, PortfolioTransaction.Type portfolioTransactionType, AccountTransaction.Type accountTransactionType, 
+                    String dateTime, double shares, String currency, double monetaryAmount, 
+                    double grossValue, double taxSum, double feeSum, String forexCurrency, double forexValue) {
+        
+        assertThat(entry.getPortfolioTransaction().getType(), is(portfolioTransactionType));
+        assertThat(entry.getAccountTransaction().getType(), is(accountTransactionType));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse(dateTime)));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(shares)));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(currency, Values.Amount.factorize(monetaryAmount))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of(currency, Values.Amount.factorize(grossValue))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(currency, Values.Amount.factorize(taxSum))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(currency, Values.Amount.factorize(feeSum))));
+        
+        if (forexCurrency != null) {
+            Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                            .orElseThrow(IllegalArgumentException::new);
+            assertThat(grossValueUnit.getForex(), is(Money.of(forexCurrency, Values.Amount.factorize(forexValue))));
+        }
+
     }
 }
