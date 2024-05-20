@@ -112,6 +112,11 @@ public final class Money implements Comparable<Money>
         return Money.of(currencyCode, Math.round(amount * multiplicand));
     }
 
+    public Money absolute()
+    {
+        return Money.of(currencyCode, Math.abs(amount));
+    }
+
     public Money with(MonetaryOperator operator)
     {
         return operator.apply(this);
