@@ -19,6 +19,9 @@ import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
@@ -178,8 +181,7 @@ public class InvestmentPlanTest
     {
         investmentPlan.setType(InvestmentPlan.Type.REMOVAL);
 
-        // Negative amount => REMOVAL transaction
-        investmentPlan.setAmount(Values.Amount.factorize(-100));
+        investmentPlan.setAmount(Values.Amount.factorize(100));
 
         investmentPlan.setAccount(account);
         investmentPlan.setStart(LocalDateTime.parse("2022-03-29T00:00"));
@@ -198,6 +200,39 @@ public class InvestmentPlanTest
         assertThat(tx.get(0), instanceOf(AccountTransaction.class));
         assertThat(tx.get(0).getDateTime(), is(LocalDateTime.parse("2022-03-29T00:00")));
         assertThat(((AccountTransaction) tx.get(0)).getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(((AccountTransaction) tx.get(0)).getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100))));
+    }
+
+    @Test
+    public void testGenerationOfInterestTransaction() throws IOException
+    {
+        investmentPlan.setType(InvestmentPlan.Type.INTEREST);
+
+        investmentPlan.setAmount(Values.Amount.factorize(200));
+        investmentPlan.setTaxes(Values.Amount.factorize(10));
+
+        investmentPlan.setAccount(account);
+        investmentPlan.setStart(LocalDateTime.parse("2022-03-29T00:00"));
+
+        investmentPlan.generateTransactions(new TestCurrencyConverter());
+
+        List<Transaction> tx = investmentPlan.getTransactions().stream()
+                        .filter(t -> t.getDateTime().getYear() == 2022 && t.getDateTime().getMonth() == Month.MARCH)
+                        .collect(Collectors.toList());
+
+        assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.INTEREST));
+
+        assertThat(tx.isEmpty(), is(false));
+        assertThat(tx.size(), is(1));
+
+        assertThat(tx.get(0), instanceOf(AccountTransaction.class));
+        assertThat(tx.get(0).getDateTime(), is(LocalDateTime.parse("2022-03-29T00:00")));
+        assertThat(((AccountTransaction) tx.get(0)).getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(((AccountTransaction) tx.get(0)).getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200))));
+        assertThat(((AccountTransaction) tx.get(0)).getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10))));
     }
 
     @Test

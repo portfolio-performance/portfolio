@@ -96,7 +96,7 @@ public class InvestmentPlanModel extends AbstractModel
         plan.setAutoGenerate(autoGenerate);
         plan.setStart(start);
         plan.setInterval(interval);
-        plan.setAmount((planType == Type.REMOVAL) ? -amount : amount);
+        plan.setAmount(amount);
         plan.setFees(fees);
         plan.setTaxes(taxes);
     }
@@ -134,10 +134,6 @@ public class InvestmentPlanModel extends AbstractModel
         this.start = plan.getStart();
         this.interval = plan.getInterval();
         this.amount = plan.getAmount();
-        if (planType == Type.REMOVAL)
-        {
-            this.amount = -this.amount;
-        }
         this.fees = plan.getFees();
         this.taxes = plan.getTaxes();
     }

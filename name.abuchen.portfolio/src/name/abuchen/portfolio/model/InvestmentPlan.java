@@ -486,35 +486,34 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
     private TransactionPair<?> createAccountTx(CurrencyConverter converter, LocalDate tDate)
     {
-        long txAmount = amount;
-
         AccountTransaction.Type transactionType;
-        if (txAmount > 0)
+
+        switch (type)
         {
-            transactionType = AccountTransaction.Type.DEPOSIT;
-        }
-        else
-        {
-            transactionType = AccountTransaction.Type.REMOVAL;
-            txAmount = -txAmount;
-        }
-        if (type == Type.INTEREST)
-        {
-            transactionType = AccountTransaction.Type.INTEREST;
-            txAmount -= taxes;
+            case DEPOSIT:
+                transactionType = AccountTransaction.Type.DEPOSIT;
+                break;
+            case REMOVAL:
+                transactionType = AccountTransaction.Type.REMOVAL;
+                break;
+            case INTEREST:
+                transactionType = AccountTransaction.Type.INTEREST;
+                break;
+            default:
+                throw new IllegalArgumentException();
         }
 
-        Money deposit = Money.of(getCurrencyCode(), txAmount);
+        Money monetaryAmount = Money.of(getCurrencyCode(), amount);
 
         boolean needsCurrencyConversion = !getCurrencyCode().equals(account.getCurrencyCode());
         if (needsCurrencyConversion)
-            deposit = converter.with(account.getCurrencyCode()).at(tDate).apply(deposit);
+            monetaryAmount = converter.with(account.getCurrencyCode()).at(tDate).apply(monetaryAmount);
 
         // create deposit transaction
         AccountTransaction transaction = new AccountTransaction();
         transaction.setDateTime(tDate.atStartOfDay());
         transaction.setType(transactionType);
-        transaction.setMonetaryAmount(deposit);
+        transaction.setMonetaryAmount(monetaryAmount);
         transaction.setNote(MessageFormat.format(Messages.InvestmentPlanAutoNoteLabel,
                         Values.DateTime.format(LocalDateTime.now()), name));
 
