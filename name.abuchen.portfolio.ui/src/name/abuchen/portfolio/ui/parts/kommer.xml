@@ -418,6 +418,100 @@
       <isRetired>false</isRetired>
       <updatedAt>2024-02-16T07:19:57.696737Z</updatedAt>
     </security>
+    <security>
+      <uuid>3cfa101b-0558-4ec4-a9e5-baab4eeddb2a</uuid>
+      <name>Amazon.com Inc.</name>
+      <currencyCode>USD</currencyCode>
+      <isin>US0231351067</isin>
+      <tickerSymbol>AMZN</tickerSymbol>
+      <wkn>906866</wkn>
+      <feed>YAHOO</feed>
+      <prices>
+        <price t="2018-02-01" v="6950000000"/>
+      </prices>
+      <attributes>
+        <map/>
+      </attributes>
+      <events>
+        <event>
+          <date>2022-06-06</date>
+          <type>STOCK_SPLIT</type>
+          <details>20:1</details>
+        </event>
+      </events>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;symbol&quot;:&quot;AMZ&quot;,&quot;firstPriceDate&quot;:&quot;2000-01-03&quot;,&quot;lastPriceDate&quot;:&quot;2024-05-21&quot;}]</property>
+      <isRetired>false</isRetired>
+      <updatedAt>2024-05-21T21:05:08.690262Z</updatedAt>
+    </security>
+    <security>
+      <uuid>15b10f6f-15a9-4129-83cb-a99dc43d9fa7</uuid>
+      <onlineId>d88b08bfc1ea4f288d8124de2819c3a5</onlineId>
+      <name>Mercedes Benz Group AG (former Daimler)</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE0007100000</isin>
+      <tickerSymbol>MBG</tickerSymbol>
+      <wkn>710000</wkn>
+      <feed>PORTFOLIO-REPORT</feed>
+      <prices>
+        <price t="2022-02-01" v="7016000000"/>
+      </prices>
+      <latest t="2024-05-21" v="6681000000">
+        <high>-1</high>
+        <low>-1</low>
+        <volume>-1</volume>
+      </latest>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;symbol&quot;:&quot;MBG&quot;,&quot;firstPriceDate&quot;:&quot;2000-01-03&quot;,&quot;lastPriceDate&quot;:&quot;2024-05-21&quot;}]</property>
+      <isRetired>false</isRetired>
+      <updatedAt>2024-05-21T21:21:38.985174Z</updatedAt>
+    </security>
+    <security>
+      <uuid>5638b182-da36-49ee-94c1-5f059cc0129a</uuid>
+      <onlineId>681d11e45dee4b099d79925aebd5bbc4</onlineId>
+      <name>Daimler Truck Holding AG</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE000DTR0CK8</isin>
+      <tickerSymbol>DTG</tickerSymbol>
+      <wkn>DTR0CK</wkn>
+      <feed>PORTFOLIO-REPORT</feed>
+      <prices>
+        <price t="2022-02-01" v="3229000000"/>
+      </prices>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;symbol&quot;:&quot;DTG&quot;,&quot;firstPriceDate&quot;:&quot;2021-12-10&quot;,&quot;lastPriceDate&quot;:&quot;2024-05-21&quot;}]</property>
+      <isRetired>false</isRetired>
+      <updatedAt>2024-05-21T21:28:58.267969Z</updatedAt>
+    </security>
+    <security>
+      <uuid>22100879-5a9f-4873-a376-8383ed635627</uuid>
+      <onlineId>0e899bc7ae184d7580ab068bf51f32c4</onlineId>
+      <name>NVIDIA Corp.</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>US67066G1040</isin>
+      <tickerSymbol>NVD</tickerSymbol>
+      <wkn>918422</wkn>
+      <feed>PORTFOLIO-REPORT</feed>
+      <prices>
+        <price t="2022-02-01" v="21760000000"/>
+      </prices>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;symbol&quot;:&quot;NVD&quot;,&quot;firstPriceDate&quot;:&quot;2000-02-02&quot;,&quot;lastPriceDate&quot;:&quot;2024-05-21&quot;}]</property>
+      <isRetired>false</isRetired>
+      <updatedAt>2024-05-21T21:30:50.444690Z</updatedAt>
+    </security>
   </securities>
   <watchlists>
     <watchlist>
@@ -632,6 +726,120 @@
                     </unit>
                   </units>
                   <updatedAt>2024-02-16T07:17:00.710431Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>75ef09c8-8632-4f3e-b93c-02bcc5c9b08c</uuid>
+                  <date>2022-04-27T00:00</date>
+                  <currencyCode>USD</currencyCode>
+                  <amount>267600</amount>
+                  <security reference="../../../../../../../../../securities/security[13]"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account>
+                      <uuid>789294db-0aa4-4673-9d91-ad083c9d6916</uuid>
+                      <name>${Kommer_ForeignCurrencyAccountUSD}</name>
+                      <currencyCode>USD</currencyCode>
+                      <isRetired>false</isRetired>
+                      <transactions>
+                        <account-transaction>
+                          <uuid>e17cdd6c-b240-40fc-b257-b6a8b30c1703</uuid>
+                          <date>2022-03-03T00:00</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>300000</amount>
+                          <shares>0</shares>
+                          <updatedAt>2024-05-21T21:08:55.841595Z</updatedAt>
+                          <type>DEPOSIT</type>
+                        </account-transaction>
+                        <account-transaction>
+                          <uuid>dfcef463-9aae-49ec-aad9-73ec9dc06066</uuid>
+                          <date>2022-04-27T00:00</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>267600</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security[13]"/>
+                          <crossEntry class="buysell" reference="../../../.."/>
+                          <shares>0</shares>
+                          <updatedAt>2024-05-21T21:07:21.595456Z</updatedAt>
+                          <type>BUY</type>
+                        </account-transaction>
+                      </transactions>
+                      <attributes>
+                        <map/>
+                      </attributes>
+                      <updatedAt>2024-05-17T22:06:08.826288Z</updatedAt>
+                    </account>
+                    <accountTransaction reference="../account/transactions/account-transaction[2]"/>
+                  </crossEntry>
+                  <shares>2000000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="USD" amount="600"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2024-05-21T21:11:20.675583Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>784bf496-784a-4b7d-bf42-17705b992fa8</uuid>
+                  <date>2021-11-01T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>87580</amount>
+                  <security reference="../../../../../../../../../securities/security[14]"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>cb4ee0a5-ae17-415d-88d7-47d621cef257</uuid>
+                      <date>2021-11-01T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>87580</amount>
+                      <security reference="../../../../../../../../../../../securities/security[14]"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <updatedAt>2024-05-21T21:22:42.944048Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>1000000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="600"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2024-05-21T21:22:42.944055Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>741d6187-6cf7-42c9-86cf-3461894503f8</uuid>
+                  <date>2022-10-01T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>26240</amount>
+                  <security reference="../../../../../../../../../securities/security[16]"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>b41d0e8e-2c08-4008-b7d0-a6723ef814d3</uuid>
+                      <date>2022-10-01T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>26240</amount>
+                      <security reference="../../../../../../../../../../../securities/security[16]"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <updatedAt>2024-05-21T21:37:46.696935Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>200000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="600"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2024-05-21T21:37:46.696941Z</updatedAt>
                   <type>BUY</type>
                 </portfolio-transaction>
               </transactions>
@@ -1733,6 +1941,152 @@
           <updatedAt>2024-02-16T07:51:21.594607Z</updatedAt>
           <type>DIVIDENDS</type>
         </account-transaction>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[8]/crossEntry/accountTransaction"/>
+        <account-transaction>
+          <uuid>42dbacc0-7c7d-4e0e-a0cf-3f35a36edd91</uuid>
+          <date>2022-05-02T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>3750</amount>
+          <security reference="../../../../../securities/security[14]"/>
+          <shares>1000000000</shares>
+          <units>
+            <unit type="TAX">
+              <amount currency="EUR" amount="1250"/>
+            </unit>
+          </units>
+          <updatedAt>2024-05-21T21:25:43.167418Z</updatedAt>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>c1c90492-0e40-4986-8391-a8e4af1171c5</uuid>
+          <date>2023-05-04T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>3900</amount>
+          <security reference="../../../../../securities/security[14]"/>
+          <shares>1000000000</shares>
+          <units>
+            <unit type="TAX">
+              <amount currency="EUR" amount="1300"/>
+            </unit>
+          </units>
+          <updatedAt>2024-05-21T21:26:19.993015Z</updatedAt>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>85708fa1-f746-4fce-8e66-fe4b574e4896</uuid>
+          <date>2024-05-09T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>3975</amount>
+          <security reference="../../../../../securities/security[14]"/>
+          <shares>1000000000</shares>
+          <units>
+            <unit type="TAX">
+              <amount currency="EUR" amount="1325"/>
+            </unit>
+          </units>
+          <updatedAt>2024-05-21T21:33:32.422039Z</updatedAt>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>07bd7328-e34a-47c4-b576-9f2969c3713b</uuid>
+          <date>2021-10-01T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>100000</amount>
+          <shares>0</shares>
+          <updatedAt>2024-05-21T21:33:01.285106Z</updatedAt>
+          <type>DEPOSIT</type>
+        </account-transaction>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[9]/crossEntry/accountTransaction"/>
+        <account-transaction>
+          <uuid>14aa3dc9-d962-46a1-9ebe-295164a51162</uuid>
+          <date>2022-11-30T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>6</amount>
+          <security reference="../../../../../securities/security[16]"/>
+          <shares>200000000</shares>
+          <units>
+            <unit type="TAX">
+              <amount currency="EUR" amount="2"/>
+            </unit>
+          </units>
+          <updatedAt>2024-05-21T21:41:59.837821Z</updatedAt>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>2a50bd05-f8df-4606-921e-03245f6ce147</uuid>
+          <date>2023-03-07T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>6</amount>
+          <security reference="../../../../../securities/security[16]"/>
+          <shares>200000000</shares>
+          <units>
+            <unit type="TAX">
+              <amount currency="EUR" amount="2"/>
+            </unit>
+          </units>
+          <updatedAt>2024-05-21T21:40:22.102970Z</updatedAt>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>169a7085-c34f-41c0-b679-2bb89a7e80e9</uuid>
+          <date>2023-06-07T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>6</amount>
+          <security reference="../../../../../securities/security[16]"/>
+          <shares>200000000</shares>
+          <units>
+            <unit type="TAX">
+              <amount currency="EUR" amount="2"/>
+            </unit>
+          </units>
+          <updatedAt>2024-05-21T21:40:39.014862Z</updatedAt>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>b039482f-fc24-4c45-bfe4-bf18e6734f6d</uuid>
+          <date>2023-09-06T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>6</amount>
+          <security reference="../../../../../securities/security[16]"/>
+          <shares>200000000</shares>
+          <units>
+            <unit type="TAX">
+              <amount currency="EUR" amount="2"/>
+            </unit>
+          </units>
+          <updatedAt>2024-05-21T21:41:00.346182Z</updatedAt>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>278a6ae8-0bb4-4f93-ba81-24f70fb4e73e</uuid>
+          <date>2023-12-05T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>6</amount>
+          <security reference="../../../../../securities/security[16]"/>
+          <shares>200000000</shares>
+          <units>
+            <unit type="TAX">
+              <amount currency="EUR" amount="2"/>
+            </unit>
+          </units>
+          <updatedAt>2024-05-21T21:41:16.157667Z</updatedAt>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>fdfa22c2-f24a-40aa-b742-b69a57862002</uuid>
+          <date>2024-03-05T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>6</amount>
+          <security reference="../../../../../securities/security[16]"/>
+          <shares>200000000</shares>
+          <units>
+            <unit type="TAX">
+              <amount currency="EUR" amount="2"/>
+            </unit>
+          </units>
+          <updatedAt>2024-05-21T22:03:39.812620Z</updatedAt>
+          <type>DIVIDENDS</type>
+        </account-transaction>
       </transactions>
       <attributes>
         <map/>
@@ -1760,27 +2114,7 @@
       </attributes>
       <updatedAt>2024-02-16T07:17:00.710311Z</updatedAt>
     </account>
-    <account>
-      <uuid>789294db-0aa4-4673-9d91-ad083c9d6916</uuid>
-      <name>${Kommer_ForeignCurrencyAccountUSD}</name>
-      <currencyCode>USD</currencyCode>
-      <isRetired>false</isRetired>
-      <transactions>
-        <account-transaction>
-          <uuid>e17cdd6c-b240-40fc-b257-b6a8b30c1703</uuid>
-          <date>2024-05-18T00:00</date>
-          <currencyCode>USD</currencyCode>
-          <amount>100000</amount>
-          <shares>0</shares>
-          <updatedAt>2024-05-17T22:06:15.327431Z</updatedAt>
-          <type>DEPOSIT</type>
-        </account-transaction>
-      </transactions>
-      <attributes>
-        <map/>
-      </attributes>
-      <updatedAt>2024-05-17T22:06:08.826288Z</updatedAt>
-    </account>
+    <account reference="../account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[7]/crossEntry/account"/>
     <account>
       <uuid>db94317b-26ed-4a8b-bf6c-2f535a217138</uuid>
       <name>${Kommer_ForeignCurrencyAccountGBP}</name>
@@ -1789,11 +2123,11 @@
       <transactions>
         <account-transaction>
           <uuid>77c28e82-d877-483a-9a9f-7dbf42c5743b</uuid>
-          <date>2024-05-18T00:00</date>
+          <date>2022-03-03T00:00</date>
           <currencyCode>GBP</currencyCode>
-          <amount>100000</amount>
+          <amount>200000</amount>
           <shares>0</shares>
-          <updatedAt>2024-05-17T22:06:51.787691Z</updatedAt>
+          <updatedAt>2024-05-21T21:31:27.103291Z</updatedAt>
           <type>DEPOSIT</type>
         </account-transaction>
       </transactions>
@@ -1929,7 +2263,7 @@
                 <rank>3</rank>
               </assignment>
               <assignment>
-                <investmentVehicle class="account" reference="../../../../../../../../accounts/account[3]"/>
+                <investmentVehicle class="account" reference="../../../../../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[7]/crossEntry/account"/>
                 <weight>10000</weight>
                 <rank>4</rank>
               </assignment>
@@ -1953,17 +2287,17 @@
               <assignment>
                 <investmentVehicle class="security" reference="../../../../../../../../securities/security"/>
                 <weight>10000</weight>
-                <rank>4</rank>
+                <rank>9</rank>
               </assignment>
               <assignment>
                 <investmentVehicle class="security" reference="../../../../../../../../securities/security[2]"/>
                 <weight>10000</weight>
-                <rank>5</rank>
+                <rank>10</rank>
               </assignment>
               <assignment>
                 <investmentVehicle class="security" reference="../../../../../../../../securities/security[3]"/>
                 <weight>10000</weight>
-                <rank>6</rank>
+                <rank>11</rank>
               </assignment>
               <assignment>
                 <investmentVehicle class="security" reference="../../../../../../../../securities/security[7]"/>
@@ -1984,6 +2318,31 @@
                 <investmentVehicle class="security" reference="../../../../../../../../securities/security[6]"/>
                 <weight>10000</weight>
                 <rank>2</rank>
+              </assignment>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[13]"/>
+                <weight>10000</weight>
+                <rank>4</rank>
+              </assignment>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[15]"/>
+                <weight>10000</weight>
+                <rank>5</rank>
+              </assignment>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[14]"/>
+                <weight>10000</weight>
+                <rank>6</rank>
+              </assignment>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[4]"/>
+                <weight>10000</weight>
+                <rank>7</rank>
+              </assignment>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security[16]"/>
+                <weight>10000</weight>
+                <rank>8</rank>
               </assignment>
             </assignments>
             <weight>10000</weight>
@@ -2159,7 +2518,12 @@
                   <assignment>
                     <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[6]"/>
                     <weight>10000</weight>
-                    <rank>2147483647</rank>
+                    <rank>1</rank>
+                  </assignment>
+                  <assignment>
+                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[13]"/>
+                    <weight>10000</weight>
+                    <rank>0</rank>
                   </assignment>
                 </assignments>
                 <weight>2400</weight>
@@ -2175,7 +2539,17 @@
                   <assignment>
                     <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[5]"/>
                     <weight>10000</weight>
+                    <rank>2</rank>
+                  </assignment>
+                  <assignment>
+                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[15]"/>
+                    <weight>10000</weight>
                     <rank>0</rank>
+                  </assignment>
+                  <assignment>
+                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[14]"/>
+                    <weight>10000</weight>
+                    <rank>1</rank>
                   </assignment>
                 </assignments>
                 <weight>1900</weight>
@@ -3113,7 +3487,17 @@
                       <assignment>
                         <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
                         <weight>1780</weight>
-                        <rank>0</rank>
+                        <rank>3</rank>
+                      </assignment>
+                      <assignment>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[15]"/>
+                        <weight>10000</weight>
+                        <rank>1</rank>
+                      </assignment>
+                      <assignment>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[14]"/>
+                        <weight>10000</weight>
+                        <rank>2</rank>
                       </assignment>
                     </assignments>
                     <weight>10000</weight>
@@ -4086,7 +4470,17 @@
                       <assignment>
                         <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[6]"/>
                         <weight>9517</weight>
+                        <rank>2</rank>
+                      </assignment>
+                      <assignment>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[13]"/>
+                        <weight>10000</weight>
                         <rank>0</rank>
+                      </assignment>
+                      <assignment>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[16]"/>
+                        <weight>10000</weight>
+                        <rank>1</rank>
                       </assignment>
                     </assignments>
                     <weight>10000</weight>
@@ -8866,6 +9260,16 @@
                         <weight>9517</weight>
                         <rank>0</rank>
                       </assignment>
+                      <assignment>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[13]"/>
+                        <weight>10000</weight>
+                        <rank>1</rank>
+                      </assignment>
+                      <assignment>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[16]"/>
+                        <weight>10000</weight>
+                        <rank>2</rank>
+                      </assignment>
                     </assignments>
                     <weight>10000</weight>
                     <rank>0</rank>
@@ -9076,7 +9480,17 @@
                       <assignment>
                         <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[9]"/>
                         <weight>1780</weight>
-                        <rank>0</rank>
+                        <rank>3</rank>
+                      </assignment>
+                      <assignment>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[15]"/>
+                        <weight>10000</weight>
+                        <rank>1</rank>
+                      </assignment>
+                      <assignment>
+                        <investmentVehicle class="security" reference="../../../../../../../../../../../../securities/security[14]"/>
+                        <weight>10000</weight>
+                        <rank>2</rank>
                       </assignment>
                     </assignments>
                     <weight>10000</weight>
