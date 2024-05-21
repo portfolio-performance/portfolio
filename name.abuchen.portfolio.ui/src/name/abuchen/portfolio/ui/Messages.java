@@ -17,6 +17,7 @@ public class Messages extends NLS
     public static String AccountMenuImportCSV;
     public static String AccountMenuImportPDF;
     public static String AccountMenuTransfer;
+    public static String AccountMenuTroubleshootBalanceDiscrepancy;
     public static String AttributeSettings;
     public static String AttributeSettings_NoSettingAvailable;
     public static String AttributeSettings_LimitPrice_ColorSettings;
@@ -169,6 +170,7 @@ public class Messages extends NLS
     public static String RebalanceAmbiguousTooltip;
     public static String RebalanceInexactTooltip;
     public static String ColumnDeltaValue;
+    public static String ColumnDiscrepancy;
     public static String ColumnDistanceFromMovingAverage;
     public static String ColumnDistanceFromMovingAverage_Description;
     public static String ColumnDistanceFromMovingAverage_Option;
@@ -197,6 +199,7 @@ public class Messages extends NLS
     public static String ColumnEntryValue;
     public static String ColumnErrorMessages;
     public static String ColumnExchangeRate;
+    public static String ColumnExpectedBalance;
     public static String ColumnExpectedReturn;
     public static String ColumnExpectedReturn_MenuLabel;
     public static String ColumnExpectedReturn_Description;
@@ -473,6 +476,7 @@ public class Messages extends NLS
     public static String InvestmentPlanMenuGenerateTransactions;
     public static String InvestmentPlanOptionDelivery;
     public static String InvestmentPlanOptionDeposit;
+    public static String InvestmentPlanOptionInterest;
     public static String InvestmentPlanOptionRemoval;
     public static String InvestmentPlanTitleEditPlan;
     public static String InvestmentPlanTitleNewPlan;
@@ -480,6 +484,7 @@ public class Messages extends NLS
     public static String InvestmentPlanTxForMultiplePlansCreated;
     public static String InvestmentPlanTypeBuyDelivery;
     public static String InvestmentPlanTypeDeposit;
+    public static String InvestmentPlanTypeInterest;
     public static String InvestmentPlanTypeRemoval;
     public static String JobLabelAutoSave;
     public static String JobLabelSyncSecuritiesOnline;
@@ -1171,6 +1176,7 @@ public class Messages extends NLS
     public static String SecurityListFilterDateReached;
     public static String SecurityListFilterDistanceFromAth;
     public static String SecurityListFilterHideInactive;
+    public static String SecurityListFilterOnlyInactive;
     public static String SecurityListFilterLimitPriceExceeded;
     public static String SecurityListFilterOnlyExchangeRates;
     public static String SecurityListFilterOnlySecurities;

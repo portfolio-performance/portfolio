@@ -1,5 +1,5 @@
 <client>
-  <version>59</version>
+  <version>60</version>
   <baseCurrency>EUR</baseCurrency>
   <securities>
     <security>
@@ -1760,6 +1760,48 @@
       </attributes>
       <updatedAt>2024-02-16T07:17:00.710311Z</updatedAt>
     </account>
+    <account>
+      <uuid>789294db-0aa4-4673-9d91-ad083c9d6916</uuid>
+      <name>${Kommer_ForeignCurrencyAccountUSD}</name>
+      <currencyCode>USD</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <uuid>e17cdd6c-b240-40fc-b257-b6a8b30c1703</uuid>
+          <date>2024-05-18T00:00</date>
+          <currencyCode>USD</currencyCode>
+          <amount>100000</amount>
+          <shares>0</shares>
+          <updatedAt>2024-05-17T22:06:15.327431Z</updatedAt>
+          <type>DEPOSIT</type>
+        </account-transaction>
+      </transactions>
+      <attributes>
+        <map/>
+      </attributes>
+      <updatedAt>2024-05-17T22:06:08.826288Z</updatedAt>
+    </account>
+    <account>
+      <uuid>db94317b-26ed-4a8b-bf6c-2f535a217138</uuid>
+      <name>${Kommer_ForeignCurrencyAccountGBP}</name>
+      <currencyCode>GBP</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <uuid>77c28e82-d877-483a-9a9f-7dbf42c5743b</uuid>
+          <date>2024-05-18T00:00</date>
+          <currencyCode>GBP</currencyCode>
+          <amount>100000</amount>
+          <shares>0</shares>
+          <updatedAt>2024-05-17T22:06:51.787691Z</updatedAt>
+          <type>DEPOSIT</type>
+        </account-transaction>
+      </transactions>
+      <attributes>
+        <map/>
+      </attributes>
+      <updatedAt>2024-05-17T22:06:39.434197Z</updatedAt>
+    </account>
   </accounts>
   <portfolios>
     <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio"/>
@@ -1880,6 +1922,16 @@
                 <investmentVehicle class="security" reference="../../../../../../../../securities/security[12]"/>
                 <weight>10000</weight>
                 <rank>2</rank>
+              </assignment>
+              <assignment>
+                <investmentVehicle class="account" reference="../../../../../../../../accounts/account[4]"/>
+                <weight>10000</weight>
+                <rank>3</rank>
+              </assignment>
+              <assignment>
+                <investmentVehicle class="account" reference="../../../../../../../../accounts/account[3]"/>
+                <weight>10000</weight>
+                <rank>4</rank>
               </assignment>
             </assignments>
             <weight>10000</weight>

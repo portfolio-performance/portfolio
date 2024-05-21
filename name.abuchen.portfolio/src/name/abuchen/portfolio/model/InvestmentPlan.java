@@ -21,7 +21,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 {
     public enum Type
     {
-        BUY_OR_DELIVERY, DEPOSIT, REMOVAL
+        PURCHASE_OR_DELIVERY, DEPOSIT, REMOVAL, INTEREST
     }
 
     private String name;
@@ -43,6 +43,9 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
     private long amount;
     private long fees;
+    private long taxes;
+
+    private Type type;
 
     private List<Transaction> transactions = new ArrayList<>();
 
@@ -58,18 +61,12 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
     public Type getPlanType()
     {
-        if (portfolio != null)
-        {
-            if (security == null)
-                throw new IllegalArgumentException("security is null with a set portfolio for" + name); //$NON-NLS-1$
-            return Type.BUY_OR_DELIVERY;
-        }
-        if (account == null)
-            throw new IllegalArgumentException("portfolio and account are not set for " + name); //$NON-NLS-1$
-        if (security == null)
-            return (amount >= 0) ? Type.DEPOSIT : Type.REMOVAL;
-        else
-            throw new IllegalArgumentException("security is set with a set account for " + name); //$NON-NLS-1$
+        return type;
+    }
+
+    public void setType(Type type)
+    {
+        this.type = type;
     }
 
     @Override
@@ -179,6 +176,16 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     public void setFees(long fees)
     {
         this.fees = fees;
+    }
+
+    public long getTaxes()
+    {
+        return taxes;
+    }
+
+    public void setTaxes(long taxes)
+    {
+        this.taxes = taxes;
     }
 
     @Override
@@ -393,9 +400,9 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     {
         Type planType = getPlanType();
 
-        if (planType == Type.BUY_OR_DELIVERY)
+        if (planType == Type.PURCHASE_OR_DELIVERY)
             return createSecurityTx(converter, tDate);
-        else if (planType == Type.DEPOSIT || planType == Type.REMOVAL)
+        else if (planType == Type.DEPOSIT || planType == Type.REMOVAL || planType == Type.INTEREST)
             return createAccountTx(converter, tDate);
         else
             throw new IllegalArgumentException("unsupported plan type " + planType.name()); //$NON-NLS-1$
@@ -479,31 +486,40 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
     private TransactionPair<?> createAccountTx(CurrencyConverter converter, LocalDate tDate)
     {
-        long txAmount = amount;
+        AccountTransaction.Type transactionType;
 
-        AccountTransaction.Type type;
-        if (txAmount > 0)
+        switch (type)
         {
-            type = AccountTransaction.Type.DEPOSIT;
+            case DEPOSIT:
+                transactionType = AccountTransaction.Type.DEPOSIT;
+                break;
+            case REMOVAL:
+                transactionType = AccountTransaction.Type.REMOVAL;
+                break;
+            case INTEREST:
+                transactionType = AccountTransaction.Type.INTEREST;
+                break;
+            default:
+                throw new IllegalArgumentException();
         }
-        else
-        {
-            type = AccountTransaction.Type.REMOVAL;
-            txAmount = -txAmount;
-        }
-        Money deposit = Money.of(getCurrencyCode(), txAmount);
+
+        Money monetaryAmount = Money.of(getCurrencyCode(), amount);
 
         boolean needsCurrencyConversion = !getCurrencyCode().equals(account.getCurrencyCode());
         if (needsCurrencyConversion)
-            deposit = converter.with(account.getCurrencyCode()).at(tDate).apply(deposit);
+            monetaryAmount = converter.with(account.getCurrencyCode()).at(tDate).apply(monetaryAmount);
 
         // create deposit transaction
         AccountTransaction transaction = new AccountTransaction();
         transaction.setDateTime(tDate.atStartOfDay());
-        transaction.setType(type);
-        transaction.setMonetaryAmount(deposit);
+        transaction.setType(transactionType);
+        transaction.setMonetaryAmount(monetaryAmount);
         transaction.setNote(MessageFormat.format(Messages.InvestmentPlanAutoNoteLabel,
                         Values.DateTime.format(LocalDateTime.now()), name));
+
+        if (taxes != 0)
+            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX,
+                            Money.of(account.getCurrencyCode(), taxes)));
 
         account.addTransaction(transaction);
         return new TransactionPair<>(account, transaction);

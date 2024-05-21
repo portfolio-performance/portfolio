@@ -38,6 +38,7 @@ import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.dialogs.balance.TroubleshootBalanceDiscrepancyDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.handlers.ImportCSVHandler;
 import name.abuchen.portfolio.ui.handlers.ImportPDFHandler;
@@ -288,6 +289,11 @@ public class AccountListView extends AbstractFinanceView implements Modification
         accountMenu.menuAboutToShow(manager, account, null);
         manager.add(new Separator());
 
+        manager.add(new SimpleAction(Messages.AccountMenuTroubleshootBalanceDiscrepancy,
+                        a -> new TroubleshootBalanceDiscrepancyDialog(getActiveShell(), getPart().getClientInput(),
+                                        account).open()));
+        manager.add(new Separator());
+
         manager.add(new SimpleAction(Messages.AccountMenuImportCSV, a -> ImportCSVHandler.runImport(getPart(),
                         Display.getDefault().getActiveShell(), getContext(), null, null, getClient(), account, null)));
 
@@ -313,7 +319,8 @@ public class AccountListView extends AbstractFinanceView implements Modification
 
         var label = Messages.AccountMenuDelete;
         if (!account.getTransactions().isEmpty())
-            label += " (" + MessageFormat.format(Messages.LabelTransactionCount, account.getTransactions().size()) + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+            label += " (" + MessageFormat.format(Messages.LabelTransactionCount, account.getTransactions().size()) //$NON-NLS-1$
+                            + ")"; //$NON-NLS-1$
 
         Action action = new ConfirmAction(label,
                         MessageFormat.format(Messages.AccountMenuDeleteConfirm, account.getName()), //

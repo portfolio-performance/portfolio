@@ -19,6 +19,9 @@ import name.abuchen.portfolio.junit.AccountBuilder;
 import name.abuchen.portfolio.junit.PortfolioBuilder;
 import name.abuchen.portfolio.junit.SecurityBuilder;
 import name.abuchen.portfolio.junit.TestCurrencyConverter;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
@@ -47,6 +50,8 @@ public class InvestmentPlanTest
     @Test
     public void testGenerationOfBuyTransaction() throws IOException
     {
+        investmentPlan.setType(InvestmentPlan.Type.PURCHASE_OR_DELIVERY);
+
         investmentPlan.setAccount(account); // set both account and portfolio
         investmentPlan.setPortfolio(portfolio); // causes securities to be
                                                 // bought
@@ -65,8 +70,8 @@ public class InvestmentPlanTest
                         .filter(t -> t.getDateTime().getYear() == 2016 && t.getDateTime().getMonth() == Month.MAY)
                         .collect(Collectors.toList());
 
-        assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.BUY_OR_DELIVERY));
-        
+        assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.PURCHASE_OR_DELIVERY));
+
         // May 2016 should contain two transactions:
         // one "spilled over" from April as 30 April is a Saturday
         // and the regular one from 31 May
@@ -98,9 +103,11 @@ public class InvestmentPlanTest
     @Test
     public void testGenerationOfDeliveryTransaction() throws IOException
     {
-        // investmentPlan.setAccount(account); // set portfolio only
-        investmentPlan.setPortfolio(portfolio); // causes securities to be
-                                                // delivered in
+        investmentPlan.setType(InvestmentPlan.Type.PURCHASE_OR_DELIVERY);
+
+        // set portfolio only causes securities to be delivered in
+        investmentPlan.setPortfolio(portfolio);
+
         investmentPlan.setSecurity(security);
         investmentPlan.setStart(LocalDateTime.parse("2016-01-31T00:00"));
 
@@ -116,7 +123,7 @@ public class InvestmentPlanTest
                         .filter(t -> t.getDateTime().getYear() == 2016 && t.getDateTime().getMonth() == Month.MAY)
                         .collect(Collectors.toList());
 
-        assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.BUY_OR_DELIVERY));
+        assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.PURCHASE_OR_DELIVERY));
 
         // May 2016 should contain two transactions:
         // one "spilled over" from April as 30 April is a Saturday
@@ -134,6 +141,8 @@ public class InvestmentPlanTest
     @Test
     public void testGenerationOfDepositTransaction() throws IOException
     {
+        investmentPlan.setType(InvestmentPlan.Type.DEPOSIT);
+
         investmentPlan.setAccount(account);
         investmentPlan.setStart(LocalDateTime.parse("2016-01-31T00:00"));
 
@@ -170,9 +179,10 @@ public class InvestmentPlanTest
     @Test
     public void testGenerationOfRemovalTransaction() throws IOException
     {
-        // Negative amount => REMOVAL transaction
-        investmentPlan.setAmount(Values.Amount.factorize(-100));
-        
+        investmentPlan.setType(InvestmentPlan.Type.REMOVAL);
+
+        investmentPlan.setAmount(Values.Amount.factorize(100));
+
         investmentPlan.setAccount(account);
         investmentPlan.setStart(LocalDateTime.parse("2022-03-29T00:00"));
 
@@ -183,18 +193,53 @@ public class InvestmentPlanTest
                         .collect(Collectors.toList());
 
         assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.REMOVAL));
-        
+
         assertThat(tx.isEmpty(), is(false));
         assertThat(tx.size(), is(1));
 
         assertThat(tx.get(0), instanceOf(AccountTransaction.class));
         assertThat(tx.get(0).getDateTime(), is(LocalDateTime.parse("2022-03-29T00:00")));
         assertThat(((AccountTransaction) tx.get(0)).getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(((AccountTransaction) tx.get(0)).getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100))));
+    }
+
+    @Test
+    public void testGenerationOfInterestTransaction() throws IOException
+    {
+        investmentPlan.setType(InvestmentPlan.Type.INTEREST);
+
+        investmentPlan.setAmount(Values.Amount.factorize(200));
+        investmentPlan.setTaxes(Values.Amount.factorize(10));
+
+        investmentPlan.setAccount(account);
+        investmentPlan.setStart(LocalDateTime.parse("2022-03-29T00:00"));
+
+        investmentPlan.generateTransactions(new TestCurrencyConverter());
+
+        List<Transaction> tx = investmentPlan.getTransactions().stream()
+                        .filter(t -> t.getDateTime().getYear() == 2022 && t.getDateTime().getMonth() == Month.MARCH)
+                        .collect(Collectors.toList());
+
+        assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.INTEREST));
+
+        assertThat(tx.isEmpty(), is(false));
+        assertThat(tx.size(), is(1));
+
+        assertThat(tx.get(0), instanceOf(AccountTransaction.class));
+        assertThat(tx.get(0).getDateTime(), is(LocalDateTime.parse("2022-03-29T00:00")));
+        assertThat(((AccountTransaction) tx.get(0)).getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(((AccountTransaction) tx.get(0)).getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(200))));
+        assertThat(((AccountTransaction) tx.get(0)).getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10))));
     }
 
     @Test
     public void testNoGenerationWithStartInFuture() throws IOException
     {
+        investmentPlan.setType(InvestmentPlan.Type.DEPOSIT);
+
         investmentPlan.setAccount(account);
         investmentPlan.setStart(LocalDate.now().minusMonths(6));
         investmentPlan.setInterval(12);
@@ -234,6 +279,8 @@ public class InvestmentPlanTest
     public void testErrorMessageWhenNoQuotesExist() throws IOException
     {
         security.removeAllPrices();
+
+        investmentPlan.setType(InvestmentPlan.Type.PURCHASE_OR_DELIVERY);
 
         investmentPlan.setAccount(account);
         investmentPlan.setPortfolio(portfolio);

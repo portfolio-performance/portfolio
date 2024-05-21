@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.util.ArraysUtil.toDouble;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import com.google.common.base.Objects;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -146,6 +148,8 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
 
         if (tx.isEmpty())
             return;
+
+        Collections.sort(tx, Transaction.BY_DATE);
 
         LocalDate now = LocalDate.now();
         LocalDate start = tx.get(0).getDateTime().toLocalDate();

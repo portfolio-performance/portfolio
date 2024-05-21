@@ -164,6 +164,7 @@ public class SecurityListView extends AbstractFinanceView
     private class FilterDropDown extends DropDown implements IMenuListener
     {
         private final Predicate<Security> securityIsNotInactive = record -> !record.isRetired();
+        private final Predicate<Security> securityIsInactive = record -> record.isRetired();
         private final Predicate<Security> onlySecurities = record -> !record.isExchangeRate();
         private final Predicate<Security> onlyExchangeRates = record -> record.isExchangeRate();
         private final Predicate<Security> sharesNotZero = record -> getSharesHeld(getClient(), record) != 0;
@@ -197,6 +198,8 @@ public class SecurityListView extends AbstractFinanceView
                 filter.add(sharesEqualZero);
             if ((savedFilters & (1 << 6)) != 0)
                 filter.add(limitPriceExceeded);
+            if ((savedFilters & (1 << 7)) != 0)
+                filter.add(securityIsInactive);
 
             if (!filter.isEmpty())
                 setImage(Images.FILTER_ON);
@@ -220,6 +223,8 @@ public class SecurityListView extends AbstractFinanceView
                     savedFilter += (1 << 5);
                 if (filter.contains(limitPriceExceeded))
                     savedFilter += (1 << 6);
+                if (filter.contains(securityIsInactive))
+                    savedFilter += (1 << 7);
                 if (watchlist != null)
                     preferenceStore.setValue(
                                     this.getClass().getSimpleName() + "-filterSettings" + "-" + watchlist.getName(), //$NON-NLS-1$ //$NON-NLS-2$
@@ -284,10 +289,14 @@ public class SecurityListView extends AbstractFinanceView
             }
 
             manager.add(createAction(Messages.SecurityListFilterHideInactive, securityIsNotInactive));
+            manager.add(createAction(Messages.SecurityListFilterOnlyInactive, securityIsInactive));
+            manager.add(new Separator());
             manager.add(createAction(Messages.SecurityListFilterOnlySecurities, onlySecurities));
             manager.add(createAction(Messages.SecurityListFilterOnlyExchangeRates, onlyExchangeRates));
+            manager.add(new Separator());
             manager.add(createAction(Messages.SecurityFilterSharesHeldNotZero, sharesNotZero));
             manager.add(createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero));
+            manager.add(new Separator());
             manager.add(createAction(Messages.SecurityListFilterLimitPriceExceeded, limitPriceExceeded));
         }
 
@@ -316,6 +325,10 @@ public class SecurityListView extends AbstractFinanceView
                             filter.remove(sharesNotZero);
                         else if (predicate == sharesNotZero)
                             filter.remove(sharesEqualZero);
+                        else if (predicate == securityIsNotInactive)
+                            filter.remove(securityIsInactive);
+                        else if (predicate == securityIsInactive)
+                            filter.remove(securityIsNotInactive);
                     }
 
                     setImage(filter.isEmpty() ? Images.FILTER_OFF : Images.FILTER_ON);

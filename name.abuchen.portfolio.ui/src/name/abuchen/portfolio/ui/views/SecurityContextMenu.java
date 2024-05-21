@@ -145,7 +145,7 @@ public class SecurityContextMenu
         {
             manager.add(new OpenDialogAction(owner, Messages.InvestmentPlanMenuCreate) //
                             .type(InvestmentPlanDialog.class) //
-                            .parameters(InvestmentPlan.Type.BUY_OR_DELIVERY) //
+                            .parameters(InvestmentPlan.Type.PURCHASE_OR_DELIVERY) //
                             .with(security));
 
             manager.add(new Separator());

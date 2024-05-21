@@ -32,7 +32,7 @@ public class InvestmentPlanModelTest
         assertThat(plans.size(), is(1));
 
         InvestmentPlan investmentPlan = plans.get(0);
-        assertThat(investmentPlan.getAmount(), is(-100L));
+        assertThat(investmentPlan.getAmount(), is(100L));
         assertThat(investmentPlan.getPlanType(), is(InvestmentPlan.Type.REMOVAL));
     }
 
@@ -42,7 +42,8 @@ public class InvestmentPlanModelTest
         InvestmentPlan investmentPlan = new InvestmentPlan("Test Plan");
         investmentPlan.setStart(LocalDateTime.parse("2022-03-29T00:00:00"));
         investmentPlan.setAccount(new Account("Test Account"));
-        investmentPlan.setAmount(-100L);
+        investmentPlan.setAmount(100L);
+        investmentPlan.setType(InvestmentPlan.Type.REMOVAL);
 
         InvestmentPlanModel model = new InvestmentPlanModel(new Client(), InvestmentPlan.Type.REMOVAL);
         model.setSource(investmentPlan);
