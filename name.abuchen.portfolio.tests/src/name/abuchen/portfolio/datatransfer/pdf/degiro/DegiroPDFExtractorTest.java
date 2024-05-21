@@ -8813,8 +8813,8 @@ public class DegiroPDFExtractorTest
      * @param expIsin
      * @param expCurrency
      */
-    private void checkOneSecurity( Security security, String expName, String expIsin, String expCurrency) {
-     
+    private void checkOneSecurity( Security security, String expName, String expIsin, String expCurrency) 
+    { 
         assertThat(security.getName(), is(expName));
         assertThat(security.getIsin(), is(expIsin));
         assertThat(security.getCurrencyCode(), is(expCurrency));
@@ -8838,7 +8838,8 @@ public class DegiroPDFExtractorTest
      */
     private void checkOneBuySellEntry( BuySellEntry entry, PortfolioTransaction.Type portfolioTransactionType, AccountTransaction.Type accountTransactionType, 
                     String dateTime, double shares, String currency, double monetaryAmount, 
-                    double grossValue, double taxSum, double feeSum, String forexCurrency, double forexValue) {
+                    double grossValue, double taxSum, double feeSum, String forexCurrency, double forexValue)
+    {
         
         assertThat(entry.getPortfolioTransaction().getType(), is(portfolioTransactionType));
         assertThat(entry.getAccountTransaction().getType(), is(accountTransactionType));
@@ -8855,7 +8856,8 @@ public class DegiroPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(currency, Values.Amount.factorize(feeSum))));
         
-        if (forexCurrency != null) {
+        if (forexCurrency != null)
+        {
             Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                             .orElseThrow(IllegalArgumentException::new);
             assertThat(grossValueUnit.getForex(), is(Money.of(forexCurrency, Values.Amount.factorize(forexValue))));
