@@ -29,7 +29,6 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.Category;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.Position;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.LogoManager;
@@ -151,10 +150,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
 
             boolean hasHoldings = snapshot.getEndClientSnapshot().getPositionsByVehicle().get(security) != null;
 
-            if (hasHoldings)
-                return LogoManager.instance().getDefaultColumnImage(security, client.getSettings());
-            else
-                return Images.SECURITY_RETIRED.image();
+            return LogoManager.instance().getDefaultColumnImage(security, client.getSettings(), !hasHoldings);
         }
 
         @Override
