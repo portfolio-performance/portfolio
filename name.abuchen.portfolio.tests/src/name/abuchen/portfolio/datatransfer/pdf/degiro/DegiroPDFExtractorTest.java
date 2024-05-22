@@ -1,7 +1,25 @@
 package name.abuchen.portfolio.datatransfer.pdf.degiro;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
 
@@ -7330,38 +7348,72 @@ public class DegiroPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transactions_french02.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(5L));
+        assertThat(countBuySell(results), is(6L));
+        assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(11));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check 1st security
-        List<Security> securities = results.stream()
-                        .filter(SecurityItem.class::isInstance)
-                        .map(Item::getSecurity)
-                        .collect(Collectors.toList());
         
-        assertThat(securities.size(), is(5));
-
-        checkOneSecurity(securities.get(0), "ADR ON AMBEV", "US02319V1035", CurrencyUnit.USD);
-        checkOneSecurity(securities.get(1), "ISHARES PROP US", "IE00B1FZSF77", CurrencyUnit.EUR);
-        checkOneSecurity(securities.get(2), "UNITEDHEALTH GROUP INC", "US91324P1021", CurrencyUnit.USD);
-        checkOneSecurity(securities.get(3), "ELEVANCE HEALTH INC", "US0367521038", CurrencyUnit.USD);
-        checkOneSecurity(securities.get(4), "MICRON TECHNOLOGY INC", "US5951121038", CurrencyUnit.USD);
-        
+        assertThat(results, hasItem(security( 
+                        hasIsin("US02319V1035"), 
+                        hasName("ADR ON AMBEV"), 
+                        hasCurrencyCode("USD"))));
+        assertThat(results, hasItem(security( 
+                        hasIsin("IE00B1FZSF77"), 
+                        hasName("ISHARES PROP US"), 
+                        hasCurrencyCode("EUR"))));
+        assertThat(results, hasItem(security( 
+                        hasIsin("US91324P1021"), 
+                        hasName("UNITEDHEALTH GROUP INC"), 
+                        hasCurrencyCode("USD"))));
+        assertThat(results, hasItem(security( 
+                        hasIsin("US0367521038"), 
+                        hasName("ELEVANCE HEALTH INC"), 
+                        hasCurrencyCode("USD"))));
+        assertThat(results, hasItem(security( 
+                        hasIsin("US5951121038"), 
+                        hasName("MICRON TECHNOLOGY INC"), 
+                        hasCurrencyCode("USD"))));
+                      
         // check 1st buy transaction
-        List<BuySellEntry> entries = results.stream()
-                        .filter(BuySellEntryItem.class::isInstance)
-                        .map(item -> (BuySellEntry)item.getSubject())
-                        .collect(Collectors.toList());
-
-        assertThat(entries.size(), is(6));
-
-        checkOneBuySellEntry(entries.get(0), PortfolioTransaction.Type.SELL, AccountTransaction.Type.SELL, "2024-04-16T21:56", 150, CurrencyUnit.EUR, 317.95, 319.95, 0, 2, CurrencyUnit.USD, 339.75);
-        checkOneBuySellEntry(entries.get(1), PortfolioTransaction.Type.SELL, AccountTransaction.Type.SELL, "2024-03-26T10:27", 4, CurrencyUnit.EUR, 101, 101, 0, 0, null, 0);
-        checkOneBuySellEntry(entries.get(2), PortfolioTransaction.Type.SELL, AccountTransaction.Type.SELL, "2024-03-26T10:13", 12, CurrencyUnit.EUR, 300, 303, 0, 3, null, 0);
-        checkOneBuySellEntry(entries.get(3), PortfolioTransaction.Type.BUY, AccountTransaction.Type.BUY, "2024-01-22T16:51", 1, CurrencyUnit.EUR, 468.94, 466.94, 0, 2, CurrencyUnit.USD, 508.4);
-        checkOneBuySellEntry(entries.get(4), PortfolioTransaction.Type.SELL, AccountTransaction.Type.SELL, "2024-01-22T16:31", 1, CurrencyUnit.EUR, 428.59, 430.59, 0, 2, CurrencyUnit.USD, 469);
-        checkOneBuySellEntry(entries.get(5), PortfolioTransaction.Type.SELL, AccountTransaction.Type.SELL, "2024-01-22T16:30", 4, CurrencyUnit.EUR, 322.22, 324.22, 0, 2, CurrencyUnit.USD, 353.24);
         
+        assertThat(results, hasItem(sale( 
+                        hasDate("2024-04-16T21:56"), hasShares(150.00), 
+                        hasSource("Transactions_french02.txt"), 
+                        hasAmount("EUR", 317.95), hasGrossValue("EUR", 319.95), 
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.00), 
+                        hasForexGrossValue("USD", 339.75))));
+        assertThat(results, hasItem(sale( 
+                        hasDate("2024-03-26T10:27"), hasShares(4.00), 
+                        hasSource("Transactions_french02.txt"), 
+                        hasAmount("EUR", 101.00), hasGrossValue("EUR", 101.00), 
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+        assertThat(results, hasItem(sale( 
+                        hasDate("2024-03-26T10:13"), hasShares(12.00), 
+                        hasSource("Transactions_french02.txt"), 
+                        hasAmount("EUR", 300.00), hasGrossValue("EUR", 303.00), 
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.00))));
+        assertThat(results, hasItem(purchase( 
+                        hasDate("2024-01-22T16:51"), hasShares(1.00), 
+                        hasSource("Transactions_french02.txt"), 
+                        hasAmount("EUR", 468.94), hasGrossValue("EUR", 466.94), 
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.00), 
+                        hasForexGrossValue("USD", 508.40))));
+        assertThat(results, hasItem(sale( 
+                        hasDate("2024-01-22T16:31"), hasShares(1.00), 
+                        hasSource("Transactions_french02.txt"), 
+                        hasAmount("EUR", 428.59), hasGrossValue("EUR", 430.59), 
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.00), 
+                        hasForexGrossValue("USD", 469.00))));
+        assertThat(results, hasItem(sale( 
+                        hasDate("2024-01-22T16:30"), hasShares(4.00), 
+                        hasSource("Transactions_french02.txt"), 
+                        hasAmount("EUR", 322.22), hasGrossValue("EUR", 324.22), 
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 2.00), 
+                        hasForexGrossValue("USD", 353.24))));
+                
     }
 
     @Test
@@ -8804,64 +8856,5 @@ public class DegiroPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
-    
-    /**
-     * Utility function to check one security 
-     * 
-     * @param security
-     * @param expName
-     * @param expIsin
-     * @param expCurrency
-     */
-    private void checkOneSecurity( Security security, String expName, String expIsin, String expCurrency) 
-    { 
-        assertThat(security.getName(), is(expName));
-        assertThat(security.getIsin(), is(expIsin));
-        assertThat(security.getCurrencyCode(), is(expCurrency));
-    }
-    
-    /**
-     * Utility to check one Buy/Sell transaction
-     *  
-     * @param entry
-     * @param portfolioTransactionType
-     * @param accountTransactionType
-     * @param dateTime
-     * @param shares
-     * @param currency
-     * @param monetaryAmount
-     * @param grossValue
-     * @param taxSum
-     * @param feeSum
-     * @param forexCurrency
-     * @param forexValue
-     */
-    private void checkOneBuySellEntry( BuySellEntry entry, PortfolioTransaction.Type portfolioTransactionType, AccountTransaction.Type accountTransactionType, 
-                    String dateTime, double shares, String currency, double monetaryAmount, 
-                    double grossValue, double taxSum, double feeSum, String forexCurrency, double forexValue)
-    {
-        
-        assertThat(entry.getPortfolioTransaction().getType(), is(portfolioTransactionType));
-        assertThat(entry.getAccountTransaction().getType(), is(accountTransactionType));
-
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse(dateTime)));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(shares)));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(currency, Values.Amount.factorize(monetaryAmount))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(currency, Values.Amount.factorize(grossValue))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(currency, Values.Amount.factorize(taxSum))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(currency, Values.Amount.factorize(feeSum))));
-        
-        if (forexCurrency != null)
-        {
-            Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
-                            .orElseThrow(IllegalArgumentException::new);
-            assertThat(grossValueUnit.getForex(), is(Money.of(forexCurrency, Values.Amount.factorize(forexValue))));
-        }
-
-    }
+   
 }
