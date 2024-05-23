@@ -1646,6 +1646,59 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug11()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(9L));
+        assertThat(results.size(), is(9));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-02-01"), hasAmount("EUR", 33.37), //
+                        hasSource("Kontoauszug11.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxRefund(hasDate("2024-02-19"), hasAmount("EUR", 78.17), //
+                        hasSource("Kontoauszug11.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-03-01"), hasAmount("EUR", 6000.00), //
+                        hasSource("Kontoauszug11.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-03-01"), hasAmount("EUR", 12.47), //
+                        hasSource("Kontoauszug11.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-04-01"), hasAmount("EUR", 7.68), //
+                        hasSource("Kontoauszug11.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-04-04"), hasAmount("EUR", 2000.00), //
+                        hasSource("Kontoauszug11.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-04-28"), hasAmount("EUR", 2.40), //
+                        hasSource("Kontoauszug11.txt"), hasNote("Hornbach Baumarkt AG FIL."))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-04-28"), hasAmount("EUR", 13.95), //
+                        hasSource("Kontoauszug11.txt"), hasNote("Hornbach Baumarkt AG FIL."))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-04-28"), hasAmount("EUR", 9.48), //
+                        hasSource("Kontoauszug11.txt"), hasNote("Hornbach Baumarkt AG FIL."))));
+    }
+
+    @Test
     public void testSteuerabrechnung01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
