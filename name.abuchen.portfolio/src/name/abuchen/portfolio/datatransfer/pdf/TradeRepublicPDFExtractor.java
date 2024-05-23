@@ -1478,6 +1478,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         Block depositRemovalBlock_Format02 = new Block("^[\\d]{2} [\\wä]{3,4}([\\.]{1})?[\\s]$");
         type.addBlock(depositRemovalBlock_Format02);
+        depositRemovalBlock_Format02.setMaxSize(4);
         depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
@@ -1563,6 +1564,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         Block depositRemovalBlock_Format03 = new Block("^[\\d]{2}[\\s]$");
         type.addBlock(depositRemovalBlock_Format03);
+        depositRemovalBlock_Format03.setMaxSize(3);
         depositRemovalBlock_Format03.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
