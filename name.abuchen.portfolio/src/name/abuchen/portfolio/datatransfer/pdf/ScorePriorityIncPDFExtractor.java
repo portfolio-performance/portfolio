@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.REGEX_MONTHS;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -83,7 +84,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                         .section("month", "day", "name", "wkn", "type", "shares", "amount", "nameContinued") //
                         .documentContext("year") //
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<wkn>[\\w]{9}) (?<type>(Buy|Sell)) (?<shares>[\\.,\\d]+) [\\.,\\d]+ (\\()?(?<amount>[\\.,\\d]+)(\\))?$") //
+                        .match("^(?<month>" + REGEX_MONTHS + ") (?<day>[\\d]{2}) (?<name>.*) (?<wkn>[\\w]{9}) (?<type>(Buy|Sell)) (?<shares>[\\.,\\d]+) [\\.,\\d]+ (\\()?(?<amount>[\\.,\\d]+)(\\))?$") //
                         .match("(?<nameContinued>.*)") //
                         .assign((t, v) -> {
                             // Is type --> "Sell" change from BUY to SELL
@@ -132,8 +133,8 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("month", "day", "name", "shares", "wkn", "amount", "tax") //
                                                         .documentContext("year") //
-                                                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
-                                                        .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$") //
+                                                        .match("^(?<month>" + REGEX_MONTHS + ") (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^" + REGEX_MONTHS + " [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$") //
                                                         .assign((t, v) -> {
                                                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                                                             v.put("currency", CurrencyUnit.USD);
@@ -151,7 +152,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("month", "day", "name", "shares", "wkn", "amount") //
                                                         .documentContext("year") //
-                                                        .match("^(?<month>.*) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^(?<month>" + REGEX_MONTHS + ") (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                                                             v.put("currency", CurrencyUnit.USD);
@@ -186,7 +187,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                         .section("month", "day", "name", "wkn", "shares", "nameContinued") //
                         .documentContext("year") //
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) (?<name>.*) (?<wkn>[\\w]{9}) Security Journal (?<shares>[\\.,\\d]+)$") //
+                        .match("^(?<month>" + REGEX_MONTHS + ") (?<day>[\\d]{2}) (?<name>.*) (?<wkn>[\\w]{9}) Security Journal (?<shares>[\\.,\\d]+)$") //
                         .match("(?<nameContinued>.*)") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
@@ -220,7 +221,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                         .section("month", "day", "name", "wkn", "amount") //
                         .documentContext("year") //
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Ca Fee_spinoff.* (?<name>.*) (?<wkn>.*) Journal \\((?<amount>[\\.,\\d]+)\\)$") //
+                        .match("^(?<month>" + REGEX_MONTHS + ") (?<day>[\\d]{2}) Ca Fee_spinoff.* (?<name>.*) (?<wkn>.*) Journal \\((?<amount>[\\.,\\d]+)\\)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
@@ -264,7 +265,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                         .section("month", "day", "name", "wkn", "amount") //
                         .documentContext("year") //
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) .* Allocation (?<wkn>[\\w]{9}) Journal (?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<month>" + REGEX_MONTHS + ") (?<day>[\\d]{2}) .* Allocation (?<wkn>[\\w]{9}) Journal (?<amount>[\\.,\\d]+)$") //
                         .match("^(?<name>.*)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
@@ -297,7 +298,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                         .section("month", "day", "amount") //
                         .documentContext("year") //
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Incoming Wire .* (?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<month>" + REGEX_MONTHS + ") (?<day>[\\d]{2}) Incoming Wire .* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);
@@ -327,7 +328,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                         .section("month", "day", "amount") //
                         .documentContext("year") //
-                        .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) .* Credit Interest (?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<month>" + REGEX_MONTHS + ") (?<day>[\\d]{2}) .* Credit Interest (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
                             v.put("currency", CurrencyUnit.USD);

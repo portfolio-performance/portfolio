@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.REGEX_MONTHS;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
@@ -108,7 +109,7 @@ public class AvivaPLCPDFExtractor extends AbstractPDFExtractor
                         // Execution date: 07 Mar 2023 23:59:00.000
                         // @formatter:on
                         .section("date", "time") //
-                        .match("^Execution date(\\/time)?: (?<date>[\\d]{2} .* [\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                        .match("^Execution date(\\/time)?: (?<date>[\\d]{2} " + REGEX_MONTHS + " [\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         .oneOf( //

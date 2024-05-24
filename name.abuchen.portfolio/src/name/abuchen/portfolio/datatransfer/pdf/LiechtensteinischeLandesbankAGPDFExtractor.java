@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.REGEX_MONTHS;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -98,7 +99,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractor extends AbstractPDFExtra
                         // Zu Ihren Lasten Valuta 22. November 2023 CHF 145.56
                         // @formatter:on
                         .section("date") //
-                        .match("^Zu Ihren (Lasten|Gunsten) Valuta (?<date>[\\d]{1,2}\\. .* [\\d]{4}) [\\w]{3} [\\.'\\d]+$") //
+                        .match("^Zu Ihren (Lasten|Gunsten) Valuta (?<date>[\\d]{1,2}\\. " + REGEX_MONTHS + " [\\d]{4}) [\\w]{3} [\\.'\\d]+$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         // @formatter:off
@@ -106,7 +107,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractor extends AbstractPDFExtra
                         // Zu Ihren Gunsten Valuta 7. November 2023 CHF 55.10
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Zu Ihren (Lasten|Gunsten) Valuta (?<date>[\\d]{1,2}\\. .* [\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^Zu Ihren (Lasten|Gunsten) Valuta [\\d]{1,2}\\. " + REGEX_MONTHS + " [\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -206,14 +207,14 @@ public class LiechtensteinischeLandesbankAGPDFExtractor extends AbstractPDFExtra
                         // Zu Ihren Gunsten Valuta 20. November 2023 CHF 5.65
                         // @formatter:on
                         .section("date") //
-                        .match("^Zu Ihren Gunsten Valuta (?<date>[\\d]{1,2}\\. .* [\\d]{4}) [\\w]{3} [\\.'\\d]+$") //
+                        .match("^Zu Ihren Gunsten Valuta (?<date>[\\d]{1,2}\\. " + REGEX_MONTHS + " [\\d]{4}) [\\w]{3} [\\.'\\d]+$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Zu Ihren Gunsten Valuta 20. November 2023 CHF 5.65
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Zu Ihren Gunsten Valuta (?<date>[\\d]{1,2}\\. .* [\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^Zu Ihren Gunsten Valuta (?<date>[\\d]{1,2}\\. " + REGEX_MONTHS + " [\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -309,7 +310,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractor extends AbstractPDFExtra
 
                         .section("date", "note1", "note2", "amount") //
                         .documentContext("currency") //
-                        .match("^Per (?<date>[\\d]{1,2}\\. .* [\\d]{4})$") //
+                        .match("^Per (?<date>[\\d]{1,2}\\. " + REGEX_MONTHS + " [\\d]{4})$") //
                         .match("^Abrechnungsperiode (?<note1>[\\d]{1,2}\\.[\\d]{2}\\.[\\d]{4})\\-(?<note2>[\\d]{1,2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .match("^Habenzins (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {

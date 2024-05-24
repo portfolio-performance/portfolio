@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.REGEX_MONTHS;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -201,7 +202,7 @@ public class LGTBankPDFExtractor extends AbstractPDFExtractor
                         // Valuta 14. Mai 2020
                         // @formatter:on
                         .section("date") //
-                        .match("^Valuta (?<date>[\\d]{1,2}\\. .* [\\d]{4})$") //
+                        .match("^Valuta (?<date>[\\d]{1,2}\\. " + REGEX_MONTHS + " [\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off

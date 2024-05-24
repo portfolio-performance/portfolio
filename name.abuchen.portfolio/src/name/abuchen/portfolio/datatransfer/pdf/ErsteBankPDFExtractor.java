@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.REGEX_MONTHS;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
@@ -261,7 +262,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Ausf.hrungsdatum: (?<date>[\\d]{2}\\. .* [\\d]{4}).*$") //
+                                                        .match("^Ausf.hrungsdatum: (?<date>[\\d]{2}\\. " + REGEX_MONTHS + " [\\d]{4}).*$") //
                                                         .assign((t, v) -> {
                                                             if (type.getCurrentContext().get("time") != null)
                                                                 t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
@@ -710,7 +711,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Zahltag : (?<date>[\\d]{2}\\. .* [\\d]{4}).*$") //
+                                                        .match("^Zahltag : (?<date>[\\d]{2}\\. " + REGEX_MONTHS + " [\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Valutatag : 23.05.2012
@@ -1049,7 +1050,7 @@ public class ErsteBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Ausf.hrungsdatum: (?<date>[\\d]{2}\\. .* [\\d]{4}).*$") //
+                                                        .match("^Ausf.hrungsdatum: (?<date>[\\d]{2}\\. " + REGEX_MONTHS + " [\\d]{4}).*$") //
                                                         .assign((t, v) -> {
                                                             if (type.getCurrentContext().get("time") != null)
                                                                 t.setDateTime(asDate(v.get("date"), type.getCurrentContext().get("time")));

@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.REGEX_MONTHS;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 import static name.abuchen.portfolio.util.TextUtil.trim;
@@ -60,18 +61,18 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
         final DocumentType type = new DocumentType("Portfolio Performance Report", (context, lines) -> {
             Pattern pYear = Pattern.compile("^.*(?<year>[\\d]{4}) Performance Report .*$");
             Pattern pCurrency = Pattern.compile("^.* Canada Conversion rate \\p{Sc}[\\.,\\d]+ [\\w]{3} = \\p{Sc}[\\.,\\d]+ (?<currency>[\\w]{3})$");
-            Pattern pDividendTaxTransactions = Pattern.compile("^(?<month>[\\w]{3,4}) "
+            Pattern pDividendTaxTransactions = Pattern.compile("^(?<month>" + REGEX_MONTHS + ") "
                             + "(?<day>[\\d]{2}) "
                             + "(?<tickerSymbol>[A-Z]{3,4})"
                             + "[\\W]{1,3}.*: .* tax .* \\([\\.,\\d]+ [\\w]{3}, .* "
                             + "(?<currency>[\\w]{3})"
                             + " .([\\.,\\d]+\\))? .* "
                             + "\\-\\p{Sc}(?<tax>[\\.,\\d]+)$");
-            Pattern pFeeRefundTransactions = Pattern.compile("^(?<month>[\\w]{3,4}) "
+            Pattern pFeeRefundTransactions = Pattern.compile("^(?<month>" + REGEX_MONTHS + ") "
                             + "(?<day>[\\d]{2}) "
                             + "Promotions and discounts applied to Wealthsimple fee [\\W]{1,3} "
                             + "\\p{Sc}(?<feeRefund>[\\.,\\d]+)$");
-            Pattern pFeeTaxTransactions = Pattern.compile("^(?<month>[\\w]{3,4}) "
+            Pattern pFeeTaxTransactions = Pattern.compile("^(?<month>" + REGEX_MONTHS + ") "
                             + "(?<day>[\\d]{2}) "
                             + "Sales tax on management fee to Wealthsimple [\\W]{1,3} "
                             + "\\-\\p{Sc}(?<tax>[\\.,\\d]+)$");
@@ -146,7 +147,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .section("month", "day", "type", "amount", "currency")
-                .match("^(?<month>[\\w]{3,4}) "
+                .match("^(?<month>" + REGEX_MONTHS + ") "
                                 + "(?<day>[\\d]{2}) "
                                 + ".* Transfer "
                                 + "(?<type>(In|Out)): "
@@ -186,7 +187,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .section("month", "day", "type", "tickerSymbol", "name", "amount", "currency", "shares")
-                .match("^(?<month>[\\w]{3,4}) "
+                .match("^(?<month>" + REGEX_MONTHS + ") "
                                 + "(?<day>[\\d]{2}) "
                                 + ".* "
                                 + "(?<type>(Bought|Sold)) "
@@ -248,7 +249,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                 .oneOf(
                                 section -> section
                                         .attributes("month", "day", "tickerSymbol", "name", "shares", "fxCurrency", "amount", "currency", "exchangeRate")
-                                        .match("^(?<month>[\\w]{3,4}) "
+                                        .match("^(?<month>" + REGEX_MONTHS + ") "
                                                         + "(?<day>[\\d]{2}) "
                                                         + "(?<tickerSymbol>[A-Z]{3,4})"
                                                         + "[\\W]{1,3}(?<name>.*): .* "
@@ -289,7 +290,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                 ,
                                 section -> section
                                         .attributes("month", "day", "tickerSymbol", "name", "shares", "fxCurrency", "currency", "amount", "exchangeRate")
-                                        .match("^(?<month>[\\w]{3,4}) "
+                                        .match("^(?<month>" + REGEX_MONTHS + ") "
                                                         + "(?<day>[\\d]{2}) "
                                                         + "(?<tickerSymbol>[A-Z]{3,4})"
                                                         + "[\\W]{1,3}"
@@ -335,7 +336,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                 ,
                                 section -> section
                                         .attributes("month", "day", "tickerSymbol", "name", "shares", "fxCurrency", "currency", "exchangeRate", "amount")
-                                        .match("^(?<month>[\\w]{3,4}) "
+                                        .match("^(?<month>" + REGEX_MONTHS + ") "
                                                         + "(?<day>[\\d]{2}) "
                                                         + "(?<tickerSymbol>[A-Z]{3,4})"
                                                         + "[\\W]{1,3}"
@@ -382,7 +383,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                                 ,
                                 section -> section
                                         .attributes("month", "day", "tickerSymbol", "name", "shares", "amount")
-                                        .match("^(?<month>[\\w]{3,4}) "
+                                        .match("^(?<month>" + REGEX_MONTHS + ") "
                                                         + "(?<day>[\\d]{2}) "
                                                         + "(?<tickerSymbol>[A-Z]{3,4})"
                                                         + "[\\W]{1,3}(?<name>.*)"
@@ -447,7 +448,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .section("month", "day", "name", "shares", "amount")
-                .match("^(?<month>[\\w]{3,4}) "
+                .match("^(?<month>" + REGEX_MONTHS + ") "
                                 + "(?<day>[\\d]{2}) "
                                 + "(?<name>[\\w]{5,}[\\W]{1,3}.*): .* \\(record date\\) "
                                 + "(?<shares>[\\.,\\d]+) "
@@ -487,7 +488,7 @@ public class WealthsimpleInvestmentsIncPDFExtractor extends AbstractPDFExtractor
                 })
 
                 .section("month", "day", "amount")
-                .match("^(?<month>[\\w]{3,4}) (?<day>[\\d]{2}) Gross management fee to Wealthsimple [\\W]{1,3} \\-\\p{Sc}(?<amount>[\\.,\\d]+)$")
+                .match("^(?<month>" + REGEX_MONTHS + ") (?<day>[\\d]{2}) Gross management fee to Wealthsimple [\\W]{1,3} \\-\\p{Sc}(?<amount>[\\.,\\d]+)$")
                 .assign((t, v) -> {
                     DocumentContext context = type.getCurrentContext();
 

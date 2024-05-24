@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.REGEX_MONTHS;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
@@ -150,12 +151,12 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^(Orderausf.hrung Datum\\/Zeit:|Schlusstag\\/\\-Zeit) (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{1,2} .* [\\d]{4})).*$") //
+                                                        .match("^(Orderausf.hrung Datum\\/Zeit:|Schlusstag\\/\\-Zeit) (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{1,2} " + REGEX_MONTHS + " [\\d]{4})).*$") //
                                                         .assign((t, v) -> {
                                                             if (type.getCurrentContext().get("time") != null)
-                                                                t.setDate(asDate(v.get("date").replace("Mrz", "Mär"), type.getCurrentContext().get("time")));
+                                                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
                                                             else
-                                                                t.setDate(asDate(v.get("date").replace("Mrz", "Mär")));
+                                                                t.setDate(asDate(v.get("date")));
                                                         }),
                                         // @formatter:off
                                         // Orderausführung Datum/Zeit: 13. 06. 2023 11:10:52
@@ -174,8 +175,8 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Valutadatum (?<date>[\\d]{1,2}\\. .* [\\d]{4})$") //
-                                                        .assign((t, v) -> t.setDate(asDate(v.get("date").replace("Mrz", "Mär")))))
+                                                        .match("^Valutadatum (?<date>[\\d]{1,2}\\. " + REGEX_MONTHS + " [\\d]{4})$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -278,12 +279,12 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // Orderausführung Datum / Zeit: 13. Februar 2021 04:21:59
                         // @formatter:on
                         .section("date") //
-                        .match("^Orderausf.hrung Datum \\/ Zeit: (?<date>[\\d]{1,2}\\. .* [\\d]{4}).*$") //
+                        .match("^Orderausf.hrung Datum \\/ Zeit: (?<date>[\\d]{1,2}\\. " + REGEX_MONTHS + " [\\d]{4}).*$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().get("time") != null)
-                                t.setDate(asDate(v.get("date").replace("Mrz", "Mär"), type.getCurrentContext().get("time")));
+                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
                             else
-                                t.setDate(asDate(v.get("date").replace("Mrz", "Mär")));
+                                t.setDate(asDate(v.get("date")));
                         })
 
                         // @formatter:off
@@ -353,8 +354,8 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // Valutadatum 15. März 2021
                         // @formatter:on
                         .section("date") //
-                        .match("^Valutadatum (?<date>[\\d]{1,2}\\. .* [\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date").replace("Mrz", "Mär"))))
+                        .match("^Valutadatum (?<date>[\\d]{1,2}\\. " + REGEX_MONTHS + " [\\d]{4})$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Ausmachender Betrag EUR 12,15
@@ -421,8 +422,8 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // Tag des Zuflusses 02 Januar 2024
                         // @formatter:on
                         .section("date") //
-                        .match("^Tag des Zuflusses (?<date>[\\d]{1,2} .* [\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date").replace("Mrz", "Mär"))))
+                        .match("^Tag des Zuflusses (?<date>[\\d]{1,2} " + REGEX_MONTHS + " [\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Aufgrund nachstehender Abrechnung buchen wir zu Ihren Lasten €34,25
@@ -1056,8 +1057,8 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // Ex Datum - Tag 25. Mai 2023
                         // @formatter:on
                         .section("date") //
-                        .match("^Ex Datum \\- Tag (?<date>[\\d]{1,2}\\. .* [\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date").replace("Mrz", "Mär"))))
+                        .match("^Ex Datum \\- Tag (?<date>[\\d]{1,2}\\. " + REGEX_MONTHS + " [\\d]{4})$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Verhältnis Neu/ Alt 1 : 3,00

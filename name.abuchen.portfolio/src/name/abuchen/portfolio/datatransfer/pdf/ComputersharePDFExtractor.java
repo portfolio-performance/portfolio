@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.REGEX_MONTHS;
+
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -118,7 +120,7 @@ public class ComputersharePDFExtractor extends AbstractPDFExtractor
 
                         section -> section.attributes("date", "amount", "shares", "fee") //
                                         .documentContext(TICKERSYMBOL, WKN) //
-                                        .match("^(?<date>[\\d]{2} [\\w]{3} [\\d]{4}) Purchase (?<amount>[\\.,\\d]+) (?<fee>[\\.,\\d]+) (?<netAmount>[\\.,\\d]+) (?<grantDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvGrant>[\\.,\\d]+) (?<purchaseDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvPurchase>[\\.,\\d]+) (?<sharePrice>[\\.,\\d]+) (?<shares>[\\.,\\d]+) (?<totalShares>[\\.,\\d]+).*") //
+                                        .match("^(?<date>[\\d]{2} " + REGEX_MONTHS + " [\\d]{4}) Purchase (?<amount>[\\.,\\d]+) (?<fee>[\\.,\\d]+) (?<netAmount>[\\.,\\d]+) (?<grantDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvGrant>[\\.,\\d]+) (?<purchaseDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvPurchase>[\\.,\\d]+) (?<sharePrice>[\\.,\\d]+) (?<shares>[\\.,\\d]+) (?<totalShares>[\\.,\\d]+).*") //
                                         .assign((t, v) -> {
                                             v.put("currency", "USD");
                                             t.setDate(asDate(v.get("date")));
@@ -131,7 +133,7 @@ public class ComputersharePDFExtractor extends AbstractPDFExtractor
 
                         section -> section.attributes("date", "amount", "shares") //
                                         .documentContext(TICKERSYMBOL, WKN) //
-                                        .match("^(?<date>[\\d]{2} [\\w]{3} [\\d]{4}) Purchase (?<amount>[\\.,\\d]+) (?<netAmount>[\\.,\\d]+) (?<grantDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvGrant>[\\.,\\d]+) (?<purchaseDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvPurchase>[\\.,\\d]+) (?<sharePrice>[\\.,\\d]+) (?<shares>[\\.,\\d]+) (?<totalShares>[\\.,\\d]+).*") //
+                                        .match("^(?<date>[\\d]{2} " + REGEX_MONTHS + " [\\d]{4}) Purchase (?<amount>[\\.,\\d]+) (?<netAmount>[\\.,\\d]+) (?<grantDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvGrant>[\\.,\\d]+) (?<purchaseDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvPurchase>[\\.,\\d]+) (?<sharePrice>[\\.,\\d]+) (?<shares>[\\.,\\d]+) (?<totalShares>[\\.,\\d]+).*") //
                                         .assign((t, v) -> {
                                             v.put("currency", "USD");
                                             t.setDate(asDate(v.get("date")));

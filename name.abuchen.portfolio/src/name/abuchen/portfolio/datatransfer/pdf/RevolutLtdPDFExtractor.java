@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.REGEX_MONTHS;
+
 import java.util.Locale;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
@@ -93,7 +95,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                         // TSLA Tesla US88160R1014 Sell 2.1451261 $1,166.12 03 Nov 2021
                         // @formatter:on
                         .section("date") //
-                        .match("^[A-Z0-9]{3,4} .* [A-Z]{2}[A-Z0-9]{9}[0-9] Sell [\\.,\\d]+ \\p{Sc}[\\.,\\d]+ (?<date>[\\d]{2} .* [\\d]{4})$") //
+                        .match("^[A-Z0-9]{3,4} .* [A-Z]{2}[A-Z0-9]{9}[0-9] Sell [\\.,\\d]+ \\p{Sc}[\\.,\\d]+ (?<date>[\\d]{2} " + REGEX_MONTHS + " [\\d]{4})$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), Locale.UK)))
 
                         // @formatter:off

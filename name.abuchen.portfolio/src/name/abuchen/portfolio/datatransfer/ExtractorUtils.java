@@ -30,6 +30,41 @@ import name.abuchen.portfolio.money.Values;
 
 public class ExtractorUtils
 {
+    /**
+     * @formatter:off
+     * Regex pattern to match month names in various languages, including English, German, Spanish, Italian, and French.
+     * The pattern covers month names in both full and abbreviated forms.
+     *
+     * Supported month names:
+     * - English: January (Jan), February (Feb), March (Mar), April (Apr), May (May), June (Jun), July (Jul), August (Aug), September (Sep), October (Oct), November (Nov), December (Dec)
+     * - German: Januar (Jan), Februar (Feb), März (Mär), April (Apr), Mai (Mai), Juni (Jun), Juli (Jul), August (Aug), September (Sep), Oktober (Okt), November (Nov), Dezember (Dez)
+     * - Spanish: Enero (Ene), Febrero (Feb), Marzo (Mar), Abril (Abr), Mayo (May), Junio (Jun), Julio (Jul), Agosto (Ago), Septiembre (Sep), Octubre (Oct), Noviembre (Nov), Diciembre (Dic)
+     * - Italian: Gennaio (Gen), Febbraio (Feb), Marzo (Mar), Aprile (Apr), Maggio (Mag), Giugno (Giu), Luglio (Lug), Agosto (Ago), Settembre (Set), Ottobre (Ott), Novembre (Nov), Dicembre (Dic)
+     * - French: Janvier (Jan), Février (Fév), Mars (Mar), Avril (Avr), Mai (Mai), Juin (Juin), Juillet (Juil), Août (Août), Septembre (Sept), Octobre (Oct), Novembre (Nov), Décembre (Déc)
+     *
+     * The regex also accounts for variations in month names, such as different spellings and abbreviations.
+     *
+     * DateTimeFormatter building patterns for month names:
+     * - For abbreviated month names: MMM (LLL) (e.g., Jan, Feb, Mar)
+     * - For full month names: MMMM (LLLL) (e.g., January, February, March)
+     *
+     * @formatter:on
+     */
+    @SuppressWarnings("nls")
+    public static final String REGEX_MONTHS = "(?i)" //
+                    + "(January|Januar|Enero|Gennaio|Janvier|Jan|Ene|Gen|Janv" //
+                    + "|February|Februar|Febrero|Febbraio|Février|Feb|Febb|Fév" //
+                    + "|March|März|Marzo|Mars|Mar|Marz|Mär|Mrz" //
+                    + "|April|Abril|Aprile|Avril|Apr|Abr|Avr" //
+                    + "|May|Mai|Mayo|Maggio|May|Mai|Mag" //
+                    + "|June|Juni|Junio|Giugno|Juin|Jun" //
+                    + "|July|Juli|Julio|Luglio|Juillet|Jul|Lug" //
+                    + "|August|Agosto|August|Agosto|Août|Aug|Ago" //
+                    + "|September|Septiembre|Settembre|Septembre|Sep|Set" //
+                    + "|October|Oktober|Octubre|Ottobre|Octobre|Oct|Okt|Ott" //
+                    + "|November|Noviembre|Novembre|Nov" //
+                    + "|December|Dezember|Diciembre|Dicembre|Dec|Dez|Dic)";
+
     // Helper method to create case-insensitive DateTimeFormatter instances
     private static DateTimeFormatter createFormatter(String pattern, Locale locale)
     {
@@ -316,6 +351,10 @@ public class ExtractorUtils
 
     public static LocalDateTime asDate(String value, Locale... hints)
     {
+        // JDK 7: Mrz 2014
+        // JDK 8: Mär 2014
+        value = value.replaceAll("(?i)\\bMrz\\b", "Mär");  //$NON-NLS-1$//$NON-NLS-2$
+
         Locale[] locales = hints.length > 0 ? hints
                         : new Locale[] { Locale.GERMANY, Locale.US, Locale.CANADA, Locale.CANADA_FRENCH, Locale.UK };
 
@@ -356,6 +395,10 @@ public class ExtractorUtils
 
     public static LocalDateTime asDate(String date, String time)
     {
+        // JDK 7: Mrz 2014
+        // JDK 8: Mär 2014
+        date = date.replaceAll("(?i)\\bMrz\\b", "Mär"); //$NON-NLS-1$ //$NON-NLS-2$
+
         String value = String.format("%s %s", date, time); //$NON-NLS-1$
 
         for (DateTimeFormatter formatter : DATE_TIME_FORMATTER)

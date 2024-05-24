@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.REGEX_MONTHS;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
@@ -501,7 +502,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                         // Zu Lasten Konto 292-123456.40R, Valuta 30. Juni 2021
                         // @formatter:on
                         .section("date") //
-                        .match("^Zu Lasten Konto .* Valuta (?<date>[\\d]{1,2}.\\ .* [\\d]{4})$") //
+                        .match("^Zu Lasten Konto .* Valuta (?<date>[\\d]{1,2}.\\ " + REGEX_MONTHS + " [\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off

@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.REGEX_MONTHS;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
@@ -83,7 +84,7 @@ public class SelfWealthPDFExtractor extends AbstractPDFExtractor
                         // 1 LONG ROAD Trade Date: 1 Jul 2021
                         // @formatter:on
                         .section("date") //
-                        .match("^.* Trade Date: (?<date>[\\d]+ .* [\\d]{4})$") //
+                        .match("^.* Trade Date: (?<date>[\\d]+ " + REGEX_MONTHS + " [\\d]{4})$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         // @formatter:off
