@@ -57,7 +57,7 @@ public class PortfolioHoldingsPane implements InformationPanePage
     {
         this.portfolio = Adaptor.adapt(Portfolio.class, input);
         CurrencyConverter converter = new CurrencyConverterImpl(factory,
-                        portfolio.getReferenceAccount().getCurrencyCode());
+                        client.getBaseCurrency());
         ClientFilter clientFilter = new PortfolioClientFilter(portfolio);
         ClientSnapshot snapshot = ClientSnapshot.create(clientFilter.filter(client), converter, LocalDate.now());
 
