@@ -5,6 +5,7 @@ import jakarta.inject.Inject;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.chart.StackedTimelineChart;
+import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
 import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 
 public class StackedChartActualValueViewer extends AbstractStackedChartViewer
@@ -19,6 +20,7 @@ public class StackedChartActualValueViewer extends AbstractStackedChartViewer
     protected void configureChart(StackedTimelineChart chart)
     {
         chart.getAxisSet().getYAxis(0).getTick().setFormat(new ThousandsNumberFormat());
+        chart.getToolTip().setDefaultValueFormat(new AmountNumberFormat());
     }
 
     @Override
