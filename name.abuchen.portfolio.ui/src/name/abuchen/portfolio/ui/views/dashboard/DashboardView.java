@@ -607,7 +607,7 @@ public class DashboardView extends AbstractHistoricView
     private Pair<WidgetDelegate<?>, Composite> buildDelegateAndMoveAboveElement(Composite columnControl,
                     WidgetFactory widgetType, Dashboard.Widget widget, Composite elementToMoveAbove)
     {
-        WidgetDelegate<?> delegate = widgetType.create(widget, dashboardData);
+        WidgetDelegate<?> delegate = widgetType.constructDelegate(widget, dashboardData);
         inject(delegate);
 
         Composite element = delegate.createControl(columnControl, resources);
@@ -844,9 +844,7 @@ public class DashboardView extends AbstractHistoricView
     {
         Dashboard.Column column = (Dashboard.Column) columnControl.getData();
 
-        Dashboard.Widget widget = new Dashboard.Widget();
-        widget.setLabel(widgetType.getLabel());
-        widget.setType(widgetType.name());
+        Dashboard.Widget widget = widgetType.constructWidget();
         column.getWidgets().add(widget);
 
         WidgetDelegate<?> delegate = buildDelegateAndMoveAboveFiller(columnControl, widgetType, widget).getLeft();
