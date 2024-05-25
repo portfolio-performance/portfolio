@@ -316,6 +316,10 @@ public class ExtractorUtils
 
     public static LocalDateTime asDate(String value, Locale... hints)
     {
+        // starting with Java 8, the abbreviation Mrz is not supported out of
+        // the box anymore
+        value = value.replaceAll("(?i)\\bMrz\\b", "Mär"); //$NON-NLS-1$//$NON-NLS-2$
+
         Locale[] locales = hints.length > 0 ? hints
                         : new Locale[] { Locale.GERMANY, Locale.US, Locale.CANADA, Locale.CANADA_FRENCH, Locale.UK };
 
@@ -356,6 +360,10 @@ public class ExtractorUtils
 
     public static LocalDateTime asDate(String date, String time)
     {
+        // starting with Java 8, the abbreviation Mrz is not supported out of
+        // the box anymore
+        date = date.replaceAll("(?i)\\bMrz\\b", "Mär"); //$NON-NLS-1$//$NON-NLS-2$
+
         String value = String.format("%s %s", date, time); //$NON-NLS-1$
 
         for (DateTimeFormatter formatter : DATE_TIME_FORMATTER)

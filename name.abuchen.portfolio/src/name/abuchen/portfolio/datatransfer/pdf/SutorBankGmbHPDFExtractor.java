@@ -153,9 +153,9 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(Orderausf.hrung Datum\\/Zeit:|Schlusstag\\/\\-Zeit) (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{1,2} .* [\\d]{4})).*$") //
                                                         .assign((t, v) -> {
                                                             if (type.getCurrentContext().get("time") != null)
-                                                                t.setDate(asDate(v.get("date").replace("Mrz", "Mär"), type.getCurrentContext().get("time")));
+                                                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
                                                             else
-                                                                t.setDate(asDate(v.get("date").replace("Mrz", "Mär")));
+                                                                t.setDate(asDate(v.get("date")));
                                                         }),
                                         // @formatter:off
                                         // Orderausführung Datum/Zeit: 13. 06. 2023 11:10:52
@@ -175,7 +175,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Valutadatum (?<date>[\\d]{1,2}\\. .* [\\d]{4})$") //
-                                                        .assign((t, v) -> t.setDate(asDate(v.get("date").replace("Mrz", "Mär")))))
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -281,9 +281,9 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         .match("^Orderausf.hrung Datum \\/ Zeit: (?<date>[\\d]{1,2}\\. .* [\\d]{4}).*$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().get("time") != null)
-                                t.setDate(asDate(v.get("date").replace("Mrz", "Mär"), type.getCurrentContext().get("time")));
+                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
                             else
-                                t.setDate(asDate(v.get("date").replace("Mrz", "Mär")));
+                                t.setDate(asDate(v.get("date")));
                         })
 
                         // @formatter:off
@@ -354,7 +354,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Valutadatum (?<date>[\\d]{1,2}\\. .* [\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date").replace("Mrz", "Mär"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Ausmachender Betrag EUR 12,15
@@ -422,7 +422,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Tag des Zuflusses (?<date>[\\d]{1,2} .* [\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date").replace("Mrz", "Mär"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Aufgrund nachstehender Abrechnung buchen wir zu Ihren Lasten €34,25
@@ -1057,7 +1057,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date") //
                         .match("^Ex Datum \\- Tag (?<date>[\\d]{1,2}\\. .* [\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date").replace("Mrz", "Mär"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Verhältnis Neu/ Alt 1 : 3,00
