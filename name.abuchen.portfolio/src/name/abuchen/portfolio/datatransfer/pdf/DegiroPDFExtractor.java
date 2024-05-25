@@ -1492,7 +1492,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 14-08-2020 21:13 TESLA MOTORS INC. - C US88160R1014 NDQ 2 1'630.00 USD -3'260.00 USD -2'964.76 CHF 1.0996 -0.55 CHF -2'965.31 CHF
                             // @formatter:on
                             section -> section
-                                .id("withExchangeRate-withFee-withoutStockExchangePlace")
+                                .id("withExchangeRate-withFee-withoutStockExchangePlace - <currency> <amount>")
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
@@ -1558,7 +1558,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 22-07-2019 19:16 LPL FINANCIAL HOLDINGS US50212V1008 NDQ 1 USD 85,73 USD 85,73 EUR 76,42 1,1218 EUR 76,42
                             // @formatter:on
                             section -> section
-                                .id("withExchangeRate-withoutFee-withoutStockExchangePlace")
+                                .id("withExchangeRate-withoutFee-withoutStockExchangePlace - <currency> <amount>")
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
@@ -1611,7 +1611,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 14-12-2020 00:00 ASTON MARTIN GB00BN7CG237 LSE 51 1 417,00 GBX -72 267,00 GBX -791,47 EUR 91,3075 -791,47 EUR
                             // @formatter:on
                             section -> section
-                                .id("withExchangeRate-withoutFee-withoutStockExchangePlace")
+                                .id("withExchangeRate-withoutFee-withoutStockExchangePlace - <amount> <currency>")
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
@@ -1667,7 +1667,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 26-04-2021 15:35 GOODFOOD MARKET CORP CA38217M1005 TOR NEOE 100 8,20 CAD -820,00 CAD -546,67 EUR 1,5 -2,67 EUR -549,34 EUR
                             // @formatter:on
                             section -> section
-                                .id("withExchangeRate-withFee-withStockExchangePlace")
+                                .id("withExchangeRate-withFee-withStockExchangePlace - <amount> <currency>")
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
@@ -1732,7 +1732,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 09-07-2019 14:08 VANGUARD FTSE AW IE00B3RBWM25 EAM 3 EUR 77,10 EUR -231,30 EUR -231,30 EUR -231,30
                             // @formatter:on
                             section -> section
-                                .id("withoutExchangeRate-withoutFee-withoutStockExchangePlace")
+                                .id("withoutExchangeRate-withoutFee-withoutStockExchangePlace - <amount> <currency>")
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
@@ -1772,7 +1772,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 22-07-2020 00:00 PHARMA MAR SA ES0169501022 MAD 21 114,66 EUR -2 407,86 EUR -2 407,86 EUR -2 407,86 EUR
                             // @formatter:on
                             section -> section
-                                .id("withoutExchangeRate-withoutFee-withoutStockExchangePlace")
+                                .id("withoutExchangeRate-withoutFee-withoutStockExchangePlace - <currency> <amount>")
                                 .attributes("date", "time", "name", "isin", "shares", "currency", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
@@ -1813,7 +1813,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 01-04-2019 12:20 DEUTSCHE BANK AG NA O.N DE0005140008 XET 18 EUR 7,353 EUR -132,35 EUR -132,35 EUR -0,03 EUR -132,38
                             // @formatter:on
                             section -> section
-                                .id("withoutExchangeRate-withFee-withoutStockExchangePlace")
+                                .id("withoutExchangeRate-withFee-withoutStockExchangePlace - <amount> <currency>")
                                 .attributes("date", "time", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
@@ -1857,7 +1857,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             // 01-08-2017 16:32 CECONOMY AG DE0007257503 XET 72 9,45 EUR -680,40 EUR -680,40 EUR -2,05 EUR -682,45 EUR
                             // @formatter:on
                             section -> section
-                                .id("withoutExchangeRate-withFee-withoutStockExchangePlace")
+                                .id("withoutExchangeRate-withFee-withoutStockExchangePlace - <currency> <amount>")
                                 .attributes("date", "time", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
                                 .match("^(?<date>[\\d]{2}\\-[\\d]{2}\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) "
                                                 + "(?<name>.*) "
