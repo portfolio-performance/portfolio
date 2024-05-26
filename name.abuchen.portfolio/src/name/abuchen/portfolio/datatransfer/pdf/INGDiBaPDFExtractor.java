@@ -167,6 +167,19 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:on
                                                             BigDecimal shares = asBigDecimal(v.get("shares"));
                                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                        }),
+                                        // @formatter:off
+                                        // Nominale 2.000,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Nominale (?<shares>[\\.,\\d]+) [\\w]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Percentage quotation, workaround for bonds
+                                                            // @formatter:on
+                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                         }))
 
                         // @formatter:off
