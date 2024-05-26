@@ -1564,6 +1564,37 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf13()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A254UR5"), hasWkn("A254UR"), hasTicker(null), //
+                        hasName("4,25% Karlsberg Brauerei GmbH ITV v.2020(2022/2025)"), //
+                        hasCurrencyCode(CurrencyUnit.EUR))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-05-22T00:00"), hasShares(20.00), //
+                        hasSource("Verkauf13.txt"), //
+                        hasNote("Rückzahlung"), //
+                        hasAmount("EUR", 2020.00), hasGrossValue("EUR", 2020.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testVorabpauschale01()
     {
         INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
