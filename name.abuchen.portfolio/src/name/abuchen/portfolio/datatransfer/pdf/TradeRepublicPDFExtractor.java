@@ -1472,6 +1472,17 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // 16 Apr. 2024 Überweisung Einzahlung akzeptiert: DE5987654321 auf DE12334567658 3.500,00 € 16.347,54 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount", "currency") //
+                                                        .match("^(?<date>[\\d]{2} [\\wä]{3,4}([\\.]{1})? [\\d]{4}) .berweisung Einzahlung .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }))
 
                         .wrap(TransactionItem::new));
@@ -1575,7 +1586,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .optionalOneOf( //
                                         // @formatter:off
-                                        // 28 
+                                        // 28
                                         // Apr. Kartentransaktion Hornbach Baumarkt AG FIL. 2,40 € 1.902,38 €
                                         // 2024
                                         // @formatter:on
@@ -1605,7 +1616,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
-                                        // 04 
+                                        // 04
                                         // Apr. Überweisung Einzahlung akzeptiert: DE34120300001066107218 auf DE00000000000000000000 2.000,00 € 3.030,97 €
                                         // 2024
                                         // @formatter:on
@@ -1711,7 +1722,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         }));
 
         // @formatter:off
-        // 01 
+        // 01
         // Feb. Zinszahlung Your interest payment 33,37 € 10.671,44 €
         // 2024
         // @formatter:on
@@ -1743,7 +1754,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         }));
 
         // @formatter:off
-        // 19 
+        // 19
         // Feb. Steuern Steueroptimierung null 0000000000000000 78,17 € 715,35 €
         // 2024
         // @formatter:on
