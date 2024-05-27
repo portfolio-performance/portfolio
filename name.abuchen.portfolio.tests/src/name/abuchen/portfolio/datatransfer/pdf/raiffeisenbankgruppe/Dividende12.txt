@@ -1,0 +1,57 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+Postfach 3069 · 55020 Mainz    Seite 1
+Depotnummer
+ 123456789
+ Kundennummer 11111100
+Max Mustermann
+ Abrechnungsnr. 76560429680
+Max Mustermann Datum 22.09.2023
+Musterst. 1 Ihr Berater Maxi Mustermann
+77777 Musterhausen Telefon 01234/111-1111     
+ 
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 29 QUALCOMM INC. US7475251036 (883121)
+REGISTERED SHARES DL -,0001
+Zahlbarkeitstag 21.09.2023 Dividende pro Stück 0,80 USD
+Bestandsstichtag 29.08.2023 Herkunftsland USA
+Ex-Tag 30.08.2023 Art der Dividende Quartalsdividende
+Geschäftsjahr 01.10.2022 - 30.09.2023
+Devisenkurs EUR / USD  1,0686
+Devisenkursdatum 22.09.2023
+Dividendengutschrift 23,20 USD 21,71+ EUR
+Umrechnung in EUR 21,71 EUR
+Einbehaltene Quellensteuer 15 % auf 23,20 USD 3,26- EUR
+Anrechenbare Quellensteuer 15 % auf 21,71 EUR 3,26 EUR
+Kapitalertragsteuerpflichtige Dividende 21,71 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 3,26 EUR 13,04 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 8,67 EUR
+Kapitalertragsteuer 25 % auf 8,67 EUR 2,17- EUR
+Solidaritätszuschlag 5,5 % auf 2,17 EUR 0,12- EUR
+Ausmachender Betrag 16,16+ EUR
+Lagerstelle CBF w/7268 w/DZ Bank (600502 / 72680000)
+Den Betrag buchen wir mit Wertstellung 25.09.2023 zu Gunsten des Kontos 123456789 (IBAN DE11 5519 0000 0111 1111
+11), BLZ 551 900 00 (BIC MVBMDE55XXX). 
+Keine Steuerbescheinigung. 
+Bitte ggf. Rückseite beachten.
+7043.09230101.0000068ER01
+
+Seite 2
+Depotnummer 1111111111
+Kundennummer 11111100
+Abrechnungsnr. 76560429680
+Datum 22.09.2023
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2023 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 1.607,81
+Ertrag 3,26
+0,00 0,00 0,00 3,26- 8,67
+Nachher 0,00 0,00 0,00 0,00 1.616,48
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7043.09230101.0000069ER01

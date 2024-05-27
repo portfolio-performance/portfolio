@@ -1,0 +1,40 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+   
+Postfach 3069 · 55020 Mainz
+Depotnummer 1111111111
+ 
+Kundennummer 11111100
+Max Mustermann
+Auftragsnummer 464088/93.00
+Max Mustermann Datum 05.07.2023
+Musterst. 1 Ihr Berater Max Mustermann
+11111 Musterhausen Telefon 01111/111-1111
+Rechnungsnummer W07043-0000028657/23
+Steuernummer 001111111111  
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 0,859 ISHS DL TREAS.BD 1-3YR U.ETF       IE00B14X4S71 (A0J202)
+REGISTERED SHARES USD (DIST)ON     
+Handels-/Ausführungsplatz Außerbörslich
+Schlusstag/-Zeit 15.11.2023 09:33:55 Auftraggeber Max Mustermann
+Ausführungskurs 116,415 EUR Auftragserteilung/ -ort sonstige
+Wertpapierrechnung Lagerland Irland
+Kurswert 100,00- EUR
+Provision 1,50- EUR
+Ausmachender Betrag 101,50- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 17.11.2023 zu Lasten des Kontos 123456789 (IBAN DE11 5519 0000 0111 1111 11),
+BLZ 55190000 (BIC MVBMDE55XXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Ausf. erfolgte über Quotrix
+Ihr ETF-Sparplan Nr.      5
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Die Order wurde im Internet aufgegeben.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7043.11151737.0000079OR07

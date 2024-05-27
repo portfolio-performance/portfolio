@@ -399,9 +399,72 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2022-03-21T00:00"), hasShares(2.549), //
-                        hasSource("Kauf07.txt"), hasNote(null), //
+                        hasSource("Kauf07.txt"), //
+                        hasNote(null), //
                         hasAmount("CHF", 399.95), hasGrossValue("CHF", 396.78), //
-                        hasTaxes("CHF", 0), hasFees("CHF", 3.17))));
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 3.17))));
+    }
+
+    @Test
+    public void testWertpapierKauf08()
+    {
+        RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B14X4S71"), hasWkn("A0J202"), hasTicker(null), //
+                        hasName("ISHS DL TREAS.BD 1-3YR U.ETF REGISTERED SHARES USD (DIST)ON"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-11-15T09:33:55"), hasShares(0.859), //
+                        hasSource("Kauf08.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 101.50), hasGrossValue("EUR", 100.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.50))));
+    }
+
+    @Test
+    public void testWertpapierKauf09()
+    {
+        RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0478205379"), hasWkn("DBX0EY"), hasTicker(null), //
+                        hasName("XTRACKERS II EUR CORPORATE BD INHABER-ANTEILE 1C O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-07-05T15:38:26"), hasShares(35.00), //
+                        hasSource("Kauf09.txt"), //
+                        hasNote("Limit billigst"), //
+                        hasAmount("EUR", 5007.32), hasGrossValue("EUR", 5002.37), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.95))));
     }
 
     @Test
@@ -1103,7 +1166,8 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2022-07-07T00:00"), hasShares(800), //
-                        hasSource("Dividende08.txt"), hasNote(null), //
+                        hasSource("Dividende08.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 156.32), hasGrossValue("EUR", 156.32), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -1133,8 +1197,10 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2020-04-15T00:00"), hasShares(221), //
-                        hasSource("Dividende09.txt"), hasNote(null), //
-                        hasAmount("EUR", 82.99), hasGrossValue("EUR", 97.81), hasForexGrossValue("USD", 106.58), //
+                        hasSource("Dividende09.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 82.99), hasGrossValue("EUR", 97.81), //
+                        hasForexGrossValue("USD", 106.58), //
                         hasTaxes("EUR", (0.86 / 1.0897) + 9.29 + 0.29), hasFees("EUR", 1.45 + 3.00))));
     }
 
@@ -1163,7 +1229,8 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2020-04-15T00:00"), hasShares(221), //
-                        hasSource("Dividende09.txt"), hasNote(null), //
+                        hasSource("Dividende09.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 82.99), hasGrossValue("EUR", 97.81), //
                         hasTaxes("EUR", (0.86 / 1.0897) + 9.29 + 0.29), hasFees("EUR", 1.45 + 3.00), //
                         check(tx -> {
@@ -1200,9 +1267,112 @@ public class RaiffeisenbankgruppePDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2021-08-16T00:00"), hasShares(7.01), //
-                        hasSource("Dividende10.txt"), hasNote(null), //
+                        hasSource("Dividende10.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 5.59), hasGrossValue("EUR", 8.34), //
                         hasTaxes("EUR", 2.15 + 0.60), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende11()
+    {
+        RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0006599905"), hasWkn("659990"), hasTicker(null), //
+                        hasName("MERCK KG A.A. INHABER-AKTIEN O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-05-02T00:00"), hasShares(25.00), //
+                        hasSource("Dividende11.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 40.50), hasGrossValue("EUR", 55.00), //
+                        hasTaxes("EUR", 13.75 + 0.75), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende12()
+    {
+        RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7475251036"), hasWkn("883121"), hasTicker(null), //
+                        hasName("QUALCOMM INC. REGISTERED SHARES DL -,0001"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-09-25T00:00"), hasShares(29.00), //
+                        hasSource("Dividende12.txt"), //
+                        hasNote("Quartalsdividende"), //
+                        hasAmount("EUR", 16.16), hasGrossValue("EUR", 21.71), //
+                        hasForexGrossValue("USD", 23.20), //
+                        hasTaxes("EUR", 3.26 + 2.17 + 0.12), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende12WithSecurityInEUR()
+    {
+        Security security = new Security("iSh.DJ U.S.Select Div.U.ETF DE Inhaber-Anteile", CurrencyUnit.EUR);
+        security.setIsin("US7475251036");
+        security.setWkn("883121");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-09-25T00:00"), hasShares(29.00), //
+                        hasSource("Dividende12.txt"), //
+                        hasNote("Quartalsdividende"), //
+                        hasAmount("EUR", 16.16), hasGrossValue("EUR", 21.71), //
+                        hasTaxes("EUR", 3.26 + 2.17 + 0.12), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -2243,12 +2413,13 @@ public class RaiffeisenbankgruppePDFExtractorTest
 
         // check cancellation transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        Messages.MsgErrorOrderCancellationUnsupported, //
                         inboundDelivery( //
-                                hasDate("2022-03-18"), hasShares(550), //
-                                hasSource("FreierErhalt01.txt"), hasNote(null), //
-                                hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+                                        hasDate("2022-03-18"), hasShares(550), //
+                                        hasSource("FreierErhalt01.txt"), //
+                                        hasNote("Änderung/Stornierung"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -2277,9 +2448,10 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupported, //
                         inboundDelivery( //
-                                hasDate("2022-07-08"), hasShares(200), //
-                                hasSource("FreierErhalt02.txt"), hasNote(null), //
-                                hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+                                        hasDate("2022-07-08"), hasShares(200), //
+                                        hasSource("FreierErhalt02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 }
