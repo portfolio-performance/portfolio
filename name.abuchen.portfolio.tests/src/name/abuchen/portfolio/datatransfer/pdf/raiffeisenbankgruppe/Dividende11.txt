@@ -1,0 +1,42 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+Postfach 3069 · 55020 Mainz    Seite 1
+Depotnummer
+ 123456789
+ Kundennummer 11111100
+Max Mustermann
+ Abrechnungsnr. 76560429680
+Max Mustermann Datum 22.09.2023
+Musterst. 1 Ihr Berater Maxi Mustermann
+77777 Musterhausen Telefon 01234/111-1111      
+ 
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 25 MERCK KG A.A. DE0006599905 (659990)
+INHABER-AKTIEN O.N.
+Zahlbarkeitstag 02.05.2024 Dividende pro Stück 2,20 EUR
+Bestandsstichtag 26.04.2024
+Ex-Tag 29.04.2024
+Geschäftsjahr 01.01.2023 - 31.12.2023
+Dividendengutschrift 55,00+ EUR
+Kapitalertragsteuerpflichtige Dividende 55,00 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 55,00 EUR
+Kapitalertragsteuer 25 % auf 55,00 EUR 13,75- EUR
+Solidaritätszuschlag 5,5 % auf 13,75 EUR 0,75- EUR
+Ausmachender Betrag 40,50+ EUR
+Lagerstelle CBF w/7268 w/DZ Bank (600502 / 72680000)
+Den Betrag buchen wir mit Wertstellung 02.05.2024 zu Gunsten des Kontos 111111111 (IBAN DE11 5519 0000 0111 1111
+11), BLZ 551 900 00 (BIC MVBMDE55XXX). 
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2024 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 1.569,67
+Ertrag 0,00 0,00 0,00 0,00 55,00
+Nachher 0,00 0,00 0,00 0,00 1.624,67
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+7043.05010107.0001457ER01

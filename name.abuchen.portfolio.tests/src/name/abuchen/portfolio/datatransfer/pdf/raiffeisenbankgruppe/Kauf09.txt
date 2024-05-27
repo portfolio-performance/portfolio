@@ -1,0 +1,38 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+   
+Postfach 3069 · 55020 Mainz
+Depotnummer 1111111111
+ 
+Kundennummer 11111100
+Max Mustermann
+Auftragsnummer 464088/93.00
+Max Mustermann Datum 05.07.2023
+Musterst. 1 Ihr Berater Max Mustermann
+11111 Musterhausen Telefon 01111/111-1111
+Rechnungsnummer W07043-0000028657/23
+Steuernummer 001111111111  
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 35 XTRACKERS II EUR CORPORATE BD      LU0478205379 (DBX0EY)
+INHABER-ANTEILE 1C O.N.            
+Handels-/Ausführungsplatz Tradegate (gemäß Weisung)
+Börsensegment XGAT
+Market-Order
+Limit billigst
+Schlusstag/-Zeit 05.07.2023 15:38:26 Auftraggeber Max Mustermann
+Ausführungskurs 142,9249 EUR Auftragserteilung/ -ort Online-Banking
+Wertpapierrechnung Lagerland Irland
+Kurswert 5.002,37- EUR
+Provision 4,95- EUR
+Ausmachender Betrag 5.007,32- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 07.07.2023 zu Lasten des Kontos 111111111 (IBAN DE11 5519 0000 0111 1111 11),
+BLZ 55190000 (BIC MVBMDE55XXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7043.07051724.0000060OR07
