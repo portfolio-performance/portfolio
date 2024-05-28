@@ -1248,6 +1248,99 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf04()
+    {
+        // This is a manipulated PDF debug to check if a fee refund works with a
+        // security with foreign currency, as well as with fees in foreign
+        // currency. If there are problems here, this can also be deleted and
+        // replaced with a correct PDF debug.
+
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0007472060"), hasWkn("747206"), hasTicker(null), //
+                        hasName("Wirecard AG Inhaber-Aktien o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-08-25T14:34"), hasShares(3.00), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote("Ord.-Nr.: 123-123 | R.-Nr.: XXXXXXXXXXXXXXXX"), //
+                        hasAmount("EUR", (2.90 / 1.222500)), hasGrossValue("EUR", (2.90 / 1.222500)), //
+                        hasForexGrossValue("USD", 2.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-08-25T14:34"), hasShares(3.00), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote("Ord.-Nr.: 123-123 | R.-Nr.: XXXXXXXXXXXXXXXX"), //
+                        hasAmount("EUR", (2.90 / 1.222500) + 8.23), hasGrossValue("EUR", (2.90 / 1.222500) + 8.23), //
+                        hasForexGrossValue("USD", 2.90 + (8.23 * 1.222500)), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf04WithSecurityInEUR()
+    {
+        // This is a manipulated PDF debug to check if a fee refund works with a
+        // security with foreign currency, as well as with fees in foreign
+        // currency. If there are problems here, this can also be deleted and
+        // replaced with a correct PDF debug.
+
+        Security security = new Security("Wirecard AG Inhaber-Aktien o.N.", CurrencyUnit.EUR);
+        security.setIsin("DE0007472060");
+        security.setWkn("747206");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2020-08-25T14:34"), hasShares(3.00), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote("Ord.-Nr.: 123-123 | R.-Nr.: XXXXXXXXXXXXXXXX"), //
+                        hasAmount("EUR", (2.90 / 1.222500)), hasGrossValue("EUR", (2.90 / 1.222500)), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2020-08-25T14:34"), hasShares(3.00), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote("Ord.-Nr.: 123-123 | R.-Nr.: XXXXXXXXXXXXXXXX"), //
+                        hasAmount("EUR", (2.90 / 1.222500) + 8.23), hasGrossValue("EUR", (2.90 / 1.222500) + 8.23), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testWertpapierVerkaufMitSteuerbehandlung01()
     {
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
@@ -1541,94 +1634,33 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung08()
     {
-        // This is a manipulated PDF debug to check if a fee refund works with a
-        // security with foreign currency, as well as with fees in foreign
-        // currency. If there are problems here, this can also be deleted and
-        // replaced with a correct PDF debug.
-
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung08.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung08.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("DE0007472060"), hasWkn("747206"), hasTicker(null), //
-                        hasName("Wirecard AG Inhaber-Aktien o.N."), //
+                        hasIsin("US46267X1081"), hasWkn("A2JGN8"), hasTicker(null), //
+                        hasName("Iqiyi Inc. Reg.Shs (Sp.ADRs) /7 DL-,00001"), //
                         hasCurrencyCode("USD"))));
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2020-08-25T14:34"), hasShares(3.00), //
+                        hasDate("2021-03-10T00:00"), hasShares(400.00), //
                         hasSource("VerkaufMitSteuerbehandlung08.txt"), //
-                        hasNote("Ord.-Nr.: 123-123 | R.-Nr.: XXXXXXXXXXXXXXXX"), //
-                        hasAmount("EUR", (2.90 / 1.222500)), hasGrossValue("EUR", (2.90 / 1.222500)), //
-                        hasForexGrossValue("USD", 2.90), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check fee transaction
-        assertThat(results, hasItem(fee( //
-                        hasDate("2020-08-25T14:34"), hasShares(3.00), //
-                        hasSource("VerkaufMitSteuerbehandlung08.txt"), //
-                        hasNote("Ord.-Nr.: 123-123 | R.-Nr.: XXXXXXXXXXXXXXXX"), //
-                        hasAmount("EUR", (2.90 / 1.222500) + 8.23), hasGrossValue("EUR", (2.90 / 1.222500) + 8.23), //
-                        hasForexGrossValue("USD", 2.90 + (8.23 * 1.222500)), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-    }
-
-    @Test
-    public void testWertpapierVerkaufMitSteuerbehandlung08WithSecurityInEUR()
-    {
-        // This is a manipulated PDF debug to check if a fee refund works with a
-        // security with foreign currency, as well as with fees in foreign
-        // currency. If there are problems here, this can also be deleted and
-        // replaced with a correct PDF debug.
-
-        Security security = new Security("Wirecard AG Inhaber-Aktien o.N.", CurrencyUnit.EUR);
-        security.setIsin("DE0007472060");
-        security.setWkn("747206");
-
-        Client client = new Client();
-        client.addSecurity(security);
-
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
-
-        List<Exception> errors = new ArrayList<>();
-
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung08.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
-
-        // check buy sell transaction
-        assertThat(results, hasItem(sale( //
-                        hasDate("2020-08-25T14:34"), hasShares(3.00), //
-                        hasSource("VerkaufMitSteuerbehandlung08.txt"), //
-                        hasNote("Ord.-Nr.: 123-123 | R.-Nr.: XXXXXXXXXXXXXXXX"), //
-                        hasAmount("EUR", (2.90 / 1.222500)), hasGrossValue("EUR", (2.90 / 1.222500)), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check fee transaction
-        assertThat(results, hasItem(fee( //
-                        hasDate("2020-08-25T14:34"), hasShares(3.00), //
-                        hasSource("VerkaufMitSteuerbehandlung08.txt"), //
-                        hasNote("Ord.-Nr.: 123-123 | R.-Nr.: XXXXXXXXXXXXXXXX"), //
-                        hasAmount("EUR", (2.90 / 1.222500) + 8.23), hasGrossValue("EUR", (2.90 / 1.222500) + 8.23), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasNote("Ord.-Nr.: 000209283981 | R.-Nr.: 542587765895DFA5"), //
+                        hasAmount("USD", 9903.02), hasGrossValue("USD", 10912.00), //
+                        hasTaxes("USD", 958.34), hasFees("USD", 36.74 + 13.90))));
     }
 
     @Test
