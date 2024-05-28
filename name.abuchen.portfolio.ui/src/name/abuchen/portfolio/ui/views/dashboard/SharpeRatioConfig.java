@@ -22,17 +22,14 @@ public class SharpeRatioConfig implements WidgetConfig
     {
         this.delegate = delegate;
         String riskFreeIRRStr = this.delegate.getWidget().getConfiguration().get(Dashboard.Config.RISKFREE_IRR.name());
-        if (riskFreeIRRStr != null)
+        try
         {
-            try
-            {
-                this.riskFreeIRR = Integer.parseInt(riskFreeIRRStr);
-            }
-            catch (NumberFormatException ex)
-            {
-                this.riskFreeIRR = 0;
-                PortfolioPlugin.info(ex.getLocalizedMessage());
-            }
+            this.riskFreeIRR = Integer.parseInt(riskFreeIRRStr);
+        }
+        catch (NumberFormatException ex)
+        {
+            this.riskFreeIRR = 0;
+            PortfolioPlugin.info(ex.getLocalizedMessage());
         }
     }
 
