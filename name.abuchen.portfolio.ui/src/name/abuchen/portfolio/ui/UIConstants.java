@@ -249,6 +249,7 @@ public interface UIConstants
          * Preference for directory from which to export CSV files
          */
         String CSV_EXPORT_PATH = "CSV_EXPORT_PATH"; //$NON-NLS-1$
+
     }
 
     interface Theme // NOSONAR

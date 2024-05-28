@@ -175,7 +175,6 @@ public enum WidgetFactory
                                     }) //
                                     .withTooltip((ds, period) -> Messages.TooltipVolatility) //
                                     .withColoredValues(false) //
-
                                     .build()),
 
     SHARPE_RATIO(Messages.LabelSharpeRatio, Messages.LabelRiskIndicators, SharpeRatioWidget::new),
