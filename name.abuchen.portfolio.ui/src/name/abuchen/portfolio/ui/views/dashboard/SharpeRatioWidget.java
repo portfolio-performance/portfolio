@@ -18,19 +18,17 @@ public class SharpeRatioWidget extends IndicatorWidget<Double>
 
         this.setFormatter(Values.PercentPlain);
         this.setValueColored(false);
-        this.setTooltip((ds, period) -> {
-            return Messages.TooltipSharpeRatio;
-        });
+        this.setTooltip((ds, period) -> Messages.TooltipSharpeRatio);
         this.setProvider((ds, period) -> {
             PerformanceIndex index = dashboardData.calculate(ds, period);
-            double r = index.getPerformanceIRR();
-            double rf = ((double)configuration.getRiskFreeIRR()) / 10000;
+            double performanceIRR = index.getPerformanceIRR();
+            double riskFreeIRR = ((double)configuration.getRiskFreeIRR()) / 10000;
             double volatility = index.getVolatility().getStandardDeviation();
 
-            if (Double.isNaN(rf))
-                return Double.NaN; // Handle invalid rf value
+            if (Double.isNaN(riskFreeIRR) || volatility == 0)
+                return Double.NaN; // Handle invalid risk-free IRR or zero volatility
 
-            double excessReturn = r - rf;
+            double excessReturn = performanceIRR - riskFreeIRR;
             return excessReturn / volatility;
         });
     }
