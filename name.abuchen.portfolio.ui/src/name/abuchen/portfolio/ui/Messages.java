@@ -1255,7 +1255,8 @@ public class Messages extends NLS
     public static String SecurityTabHistoricalQuotes;
     public static String SecurityTabTrades;
     public static String SecurityTabTransactions;
-    public static String SharpeRatioRisklessIRR;
+    public static String SharpeRatioRiskfreeIRRLabel;
+    public static String SharpeRatioRiskfreeIRR;
     public static String SiteAppLandingpage;
     public static String SiteNewAndNoteworthy;
     public static String SplitWizardDefinitionDescription;

@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.preferences;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
-import org.eclipse.jface.preference.IntegerFieldEditor;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -33,9 +32,6 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage
 
         addField(new BooleanFieldEditor(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS, //
                         Messages.PrefLabelUseSWTChartLibrary, getFieldEditorParent()));
-
-        addField(new IntegerFieldEditor(UIConstants.Preferences.SHARPE_RATIO_IRR, 
-                        Messages.SharpeRatioRisklessIRR, getFieldEditorParent()));
 
     }
 }
