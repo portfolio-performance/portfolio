@@ -60,6 +60,7 @@ public class ExtractorUtils
                     createFormatter("dd LLL yyyy", Locale.US), //$NON-NLS-1$
                     createFormatter("d LLL yyyy", Locale.US), //$NON-NLS-1$
                     createFormatter("MM-dd-yy", Locale.US), //$NON-NLS-1$
+                    createFormatter("MM/dd/yy", Locale.US), //$NON-NLS-1$
                     createFormatter("MMM/dd/yyyy", Locale.US), //$NON-NLS-1$
                     createFormatter("MMM/d/yyyy", Locale.US), //$NON-NLS-1$
                     createFormatter("LLL/dd/yyyy", Locale.US), //$NON-NLS-1$
