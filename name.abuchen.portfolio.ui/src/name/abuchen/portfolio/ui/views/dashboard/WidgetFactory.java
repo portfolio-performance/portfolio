@@ -196,7 +196,16 @@ public enum WidgetFactory
                                         double excessReturn = r - rf;
                                         return excessReturn / volatility;
                                     }) //
-                                    .withTooltip((ds, period) -> Messages.TooltipSharpeRatio) //
+                                    .withTooltip((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        double r = index.getPerformanceIRR();
+                                        double rf = new ClientProperties(data.getClient()).getRiskFreeRateOfReturn();
+                                        double volatility = index.getVolatility().getStandardDeviation();
+                                        double sharpeRatio = (r - rf) / volatility;
+                                        return MessageFormat.format(Messages.TooltipSharpeRatio,
+                                                        Values.Percent5.format(r), Values.Percent2.format(rf),
+                                                        volatility, sharpeRatio);
+                                    }) //
                                     .build()),
 
     SEMIVOLATILITY(Messages.LabelSemiVolatility, Messages.LabelRiskIndicators, //
