@@ -1,8 +1,11 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -28,6 +31,7 @@ public class IndicatorWidget<N> extends AbstractIndicatorWidget<N>
         private boolean supportsBenchmarks = true;
         private Predicate<DataSeries> predicate;
         private boolean isValueColored = true;
+        private List<Function<WidgetDelegate<?>, WidgetConfig>> additionalConfig = new ArrayList<>();
 
         public Builder(Widget widget, DashboardData dashboardData)
         {
@@ -71,6 +75,12 @@ public class IndicatorWidget<N> extends AbstractIndicatorWidget<N>
             return this;
         }
 
+        Builder<N> withConfig(Function<WidgetDelegate<?>, WidgetConfig> config)
+        {
+            this.additionalConfig.add(config);
+            return this;
+        }
+
         IndicatorWidget<N> build()
         {
             Objects.requireNonNull(formatter);
@@ -82,6 +92,9 @@ public class IndicatorWidget<N> extends AbstractIndicatorWidget<N>
             indicatorWidget.setProvider(provider);
             indicatorWidget.setTooltip(tooltip);
             indicatorWidget.setValueColored(isValueColored);
+
+            additionalConfig.forEach(config -> indicatorWidget.addConfig(config.apply(indicatorWidget)));
+
             return indicatorWidget;
         }
     }
