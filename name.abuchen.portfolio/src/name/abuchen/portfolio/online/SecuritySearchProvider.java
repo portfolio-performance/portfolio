@@ -53,7 +53,10 @@ public interface SecuritySearchProvider
 
     public enum Type
     {
-        ALL(Messages.LabelSearchAll), SHARE(Messages.LabelSearchShare), BOND(Messages.LabelSearchBond);
+        ALL(Messages.LabelSearchAll), //
+        SHARE(Messages.LabelSearchShare), //
+        BOND(Messages.LabelSearchBond), //
+        CRYPTO(Messages.LabelSearchCryptoCurrency);
 
         private final String label;
 
