@@ -176,8 +176,7 @@ public class NewDomainElementHandler
             var allCryptos = new ArrayList<ResultItem>();
 
             // add Portfolio Report cryptos
-            allCryptos.addAll(Factory.getSearchProvider(PortfolioReportNetSearchProvider.class) //
-                            .search("", SecuritySearchProvider.Type.CRYPTO)); //$NON-NLS-1$
+            allCryptos.addAll(Factory.getSearchProvider(PortfolioReportNetSearchProvider.class).getCoins());
 
             // add Coingecko unless the crypto already exists. Because the
             // symbol is not unique, we compare symbol and name

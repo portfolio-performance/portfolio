@@ -32,15 +32,15 @@ import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
-import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
-import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed.Coin;
+import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+import name.abuchen.portfolio.online.impl.CoinGeckoSearchProvider;
+import name.abuchen.portfolio.online.impl.PortfolioReportNetSearchProvider;
 
 public abstract class AbstractPDFExtractor implements Extractor
 {
@@ -193,47 +193,54 @@ public abstract class AbstractPDFExtractor implements Extractor
     protected Security getOrCreateCryptoCurrency(Map<String, String> values)
     {
         // enrich values map with name to allow matching by name
-        Optional<CoinGeckoQuoteFeed.Coin> coin = lookupCoin(values);
+        Optional<ResultItem> coin = lookupCoin(values);
 
         if (coin.isPresent())
             values.put("name", coin.get().getName()); //$NON-NLS-1$
 
         return getOrCreateSecurity(values, () -> {
-            Security crypto = new Security(null, asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
+
+            var currencyCode = asCurrencyCode(values.get("currency")); //$NON-NLS-1$
 
             if (coin.isPresent())
             {
-                crypto.setTickerSymbol(coin.get().getSymbol().toUpperCase());
-                crypto.setFeed(CoinGeckoQuoteFeed.ID);
-                crypto.setPropertyValue(SecurityProperty.Type.FEED, CoinGeckoQuoteFeed.COINGECKO_COIN_ID,
-                                coin.get().getId());
-                crypto.setLatestFeed(QuoteFeed.MANUAL);
+                var security = coin.get().create(getClient());
+                security.setCurrencyCode(currencyCode);
+                return security;
             }
-
-            return crypto;
+            else
+            {
+                return new Security(null, currencyCode);
+            }
         });
     }
 
-    private Optional<Coin> lookupCoin(Map<String, String> values)
+    private Optional<ResultItem> lookupCoin(Map<String, String> values)
     {
         try
         {
             String tickerSymbol = values.get("tickerSymbol").trim(); //$NON-NLS-1$
 
-            var coins = lookupFeed().getCoins();
-            return coins.stream().filter(c -> c.getSymbol().equalsIgnoreCase(tickerSymbol)).findAny();
+            for (SecuritySearchProvider provider : lookupCryptoProvider())
+            {
+                var coins = provider.getCoins();
+                var candidate = coins.stream().filter(c -> c.getSymbol().equalsIgnoreCase(tickerSymbol)).findAny();
+                if (candidate.isPresent())
+                    return candidate;
+            }
         }
         catch (IOException e)
         {
             PortfolioLog.error(e);
-            return Optional.empty();
         }
+        return Optional.empty();
     }
 
     @VisibleForTesting
-    protected CoinGeckoQuoteFeed lookupFeed()
+    protected List<SecuritySearchProvider> lookupCryptoProvider()
     {
-        return Factory.getQuoteFeed(CoinGeckoQuoteFeed.class);
+        return List.of(Factory.getSearchProvider(PortfolioReportNetSearchProvider.class),
+                        Factory.getSearchProvider(CoinGeckoSearchProvider.class));
     }
 
     private Security getOrCreateSecurity(Map<String, String> values, Supplier<Security> factory)

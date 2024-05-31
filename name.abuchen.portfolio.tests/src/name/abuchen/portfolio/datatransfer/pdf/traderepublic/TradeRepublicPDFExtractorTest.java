@@ -39,7 +39,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -57,6 +56,7 @@ import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.datatransfer.pdf.TestCoinSearchProvider;
 import name.abuchen.portfolio.datatransfer.pdf.TradeRepublicPDFExtractor;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -70,6 +70,7 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 
 @SuppressWarnings("nls")
@@ -78,19 +79,9 @@ public class TradeRepublicPDFExtractorTest
     TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client())
     {
         @Override
-        protected CoinGeckoQuoteFeed lookupFeed()
+        protected List<SecuritySearchProvider> lookupCryptoProvider()
         {
-            // mock the list of coins to avoid remote call
-            return new CoinGeckoQuoteFeed()
-            {
-                @Override
-                public synchronized List<Coin> getCoins() throws IOException
-                {
-                    return List.of( //
-                                    new Coin("bitcoin", "BTC", "Bitcoin"), //
-                                    new Coin("ethereum", "ETH", "Ethereum"));
-                }
-            };
+            return TestCoinSearchProvider.cryptoProvider();
         }
     };
 

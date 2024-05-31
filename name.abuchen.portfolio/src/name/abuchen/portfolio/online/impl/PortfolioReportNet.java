@@ -15,6 +15,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.util.WebAccess;
@@ -119,7 +120,10 @@ public class PortfolioReportNet
             security.setTickerSymbol(code);
 
             if (pricesAvailable)
+            {
                 security.setFeed(PortfolioReportQuoteFeed.ID);
+                security.setLatestFeed(QuoteFeed.MANUAL);
+            }
 
             if (!TYPE_CRYPTO.equals(securityType))
             {

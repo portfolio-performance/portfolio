@@ -34,7 +34,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +48,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.SutorBankGmbHPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.TestCoinSearchProvider;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -58,6 +58,7 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 
 @SuppressWarnings("nls")
@@ -66,20 +67,9 @@ public class SutorBankGmbHPDFExtractorTest
     SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client())
     {
         @Override
-        protected CoinGeckoQuoteFeed lookupFeed()
+        protected List<SecuritySearchProvider> lookupCryptoProvider()
         {
-            // mock the list of coins to avoid remote call
-            return new CoinGeckoQuoteFeed()
-            {
-                @Override
-                public synchronized List<Coin> getCoins() throws IOException
-                {
-                    return List.of( //
-                                    new Coin("bitcoin", "BTC", "Bitcoin"), //
-                                    new Coin("ethereum", "ETH", "Ethereum"), //
-                                    new Coin("stellar", "XLM", "Stellar"));
-                }
-            };
+            return TestCoinSearchProvider.cryptoProvider();
         }
     };
 
