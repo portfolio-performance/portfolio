@@ -3,8 +3,8 @@ package name.abuchen.portfolio.ui.handlers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -50,6 +50,8 @@ import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.CoinGeckoSearchProvider;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
+import name.abuchen.portfolio.online.impl.PortfolioReportNet;
+import name.abuchen.portfolio.online.impl.PortfolioReportNetSearchProvider;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -141,11 +143,6 @@ public class NewDomainElementHandler
     {
         try
         {
-            @SuppressWarnings("nls")
-            final Set<String> popularCoins = Set.of("bitcoin", "ethereum", "aave", "algorand", "bitcoin-cash",
-                            "cardano", "chainlink", "decentraland", "dogecoin", "litecoin", "polkadot", "matic-network",
-                            "shiba-inu", "solana", "the-sandbox", "uniswap", "ripple");
-
             ILabelProvider labelProvider = new ColumnLabelProvider()
             {
                 @Override
@@ -158,8 +155,7 @@ public class NewDomainElementHandler
                 @Override
                 public Color getBackground(Object element)
                 {
-                    SecuritySearchProvider.ResultItem item = (SecuritySearchProvider.ResultItem) element;
-                    return popularCoins.contains(item.getExchange()) ? Colors.theme().warningBackground() : null;
+                    return element instanceof PortfolioReportNet.OnlineItem ? Colors.theme().warningBackground() : null;
                 }
             };
 
@@ -173,12 +169,30 @@ public class NewDomainElementHandler
                 @Override
                 public int category(Object element)
                 {
-                    SecuritySearchProvider.ResultItem item = (SecuritySearchProvider.ResultItem) element;
-                    return popularCoins.contains(item.getExchange()) ? 0 : 1;
+                    return element instanceof PortfolioReportNet.OnlineItem ? 0 : 1;
                 }
             });
-            dialog.setElements(Factory.getSearchProvider(CoinGeckoSearchProvider.class) //
-                            .search("", SecuritySearchProvider.Type.ALL)); //$NON-NLS-1$
+
+            var allCryptos = new ArrayList<ResultItem>();
+
+            // add Portfolio Report cryptos
+            allCryptos.addAll(Factory.getSearchProvider(PortfolioReportNetSearchProvider.class) //
+                            .search("", SecuritySearchProvider.Type.CRYPTO)); //$NON-NLS-1$
+
+            // add Coingecko unless the crypto already exists. Because the
+            // symbol is not unique, we compare symbol and name
+
+            var existingCryptos = allCryptos.stream()
+                            .collect(Collectors.toMap(i -> i.getSymbol(), i -> i, (r, l) -> r));
+
+            Factory.getSearchProvider(CoinGeckoSearchProvider.class) //
+                            .search("", SecuritySearchProvider.Type.CRYPTO) //$NON-NLS-1$
+                            .stream().filter(item -> {
+                                var other = existingCryptos.get(item.getSymbol());
+                                return other == null || !other.getName().equals(item.getName());
+                            }).forEach(allCryptos::add);
+
+            dialog.setElements(allCryptos);
 
             if (dialog.open() == Window.OK)
             {

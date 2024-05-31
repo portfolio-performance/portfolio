@@ -183,6 +183,9 @@ public class PortfolioReportNet
             case BOND:
                 webAccess.addParameter(PROPERTY_SECURITY_TYPE, TYPE_BOND);
                 break;
+            case CRYPTO:
+                webAccess.addParameter(PROPERTY_SECURITY_TYPE, TYPE_CRYPTO);
+                break;
             case ALL:
             default:
                 // do nothing
