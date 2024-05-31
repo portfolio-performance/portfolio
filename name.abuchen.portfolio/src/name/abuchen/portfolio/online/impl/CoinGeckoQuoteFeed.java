@@ -31,6 +31,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.util.RateLimitExceededException;
 import name.abuchen.portfolio.util.WebAccess;
 import name.abuchen.portfolio.util.WebAccess.WebAccessException;
@@ -70,6 +71,11 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
         public String getName()
         {
             return name;
+        }
+
+        public ResultItem asResultItem()
+        {
+            return new CoinGeckoSearchProvider.Result(this);
         }
     }
 

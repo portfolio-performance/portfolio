@@ -24,7 +24,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +33,9 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.BisonPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.datatransfer.pdf.TestCoinSearchProvider;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 
 @SuppressWarnings("nls")
@@ -43,17 +44,9 @@ public class BisonPDFExtractorTest
     BisonPDFExtractor extractor = new BisonPDFExtractor(new Client())
     {
         @Override
-        protected CoinGeckoQuoteFeed lookupFeed()
+        protected List<SecuritySearchProvider> lookupCryptoProvider()
         {
-            // mock the list of coins to avoid remote call
-            return new CoinGeckoQuoteFeed()
-            {
-                @Override
-                public synchronized List<Coin> getCoins() throws IOException
-                {
-                    return List.of(new Coin("bitcoin", "BTC", "Bitcoin"), new Coin("ethereum", "ETH", "Ethereum"));
-                }
-            };
+            return TestCoinSearchProvider.cryptoProvider();
         }
     };
 

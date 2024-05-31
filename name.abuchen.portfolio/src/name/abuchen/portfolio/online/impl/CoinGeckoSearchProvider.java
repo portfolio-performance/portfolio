@@ -19,7 +19,7 @@ public class CoinGeckoSearchProvider implements SecuritySearchProvider
     {
         private Coin coin;
 
-        private Result(Coin coin)
+        /* package */ Result(Coin coin)
         {
             this.coin = coin;
         }
@@ -101,4 +101,10 @@ public class CoinGeckoSearchProvider implements SecuritySearchProvider
         return items;
     }
 
+    @Override
+    public List<ResultItem> getCoins() throws IOException
+    {
+        CoinGeckoQuoteFeed feed = Factory.getQuoteFeed(CoinGeckoQuoteFeed.class);
+        return feed.getCoins().stream().map(coin -> (ResultItem) new Result(coin)).toList();
+    }
 }

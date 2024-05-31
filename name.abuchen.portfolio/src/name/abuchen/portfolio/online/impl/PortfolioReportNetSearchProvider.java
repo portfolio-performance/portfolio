@@ -7,6 +7,7 @@ import name.abuchen.portfolio.online.SecuritySearchProvider;
 
 public class PortfolioReportNetSearchProvider implements SecuritySearchProvider
 {
+    private List<ResultItem> coins;
 
     @Override
     public String getName()
@@ -18,5 +19,20 @@ public class PortfolioReportNetSearchProvider implements SecuritySearchProvider
     public List<ResultItem> search(String query, Type type) throws IOException
     {
         return new PortfolioReportNet().search(query, type);
+    }
+
+    /**
+     * As the available cryptos are needed fairly often (and change rarely), we
+     * cache the search result.
+     */
+    @Override
+    public synchronized List<ResultItem> getCoins() throws IOException
+    {
+        if (coins == null)
+        {
+            coins = search("", Type.CRYPTO); //$NON-NLS-1$
+        }
+
+        return coins;
     }
 }
