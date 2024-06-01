@@ -63,7 +63,7 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
         LocalDate start = null;
 
         if (!security.getPrices().isEmpty())
-            start = security.getPrices().get(security.getPrices().size() - 1).getDate();
+            start = security.getPrices().get(security.getPrices().size() - 1).getDate().plusDays(1);
         else
             start = LocalDate.of(2000, 1, 1);
 
