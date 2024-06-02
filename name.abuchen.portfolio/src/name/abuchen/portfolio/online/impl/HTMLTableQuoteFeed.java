@@ -366,7 +366,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     @Override
     public Optional<String> getHelpURL()
     {
-        return Optional.of("https://help.portfolio-performance.info/kursdaten_laden/#tabelle-auf-einer-webseite"); //$NON-NLS-1$
+        return Optional.of(
+                        "https://help.portfolio-performance.info/de/how-to/kursdaten_laden/#tabelle-auf-einer-webseite"); //$NON-NLS-1$
     }
 
     @Override
