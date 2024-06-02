@@ -132,12 +132,52 @@ public final class ClientFilterMenu implements IMenuListener
         loadCustomItems();
     }
 
+    public ClientFilterMenu(Client client, IPreferenceStore preferences, boolean withReferenceAccount)
+    {
+        this.client = client;
+        this.preferences = preferences;
+        this.filterConfig = client.getSettings()
+                        .getConfigurationSet(WellKnownConfigurationSets.CLIENT_FILTER_DEFINITIONS);
+
+        selectedItem = new Item("", Messages.PerformanceChartLabelEntirePortfolio, "", //$NON-NLS-1$ //$NON-NLS-2$
+                        ClientFilter.NO_FILTER);
+        defaultItems.add(selectedItem);
+        if (withReferenceAccount)
+        {
+            client.getActivePortfolios().forEach(portfolio -> {
+                defaultItems.add(new Item(portfolio.getUUID(), portfolio.getName(), portfolio.getUUID(),
+                                new PortfolioClientFilter(portfolio)));
+                defaultItems.add(new Item(portfolio.getUUID() + "," + portfolio.getReferenceAccount().getUUID(), //$NON-NLS-1$
+                                portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(), //$NON-NLS-1$
+                                portfolio.getUUID() + "," + portfolio.getReferenceAccount().getUUID(), //$NON-NLS-1$
+                                new PortfolioClientFilter(portfolio, portfolio.getReferenceAccount())));
+            });
+        }
+        else // do not fetch ReferenceAccount
+        {
+            client.getActivePortfolios().forEach(portfolio -> {
+                defaultItems.add(new Item(portfolio.getUUID(), portfolio.getName(), portfolio.getUUID(),
+                                new PortfolioClientFilter(portfolio)));
+            });
+
+        }
+
+        loadCustomItems();
+
+    }
+
     public ClientFilterMenu(Client client, IPreferenceStore preferences, Consumer<ClientFilter> listener)
     {
         this(client, preferences);
         this.listeners.add(listener);
     }
 
+    public ClientFilterMenu(Client client, IPreferenceStore preferences, Consumer<ClientFilter> listener,
+                    boolean withReferenceAccount)
+    {
+        this(client, preferences, withReferenceAccount);
+        this.listeners.add(listener);
+    }
     private void loadCustomItems()
     {
         filterConfig.getConfigurations().forEach(conf -> {
