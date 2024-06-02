@@ -462,7 +462,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             {
                 QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
 
-                String url = "https://help.portfolio-performance.info/kursdaten_laden/"; //$NON-NLS-1$
+                String url = "https://help.portfolio-performance.info/de/how-to/kursdaten_laden/"; //$NON-NLS-1$
 
                 if (feed != null && feed.getHelpURL().isPresent())
                     url = feed.getHelpURL().get();
