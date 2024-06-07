@@ -1,0 +1,41 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+Tradegate AGWertpapierhandelsbank · Kurfürstendamm 129d · 10711 Berlin
+Datum 04.06.2024
+Herrn Kundennummer 12345678
+Total Egal IBAN DE48 1111 2222 3333 4444 55
+Dumdideldumweg 19 Investment-Depot 00123456.123
+12345 Investcity Order-/Ref.nr. 9876543
+E-Mail support@tradegate.direct
+Seite 1 von 1
+Wertpapierabrechnung
+Ihre Wertpapierorder vom 04.06.2024 wurde ausgeführt:
+Orderart Kauf Börsenplatz Tradegate Exchange
+Wertpapierart ETP Stück 3
+ISIN IE00BM67HN09 Gültigkeit 31.07.2024
+WKN A113FG
+Wertpapier Xtr.(IE)-MSCI Wrld Con.Staples Registered Shares 1C USD o.N.
+Verwahrart Wertpapierrechnung
+Lagerland Irland
+Ordertyp Limit
+Limit 43,2500 EUR
+Stück ausgeführt 3
+Ausführungskurs 43,2500 EUR
+Handelstag/-zeit 04.06.2024 11:04:53
+Wertpapierabrechnung
+Kurswert 129,75 EUR
+Orderprovision 0,00 EUR
+Fremde Gebühren und Spesen 0,00 EUR
+Ausmachender Betrag 129,75 EUR
+Der Abrechnungsbetrag i. H. v. 129,75 EUR wird Ihrem o. g. Verrechnungskonto mit Valuta 06.06.2024 belastet.
+DieWertpapiere habenwir entsprechend IhrerWertpapierabrechnung gebucht. Bitte prüfen Sie dieseWertpapierabrechnung
+unverzüglich und richten etwaige Einwendungenunverzüglich an tradegate.direct, Kurfürstendamm129d, 10711Berlin oder
+an beschwerdemanagement@tradegate.direct. Andernfalls gilt diese Wertpapierabrechnung als genehmigt.
+Beratungsfreies Geschäft
+Diese Mitteilung wurde maschinell erstellt und wird von der Bank nicht unterschrieben.
+tradegate.direct ein Service der Tradegate AG Wertpapierhandelsbank
+Tradegate AG Wertpapierhandelsbank · Kurfürstendamm 129d · 10711 Berlin
+Telefon: +49 (0)30 515 657 700 · E-Mail: info@tradegate.direct · Internet: www.tradegate.direct
+Handelsregister: Amtsgericht Berlin-Charlottenburg, HRB 71506 B · USt-ID: DE 155 528 522 · BIC: TRDADEBBDIR · BLZ: 103 106 66
+Aufsichtsratsvorsitzender: Frank-Uwe Fricke · Vorstand: Holger Timm (Vorsitzender), Kerstin Timm, Jörg Hartmann, Thorsten Commichau, Klaus-Gerd Kleversaat, Karsten Haesen
