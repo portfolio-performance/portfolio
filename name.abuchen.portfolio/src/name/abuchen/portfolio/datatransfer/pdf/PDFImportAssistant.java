@@ -89,6 +89,7 @@ public class PDFImportAssistant
         extractors.add(new PostfinancePDFExtractor(client));
         extractors.add(new QuirinBankAGPDFExtractor(client));
         extractors.add(new RaiffeisenBankgruppePDFExtractor(client));
+        extractors.add(new RaisinBankAGPDFExtractor(client));
         extractors.add(new RenaultBankDirektPDFExtractor(client));
         extractors.add(new RevolutLtdPDFExtractor(client));
         extractors.add(new SantanderConsumerBankPDFExtractor(client));
