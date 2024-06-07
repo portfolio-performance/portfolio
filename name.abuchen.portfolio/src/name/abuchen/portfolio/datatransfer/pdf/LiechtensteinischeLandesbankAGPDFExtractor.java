@@ -106,7 +106,7 @@ public class LiechtensteinischeLandesbankAGPDFExtractor extends AbstractPDFExtra
                         // Zu Ihren Gunsten Valuta 7. November 2023 CHF 55.10
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Zu Ihren (Lasten|Gunsten) Valuta (?<date>[\\d]{1,2}\\. .* [\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^Zu Ihren (Lasten|Gunsten) Valuta [\\d]{1,2}\\. .* [\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
