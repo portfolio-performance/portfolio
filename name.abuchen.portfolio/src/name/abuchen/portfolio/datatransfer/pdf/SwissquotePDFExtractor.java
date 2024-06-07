@@ -48,13 +48,13 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(B.rsentransaktion: )?(Kauf|Verkauf)", //
+        DocumentType type = new DocumentType("((B.rsen|Derivate)transaktion: )?(Kauf|Verkauf|Sell)", //
                         "Anzahl W.hrung Rate");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(B.rsentransaktion: )?(Kauf|Verkauf).*$");
+        Block firstRelevantLine = new Block("^((B.rsen|Derivate)transaktion: )?(Kauf|Verkauf|Sell).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -68,27 +68,47 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^B.rsentransaktion: (?<type>(Kauf|Verkauf)) .*$") //
+                        .match("^((B.rsen|Derivate)transaktion: )?(?<type>(Kauf|Verkauf|Sell)) .*$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type")))
+                            if ("Verkauf".equals(v.get("type")) || ("Sell".equals(v.get("type"))))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
-                        // @formatter:off
-                        // APPLE ORD ISIN: US0378331005 NASDAQ New York
-                        // 15 193 USD 2'895.00
-                        // @formatter:on
-                        .section("name", "isin", "currency") //
-                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                        .match("^[\\.'\\d]+ [\\.'\\d]+ (?<currency>[\\w]{3}) [\\.'\\d]+$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // APPLE ORD ISIN: US0378331005 NASDAQ New York
+                                        // 15 193 USD 2'895.00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^[\\.'\\d]+ [\\.'\\d]+ (?<currency>[\\w]{3}) [\\.'\\d]+$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Bezeichnung Anzahl Kontraktwährung Preis
+                                        // SPY JUL24 527C 1.00 USD 11.6
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency") //
+                                                        .find("Bezeichnung Anzahl Kontraktw.hrung Preis")
+                                                        .match("^(?<name>.*) [\\.'\\d]+ (?<currency>[\\w]{3}) [\\.'\\d]+$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-                        // @formatter:off
-                        // 15 193 USD 2'895.00
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^(?<shares>[\\.'\\d]+) [\\.'\\d]+ [\\w]{3} [\\.'\\d]+$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 15 193 USD 2'895.00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^(?<shares>[\\.'\\d]+) [\\.'\\d]+ [\\w]{3} [\\.'\\d]+$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // 100 100 527 31.07.2024 International Securities
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^(?<shares>[\\.'\\d]+) [\\.'\\d]+ [\\.'\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         // @formatter:off
                         // Gemäss Ihrem Kaufauftrag vom 05.08.2019 haben wir folgende Transaktionen vorgenommen:
@@ -101,9 +121,10 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Zu Ihren Lasten USD 2'900.60
                         // Zu Ihren Gunsten CHF 8'198.70
+                        // Total gutgeschrieben USD 1'159.55
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Zu Ihren (Lasten|Gunsten) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^(Zu Ihren (Lasten|Gunsten)|Total gutgeschrieben) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
