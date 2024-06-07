@@ -1,0 +1,30 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+QiKQAcL sjnfyNV SEITE 1 von 1
+rnQrmrkKJGHQ 58/87 DATUM 27.05.2024
+0033 EKAW ORDER 0e9a-3i77
+AUSFÜHRUNG b53c-j787
+DEPOT 3159893335
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Market-Order BUY am 27.05.2024, um 08:15 Uhr (Europe/Berlin).
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL PREIS BETRAG
+Kontron 23 Stk. 20,90 EUR 480,70 EUR
+ISIN: AT0000A0E9W5
+GESAMT 480,70 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+GESAMT -481,70 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE12309876507025401111 2024-05-29 -481,70 EUR
+Kontron in Girosammelverwahrung in Deutschland
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
