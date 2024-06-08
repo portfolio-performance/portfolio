@@ -500,6 +500,8 @@ public class Messages extends NLS
     public static String JobMsgRunningConsistencyChecks;
     public static String JobMsgSamplingHistoricalQuotes;
     public static String JobMsgUpdatingQuotesFor;
+    public static String Label4PRuleMonthly;
+    public static String Label4PRuleYearly;
     public static String LabelAbout;
     public static String LabelAbsoluteChange;
     public static String LabelAbsoluteDelta;
