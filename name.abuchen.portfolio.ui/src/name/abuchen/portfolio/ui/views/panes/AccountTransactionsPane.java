@@ -62,8 +62,8 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.ui.util.searchfilter.TransactionSearchField;
 import name.abuchen.portfolio.ui.util.searchfilter.TransactionFilterDropDown;
+import name.abuchen.portfolio.ui.util.searchfilter.TransactionSearchField;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -486,6 +486,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
         toolBar.add(new Separator());
 
+        transactionFilter.dispose();
         toolBar.add(transactionFilter);
 
         toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
