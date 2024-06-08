@@ -27,13 +27,13 @@ public class AdvanziaBankPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszug Advanziakonto",
-                        documentContext -> documentContext
-                        // @formatter:off
-                        // Datum Beschreibung Betrag (EUR)
-                        // @formatter:on
-                                        .section("currency")
-                                        .match("^Datum Beschreibung Betrag \\((?<currency>[\\w]{3})\\).*$")
+        final DocumentType type = new DocumentType("Kontoauszug Advanziakonto", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Datum Beschreibung Betrag (EUR)
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Datum Beschreibung Betrag \\((?<currency>[\\w]{3})\\).*$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
         this.addDocumentTyp(type);
