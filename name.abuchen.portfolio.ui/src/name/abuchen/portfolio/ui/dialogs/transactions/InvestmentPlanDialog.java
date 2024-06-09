@@ -154,18 +154,22 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         interval.bindValue(Properties.interval.name(),
                         MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnInterval));
 
-        // amount
+        // gross amount
 
-        Input amount = new Input(editArea, Messages.ColumnAmount);
-        amount.bindValue(Properties.amount.name(), Messages.ColumnAmount, Values.Amount, true);
-        amount.bindCurrency(Properties.transactionCurrencyCode.name());
+        Input grossAmount = null;
+        if (planType == Type.INTEREST || planType == Type.PURCHASE_OR_DELIVERY)
+        {
+            grossAmount = new Input(editArea, Messages.ColumnGrossValue);
+            grossAmount.bindValue(Properties.grossAmount.name(), Messages.ColumnGrossValue, Values.Amount, true);
+            grossAmount.bindCurrency(Properties.transactionCurrencyCode.name());
+        }
 
         // taxes
 
         Input taxes = null;
         if (planType == Type.INTEREST)
         {
-            taxes = new Input(editArea, Messages.ColumnTaxes);
+            taxes = new Input(editArea, "- " + Messages.ColumnTaxes); //$NON-NLS-1$
             taxes.bindValue(Properties.taxes.name(), Messages.ColumnTaxes, Values.Amount, false);
             taxes.bindCurrency(Properties.transactionCurrencyCode.name());
         }
@@ -175,10 +179,31 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         Input fees = null;
         if (planType == Type.PURCHASE_OR_DELIVERY)
         {
-            fees = new Input(editArea, Messages.ColumnFees);
-            fees.bindValue(Properties.fees.name(), Messages.ColumnAmount, Values.Amount, false);
+            fees = new Input(editArea, "+ " + Messages.ColumnFees); //$NON-NLS-1$
+            fees.bindValue(Properties.fees.name(), Messages.ColumnFees, Values.Amount, false);
             fees.bindCurrency(Properties.transactionCurrencyCode.name());
         }
+
+        // amount
+        String label;
+        switch (planType)
+        {
+            case DEPOSIT, INTEREST:
+                label = Messages.ColumnCreditNote;
+                break;
+            case REMOVAL:
+                label = Messages.ColumnDebitNote;
+                break;
+            case PURCHASE_OR_DELIVERY:
+                label = Messages.ColumnAmount;
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+
+        Input amount = new Input(editArea, label);
+        amount.bindValue(Properties.amount.name(), label, Values.Amount, true);
+        amount.bindCurrency(Properties.transactionCurrencyCode.name());
 
         //
         // form layout
@@ -199,19 +224,28 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         factory = factory.thenBelow(account.value.getControl()).label(account.label)
                         .suffix(account.currency, currencyWidth) //
                         .thenBelow(labelAutoGenerate, 10) //
-                        .thenBelow(valueDate.getControl(), 10).label(lblDate) //
-                        .thenBelow(amount.value, 10).width(amountWidth).label(amount.label)
-                        .suffix(amount.currency, currencyWidth);
+                        .thenBelow(valueDate.getControl(), 10).label(lblDate);
+
+        if (grossAmount != null)
+        {
+            factory = factory.thenBelow(grossAmount.value, 10).width(amountWidth).label(grossAmount.label)
+                            .suffix(grossAmount.currency, currencyWidth);
+        }
 
         if (fees != null)
         {
-            factory.thenBelow(fees.value).width(amountWidth).label(fees.label).suffix(fees.currency, currencyWidth);
+            factory = factory.thenBelow(fees.value, 10).width(amountWidth).label(fees.label).suffix(fees.currency,
+                            currencyWidth);
         }
 
         if (taxes != null)
         {
-            factory.thenBelow(taxes.value).width(amountWidth).label(taxes.label).suffix(taxes.currency, currencyWidth);
+            factory = factory.thenBelow(taxes.value, 10).width(amountWidth).label(taxes.label).suffix(taxes.currency,
+                            currencyWidth);
         }
+
+        factory.thenBelow(amount.value, 10).width(amountWidth).label(amount.label).suffix(amount.currency,
+                        currencyWidth);
 
         startingWith(labelAutoGenerate).thenLeft(buttonAutoGenerate);
 

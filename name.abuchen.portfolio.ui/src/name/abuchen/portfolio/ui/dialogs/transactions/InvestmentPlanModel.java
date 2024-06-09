@@ -18,7 +18,7 @@ public class InvestmentPlanModel extends AbstractModel
 {
     public enum Properties
     {
-        calculationStatus, name, security, securityCurrencyCode, portfolio, account, accountCurrencyCode, start, interval, amount, fees, taxes, transactionCurrencyCode, autoGenerate; // NOSONAR
+        calculationStatus, name, security, securityCurrencyCode, portfolio, account, accountCurrencyCode, start, interval, amount, grossAmount, fees, taxes, transactionCurrencyCode, autoGenerate; // NOSONAR
     }
 
     public static final Account DELIVERY = new Account(Messages.InvestmentPlanOptionDelivery);
@@ -38,6 +38,7 @@ public class InvestmentPlanModel extends AbstractModel
     private LocalDate start = LocalDate.now();
 
     private int interval = 1;
+    private long grossAmount;
     private long amount;
     private long fees;
     private long taxes;
@@ -134,6 +135,7 @@ public class InvestmentPlanModel extends AbstractModel
         this.start = plan.getStart();
         this.interval = plan.getInterval();
         this.amount = plan.getAmount();
+        this.grossAmount = plan.getAmount() - plan.getFees() + plan.getTaxes();
         this.fees = plan.getFees();
         this.taxes = plan.getTaxes();
     }
@@ -158,6 +160,13 @@ public class InvestmentPlanModel extends AbstractModel
 
         if (amount == 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnAmount));
+
+        if (grossAmount == 0L)
+            return ValidationStatus
+                            .error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnGrossValue));
+
+        if (grossAmount + fees - taxes != amount)
+            return ValidationStatus.error(Messages.MsgIncorrectSubTotal);
 
         return ValidationStatus.ok();
     }
@@ -263,6 +272,25 @@ public class InvestmentPlanModel extends AbstractModel
     public void setAmount(long amount)
     {
         firePropertyChange(Properties.amount.name(), this.amount, this.amount = amount); // NOSONAR
+
+        var newGrossAmount = Math.abs(amount - fees + taxes);
+        firePropertyChange(Properties.grossAmount.name(), this.grossAmount, this.grossAmount = newGrossAmount); // NOSONAR
+
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus()); // NOSONAR
+    }
+
+    public long getGrossAmount()
+    {
+        return grossAmount;
+    }
+
+    public void setGrossAmount(long grossAmount)
+    {
+        firePropertyChange(Properties.grossAmount.name(), this.grossAmount, this.grossAmount = grossAmount); // NOSONAR
+
+        var newAmount = grossAmount + fees - taxes;
+        firePropertyChange(Properties.amount.name(), this.amount, this.amount = newAmount); // NOSONAR
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus()); // NOSONAR
     }
@@ -275,6 +303,11 @@ public class InvestmentPlanModel extends AbstractModel
     public void setFees(long fees)
     {
         firePropertyChange(Properties.fees.name(), this.fees, this.fees = fees); // NOSONAR
+
+        var newAmount = grossAmount + fees - taxes;
+        firePropertyChange(Properties.amount.name(), this.amount, this.amount = newAmount); // NOSONAR
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public long getTaxes()
@@ -285,6 +318,11 @@ public class InvestmentPlanModel extends AbstractModel
     public void setTaxes(long taxes)
     {
         firePropertyChange(Properties.taxes.name(), this.taxes, this.taxes = taxes); // NOSONAR
+
+        var newAmount = grossAmount + fees - taxes;
+        firePropertyChange(Properties.amount.name(), this.amount, this.amount = newAmount); // NOSONAR
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public String getSecurityCurrencyCode()
