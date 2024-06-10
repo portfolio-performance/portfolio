@@ -4703,6 +4703,37 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testSparplan09()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0011794037"), hasWkn(null), hasTicker(null), //
+                        hasName("Ahold Delhaize"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-06-10T00:00"), hasShares(0.106382), //
+                        hasSource("Sparplan09.txt"), //
+                        hasNote("Ausführung: d149-71d0 | Sparplan: 6c05-cb18"), //
+                        hasAmount("EUR", 3.00), hasGrossValue("EUR", 3.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testFusion01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
