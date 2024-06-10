@@ -48,13 +48,13 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("((B.rsen|Derivate)transaktion: )?(Kauf|Verkauf|Sell)", //
+        DocumentType type = new DocumentType("((B.rsen|Derivate)transaktion: )?(Kauf|Verkauf|Sell|Buy)", //
                         "Anzahl W.hrung Rate");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^((B.rsen|Derivate)transaktion: )?(Kauf|Verkauf|Sell).*$");
+        Block firstRelevantLine = new Block("^((B.rsen|Derivate)transaktion: )?(Kauf|Verkauf|Sell|Buy).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -122,9 +122,10 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // Zu Ihren Lasten USD 2'900.60
                         // Zu Ihren Gunsten CHF 8'198.70
                         // Total gutgeschrieben USD 1'159.55
+                        // Total belastet USD 3'144.75
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^(Zu Ihren (Lasten|Gunsten)|Total gutgeschrieben) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^(Zu Ihren (Lasten|Gunsten)|Total (gutgeschrieben|belastet)) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
