@@ -1,0 +1,27 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+VORNAME_NAME_XYZ SEITE 1 von 1
+STRASSE_XYZ DATUM 10.06.2024
+4xxxx Stadt AUSFÜHRUNG d149-71d0
+SPARPLAN 6c05-cb18
+DEPOT 123456789
+WERTPAPIERABRECHNUNG SPARPLAN
+ÜBERSICHT
+Sparplanausführung am 10.06.2024 an der Lang und Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL DURCHSCHNITTSKURS BETRAG
+Ahold Delhaize 0,106382 Stk. 28,20 EUR 3,00 EUR
+ISIN: NL0011794037
+GESAMT 3,00 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE3100000000000000000000 2024-06-12 -3,00 EUR
+Ahold Delhaize in Girosammelverwahrung in Deutschland
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
+ABRE / 5be6-d327
