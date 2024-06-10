@@ -2346,6 +2346,37 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf09()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US1912161007"), hasWkn(null), hasTicker(null), //
+                        hasName("Coca-Cola"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-06-10T12:35"), hasShares(0.286887), //
+                        hasSource("Verkauf09.txt"), //
+                        hasNote("Order: a00a-0000 | Ausführung: 000a-aa00"), //
+                        hasAmount("EUR", 17.0), hasGrossValue("EUR", 17.07), //
+                        hasTaxes("EUR", 0.07), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testSell01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
