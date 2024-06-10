@@ -94,6 +94,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         + "|Acquisto" //
                                         + "|Verkauf"
                                         + "|Sell" //
+                                        + "|SELL" //
                                         + "|Sparplanausf.hrung" //
                                         + "|SAVINGS PLAN" //
                                         + "|Ex.cution de l.investissement programm." //
@@ -104,6 +105,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")) //
                                             || "Sell".equals(v.get("type")) //
+                                            || "SELL".equals(v.get("type")) //
                                             || "ZWANGSÜBERNAHME".equals(v.get("type")) //
                                             || "TILGUNG".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
