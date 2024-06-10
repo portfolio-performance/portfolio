@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 1234567890 - TRADING
+IBAN: CH12345678901234567890
+Herrn Manfred Mutermann
+Musterstrasse 3
+012345 Musterhausen
+Gland, 29.05.2024
+Derivatetransaktion: Buy to open Unsere Referenz: 581899025 
+Gemäss Ihrem Kaufauftrag vom 29.05.2024 haben wir folgende Transaktionen vorgenommen:
+Bezeichnung Anzahl Kontraktwährung Preis
+SPY JUL24 527C 3.00 USD 11.91
+Kontraktgrösse Multiplikator Ausübungspreis Fälligkeit Börsenplatz
+100 100 527 31.07.2024 International Securities
+Exchange
+Wir haben die folgenden Beträge auf Ihrem Konto verbucht:
+Kontonummer 1234567890
+Valutadatum 30.05.2024
+Total USD 3'573.00
+Börsengebühren USD 1.35
+Bruttobetrag USD 3'574.35
+Kommission Swissquote Bank AG USD 5.00
+Total belastet USD 3'579.35
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland  Formular ohne Unterschrift | SE&O.
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+CHE-116.310.079 MwSt
