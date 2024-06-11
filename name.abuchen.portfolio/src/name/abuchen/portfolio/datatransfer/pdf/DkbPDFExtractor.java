@@ -827,8 +827,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
-                        + "(?i)(.berweisung" //
+        Block removalBlock = new Block("^(?i)[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
+                        + "(.berweisung" //
                         + "|Dauerauftrag" //
                         + "|Basislastschrift" //
                         + "|Lastschrift" //
@@ -849,8 +849,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .section("month1", "day", "month2", "note", "amount") //
                         .documentContext("nr", "year", "currency") //
-                        .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. " //
-                                        + "(?i)(?<note>(.berweisung" //
+                        .match("^(?i)[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. " //
+                                        + "(?<note>(.berweisung" //
                                         + "|Dauerauftrag" //
                                         + "|Basislastschrift" //
                                         + "|Lastschrift" //
@@ -900,8 +900,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
-                        + "(?i)(Lohn, Gehalt, Rente" //
+        Block depositBlock = new Block("^(?i)[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
+                        + "(Lohn, Gehalt, Rente" //
                         + "|Zahlungseingang" //
                         + "|Storno Gutschrift" //
                         + "|Bareinzahlung am GA" //
@@ -920,8 +920,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .section("month1", "day", "month2", "note", "amount") //
                         .documentContext("nr", "year", "currency") //
-                        .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. " //
-                                        + "(?i)(?<note>(Lohn, Gehalt, Rente" //
+                        .match("^(?i)[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. " //
+                                        + "(?<note>(Lohn, Gehalt, Rente" //
                                         + "|Zahlungseingang" //
                                         + "|Storno Gutschrift" //
                                         + "|Bareinzahlung am GA" //
@@ -957,7 +957,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block taxReturnBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?i)Steuerausgleich [\\.,\\d]+$");
+        Block taxReturnBlock = new Block("^(?i)[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. [\\d]+ Steuerausgleich [\\.,\\d]+$");
         type.addBlock(taxReturnBlock);
         taxReturnBlock.set(new Transaction<AccountTransaction>()
 
@@ -969,8 +969,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .section("month1", "day", "month2", "note", "amount") //
                         .documentContext("nr", "year", "currency") //
-                        .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. [\\d]+ " //
-                                        + "(?i)(?<note>Steuerausgleich) " //
+                        .match("^(?i)[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. [\\d]+ " //
+                                        + "(?<note>Steuerausgleich) " //
                                         + "(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             // since year is not within the date correction
@@ -992,8 +992,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
-                        + "(?i)(Rechnung" //
+        Block feesBlock = new Block("^(?i)[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
+                        + "(Rechnung" //
                         + "|Buchung" //
                         + "|sonstige Entgelte) " //
                         + "[\\.,\\d]+$");
@@ -1008,12 +1008,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .section("month1", "day", "month2", "note1", "amount", "note2") //
                         .documentContext("nr", "year", "currency") //
-                        .match("^[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. " //
-                                        + "(?i)(?<note1>(Rechnung" //
+                        .match("^(?i)[\\d]{2}\\.(?<month1>[\\d]{2})\\. (?<day>[\\d]{2})\\.(?<month2>[\\d]{2})\\. " //
+                                        + "(?<note1>(Rechnung" //
                                         + "|Buchung" //
                                         + "|sonstige Entgelte)) " //
                                         + "(?<amount>[\\.,\\d]+)$")
-                        .match("^.*(?i)(?<note2>(Bargeldeinzahlung" //
+                        .match("^(?i).*(?<note2>(Bargeldeinzahlung" //
                                         + "|R.ckruf\\/Nachforschung" //
                                         + "|Identifikationscode" //
                                         + "|Stornorechnung" //
