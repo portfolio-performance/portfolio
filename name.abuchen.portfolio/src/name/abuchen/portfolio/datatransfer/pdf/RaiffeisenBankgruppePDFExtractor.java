@@ -662,8 +662,8 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("day", "month", "note", "amount", "sign").optional() //
                         .documentContext("currency", "nr", "year") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. " //
-                                        + "(?i)(?<note>Einnahmen" //
+                        .match("^(?i)[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. " //
+                                        + "(?<note>Einnahmen" //
                                         + "|BASISLASTSCHRIFT" //
                                         + "|DAUERAUFTRAG" //
                                         + "|EURO\\-UEBERWEISUNG" //

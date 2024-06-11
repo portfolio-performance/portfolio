@@ -87,14 +87,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
-                        .match("(?i)^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?" //
+                        .match("^(?i)((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?" //
                                         + "(?<type>(Kauf" //
                                         + "|Buy" //
                                         + "|Achat" //
                                         + "|Acquisto" //
                                         + "|Verkauf"
                                         + "|Sell" //
-                                        + "|SELL" //
                                         + "|Sparplanausf.hrung" //
                                         + "|SAVINGS PLAN" //
                                         + "|Ex.cution de l.investissement programm." //
@@ -103,11 +102,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         + "|TILGUNG))" //
                                         + ".*$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type")) //
-                                            || "Sell".equals(v.get("type")) //
-                                            || "SELL".equals(v.get("type")) //
-                                            || "ZWANGSÜBERNAHME".equals(v.get("type")) //
-                                            || "TILGUNG".equals(v.get("type")))
+                            if ("Verkauf".equalsIgnoreCase(v.get("type")) //
+                                            || "Sell".equalsIgnoreCase(v.get("type")) //
+                                            || "ZWANGSÜBERNAHME".equalsIgnoreCase(v.get("type")) //
+                                            || "TILGUNG".equalsIgnoreCase(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -243,7 +241,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("(?i)^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Buy|Achat|Acquisto|Kauf|Verkauf|Sell) .*" //
+                                                        .match("^(?i)((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Buy|Achat|Acquisto|Kauf|Verkauf|Sell) .*" //
                                                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}" //
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}" //
                                                                         + "|[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}))" //
@@ -2291,7 +2289,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("(?i)^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Buy|Achat|Acquisto|Kauf|Verkauf|Sell) .* " //
+                                                        .match("^(?i)((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Buy|Achat|Acquisto|Kauf|Verkauf|Sell) .* " //
                                                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}" //
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}" //
                                                                         + "|[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}))" //
