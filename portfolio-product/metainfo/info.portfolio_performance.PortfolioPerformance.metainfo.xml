@@ -37,6 +37,46 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.69.0" date="2024-06-12">
+      <description>
+        <ul>
+          <li>New: Portfolio Report with cryptocurrencies and prices in other currencies</li>
+          <li>New: Added charts of holdings and balances to the "Security Accounts" view</li>
+          <li>New: Introduced a new investment plan of type "Interest"</li>
+          <li>New: Added Sharpe Ratio widget to the dashboard</li>
+          <li>New: New dialog to help find differences between recorded and actual balance</li>
+          <li>New: Added an option to list only active instruments in the "All Securities" view</li>
+          <li>New: Added columns to display ex-date and payment date of dividend payments loaded from DivvyDiary</li>
+          <li>New: Added a new trade calendar for the Australian Stock Exchange (ASX)</li>
+          <li>New: Introduced a new PDF importer for C24 Bank, Tradegate, Raisin Bank, and First Trade Securities</li>
+          <li>Improvements to the PDF importers for Liechtenstein, Swissquote, Consorsbank, Trade Republic, FFB, Comdirect, Raiffeisenbank, ING DiBa, Degiro, DADAT, FlatEx, WIR Bank, sBroker, DKB, Erste Bank, Zürcher Kantonalbank, Arkea Direct Bank, Geno Broker, Bondora</li>
+          <li>Improvement: Added configuration to the "Earnings" widget to show collapsed or expanded monthly transactions</li>
+          <li>Improvement: Benchmark series can now be configured for the IRR dashboard widget</li>
+          <li>Improvement: Added options to filter by type of transaction or search transactions in the list of transactions below accounts</li>
+          <li>Improvement: Stopped updating dividend payments from DivvyDiary if the instrument is retired</li>
+          <li>Fix: Fixed a problem where a tooltip was showing actual values even though discreet mode was active</li>
+          <li>Fix: Fixed the missing logo of instruments in the performance calculation if the instrument was not held anymore</li>
+          <li>Fix: Fixed a problem where future historical prices were not stored in the binary format</li>
+          <li xml:lang="de">Neu: Portfolio-Report liefert jetzt Kryptowährungen und Preise in anderen Währungen als EUR</li>
+          <li xml:lang="de">Neu: Diagramme zu Beständen und Salden in die Ansicht "Wertpapierkonten" hinzugefügt</li>
+          <li xml:lang="de">Neu: Neuer Sparplan "Zinsen" eingeführt</li>
+          <li xml:lang="de">Neu: Sharpe Ratio Widget zum Dashboard hinzugefügt</li>
+          <li xml:lang="de">Neu: Neuer Dialog, um Unterschiede zwischen aufgezeichnetem und tatsächlichem Saldo zu finden</li>
+          <li xml:lang="de">Neu: Neue Option, um nur aktive Instrumente in der Ansicht "Alle Wertpapiere" aufzulisten</li>
+          <li xml:lang="de">Neu: Spalten zur Anzeige des Ex-Datums und des Zahlungstermins von Dividendenzahlungen aus DivvyDiary hinzugefügt</li>
+          <li xml:lang="de">Neu: Neuer Handelskalender für die Australian Stock Exchange (ASX) hinzugefügt</li>
+          <li xml:lang="de">Neu: Neuer PDF-Importer für C24 Bank, Tradegate, Raisin Bank und First Trade Securities</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Liechtenstein, Swissquote, Consorsbank, Trade Republic, FFB, Comdirect, Raiffeisenbank, ING DiBa, Degiro, DADAT, FlatEx, WIR Bank, sBroker, DKB, Erste Bank, Zürcher Kantonalbank, Arkea Direct Bank, Geno Broker, Bondora</li>
+          <li xml:lang="de">Verbesserung: Zusätzliche Konfiguration am "Erträge"-Widgets, um monatliche Buchungen standardmässig einzuklappen oder zu erweitern</li>
+          <li xml:lang="de">Verbesserung: Benchmark-Serien können jetzt auch für das IRR-Dashboard-Widget konfiguriert werden</li>
+          <li xml:lang="de">Verbesserung: Optionen zum Filtern nach Buchungsstyp oder zum Suchen in der Liste der Buchungen bei Konten und Depots</li>
+          <li xml:lang="de">Verbesserung: Dividendenzahlungen werden von DivvyDiary nicht aktualisiert, wenn das Wertpapier inaktiv ist</li>
+          <li xml:lang="de">Fehlerbehebung: Behebt ein Problem, bei dem ein Tooltip echte Werte anzeigte, obwohl der diskrete Modus aktiv war</li>
+          <li xml:lang="de">Fehlerbehebung: Behebt ein Problem, bei dem das Logo von Instrumenten in der Performance-Berechnung nicht angezeigt wurde, wenn das Instrument nicht mehr gehalten wurde</li>
+          <li xml:lang="de">Fehlerbehebung: Behebt ein Problem, bei dem historische Preise in der Zukunft nicht im Binärformat gespeichert wurden</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.68.4" date="2024-04-28">
       <description>
         <ul>
