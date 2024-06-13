@@ -102,6 +102,11 @@ public class DataSeriesCache
                     return PerformanceIndex.forPortfolio(client, converter, (Portfolio) series.getInstance(),
                                     reportingPeriod, warnings);
 
+                case TYPE_PARENT:
+                    var instance = ((GroupedDataSeries) series.getInstance());
+                    
+                    return instance.getPerformanceIndexMethod(client, converter, reportingPeriod, warnings);
+
                 case PORTFOLIO_PRETAX:
                     return calculatePortfolioPretax(series, reportingPeriod, warnings);
 
