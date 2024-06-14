@@ -64,12 +64,21 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<shares>[\\.,\\d]+) St.ck [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}.*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        // @formatter:off
-                        // Handelsdatum, Uhrzeit: 23.05.2024 12:10:43
-                        // @formatter:on
-                        .section("date", "time") //
-                        .match("^Handelsdatum, Uhrzeit: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                        .oneOf(
+                            // @formatter:off
+                            // Handelsdatum: 24.05.2024 
+                            // @formatter:on
+                            section -> section //
+                                .attributes("date") //
+                                .match("^Handelsdatum: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                            // @formatter:off
+                            // Handelsdatum, Uhrzeit: 23.05.2024 12:10:43
+                            // @formatter:on
+                            section -> section //
+                                .attributes("date", "time") //
+                                .match("^Handelsdatum, Uhrzeit: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                                .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
 
                         // @formatter:off
                         // Valuta Betrag zu Ihren Lasten

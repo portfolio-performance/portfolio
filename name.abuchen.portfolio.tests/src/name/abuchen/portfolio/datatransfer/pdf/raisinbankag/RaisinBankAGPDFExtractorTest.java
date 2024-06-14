@@ -67,4 +67,35 @@ public class RaisinBankAGPDFExtractorTest
                         hasAmount("EUR", 4.54), hasGrossValue("EUR", 4.54), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
+
+    @Test
+    public void testWertpapierKauf02()
+    {
+        RaisinBankAGPDFExtractor extractor = new RaisinBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B42W4L06"), hasWkn(null), hasTicker(null), //
+                        hasName("VAN.INVT-GL SC IDX EOA"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-05-24"), hasShares(0.03178), //
+                        hasSource("Kauf02.txt"), //
+                        hasNote("Abrechnungsnummer: acc8e2cf-f87f-4372-8b11-8cd3eea151ce"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
 }
