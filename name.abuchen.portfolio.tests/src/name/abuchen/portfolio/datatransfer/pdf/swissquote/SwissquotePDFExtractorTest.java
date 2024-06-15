@@ -18,9 +18,11 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -37,6 +39,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
@@ -376,7 +379,7 @@ public class SwissquotePDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2024-03-25T00:00"), hasShares(100.00), //
+                        hasDate("2024-03-25T00:00"), hasShares(500.00), //
                         hasSource("Kauf06.txt"), //
                         hasNote("Referenz: 539850276"), //
                         hasAmount("USD", 3144.75), hasGrossValue("USD", 3135.00), //
@@ -407,11 +410,42 @@ public class SwissquotePDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2024-05-29T00:00"), hasShares(100.00), //
+                        hasDate("2024-05-29T00:00"), hasShares(300.00), //
                         hasSource("Kauf07.txt"), //
                         hasNote("Referenz: 581899025"), //
                         hasAmount("USD", 3579.35), hasGrossValue("USD", 3573.00), //
                         hasTaxes("USD", 0.00), hasFees("USD", 1.35 + 5.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf08()
+    {
+        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("SPY JUL24 530C"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-05-23T00:00"), hasShares(500.00), //
+                        hasSource("Kauf08.txt"), //
+                        hasNote("Referenz: 578365281"), //
+                        hasAmount("USD", 4769.75), hasGrossValue("USD", 4760.00), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 2.25 + 7.50))));
     }
 
     @Test
@@ -612,7 +646,7 @@ public class SwissquotePDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2024-05-24T00:00"), hasShares(100.00), //
+                        hasDate("2024-05-24T00:00"), hasShares(200.00), //
                         hasSource("Verkauf04.txt"), //
                         hasNote("Referenz: 579076719"), //
                         hasAmount("USD", 2348.10), hasGrossValue("USD", 2350.00), //
@@ -643,7 +677,7 @@ public class SwissquotePDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2024-05-31T00:00"), hasShares(100.00), //
+                        hasDate("2024-05-31T00:00"), hasShares(300.00), //
                         hasSource("Verkauf05.txt"), //
                         hasNote("Referenz: 583488434"), //
                         hasAmount("USD", 3461.65), hasGrossValue("USD", 3468.00), //
@@ -679,6 +713,39 @@ public class SwissquotePDFExtractorTest
                         hasNote("Referenz: 585697505"), //
                         hasAmount("USD", 7044.55), hasGrossValue("USD", 7050.00), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.45 + 5.00))));
+    }
+
+    @Test
+    public void testExpiryOption01()
+    {
+        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OptionVerfall01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("QQQ APR24 447C"), //
+                        hasCurrencyCode("USD"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        outboundDelivery( //
+                                        hasDate("2024-04-08T00:00"), hasShares(100.00), //
+                                        hasSource("OptionVerfall01.txt"), //
+                                        hasNote("Referenz: 549183576"), //
+                                        hasAmount("USD", 0.00), hasGrossValue("USD", 0.00), //
+                                        hasTaxes("USD", 0.00), hasFees("USD", 0.00)))));
     }
 
     @Test
