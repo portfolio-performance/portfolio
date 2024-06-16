@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -35,6 +36,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
         addPaymentTransaction();
         addInterestTransaction();
         addAccountStatementTransaction();
+        addNonImportableTransaction();
     }
 
     @Override
@@ -103,12 +105,25 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<shares>[\\.'\\d]+) [\\.'\\d]+ [\\w]{3} [\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
+                                        // Bezeichnung Anzahl Kontraktwährung Preis
+                                        // SPY JUL24 530C 5.00 USD 9.52
+                                        // Kontraktgrösse Multiplikator Ausübungspreis Fälligkeit Börsenplatz
                                         // 100 100 527 31.07.2024 International Securities
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("shares") //
-                                                        .match("^(?<shares>[\\.'\\d]+) [\\.'\\d]+ [\\.'\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
-                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
+                                                        .attributes("multiplicator", "shares") //
+                                                        .match("^.* (?<shares>[\\.'\\d]+) [\\w]{3} [\\.'\\d]+$") //
+                                                        .match("^[\\.'\\d]+ (?<multiplicator>[\\.'\\d]+) [\\.'\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
+                                                        .assign((t, v) -> {
+                                                            BigDecimal shares = new BigDecimal(v.get("shares"));
+                                                            BigDecimal multiplicator = new BigDecimal(v.get("multiplicator"));
+
+                                                            t.setShares(shares.multiply(multiplicator, Values.MC)
+                                                                            .setScale(Values.Share.precision(),
+                                                                                            RoundingMode.HALF_UP)
+                                                                            .movePointRight(Values.Share.precision())
+                                                                            .longValue());
+                                                        }))
 
                         // @formatter:off
                         // Gemäss Ihrem Kaufauftrag vom 05.08.2019 haben wir folgende Transaktionen vorgenommen:
@@ -552,6 +567,86 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                 return new TransactionItem(t);
                             return null;
                         }));
+    }
+
+    private void addNonImportableTransaction()
+    {
+        DocumentType type = new DocumentType("((B.rsen|Derivate)transaktion: )?Verfall", //
+                        "Anzahl W.hrung Rate");
+        this.addDocumentTyp(type);
+
+        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^((B.rsen|Derivate)transaktion: )?Verfall.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                            return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // Bezeichnung Anzahl Kontraktwährung Preis
+                        // QQQ APR24 447C 1.00 USD -
+                        // @formatter:on
+                        .section("name", "currency") //
+                        .find("Bezeichnung Anzahl Kontraktw.hrung Preis")
+                        .match("^(?<name>.*) [\\.'\\d]+ (?<currency>[\\w]{3}) \\-$") //
+                        .assign((t, v) -> {
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                            t.setAmount(0L);
+                        })
+
+                        // @formatter:off
+                        // Bezeichnung Anzahl Kontraktwährung Preis
+                        // QQQ APR24 447C 1.00 USD -
+                        // Kontraktgrösse Multiplikator Ausübungspreis Fälligkeit Börsenplatz
+                        // 100 100 447 05.04.2024 International Securities
+                        // @formatter:on
+                        .section("multiplicator", "shares") //
+                        .match("^.* (?<shares>[\\.'\\d]+) [\\w]{3} \\-$") //
+                        .match("^[\\.'\\d]+ (?<multiplicator>[\\.'\\d]+) [\\.'\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
+                        .assign((t, v) -> {
+                            BigDecimal shares = new BigDecimal(v.get("shares"));
+                            BigDecimal multiplicator = new BigDecimal(v.get("multiplicator"));
+
+                            t.setShares(shares.multiply(multiplicator, Values.MC)
+                                            .setScale(Values.Share.precision(),
+                                                            RoundingMode.HALF_UP)
+                                            .movePointRight(Values.Share.precision())
+                                            .longValue());
+                        })
+
+                        // @formatter:off
+                        // Am 08.04.2024 haben wir folgende Transaktionen vorgenommen:
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Derivatetransaktion: Verfall Unsere Referenz: 549183576
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.* (?<note>Referenz: .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
