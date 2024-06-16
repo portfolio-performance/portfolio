@@ -199,7 +199,7 @@ public class AllTransactionsView extends AbstractFinanceView
         // We filter the table like this and not by using the
         // clientFilter#filter(Client) method, because that modifies some
         // transactions (e.g. removes the cross entry for purchases/sells and
-        // adds fictitious removals for dividend payments when only the
+        // adds fictitious withdrawals for dividend payments when only the
         // portfolio without the account passes the filter)
         table.addFilter(new ViewerFilter()
         {
