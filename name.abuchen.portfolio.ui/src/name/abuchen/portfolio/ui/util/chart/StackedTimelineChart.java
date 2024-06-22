@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util.chart;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
@@ -26,6 +27,8 @@ public class StackedTimelineChart extends Chart // NOSONAR
     private TimelineChartToolTip toolTip;
 
     private List<LocalDate> dates;
+
+    private ChartContextMenu contextMenu;
 
     public StackedTimelineChart(Composite parent, List<LocalDate> dates)
     {
@@ -66,7 +69,7 @@ public class StackedTimelineChart extends Chart // NOSONAR
         toolTip.enableCategory(true);
         toolTip.reverseLabels(true);
 
-        new ChartContextMenu(this);
+        this.contextMenu = new ChartContextMenu(this);
     }
 
     public void setDates(List<LocalDate> dates)
@@ -127,5 +130,10 @@ public class StackedTimelineChart extends Chart // NOSONAR
     public boolean setFocus()
     {
         return getPlotArea().setFocus();
+    }
+
+    public void exportMenuAboutToShow(IMenuManager manager, String label)
+    {
+        this.contextMenu.exportMenuAboutToShow(manager, label);
     }
 }
