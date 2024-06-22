@@ -1,0 +1,24 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Gogx uOSTms ydebwuz SEITE 1 von 1
+sQUlrGuAZcctOWW 6 DATUM 18.06.2024
+19867 MLtwsAR Fs Aou aZfA DEPOT 2425458944
+DIVIDENDE
+ÜBERSICHT
+Dividende mit Ex-Datum08.06.2024.
+POSITION ANZAHL ERTRAG BETRAG
+Euro iSTOXX ex FIN Dividend+ EUR (Dist) 206.651869 Stücke 0.48 EUR 99.19 EURDE000ETFL482
+GESAMT 99.19 EUR
+ABRECHNUNG
+POSITION BETRAG
+Zwischensumme 99.19 EUR
+Kapitalertragssteuer -16.98 EUR
+Kirchensteuer -1.52 EUR
+Solidaritätszuschlag -0.93 EUR
+GESAMT 79.76 EUR
+BUCHUNG
+VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
+DE37000100000000064000 10.06.2024 79.76 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
