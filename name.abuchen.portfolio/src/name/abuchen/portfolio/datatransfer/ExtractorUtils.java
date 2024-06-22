@@ -28,6 +28,7 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
+@SuppressWarnings("nls")
 public class ExtractorUtils
 {
     // Helper method to create case-insensitive DateTimeFormatter instances
@@ -38,54 +39,55 @@ public class ExtractorUtils
 
     // Date formatters with case-insensitive support for Germany
     private static final DateTimeFormatter[] DATE_FORMATTER_GERMANY = { //
-                    createFormatter("d.M.yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("d.M.yy", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("yyyy-M-d", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("d-M-yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("dd.MM.yy", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("dd-MM-yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("yyyy-MM-dd", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("dd. MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("d. MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("dd MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("d MMMM yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("dd MMM yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("d MMM yyyy", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("dd/MM/yyyy", Locale.GERMANY) }; //$NON-NLS-1$
+                    createFormatter("d.M.yyyy", Locale.GERMANY), //
+                    createFormatter("d.M.yy", Locale.GERMANY), //
+                    createFormatter("yyyy-M-d", Locale.GERMANY), //
+                    createFormatter("d-M-yyyy", Locale.GERMANY), //
+                    createFormatter("dd.MM.yy", Locale.GERMANY), //
+                    createFormatter("dd-MM-yyyy", Locale.GERMANY), //
+                    createFormatter("yyyy-MM-dd", Locale.GERMANY), //
+                    createFormatter("dd. MMMM yyyy", Locale.GERMANY), //
+                    createFormatter("d. MMMM yyyy", Locale.GERMANY), //
+                    createFormatter("dd MMMM yyyy", Locale.GERMANY), //
+                    createFormatter("d MMMM yyyy", Locale.GERMANY), //
+                    createFormatter("dd MMM yyyy", Locale.GERMANY), //
+                    createFormatter("d MMM yyyy", Locale.GERMANY), //
+                    createFormatter("dd/MM/yyyy", Locale.GERMANY) }; //
 
     // Date formatters with case-insensitive support for the United States
     private static final DateTimeFormatter[] DATE_FORMATTER_US = { //
-                    createFormatter("dd LLLL yyyy", Locale.US), //$NON-NLS-1$
-                    createFormatter("d LLLL yyyy", Locale.US), //$NON-NLS-1$
-                    createFormatter("dd LLL yyyy", Locale.US), //$NON-NLS-1$
-                    createFormatter("d LLL yyyy", Locale.US), //$NON-NLS-1$
-                    createFormatter("MM-dd-yy", Locale.US), //$NON-NLS-1$
-                    createFormatter("MM/dd/yy", Locale.US), //$NON-NLS-1$
-                    createFormatter("MMM/dd/yyyy", Locale.US), //$NON-NLS-1$
-                    createFormatter("MMM/d/yyyy", Locale.US), //$NON-NLS-1$
-                    createFormatter("LLL/dd/yyyy", Locale.US), //$NON-NLS-1$
-                    createFormatter("LLL/d/yyyy", Locale.US), //$NON-NLS-1$
-                    createFormatter("LL/dd/yyyy", Locale.US), //$NON-NLS-1$
-                    createFormatter("LL/d/yyyy", Locale.US), //$NON-NLS-1$
-                    createFormatter("yyyyMMdd", Locale.US) }; //$NON-NLS-1$
+                    createFormatter("dd LLLL yyyy", Locale.US), //
+                    createFormatter("d LLLL yyyy", Locale.US), //
+                    createFormatter("dd LLL yyyy", Locale.US), //
+                    createFormatter("d LLL yyyy", Locale.US), //
+                    createFormatter("MM-dd-yy", Locale.US), //
+                    createFormatter("MM/dd/yy", Locale.US), //
+                    createFormatter("MMM/dd/yyyy", Locale.US), //
+                    createFormatter("MMM/d/yyyy", Locale.US), //
+                    createFormatter("LLL/dd/yyyy", Locale.US), //
+                    createFormatter("LLL/d/yyyy", Locale.US), //
+                    createFormatter("LL/dd/yyyy", Locale.US), //
+                    createFormatter("LL/d/yyyy", Locale.US), //
+                    createFormatter("yyyyMMdd", Locale.US) }; //
 
     // Date formatters with case-insensitive support for Canada
     private static final DateTimeFormatter[] DATE_FORMATTER_CANADA = { //
-                    createFormatter("LLL dd, yyyy", Locale.CANADA) }; //$NON-NLS-1$
+                    createFormatter("LLL dd, yyyy", Locale.CANADA), //
+                    createFormatter("LLL. dd, yyyy", Locale.CANADA) }; //
 
     // Date formatters with case-insensitive support for Canadian French
     private static final DateTimeFormatter[] DATE_FORMATTER_CANADA_FRENCH = { //
-                    createFormatter("dd LLL yyyy", Locale.CANADA_FRENCH) }; //$NON-NLS-1$
+                    createFormatter("dd LLL yyyy", Locale.CANADA_FRENCH) }; //
 
     // Date formatters with case-insensitive support for the United Kingdom
     private static final DateTimeFormatter[] DATE_FORMATTER_UK = { //
-                    createFormatter("dd LLLL yyyy", Locale.UK), //$NON-NLS-1$
-                    createFormatter("d LLLL yyyy", Locale.UK), //$NON-NLS-1$
-                    createFormatter("dd LLL yyyy", Locale.UK), //$NON-NLS-1$
-                    createFormatter("d LLL yyyy", Locale.UK), //$NON-NLS-1$
-                    createFormatter("LL/dd/yyyy", Locale.UK), //$NON-NLS-1$
-                    createFormatter("L/d/yyyy", Locale.UK), //$NON-NLS-1$
-                    createFormatter("dd.LL.yyyy", Locale.UK) }; //$NON-NLS-1$
+                    createFormatter("dd LLLL yyyy", Locale.UK), //
+                    createFormatter("d LLLL yyyy", Locale.UK), //
+                    createFormatter("dd LLL yyyy", Locale.UK), //
+                    createFormatter("d LLL yyyy", Locale.UK), //
+                    createFormatter("LL/dd/yyyy", Locale.UK), //
+                    createFormatter("L/d/yyyy", Locale.UK), //
+                    createFormatter("dd.LL.yyyy", Locale.UK) }; //
 
     // Map associating locales with their respective date formatters
     private static final Map<Locale, DateTimeFormatter[]> LOCALE2DATE = Map.of( //
@@ -97,26 +99,26 @@ public class ExtractorUtils
 
     // DateTime formatters with case-insensitive support for various locales
     private static final DateTimeFormatter[] DATE_TIME_FORMATTER = { //
-                    createFormatter("d.M.yyyy HH:mm", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("dd-MM-yyyy HH:mm", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("dd-MM-yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("dd LLLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("d LLLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("dd LLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("d LLLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("d LLL yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("d. MMMM yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("d.M.yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("dd/MM/yyyy HH:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("dd.MM.yyyy HH.mm.ss", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("dd.MM.yyyy H:mm:ss", Locale.GERMANY), //$NON-NLS-1$
-                    createFormatter("yyyy-MM-dd HH:mm:ss", Locale.US), //$NON-NLS-1$
-                    createFormatter("yyyyMMdd HHmmss", Locale.US), //$NON-NLS-1$
-                    createFormatter("dd/MM/yyyy HH:mm", Locale.UK), //$NON-NLS-1$
-                    createFormatter("dd LLL yyyy HH:mm:ss", Locale.UK), //$NON-NLS-1$
-                    createFormatter("dd.MM.yyyy hh:mm:ss a", Locale.UK), //$NON-NLS-1$
-                    createFormatter("dd/MM/yy HH.mm", Locale.UK), //$NON-NLS-1$
-                    createFormatter("d/MM/yy HH.mm", Locale.UK) }; //$NON-NLS-1$
+                    createFormatter("d.M.yyyy HH:mm", Locale.GERMANY), //
+                    createFormatter("dd-MM-yyyy HH:mm", Locale.GERMANY), //
+                    createFormatter("dd-MM-yyyy HH:mm:ss", Locale.GERMANY), //
+                    createFormatter("dd LLLL yyyy HH:mm:ss", Locale.GERMANY), //
+                    createFormatter("d LLLL yyyy HH:mm:ss", Locale.GERMANY), //
+                    createFormatter("dd LLL yyyy HH:mm:ss", Locale.GERMANY), //
+                    createFormatter("d LLLL yyyy HH:mm:ss", Locale.GERMANY), //
+                    createFormatter("d LLL yyyy HH:mm:ss", Locale.GERMANY), //
+                    createFormatter("d. MMMM yyyy HH:mm:ss", Locale.GERMANY), //
+                    createFormatter("d.M.yyyy HH:mm:ss", Locale.GERMANY), //
+                    createFormatter("dd/MM/yyyy HH:mm:ss", Locale.GERMANY), //
+                    createFormatter("dd.MM.yyyy HH.mm.ss", Locale.GERMANY), //
+                    createFormatter("dd.MM.yyyy H:mm:ss", Locale.GERMANY), //
+                    createFormatter("yyyy-MM-dd HH:mm:ss", Locale.US), //
+                    createFormatter("yyyyMMdd HHmmss", Locale.US), //
+                    createFormatter("dd/MM/yyyy HH:mm", Locale.UK), //
+                    createFormatter("dd LLL yyyy HH:mm:ss", Locale.UK), //
+                    createFormatter("dd.MM.yyyy hh:mm:ss a", Locale.UK), //
+                    createFormatter("dd/MM/yy HH.mm", Locale.UK), //
+                    createFormatter("d/MM/yy HH.mm", Locale.UK) }; //
 
     private ExtractorUtils()
     {
@@ -207,7 +209,6 @@ public class ExtractorUtils
         }
     }
 
-    @SuppressWarnings("nls")
     public static long convertToNumberLong(String value, Values<Long> valueType, String language, String country)
     {
         DecimalFormat newNumberFormat = (DecimalFormat) NumberFormat.getInstance(new Locale(language, country));
@@ -258,7 +259,6 @@ public class ExtractorUtils
         }
     }
 
-    @SuppressWarnings("nls")
     public static BigDecimal convertToNumberBigDecimal(String value, Values<Long> valueType, String language,
                     String country)
     {
@@ -319,7 +319,7 @@ public class ExtractorUtils
     {
         // starting with Java 8, the abbreviation Mrz is not supported out of
         // the box anymore
-        value = value.replaceAll("(?i)\\bMrz\\b", "Mär"); //$NON-NLS-1$//$NON-NLS-2$
+        value = value.replaceAll("(?i)\\bMrz\\b", "Mär"); //
 
         Locale[] locales = hints.length > 0 ? hints
                         : new Locale[] { Locale.GERMANY, Locale.US, Locale.CANADA, Locale.CANADA_FRENCH, Locale.UK };
@@ -363,9 +363,9 @@ public class ExtractorUtils
     {
         // starting with Java 8, the abbreviation Mrz is not supported out of
         // the box anymore
-        date = date.replaceAll("(?i)\\bMrz\\b", "Mär"); //$NON-NLS-1$//$NON-NLS-2$
+        date = date.replaceAll("(?i)\\bMrz\\b", "Mär"); //
 
-        String value = String.format("%s %s", date, time); //$NON-NLS-1$
+        String value = String.format("%s %s", date, time); //
 
         for (DateTimeFormatter formatter : DATE_TIME_FORMATTER)
         {
