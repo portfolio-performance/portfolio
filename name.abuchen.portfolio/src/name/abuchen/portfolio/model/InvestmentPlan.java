@@ -524,4 +524,10 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         account.addTransaction(transaction);
         return new TransactionPair<>(account, transaction);
     }
+
+    @Override
+    public String toString()
+    {
+        return name;
+    }
 }
