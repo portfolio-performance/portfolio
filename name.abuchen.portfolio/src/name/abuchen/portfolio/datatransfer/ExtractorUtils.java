@@ -208,7 +208,6 @@ public class ExtractorUtils
         }
     }
 
-    @SuppressWarnings("nls")
     public static long convertToNumberLong(String value, Values<Long> valueType, String language, String country)
     {
         DecimalFormat newNumberFormat = (DecimalFormat) NumberFormat.getInstance(new Locale(language, country));
@@ -259,7 +258,6 @@ public class ExtractorUtils
         }
     }
 
-    @SuppressWarnings("nls")
     public static BigDecimal convertToNumberBigDecimal(String value, Values<Long> valueType, String language,
                     String country)
     {
