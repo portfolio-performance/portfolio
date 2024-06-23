@@ -11,6 +11,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.services.IStylingEngine;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
@@ -23,7 +24,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
@@ -72,6 +75,12 @@ public abstract class AbstractFinanceView
 
     private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
     private List<Menu> contextMenus = new ArrayList<>();
+
+    /**
+     * Boolean used to verify whether the listener for "CTRL + F" is added to
+     * the display.
+     */
+    private static boolean isCtrlFListenerAdded = false;
 
     protected abstract String getDefaultTitle();
     
@@ -185,6 +194,8 @@ public abstract class AbstractFinanceView
 
         viewToolBar.update(false);
         actionToolBar.update(false);
+
+        addCtrlFKeyListener(getToolBarManager().find("searchbox")); //$NON-NLS-1$
 
         notifyViewCreationCompleted();
     }
@@ -302,6 +313,30 @@ public abstract class AbstractFinanceView
         contextMenus.add(contextMenu);
 
         return contextMenu;
+    }
+
+    /**
+     * Method to add the "CTRL + F" key listener to the display, to set the
+     * focus on the search bar when the shortcut is pressed.
+     */
+    private static void addCtrlFKeyListener(IContributionItem search)
+    {
+        if (!isCtrlFListenerAdded && search != null)
+        {
+            Display.getDefault().addFilter(SWT.KeyDown, new Listener()
+            {
+                @Override
+                public void handleEvent(Event e)
+                {
+                    if (e.stateMask == SWT.MOD1 && e.keyCode == 'f')
+                    {
+                        System.out.println("OK");
+                        // getSearchText().setFocus();
+                    }
+                }
+            });
+            isCtrlFListenerAdded = true;
+        }
     }
 
     public void dispose()
