@@ -62,12 +62,13 @@ import name.abuchen.portfolio.util.Interval;
 
         collectTransferalsAndTaxes(interval);
 
+        var snapshot = new ClientSnapshotIterator(getClient(), getCurrencyConverter());
+
         // first value = reference value
         dates[0] = interval.getStart();
         delta[0] = 0;
         accumulated[0] = 0;
-        ClientSnapshot snapshot = ClientSnapshot.create(getClient(), getCurrencyConverter(), dates[0]);
-        long valuation = totals[0] = snapshot.getMonetaryAssets().getAmount();
+        long valuation = totals[0] = snapshot.nextValuation(dates[0]);
 
         // calculate series
         int index = 1;
@@ -76,8 +77,7 @@ import name.abuchen.portfolio.util.Interval;
         {
             dates[index] = date;
 
-            snapshot = ClientSnapshot.create(getClient(), getCurrencyConverter(), dates[index]);
-            long thisValuation = totals[index] = snapshot.getMonetaryAssets().getAmount();
+            long thisValuation = totals[index] = snapshot.nextValuation(dates[index]);
 
             if (valuation + inboundTransferals[index] == 0)
             {
