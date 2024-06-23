@@ -77,10 +77,10 @@ public abstract class AbstractFinanceView
     private List<Menu> contextMenus = new ArrayList<>();
 
     /**
-     * Boolean used to verify whether the listener for "CTRL + F" is added to
-     * the display.
+     * Listener used for detecting whether CTRL + F shortcut is pressed on the
+     * keyboard.
      */
-    private static boolean isCtrlFListenerAdded = false;
+    private static Listener keyListener;
 
     protected abstract String getDefaultTitle();
     
@@ -321,9 +321,13 @@ public abstract class AbstractFinanceView
      */
     private static void addCtrlFKeyListener(IContributionItem search)
     {
-        if (!isCtrlFListenerAdded && search != null)
+        if (keyListener != null && search == null)
         {
-            Display.getDefault().addFilter(SWT.KeyDown, new Listener()
+            Display.getDefault().removeFilter(SWT.KeyDown, keyListener);
+        }
+        else if (search != null)
+        {
+            keyListener = new Listener()
             {
                 @Override
                 public void handleEvent(Event e)
@@ -334,8 +338,8 @@ public abstract class AbstractFinanceView
                         // getSearchText().setFocus();
                     }
                 }
-            });
-            isCtrlFListenerAdded = true;
+            };
+            Display.getDefault().addFilter(SWT.KeyDown, keyListener);
         }
     }
 
