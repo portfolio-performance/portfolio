@@ -67,6 +67,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "|Kauf Einmalanlage" //
                         + "|Kauf aus Sparplan" //
                         + "|Kauf aus Wiederanlage Fondsaussch.ttung" //
+                        + "|Kauf Zeichnung" //
                         + "|Bezug" //
                         + "|Verkauf" //
                         + "|Verkauf aus Kapitalmaßnahme" //
@@ -82,6 +83,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "|Kauf Einmalanlage" //
                         + "|Kauf aus Sparplan" //
                         + "|Kauf aus Wiederanlage Fondsaussch.ttung" //
+                        + "|Kauf Zeichnung" //
                         + "|Bezug" //
                         + "|Verkauf" //
                         + "|Verkauf aus Kapitalmaßnahme" //
@@ -105,6 +107,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         + "(?<type>(Kauf" //
                                         + "|Kauf Einmalanlage" //
                                         + "|Kauf aus Sparplan" //
+                                        + "|Kauf aus Wiederanlage Fondsaussch.ttung" //
+                                        + "|Kauf Zeichnung" //
                                         + "|Bezug" //
                                         + "|Verkauf" //
                                         + "|Verkauf aus Kapitalmaßnahme" //
@@ -276,7 +280,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("(Dividendengutschrift" //
                         + "|Ertragsgutschrift" //
-                        + "|Zinsgutschrift)", // 
+                        + "|Zinsgutschrift)", //
                         jointAccount);
         this.addDocumentTyp(type);
 
@@ -544,7 +548,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(Ueberweisung" //
                         + "|Dauerauftrag\\/Terminueberw\\." //
-                        + "|Lastschrift" 
+                        + "|Lastschrift" //
                         + "|Kontol.schung)" //
                         + ".* \\-[\\.,\\d]+$");
         type.addBlock(removalBlock);
@@ -561,7 +565,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?<note>Ueberweisung" //
                                         + "|Dauerauftrag\\/Terminueberw\\." //
-                                        + "|Lastschrift" 
+                                        + "|Lastschrift" //
                                         + "|Kontol.schung)" //
                                         + ".* \\-(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
@@ -589,8 +593,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // @formatter:on
         Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(Gutschrift-VWL" //
-                        + "|Gutschrift\\/Dauerauftrag"
-                        + "|Gehalt\\/Rente" 
+                        + "|Gutschrift\\/Dauerauftrag" //
+                        + "|Gehalt\\/Rente" //
                         + "|Gutschrift)" //
                         + ".* [\\.,\\d]+$");
         type.addBlock(depositBlock);
@@ -606,8 +610,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?<note>Gutschrift\\-VWL" //
-                                        + "|Gutschrift\\/Dauerauftrag"
-                                        + "|Gehalt\\/Rente" 
+                                        + "|Gutschrift\\/Dauerauftrag" //
+                                        + "|Gehalt\\/Rente" //
                                         + "|Gutschrift)" //
                                         + ".* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
@@ -662,7 +666,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         }))
 
                         .wrap(TransactionItem::new));
-        
+
         // @formatter:off
         // 30.12.2016 Kapitalertragsteuer -1,38
         // 30.12.2016 Solidaritätszuschlag -0,07
