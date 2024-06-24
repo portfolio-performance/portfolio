@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +17,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -33,6 +35,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.chart.StackedChartCSVExporter;
 import name.abuchen.portfolio.ui.util.chart.StackedTimelineChart;
 import name.abuchen.portfolio.util.Interval;
 
@@ -146,6 +149,27 @@ public abstract class AbstractStackedChartViewer extends AbstractChartPage imple
         });
         action.setChecked(getModel().isOrderByTaxonomyInStackChart());
         manager.add(action);
+    }
+
+    @Override
+    public void exportMenuAboutToShow(IMenuManager manager)
+    {
+        manager.add(new Action(Messages.MenuExportChartData)
+        {
+            @Override
+            public void run()
+            {
+                StackedChartCSVExporter exporter = new StackedChartCSVExporter(chart);
+                // set decimal format if chart is a Percentage Stack Chart.
+                if (chart.getAxisSet().getYAxis(0).getTick().getFormat() instanceof DecimalFormat)
+                    exporter.setValueFormat(new DecimalFormat("0.##########")); //$NON-NLS-1$
+
+                exporter.export(chart.getTitle().getText() + ".csv"); //$NON-NLS-1$
+            }
+        });
+
+        manager.add(new Separator());
+        chart.exportMenuAboutToShow(manager, chart.getTitle().getText());
     }
 
     @Override

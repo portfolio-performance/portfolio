@@ -15,7 +15,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -43,6 +45,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
 import name.abuchen.portfolio.util.Interval;
 
 public class PortfolioBalanceChart extends TimelineChart // NOSONAR
@@ -213,6 +216,7 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
 
     public void addButtons(ToolBarManager toolBar)
     {
+        toolBar.add(new ExportDropDown());
         toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE, this::chartConfigAboutToShow));
     }
 
@@ -242,6 +246,27 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
 
         action.setChecked(chartConfig.contains(detail));
         return action;
+    }
+
+    private final class ExportDropDown extends DropDown implements IMenuListener
+    {
+        private ExportDropDown()
+        {
+            super(Messages.MenuExportData, Images.EXPORT, SWT.NONE);
+            setMenuListener(this);
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            manager.add(new SimpleAction(Messages.MenuExportChartData, a -> {
+                TimelineChartCSVExporter exporter = new TimelineChartCSVExporter(PortfolioBalanceChart.this);
+                exporter.export(getTitle().getText() + ".csv"); //$NON-NLS-1$
+            }));
+
+            manager.add(new Separator());
+            PortfolioBalanceChart.this.exportMenuAboutToShow(manager, getTitle().getText());
+        }
     }
 
     private void addAbsoluteInvestedCapital(PerformanceIndex index, int swtAntialias)
