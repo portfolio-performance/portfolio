@@ -517,7 +517,19 @@ public class ClientFactory
         }
 
         if (flags.isEmpty())
+        {
             flags.add(SaveFlag.XML);
+            try (Reader input = new InputStreamReader(new FileInputStream(file)))
+            {
+                char[] idBuf = new char[80];
+                input.read(idBuf);
+                String idStr = new String(idBuf);
+                if (idStr.contains("<client id="))
+                {
+                    flags.add(SaveFlag.ID_REFERENCES);
+                }
+            }
+        }
 
         return flags;
     }
