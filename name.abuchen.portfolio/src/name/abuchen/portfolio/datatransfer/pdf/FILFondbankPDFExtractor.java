@@ -37,12 +37,12 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Fondsabrechnung");
+        DocumentType type = new DocumentType("(Fondsabrechnung|Steuerliche Informationen \\(Einzeltransaktion\\))");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf) .*$");
+        Block firstRelevantLine = new Block("^(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf|Steuerliche Informationen \\(Einzeltransaktion\\)).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -56,7 +56,7 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^(?<type>(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)) .*$") //
+                        .match("^(?<type>(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf|Steuerliche Informationen \\(Einzeltransaktion\\))).*$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")))
                             {
@@ -66,6 +66,15 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .oneOf( //
+                                        // @formatter:off
+                                        // Fondsname (WKN / ISIN) Xtrackers MSCI World UCITS ETF 1C (A1XB5U / IE00BJ0KDQ92)
+                                        // Abrechnungspreis 105,3600 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .match("^Fondsname \\(WKN \\/ ISIN\\) (?<name>.*) \\((?<wkn>[A-Z0-9]{6}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
+                                                        .match("^Abrechnungspreis [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Kauf UBS Emer.Mkt.Soc.Resp.UETFADIS 89,56 EUR 12,6399 USD 7,728
                                         // 2540401213 A110QD / LU1048313891 1,090667 USD 02.10.2019 45,394
@@ -85,12 +94,21 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\d]+ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\/ (?<wkn>[A-Z0-9]{6}) .*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-                        // @formatter:off
-                        // Kauf UBS Emer.Mkt.Soc.Resp.UETFADIS 89,56 EUR 12,6399 USD 7,728
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)( Betrag)? .* ([\\-|\\+])?(?<shares>[\\.,\\d]+)$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Kauf UBS Emer.Mkt.Soc.Resp.UETFADIS 89,56 EUR 12,6399 USD 7,728
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)( Betrag)? .* ([\\-|\\+])?(?<shares>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Anteile 0,263
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Anteile (?<shares>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         // @formatter:off
                         // Handelsuhrzeit 16:51:24
@@ -99,24 +117,34 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         .match("^Handelsuhrzeit (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$") //
                         .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
 
-                        // @formatter:off
-                        // 2536717769 A0X97T / LU0446734526 1,125168 USD 16.04.2019 1,334
-                        // @formatter:on
-                        .section("date") //
-                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+$") //
-                        .assign((t, v) -> {
-                            if (type.getCurrentContext().get("time") != null)
-                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
-                            else
-                                t.setDate(asDate(v.get("date")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 2536717769 A0X97T / LU0446734526 1,125168 USD 16.04.2019 1,334
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().get("time") != null)
+                                                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                            else
+                                                                t.setDate(asDate(v.get("date")));
+                                                        }),
+                                        // @formatter:off
+                                        // 30.04.2024: Kauf aus VL-Sparplan
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}): Kauf aus VL\\-Sparplan$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Abrechnungsbetrag 1,77 EUR
                         // Auszahlungsbetrag 0,00 EUR
+                        // Abrechnungsbetrag 26,00 EUR (inkl. Kosten)
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^(Abrechnungsbetrag|Auszahlungsbetrag) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^(Abrechnungsbetrag|Auszahlungsbetrag) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})( \\(inkl\\. Kosten\\))?$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -127,32 +155,62 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                         // If the net amount is stated in foreign currency, we convert this.
                         // @formatter:on
 
-                        // @formatter:off
-                        // Splittkauf Betrag UBS Msci Pacific exJap.U ETF A 1,77 EUR 44,4324 USD 0,045
-                        // 2536717769 A0X97T / LU0446734526 1,125168 USD 16.04.2019 1,334
-                        // UBS (Luxembourg) S.A. 1,99 USD 0,0000 EUR 1,379
-                        // @formatter:on
-                        .section("baseCurrency", "exchangeRate", "fxGross", "termCurrency").optional() //
-                        .match("^(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)( Betrag)? .* [\\.,\\d]+ (?<baseCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} ([\\-|\\+])?[\\.,\\d]+$") //
-                        .match("^[\\d]+ .* \\/ .* (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$") //
-                        .match("^.* (?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+$") //
-                        .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
-                            type.getCurrentContext().putType(rate);
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Splittkauf Betrag UBS Msci Pacific exJap.U ETF A 1,77 EUR 44,4324 USD 0,045
+                                        // 2536717769 A0X97T / LU0446734526 1,125168 USD 16.04.2019 1,334
+                                        // UBS (Luxembourg) S.A. 1,99 USD 0,0000 EUR 1,379
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("baseCurrency", "exchangeRate", "fxGross", "termCurrency") //
+                                                        .match("^(Splittkauf|Splitkauf|Wiederanlage|Kauf|Verkauf)( Betrag)? .* [\\.,\\d]+ (?<baseCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} ([\\-|\\+])?[\\.,\\d]+$") //
+                                                        .match("^[\\d]+ .* \\/ .* (?<exchangeRate>[\\.,\\d]+) [\\w]{3} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$") //
+                                                        .match("^.* (?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
-                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                        })
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Abrechnungsbetrag 26,00 EUR (inkl. Kosten)
+                                        // 27,66 USD
+                                        // Devisenkurs 1,0637970
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("gross", "baseCurrency", "termCurrency", "exchangeRate") //
+                                                        .match("^Abrechnungsbetrag (?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})( \\(inkl\\. Kosten\\))?$") //
+                                                        .match("^[\\.,\\d]+ (?<termCurrency>[\\w]{3})$") //
+                                                        .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                        // @formatter:off
-                        // 2540401213 A110QD / LU1048313891 1,090667 USD 02.10.2019 45,394
-                        // 2490116288 DE0009807016 / 980701 04.01.2016 3,818
-                        // @formatter:on
-                        .section("note").optional() //
-                        .match("^(?<note>[\\d]+) .* \\/ .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$") //
-                        .assign((t, v) -> t.setNote("Auftrags-Nr. " + v.get("note")))
+                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // 2540401213 A110QD / LU1048313891 1,090667 USD 02.10.2019 45,394
+                                        // 2490116288 DE0009807016 / 980701 04.01.2016 3,818
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^(?<note>[\\d]+) .* \\/ .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$") //
+                                                        .assign((t, v) -> t.setNote("Auftrags-Nr. " + v.get("note"))),
+                                        // @formatter:off
+                                        // Auftragsnummer 2616145223
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^Auftragsnummer (?<note>[\\d]+)$") //
+                                                        .assign((t, v) -> t.setNote("Auftrags-Nr. " + v.get("note"))))
 
                         // @formatter:off
                         // Splittkauf Betrag UBS Msci Pacific exJap.U ETF A 1,77 EUR 44,4324 USD 0,045
