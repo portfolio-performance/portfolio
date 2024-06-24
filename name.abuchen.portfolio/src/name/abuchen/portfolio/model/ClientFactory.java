@@ -551,24 +551,6 @@ public class ClientFactory
         }
     }
 
-    public static Client load(Reader input) throws IOException
-    {
-        try
-        {
-            return new XmlSerialization().load(input);
-        }
-        finally
-        {
-            if (input != null)
-                input.close();
-        }
-    }
-
-    public static Client load(InputStream input) throws IOException
-    {
-        return load(new InputStreamReader(input, StandardCharsets.UTF_8));
-    }
-
     public static void save(final Client client, final File file) throws IOException
     {
         Set<SaveFlag> flags = EnumSet.copyOf(client.getSaveFlags());
