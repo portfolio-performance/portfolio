@@ -29,7 +29,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -316,29 +318,44 @@ public abstract class AbstractFinanceView
     }
 
     /**
-     * Method to add the "CTRL + F" key listener to the display, to set the
-     * focus on the search bar when the shortcut is pressed.
+     * Method to add or remove the "CTRL+F" key listener on the display. The key
+     * listener is used to set the focus on the search bar when shortcut is
+     * pressed.
      */
-    private static void addCtrlFKeyListener(IContributionItem search)
+    private void addCtrlFKeyListener(IContributionItem search)
     {
+        // When the keyListener is set and the view doesn't contain a search bar
+        // => Remove the listener for shortcut "CTRL + F"
         if (keyListener != null && search == null)
         {
             Display.getDefault().removeFilter(SWT.KeyDown, keyListener);
         }
+        // When the view contains a search bar
+        // => Add the listener for shortcut "CTRL + F"
         else if (search != null)
         {
-            keyListener = new Listener()
+            // Iterating over the items of the actionToolBar to get the search
+            // bar.
+            for (ToolItem toolItem : getToolBarManager().getControl().getItems())
             {
-                @Override
-                public void handleEvent(Event e)
+                // If the search bar is found in the actionToolBar
+                if (toolItem.getControl() instanceof Text)
                 {
-                    if (e.stateMask == SWT.MOD1 && e.keyCode == 'f')
+                    // Create the listener for CTRL + F.
+                    // When pressed, the focus is set on search box.
+                    keyListener = new Listener()
                     {
-                        System.out.println("OK");
-                        // getSearchText().setFocus();
-                    }
+                        @Override
+                        public void handleEvent(Event e)
+                        {
+                            if (e.stateMask == SWT.MOD1 && e.keyCode == 'f')
+                            {
+                                toolItem.getControl().setFocus();
+                            }
+                        }
+                    };
                 }
-            };
+            }
             Display.getDefault().addFilter(SWT.KeyDown, keyListener);
         }
     }
