@@ -34,12 +34,25 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("AVIS D.OP.RATIONS");
+        var securityRange = new Block("^.* (ACTION|TRACKER) : .* \\([A-Z]{2}[A-Z0-9]{9}[0-9]\\)$") //
+                        .asRange(section -> section //
+                                        // @formatter:off
+                                        // ¢ ACTION : ORANGE (FR0000133308)
+                                        // Quantité 46 Cours 10,646 €
+                                        //
+                                        // ¢ TRACKER : AMUNDI MSCI WORLD UC.ETF EUR D (LU2655993207)
+                                        // Quantité 7 Cours 30,24 €
+                                        // @formatter:on
+                                        .attributes("name", "isin", "currency") //
+                                        .match("^.* (ACTION|TRACKER) : (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
+                                        .match("^Quantit. [\\,\\d\\s]+ Cours [\\,\\d\\s]+ (?<currency>\\p{Sc})$"));
+
+        final DocumentType type = new DocumentType("AVIS D.OP.RATIONS", securityRange);
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^.* (ACTION|TRACKER) : .* \\([A-Z]{2}[A-Z0-9]{9}[0-9]\\)$");
+        Block firstRelevantLine = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} R.f.rence .*$", "^Montant NET .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -52,23 +65,15 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
-                        // ¢ ACTION : ORANGE (FR0000133308)
-                        // Quantité 46 Cours 10,646 €
-                        //
-                        // ¢ TRACKER : AMUNDI MSCI WORLD UC.ETF EUR D (LU2655993207)
-                        // Quantité 7 Cours 30,24 €
-                        // @formatter:on
-                        .section("name", "isin", "currency") //
-                        .match("^.* (ACTION|TRACKER) : (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
-                        .match("^Quantit. [\\,\\d\\s]+ Cours [\\,\\d\\s]+ (?<currency>\\p{Sc})$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        // @formatter:off
                         // Quantité 46 Cours 10,646 €
                         // @formatter:on
                         .section("shares") //
+                        .documentRange("name", "isin", "currency") //
                         .match("^Quantit. (?<shares>[\\,\\d\\s]+) Cours [\\,\\d\\s]+ \\p{Sc}$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
 
                         // @formatter:off
                         // 26-03-2024 Référence 94R6134018440990
