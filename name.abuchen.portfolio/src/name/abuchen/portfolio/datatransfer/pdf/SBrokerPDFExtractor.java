@@ -1056,12 +1056,18 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // 08.06.2020 08.06.2020
                                         // Überweisung online               25,00-
+                                        //
+                                        // 10.01.2020 10.01.2020
+                                        // . GutschriftÜberweisung               15,00+
+                                        //
+                                        // 08.07.2020 08.07.2020
+                                        //   Kartenzahlung               24,41-
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "note", "amount", "type") //
                                                         .documentContext("currency") //
                                                         .match("^.*[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                                                        .match("^(?<note>(Lastschrift" //
+                                                        .match("^(.* )?(?<note>(Lastschrift" //
                                                                         + "|.berweisung online" //
                                                                         + "|.berweisung" //
                                                                         + "|.berweisung Vordruck" //
