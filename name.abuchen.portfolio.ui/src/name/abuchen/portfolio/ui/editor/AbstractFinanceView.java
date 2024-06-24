@@ -82,7 +82,7 @@ public abstract class AbstractFinanceView
      * Listener used for detecting whether CTRL + F shortcut is pressed on the
      * keyboard.
      */
-    private static Listener keyListener;
+    private Listener keyListener;
 
     protected abstract String getDefaultTitle();
     
@@ -324,15 +324,9 @@ public abstract class AbstractFinanceView
      */
     private void addCtrlFKeyListener(IContributionItem search)
     {
-        // When the keyListener is set and the view doesn't contain a search bar
-        // => Remove the listener for shortcut "CTRL + F"
-        if (keyListener != null && search == null)
-        {
-            Display.getDefault().removeFilter(SWT.KeyDown, keyListener);
-        }
-        // When the view contains a search bar
+        // When the keyListener is set and the view contains a search bar
         // => Add the listener for shortcut "CTRL + F"
-        else if (search != null)
+        if (search != null)
         {
             // Iterating over the items of the actionToolBar to get the search
             // bar.
@@ -354,14 +348,21 @@ public abstract class AbstractFinanceView
                             }
                         }
                     };
+                    Display.getDefault().addFilter(SWT.KeyDown, keyListener);
+                    break;
                 }
             }
-            Display.getDefault().addFilter(SWT.KeyDown, keyListener);
         }
     }
 
     public void dispose()
     {
+        if (keyListener != null)
+        {
+            Display.getDefault().removeFilter(SWT.KeyDown, keyListener);
+            keyListener = null;
+        }
+
         viewToolBar.dispose();
         actionToolBar.dispose();
 
