@@ -115,7 +115,7 @@ public class ClientFactory
 
     /* package */ static class XmlSerialization
     {
-        boolean idReferences;
+        private boolean idReferences;
 
         public XmlSerialization(boolean idReferences)
         {
@@ -127,7 +127,7 @@ public class ClientFactory
             this(false);
         }
 
-        XStream makeXStream()
+        private XStream makeXStream()
         {
             XStream xs = xstream();
             if (idReferences)
@@ -191,7 +191,8 @@ public class ClientFactory
         @Override
         public Client load(InputStream input) throws IOException
         {
-            Client client = new XmlSerialization(idReferences).load(new InputStreamReader(input, StandardCharsets.UTF_8));
+            Client client = new XmlSerialization(idReferences)
+                            .load(new InputStreamReader(input, StandardCharsets.UTF_8));
             client.getSaveFlags().add(SaveFlag.XML);
             if (idReferences)
             {
@@ -517,7 +518,18 @@ public class ClientFactory
         }
 
         if (flags.isEmpty())
+        {
             flags.add(SaveFlag.XML);
+            try (Reader input = new InputStreamReader(new FileInputStream(file)))
+            {
+                char[] buffer = new char[80];
+                input.read(buffer);
+                if (new String(buffer).contains("<client id=")) //$NON-NLS-1$
+                {
+                    flags.add(SaveFlag.ID_REFERENCES);
+                }
+            }
+        }
 
         return flags;
     }
