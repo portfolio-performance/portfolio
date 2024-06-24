@@ -46,6 +46,7 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
+import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.util.Interval;
 
 public class PortfolioBalanceChart extends TimelineChart // NOSONAR
@@ -59,10 +60,12 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.ABSOLUTE_INVESTED_CAPITAL,
                     ChartDetails.ABSOLUTE_DELTA);
 
-    private static final Color colorAbsoluteInvestedCapital = Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
-    private static final Color colorAbsoluteDelta = Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY);
+    private static final Color colorAbsoluteInvestedCapital = Colors.getColor(235, 201, 52); // #EBC934;
+    private static final Color colorAbsoluteDelta = Colors.getColor(90, 114, 226); // #5A72E2;
     private static final Color colorTaxesAccumulated = Display.getDefault().getSystemColor(SWT.COLOR_RED);
     private static final Color colorFeesAccumulated = Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
+    private Color colorDeltaAreaPositive = Colors.getColor(90, 114, 226); // #5A72E2
+    private Color colorDeltaAreaNegative = Colors.getColor(226, 91, 90); // #E25B5A
 
     public PortfolioBalanceChart(Composite parent, Client client)
     {
@@ -76,6 +79,8 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
         ILegend legend = getLegend();
         legend.setPosition(SWT.BOTTOM);
         legend.setVisible(true);
+
+        setupTooltip();
     }
 
     private final void readChartConfig(Client client)
@@ -282,6 +287,39 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
     private void addAbsoluteDeltaAllRecords(PerformanceIndex index, int swtAntialias)
     {
         double[] values = toDouble(index.calculateAbsoluteDelta(), Values.Amount.divider());
+
+        double[] valuesRelativePositive = new double[values.length];
+        double[] valuesRelativeNegative = new double[values.length];
+        for (int ii = 0; ii < values.length; ii++)
+        {
+            if (values[ii] >= 0)
+            {
+                valuesRelativePositive[ii] = values[ii];
+                valuesRelativeNegative[ii] = 0;
+            }
+            else
+            {
+                valuesRelativePositive[ii] = 0;
+                valuesRelativeNegative[ii] = values[ii];
+            }
+        }
+        String lineIDNeg = Messages.LabelAbsoluteDelta + "Negative"; //$NON-NLS-1$
+        String lineIDPos = Messages.LabelAbsoluteDelta + "Positive"; //$NON-NLS-1$
+
+        ILineSeries lineSeries2ndNegative = addDateSeries(lineIDNeg, index.getDates(), valuesRelativeNegative,
+                        colorDeltaAreaNegative, lineIDNeg);
+        lineSeries2ndNegative.setAntialias(swtAntialias);
+        lineSeries2ndNegative.enableArea(true);
+        lineSeries2ndNegative.setVisibleInLegend(false);
+        lineSeries2ndNegative.setLineWidth(1);
+
+        ILineSeries lineSeries2ndPositive = addDateSeries(lineIDPos, index.getDates(), valuesRelativePositive,
+                        colorDeltaAreaPositive, lineIDPos);
+        lineSeries2ndPositive.setAntialias(swtAntialias);
+        lineSeries2ndPositive.enableArea(true);
+        lineSeries2ndPositive.setVisibleInLegend(false);
+        lineSeries2ndPositive.setLineWidth(1);
+
         String lineID = Messages.LabelAbsoluteDelta;
 
         ILineSeries lineSeries = addDateSeries(lineID, index.getDates(), values, colorAbsoluteDelta, lineID);
@@ -325,5 +363,12 @@ public class PortfolioBalanceChart extends TimelineChart // NOSONAR
         {
             return label;
         }
+    }
+
+    private void setupTooltip()
+    {
+        TimelineChartToolTip toolTip = getToolTip();
+        toolTip.addSeriesExclude(Messages.LabelAbsoluteDelta + "Positive"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(Messages.LabelAbsoluteDelta + "Negative"); //$NON-NLS-1$
     }
 }
