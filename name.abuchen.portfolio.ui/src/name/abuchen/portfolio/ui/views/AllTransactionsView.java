@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.text.MessageFormat;
 import java.util.List;
 
 import jakarta.inject.Inject;
@@ -123,11 +124,15 @@ public class AllTransactionsView extends AbstractFinanceView
     {
         textFilter = new TransactionSearchField(text -> table.refresh(false));
     }
-    
+
     @Override
     public void notifyModelUpdated()
     {
-        table.setInput(getClient().getAllTransactions());
+        var allTransactions = getClient().getAllTransactions();
+        table.setInput(allTransactions);
+
+        updateTitle(Messages.LabelAllTransactions + " (" //$NON-NLS-1$
+                        + MessageFormat.format(Messages.LabelTransactionCount, allTransactions.size()) + ")"); //$NON-NLS-1$
     }
 
     @Override
