@@ -1689,6 +1689,17 @@ public class ClientFactory
             xstream.addImmutableType(LocalDate.class, true);
             xstream.addImmutableType(LocalDateTime.class, true);
 
+            // Java types which aren't multiple-referenced in PP data model, so
+            // skip giving "id" attribute to these, as that adds a lot of noise
+            // to the produced XML.
+            xstream.addImmutableType(HashMap.class, false);
+            xstream.addImmutableType(ArrayList.class, false);
+
+            // PP's wrappers around Java types, again not multiple-reference,
+            // skip adding "id" attribute for the same reason.
+            xstream.addImmutableType(TypedMap.class, false);
+            xstream.addImmutableType(Attributes.class, false);
+
             xstream.registerConverter(new XStreamLocalDateConverter());
             xstream.registerConverter(new XStreamLocalDateTimeConverter());
             xstream.registerConverter(new XStreamInstantConverter());
@@ -1702,31 +1713,39 @@ public class ClientFactory
             xstream.useAttributeFor(Money.class, "amount");
             xstream.useAttributeFor(Money.class, "currencyCode");
             xstream.aliasAttribute(Money.class, "currencyCode", "currency");
+            xstream.addImmutableType(Money.class, false);
 
             xstream.alias("account", Account.class);
             xstream.alias("client", Client.class);
             xstream.alias("settings", ClientSettings.class);
+            xstream.addImmutableType(ClientSettings.class, false);
             xstream.alias("bookmark", Bookmark.class);
+            xstream.addImmutableType(Bookmark.class, false);
             xstream.alias("portfolio", Portfolio.class);
             xstream.alias("unit", Transaction.Unit.class);
             xstream.useAttributeFor(Transaction.Unit.class, "type");
+            xstream.addImmutableType(Transaction.Unit.class, false);
             xstream.alias("account-transaction", AccountTransaction.class);
             xstream.alias("portfolio-transaction", PortfolioTransaction.class);
             xstream.alias("security", Security.class);
             xstream.addImplicitCollection(Security.class, "properties");
             xstream.alias("latest", LatestSecurityPrice.class);
+            xstream.addImmutableType(LatestSecurityPrice.class, false);
             xstream.alias("category", Category.class); // NOSONAR
             xstream.alias("watchlist", Watchlist.class);
             xstream.alias("investment-plan", InvestmentPlan.class);
             xstream.alias("attribute-type", AttributeType.class);
+            xstream.addImmutableType(AttributeType.class, false);
 
             xstream.alias("price", SecurityPrice.class);
             xstream.useAttributeFor(SecurityPrice.class, "date");
             xstream.aliasField("t", SecurityPrice.class, "date");
             xstream.useAttributeFor(SecurityPrice.class, "value");
             xstream.aliasField("v", SecurityPrice.class, "value");
+            xstream.addImmutableType(SecurityPrice.class, false);
 
             xstream.alias("limitPrice", LimitPrice.class);
+            xstream.addImmutableType(LimitPrice.class, false);
 
             xstream.alias("cpi", ConsumerPriceIndex.class); // NOSONAR
             xstream.useAttributeFor(ConsumerPriceIndex.class, "year"); // NOSONAR
@@ -1741,21 +1760,30 @@ public class ClientFactory
             xstream.alias("portfolio-transfer", PortfolioTransferEntry.class);
 
             xstream.alias("taxonomy", Taxonomy.class);
+            xstream.addImmutableType(Taxonomy.class, false);
             xstream.alias("classification", Classification.class);
             xstream.alias("assignment", Assignment.class);
+            xstream.addImmutableType(Assignment.class, false);
 
             xstream.alias("dashboard", Dashboard.class);
             xstream.useAttributeFor(Dashboard.class, "name");
+            xstream.addImmutableType(Dashboard.class, false);
             xstream.alias("column", Dashboard.Column.class);
+            xstream.addImmutableType(Dashboard.Column.class, false);
             xstream.alias("widget", Dashboard.Widget.class);
             xstream.useAttributeFor(Dashboard.Widget.class, "type");
+            xstream.addImmutableType(Dashboard.Widget.class, false);
 
             xstream.alias("event", SecurityEvent.class);
+            xstream.addImmutableType(SecurityEvent.class, false);
             xstream.alias("dividendEvent", SecurityEvent.DividendEvent.class);
             xstream.alias("config-set", ConfigurationSet.class);
+            xstream.addImmutableType(ConfigurationSet.class, false);
             xstream.alias("config", ConfigurationSet.Configuration.class);
+            xstream.addImmutableType(ConfigurationSet.Configuration.class, false);
 
             xstream.processAnnotations(SecurityProperty.class);
+            xstream.addImmutableType(SecurityProperty.class, false);
         }
         return xstream;
     }
