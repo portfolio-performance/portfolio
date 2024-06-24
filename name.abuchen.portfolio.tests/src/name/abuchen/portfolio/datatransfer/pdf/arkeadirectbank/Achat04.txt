@@ -1,0 +1,55 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+AVIS D'OPÉRATIONS
+M Ozq sccKSml oOEwS
+Au 3 juin 2024
+47 VClQEy gL hUSkK
+59830 oUDkT
+VOTRE COMPTE PEA N° 772327783739 M bjG RQoLbbQ yliBO
+Date
+Désignation Débit Crédit
+opération
+¢ TRACKER : AM.PEA SP500 ESG UCIT ETF EUR (FR0013412285)
+03-06-2024 Référence 00F1913647290101
+09:29:05 Sens Achat - Exécution fractionnée
+Modalité Au marché
+Marché Comptant
+Lieu d'exécution EURONEXT PARIS
+Quantité 12 Cours 40,245 €
+Montant Brut 482,94 €
+Courtage et Commission 0,00 €
+Montant NET 482,94 € 482,94 €
+03-06-2024 Référence 00F1913647700101
+09:29:38 Sens Achat - Exécution fractionnée
+Modalité Au marché
+Marché Comptant
+Lieu d'exécution EURONEXT PARIS
+Quantité 12 Cours 40,246 €
+Montant Brut 482,95 €
+Courtage et Commission 0,00 €
+Montant NET 482,95 € 482,95 €
+Duplicata Internet
+Page 1/2
+Fortuneo est une marque commerciale d'Arkéa Direct Bank. Arkéa Direct Bank, Société Anonyme à Directoire et Conseil de Surveillance
+au capital de 89 198 952 euros. RCS Nanterre 384 288 890. Siège social : Tour Ariane - 5, place de la Pyramide 92088 Paris La Défense.
+Courtier en assurance n°ORIAS 07 008 441. Adresse postale : Fortuneo - Service Clients - TSA41707 - 35917 RENNES CEDEX 9.
+VOTRE COMPTE PEA N° 016830040216 M bjG RQoLbbQ yliBO
+Date
+Désignation Débit Crédit
+opération
+03-06-2024 Référence 00F1913649810101
+09:31:22 Sens Achat - Exécution unique
+Modalité Au marché
+Marché Comptant
+Lieu d'exécution EURONEXT PARIS
+Quantité 10 Cours 40,261 €
+Montant Brut 402,61 €
+Courtage et Commission 0,00 €
+Montant NET 402,61 € 402,61 €
+Sous réserve de bonne fin.
+Lorsqu'elle s'applique, l'exonération de TVA relève de l'article 261 C du CGI.
+Sous réserve de son application à la présente transaction, la Taxe sur les Transactions Financières prévue par l'article 235 ter ZD du
+CGI est prélevée sur votre compte espèces et fait l'objet d'un avis récapitulatif spécifique.
+Duplicata Internet
+Page 2/2
