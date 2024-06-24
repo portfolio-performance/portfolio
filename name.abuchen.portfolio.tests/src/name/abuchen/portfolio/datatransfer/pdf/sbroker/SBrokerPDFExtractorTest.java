@@ -1,5 +1,18 @@
 package name.abuchen.portfolio.datatransfer.pdf.sbroker;
 
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.junit.Test;
+
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
@@ -28,21 +41,10 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
+
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertNull;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
@@ -4920,10 +4922,6 @@ public class SBrokerPDFExtractorTest
                         hasSource("GiroKontoauszug42.txt"), hasNote("Überweisung"))));
 
         // assert transaction
-        assertThat(results, hasItem(removal(hasDate("2016-06-13"), hasAmount("EUR", 161.00), //
-                        hasSource("GiroKontoauszug42.txt"), hasNote("Überweisung"))));
-
-        // assert transaction
         assertThat(results, hasItem(removal(hasDate("2016-06-13"), hasAmount("EUR", 20.52), //
                         hasSource("GiroKontoauszug42.txt"), hasNote("Überweisung"))));
 
@@ -5012,6 +5010,432 @@ public class SBrokerPDFExtractorTest
                         Messages.MsgErrorTransactionTypeNotSupported, //
                         interest(hasDate("2016-06-30"), hasAmount("EUR", 0.00), //
                         hasSource("GiroKontoauszug42.txt"), hasNote("Abrechnungszeitraum vom 01.04.2016 bis 30.06.2016")))));
+    }
+
+    @Test
+    public void testGiroKontoauszug43()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug43.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(24L));
+        assertThat(results.size(), is(24));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-01-02"), hasAmount("EUR", 200.00), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Dauerauftrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-01-02"), hasAmount("EUR", 144.47), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-01-02"), hasAmount("EUR", 25.00), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Dauerauftrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-01-02"), hasAmount("EUR", 4.60), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-01-03"), hasAmount("EUR", 12.00), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-01-07"), hasAmount("EUR", 260.78), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-01-07"), hasAmount("EUR", 10.50), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-01-08"), hasAmount("EUR", 64.53), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-01-10"), hasAmount("EUR", 15.00), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-01-10"), hasAmount("EUR", 1641.18), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-01-13"), hasAmount("EUR", 10.00), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-01-13"), hasAmount("EUR", 48.00), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-01-14"), hasAmount("EUR", 5000.00), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-01-15"), hasAmount("EUR", 110.88), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-01-16"), hasAmount("EUR", 19.99), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-01-20"), hasAmount("EUR", 22.00), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-01-20"), hasAmount("EUR", 10.00), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-01-20"), hasAmount("EUR", 22.49), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-01-21"), hasAmount("EUR", 2.01), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-01-27"), hasAmount("EUR", 34.98), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-01-30"), hasAmount("EUR", 1442.17), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2020-01-31"), hasAmount("EUR", 8.50), //
+                        hasSource("GiroKontoauszug43.txt"), hasNote("Entgelte vom 31.12.2019 bis 31.01.2020"))));
+    }
+
+    @Test
+    public void testGiroKontoauszug44()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug44.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(34L));
+        assertThat(results.size(), is(34));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-01"), hasAmount("EUR", 1013.71), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-01"), hasAmount("EUR", 1000.00), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-01"), hasAmount("EUR", 200.00), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Dauerauftrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-01"), hasAmount("EUR", 25.00), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Dauerauftrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-07-02"), hasAmount("EUR", 612.50), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-03"), hasAmount("EUR", 55.25), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-06"), hasAmount("EUR", 1024.57), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-07-06"), hasAmount("EUR", 57.06), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-07-06"), hasAmount("EUR", 65.00), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-07-06"), hasAmount("EUR", 393.50), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-08"), hasAmount("EUR", 24.41), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-07-08"), hasAmount("EUR", 1652.56), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-10"), hasAmount("EUR", 42.00), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Dauerauftrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-13"), hasAmount("EUR", 181.53), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-13"), hasAmount("EUR", 7.52), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-07-14"), hasAmount("EUR", 181.36), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-07-14"), hasAmount("EUR", 1560.00), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-15"), hasAmount("EUR", 19.49), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-15"), hasAmount("EUR", 4.98), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-16"), hasAmount("EUR", 100.00), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-20"), hasAmount("EUR", 7.95), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-07-20"), hasAmount("EUR", 4.80), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-07-20"), hasAmount("EUR", 22.49), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-07-20"), hasAmount("EUR", 229.00), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2020-07-21"), hasAmount("EUR", 120.00), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Gutschrift (Überweisung)"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-24"), hasAmount("EUR", 176.20), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-27"), hasAmount("EUR", 34.10), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-27"), hasAmount("EUR", 7.80), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-28"), hasAmount("EUR", 40.00), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-28"), hasAmount("EUR", 5.46), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-30"), hasAmount("EUR", 34.12), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Überweisung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2020-07-31"), hasAmount("EUR", 17.60), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2020-07-31"), hasAmount("EUR", 8.50), //
+                        hasSource("GiroKontoauszug44.txt"), hasNote("Entgelte vom 01.07.2020 bis 31.07.2020"))));
+    }
+
+    @Test
+    public void testGiroKontoauszug45()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug45.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(38L));
+        assertThat(results.size(), is(38));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-02"), hasAmount("EUR", 350.00), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-02"), hasAmount("EUR", 19.99), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-02"), hasAmount("EUR", 13.45), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-02"), hasAmount("EUR", 13.45), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-03"), hasAmount("EUR", 12.00), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-03"), hasAmount("EUR", 13.08), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-03"), hasAmount("EUR", 13.45), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-03"), hasAmount("EUR", 130.00), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-04"), hasAmount("EUR", 83.36), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-04"), hasAmount("EUR", 13.45), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-06"), hasAmount("EUR", 1.60), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-09"), hasAmount("EUR", 55.00), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-10"), hasAmount("EUR", 24.80), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-10"), hasAmount("EUR", 6.00), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-11"), hasAmount("EUR", 58.31), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-11"), hasAmount("EUR", 5.99), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-17"), hasAmount("EUR", 89.98), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-17"), hasAmount("EUR", 83.10), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-20"), hasAmount("EUR", 50.00), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Geldautomat"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-20"), hasAmount("EUR", 5.99), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-23"), hasAmount("EUR", 13.45), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-23"), hasAmount("EUR", 70.00), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-24"), hasAmount("EUR", 4.99), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-24"), hasAmount("EUR", 12.00), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-25"), hasAmount("EUR", 12.00), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-25"), hasAmount("EUR", 30.48), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-25"), hasAmount("EUR", 5.99), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-25"), hasAmount("EUR", 82.50), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-27"), hasAmount("EUR", 99.00), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-26"), hasAmount("EUR", 12.00), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-30"), hasAmount("EUR", 51.89), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-30"), hasAmount("EUR", 2.79), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-30"), hasAmount("EUR", 26.78), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-30"), hasAmount("EUR", 64.82), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2016-05-31"), hasAmount("EUR", 75.68), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Basis-Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-31"), hasAmount("EUR", 28.01), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-06-01"), hasAmount("EUR", 81.78), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Scheckeinzug"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2016-05-31"), hasAmount("EUR", 106.00), //
+                        hasSource("GiroKontoauszug45.txt"), hasNote("Zahlungseingang"))));
     }
 
     @Test
