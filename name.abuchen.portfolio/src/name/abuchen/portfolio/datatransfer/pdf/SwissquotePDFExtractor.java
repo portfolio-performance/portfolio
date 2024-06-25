@@ -330,15 +330,15 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // Betrag EUR 134.40
                         // Wechselkurs EUR / CHF : 0.94515
                         // @formatter:on
-                        .section("fxGross", "termCurrency", "baseCurrency", "exchangeRate").optional()//
-                        .match("^Betrag [\\w]{3} (?<fxGross>[\\.'\\d]+)$") //
-                        .match("^Wechselkurs (?<termCurrency>[\\w]{3}) \\/ (?<baseCurrency>[\\w]{3}) : (?<exchangeRate>[\\.'\\d]+)$") //
+                        .section("baseCurrency", "termCurrency", "exchangeRate", "currency", "gross").optional()//
+                        .match("^Betrag (?<currency>[\\w]{3}) (?<gross>[\\.'\\d]+)$") //
+                        .match("^Wechselkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) : (?<exchangeRate>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             ExtrExchangeRate rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
