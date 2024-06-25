@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf.swissquote;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -8,6 +9,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeed;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeedProperty;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -825,6 +827,45 @@ public class SwissquotePDFExtractorTest
     }
 
     @Test
+    public void testDividende01WithSecurityInCHF()
+    {
+        Security security = new Security("HARVEST CAPITAL CREDIT ORD", "CHF");
+        security.setIsin("US41753F1093");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2019-06-27T00:00"), hasShares(350.00), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Referenz: 32484929"), //
+                        hasAmount("USD", 19.60), hasGrossValue("USD", 28.00), //
+                        hasForexGrossValue("CHF", 27.37), //
+                        hasTaxes("USD", 8.40), hasFees("USD", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.USD);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testDividende02()
     {
         Client client = new Client();
@@ -900,7 +941,7 @@ public class SwissquotePDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-31T00:00")));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(40)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(40.00)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Referenz: 222443221"));
 
@@ -912,6 +953,45 @@ public class SwissquotePDFExtractorTest
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testDividende03WithSecurityInCHF()
+    {
+        Security security = new Security("Vanguard All World ETF Dist", "CHF");
+        security.setIsin("IE00B3RBWM25");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2021-03-31T00:00"), hasShares(40.00), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote("Referenz: 222443221"), //
+                        hasAmount("USD", 13.52), hasGrossValue("USD", 13.52), //
+                        hasForexGrossValue("CHF", 12.74), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.USD);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
@@ -1050,6 +1130,45 @@ public class SwissquotePDFExtractorTest
     }
 
     @Test
+    public void testDividende06WithSecurityInCHF()
+    {
+        Security security = new Security("Vanguard AllWrld Div ETF Dist", "CHF");
+        security.setIsin("IE00B8GKDB10");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-03-29T00:00"), hasShares(3.553), //
+                        hasSource("Dividende06.txt"), //
+                        hasNote("Referenz: 123456789"), //
+                        hasAmount("USD", 1.46), hasGrossValue("USD", 1.46), //
+                        hasForexGrossValue("CHF", 1.34), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.USD);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testDividende07()
     {
         SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
@@ -1078,6 +1197,45 @@ public class SwissquotePDFExtractorTest
                         hasNote("Referenz: 548895976"), //
                         hasAmount("EUR", 114.24), hasGrossValue("EUR", 134.40), //
                         hasTaxes("EUR", 20.16), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende07WithSecurityInCHF()
+    {
+        Security security = new Security("VanEck Global Real Estate ETF", "CHF");
+        security.setIsin("NL0009690239");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-12-13T00:00"), hasShares(420.000), //
+                        hasSource("Dividende07.txt"), //
+                        hasNote("Referenz: 548895976"), //
+                        hasAmount("EUR", 114.24), hasGrossValue("EUR", 134.40), //
+                        hasForexGrossValue("CHF", 127.03), //
+                        hasTaxes("EUR", 20.16), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test
