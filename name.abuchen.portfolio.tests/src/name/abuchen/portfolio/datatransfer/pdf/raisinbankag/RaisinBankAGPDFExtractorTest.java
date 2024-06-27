@@ -92,7 +92,7 @@ public class RaisinBankAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2024-05-24"), hasShares(0.03178), //
+                        hasDate("2024-05-24T00:00"), hasShares(0.03178), //
                         hasSource("Kauf02.txt"), //
                         hasNote("Abrechnungsnummer: acc8e2cf-f87f-4372-8b11-8cd3eea151ce"), //
                         hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
