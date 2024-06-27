@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf.raisinbankag;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -33,6 +34,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.RaisinBankAGPDFExtractor;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class RaisinBankAGPDFExtractorTest
@@ -97,5 +99,36 @@ public class RaisinBankAGPDFExtractorTest
                         hasNote("Abrechnungsnummer: acc8e2cf-f87f-4372-8b11-8cd3eea151ce"), //
                         hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende01()
+    {
+        RaisinBankAGPDFExtractor extractor = new RaisinBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B945VV12"), hasWkn(null), hasTicker(null), //
+                        hasName("VANG.FTSE DEV.EU.UETF EOD"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-26T00:00"), hasShares(154.9996), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Auftragsnummer: 680ZY015-5cfb-4240-961c-865127t5147j"), //
+                        hasAmount("EUR", 92.21), hasGrossValue("EUR", 114.67), //
+                        hasTaxes("EUR", 19.63 + 1.07 + 1.76), hasFees("EUR", 0.00))));
     }
 }
