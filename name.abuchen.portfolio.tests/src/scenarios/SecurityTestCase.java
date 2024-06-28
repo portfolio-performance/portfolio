@@ -17,8 +17,10 @@ import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
@@ -46,6 +48,9 @@ public class SecurityTestCase
         Interval period = Interval.of(LocalDate.parse("2013-12-04"), LocalDate.parse("2014-12-04"));
         TestCurrencyConverter converter = new TestCurrencyConverter();
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, period);
+
+        new SecurityPerformanceSnapshotComparator(snapshot,
+                        LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();
 
         SecurityPerformanceRecord record = snapshot.getRecords().get(0);
 

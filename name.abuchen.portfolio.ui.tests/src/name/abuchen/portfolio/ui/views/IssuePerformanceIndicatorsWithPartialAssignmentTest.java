@@ -27,8 +27,8 @@ import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsViewer.Element;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsViewer.ElementValueProvider;
 import name.abuchen.portfolio.util.Interval;
@@ -54,17 +54,17 @@ public class IssuePerformanceIndicatorsWithPartialAssignmentTest
 
     private static ClientSnapshot SNAPSHOT;
 
-    private static Map<Security, SecurityPerformanceRecord> SECURITY2RECORD;
+    private static Map<Security, LazySecurityPerformanceRecord> SECURITY2RECORD;
 
     private Function<Stream<Object>, Object> sum = objects -> objects.map(e -> (Money) e)
                     .collect(MoneyCollectors.sum(SNAPSHOT.getCurrencyConverter().getTermCurrency()));
 
     private ElementValueProvider function_delta = new ElementValueProvider( //
-                    SecurityPerformanceRecord::getDelta, sum);
+                    LazySecurityPerformanceRecord::getDelta, sum);
     private ElementValueProvider function_capital_gains = new ElementValueProvider(
-                    SecurityPerformanceRecord::getCapitalGainsOnHoldings, sum);
+                    LazySecurityPerformanceRecord::getCapitalGainsOnHoldings, sum);
     private ElementValueProvider function_capical_gains_percent = new ElementValueProvider(
-                    SecurityPerformanceRecord::getCapitalGainsOnHoldingsPercent, null);
+                    LazySecurityPerformanceRecord::getCapitalGainsOnHoldingsPercent, null);
 
     @BeforeClass
     public static void setupClient() throws IOException
@@ -76,10 +76,10 @@ public class IssuePerformanceIndicatorsWithPartialAssignmentTest
 
         SNAPSHOT = ClientSnapshot.create(CLIENT, converter, LocalDate.parse("2018-07-14")); //$NON-NLS-1$
 
-        SecurityPerformanceSnapshot sps = SecurityPerformanceSnapshot.create(CLIENT, converter, REPORTING_PERIOD);
+        var sps = LazySecurityPerformanceSnapshot.create(CLIENT, converter, REPORTING_PERIOD);
 
         SECURITY2RECORD = sps.getRecords().stream()
-                        .collect(Collectors.toMap(SecurityPerformanceRecord::getSecurity, r -> r));
+                        .collect(Collectors.toMap(LazySecurityPerformanceRecord::getSecurity, r -> r));
     }
 
     @Test
