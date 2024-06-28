@@ -14,8 +14,10 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.snapshot.security.CalculationLineItem.DividendPayment;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.util.Interval;
 
 public class Issue1879DividendRateOfReturnPerYearWithSecurityInMultipleAccountsTest
@@ -31,6 +33,9 @@ public class Issue1879DividendRateOfReturnPerYearWithSecurityInMultipleAccountsT
                         LocalDate.parse("2020-12-31")); //$NON-NLS-1$
 
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, period);
+
+        new SecurityPerformanceSnapshotComparator(snapshot,
+                        LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();
 
         SecurityPerformanceRecord record = snapshot.getRecords().get(0);
 

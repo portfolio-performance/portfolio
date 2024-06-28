@@ -18,8 +18,10 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.util.Interval;
 
 public class Issue1498FifoCrossPortfolioTest
@@ -47,6 +49,9 @@ public class Issue1498FifoCrossPortfolioTest
         SecurityPerformanceRecord securityRecord = securitySnapshot.getRecords().get(0);
         assertThat(securityRecord.getSecurity(), is(lufthansa));
         assertThat(securityRecord.getFifoCost(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1150))));
+        
+        new SecurityPerformanceSnapshotComparator(securitySnapshot,
+                        LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();
 
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, period);
 

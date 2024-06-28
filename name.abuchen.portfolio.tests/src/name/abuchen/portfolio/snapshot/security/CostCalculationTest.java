@@ -129,8 +129,11 @@ public class CostCalculationTest
 
         CurrencyConverter converter = new TestCurrencyConverter().with(CurrencyUnit.EUR);
 
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter,
-                        Interval.of(LocalDate.parse("2015-01-16"), LocalDate.parse("2015-12-31")));
+        var interval = Interval.of(LocalDate.parse("2015-01-16"), LocalDate.parse("2015-12-31"));
+        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, interval);
+
+        new SecurityPerformanceSnapshotComparator(snapshot,
+                        LazySecurityPerformanceSnapshot.create(client, converter, interval)).compare();
 
         assertThat(snapshot.getRecords().size(), is(1));
 
