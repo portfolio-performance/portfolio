@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf.tradegateag;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -98,5 +99,36 @@ public class TradegateAGPDFExtractorTest
                         hasNote("Order-/Ref.nr. 9876543 | Limit 43,6600 EUR"), //
                         hasAmount("EUR", 130.75), hasGrossValue("EUR", 130.98), //
                         hasTaxes("EUR", 0.22 + 0.01), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende01()
+    {
+        TradegateAGPDFExtractor extractor = new TradegateAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BZ163G84"), hasWkn("A143JK"), hasTicker(null), //
+                        hasName("Vanguard EUR Corp.Bond U.ETF Registered Shares EUR Dis.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-26T00:00"), hasShares(76.00), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Order-/Ref.nr. 9876543"), //
+                        hasAmount("EUR", 7.16), hasGrossValue("EUR", 9.72), //
+                        hasTaxes("EUR", 2.43 + 0.13), hasFees("EUR", 0.00))));
     }
 }

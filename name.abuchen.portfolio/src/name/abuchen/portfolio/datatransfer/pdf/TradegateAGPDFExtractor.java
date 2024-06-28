@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -20,6 +21,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Tradegate AG");
 
         addBuySellTransaction();
+        addDividendeTransaction();
     }
 
     @Override
@@ -111,6 +113,74 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
         addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
+    private void addDividendeTransaction()
+    {
+        DocumentType type = new DocumentType("Ertragsgutschrift");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^.*Kundennummer.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Wertpapier Vanguard EUR Corp.Bond U.ETF Registered Shares EUR Dis.oN
+                        // ISIN IE00BZ163G84
+                        // WKN A143JK
+                        // Ausschüttung 0,127847 EUR pro Stück
+                        // @formatter:on
+                        .section("name", "isin", "wkn", "currency") //
+                        .match("^Wertpapier (?<name>.*)$")
+                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .match("^WKN (?<wkn>[A-Z0-9]{6})$") //
+                        .match("^Ausschüttung [\\.,\\d]+ (?<currency>[\\w]{3}) pro St.ck$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // Nominal/Stück 76 Stück
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^Nominal\\/St.ck (?<shares>[\\.,\\d]+) St.ck$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Der Abrechnungsbetrag wird Ihrem o. g. Verrechnungskonto mit Valuta 26.06.2024 gutgeschrieben.
+                        // @formatter:on
+                        .section("date") //
+                        .match("^.* Verrechnungskonto mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) gutgeschrieben\\.$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Ausmachender Betrag 7,16 EUR
+                        // @formatter:on
+                        .section("currency", "amount") //
+                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // 12345 Investcity Order-/Ref.nr. 9876543
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>Order\\-\\/Ref\\.nr\\. .*)$")
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+    }
+
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
@@ -127,6 +197,13 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Abgef.hrter Solidarit.tszuschlag \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Abgeführter Kirchensteuer -X,XX EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Abgef.hrter Kirchensteuer \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 }

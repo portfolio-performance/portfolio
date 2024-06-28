@@ -1,0 +1,55 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+Tradegate AGWertpapierhandelsbank · Kurfürstendamm 129d · 10711 Berlin
+Datum 27.06.2024
+Herrn Kundennummer 12345678
+Total Egal IBAN DE48 1111 2222 3333 4444 55
+Dumdideldumweg 19 Investment-Depot 00123456.123
+12345 Investcity Order-/Ref.nr. 9876543
+E-Mail support@tradegate.direct
+Seite 1 von 2
+Ertragsgutschrift
+Wertpapier Vanguard EUR Corp.Bond U.ETF Registered Shares EUR Dis.oN
+ISIN IE00BZ163G84
+WKN A143JK
+Verwahrart Wertpapierrechnung
+Lagerland Vereinigtes Königreich
+Nominal/Stück 76 Stück
+Währung EUR
+Ausschüttung 0,127847 EUR pro Stück
+Dividendenart Ordentliche Dividende
+Periodizität Interim
+Zahlungsdatum 26.06.2024
+Ex-Datum 13.06.2024
+Abrechnung
+Bruttobetrag 9,72 EUR
+Abgeführte Kapitalertragsteuer -2,43 EUR
+Abgeführter Solidaritätszuschlag -0,13 EUR
+Nettobetrag 7,16 EUR
+Ausmachender Betrag 7,16 EUR
+Der Abrechnungsbetrag wird Ihrem o. g. Verrechnungskonto mit Valuta 26.06.2024 gutgeschrieben.
+Erträge aus ausländischen Wertpapieren von über 12.500,00 EUR sind nach §§ 67 ff. Außenwirtschaftsverordnung
+(AWV) meldepflichtig.
+Etwaige Einwendungen wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte unverzüglich an tradegate.direct,
+Kurfürstendamm 129d, 10711 Berlin oder an beschwerdemanagement@tradegate.direct.
+Bitte beachten Sie, dass dieser Beleg keine Steuerbescheinigung darstellt.
+Diese Mitteilung wurde maschinell erstellt und wird von der Bank nicht unterschrieben.
+tradegate.direct ein Service der Tradegate AG Wertpapierhandelsbank
+Tradegate AG Wertpapierhandelsbank · Kurfürstendamm 129d · 10711 Berlin
+Telefon: +49 (0)30 515 657 700 · E-Mail: info@tradegate.direct · Internet: www.tradegate.direct
+Handelsregister: Amtsgericht Berlin-Charlottenburg, HRB 71506 B · USt-ID: DE 155 528 522 · BIC: TRDADEBBDIR · BLZ: 103 106 66
+Aufsichtsratsvorsitzender: Frank-Uwe Fricke · Vorstand: Holger Timm (Vorsitzender), Kerstin Timm, Jörg Hartmann, Thorsten Commichau, Klaus-Gerd Kleversaat, Karsten Haesen
+Seite 2 von 2
+Steuerliche Informationen - Ertragsgutschrift
+Ausschüttungen gem. § 2 Abs. 11 InvStG EUR 9,72
+Steuerpflichtiger Betrag nach Teilfreistellung (im Privatvermögen) EUR 9,72
+Bemessungsgrundlage für Kapitalertragsteuer EUR 9,72
+Kapitalertragsteuer EUR -2,43
+Solidaritätszuschlag EUR -0,13
+Kirchensteuer EUR 0,00
+tradegate.direct ein Service der Tradegate AG Wertpapierhandelsbank
+Tradegate AG Wertpapierhandelsbank · Kurfürstendamm 129d · 10711 Berlin
+Telefon: +49 (0)30 515 657 700 · E-Mail: info@tradegate.direct · Internet: www.tradegate.direct
+Handelsregister: Amtsgericht Berlin-Charlottenburg, HRB 71506 B · USt-ID: DE 155 528 522 · BIC: TRDADEBBDIR · BLZ: 103 106 66
+Aufsichtsratsvorsitzender: Frank-Uwe Fricke · Vorstand: Holger Timm (Vorsitzender), Kerstin Timm, Jörg Hartmann, Thorsten Commichau, Klaus-Gerd Kleversaat, Karsten Haesen
