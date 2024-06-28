@@ -1118,32 +1118,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .optionalOneOf(
                                         // @formatter:off
-                                        // GESAMT 5,63 USD
-                                        // Zwischensumme 1,102 EUR/USD 5,11 EUR
-                                        //
-                                        // TOTALE 18,61 CAD
-                                        // Subtotale 1,46055 EUR/CAD 9,56 EUR
-                                        //
-                                        // TOTAL 0.02 USD
-                                        // Subtotal 1.0715 EUR/USD 0.02 EUR
-                                        //
-                                        // TOTAL 0,48 USD
-                                        // Sous-total 1,0802 EUR/USD 0,38 EUR
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("fxGross", "exchangeRate", "baseCurrency", "termCurrency") //
-                                                        .match("^(GESAMT|TOTALE|TOTAL) (\\-)?(?<fxGross>[\\.,\\d]+) [\\w]{3}$") //
-                                                        .match("^(Zwischensumme|Subtotale|Subtotal|Sous\\-total) (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?[\\.,\\d]+ [\\w]{3}$") //
-                                                        .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
-                                                            type.getCurrentContext().putType(rate);
-
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
-
-                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                                        }),
-                                        // @formatter:off
                                         // 1 Bruttoertrag 26,80 GBP
                                         // Zwischensumme 0,85267 EUR/GBP 0,44 EUR
                                         // @formatter:on
@@ -1177,6 +1151,41 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                                                             Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
                                                             Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // GESAMT 5,63 USD
+                                        // Zwischensumme 1,102 EUR/USD 5,11 EUR
+                                        //
+                                        // TOTALE 18,61 CAD
+                                        // Subtotale 1,46055 EUR/CAD 9,56 EUR
+                                        //
+                                        // TOTAL 0.02 USD
+                                        // Subtotal 1.0715 EUR/USD 0.02 EUR
+                                        //
+                                        // TOTAL 0,48 USD
+                                        // Sous-total 1,0802 EUR/USD 0,38 EUR
+                                        //
+                                        // Zwischensumme 21.42 USD
+                                        // Zwischensumme 1.073 USD/EUR 19.97 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "fxCurrency", "exchangeRate", "baseCurrency", "termCurrency", "gross", "currency") //
+                                                        .match("^(Zwischensumme|GESAMT|TOTALE|TOTAL) (\\-)?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
+                                                        .match("^(Zwischensumme|Subtotale|Subtotal|Sous\\-total) (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?(?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            if (!asCurrencyCode(v.get("currency")).equals(asCurrencyCode(v.get("baseCurrency"))))
+                                                            {
+                                                                v.put("baseCurrency", asCurrencyCode(v.get("currency")));
+                                                                v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
+                                                            }
+
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))

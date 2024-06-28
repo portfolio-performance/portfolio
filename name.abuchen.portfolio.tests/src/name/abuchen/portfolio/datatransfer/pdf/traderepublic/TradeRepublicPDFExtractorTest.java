@@ -4285,6 +4285,38 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testDividende23()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US91324P1021"), hasWkn(null), hasTicker(null), //
+                        hasName("UnitedHealth"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-25T00:00"), hasShares(12.00), //
+                        hasSource("Dividende23.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 19.97), hasGrossValue("EUR", 23.49), //
+                        hasForexGrossValue("USD", 25.20), //
+                        hasTaxes("EUR", 3.78 / 1.073), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDividend01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
