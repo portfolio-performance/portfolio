@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.snapshot.security;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,9 @@ import name.abuchen.portfolio.util.Interval;
             addPseudoValuationTansactions(portfolio, transactions);
         }
 
+        transactions.values()
+                        .forEach(item -> Collections.sort(item.getLineItems(), new CalculationLineItemComparator()));
+
         return transactions.values().stream().filter(item -> !item.getLineItems().isEmpty()).toList();
     }
 
@@ -75,6 +79,9 @@ import name.abuchen.portfolio.util.Interval;
                                 position, interval.getEnd().atStartOfDay()));
             }
         }
+
+        transactions.values()
+                        .forEach(item -> Collections.sort(item.getLineItems(), new CalculationLineItemComparator()));
 
         return transactions.values().stream().filter(item -> !item.getLineItems().isEmpty()).toList();
     }
