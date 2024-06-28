@@ -30,9 +30,11 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.snapshot.trail.Trail;
 import name.abuchen.portfolio.util.Interval;
 
@@ -227,6 +229,10 @@ public class CurrencyTestCase
 
         Interval period = Interval.of(LocalDate.parse("2014-12-31"), LocalDate.parse("2015-08-10"));
         SecurityPerformanceSnapshot performance = SecurityPerformanceSnapshot.create(client, converter, period);
+        
+        new SecurityPerformanceSnapshotComparator(performance,
+                        LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();
+        
         SecurityPerformanceRecord record = performance.getRecords().stream().filter(r -> r.getSecurity() == securityUSD)
                         .findAny().orElseThrow(IllegalArgumentException::new);
         assertThat(record.getSharesHeld(), is(Values.Share.factorize(15)));
