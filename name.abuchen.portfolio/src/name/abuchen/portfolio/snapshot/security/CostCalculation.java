@@ -20,6 +20,11 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
 /* package */class CostCalculation extends Calculation
 {
+    public record CostCalculationResult(long sharesHeld, Money fifoCost, Money netFifoCost, Money movingAverageCost,
+                    Money netMovingAverageCost)
+    {
+    }
+
     private static class LineItem
     {
         private TransactionOwner<?> owner;
@@ -248,6 +253,12 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         t.setFifoCost(getFifoCost());
         t.setMovingAverageCost(getMovingAverageCost());
         t.setTotalShares(getSharesHeld());
+    }
+
+    public CostCalculationResult getResult()
+    {
+        return new CostCalculationResult(getSharesHeld(), getFifoCost(), getNetFifoCost(), getMovingAverageCost(),
+                        getNetMovingAverageCost());
     }
 
     /**
