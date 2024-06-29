@@ -103,7 +103,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-02T10:49:34")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(53)));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(53.00)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
         assertNull(entry.getNote());
 
@@ -147,9 +147,9 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-06-03T09:27:01")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29)));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.00)));
         assertThat(entry.getSource(), is("Kauf02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Handelsreferenz: [0123456789abcdef01234567]"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2083.94))));
@@ -191,9 +191,9 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-03-01T18:23:36")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30)));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30.00)));
         assertThat(entry.getSource(), is("Kauf03.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Handelsreferenz: 603d2318e971a90019a6053b"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2292.00))));
@@ -229,10 +229,42 @@ public class SutorBankGmbHPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-06-01T20:37:32"), hasShares(300), //
-                        hasSource("Kauf04.txt"), hasNote(null), //
+                        hasDate("2023-06-01T20:37:32"), hasShares(300.00), //
+                        hasSource("Kauf04.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 1902.40), hasGrossValue("EUR", 1901.40), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 12.51 - 11.51))));
+    }
+
+    @Test
+    public void testWertpapierKauf05()
+    {
+        SutorBankGmbHPDFExtractor extractor = new SutorBankGmbHPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US56035L1044"), hasWkn(null), hasTicker(null), //
+                        hasName("Main Street Capital Corp."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-06-26T21:11:58"), hasShares(5.00), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote("Handelsreferenz: 547l78QW0n57EA12598N8822"), //
+                        hasAmount("EUR", 234.22), hasGrossValue("EUR", 233.22), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.17 - 3.17))));
     }
 
     @Test
@@ -267,7 +299,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-07-31T21:00:15")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(58)));
         assertThat(entry.getSource(), is("Verkauf01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Handelsreferenz: 5f245de9567c6400199b6ba9"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2232.23))));
@@ -311,7 +343,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-06-25T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(9)));
         assertThat(entry.getSource(), is("Verkauf02.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Referenz 6709"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2070.00))));
@@ -378,7 +410,8 @@ public class SutorBankGmbHPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2023-06-13T11:10:52"), hasShares(0.4000), //
-                        hasSource("Verkauf04.txt"), hasNote(null), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote("Handelsreferenz: 11111111"), //
                         hasAmount("EUR", 1.26), hasGrossValue("EUR", 1.26), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -415,7 +448,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T14:31:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Handelsreferenz: 5f313e083e83d00019d6835e"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1228.00))));
@@ -436,7 +469,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T15:48:16")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(125)));
         assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Handelsreferenz: 5f315020567c6400199c4044"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1575.00))));
@@ -457,7 +490,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T15:51:21")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(125)));
         assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Handelsreferenz: 5f3150d93e83d00019d68628"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1573.75))));
@@ -478,7 +511,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T16:51:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(150)));
         assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Handelsreferenz: 5f315ee83e83d00019d6885a"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1830.00))));
@@ -499,7 +532,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T15:33:52")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Handelsreferenz: 5f314b9f567c6400199c3fb1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1262.00))));
@@ -520,7 +553,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T15:50:52")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(125)));
         assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Handelsreferenz: 5f31509a3e83d00019d6861b"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1576.25))));
@@ -541,7 +574,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T16:19:50")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(125)));
         assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Handelsreferenz: 5f3156b43e83d00019d686fa"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1575.00))));
@@ -562,7 +595,7 @@ public class SutorBankGmbHPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-08-10T17:07:12")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(150)));
         assertThat(entry.getSource(), is("Sammelabrechnung01.txt"));
-        assertNull(entry.getNote());
+        assertThat(entry.getNote(), is("Handelsreferenz: 5f3162a03e83d00019d68929"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1833.00))));
