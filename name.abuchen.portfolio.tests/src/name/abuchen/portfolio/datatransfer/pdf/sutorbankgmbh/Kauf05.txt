@@ -1,0 +1,39 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+justTRADE
+Ein Service der Sutor Bank GmbH
+JT Technologies GmbH
+Hamburger Allee 14
+Herr 60486 Frankfurt am Main
+wyBjXV GbrtHoh E-Mail: service@justtrade.com
+fxsGzkiiEbhpeQ 26 Web: www.justtrade.com
+66243 hHFTxMiPzvRU
+Name des Kunden: VNFpqf VWRE
+Depotnummer: 762381388
+WERTPAPIERABRECHNUNG
+Sehr geehrter Herr Max Mustermann,
+dieses Dokument ist eine Bestätigung der Transaktion, die wir in Ihrem Namen durchgeführt haben.
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an unseren Kundenservice. Sie
+finden die Kontaktdetails im Briefkopf dieses Schreibens.
+Der Gegenwert der Transaktion wird per Valutatag gebucht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Produktbezeichnung - Main Street Capital Corp.
+Internationale Wertpapierkennnummer (ISIN): US56035L1044
+Währung: EUR
+Handels-/Ausführungsplatz: HAMN
+Handelsreferenz: 547l78QW0n57EA12598N8822
+Orderausführung Datum/Zeit: 26 Jun 2024 21:11:58
+Valutatag Datum: 28 Jun 2024
+Transaktionsart: Kauf
+Kurs: €46,6450
+Stück/Nominale: 5,0000
+Kurswert: €233,23
+Orderprovision: €4,17
+Rabatt (inkl. Rückvergütung): - €3,17
+Ausmachender Betrag: €234,22
+SUTOR BANK GmbH TELEFON 040-8090685-0 GESCHÄFTSFÜHRUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 222721000896 HRB 178357
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX

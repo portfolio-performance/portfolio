@@ -209,6 +209,14 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
 
+                        // @formatter:off
+                        // Referenz 6709
+                        // Handelsreferenz: 547l78QW0n57EA12598N8822
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>(Referenz|Handelsreferenz:) .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
                         .wrap(t -> {
                             // If we have multiple entries in the document, with
                             // fee and fee refunds, then the "noProvision" flag
