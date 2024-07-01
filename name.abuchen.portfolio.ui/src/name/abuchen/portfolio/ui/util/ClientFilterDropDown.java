@@ -44,4 +44,9 @@ public final class ClientFilterDropDown extends DropDown implements IMenuListene
     {
         return menu.hasActiveFilter();
     }
+
+    public ClientFilterMenu getClientFilterMenu()
+    {
+        return menu;
+    }
 }

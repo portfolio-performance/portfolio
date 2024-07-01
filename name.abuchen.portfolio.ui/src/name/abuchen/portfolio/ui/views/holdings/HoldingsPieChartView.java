@@ -67,7 +67,9 @@ public class HoldingsPieChartView extends AbstractFinanceView
     @Override
     protected String getDefaultTitle()
     {
-        return Messages.LabelStatementOfAssetsHoldings;
+        return (clientFilter == null || !clientFilter.hasActiveFilter()) ? Messages.LabelStatementOfAssetsHoldings
+                        : Messages.LabelStatementOfAssetsHoldings + " : " //$NON-NLS-1$
+                                        + clientFilter.getClientFilterMenu().getSelectedItem().getLabel();
     }
 
     @Override
@@ -80,6 +82,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
         chart.refresh(snapshot);
         
         updateWarningInToolBar();
+        updateTitle(getDefaultTitle());
 
         setInformationPaneInput(null);
     }
@@ -103,6 +106,8 @@ public class HoldingsPieChartView extends AbstractFinanceView
         }
 
         updateWarningInToolBar();
+        updateTitle(getDefaultTitle());
+
         return chart.createControl(parent);
     }
 
