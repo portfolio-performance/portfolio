@@ -275,7 +275,9 @@ public class SecuritiesChart
         EMA_100DAYS(Messages.LabelChartDetailMovingAverage_100days), //
         EMA_200DAYS(Messages.LabelChartDetailMovingAverage_200days), //
         SHOW_MARKER_LINES(Messages.LabelChartDetailSettingsShowMarkerLines), //
-        SHOW_DATA_LABELS(Messages.LabelChartDetailSettingsShowDataLabel), //
+        SHOW_DATA_DIVESTMENT_INVESTMENT_LABEL(Messages.LabelChartDetailSettingsShowDivestmentInvestmentDataLabel), //
+        SHOW_DATA_DIVIDEND_LABEL(Messages.LabelChartDetailSettingsShowDividendDataLabel), //
+        SHOW_DATA_EXTREMES_LABEL(Messages.LabelChartDetailSettingsShowExtremeDataLabel), //
         SHOW_MISSING_TRADING_DAYS(Messages.LabelChartDetailSettingsShowMissingTradingDays), //
         SHOW_LIMITS(Messages.LabelChartDetailSettingsShowLimits), //
         SHOW_PERCENTAGE_AXIS(Messages.LabelChartDetailSettingsShowPercentageAxis), //
@@ -747,7 +749,9 @@ public class SecuritiesChart
         subMenuChartMovingAverageEMA.add(addMenuAction(ChartDetails.EMA_100DAYS));
         subMenuChartMovingAverageEMA.add(addMenuAction(ChartDetails.EMA_200DAYS));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MARKER_LINES));
-        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_LABELS));
+        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_DIVIDEND_LABEL));
+        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_EXTREMES_LABEL));
+        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_DIVESTMENT_INVESTMENT_LABEL));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MISSING_TRADING_DAYS));
         subMenuChartSettings.add(new Separator());
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_PERCENTAGE_AXIS));
@@ -1249,7 +1253,7 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
         {
-            var showLabels = chartConfig.contains(ChartDetails.SHOW_DATA_LABELS);
+            var showLabels = chartConfig.contains(ChartDetails.SHOW_DATA_DIVESTMENT_INVESTMENT_LABEL);
             transactions.forEach(t -> {
                 if (showLabels)
                 {
@@ -1296,7 +1300,7 @@ public class SecuritiesChart
             inner.setSymbolColor(color);
             configureSeriesPainter(inner, dates, values, color, 0, LineStyle.NONE, false, true);
 
-            if (chartConfig.contains(ChartDetails.SHOW_DATA_LABELS))
+            if (chartConfig.contains(ChartDetails.SHOW_DATA_DIVESTMENT_INVESTMENT_LABEL))
             {
                 customPaintListeners.add(event -> {
                     Color defaultForeground = Colors.theme().defaultForeground();
@@ -1346,7 +1350,7 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
         {
-            var showLabels = chartConfig.contains(ChartDetails.SHOW_DATA_LABELS);
+            var showLabels = chartConfig.contains(ChartDetails.SHOW_DATA_DIVIDEND_LABEL);
             dividends.forEach(t -> chart.addMarkerLine(t.getDateTime().toLocalDate(), colorEventDividend,
                             showLabels ? getDividendLabel(t) : null));
         }
@@ -1393,7 +1397,7 @@ public class SecuritiesChart
             inner.setSymbolColor(colorEventDividend);
             configureSeriesPainter(inner, dates, values, null, 0, LineStyle.NONE, false, true);
 
-            if (chartConfig.contains(ChartDetails.SHOW_DATA_LABELS))
+            if (chartConfig.contains(ChartDetails.SHOW_DATA_DIVIDEND_LABEL))
             {
                 customPaintListeners.add(event -> {
                     FontMetrics fontMetrics = event.gc.getFontMetrics();
@@ -1486,7 +1490,7 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
         {
-            if (chartConfig.contains(ChartDetails.SHOW_DATA_LABELS))
+            if (chartConfig.contains(ChartDetails.SHOW_DATA_EXTREMES_LABEL))
             {
                 String valueFormat = Values.Quote.format(price.getValue());
                 chart.addMarkerLine(eventDate, color, valueFormat, value);
@@ -1507,7 +1511,7 @@ public class SecuritiesChart
             configureSeriesPainter(inner, new Date[] { zonedDate }, new double[] { value }, color, 0, LineStyle.NONE,
                             false, true);
 
-            if (chartConfig.contains(ChartDetails.SHOW_DATA_LABELS))
+            if (chartConfig.contains(ChartDetails.SHOW_DATA_EXTREMES_LABEL))
             {
                 customPaintListeners.add(event -> {
                     IAxis xAxis = chart.getAxisSet().getXAxis(0);
