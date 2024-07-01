@@ -1902,7 +1902,7 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("Kontoauszug14.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2024-06-09"), hasAmount("EUR", 33.21), // TODO should be removal
+        assertThat(results, hasItem(removal(hasDate("2024-06-09"), hasAmount("EUR", 33.21), //
                         hasSource("Kontoauszug14.txt"), hasNote("Lidl sagt Danke"))));
 
         // assert transaction
