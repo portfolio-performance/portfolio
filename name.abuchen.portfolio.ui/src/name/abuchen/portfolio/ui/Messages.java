@@ -577,7 +577,9 @@ public class Messages extends NLS
     public static String LabelChartDetailSettingsShowHorizontalLinesPercentage;
     public static String LabelChartDetailSettingsShowLimits;
     public static String LabelChartDetailSettingsShowMarkerLines;
-    public static String LabelChartDetailSettingsShowDataLabel;
+    public static String LabelChartDetailSettingsShowDividendDataLabel;
+    public static String LabelChartDetailSettingsShowExtremeDataLabel;
+    public static String LabelChartDetailSettingsShowDivestmentInvestmentDataLabel;
     public static String LabelChartDetailSettingsShowMissingTradingDays;
     public static String LabelChartDetailSettingsShowPercentageAxis;
     public static String LabelChartShowLabels;
