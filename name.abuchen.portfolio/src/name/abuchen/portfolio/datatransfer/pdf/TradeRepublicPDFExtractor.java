@@ -67,7 +67,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|RELEV. DE TRANSACTION"
                         + "|REGOLAMENTO TITOLI"
                         + "|ZWANGS.BERNAHME"
-                        + "|TILGUNG)", //
+                        + "|TILGUNG"
+                        + "|REPAYMENT)", //
                         "(ABRECHNUNG CRYPTOGESCH.FT|CRYPTO SPARPLAN)");
         this.addDocumentTyp(type);
 
@@ -99,28 +100,31 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         + "|Ex.cution de l.investissement programm." //
                                         + "|REINVESTIERUNG" //
                                         + "|ZWANGS.BERNAHME"
-                                        + "|TILGUNG))" //
+                                        + "|TILGUNG"
+                                        + "|REPAYMENT))" //
                                         + ".*$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equalsIgnoreCase(v.get("type")) //
                                             || "Sell".equalsIgnoreCase(v.get("type")) //
                                             || "ZWANGSÜBERNAHME".equalsIgnoreCase(v.get("type")) //
-                                            || "TILGUNG".equalsIgnoreCase(v.get("type")))
+                                            || "TILGUNG".equalsIgnoreCase(v.get("type")) //
+                                            || "REPAYMENT".equalsIgnoreCase(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
                         .oneOf( //
                                         // @formatter:off
-                                        // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
-                                        // Registered Shares o.N.
-                                        // AU000000CUV3
-                                        // ISIN: DE000A3H23V7
+                                        // 1 Repayment Société Générale Effekten GmbH 500 Pcs.
+                                        // MiniL O.End CBOE VIX 14,94
+                                        // DE000SQ728J8
+                                        // 1 Market value 35.00 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("name", "currency", "isin", "nameContinued") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
-                                                        .match("^(?<nameContinued>.*)$") //
-                                                        .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .attributes("name", "nameContinued", "isin", "currency") //
+                                                        .match("^[\\d] (Ausbuchung|Tilgung|Repayment) (?<name>.*) [\\.,\\d]+ (Stk|Pcs)\\.$")
+                                                        .match("^(?<nameContinued>.*) [\\w]{4} [\\w]{3,4} [\\.,\\d]+$")
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .match("^[\\d] (Barausgleich|Kurswert|Market value) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // 1 Ausbuchung Quantafuel AS 17 Stk.
@@ -132,13 +136,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // TurboC O.End Linde
                                         // DE000TT22GS8
                                         // 1 Kurswert 0,70 EUR
-                                        // @formatter:on
                                         section -> section //
                                                         .attributes("name", "nameContinued", "isin", "currency") //
-                                                        .match("^[\\d] (Ausbuchung|Tilgung) (?<name>.*) [\\.,\\d]+ Stk\\.$")
+                                                        .match("^[\\d] (Ausbuchung|Tilgung|Repayment) (?<name>.*) [\\.,\\d]+ (Stk|Pcs)\\.$")
                                                         .match("^(?<nameContinued>.*)$")
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                                                        .match("^[\\d] (Barausgleich|Kurswert) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^[\\d] (Barausgleich|Kurswert|Market value) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Bundesrep.Deutschland 1.019 EUR 98,05 % 999,13 EUR
@@ -150,15 +153,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<name>.*) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ % [\\.,\\d]+ [\\w]{3}$")
                                                         .match("^(?<nameContinued>.*)$")
                                                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
-                                        // @formatter:off
-                                        // Kontron 23 Stk. 20,90 EUR 480,70 EUR
-                                        // ISIN: AT0000A0E9W5
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("name", "currency", "isin") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
-                                                        .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // This is for the reinvestment of dividends
@@ -178,6 +172,41 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^[\\d] Bruttoertrag [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Société Générale Effekten GmbH 490 Pcs. 0.886 EUR 434.14 EUR
+                                        // MiniL O.End CBOE VIX 11,49
+                                        // ISIN: DE000SQ6QKU9
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin", "nameContinued") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(?<nameContinued>.*) [\\w]{4} [\\w]{3,4} [\\.,\\d]+$")
+                                                        .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // 3M Co. 7 Stk. 139,40 EUR 975,80 EUR
+                                        // Registered Shares DL -,01
+                                        // ISIN: US88579Y1010
+                                        //
+                                        // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
+                                        // Registered Shares o.N.
+                                        // AU000000CUV3
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin", "nameContinued") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Kontron 23 Stk. 20,90 EUR 480,70 EUR
+                                        // ISIN: AT0000A0E9W5
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -204,6 +233,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^[\\d] (Ausbuchung|Tilgung) .* (?<shares>[\\.,\\d]+) Stk\\.$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
+                                        // @formatter:off
+                                        // 1 Repayment Société Générale Effekten GmbH 500 Pcs.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^[\\d] Repayment .* (?<shares>[\\.,\\d]+) Pcs\\.$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Bundesrep.Deutschland 1.019 EUR 98,05 % 999,13 EUR
@@ -2246,16 +2282,17 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         // @formatter:off
-                                        // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
-                                        // Registered Shares o.N.
-                                        // AU000000CUV3
-                                        // ISIN: DE000A3H23V7
+                                        // 1 Repayment Société Générale Effekten GmbH 500 Pcs.
+                                        // MiniL O.End CBOE VIX 14,94
+                                        // DE000SQ728J8
+                                        // 1 Market value 35.00 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("name", "currency", "isin", "nameContinued") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
-                                                        .match("^(?<nameContinued>.*)$") //
-                                                        .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .attributes("name", "nameContinued", "isin", "currency") //
+                                                        .match("^[\\d] (Ausbuchung|Tilgung|Repayment) (?<name>.*) [\\.,\\d]+ (Stk|Pcs)\\.$")
+                                                        .match("^(?<nameContinued>.*) [\\w]{4} [\\w]{3,4} [\\.,\\d]+$")
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .match("^[\\d] (Barausgleich|Kurswert|Market value) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // 1 Ausbuchung Quantafuel AS 17 Stk.
@@ -2267,13 +2304,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // TurboC O.End Linde
                                         // DE000TT22GS8
                                         // 1 Kurswert 0,70 EUR
-                                        // @formatter:on
                                         section -> section //
                                                         .attributes("name", "nameContinued", "isin", "currency") //
-                                                        .match("^[\\d] (Ausbuchung|Tilgung) (?<name>.*) [\\.,\\d]+ Stk\\.$")
+                                                        .match("^[\\d] (Ausbuchung|Tilgung|Repayment) (?<name>.*) [\\.,\\d]+ (Stk|Pcs)\\.$")
                                                         .match("^(?<nameContinued>.*)$")
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                                                        .match("^[\\d] (Barausgleich|Kurswert) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^[\\d] (Barausgleich|Kurswert|Market value) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Bundesrep.Deutschland 1.019 EUR 98,05 % 999,13 EUR
@@ -2285,15 +2321,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<name>.*) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ % [\\.,\\d]+ [\\w]{3}$")
                                                         .match("^(?<nameContinued>.*)$")
                                                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
-                                        // @formatter:off
-                                        // Kontron 23 Stk. 20,90 EUR 480,70 EUR
-                                        // ISIN: AT0000A0E9W5
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("name", "currency", "isin") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
-                                                        .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // This is for the reinvestment of dividends
@@ -2313,6 +2340,41 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^[\\d] Bruttoertrag [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Société Générale Effekten GmbH 490 Pcs. 0.886 EUR 434.14 EUR
+                                        // MiniL O.End CBOE VIX 11,49
+                                        // ISIN: DE000SQ6QKU9
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin", "nameContinued") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(?<nameContinued>.*) [\\w]{4} [\\w]{3,4} [\\.,\\d]+$")
+                                                        .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // 3M Co. 7 Stk. 139,40 EUR 975,80 EUR
+                                        // Registered Shares DL -,01
+                                        // ISIN: US88579Y1010
+                                        //
+                                        // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
+                                        // Registered Shares o.N.
+                                        // AU000000CUV3
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin", "nameContinued") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Kontron 23 Stk. 20,90 EUR 480,70 EUR
+                                        // ISIN: AT0000A0E9W5
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -2339,6 +2401,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^[\\d] (Ausbuchung|Tilgung) .* (?<shares>[\\.,\\d]+) Stk\\.$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // 1 Repayment Société Générale Effekten GmbH 500 Pcs.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^[\\d] Repayment .* (?<shares>[\\.,\\d]+) Pcs\\.$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Bundesrep.Deutschland 1.019 EUR 98,05 % 999,13 EUR
