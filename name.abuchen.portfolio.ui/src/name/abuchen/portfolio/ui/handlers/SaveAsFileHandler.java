@@ -46,6 +46,9 @@ public class SaveAsFileHandler
             case "xml":
                 fileType = ClientFileType.XML;
                 break;
+            case "xml+id":
+                fileType = ClientFileType.XML_ID;
+                break;
             case "xml+zip":
                 fileType = ClientFileType.XML_ZIP;
                 break;

@@ -7,6 +7,7 @@ import java.util.Set;
 public enum ClientFileType
 {
     XML("xml", SaveFlag.XML), //$NON-NLS-1$
+    XML_ID("xml", SaveFlag.XML, SaveFlag.ID_REFERENCES), //$NON-NLS-1$
     XML_ZIP("zip", SaveFlag.XML, SaveFlag.COMPRESSED), //$NON-NLS-1$
     XML_AES256("portfolio", SaveFlag.XML, SaveFlag.ENCRYPTED, SaveFlag.AES256), //$NON-NLS-1$
     XML_AES128("portfolio", SaveFlag.XML, SaveFlag.ENCRYPTED, SaveFlag.AES128), //$NON-NLS-1$
