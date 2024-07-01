@@ -431,6 +431,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 return ""; //$NON-NLS-1$
             }
         });
+        ColumnViewerSorter.create(entry -> ((ExtractedEntry) entry).getMaxCode()).attachTo(viewer, column);
         layout.setColumnData(column.getColumn(), new ColumnPixelData(22, true));
 
         column = new TableViewerColumn(viewer, SWT.NONE);
