@@ -46,6 +46,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("ING-DiBa AG");
+        addBankIdentifier("ING BANK NV");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -57,7 +58,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "ING-DiBa AG";
+        return "ING-DiBa AG / ING Groep N.V.";
     }
 
     private void addBuySellTransaction()
@@ -73,7 +74,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "|Verkauf aus Kapitalmaßnahme" //
                         + "|Verk\\. Teil\\-\\/Bezugsr\\.)" //
                         + "|R.ckzahlung" //
-                        + "|Einl.sung)", jointAccount);
+                        + "|Einl.sung"
+                        + "|Operaciones Cuenta de Valores)", jointAccount);
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -89,7 +91,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "|Verkauf aus Kapitalmaßnahme" //
                         + "|Verk\\. Teil\\-\\/Bezugsr\\.)" //
                         + "|R.ckzahlung" //
-                        + "|Einl.sung)");
+                        + "|Einl.sung"
+                        + "|Operaciones Cuenta de Valores)");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -114,7 +117,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         + "|Verkauf aus Kapitalmaßnahme" //
                                         + "|Verk. Teil\\-\\/Bezugsr\\.)" //
                                         + "|R.ckzahlung" //
-                                        + "|Einl.sung)$") //
+                                        + "|Einl.sung"
+                                        + "|Venta)$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")) //
                                             || "Verkauf aus Kapitalmaßnahme".equals(v.get("type")) //
@@ -126,25 +130,51 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        // @formatter:off
-                        // ISIN (WKN) DE0002635307 (263530)
-                        // Wertpapierbezeichnung iSh.STOXX Europe 600 U.ETF DE
-                        // Inhaber-Anteile
-                        // Kurswert EUR 4.997,22
-                        // @formatter:on
-                        .section("isin", "wkn", "name", "name1", "currency") //
-                        .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                        .match("^Wertpapierbezeichnung (?<name>.*)$") //
-                        .match("^(?<name1>.*)$") //
-                        .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                        // Is type --> "Venta" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* (?<type>(Compra|Venta)) .*$") //
                         .assign((t, v) -> {
-                            if (!v.get("name1").startsWith("Nominale") && !v.get("name1").startsWith("Zinstermin"))
-                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
-
-                            t.setSecurity(getOrCreateSecurity(v));
+                            if ("Venta".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
                         })
 
                         .oneOf( //
+                                        // @formatter:off
+                                        // ISIN (WKN) DE0002635307 (263530)
+                                        // Wertpapierbezeichnung iSh.STOXX Europe 600 U.ETF DE
+                                        // Inhaber-Anteile
+                                        // Kurswert EUR 4.997,22
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "wkn", "name", "name1", "currency") //
+                                                        .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^Wertpapierbezeichnung (?<name>.*)$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Nominale") && !v.get("name1").startsWith("Zinstermin"))
+                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // 67 RED ELECTRICA ES0173093024 M.CONTINUO Compra 15,01 EUR 1.005,67 EUR 4,01 EUR 0,33 EUR 2,01 EUR 1.012,02 EUR
+                                        // 30 DIAGEO GB0002374006 LONDRES Compra 25,19 GBP 894,48 EUR 4,47 EUR 4,52 EUR 0,00 EUR 4,47 EUR 907,94 EUR
+                                        // 125 EBRO FOODS ES0112501012 M.CONTINUO Venta 16,66 EUR 2.082,50 EUR 5,08 EUR 3,17 EUR 0,00 EUR 2.074,25 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^[\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .* (Compra|Venta) [\\.,\\d]+ (?<currency>[\\w]{3}) .*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 67 RED ELECTRICA ES0173093024 M.CONTINUO Compra 15,01 EUR 1.005,67 EUR 4,01 EUR 0,33 EUR 2,01 EUR 1.012,02 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^(?<shares>[\\.,\\d]+) .* (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Nominale Stück 14,00
                                         // @formatter:on
@@ -194,50 +224,89 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .match("^(Ausf.hrungstag|Schlusstag) \\/ \\-zeit [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$") //
                         .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
 
-                        // @formatter:off
-                        // Ausführungstag 15.12.2015
-                        // Schlusstag / -zeit 20.03.2012 um 19:35:40 Uhr
-                        // Fälligkeit 25.05.2017
-                        // @formatter:on
-                        .section("date").multipleTimes() //
-                        .match("^(Ausf.hrungstag|Schlusstag|F.lligkeit)( \\/ -zeit)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})( .*)?$") //
-                        .assign((t, v) -> {
-                            if (type.getCurrentContext().get("time") != null)
-                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
-                            else
-                                t.setDate(asDate(v.get("date")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 14/08/2023 14/08/2023 15:37 67 Limitada 15,01 EUR 14/08/2023 12:21 1005,67 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Ausführungstag 15.12.2015
+                                        // Schlusstag / -zeit 20.03.2012 um 19:35:40 Uhr
+                                        // Fälligkeit 25.05.2017
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date").multipleTimes() //
+                                                        .match("^(Ausf.hrungstag|Schlusstag|F.lligkeit)( \\/ -zeit)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})( .*)?$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().get("time") != null)
+                                                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                            else
+                                                                t.setDate(asDate(v.get("date")));
+                                                        }))
 
-                        // @formatter:off
-                        // Endbetrag zu Ihren Lasten EUR 533,39
-                        // Endbetrag zu Ihren Gunsten EUR 1.887,64
-                        // Endbetrag EUR 256,66
-                        // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^Endbetrag( zu Ihren (Lasten|Gunsten))? (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 67 RED ELECTRICA ES0173093024 M.CONTINUO Compra 15,01 EUR 1.005,67 EUR 4,01 EUR 0,33 EUR 2,01 EUR 1.012,02 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("[\\.,\\d]+ .* (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Endbetrag zu Ihren Lasten EUR 533,39
+                                        // Endbetrag zu Ihren Gunsten EUR 1.887,64
+                                        // Endbetrag EUR 256,66
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^(Ausf.hrungstag|Schlusstag|F.lligkeit)( \\/ -zeit)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})( .*)?$") //
+                                                        .match("^Endbetrag( zu Ihren (Lasten|Gunsten))? (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
-                        // @formatter:off
-                        // Zwischensumme USD 1.503,75
-                        // umger. zum Devisenkurs EUR 1.311,99 (USD = 1,146163)
-                        // Endbetrag zu Ihren Lasten EUR 1.335,07
-                        // @formatter:on
-                        .section("fxGross", "gross", "termCurrency", "exchangeRate", "baseCurrency").optional() //
-                        .match("^Zwischensumme [\\w]{3} (?<fxGross>[\\.,\\d]+)$") //
-                        .match("^.* Devisenkurs [\\w]{3} (?<gross>[\\.,\\d]+) \\((?<termCurrency>[\\w]{3}) = (?<exchangeRate>[\\.,\\d]+)\\)$") //
-                        .match("^Endbetrag( zu Ihren (Lasten|Gunsten))? (?<baseCurrency>[\\w]{3}) [\\.,\\d]+$") //
-                        .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
-                            type.getCurrentContext().putType(rate);
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Zwischensumme USD 1.503,75
+                                        // umger. zum Devisenkurs EUR 1.311,99 (USD = 1,146163)
+                                        // Endbetrag zu Ihren Lasten EUR 1.335,07
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "gross", "termCurrency", "exchangeRate", "baseCurrency") //
+                                                        .match("^Zwischensumme [\\w]{3} (?<fxGross>[\\.,\\d]+)$") //
+                                                        .match("^.* Devisenkurs [\\w]{3} (?<gross>[\\.,\\d]+) \\((?<termCurrency>[\\w]{3}) = (?<exchangeRate>[\\.,\\d]+)\\)$") //
+                                                        .match("^Endbetrag( zu Ihren (Lasten|Gunsten))? (?<baseCurrency>[\\w]{3}) [\\.,\\d]+$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
-                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                        })
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // 07/06/2024 19/06/2024 09:00 30 Limitada 25,19 GBP 07/06/2024 16:15 1,190 EUR 899,28 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("termCurrency", "exchangeRate", "baseCurrency", "gross") //
+                                                        .match("^.* (?<termCurrency>[\\w]{3}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\d]{2}:[\\d]{2} (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+) [\\w]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
 
                         // @formatter:off
                         // Ordernummer 12345678.001
@@ -270,6 +339,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<note>St.ckzinsen .*)$") //
                                                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))))
 
+                        .conclude(ExtractorUtils.fixGrossValueBuySell())
+
                         .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -280,7 +351,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("(Dividendengutschrift" //
                         + "|Ertragsgutschrift" //
-                        + "|Zinsgutschrift)", //
+                        + "|Zinsgutschrift"
+                        + "|Abono de Dividendos)", //
                         jointAccount);
         this.addDocumentTyp(type);
 
@@ -288,7 +360,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         Block firstRelevantLine = new Block("^(Dividendengutschrift" //
                         + "|Ertragsgutschrift" //
-                        + "|Zinsgutschrift).*$");
+                        + "|Zinsgutschrift"
+                        + "|Abono de Dividendos).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -349,59 +422,100 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .match("^ISIN \\(WKN\\) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("^Wertpapierbezeichnung (?<name>.*)$") //
                                                         .match("^Nominale [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Valor: ADMIRAL GROUP PLC(ADM) Mercado: LONDRES
+                                        // Importe por título: 0,61 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency") //
+                                                        .match("^Valor: (?<name>.*) Mercado: .*$") //
+                                                        .match("^Importe por t.tulo: [\\.,\\d]+ (?<currency>\\p{Sc})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
-                        // @formatter:off
-                        // Nominale 66,00 Stück
-                        // Nominale 1.000,00 EUR
-                        // @formatter:on
-                        .section("shares", "notation") //
-                        .match("^Nominale (?<shares>[\\.,\\d]+) (?<notation>(St.ck|[\\w]{3}))$") //
-                        .assign((t, v) -> {
-                            // Percentage quotation, workaround for bonds
-                            if (v.get("notation") != null && !"Stück".equalsIgnoreCase(v.get("notation")))
-                            {
-                                BigDecimal shares = asBigDecimal(v.get("shares"));
-                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
-                            }
-                            else
-                            {
-                                t.setShares(asShares(v.get("shares")));
-                            }
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Nominale 66,00 Stück
+                                        // Nominale 1.000,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "notation") //
+                                                        .match("^Nominale (?<shares>[\\.,\\d]+) (?<notation>(St.ck|[\\w]{3}))$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Percentage quotation, workaround for bonds
+                                                            // @formatter:on
+                                                            if (v.get("notation") != null && !"Stück".equalsIgnoreCase(v.get("notation")))
+                                                            {
+                                                                BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                            }
+                                                            else
+                                                            {
+                                                                t.setShares(asShares(v.get("shares")));
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Número de títulos: 103
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^N.mero de t.tulos: (?<shares>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
-                        // @formatter:off
-                        // Valuta 15.12.2016
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Valuta 15.12.2016
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // 07/06/2024 1465 0100 32 5120505073 51,25 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) .*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
-                        // @formatter:off
-                        // Gesamtbetrag zu Ihren Gunsten EUR 44,01
-                        // @formatter:on
-                        .section("amount", "currency").optional() //
-                        .match("^Gesamtbetrag zu Ihren Gunsten (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Gesamtbetrag zu Ihren Gunsten EUR 44,01
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Gesamtbetrag zu Ihren Gunsten (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // If the total amount is negative, then we change the
+                                        // transaction type from DIVIDENDS to TAXES.
+                                        //
+                                        // Gesamtbetrag zu Ihren Lasten EUR - 20,03
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Gesamtbetrag zu Ihren Lasten (?<currency>[\\w]{3}) \\- (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            if (v.getTransactionContext().get(FAILURE) == null)
+                                                                t.setType(AccountTransaction.Type.TAXES);
 
-                        // @formatter:off
-                        // If the total amount is negative, then we change the
-                        // transaction type from DIVIDENDS to TAXES.
-                        //
-                        // Gesamtbetrag zu Ihren Lasten EUR - 20,03
-                        // @formatter:on
-                        .section("currency", "amount").optional() //
-                        .match("^Gesamtbetrag zu Ihren Lasten (?<currency>[\\w]{3}) \\- (?<amount>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            if (v.getTransactionContext().get(FAILURE) == null)
-                                t.setType(AccountTransaction.Type.TAXES);
-
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Importe total neto: 51,25 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Importe total neto: (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
                         // @formatter:off
                         // Brutto USD 62,04
@@ -829,6 +943,25 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         transaction //
 
                         // @formatter:off
+                        // Nº Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos  Importe
+                        //     operación  operación de ING bolsa   total
+                        //
+                        // 67 RED ELECTRICA ES0173093024 M.CONTINUO Compra 15,01 EUR 1.005,67 EUR 4,01 EUR 0,33 EUR 2,01 EUR 1.012,02 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .find(".*Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos  Importe")
+                        .find(".*operación  operación de ING bolsa   total")
+                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Franz. Transaktionssteuer 0,30% EUR 2,52
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^Franz\\. Transaktionssteuer [\\.,\\d]+% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
                         // Kapitalertragsteuer (Account)
                         // Kapitalertragsteuer 25,00 % EUR 18,32
                         // Kapitalertragsteuer 25,00% EUR 5,91
@@ -948,16 +1081,93 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
-                        // Franz. Transaktionssteuer 0,30% EUR 2,52
+                        // Retención: 12,02 €
                         // @formatter:on
-                        .section("currency", "tax").optional() //
-                        .match("^Franz\\. Transaktionssteuer [\\.,\\d]+% (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type));
+                        .section("currency", "withHoldingTax").optional() //
+                        .match("^Retenci.n: (?<withHoldingTax>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
+                        // @formatter:off
+                        // Retención en origen: 9,05 €
+                        // @formatter:on
+                        .section("currency", "withHoldingTax").optional() //
+                        .match("^Retenci.n en origen: (?<withHoldingTax>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
+                        // @formatter:off
+                        // Retención en destino: 9,74 €
+                        // @formatter:on
+                        .section("currency", "withHoldingTax").optional() //
+                        .match("^Retenci.n en destino: (?<withHoldingTax>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
+
+                        // @formatter:off
+                        // Nº Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos  Importe
+                        //     operación  operación de ING bolsa   total
+                        //
+                        // 67 RED ELECTRICA ES0173093024 M.CONTINUO Compra 15,01 EUR 1.005,67 EUR 4,01 EUR 0,33 EUR 2,01 EUR 1.012,02 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .find(".*Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos  Importe")
+                        .find(".*operación  operación de ING bolsa   total")
+                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Nº Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos  Importe
+                        //     operación  operación de ING bolsa   total
+                        //
+                        // 67 RED ELECTRICA ES0173093024 M.CONTINUO Compra 15,01 EUR 1.005,67 EUR 4,01 EUR 0,33 EUR 2,01 EUR 1.012,02 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .find(".*Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos  Importe")
+                        .find(".*operación  operación de ING bolsa   total")
+                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Nº Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos Comisión  Importe
+                        //     operación  operación de ING bolsa  cambio   total
+                        //           de divisa
+                        // 30 DIAGEO GB0002374006 LONDRES Compra 25,19 GBP 894,48 EUR 4,47 EUR 4,52 EUR 0,00 EUR 4,47 EUR 907,94 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .find(".*Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos Comisión  Importe")
+                        .find(".*operación  operación de ING bolsa  cambio   total")
+                        .find(".*de divisa")
+                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Nº Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos Comisión  Importe
+                        //     operación  operación de ING bolsa  cambio   total
+                        //           de divisa
+                        // 30 DIAGEO GB0002374006 LONDRES Compra 25,19 GBP 894,48 EUR 4,47 EUR 4,52 EUR 0,00 EUR 4,47 EUR 907,94 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .find(".*Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos Comisión  Importe")
+                        .find(".*operación  operación de ING bolsa  cambio   total")
+                        .find(".*de divisa")
+                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Nº Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos Comisión  Importe
+                        //     operación  operación de ING bolsa  cambio   total
+                        //           de divisa
+                        // 30 DIAGEO GB0002374006 LONDRES Compra 25,19 GBP 894,48 EUR 4,47 EUR 4,52 EUR 0,00 EUR 4,47 EUR 907,94 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .find(".*Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos Comisión  Importe")
+                        .find(".*operación  operación de ING bolsa  cambio   total")
+                        .find(".*de divisa")
+                        .match("^[\\.,\\d]+ .* [A-Z]{2}[A-Z0-9]{9}[0-9] .* [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Handelsplatzgebühr EUR 2,50

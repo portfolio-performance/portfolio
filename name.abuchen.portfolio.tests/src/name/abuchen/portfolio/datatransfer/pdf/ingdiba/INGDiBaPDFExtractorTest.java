@@ -1016,6 +1016,136 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
+    public void testValorCompra01()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Compra01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("ES0173093024"), hasWkn(null), hasTicker(null), //
+                        hasName("RED ELECTRICA"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-08-14T15:37"), hasShares(67.00), //
+                        hasSource("Compra01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1012.02), hasGrossValue("EUR", 1005.67), //
+                        hasTaxes("EUR", 2.01), hasFees("EUR", 4.01 + 0.33))));
+    }
+
+    @Test
+    public void testValorCompra02()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Compra02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB0002374006"), hasWkn(null), hasTicker(null), //
+                        hasName("DIAGEO"), //
+                        hasCurrencyCode("GBP"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-06-19T09:00"), hasShares(30.00), //
+                        hasSource("Compra02.txt"), //
+                        hasNote(null), //
+//                        hasAmount("EUR", 907.94), hasGrossValue("EUR", 898.48), //
+//                        hasForexGrossValue("GBP", 1070.14), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.47 + 4.52 + 4.47))));
+    }
+
+    @Test
+    public void testValorCompra02WithValorInEUR()
+    {
+        Security security = new Security("DIAGEO", CurrencyUnit.EUR);
+        security.setIsin("GB0002374006");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Compra02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-06-19T09:00"), hasShares(30.00), //
+                        hasSource("Compra02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 907.94), hasGrossValue("EUR", 894.48), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.47 + 4.52 + 4.47), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testValorCompra03()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Compra03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB00B10RZP78"), hasWkn(null), hasTicker(null), //
+                        hasName("UNILEVER PLC"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-03-25T09:52"), hasShares(4.00), //
+                        hasSource("Compra03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 188.14), hasGrossValue("EUR", 184.96), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.18))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
@@ -1623,6 +1753,37 @@ public class INGDiBaPDFExtractorTest
                         hasNote("Rückzahlung"), //
                         hasAmount("EUR", 2020.00), hasGrossValue("EUR", 2020.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testValorVenta01()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Venta01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("ES0112501012"), hasWkn(null), hasTicker(null), //
+                        hasName("EBRO FOODS"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-04-14T09:13"), hasShares(125.00), //
+                        hasSource("Venta01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2074.25), hasGrossValue("EUR", 2082.50), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 5.08 + 3.17))));
     }
 
     @Test
@@ -3190,6 +3351,99 @@ public class INGDiBaPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividendos01()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividendos01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("ADMIRAL GROUP PLC(ADM)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-07T00:00"), hasShares(103.00), //
+                        hasSource("Dividendos01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 51.25), hasGrossValue("EUR", 63.27), //
+                        hasTaxes("EUR", 12.02), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividendos02()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividendos02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("INDITEX(ITX)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-05-02T00:00"), hasShares(95.00), //
+                        hasSource("Dividendos02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 59.25), hasGrossValue("EUR", 73.15), //
+                        hasTaxes("EUR", 13.90), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividendos03()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividendos03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker(null), //
+                        hasName("T ROWE PRICE GROUP INC(TROW)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-27T00:00"), hasShares(52.00), //
+                        hasSource("Dividendos03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 41.54), hasGrossValue("EUR", 60.33), //
+                        hasTaxes("EUR", 9.05 + 9.74), hasFees("EUR", 0.00))));
     }
 
     @Test
