@@ -17,9 +17,11 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.util.Interval;
 
 public class Issue1909FIFOCalculationOfSecurityPositionTest
@@ -39,6 +41,10 @@ public class Issue1909FIFOCalculationOfSecurityPositionTest
 
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter,
                         Interval.of(LocalDate.MIN, date), SecurityPerformanceIndicator.Costs.class);
+
+        new SecurityPerformanceSnapshotComparator(snapshot,
+                        LazySecurityPerformanceSnapshot.create(client, converter, Interval.of(LocalDate.MIN, date)))
+                                        .compareCosts();
 
         SecurityPerformanceRecord record = snapshot.getRecords().get(0);
 

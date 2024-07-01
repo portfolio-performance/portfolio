@@ -17,8 +17,11 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.util.Interval;
 
 public class Issue672CapitalGainsIfSecurityIsTransferredTest
@@ -36,6 +39,11 @@ public class Issue672CapitalGainsIfSecurityIsTransferredTest
 
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, secondPortfolio,
                         period);
+
+        new SecurityPerformanceSnapshotComparator(snapshot,
+                        LazySecurityPerformanceSnapshot.create(
+                                        new PortfolioClientFilter(secondPortfolio).filter(client), converter, period))
+                                                        .compare();
 
         assertThat(snapshot.getRecords().size(), is(1));
 

@@ -37,8 +37,13 @@ public class SecurityPerformanceSnapshotTest
                         .sell(security, "2018-05-08", Values.Share.factorize(500000), Values.Amount.factorize(494500))
                         .addTo(client);
 
+        final Interval interval = Interval.of(LocalDate.parse("2018-04-01"), LocalDate.parse("2018-06-01"));
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
-                        Interval.of(LocalDate.parse("2018-04-01"), LocalDate.parse("2018-06-01")));
+                        interval);
+
+        new SecurityPerformanceSnapshotComparator(snapshot,
+                        LazySecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(), interval))
+                                        .compare();
 
         assertThat(snapshot.getRecords(), hasSize(1));
 
@@ -69,6 +74,10 @@ public class SecurityPerformanceSnapshotTest
         Interval reportingPeriod = Interval.of(LocalDate.parse("2018-04-01"), LocalDate.parse("2018-06-01"));
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
                         reportingPeriod);
+
+        new SecurityPerformanceSnapshotComparator(snapshot,
+                        LazySecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(), reportingPeriod))
+                                        .compare();
 
         assertThat(snapshot.getRecords(), hasSize(1));
 

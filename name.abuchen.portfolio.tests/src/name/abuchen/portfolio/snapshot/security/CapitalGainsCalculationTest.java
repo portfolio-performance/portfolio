@@ -50,8 +50,13 @@ public class CapitalGainsCalculationTest
 
         transfer.insert();
 
+        var interval = Interval.of(LocalDate.parse("2020-12-31"), LocalDate.parse("2021-01-31"));
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
-                        Interval.of(LocalDate.parse("2020-12-31"), LocalDate.parse("2021-01-31")));
+                        interval);
+
+        new SecurityPerformanceSnapshotComparator(snapshot,
+                        LazySecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(), interval))
+                                        .compare();
 
         SecurityPerformanceRecord record = snapshot.getRecord(security).orElseThrow(IllegalArgumentException::new);
 

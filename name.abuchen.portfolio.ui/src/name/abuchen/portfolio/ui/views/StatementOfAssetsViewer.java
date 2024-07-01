@@ -75,9 +75,9 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyPortfolio;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord.LazyValue;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -250,24 +250,11 @@ public class StatementOfAssetsViewer
             if (calculated.contains(key))
                 return;
 
-            SecurityPerformanceSnapshot snapshot = null;
+            var snapshot = LazySecurityPerformanceSnapshot.create(filteredClient, converter.with(currencyCode),
+                            interval);
 
-            if (this.globalInterval.equals(interval))
-            {
-                // the global interval starts at LocalDate.MIN. Therefore we
-                // cannot calculate all values (definitely not the TTWROR). For
-                // now, reduce it to the costs data.
-
-                snapshot = SecurityPerformanceSnapshot.create(filteredClient, converter.with(currencyCode), interval,
-                                SecurityPerformanceIndicator.Costs.class);
-            }
-            else
-            {
-                snapshot = SecurityPerformanceSnapshot.create(filteredClient, converter.with(currencyCode), interval);
-            }
-
-            Map<Security, SecurityPerformanceRecord> map = snapshot.getRecords().stream()
-                            .collect(Collectors.toMap(SecurityPerformanceRecord::getSecurity, r -> r));
+            Map<Security, LazySecurityPerformanceRecord> map = snapshot.getRecords().stream()
+                            .collect(Collectors.toMap(LazySecurityPerformanceRecord::getSecurity, r -> r));
 
             elements.stream().filter(Element::isSecurity)
                             .forEach(e -> e.setPerformance(currencyCode, interval, map.get(e.getSecurity())));
@@ -524,7 +511,7 @@ public class StatementOfAssetsViewer
         column = new Column("7", Messages.ColumnPurchasePrice, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setDescription(Messages.ColumnPurchasePrice_Description);
         labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(SecurityPerformanceRecord::getFifoCostPerSharesHeld, null), false);
+                        new ElementValueProvider(LazySecurityPerformanceRecord::getFifoCostPerSharesHeld, null), false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -532,9 +519,8 @@ public class StatementOfAssetsViewer
 
         column = new Column("ppmvavg", Messages.ColumnPurchasePriceMovingAverage, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description);
-        labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(SecurityPerformanceRecord::getMovingAverageCostPerSharesHeld, null),
-                        false);
+        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
+                        LazySecurityPerformanceRecord::getMovingAverageCostPerSharesHeld, null), false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -543,7 +529,7 @@ public class StatementOfAssetsViewer
         column = new Column("8", Messages.ColumnPurchaseValue, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setDescription(Messages.ColumnPurchaseValue_Description);
         labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(SecurityPerformanceRecord::getFifoCost, withSum()), false);
+                        new ElementValueProvider(LazySecurityPerformanceRecord::getFifoCost, withSum()), false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -552,7 +538,8 @@ public class StatementOfAssetsViewer
         column = new Column("pvmvavg", Messages.ColumnPurchaseValueMovingAverage, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setDescription(Messages.ColumnPurchaseValueMovingAverage_Description);
         labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(SecurityPerformanceRecord::getMovingAverageCost, withSum()), false);
+                        new ElementValueProvider(LazySecurityPerformanceRecord::getMovingAverageCost, withSum()),
+                        false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
@@ -560,7 +547,7 @@ public class StatementOfAssetsViewer
 
         column = new Column("9", Messages.ColumnProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(SecurityPerformanceRecord::getCapitalGainsOnHoldings, withSum()),
+                        new ElementValueProvider(LazySecurityPerformanceRecord::getCapitalGainsOnHoldings, withSum()),
                         true);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
@@ -617,7 +604,8 @@ public class StatementOfAssetsViewer
         ReportingPeriodLabelProvider labelProvider;
 
         Column column = new Column("ttwror", Messages.ColumnTTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getTrueTimeWeightedRateOfReturn);
+        labelProvider = new ReportingPeriodLabelProvider(
+                        LazySecurityPerformanceRecord::getTrueTimeWeightedRateOfReturn);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWROR_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.LabelTTWROR);
@@ -628,7 +616,7 @@ public class StatementOfAssetsViewer
 
         column = new Column("ttwror_pa", Messages.ColumnTTWRORpa, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(
-                        SecurityPerformanceRecord::getTrueTimeWeightedRateOfReturnAnnualized);
+                        LazySecurityPerformanceRecord::getTrueTimeWeightedRateOfReturnAnnualized);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWRORpa_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.LabelTTWROR_Annualized);
@@ -638,7 +626,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("irr", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getIrr);
+        labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getIrr);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnIRRPerformanceOption, options));
         column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelPerformance);
@@ -648,7 +636,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("capitalgains", Messages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getCapitalGainsOnHoldings,
+        labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getCapitalGainsOnHoldings,
                         withSum(), true);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGains_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
@@ -659,7 +647,8 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("capitalgains%", Messages.ColumnCapitalGainsPercent, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getCapitalGainsOnHoldingsPercent);
+        labelProvider = new ReportingPeriodLabelProvider(
+                        LazySecurityPerformanceRecord::getCapitalGainsOnHoldingsPercent);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsPercent_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGainsPercent_Description);
@@ -670,7 +659,7 @@ public class StatementOfAssetsViewer
 
         column = new Column("capitalgainsmvavg", Messages.ColumnCapitalGainsMovingAverage, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(
-                        SecurityPerformanceRecord::getCapitalGainsOnHoldingsMovingAverage, withSum(), true);
+                        LazySecurityPerformanceRecord::getCapitalGainsOnHoldingsMovingAverage, withSum(), true);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsMovingAverage_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGainsMovingAverage_Description);
@@ -681,7 +670,7 @@ public class StatementOfAssetsViewer
 
         column = new Column("capitalgainsmvavg%", Messages.ColumnCapitalGainsMovingAveragePercent, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(
-                        SecurityPerformanceRecord::getCapitalGainsOnHoldingsMovingAveragePercent);
+                        LazySecurityPerformanceRecord::getCapitalGainsOnHoldingsMovingAveragePercent);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsMovingAveragePercent_Option,
                         options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
@@ -692,7 +681,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("delta", Messages.ColumnAbsolutePerformance_MenuLabel, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getDelta, withSum(), true);
+        labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getDelta, withSum(), true);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformance_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnAbsolutePerformance_Description);
@@ -702,7 +691,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("delta%", Messages.ColumnAbsolutePerformancePercent_MenuLabel, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getDeltaPercent);
+        labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getDeltaPercent);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformancePercent_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnAbsolutePerformancePercent_Description);
@@ -718,7 +707,7 @@ public class StatementOfAssetsViewer
 
         Column column = new Column("sumdiv", Messages.ColumnDividendSum, SWT.RIGHT, 80); //$NON-NLS-1$
 
-        labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getSumOfDividends, withSum(),
+        labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getSumOfDividends, withSum(),
                         false);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnDividendSum + " {0}", options)); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelDividends);
@@ -729,7 +718,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("d%", Messages.ColumnDividendTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getTotalRateOfReturnDiv, null,
+        labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getTotalRateOfReturnDiv, null,
                         false);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnDividendTotalRateOfReturn + " {0}", options)); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelDividends);
@@ -741,7 +730,7 @@ public class StatementOfAssetsViewer
 
         column = new Column("d%mvavg", Messages.ColumnDividendMovingAverageTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(
-                        SecurityPerformanceRecord::getTotalRateOfReturnDivMovingAverage, null, false);
+                        LazySecurityPerformanceRecord::getTotalRateOfReturnDivMovingAverage, null, false);
         column.setOptions(new ReportingPeriodColumnOptions(
                         Messages.ColumnDividendMovingAverageTotalRateOfReturn + " {0}", options)); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelDividends);
@@ -876,7 +865,7 @@ public class StatementOfAssetsViewer
         column.setDescription(Messages.ColumnPurchaseValueBaseCurrency);
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
         labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(SecurityPerformanceRecord::getFifoCost, null),
+                        new ElementValueProvider(LazySecurityPerformanceRecord::getFifoCost, null),
                         e -> e.isSecurity() ? e.getSecurity().getCurrencyCode()
                                         : model.getCurrencyConverter().getTermCurrency(),
                         false);
@@ -890,7 +879,7 @@ public class StatementOfAssetsViewer
         column.setDescription(Messages.ColumnPurchasePriceBaseCurrency);
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
         labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(SecurityPerformanceRecord::getFifoCostPerSharesHeld, null),
+                        new ElementValueProvider(LazySecurityPerformanceRecord::getFifoCostPerSharesHeld, null),
                         e -> e.isSecurity() ? e.getSecurity().getCurrencyCode()
                                         : model.getCurrencyConverter().getTermCurrency(),
                         false);
@@ -904,7 +893,7 @@ public class StatementOfAssetsViewer
         column.setDescription(Messages.ColumnProfitLossBaseCurrency);
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
         labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(SecurityPerformanceRecord::getCapitalGainsOnHoldings, null),
+                        new ElementValueProvider(LazySecurityPerformanceRecord::getCapitalGainsOnHoldings, null),
                         e -> e.isSecurity() ? e.getSecurity().getCurrencyCode()
                                         : model.getCurrencyConverter().getTermCurrency(),
                         false);
@@ -1060,7 +1049,7 @@ public class StatementOfAssetsViewer
 
         private List<Element> children = new ArrayList<>();
 
-        private Map<CacheKey, SecurityPerformanceRecord> performance = new HashMap<>();
+        private Map<CacheKey, LazySecurityPerformanceRecord> performance = new HashMap<>();
 
         private Element(GroupByTaxonomy groupByTaxonomy, AssetCategory category, int sortOrder)
         {
@@ -1116,12 +1105,12 @@ public class StatementOfAssetsViewer
             return sortOrder;
         }
 
-        public void setPerformance(String currencyCode, Interval period, SecurityPerformanceRecord record)
+        public void setPerformance(String currencyCode, Interval period, LazySecurityPerformanceRecord record)
         {
             performance.put(new CacheKey(currencyCode, period), record);
         }
 
-        public SecurityPerformanceRecord getPerformance(String currencyCode, Interval period)
+        public LazySecurityPerformanceRecord getPerformance(String currencyCode, Interval period)
         {
             return performance.get(new CacheKey(currencyCode, period));
         }
@@ -1251,10 +1240,10 @@ public class StatementOfAssetsViewer
 
     /* testing */ static class ElementValueProvider
     {
-        private Function<SecurityPerformanceRecord, Object> valueProvider;
+        private Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider;
         private Function<Stream<Object>, Object> collector;
 
-        public ElementValueProvider(Function<SecurityPerformanceRecord, Object> valueProvider,
+        public ElementValueProvider(Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider,
                         Function<Stream<Object>, Object> collector)
         {
             this.valueProvider = valueProvider;
@@ -1266,14 +1255,14 @@ public class StatementOfAssetsViewer
             if (element.isSecurity())
             {
                 // assumption: performance record has been calculated before!
-                SecurityPerformanceRecord record = element.getPerformance(currencyCode, interval);
+                LazySecurityPerformanceRecord record = element.getPerformance(currencyCode, interval);
 
                 // record is null if there are no transactions for the security
                 // in the given period
                 if (record == null)
                     return null;
 
-                Object value = valueProvider.apply(record);
+                Object value = valueProvider.apply(record).get();
 
                 // if not a monetary value, no splitting is supported
                 if (!(value instanceof Money))
@@ -1341,12 +1330,12 @@ public class StatementOfAssetsViewer
         private ElementValueProvider valueProvider;
         private Function<Element, String> currencyProvider;
 
-        public ReportingPeriodLabelProvider(Function<SecurityPerformanceRecord, Object> valueProvider)
+        public ReportingPeriodLabelProvider(Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider)
         {
             this(new ElementValueProvider(valueProvider, null), null, true);
         }
 
-        public ReportingPeriodLabelProvider(Function<SecurityPerformanceRecord, Object> valueProvider,
+        public ReportingPeriodLabelProvider(Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider,
                         Function<Stream<Object>, Object> collector, boolean showUpAndDownArrows)
         {
             this(new ElementValueProvider(valueProvider, collector), null, showUpAndDownArrows);
