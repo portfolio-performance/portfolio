@@ -1,0 +1,27 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KÖPENICKER STRASSE 40C  10179 BERLIN
+pmUr IGm KthjGC PAGE 1 from 1
+iXBOzZXwU 9 DATE 05.07.2023
+05722 BcodlSKP SECURITIES ACCOUNT 4337564104
+REPAYMENT
+OVERVIEW
+NO. BOOKING SECURITY AMOUNT
+1 Repayment Société Générale Effekten GmbH 500 Pcs.
+MiniL O.End CBOE VIX 14,94
+DE000SQ728J8
+BILLING
+NO. POSITION AMOUNT
+1 Market value 35.00 EUR
+TOTAL 35.00 EUR
+BOOKING
+CLEARING ACCOUNT VALUE DATE AMOUNT
+DE32502109007011423226 06.07.2023 35.00 EUR
+Société Générale Effekten GmbH MiniL O.End CBOE VIX 14,94 in giro collection storage in Germany.
+This statement is generated automatically and therefore not signed.
+If no VAT is shown, it is according to § 4 No. 8 UStG for a sales tax-free service.
+Trade Republic Bank GmbH www.traderepublic.com Headquarters: Berlin Directors
+Köpenicker Straße 40c service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10179 Berlin VAT-ID DE307510626 Gernot Mittendorfer
+ABRE / 06.07.2023 / 46649403 / 6fc7-3f72
