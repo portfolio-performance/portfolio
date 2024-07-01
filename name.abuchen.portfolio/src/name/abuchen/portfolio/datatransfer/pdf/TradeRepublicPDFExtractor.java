@@ -1750,13 +1750,37 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 04
                                         // Apr. Überweisung Einzahlung akzeptiert: DE34120300001066107218 auf DE00000000000000000000 2.000,00 € 3.030,97 €
                                         // 2024
+                                        //
+                                        // 03 
+                                        // Juni Prämie Your Saveback payment 5,18 € 3.484,00 €
+                                        // 2024
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("day", "month", "year", "amount", "currency") //
                                                         .match("^(?<day>[\\d]{2})[\\s]$")
-                                                        .match("^(?<month>[\\wä]{3,4}([\\.]{1})?) .berweisung Einzahlung akzeptiert: .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<month>[\\wä]{3,4}([\\.]{1})?) " //
+                                                                        + "(.berweisung Einzahlung akzeptiert:"
+                                                                        + "|Pr.mie Your Saveback)" //
+                                                                        + ".* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // 14 
+                                        // Juni Überweisung PayOut to transit 6.500,00 € 50.860,76 €
+                                        // 2024
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("day", "month", "year", "amount", "currency") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]$")
+                                                        .match("^(?<month>[\\wä]{3,4}([\\.]{1})?) .berweisung PayOut .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<year>[\\d]{4})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.REMOVAL);
+
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -1888,6 +1912,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         // 19
         // Feb. Steuern Steueroptimierung null 0000000000000000 78,17 € 715,35 €
         // 2024
+        //
+        // 04 
+        // Juni Steuern Kapitalertragssteueroptimierung Depot Direktverkauf IE00BGJWWY63 INVESCOM2 
+        // 2024 EUR GOVB1-3Y A 5008723420240604
+        //
+        // 14 
+        // Juni Steuern Tax Optimisation 0,01 € 50.860,75 €
+        // 2024
         // @formatter:on
         Block taxBlock_Format03 = new Block("^[\\d]{2}[\\s]$");
         type.addBlock(taxBlock_Format03);
@@ -1900,11 +1932,25 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("day", "month", "year", "amount", "currency").optional() //
+                        .section("day", "month", "year", "amount", "currency", "amountAfter", "currencyAfter").optional() //
                         .match("^(?<day>[\\d]{2})[\\s]$")
-                        .match("^(?<month>[\\wä]{3,4}([\\.]{1})?) Steuern Steueroptimierung .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
-                        .match("^(?<year>[\\d]{4})$") //
+                        .match("^(?<month>[\\wä]{3,4}([\\.]{1})?) Steuern (Steueroptimierung |Tax Optimisation|Kapitalertragssteueroptimierung ).* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
+                        .match("^(?<year>[\\d]{4}).*$") //
                         .assign((t, v) -> {
+                            DocumentContext context = type.getCurrentContext();
+                            Money amountAfter = Money.of(asCurrencyCode(v.get("currencyAfter")), asAmount(v.get("amountAfter")));
+
+                            AccountAmountTransactionHelper accountAmountTransactionHelper = context.getType(AccountAmountTransactionHelper.class).orElseGet(AccountAmountTransactionHelper::new);
+                            Optional<AccountAmountTransactionItem> item = accountAmountTransactionHelper.findItem(v.getStartLineNumber(), amountAfter);
+
+                            if (item.isPresent())
+                            {
+                                Money amountBefore = Money.of(item.get().currency, item.get().amount);
+
+                                if (amountBefore.isGreaterThan(amountAfter))
+                                    t.setType(AccountTransaction.Type.TAXES);
+                            }
+
                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));

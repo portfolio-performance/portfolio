@@ -1882,6 +1882,43 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug14()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-06-03"), hasAmount("EUR", 5.18), //
+                        hasSource("Kontoauszug14.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-06-09"), hasAmount("EUR", 33.21), // TODO should be removal
+                        hasSource("Kontoauszug14.txt"), hasNote("Lidl sagt Danke"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-06-14"), hasAmount("EUR", 6500.00), //
+                        hasSource("Kontoauszug14.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxes(hasDate("2024-06-14"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug14.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxRefund(hasDate("2024-06-14"), hasAmount("EUR", 80.62), //
+                        hasSource("Kontoauszug14.txt"), hasNote(null))));
+    }
+
+    @Test
     public void testSteuerabrechnung01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
