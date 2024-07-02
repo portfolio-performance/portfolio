@@ -215,11 +215,19 @@ public class AttributeSettingsPane implements InformationPanePage
             // before
             stylingEngine.style(gpColors);
 
-            int width = SWTHelper.widest(positiveExceeded.getFirst(), negativelyExceeded.getSecond());
+            // Compute the widest element width in the group using
+            int width = SWTHelper.widest(positiveExceeded.getFirst(), negativelyExceeded.getFirst(), button,
+                            resetButton);
 
-            FormDataFactory.startingWith(positiveExceeded.getFirst()).width(width + 20)
-                            .thenBelow(negativelyExceeded.getFirst()).width(width + 20).thenBelow(button)
-                            .left(new FormAttachment(0)).thenRight(resetButton);
+            // Set the width of the gpColors group to the widest element's width
+            // plus padding
+            gpColors.setSize(width, gpColors.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+
+            FormDataFactory.startingWith(positiveExceeded.getFirst()).width(width + 20) //
+                            .thenBelow(negativelyExceeded.getFirst()).width(width + 20) //
+                            .thenBelow(button).left(new FormAttachment(0)).thenRight(resetButton);
+
+            stylingEngine.style(gpColors);
         }
 
         private static Triple<CLabel, ColoredLabel, Button> createColorButtons(Composite parent,
