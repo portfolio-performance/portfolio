@@ -15,6 +15,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -99,6 +100,37 @@ public class RaisinBankAGPDFExtractorTest
                         hasNote("Abrechnungsnummer: acc8e2cf-f87f-4372-8b11-8cd3eea151ce"), //
                         hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf01()
+    {
+        RaisinBankAGPDFExtractor extractor = new RaisinBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKX55R35"), hasWkn(null), hasTicker(null), //
+                        hasName("VANG.FTSE N.AME.U.ETF DLD"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-07-02T12:11:16"), hasShares(0.0075), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote("Abrechnungsnummer: bf7448fe-2a12-4c8e-bc98-e6b7411fb56b"), //
+                        hasAmount("EUR", 0.88), hasGrossValue("EUR", 0.92), //
+                        hasTaxes("EUR", 0.04), hasFees("EUR", 0.00))));
     }
 
     @Test

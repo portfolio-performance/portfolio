@@ -32,12 +32,12 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Kauf");
+        DocumentType type = new DocumentType("Wir haben für Sie (gekauft|verkauft)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Kauf.*$");
+        Block firstRelevantLine = new Block("^(Kauf|Verkauf).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -47,6 +47,14 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
                             BuySellEntry portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
+                        })
+
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^(?<type>(Kauf|Verkauf)).*$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type"))) //
+                                t.setType(PortfolioTransaction.Type.SELL);
                         })
 
                         // @formatter:off
@@ -84,9 +92,12 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Valuta Betrag zu Ihren Lasten
                         // 27.05.2024 4,54 EUR
+                        //
+                        // Valuta Betrag zu Ihren Gunsten
+                        // 04.07.2024 0,88 EUR
                         // @formatter:on
                         .section("currency", "amount") //
-                        .find("Valuta Betrag zu Ihren Lasten.*")
+                        .find("Valuta Betrag zu Ihren (Lasten|Gunsten).*$")
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -96,13 +107,19 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Abrechnungsnummer
                         // 95a8535f-0aa7-4197-85ae-3f7337d9232d
+                        //
+                        // Abrechnungsnummer
+                        // IzFqnHk IyBqtsnat XKGoEM bf7448fe-2a12-4c8e-bc98-e6b7411fb56b
                         // @formatter:on
                         .section("note1", "note2").optional() //
-                        .match("^(?<note1>Abrechnungsnummer).*")
-                        .match("^(?<note2>[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+).*$") //
+                        .match("^(?<note1>Abrechnungsnummer).*$")
+                        .match("^(.* )?(?<note2>[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+).*$") //
+                        .find("Wir haben f.r.*") //
                         .assign((t, v) -> t.setNote(concatenate(trim(v.get("note1")), trim(v.get("note2")), ": ")))
 
                         .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addDividendeTransaction()
@@ -187,10 +204,10 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
-                        // Einbehaltener deutscher Solidaritätszuschlag: 1,07 EUR
+                        // Kapitalertragssteuer: 0,04 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Einbehaltener deutscher Solidarit.tszuschlag: (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .match("^Kapitalertrags(s)?teuer: (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -198,6 +215,27 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Einbehaltene deutsche Kirchensteuer: (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Solidaritätszuschlag: 0,00 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Solidarit.tszuschlag: (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Einbehaltener deutscher Solidaritätszuschlag: 1,07 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Einbehaltener deutscher Solidarit.tszuschlag: (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Kirchensteuer: 0,00 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Kirchensteuer: (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 }
