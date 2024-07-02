@@ -5753,7 +5753,7 @@ public class TradeRepublicPDFExtractorTest
 
         // check interest transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2023-06-01"), //
+                        hasDate("2023-06-01T00:00"), //
                         hasSource("RescontoInteressiMaturati01.txt"), //
                         hasNote("Interessi (2,00%)"), //
                         hasAmount("EUR", 0.12), hasGrossValue("EUR", 0.12), //
@@ -5780,10 +5780,45 @@ public class TradeRepublicPDFExtractorTest
 
         // check interest transaction
         assertThat(results, hasItem(interest( //
-                        hasDate("2023-10-02"), //
+                        hasDate("2023-10-02T00:00"), //
                         hasSource("InterestInvoice01.txt"), //
                         hasNote("Interest (2,00%)"), //
                         hasAmount("EUR", 1.47), hasGrossValue("EUR", 1.47), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testInterestInvoice02()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "InterestInvoice02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-07-01T00:00"), //
+                        hasSource("InterestInvoice02.txt"), //
+                        hasNote("Interest 01.06.2024 - 11.06.2024 (4,00%)"), //
+                        hasAmount("EUR", 7.10), hasGrossValue("EUR", 7.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-07-01T00:00"), //
+                        hasSource("InterestInvoice02.txt"), //
+                        hasNote("Interest 12.06.2024 - 30.06.2024 (3,75%)"), //
+                        hasAmount("EUR", 11.56), hasGrossValue("EUR", 11.56), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }
