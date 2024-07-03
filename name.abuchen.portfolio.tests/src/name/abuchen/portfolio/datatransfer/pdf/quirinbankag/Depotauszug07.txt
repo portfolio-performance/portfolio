@@ -1,0 +1,188 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+Kontoauszug
+Konto 1337059707 EUR
+IBAN DE67101106006314265555
+ERcjfmGr, fRhwKpNsK
+Vermögensverwaltungskonto in EUR
+Datum 30.06.2024
+Herrn Auszug-Nr 2
+SBOovuklg OWcbsQbT Seite 1 von 4
+PnPP-ZklZqIRhdy-pTP 4
+71711 Xlsp Betreuer Jens ICCgE
+Telefon +49 (0) 9281 82088-13
+E-Mail Vorname.nachname@quirinprivatbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Steueroptimierung 02.04.2024 02.04.2024 56,07 EUR
+Ref.: 464710285
+6314265222 Bestandsprovision, 01.01.2024 - 31.03.2024, 16.04.2024 31.03.2024 2,04 EUR
+LU1274520086 RCGF.-R.QI GL.DE.C.EQ.IEO
+Gesamtbetrag: 2,50 EUR (KEST: -0,44 EUR, SOLI: -0,02 EUR)
+Ref.: 467260165
+6314265222 Bestandsprovision, 01.01.2024 - 31.03.2024, 16.04.2024 31.03.2024 3,17 EUR
+LU1233758587 RCGF.-.R.QI EM.CO.EQ.IEEO
+Gesamtbetrag: 3,88 EUR (KEST: -0,68 EUR, SOLI: -0,03 EUR)
+Ref.: 467260166
+Erträgnisabrechnung, Ref.: 472904276 25.04.2024 24.04.2024 364,02 EUR
+Robeco C.G.Fds-R.QI.Em.Con.Eq. Actions Nominat. IE EUR o.N.
+LU1233758587, ST 129,4031
+KEST: EUR -78,13, SOLI: EUR -4,29
+Vermögensverwaltungshonorar 6314265222, 01.04.2024 - 30.04.2024 30.04.2024 30.04.2024 -440,14 EUR
+Bemessungsgrundlage 536.966,78 EUR
+Betrag inkl. USt: -440,14 EUR (Netto: -369,87 EUR, USt: -70,27
+EUR), enthaltener Transaktionskostenanteil: 202,46 EUR
+Ref.: 474917266
+Steueroptimierung 02.05.2024 02.05.2024 53,38 EUR
+Ref.: 475292925
+Wertpapier Verkauf, Ref.: 479524253 14.05.2024 16.05.2024 13.380,85 EUR
+Dimens.Fds-Glbl Core Equity Fd Registered Shs EUR Dis.o.N.
+IE00B3M0BZ05, ST -436,2506
+KEST: EUR -1.209,03, SOLI: EUR -66,49
+Wertpapier Kauf, Ref.: 479524302 14.05.2024 16.05.2024 -1.160,74 EUR
+Dim.Fds-Gl Short Fixed Income Registered Shares EUR Dis.o.N.
+IE00B3QL0Y14, ST 132,0151
+Wertpapier Verkauf, Ref.: 479524262 15.05.2024 16.05.2024 278,66 EUR
+Rob.C.Gr.Fds-R.QI Gl.De.Co.Eq. Actions Nom. I EUR o.N.
+LU1274520086, ST -1,6316
+KEST: EUR -15,95, SOLI: EUR -0,87
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 77257648 / 20240629 18:49:57
+Kontoauszug
+Konto 1946329888 EUR
+IBAN DE67101106006314265555
+ZMUeSLtC, jRQZNQkkb
+Vermögensverwaltungskonto in EUR
+Datum 30.06.2024
+Herrn Auszug-Nr 2
+sFTxdWwHy NosrFJDF Seite 2 von 4
+Hqng-tRCFKNXdJY-swE 4
+71711 SEfM Betreuer BhpE SnVcg
+Telefon +49 (0) 9281 82088-13
+E-Mail jVorname.nachname@quirinprivatbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Wertpapier Verkauf, Ref.: 479524267 16.05.2024 16.05.2024 2.487,89 EUR
+Vang.Inv.S.-Global Stk.Ind.Fd Reg.Shs EUR Acc o.N.
+IE00B03HD191, ST -59,4386
+KEST: EUR -213,79, SOLI: EUR -11,75
+Wertpapier Verkauf, Ref.: 479524273 16.05.2024 17.05.2024 2.716,08 EUR
+InvescoMI MSCI World ETF Registered Shares Acc o.N
+IE00B60SX394, ST -29,7082
+KEST: EUR -204,71, SOLI: EUR -11,25
+Wertpapier Verkauf, Ref.: 479524292 16.05.2024 17.05.2024 3.971,53 EUR
+iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N.
+IE00BF4RFH31, ST -632,6936
+KEST: EUR -267,54, SOLI: EUR -14,71
+Wertpapier Kauf, Ref.: 479524309 16.05.2024 17.05.2024 -812,75 EUR
+MUL Amundi EUR GovBond 1-3Y UCITS ETF Inh.Anteile Acc
+LU1650487413, ST 6,6838
+Wertpapier Kauf, Ref.: 479524318 16.05.2024 17.05.2024 -855,03 EUR
+UBS(L)FS-BBG EO A.L.Crp1-5UETF Inhaber-Anteile A Dis.EUR o.N.
+LU1048314196, ST 65,5288
+Wertpapier Kauf, Ref.: 479524326 16.05.2024 17.05.2024 -811,99 EUR
+SPDR Bl.1-3Y.Eu.Go.Bd U.ETF Registered Shares o.N.
+IE00B6YX5F63, ST 15,8913
+Wertpapier Kauf, Ref.: 479524337 16.05.2024 17.05.2024 -831,54 EUR
+SPDR Bl.0-3Y.Eu.Co.Bd UETF Registered Shares o.N.
+IE00BC7GZW19, ST 27,8929
+Wertpapier Kauf, Ref.: 479524346 16.05.2024 17.05.2024 -533,00 EUR
+iShsIV-Fa.An.Hi.Yi.Co.Bd U.ETF Reg.Shares EUR Hdgd Dist o.N.
+IE00BF3N7219, ST 112,7489
+Wertpapier Kauf, Ref.: 479524355 16.05.2024 17.05.2024 -753,46 EUR
+iShs EO H.Yield Corp Bd U.ETF Registered Shares o.N.
+IE00B66F4759, ST 8,1735
+Wertpapier Kauf, Ref.: 479524362 16.05.2024 17.05.2024 -17.058,37 EUR
+Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N.
+IE00BL25JM42, ST 413,8243
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 77257648 / 20240629 18:49:57
+Kontoauszug
+Konto 8869825683 EUR
+IBAN DE67101106006314265555
+SJScTdeT, lJHyfHdTj
+Vermögensverwaltungskonto in EUR
+Datum 30.06.2024
+Herrn Auszug-Nr 2
+NwBnJGbLO BMhjVfTi Seite 3 von 4
+VZsj-oVYOBlaloq-cnB 4
+71711 qfVL Betreuer AlMp aTryd
+Telefon +49 (0) 9281 82088-13
+E-Mail jVorname.nachname@quirinprivatbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Wertpapier Kauf, Ref.: 479524367 16.05.2024 17.05.2024 -1.691,00 EUR
+Xtrackers II Global Gov.Bond Inhaber-Anteile 1D EUR Hgd oN
+LU0690964092, ST 9,5408
+Wertpapier Verkauf, Ref.: 479524283 17.05.2024 17.05.2024 1.413,93 EUR
+Assenagon Funds Val.Size Glob. Act. Nom. RS EUR Dis. oN
+LU2146179432, ST -18,8472
+KEST: EUR -101,15, SOLI: EUR -5,56
+Wertpapier Kauf, Ref.: 480189188 17.05.2024 21.05.2024 -12.774,34 EUR
+Dimensional Fds-Emerg.Mkts Va. Registered Shares EUR Dis.o.N.
+IE00B42THM37, ST 1.083,3492
+Wertpapier Verkauf, Ref.: 480189180 21.05.2024 21.05.2024 27.128,21 EUR
+iShs Core MSCI EM IMI U.ETF Registered Shs USD (Dist) o.N.
+IE00BD45KH83, ST -6.096,0503
+Wertpapier Kauf, Ref.: 480189194 21.05.2024 21.05.2024 -13.236,33 EUR
+Robeco C.G.Fds-R.QI.Em.Con.Eq. Actions Nominat. IE EUR o.N.
+LU1233758587, ST 131,3616
+Steueroptimierung 21.05.2024 21.05.2024 132,52 EUR
+Ref.: 481573598
+Vermögensverwaltungshonorar 6314265222, 01.05.2024 - 31.05.2024 31.05.2024 31.05.2024 -459,73 EUR
+Bemessungsgrundlage 542.780,15 EUR
+Betrag inkl. USt: -459,73 EUR (Netto: -386,33 EUR, USt: -73,40
+EUR), enthaltener Transaktionskostenanteil: 211,48 EUR
+Ref.: 484298415
+Steueroptimierung 03.06.2024 03.06.2024 55,78 EUR
+Ref.: 484782044
+Erträgnisabrechnung, Ref.: 481611379 10.06.2024 07.06.2024 67,81 EUR
+Xtrackers II Global Gov.Bond Inhaber-Anteile 1D EUR Hgd oN
+LU0690964092, ST 100,3515
+KEST: EUR -23,02, SOLI: EUR -1,26
+Erträgnisabrechnung, Ref.: 488669118 26.06.2024 26.06.2024 176,89 EUR
+iShsIV-Fa.An.Hi.Yi.Co.Bd U.ETF Reg.Shares EUR Hdgd Dist o.N.
+IE00BF3N7219, ST 1.879,9356
+KEST: EUR -60,07, SOLI: EUR -3,30
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 77257648 / 20240629 18:49:57
+Kontoauszug
+Konto 1350945412 EUR
+IBAN DE67101106006314265555
+nznLOuSF, riuLOMKum
+Vermögensverwaltungskonto in EUR
+Datum 30.06.2024
+Herrn Auszug-Nr 2
+FDUEZfRFI KpfTduLS Seite 4 von 4
+CDEn-cTCtYZhgUz-TKx 4
+71711 EHPn Betreuer MPTs KELKH
+Telefon +49 (0) 9281 82088-13
+E-Mail Vorname.nachname@quirinprivatbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Vermögensverwaltungshonorar 6314265222, 01.06.2024 - 30.06.2024 30.06.2024 30.06.2024 -451,89 EUR
+Bemessungsgrundlage 551.309,30 EUR
+Betrag inkl. USt: -451,89 EUR (Netto: -379,74 EUR, USt: -72,15
+EUR), enthaltener Transaktionskostenanteil: 207,87 EUR
+Ref.: 494534896
+letzter Auszug 31.03.2024 alter Saldo 2.574,15 EUR
+Umsatz 418,52 EUR
+Limit (in Währung) 0,00 neuer Saldo 2.992,67 EUR
+Sollzins in % p.a. 0,00
+Überziehungszins in % p.a. 0,00
+Dieser Kontoauszug gilt gleichzeitig als Saldenmitteilung. Etwaige Einwendungen gegen den Kontoauszug sind unverzüglich zu erheben;
+ist der Kontoauszug zusätzlich als Rechnungsabschluss bezeichnet, gilt der Abschlusssaldo als genehmigt, wenn ihm nicht innerhalb von
+sechs Wochen nach Zugang schriftlich widersprochen wird. Zur Fristwahrung genügt die rechtzeitige Absendung.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem
+"Informationsbogen für den Einleger" entnommen werden.
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 77257648 / 20240629 18:49:57

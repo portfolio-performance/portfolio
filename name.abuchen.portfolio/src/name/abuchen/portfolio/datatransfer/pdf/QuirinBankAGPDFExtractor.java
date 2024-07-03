@@ -562,14 +562,14 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                         + "|Interne Buchung" //
                                         + "|.berweisungsgutschrift Inland)) " //
                                         + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+) ([\\s])?" //
                                         + "(?<amount>[\\.,\\d]+)([\\s])?(?<currency>[\\w]{3}).*$") //
                         .match("^(?<note2>Ref\\.: .*)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note1") + " " + trim(v.get("note2")));
+                            t.setNote(v.get("note1") + " | " + trim(v.get("note2")));
                         })
 
                         .wrap(TransactionItem::new));
@@ -590,20 +590,21 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
                         .section("note1", "note2", "date", "amount") //
                         .match("^(?<note1>R.ck.berweisung Inland) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+) ([\\s])?" //
                                         + "\\-(?<amount>[\\.,\\d]+)([\\s])?(?<currency>[\\w]{3}).*$") //
                         .match("^(?<note2>Ref\\.: .*)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note1") + " " + trim(v.get("note2")));
+                            t.setNote(v.get("note1") + " | " + trim(v.get("note2")));
                         })
 
                         .wrap(TransactionItem::new));
 
         // @formatter:off
-        // Steueroptimierung 12.06.2020 12.06.2020 36,82 EUR
+        // Steueroptimierung 02.04.2024 02.04.2024 56,07 EUR
+        // Ref.: 464710285
         // @formatter:on
         Block taxReturnBlock = new Block("^Steueroptimierung .* [\\.,\\d]+([\\s])?[\\w]{3}.*$");
         type.addBlock(taxReturnBlock);
@@ -618,14 +619,14 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
                         .section("note1", "note2", "date", "amount", "currency") //
                         .match("^(?<note1>Steueroptimierung) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+) ([\\s])?" //
                                         + "(?<amount>[\\.,\\d]+)([\\s])?(?<currency>[\\w]{3}).*$") //
                         .match("^(?<note2>Ref\\.: .*)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note1") + " " + trim(v.get("note2")));
+                            t.setNote(v.get("note1") + " | " + trim(v.get("note2")));
                         })
 
                         .wrap(TransactionItem::new));
@@ -647,14 +648,14 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
                         .section("note1", "date", "amount", "currency", "note2") //
                         .match("^(?<note1>Verm.gensverwaltungshonorar).* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\- )?" //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+) ([\\s])?" //
                                         + "\\-(?<amount>[\\.,\\d]+)([\\s])?(?<currency>[\\w]{3}).*$") //
                         .match("^(?<note2>Ref\\.: .*)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note1") + " " + trim(v.get("note2")));
+                            t.setNote(v.get("note1") + " | " + trim(v.get("note2")));
                         })
 
                         .wrap(TransactionItem::new));
@@ -663,7 +664,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         // Flatrate, Ref: KA-0139816662 30.06.2010 30.06.2010 -75,00 EUR
         // Gebühren 01.06.2010 - 30.06.2010
         // @formatter:on
-        Block feesBlock02 = new Block("^Flatrate, .* \\-[\\.,\\d]+ [\\w]{3}.*$");
+        Block feesBlock02 = new Block("^Flatrate, .* \\-[\\.,\\d]+([\\s])?[\\w]{3}.*$");
         type.addBlock(feesBlock02);
         feesBlock02.setMaxSize(5);
         feesBlock02.set(new Transaction<AccountTransaction>()
@@ -676,7 +677,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
 
                         .section("note1", "date", "amount", "currency", "note2") //
                         .match("^(?<note1>Flatrate),( .*)? [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (\\- )?" //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d\\s]+) ([\\s])?" //
                                         + "\\-(?<amount>[\\.,\\d]+)([\\s])?(?<currency>[\\w]{3})$") //
                         .match("^(?<note2>Geb.hren [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
@@ -717,9 +718,47 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
 
         // @formatter:off
+        // 6314265222 Bestandsprovision, 01.01.2024 - 31.03.2024, 16.04.2024 31.03.2024 2,04 EUR
+        // LU1274520086 RCGF.-R.QI GL.DE.C.EQ.IEO
+        // Gesamtbetrag: 2,50 EUR (KEST: -0,44 EUR, SOLI: -0,02 EUR)
+        // Ref.: 467260165
+        // @formatter:on
+        Block feeBlock04 = new Block("^[\\d]+ Bestand.*, .* [\\.,\\d]+([\\s])?[\\w]{3}.*$");
+        type.addBlock(feeBlock04);
+        feeBlock04.setMaxSize(5);
+        feeBlock04.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        .section("note1", "note2", "date", "amount", "currency", "note3", "note4") //
+                        .match("^[\\d]+ (?<note1>Bestand.*), "
+                                        + "(?<note2>.*), "
+                                        + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]+) "
+                                        + "(?<amount>[\\.,\\d]+)([\\s])?(?<currency>[\\w]{3}).*$") //
+                        .match("^(?<note3>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                        .match("^(?<note4>Ref\\.: .*)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note1") + " " + trim(v.get("note3")) + " " + trim(v.get("note2")) + " | " + trim(v.get("note4")));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
+        // @formatter:off
         // Haben-Zinsen Kontoabschluss, Ref: KA-0139907281 30.06.2010 30.06.2010 4,61EUR
         // @formatter:on
-        Block interestBlock = new Block("^Haben\\-Zinsen Kontoabschluss, .* ([\\s])?[\\.,\\d]+([\\s])?[\\w]{3}.*$");
+        Block interestBlock = new Block("^Haben\\-Zinsen Kontoabschluss, .* [\\.,\\d]+([\\s])?[\\w]{3}.*$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -738,7 +777,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note1") + " " + trim(v.get("note2")));
+                            t.setNote(v.get("note1") + " | " + trim(v.get("note2")));
                         })
 
                         .wrap(TransactionItem::new));
@@ -768,7 +807,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note1") + " " + trim(v.get("note2")));
+                            t.setNote(v.get("note1") + " | " + trim(v.get("note2")));
                         })
 
                         .wrap(t -> {
@@ -803,7 +842,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setNote(v.get("note1") + " " + trim(v.get("note3")) + " " + trim(v.get("note2")));
+                            t.setNote(v.get("note1") + " " + trim(v.get("note3")) + " | " + trim(v.get("note2")));
                         })
 
                         .wrap(t -> {
