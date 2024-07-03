@@ -1,0 +1,28 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+OPERATION DE BOURSE
+le 29/09/2023
+774963
+o7980
+MR fldbefU WPxwDwY
+9 fEO jE kBNci
+55566 vOaufL
+Références de votre compte titres
+04114 36444 60062327183 Compte PEA
+Résident Français
+VENTE COMPTANT
+ACTION
+Date et heure
+locale d'exécution Quantité Informations sur la valeur Informations sur l'exécution
+29/09/2023 42 AM.PEA MSCI EM.MKTS UC.ETF FCP Référence : 493029272303
+12:36:04 Type d'ordre : à cours limiteCours demandé : 20,5500 EUR
+Code ISIN : FR0013412020 Cours exécuté : 20,550 EUR
+Lieu d'exécution : EURONEXT PARIS
+Montant brut Commission Frais (♦) Montant net au crédit de votre compte
+863,10 EUR 4,32 EUR 858,78 EUR
+Sous réserve de bonne fin.
+(♦) Frais inhérents à la Taxe sur les Transactions Financières française
+Cet avis ne tient pas compte des frais inhérents aux Taxes sur les Transactions Financières européennes (hors France), s'ils doivent s'appliquer.
+AA1
+596730 y6552 p9097 1/1
