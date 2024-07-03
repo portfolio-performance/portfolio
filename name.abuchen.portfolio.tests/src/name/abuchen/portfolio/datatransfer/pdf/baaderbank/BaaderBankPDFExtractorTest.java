@@ -34,8 +34,11 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -4832,6 +4835,35 @@ public class BaaderBankPDFExtractorTest
         assertThat(results, hasItem(deposit(hasDate("2020-11-02"), hasAmount("EUR", 50.00), //
                         hasSource("Periodenauszug09.txt"), hasNote("Lastschrift aktiv"))));
     }
+
+    @Test
+    public void testPeriodenauszug10()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug10.txt"),
+                        errors);
+
+        // Check if the results list is not empty
+        assertTrue(results.isEmpty());
+
+        // Check if at least one error is present
+        assertTrue(!errors.isEmpty());
+
+        // Extract the first error from the list
+        Exception firstError = errors.get(0);
+
+        // Check if the first error is an UnsupportedOperationException
+        assertTrue(firstError instanceof UnsupportedOperationException);
+
+        // Check the error message of the first error
+        String expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
+                        "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH / Traders Place GmbH & Co. KGaA", "Periodenauszug10.txt");
+        assertEquals(expectedErrorMessage, firstError.getMessage());
+    }
+
 
     @Test
     public void testTageskontoauszug01()
