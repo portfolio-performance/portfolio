@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -10,6 +12,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
 public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
@@ -124,12 +127,12 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final DocumentType type = new DocumentType("Ausch.ttung");
+        final DocumentType type = new DocumentType("Aus(s)?ch.ttung");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Ausch.ttung.*$");
+        Block firstRelevantLine = new Block("^Aus(s)?ch.ttung.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -179,12 +182,32 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
+                        // 6,38096 Stück 0,4874 USD 3,11 USD
+                        // Devisenkurs: 1,0704 EUR/USD
+                        // @formatter:on
+                        .section("fxGross", "exchangeRate", "baseCurrency", "termCurrency").optional() //
+                        .match("^[\\.,\\d]+ St.ck [\\.,\\d]+ [\\w]{3} (?<fxGross>[\\.,\\d]+) [\\w]{3}.*$") //
+                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}).*$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        // @formatter:off
                         // Auftragsnummer
                         // 680ZY015-5cfb-4240-961c-865127t5147j
+                        //
+                        // Auftragsnummer
+                        // eZqTLXa ODRtHoPVn XjThGc 237dcf5e-bbe9-4127-9eef-4153d9c85ccf
                         // @formatter:on
                         .section("note1", "note2").optional() //
                         .match("^(?<note1>Auftragsnummer).*")
-                        .match("^(?<note2>[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+).*$") //
+                        .match("^(.* )?(?<note2>[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+).*$") //
                         .assign((t, v) -> t.setNote(concatenate(trim(v.get("note1")), trim(v.get("note2")), ": ")))
 
                         .wrap(TransactionItem::new);
