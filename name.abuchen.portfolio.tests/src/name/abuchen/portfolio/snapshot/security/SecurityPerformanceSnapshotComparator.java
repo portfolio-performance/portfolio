@@ -39,9 +39,24 @@ public class SecurityPerformanceSnapshotComparator
             assertThat(left.getDelta(), is(right.getDelta().get()));
             assertThat(left.getDeltaPercent(), is(right.getDeltaPercent().get()));
             assertThat(left.getSumOfDividends(), is(right.getSumOfDividends().get()));
+
+            assertThat(left.getDividendEventCount(), is(right.getDividendEventCount().get()));
+            assertThat(left.getLastDividendPayment(), is(right.getLastDividendPayment().get()));
+            assertThat(left.getPeriodicity(), is(right.getPeriodicity().get()));
+            
             assertThat(left.getTotalRateOfReturnDiv(), is(right.getTotalRateOfReturnDiv().get()));
             assertThat(left.getTotalRateOfReturnDivMovingAverage(),
                             is(right.getTotalRateOfReturnDivMovingAverage().get()));
+
+            assertThat(left.getRealizedCapitalGains().getCapitalGains(),
+                            is(right.getRealizedCapitalGains().get().getCapitalGains()));
+            assertThat(left.getRealizedCapitalGains().getForexCaptialGains(),
+                            is(right.getRealizedCapitalGains().get().getForexCaptialGains()));
+
+            assertThat(left.getUnrealizedCapitalGains().getCapitalGains(),
+                            is(right.getUnrealizedCapitalGains().get().getCapitalGains()));
+            assertThat(left.getUnrealizedCapitalGains().getForexCaptialGains(),
+                            is(right.getUnrealizedCapitalGains().get().getForexCaptialGains()));
 
             assertCosts(left, right);
 
@@ -62,6 +77,8 @@ public class SecurityPerformanceSnapshotComparator
     private void assertCosts(SecurityPerformanceRecord left, LazySecurityPerformanceRecord right)
     {
         assertThat(left.getMarketValue(), is(right.getMarketValue().get()));
+        assertThat(left.getQuote(), is(right.getQuote().get()));
+
         assertThat(left.getFifoCost(), is(right.getFifoCost().get()));
         assertThat(left.getMovingAverageCost(), is(right.getMovingAverageCost().get()));
         assertThat(left.getCapitalGainsOnHoldings(), is(right.getCapitalGainsOnHoldings().get()));
@@ -71,5 +88,8 @@ public class SecurityPerformanceSnapshotComparator
         assertThat(left.getCapitalGainsOnHoldingsMovingAveragePercent(),
                         is(right.getCapitalGainsOnHoldingsMovingAveragePercent().get()));
         assertThat(left.getFifoCostPerSharesHeld(), is(right.getFifoCostPerSharesHeld().get()));
+        assertThat(left.getSharesHeld(), is(right.getSharesHeld().get()));
+        assertThat(left.getFees(), is(right.getFees().get()));
+        assertThat(left.getTaxes(), is(right.getTaxes().get()));
     }
 }

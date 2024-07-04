@@ -3,7 +3,6 @@ package name.abuchen.portfolio.snapshot.security;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
@@ -20,8 +19,8 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
 /* package */class CostCalculation extends Calculation
 {
-    public record CostCalculationResult(long sharesHeld, Money fifoCost, Money netFifoCost, Money movingAverageCost,
-                    Money netMovingAverageCost)
+    public record CostCalculationResult(long sharesHeld, Money fifoCost, TrailRecord fifoCostTrail, Money netFifoCost,
+                    Money movingAverageCost, Money netMovingAverageCost, Money fees, Money taxes)
     {
     }
 
@@ -257,8 +256,8 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
     public CostCalculationResult getResult()
     {
-        return new CostCalculationResult(getSharesHeld(), getFifoCost(), getNetFifoCost(), getMovingAverageCost(),
-                        getNetMovingAverageCost());
+        return new CostCalculationResult(getSharesHeld(), getFifoCost(), getFifoCostTrail(), getNetFifoCost(),
+                        getMovingAverageCost(), getNetMovingAverageCost(), getFees(), getTaxes());
     }
 
     /**
@@ -277,7 +276,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         return TrailRecord.of(fifo.stream().filter(entry -> entry.grossAmount > 0) //
                         .map(entry -> entry.trail.fraction(Money.of(getTermCurrency(), entry.grossAmount), entry.shares,
                                         entry.originalShares))
-                        .collect(Collectors.toList()));
+                        .toList());
     }
 
     /**

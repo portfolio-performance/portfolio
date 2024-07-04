@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.Set;
 
 import name.abuchen.portfolio.math.Risk;
@@ -38,29 +37,6 @@ import name.abuchen.portfolio.util.Interval;
 public final class SecurityPerformanceRecord extends BaseSecurityPerformanceRecord
                 implements Adaptable, TrailProvider, SecurityPerformanceIndicator.Costs
 {
-    public enum Periodicity
-    {
-        UNKNOWN, NONE, INDEFINITE, ANNUAL, SEMIANNUAL, QUARTERLY, MONTHLY, IRREGULAR;
-
-        private static final ResourceBundle RESOURCES = ResourceBundle
-                        .getBundle("name.abuchen.portfolio.snapshot.labels"); //$NON-NLS-1$
-
-        @Override
-        public String toString()
-        {
-            return RESOURCES.getString("dividends." + name()); //$NON-NLS-1$
-        }
-    }
-
-    public interface Trails // NOSONAR
-    {
-        String FIFO_COST = "fifoCost"; //$NON-NLS-1$
-        String REALIZED_CAPITAL_GAINS = "realizedCapitalGains"; //$NON-NLS-1$
-        String REALIZED_CAPITAL_GAINS_FOREX = "realizedCapitalGainsForex"; //$NON-NLS-1$
-        String UNREALIZED_CAPITAL_GAINS = "unrealizedCapitalGains"; //$NON-NLS-1$
-        String UNREALIZED_CAPITAL_GAINS_FOREX = "unrealizedCapitalGainsForex"; //$NON-NLS-1$
-    }
-
     /**
      * internal rate of return of security {@link #calculateIRR()}
      */
@@ -204,11 +180,6 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
                     Interval interval)
     {
         super(client, security, converter, interval);
-    }
-
-    public String getSecurityName()
-    {
-        return getSecurity().getName();
     }
 
     public String getNote()

@@ -17,7 +17,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord.Periodicity;
+import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord.Periodicity;
 
 @SuppressWarnings("nls")
 public class DividendCalculationTest
