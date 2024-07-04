@@ -1,0 +1,40 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+Wertpapierabrechnung 
+Ausschüttung 
+Auftragsnummer 
+eZqTLXa ODRtHoPVn XjThGc 237dcf5e-bbe9-4127-9eef-4153d9c85ccf 
+Straße 40 
+30655 Hannover 
+Deutschland Depotinhaber Depotnummer - Konto 
+rBVabzp LkTgGdbwZ 
+406276884-1 
+ARbdgx 
+Sie haben eine Dividende erhalten Berlin, 03.07.2024 
+Wertpapier ISIN 
+VANGUARD FTSE EMU.ETF DLD IE00B3VVMM84 
+Positionsgröße / Anteile Auszahlung pro Stück Gesamteinnahme 
+6,38096 Stück 0,4874 USD 3,11 USD 
+Devisenkurs: 1,0704 EUR/USD 
+Dividende: 2,91 EUR 
+Gezahlte ausländische Quellensteuer: 0,00 EUR 
+Anrechenbare ausländische Quellensteuer: 0,00 EUR 
+Zwischensumme: 2,91 EUR 
+Gesamteinnahme: 2,91 EUR 
+Reduktion der Bemessungsgrundlage durch ausländische Quellensteuer: 0,00 EUR 
+Teilfreistellung Investmentfonds (30%): -0,87 EUR 
+Steuerliche Bemessungsgrundlage: 2,04 EUR 
+Einbehaltene deutsche Kapitalertragsteuer: 0,51 EUR 
+Einbehaltener deutscher Solidaritätszuschlag: 0,02 EUR 
+Einbehaltene deutsche Kirchensteuer: 0,00 EUR 
+Gesamtbetrag der einbehaltenen Steuern: 0,53 EUR 
+Valuta Betrag zu Ihren Gunsten 
+01.07.2024 2,38 EUR 
+Dokument ID: a17bd262-c0eb-4da0-b516-ad866e6401d3
+© Raisin Bank AG
+Raisin Bank AG Niedenau 61-63 60325 Frankfurt am Main
+Sitz der Gesellschaft/Registered Office: Frankfurt am Main
+Registergericht/Commercial Register: Amtsgericht Frankfurt am Main, HRB 13305
+Vorstand/Member of the Board of Directors: Marco Lindgens, Mirko Siepmann, Dr. Andreas Wolf
+Vorsitzender des Aufsichtsrats/Chairman of the Supervisory Board: Dr. Frank Freund
