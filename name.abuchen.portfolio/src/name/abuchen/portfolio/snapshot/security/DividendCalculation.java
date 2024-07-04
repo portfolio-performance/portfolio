@@ -12,11 +12,16 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord.Periodicity;
+import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord.Periodicity;
 import name.abuchen.portfolio.util.Dates;
 
 /* package */class DividendCalculation extends Calculation
 {
+    public record DividendCalculationResult(Money sum, LocalDate lastDividendPayment, int numOfEvents,
+                    Periodicity periodicity, double rateOfReturnPerYear)
+    {
+    }
+
     /**
      * A dividend payment.
      */
@@ -211,6 +216,12 @@ import name.abuchen.portfolio.util.Dates;
                 }
             }
         }
+    }
+
+    public DividendCalculationResult getResult()
+    {
+        return new DividendCalculationResult(sum.toMoney(), getLastDividendPayment(), payments.size(), periodicity,
+                        rateOfReturnPerYear);
     }
 
     public LocalDate getLastDividendPayment()

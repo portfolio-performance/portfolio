@@ -345,6 +345,8 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         unrealizedCapitalGains.addCapitalGainsTrail(endTrail.subtract(startTrail));
         unrealizedCapitalGains.addForexCaptialGains(Money.of(termCurrency, forexGain));
         unrealizedCapitalGains.addForexCapitalGainsTrail(forexGainTrail);
+        
+        fifo.clear();
     }
 
     private void squashForexValuationsAtStart(CurrencyConverter converter)

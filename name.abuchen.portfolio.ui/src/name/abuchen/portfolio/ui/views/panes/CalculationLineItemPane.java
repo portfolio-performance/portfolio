@@ -24,8 +24,8 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
+import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.CalculationLineItem;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.DropDown;
@@ -50,7 +50,7 @@ public class CalculationLineItemPane implements InformationPanePage
     private TableViewer transactions;
     private ShowHideColumnHelper support;
 
-    private SecurityPerformanceRecord record;
+    private BaseSecurityPerformanceRecord record;
 
     @Override
     public String getLabel()
@@ -298,7 +298,7 @@ public class CalculationLineItemPane implements InformationPanePage
     @Override
     public void setInput(Object input)
     {
-        record = Adaptor.adapt(SecurityPerformanceRecord.class, input);
+        record = Adaptor.adapt(BaseSecurityPerformanceRecord.class, input);
 
         if (record != null)
         {
