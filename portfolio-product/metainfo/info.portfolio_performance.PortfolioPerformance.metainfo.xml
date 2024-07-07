@@ -37,6 +37,20 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.69.1" date="2024-07-07">
+      <description>
+        <ul>
+          <li>New: Performance improvements for 'Statement of Assets' with many columns</li>
+          <li>New: CSV export for stacked diagrams in the taxonomy view</li>
+          <li>New: Introduced a new PDF importer for Bourso Bank</li>
+          <li>Improvements to the PDF importers for Raisin Bank AG, Quirin, Baader Bank, Trade Republic, ING DiBa, JustTrade, Tradegate, Swissquote, FFB, Arkea Direct Bank, sBroker</li>
+          <li xml:lang="de">Verbesserung der Performance von der Vermögensaufstellung mit vielen Spalten</li>
+          <li xml:lang="de">Neu: CSV Export für Stapel-Diagramme in den Klassifizierungen</li>
+          <li xml:lang="de">Neu: Neuer PDF-Importer für Bourso Bank</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Raisin Bank AG, Quirin, Baader Bank, Trade Republic, ING DiBa, JustTrade, Tradegate, Swissquote, FFB, Arkea Direct Bank, sBroker</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.69.0" date="2024-06-12">
       <description>
         <ul>
