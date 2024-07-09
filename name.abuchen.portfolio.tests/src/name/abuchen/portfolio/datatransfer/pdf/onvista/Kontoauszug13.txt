@@ -1,0 +1,52 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1.qualifier
+-----------------------------------------
+Seite 1 von 2
+Herr
+Max Muster Unsere Postanschrift:
+Musterstr. 2 Postfach 10 08 60
+54321 Musterhausen 60008 Frankfurt
+Ihre Kundenbetreuer:
+Telefon (069) 7107530
+Telefax (069) 7107100
+Für Überweisungen:
+Kreditinstitut OnVista Bank GmbH
+Bankleitzahl 514 108 00
+Für EU-Standardüberweisungen:
+BIC BOURDEFF
+IBAN DE37514108000194507065
+Ihre Kontonummer : 194507065 : Customer Cash Account  EUR
+KONTOAUSZUG Nr. 3 per 30.09.2016
+Alter Saldo 116,84 H
+Neuer Saldo 4,21 S
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig.
+Nähere Informationen können dem "Informationsbogen für den Einleger", der unter www.onvista-bank.de
+im Menü "Service - Formulare" abgelegt ist, entnommen werden.
+Ihre Kontonummer : 194507065 : Customer Cash Account  EUR
+KONTOAUSZUG Nr. 3 per 30.09.2016 Seite 2 von 2
+B.Datum Valuta Bezeichnung Soll Haben
+Alter Saldo 116,84
+15.07. 15.07. REF: 000040697615 5,00-
+Überweisungausgang SEPA Muster Max
+BYLADEM1001 / DE30120300000016664096
+Auszahlung Onvista 01
+ATOS_Id: C607150004
+CRM_Id: 125144729
+19.07. 19.07. REF: 000040720216 5,00
+Überweisungseingang SEPA Max Muster
+BYLADEM1001 / DE30120300000016664096
+Einzahlung Onvista 01
+27.07. 28.07. REF: 000040856165 120,99-
+Wertpapierkauf
+COMMERZBANK AG
+STK: 20
+ISIN: DE000CBK1001
+ABR: 5397801420160726
+31.08. 30.08. REF: 000041433748 0,03-
+Überziehungszinsen
+30.09. 30.09. REF: 000041983798 0,03-
+Überziehungszinsen
+Neuer Saldo 4,21-
+
+```

@@ -1,0 +1,90 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1.qualifier
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=Max MUSTERMANN
+ADRESSZEILE3=Musterstrasse 2
+ADRESSZEILE4=54321 Musterhausen
+Ausschüttung für
+Herr ADRESSZEILE5=01.10.2014 - 30.09.2015
+Max MUSTERMANN ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstrasse 2 BELEGNUMMER=460
+54321 Musterhausen 173458000 70187215 / 17.12.2015 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max MUSTERMANN
+Erträgnisgutschrift Frankfurt am Main, 17.12.2015
+Gattungsbezeichnung ISIN
+AGIF-Allianz Euro Bond Inhaber Anteile A (EUR) o.N. LU0165915215
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 156,729 15.12.2015 17.12.2015 EUR 0,075560
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+17.12.2015 172305047 EUR 7,68
+Ertrag für 2014/15 EUR 11,84
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zinsanteil (Ausschüttung) EUR 14,85
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 14,85
+einbehaltene Kapitalertragsteuer EUR 3,63
+einbehaltener Solidaritätszuschlag EUR 0,20
+einbehaltene Kirchensteuer EUR 0,33
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 32,60
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 1,79
+im laufenden Jahr einbehaltene Kirchensteuer EUR 2,93
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Köln-Porz, Steuernummer 216/5881/1238.
+Steuerlicher Stichtag 17.12.2015
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung      
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/ABREEREIERTR/GDBERTRG/000460/181215/001900
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=Max MUSTER
+ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+Ausschüttung für
+Herr ADRESSZEILE5=01.10.2014 - 30.09.2015
+Max MUSTER ADRESSZEILE6=
+Depot-Nr. Ausführungs-Nr.
+Musterstr. 2 BELEGNUMMER=24
+54321 Musterhausen 173458000 33217061 / 11.12.2015 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max MUSTER
+Ertragsthesaurierung Frankfurt am Main, 17.12.2015
+Gattungsbezeichnung ISIN
+AGIF-Allianz Euro Bond Inhaber Anteile A (EUR) o.N. LU0165915215
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 156,729 15.12.2015 17.12.2015 EUR 0,019210
+Steuerpflichtiger Betrag gem.§ 2 Abs. 1 InvStG EUR 3,01
+Bei Teilthesaurierungen kann die Steuerpflicht durch die Barausschüttungskomponente abgegolten sein. In diesen Fällen
+wurde auch die ggf. ausgewiesene anrechenbare Quellensteuer bereits im Rahmen der Ausschüttung berücksichtigt.
+Steuerlicher Stichtag 17.12.2015
+Der von der Kapitalverwaltungsgesellschaft (KVG) zum Geschäftsjahresende des Fonds gemeldete und in jenem
+Kalenderjahr als zugeflossen geltende ausschüttungsgleiche (thesaurierte) Ertrag ist gem. §2 Abs. 1 InvStG steuerpflichtig
+und in der Steuererklärung für 2015 (Anlage KAP) zu deklarieren.
+Verwahrart: Girosammelverwahrung      
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/DUANDEREEREIERTR/GDBERTRG/000024/181215/000732
+
+```

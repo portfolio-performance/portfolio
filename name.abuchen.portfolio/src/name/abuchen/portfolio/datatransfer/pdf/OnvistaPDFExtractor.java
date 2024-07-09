@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 import java.math.BigDecimal;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.DocumentContext;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -38,7 +39,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         addDeliveryInOutBoundTransaction();
         addRegistrationFeeTransaction();
         addAccountStatementTransaction();
-        addNonImportableTransaction();
+        addChangeTransaction();
     }
 
     @Override
@@ -54,7 +55,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         + "|Scheme of Arrangement" //
                         + "|Gesamtf.lligkeit" //
                         + "|Zwangsabfindung" //
-                        + "|Dividende)");
+                        + "|Umtausch\\/Bezug"
+                        + "|Dividende)", "(Kontoauszug|KONTOAUSZUG) Nr\\.");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -63,6 +65,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         + "(Kauf" //
                         + "|Verkauf" //
                         + "|Gesamtf.lligkeit" //
+                        + "|Umtausch\\/Bezug"
                         + "|Abrechnung)" //
                         + "( .*)?$");
         type.addBlock(firstRelevantLine);
@@ -715,6 +718,22 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
+                                        // This is for the "Ertragsthesaurierung without importable amount"
+                                        //
+                                        // Ertragsthesaurierung Frankfurt am Main, 17.12.2015
+                                        // Steuerpflichtiger Betrag gem.§ 2 Abs. 1 InvStG EUR 3,01
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .find("Ertragsthesaurierung .*") //
+                                                        .match("^Steuerpflichtiger Betrag gem\\..*InvStG (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            // "SKIP Ertragsthesaurierung without real amount
+                                                            type.getCurrentContext().putBoolean("noDividend", true);
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
                                         // 21.04.2016 172306238 EUR 10,00
                                         // @formatter:on
                                         section -> section //
@@ -862,16 +881,20 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .conclude(ExtractorUtils.fixGrossValueA())
 
                         .wrap((t, ctx) -> {
+                            DocumentContext context = type.getCurrentContext();
+                            if (type.getCurrentContext().getBoolean("noDividend"))
+                                return null;
+
                             TransactionItem item = new TransactionItem(t);
 
                             // If we have multiple entries in the document, with
                             // taxes and tax refunds, then the "negative" flag
                             // must be removed.
-                            type.getCurrentContext().remove("negative");
+                            context.remove("negative");
 
                             // If we have a gross reinvestment, then the "noTax"
                             // flag must be removed.
-                            type.getCurrentContext().remove("noTax");
+                            context.remove("noTax");
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -1203,7 +1226,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date", "amount", "note", "sign").optional() //
                         .documentContext("year", "currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+)(?<sign>(.{0,1}))$") //
                         .match("^(?<note>.berweisung(seingang|ausgang) SEPA).*$") //
                         .assign((t, v) -> {
                             // Is sign is negative change to REMOVAL
@@ -1237,12 +1260,15 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // Portogebuehren 03/15
                         // 24.03. 23.03. REF: 000137060674 42,42+
                         // Erst. BGH-Urteil Sonstige
+                        // 11.05. 03.05. REF: 000057140531 0,70+
+                        // Storno: Portogebühren
+                        // Portogebuehren 04/18
                         // @formatter:on
                         .section("date", "amount", "sign", "note1", "note2").optional() //
                         .documentContext("year", "currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$") //
-                        .match("^(?<note1>(Portogeb.hren|Erst\\. BGH\\-Urteil Sonstige))$") //
-                        .match("^(Portogebuehren )?(?<note2>([\\d]{2}\\/[\\d]{2}|[\\d]{1}\\. Quartal [\\d]{4}))$") //
+                        .match("^(?<note1>(Storno: Portogeb.hren|Portogeb.hren|Erst\\. BGH\\-Urteil Sonstige))$") //
+                        .match("^(Storno: Portogeb.hren|Portogebuehren )?(?<note2>([\\d]{2}\\/[\\d]{2}|[\\d]{1}\\. Quartal [\\d]{4}))$") //
                         .assign((t, v) -> {
                             // Is sign is positiv change to FEES_REFUND
                             if ("-".equals(v.get("sign")))
@@ -1284,7 +1310,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         });
     }
 
-    private void addNonImportableTransaction()
+    private void addChangeTransaction()
     {
         final DocumentType type = new DocumentType("(Freier Erhalt" //
                         + "|Freie Lieferung" //
@@ -1292,21 +1318,77 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         + "|Fusion" //
                         + "|Kapitalerh.hung" //
                         + "|Kapitalherabsetzung" //
-                        + "|Umtausch" //
+                        + "|Umtausch " //
+                        + "|Reverse Split"
                         + "|Im Zuge der Geldzahlung erfolgt die Ausbuchung der Rechte)", //
-                        "(Kontoauszug|KONTOAUSZUG) Nr\\.");
+                        "(Kontoauszug|KONTOAUSZUG) Nr\\.", //
+                                        documentContext -> documentContext //
+
+                                        // If "Storno", skip the delivery
+                                        // in/outbond transaction, only use the
+                                        // (corrected) tax transaction.
+
+                                        // @formatter:off
+                                        //Storno Frankfurt am Main, 01.07.2019
+                                        // @formatter:on
+                                        .section("cancel").optional()
+                                        .match("^(?<cancel>Storno).*, [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
+                                        .assign((ctx, v) -> {
+                                            ctx.putBoolean("noTransfer", true);
+                                        })
+
+                                        .oneOf( //
+                                                        // @formatter:off
+                                                        //Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+                                                        //26.11.2015 172306238 68366911 EUR 7,90
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("date") //
+                                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ [\\d]+.*$") //
+                                                        .assign((ctx, v) -> ctx.put("date",
+                                                                        v.get("date"))),
+                                                        
+                                                        // @formatter:off
+                                                        //Nominal Schlusstag Wert
+                                                        //STK 50,000 07.02.2024 08.02.2024
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("date") //
+                                                                        .match("^STK [\\.,\\d]+ ([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((ctx, v) -> ctx.put("date",
+                                                                        v.get("date"))),
+                                                        
+                                                        // @formatter:off
+                                                        //Nominal Ex-Tag
+                                                        //STK 2.000,000 25.11.2016
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("date") //
+                                                                        .match("^STK [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                                        .assign((ctx, v) -> ctx.put("date",
+                                                                                        v.get("date"))),
+                                                        // @formatter:off
+                                                        // Frankfurt am Main, 25.05.2016
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("date") //
+                                                                        .match("^.*, (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                                        .assign((ctx, v) -> ctx.put("date",
+                                                                                        v.get("date"))))
+                                        );
+        
+        
+        
         this.addDocumentTyp(type);
 
         Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Freier Erhalt" //
-                        + "|Freie Lieferung" //
-                        + "|Einbuchung von Rechten" //
-                        + "|Fusion" //
-                        + "|Kapitalerh.hung" //
-                        + "|Kapitalherabsetzung" //
-                        + "|Umtausch" //
-                        + "|Dividendengutschrift)(?! im Verh.ltnis).*$");
+        Block firstRelevantLine = new Block("^(Ausbuchung:"
+                        + "|Einbuchung:"
+                        + "|Wir lieferten zu Lasten Ihres Depots"
+                        + "|Wir erhielten zu Gunsten Ihres Depots"
+                        + "|Dividendengutschrift"
+                        + "|Wir haben Ihrem Depot im Verh.ltnis .* zugebucht).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1318,157 +1400,83 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             return portfolioTransaction;
                         })
 
-                        .optionalOneOf( //
-                                        // @formatter:off
-                                        // Is type --> "Freie Lieferung" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
-                                        // Is type --> "Fusion" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
-                                        // Is type --> "Kapitalherabsetzung" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
-                                        // Is type --> "Ausbuchung:" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("type") //
-                                                        .match("^(?<type>(Freier Erhalt" //
-                                                                        + "|Freie Lieferung" //
-                                                                        + "|Einbuchung von Rechten" //
-                                                                        + "|Fusion" //
-                                                                        + "|Kapitalerh.hung" //
-                                                                        + "|Kapitalherabsetzung" //
-                                                                        + "|Ausbuchung:)).*$") //
-                                                        .assign((t, v) -> {
-                                                            if ("Freie Lieferung".equals(v.get("type")) //
-                                                                            || "Fusion".equals(v.get("type")) //
-                                                                            || "Kapitalherabsetzung".equals(v.get("type")) //
-                                                                            || "Ausbuchung:".equals(v.get("type")))
-                                                                t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-                                                        }),
-                                        // @formatter:off
-                                        // Im Zuge der Geldzahlung erfolgt die Ausbuchung der Rechte. Ein separater Beleg wird nicht erstellt.
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("type") //
-                                                        .match("^.*(?<type>Ausbuchung der Rechte).*$") //
-                                                        .assign((t, v) -> {
-                                                            if ("Ausbuchung der Rechte".equals(v.get("type")))
-                                                                t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-                                                        }))
-
                         // @formatter:off
-                        // Gattungsbezeichnung ISIN
-                        // Allianz PIMCO Euro Bd Tot.Ret. Inhaber-Anteile A (EUR) o.N. LU0140355917
-                        // Nominal Schlusstag Wert
+                        //Ausbuchung:
                         // @formatter:on
-                        .section("name", "isin", "name1") //
-                        .find("Gattungsbezeichnung ISIN") //
-                        .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^(?<name1>.*)") //
+                        .section("type").optional() //
+                        .match("^(?<type>(Ausbuchung:" 
+                                        + "|Im Zuge der Geldzahlung erfolgt die Ausbuchung der Rechte"
+                                        + "|Wir lieferten zu Lasten Ihres Depots)).*$") //
                         .assign((t, v) -> {
-                            if (!v.get("name1").startsWith("Nominal"))
-                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
-
-                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
                         })
+
+
+                        .oneOf(
+                            // @formatter:off
+                            // Gattungsbezeichnung ISIN
+                            // Allianz PIMCO Euro Bd Tot.Ret. Inhaber-Anteile A (EUR) o.N. LU0140355917
+                            // Nominal Schlusstag Wert
+                            // @formatter:on
+                                        section -> section.attributes("name", "isin", "name1") //
+                                                        .find("Gattungsbezeichnung ISIN") //
+                                                        .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^(?<name1>.*)") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Nominal"))
+                                                                v.put("name", trim(v.get("name")) + " "
+                                                                                + trim(v.get("name1")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                            // @formatter:off
+                            // Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+                            // TUI AG Inhaber-Teilrechte 09.03.2023 DE000TUAG1T2
+                            // Nominal
+                            // @formatter:on
+                                        section -> section.attributes("name", "isin", "name1") //
+                                                        .find("Gattungsbezeichnung F.lligkeit n.ch\\. Zinstermin ISIN") //
+                                                        .match("^(?<name>.*) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^(?<name1>.*)") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Nominal"))
+                                                                v.put("name", trim(v.get("name")) + " "
+                                                                                + trim(v.get("name1")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
 
                         // @formatter:off
                         // STK 50,000 07.02.2024 08.02.2024
                         // @formatter:on
                         .section("shares") //
+                        .documentContext("date") //
                         .match("^STK (?<shares>[\\.,\\d]+).*$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .assign((t, v) -> {
+                            t.setShares(asShares(v.get("shares")));
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(t.getSecurity().getCurrencyCode());
+                            t.setAmount(0L);
+                        })
 
-                        .oneOf( //
-                                        // @formatter:off
-                                        // STK 6,000 23.05.2022 25.05.2022 EUR 1,660000
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date") //
-                                                        .match("^STK [\\.,\\d]+( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\w]{3} [\\.,\\d]+$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
-                                        // @formatter:off
-                                        // STK 50,000 07.02.2024 08.02.2024
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date") //
-                                                        .match("^STK [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
-                                        // @formatter:off
-                                        // Frankfurt am Main, 25.05.2016
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date") //
-                                                        .match("^.*, (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
-
-                        .oneOf( //
-                                        // @formatter:off
-                                        // Freier Erhalt ADRESSZEILE4=54321 Musterhausen
-                                        // Freie Lieferung ADRESSZEILE2=Vorname NachnameADRESSZEILE3=Straße 1
-                                        // Einbuchung von Rechten für die ADRESSZEILE1=Herr
-                                        // Kapitalerhöhung ADRESSZEILE2=Max MustermannADRESSZEILE3=Musterstr. 2
-                                        // Umtausch ADRESSZEILE2=Max MustermannADRESSZEILE3=Musterstr. 2
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("type") //
-                                                        .match("^(?<type>(Freier Erhalt" //
-                                                                        + "|Freie Lieferung" //
-                                                                        + "|Einbuchung von Rechten" //
-                                                                        + "|Fusion"
-                                                                        + "|Kapitalerh.hung"
-                                                                        + "|Umtausch)) .*$") //
-                                                        .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
-
-                                                            t.setCurrencyCode(t.getSecurity().getCurrencyCode());
-                                                            t.setAmount(0L);
-                                                        }),
-                                        // @formatter:off
-                                        // Dividendengutschrift
-                                        // Im Zuge der Geldzahlung erfolgt die Ausbuchung der Rechte. Ein separater Beleg wird nicht erstellt.
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("type") //
-                                                        .match("^(?<type>Dividendengutschrift).*$") //
-                                                        .find(".*Ausbuchung der Rechte.*")
-                                                        .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
-
-                                                            t.setCurrencyCode(t.getSecurity().getCurrencyCode());
-                                                            t.setAmount(0L);
-                                                        }),
-                                        // @formatter:off
-                                        // Kapitalherabsetzung ADRESSZEILE1=Herr
-                                        // Umbuchung der Teil- in Vollrechte. Für die eventuell verbleibenden Bruchteile (Nachkommastellen) in den Teilrechten
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("type") //
-                                                        .match("^(?<type>Kapitalherabsetzung).*$") //
-                                                        .find("Umbuchung der Teil\\- in Vollrechte.*")
-                                                        .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
-
-                                                            t.setCurrencyCode(t.getSecurity().getCurrencyCode());
-                                                            t.setAmount(0L);
-                                                        }),
-                                        // @formatter:off
-                                        // Kapitalherabsetzung ADRESSZEILE1=Herr
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("type") //
-                                                        .match("^(?<type>Kapitalherabsetzung) .*$") //
-                                                        .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
-
-                                                            t.setCurrencyCode(t.getSecurity().getCurrencyCode());
-                                                            t.setAmount(0L);
-                                                        }))
-
+                        // @formatter:off
+                        //Nominal Ex-Tag
+                        //STK 28,000 23.11.2015
+                        .section("date").optional() //
+                        .match("^STK [\\.,\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                        })
+                        
                         .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
+                            if (type.getCurrentContext().getBoolean("noTransfer"))
+                                return null;
+                            return new TransactionItem(t);
                         });
+        
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addTaxesBlock(type);
+        addTaxReturnBlock(type);
     }
 
     private void addTaxReturnBlock(DocumentType type)
@@ -1690,6 +1698,22 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
+                        // Kapitalertragsteuer EUR 11,23
+                        // Solidaritätszuschlag EUR 0,62
+                        // Kirchensteuer EUR 1,01
+                        // Wert Konto-Nr. Betrag zu Ihren Gunsten
+                        // 23.11.2015 194507065 EUR 12,86
+                        // @formatter:on
+                        .section("currency", "amount").optional() //
+                        .match("^.*(Kapitalertragsteuer|Solidarit.tszuschlag|Kirchensteuer) [\\w]{3} [\\.,\\d]+$") //
+                        .match("^Wert Konto\\-Nr\\. Betrag zu Ihren Gunsten")
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
                         // 17.12.2020 241462046 EUR/USD 1,2239 EUR 3.965,72
                         // zu versteuern (negativ) EUR 53,43
                         // 16.12.2020 241462046 59592727 EUR 14,10
@@ -1718,6 +1742,95 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .match("^.* (?<note1>Abrechnungs\\-Nr\\.).*$") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<note2>[\\d]+) [\\w]{3} [\\.,\\d]+$") //
                         .assign((t, v) -> t.setNote(v.get("note1") + " " + v.get("note2")))
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
+    }
+
+    private void addTaxesBlock(DocumentType type)
+    {
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^(Umtausch) .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+                        
+                        // @formatter:off
+                        // Gattungsbezeichnung ISIN
+                        // Lyxor MSCI AC As.Pa.x Ja.U.ETF Act. au Port. Acc o.N. FR0010312124
+                        // Nominal Schlusstag Wert
+                        // @formatter:on
+                        .section("name", "isin", "name1") //
+                        .find("Gattungsbezeichnung ISIN") //
+                        .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .match("^(?<name1>.*)") //
+                        .assign((t, v) -> {
+                            if (!v.get("name1").startsWith("Nominal"))
+                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+                        
+                        // @formatter:off
+                        // Kapitalertragsteuer EUR 11,23-
+                        //Solidaritätszuschlag EUR 0,62-
+                        //Kirchensteuer EUR 1,01-
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^.*Kapitalertragsteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)\\-$") //
+                        .documentContext("date") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("tax")));
+                        })
+                        .section("currency", "tax").optional() //
+                        .match("^.*Solidaritätszuschlag (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)\\-$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(t.getAmount() + asAmount(v.get("tax")));
+                        })
+                        .section("currency", "tax").optional() //
+                        .match("^.*Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)\\-$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(t.getAmount() + asAmount(v.get("tax")));
+                        })
+
+                        // @formatter:off
+                        //Kapitalertragsteuer USD 0,29-
+                        //Solidaritätszuschlag USD 0,01-
+                        //Ausmachender Betrag USD 0,30-
+                        //Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten
+                        //22.02.2019 356238049 EUR/USD 1,13375 EUR 0,27
+                        // @formatter:on
+                        .section("baseCurrency", "termCurrency", "exchangeRate", "gross").optional() //
+                        .find("^Wert Konto\\-Nr\\. Devisenkurs Betrag zu Ihren Lasten")
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money fxGross = Money.of(t.getCurrencyCode(), t.getAmount());
+
+                            t.setAmount(asAmount(v.get("gross")));
+                            t.setCurrencyCode(rate.getBaseCurrency());
+
+                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
@@ -1906,6 +2019,13 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^.* Fremdspesen[\\s]{1,}(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Verwahrart Girosammelverwahrung Gebühren                    EUR 10,00-
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Verwahrart Girosammelverwahrung Geb.hren[\\s]{1,}(?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }

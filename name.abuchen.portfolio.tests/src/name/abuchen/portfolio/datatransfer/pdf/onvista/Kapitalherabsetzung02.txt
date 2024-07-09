@@ -1,0 +1,46 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1.qualifier
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Kapitalherabsetzung ADRESSZEILE1=Herr
+Durchführungsanzeige ADRESSZEILE2=Max MUSTER
+ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+Herr ADRESSZEILE5=
+Max MUSTER ADRESSZEILE6=Depot-Nr. Ausführungs-Nr.
+Musterstr. 2 BELEGNUMMER=482
+54321 Musterhausen 173458000 47176972 / 22.02.2023 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max MUSTER
+Frankfurt am Main, 23.02.2023
+Ausbuchung:
+Gattungsbezeichnung ISIN
+TUI AG Namens-Aktien o.N. DE000TUAG000
+Nominal Ex-Tag
+STK 50,000 24.02.2023
+Verwahrart
+Girosammelverwahrung
+Einbuchung:
+Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+TUI AG Inhaber-Teilrechte 09.03.2023 DE000TUAG1T2
+Nominal
+STK 5,000
+Verwahrart
+Girosammelverwahrung
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvist a bank - eine M arke der Com merzbank AG · Solmsst raße 83 · 6 0 486 Frankfur t a m M ain
+Kundenservice: +49 ( 0 )69-710 7-53 0 · T: +49 ( 0 )69-710 7- 0 · F: +49 ( 0 )69-710 7-10 0 · E: in fo@onvist a -bank.de · W: w w w.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender), Marcus Chromik, Michael Kotzbauer,
+Sabine Mlnarsky, Jörg Oliveri del Castillo-Schulz, Bet t ina Orlopp, Thomas Schaufler · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
+3.18/DUANDEREEREIABKPRD/GDBVKAPU/000482/240223/002403
+
+```

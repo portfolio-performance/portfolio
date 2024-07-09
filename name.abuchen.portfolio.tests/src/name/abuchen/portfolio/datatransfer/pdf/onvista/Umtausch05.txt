@@ -1,0 +1,47 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1.qualifier
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+ EMAILVERSAND=N
+DEPOTNUMMER=173458000
+       DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+       ADRESSZEILE1=Herr
+Wertpapierabrechnung ADRESSZEILE2=Max MUSTER
+ ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+Umtausch/Bezug ADRESSZEILE5=
+ADRESSZEILE6=
+Herr BELEGNUMMER=3408SEITENNUMMER=1
+Max MUSTER
+Depot-Nr. Abrechnungs-Nr. STEUERERSTATTUNG=N
+Musterstr. 2
+54321 Musterhausen 173458000 36678912 / 08.06.2011
+Depotinhaber
+Max MUSTER
+  
+Bestätigung Frankfurt am Main, 08.06.2011
+  
+Gattungsbezeichnung ISIN
+Commerzbank AG Inhaber-Aktien o.N. DE0008032004
+Nominal Kurs
+STK 30,000 EUR 2,1800
+  
+Börse außerbörslich  Kurswert                    EUR 65,40-
+Verwahrart Girosammelverwahrung Gebühren                    EUR 10,00-
+ 
+Wert  Konto-Nr. Betrag zu Ihren Lasten  
+06.06.2011 172305047 EUR 75,40
+   
+ 
+Wir werden in Ihrem Depot wie angegeben buche n.
+Bezug
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+3.31/ABREABRCRECHUMTA/GAAASAFG/003408/080611/231503
+
+```

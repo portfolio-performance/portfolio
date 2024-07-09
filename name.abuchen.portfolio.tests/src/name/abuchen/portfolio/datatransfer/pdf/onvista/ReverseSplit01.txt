@@ -1,0 +1,43 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1.qualifier
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Reverse Split ADRESSZEILE1=Herr
+Durchführungsanzeige ADRESSZEILE2=Max Muster
+ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+Herr ADRESSZEILE5=
+Max Muster ADRESSZEILE6=
+Depot-Nr. Ausführungs-Nr.
+Musterstr. 2 BELEGNUMMER=168
+54321 Musterhausen 173458000 43863205 / 25.11.2016 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Muster
+Frankfurt am Main, 25.11.2016
+Ausbuchung:
+Gattungsbezeichnung ISIN
+Ocean Sky International Ltd Registered Shares o.N. SG1N28909355
+Nominal Ex-Tag
+STK 2.000,000 25.11.2016
+Verwahrart Lagerland
+Wertpapierrechnung Singapur
+Wir haben Ihrem Depot im Verhältnis 2 : 1 folgende Stücke zugebucht (hinzugefügt):
+Gattungsbezeichnung ISIN
+Ocean Sky International Ltd Registered Shares o.N. SG1DD2000002
+Nominal
+STK 1.000,000
+Verwahrart Lagerland
+Wertpapierrechnung Singapur
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.18/DUANDEREEREIABRSPL/GDBVKAPU/000168/261116/001854
+
+```

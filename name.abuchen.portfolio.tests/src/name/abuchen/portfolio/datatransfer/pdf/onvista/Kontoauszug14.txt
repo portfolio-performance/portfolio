@@ -1,0 +1,84 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1.qualifier
+-----------------------------------------
+Seite 1 von 2
+Herr Unsere Postanschrift:
+Max Muster onvista bank
+Musterstr. 2 Postfach 10 08 60
+54321 Musterhausen 60008 Frankfurt
+Kundenservice:
+Telefon: +49 (0) 69 7107 - 530
+Fax +49 (0) 69 7107 - 100
+Mo-Fr 8:00 - 19:00 Uhr
+service@onvista-bank.de
+Ihre Bankverbindung für Überweisungen:
+IBAN DE37514108000194507065
+BIC BOURDEFF
+Kontoauszug Nr. 2018 / 2 zum 29.06.2018
+EUR - Verrechnungskonto: 01 72305 047
+Alter Saldo 115,70 H
+Neuer Saldo 47,24 H
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig.
+Nähere Informationen können dem "Informationsbogen für den Einleger", der unter www.onvista-bank.de
+im Menü "Service - Formulare" abgelegt ist, entnommen werden.
+Der Ihnen angezeigte Saldo kann Kontobewegungen berücksichtigen, deren tatsächliche
+Wertstellung (Valuta) noch nicht erfolgt ist. Bitte beachten Sie dies bei Ihrer Gelddisposition, da
+ansonsten Sollzinsen / Überziehungszinsen anfallen könnten. Das Datum der Wertstellung (Valuta)
+können Sie auf den folgenden Seiten zur jeweiligen Buchung entnehmen.
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit eines Rechnungsabschlusses sind gem. Nr. 7
+Abs. 2 unserer Allgemeinen Geschäftsbedingungen spätestens vor Ablauf von sechs Wochen nach
+Zugang des Rechnungsabschlusses zu erheben. Sofern Sie Ihre Einwendungen schriftlich geltend
+machen, richten Sie diese bitte unter Angabe der oben genannten Kontonummer an die onvista
+bank, Interne Revision, Wildunger Straße 6a, 60487 Frankfurt am Main. Es genügt die Absendung
+innerhalb der Sechs-Wochen-Frist. Das Unterlassen rechtzeitiger Einwendungen gilt als
+Genehmigung.
+Bei Zahlungen größer 12.500 EUR bitte Meldepflichten nach dem Außenwirtschaftsrecht beachten.
+Seite 2 von 2
+Kontoauszug Nr. 2018 / 2 zum 29.06.2018
+EUR - Verrechnungskonto: 01 72305 047
+Buchungs- Valuta Buchungstext Soll in EUR Haben in EUR
+datum
+Alter Kontostand vom 29.03.18 115,70+
+04.04. 04.04. REF: 000055937396 0,70-
+Portogebühren
+Portogebuehren 03/18
+02.05. 02.05. REF: 000056629810 4,95+
+Zinsen/Dividenden
+DEUTZ AG O.N.
+STK: 33
+ISIN: DE0006305006
+ABR: 6659534020180430
+03.05. 03.05. REF: 000056821661 0,70-
+Portogebühren
+Portogebuehren 04/18
+11.05. 03.05. REF: 000057140531 0,70+
+Storno: Portogebühren
+Portogebuehren 04/18
+18.05. 18.05. REF: 000057347294 5,06+
+Zinsen/Dividenden
+PORSCHE AUTOM.HLDG VZO
+STK: 4
+ISIN: DE000PAH0038
+ABR: 3268521120180517
+22.05. 22.05. REF: 000057414194 16,25+
+Zinsen/Dividenden
+DT.TELEKOM AG NA
+STK: 25
+ISIN: DE0005557508
+ABR: 4718499720180521
+07.06. 07.06. REF: 000057920129 7,92+
+Zinsen/Dividenden
+VONOVIA SE DIV.CASH
+STK: 6
+ISIN: DE000A2LQ132
+ABR: 2832181120180606
+11.06. 12.06. REF: 000057995664 101,94-
+Wertpapierkauf
+SOLARWORLD AG O.N.
+STK: 340
+ISIN: DE000A1YCMM2
+ABR: 1524043720180608
+Neuer Kontostand zum 29.06.2018 47,24+
+
+```

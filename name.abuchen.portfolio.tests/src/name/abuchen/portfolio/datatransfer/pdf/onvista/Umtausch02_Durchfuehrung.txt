@@ -1,0 +1,50 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1.qualifier
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Umtausch ADRESSZEILE1=Herr
+Durchführungsanzeige ADRESSZEILE2=Max MUSTER
+ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+Herr ADRESSZEILE5=
+Max MUSTER ADRESSZEILE6=Depot-Nr. Ausführungs-Nr.
+Musterstr. 2 BELEGNUMMER=87
+54321 Musterhausen 173458000 44870296 / 26.11.2015 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max MUSTER
+Frankfurt am Main, 26.11.2015
+Einbuchung:
+Gattungsbezeichnung ISIN
+AGIF-Allianz Euro Bond Inhaber Anteile A (EUR) o.N. LU0165915215
+Nominal
+STK 156,729
+Verwahrart
+Girosammelverwahrung
+Wert Betrag zu Ihren Gunsten
+EUR 0,00
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zwischengewinn EUR 28,21
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern (negativ) EUR 28,21
+Steuerausgleich nach § 43a Abs. 3 Satz 2 EStG:
+Kapitalertragsteuer EUR 6,90
+Solidaritätszuschlag EUR 0,38
+Kirchensteuer EUR 0,62
+Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+26.11.2015 172305047 68366911 EUR 7,90
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 28,97
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 1,59
+im laufenden Jahr einbehaltene Kirchensteuer EUR 2,60
+Es folgt Seite 2
+3.18/DUANDEREEREIEBSTUM/GDBVKAPU/000087/271115/000313
+
+```
