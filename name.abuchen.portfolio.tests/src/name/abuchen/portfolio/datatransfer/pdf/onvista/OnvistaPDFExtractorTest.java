@@ -3039,6 +3039,32 @@ public class OnvistaPDFExtractorTest
     }
 
     @Test
+    public void testDividende19()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende19.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0140355917"), hasWkn(null), hasTicker(null), //
+                        hasName("Allianz PIMCO Euro Bd Tot.Ret. Inhaber-Anteile A (EUR) o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2012-03-07T00:00"), hasShares(28), //
+                        hasSource("Dividende19.txt"), hasNote("Abrechnungs-Nr. 37828545 | Ertrag für 2011"), //
+                        hasAmount("EUR", 25.92), //
+                        hasTaxes("EUR", 9.51 + 0.52), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDividendeStorno01()
     {
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
@@ -4208,8 +4234,8 @@ public class OnvistaPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(2));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(3));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -4217,6 +4243,14 @@ public class OnvistaPDFExtractorTest
                         hasIsin("LU0140355917"), hasWkn(null), hasTicker(null), //
                         hasName("Allianz Euro Bond Fund Inhaber-Anteile A (EUR) o.N."), //
                         hasCurrencyCode("EUR"))));
+
+        // check transaction
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2015-11-23T00:00"), hasShares(28), //
+                        hasSource("Umtausch06.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check transaction
         assertThat(results, hasItem(taxRefund( //

@@ -1,0 +1,101 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.2.qualifier
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+ EMAILVERSAND=N
+DEPOTNUMMER=194507000
+       DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+       ADRESSZEILE1=Herr
+Erträgnisgutschrift ADRESSZEILE2=Max MusterADRESSZEILE3=Musterstr. 2
+aus Wertpapieren ADRESSZEILE4=54321 Musterhausen
+ADRESSZEILE5=
+Ausschüttung für ADRESSZEILE6=
+Herr 0 1.01.2011 - 31.12.2011 BELEGNUMMER=17SEITENNUMMER=1
+Max Muster
+Depot-Nr. Ausführungs-Nr. STEUERERSTATTUNG=N
+Musterstr. 2
+54321 Musterhausen 194507000 51284504 / 02.03.2012
+Depotinhaber
+Max Muster
+  
+Ertragsthesaurierung Frankfurt am Main, 07.03.2012
+  
+Gattungsbezeichnung ISIN
+Allianz PIMCO Euro Bd Tot.Ret. Inhaber-Anteile A (EUR) o.N. LU0140355917
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 28,000 05.03.2012 07.03.2012 EUR 0,077270
+ 
+Steuerpflichtiger Betrag gem.§ 2 Abs. 1 InvStG EUR 2,16
+ 
+ 
+Zahlungstag 07.03.2012
+ 
+ 
+Verwahrart: Girosammelverwahrung
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.31/DUANDEREEREIERTR/GDBERTRG/000017/070312/224337
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+ EMAILVERSAND=N
+DEPOTNUMMER=194507000
+       DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+       ADRESSZEILE1=Herr
+Erträgnisgutschrift ADRESSZEILE2=Max MusterADRESSZEILE3=Musterstr. 2
+aus Wertpapieren ADRESSZEILE4=54321 Musterhausen
+ADRESSZEILE5=
+Ausschüttung für ADRESSZEILE6=
+Herr  01.01.2011 - 31.12.2011 BELEGNUMMER=186SEITENNUMMER=1
+Max Muster
+Depot-Nr. Abrechnungs-Nr. STEUERERSTATTUNG=N
+Musterstr. 2
+54321 Musterhausen 194507000 37828545 / 07.03.2012
+Depotinhaber
+Max Muster
+  
+Erträgnisgutschrift Frankfurt am Main, 07.03.2012
+  
+Gattungsbezeichnung ISIN
+Allianz PIMCO Euro Bd Tot.Ret. Inhaber-Anteile A (EUR) o.N. LU0140355917
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 28,000 05.03.2012 07.03.2012 EUR 1,283980
+ 
+Wert  Konto-Nr. Betrag zu Ihren Gunsten  
+07.03.2012 194507065 EUR 25,92
+ 
+Ertrag für 2011 EUR 35,95
+ 
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zinsanteil (Ausschüttung) EUR             38,17     
+anrechenbare Quellensteuer Fondseingangsseite EUR              0,03     
+Aktienverlusttopf EUR              0,00                  0,00     
+allgemeiner Verlusttopf EUR              0,00                  0,00     
+Quellensteuertopf EUR              0,00                  0,00     
+zu versteuern  EUR             38,05     
+einbehaltene Kapitalertragsteuer EUR              9,51     
+einbehaltener Solidaritätszuschlag  EUR              0,52     
+ 
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR              9,51     
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR              0,52     
+ 
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Köln-Porz, Steuernummer 216/5881/1238.
+ 
+Zahlungstag 07.03.2012
+ 
+Jahressteuerbescheinigung folgt  
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+ 
+Verwahrart: Girosammelverwahrung
+3.31/ABREEREIERTR/GDBERTRG/000186/070312/224554
+
+```

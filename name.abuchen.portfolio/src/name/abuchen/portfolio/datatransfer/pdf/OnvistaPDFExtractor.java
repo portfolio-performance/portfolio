@@ -729,6 +729,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Steuerpflichtiger Betrag gem\\..*InvStG (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             // "SKIP Ertragsthesaurierung without real amount
+                                                            // v.getTransactionContext().putBoolean("noDividend",
+                                                            // true);
                                                             type.getCurrentContext().putBoolean("noDividend", true);
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -882,10 +884,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                         .wrap((t, ctx) -> {
                             DocumentContext context = type.getCurrentContext();
-                            if (type.getCurrentContext().getBoolean("noDividend"))
-                                return null;
-
-                            TransactionItem item = new TransactionItem(t);
 
                             // If we have multiple entries in the document, with
                             // taxes and tax refunds, then the "negative" flag
@@ -895,6 +893,14 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             // If we have a gross reinvestment, then the "noTax"
                             // flag must be removed.
                             context.remove("noTax");
+
+                            if (type.getCurrentContext().getBoolean("noDividend"))
+                            {
+                                context.remove("noDividend");
+                                return null;
+                            }
+
+                            TransactionItem item = new TransactionItem(t);
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -1324,9 +1330,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         "(Kontoauszug|KONTOAUSZUG) Nr\\.", //
                                         documentContext -> documentContext //
 
-                                        // If "Storno", skip the delivery
-                                        // in/outbond transaction, only use the
-                                        // (corrected) tax transaction.
+                                        // If "Storno", remember it here to swap
+                                        // the delivery type later
 
                                         // @formatter:off
                                         //Storno Frankfurt am Main, 01.07.2019
@@ -1334,7 +1339,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         .section("cancel").optional()
                                         .match("^(?<cancel>Storno).*, [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
                                         .assign((ctx, v) -> {
-                                            ctx.putBoolean("noTransfer", true);
+                                            ctx.putBoolean("cancelation", true);
                                         })
 
                                         .oneOf( //
@@ -1469,8 +1474,16 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
                         
                         .wrap((t, ctx) -> {
-                            if (type.getCurrentContext().getBoolean("noTransfer"))
-                                return null;
+                            if (type.getCurrentContext().getBoolean("cancelation")) 
+                            {
+                                if (t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
+                                    t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                                else
+                                    t.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                                
+                                ctx.remove("cancelation");
+                            }
+                                
                             return new TransactionItem(t);
                         });
         
