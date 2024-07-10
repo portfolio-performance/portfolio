@@ -1229,11 +1229,14 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // 04.04. 04.04. REF: 000045862247 200,00+
                         // Überweisungseingang SEPA Max Mustermann
+                        // 22.05. 22.05. REF: 912315845658 60.000,00-
+                        // Übertrag Referenzkonto
+                        // Überweisung
                         // @formatter:on
                         .section("date", "amount", "note", "sign").optional() //
                         .documentContext("year", "currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+)(?<sign>(.{0,1}))$") //
-                        .match("^(?<note>.berweisung(seingang|ausgang) SEPA).*$") //
+                        .match("^(?<note>(.berweisung(seingang|ausgang) SEPA)|(.bertrag Referenzkonto)).*$") //
                         .assign((t, v) -> {
                             // Is sign is negative change to REMOVAL
                             if ("-".equals(v.get("sign")))
@@ -1269,12 +1272,15 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // 11.05. 03.05. REF: 000057140531 0,70+
                         // Storno: Portogebühren
                         // Portogebuehren 04/18
+                        // 02.05. 02.05. REF: 337909771410 7,50-
+                        // Geb. Back Office extern
+                        // Ertraegnisaufstellung 12.03.2024
                         // @formatter:on
                         .section("date", "amount", "sign", "note1", "note2").optional() //
                         .documentContext("year", "currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$") //
-                        .match("^(?<note1>(Storno: Portogeb.hren|Portogeb.hren|Erst\\. BGH\\-Urteil Sonstige))$") //
-                        .match("^(Storno: Portogeb.hren|Portogebuehren )?(?<note2>([\\d]{2}\\/[\\d]{2}|[\\d]{1}\\. Quartal [\\d]{4}))$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<sign>(.{0,1}))$") //
+                        .match("^(?<note1>(Storno: Portogeb.hren|Portogeb.hren|Erst\\. BGH\\-Urteil Sonstige|Geb\\. Back Office extern))$") //
+                        .match("^(Storno: Portogeb.hren|Portogebuehren )?(?<note2>([\\d]{2}\\/[\\d]{2}|[\\d]{1}\\. Quartal [\\d]{4}|Ertraegnisaufstellung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))$") //
                         .assign((t, v) -> {
                             // Is sign is positiv change to FEES_REFUND
                             if ("-".equals(v.get("sign")))
@@ -1294,7 +1300,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("date", "amount", "sign", "note").optional() //
                         .documentContext("year", "currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<sign>(.{0,1}))$") //
                         .match("^(?<note>.berziehungszinsen)$") //
                         .assign((t, v) -> {
                             // Is sign is positiv change to INTEREST

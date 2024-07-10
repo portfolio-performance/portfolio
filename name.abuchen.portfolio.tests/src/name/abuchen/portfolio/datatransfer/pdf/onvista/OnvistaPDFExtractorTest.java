@@ -5201,4 +5201,35 @@ public class OnvistaPDFExtractorTest
         assertThat(results, hasItem(feeRefund(hasDate("2018-05-11"), hasAmount("EUR", 0.70), //
                         hasSource("Kontoauszug14.txt"), hasNote("Storno: Portogebühren 04/18"))));
     }
+
+    @Test
+    public void testKontoauszug15()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-04-30"), hasAmount("EUR", 30000.00), //
+                        hasSource("Kontoauszug15.txt"), hasNote("Überweisungseingang SEPA"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2024-04-30"), hasAmount("EUR", 30000.00), //
+                        hasSource("Kontoauszug15.txt"), hasNote("Überweisungseingang SEPA"))));
+
+        assertThat(results, hasItem(fee(hasDate("2024-05-02"), hasAmount("EUR", 7.50), //
+                        hasSource("Kontoauszug15.txt"),
+                        hasNote("Geb. Back Office extern Ertraegnisaufstellung 12.03.2024"))));
+
+        assertThat(results, hasItem(removal(hasDate("2024-05-22"), hasAmount("EUR", 60000.00), //
+                        hasSource("Kontoauszug15.txt"), hasNote("Übertrag Referenzkonto"))));
+    }
 }
