@@ -14,7 +14,7 @@
 * [Homepage](https://www.portfolio-performance.info)
 * [Downloads](https://github.com/portfolio-performance/portfolio/releases)
 * [Forum](https://forum.portfolio-performance.info/)
-* [Help (German)](https://help.portfolio-performance.info/)
+* [Manual](https://help.portfolio-performance.info/en)
 
 
 ## Contributing Source Code
