@@ -5232,4 +5232,29 @@ public class OnvistaPDFExtractorTest
         assertThat(results, hasItem(removal(hasDate("2024-05-22"), hasAmount("EUR", 60000.00), //
                         hasSource("Kontoauszug15.txt"), hasNote("Übertrag Referenzkonto"))));
     }
+
+    @Test
+    public void testKontoauszug16()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug16.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-08-23"), hasAmount("EUR", 1000.00), //
+                        hasSource("Kontoauszug16.txt"), hasNote("Überweisungseingang SEPA"))));
+
+        assertThat(results, hasItem(fee(hasDate("2023-07-06"), hasAmount("EUR", 1.29), //
+                        hasSource("Kontoauszug16.txt"),
+                        hasNote("Geb. Back Office extern ADR USD 0,02 US01609W1027 St.70 v.31.03.2023"))));
+    }
 }

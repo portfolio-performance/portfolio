@@ -1275,12 +1275,15 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // 02.05. 02.05. REF: 337909771410 7,50-
                         // Geb. Back Office extern
                         // Ertraegnisaufstellung 12.03.2024
+                        // 06.07. 06.07. REF: 000157592994 1,29-
+                        // Geb. Back Office extern
+                        // ADR USD 0,02 US01609W1027 St.70 v.31.03.2023
                         // @formatter:on
                         .section("date", "amount", "sign", "note1", "note2").optional() //
                         .documentContext("year", "currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<sign>(.{0,1}))$") //
                         .match("^(?<note1>(Storno: Portogeb.hren|Portogeb.hren|Erst\\. BGH\\-Urteil Sonstige|Geb\\. Back Office extern))$") //
-                        .match("^(Storno: Portogeb.hren|Portogebuehren )?(?<note2>([\\d]{2}\\/[\\d]{2}|[\\d]{1}\\. Quartal [\\d]{4}|Ertraegnisaufstellung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))$") //
+                        .match("^(Storno: Portogeb.hren|Portogebuehren )?(?<note2>([\\d]{2}\\/[\\d]{2}|[\\d]{1}\\. Quartal [\\d]{4}|Ertraegnisaufstellung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|ADR.*))$") //
                         .assign((t, v) -> {
                             // Is sign is positiv change to FEES_REFUND
                             if ("-".equals(v.get("sign")))
