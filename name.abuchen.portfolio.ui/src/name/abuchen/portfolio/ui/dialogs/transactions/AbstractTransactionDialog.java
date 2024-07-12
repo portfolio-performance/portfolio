@@ -2,11 +2,13 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -37,6 +39,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.FormLayout;
@@ -71,6 +75,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         public final Label label;
         public final Text value;
         public final Label currency;
+        public static final char DECIMAL_SEPARATOR = new DecimalFormatSymbols().getDecimalSeparator();
 
         public Input(Composite editArea, String text)
         {
@@ -85,6 +90,25 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
                     value.selectAll();
                 }
             });
+
+            // on French keyboard, the numpad decimal is '.'
+            // which should be catched and replaced by a ',' as
+            // decimal separator
+            if ("FR".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$
+            {
+                value.addKeyListener(new KeyAdapter()
+                {
+                    @Override
+                    public void keyPressed(KeyEvent e)
+                    {
+                        if ((e.keyCode == SWT.KEYPAD_DECIMAL))
+                        {
+                            e.doit = false;
+                            value.insert(String.valueOf(DECIMAL_SEPARATOR));
+                        }
+                    }
+                });
+            }
 
             currency = new Label(editArea, SWT.NONE);
         }
