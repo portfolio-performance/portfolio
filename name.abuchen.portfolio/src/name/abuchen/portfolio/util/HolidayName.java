@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 /* package */ enum HolidayName
 {
+    ALL_SAINTS_DAY,
     ALL_SOULS_DAY,
     ANZAC_DAY,
     ASCENSION_DAY,
@@ -13,10 +14,15 @@ import java.util.ResourceBundle;
     BERCHTOLDSTAG,
     BOXING_DAY,
     CARNIVAL,
+    CHILE,
+    CHILE_ARMY,
+    CHILE_EXTRA,
+    CHILE_NAVY_DAY,
     CHRISTMAS,
     CHRISTMAS_EVE,
     CHRISTMAS_EVE_RUSSIA,
     CIVIC_DAY,
+    COLUMBUS_DAY,
     CORONATION,
     CORPUS_CHRISTI,
     DEFENDER_OF_THE_FATHERLAND_DAY,
@@ -28,6 +34,8 @@ import java.util.ResourceBundle;
     GOOD_FRIDAY,
     HURRICANE_SANDY,
     INDEPENDENCE,
+    INDIGENOUS_PEOPLE,
+    INMACULATE_CONCEPTION,
     INTERNATION_WOMENS_DAY,
     JUNETEENTH,
     KINGS_BIRTHDAY,
@@ -46,6 +54,7 @@ import java.util.ResourceBundle;
     ROYAL_JUBILEE,
     ROYAL_WEDDING,
     SAINT_STEPHEN,
+    SAINT_PETER_PAUL,
     SECOND_CHRISTMAS_DAY,
     SPRING_MAY_BANK_HOLIDAY,
     STATE_FUNERAL,
@@ -57,6 +66,7 @@ import java.util.ResourceBundle;
     UNITY_DAY,
     VICTORIA_DAY,
     VICTORY_DAY,
+    VIRGIN_OF_CARMEN,
     WASHINGTONS_BIRTHDAY,
     WHIT_MONDAY;
 
