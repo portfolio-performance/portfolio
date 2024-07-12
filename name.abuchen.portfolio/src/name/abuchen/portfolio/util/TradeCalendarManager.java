@@ -152,6 +152,27 @@ public class TradeCalendarManager
         tc.add(fixed(STATE_FUNERAL, Month.DECEMBER, 5).onlyIn(2018)); // funeral of former president Bush Sr.
         CACHE.put(tc.getCode(), tc);
 
+        // see https://www.bolsadesantiago.com/mercado_horarios_feriados
+        tc = new TradeCalendar("sgo", Messages.LabelTradeCalendarSGO, STANDARD_WEEKEND); //$NON-NLS-1$
+        tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
+        tc.add(easter(GOOD_FRIDAY, -2));
+        tc.add(fixed(HOLY_SATURDAY, Month.MARCH, 30));
+        tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
+        tc.add(fixed(NAVY_DAY, Month.MAY, 21));
+        tc.add(fixed(INDIGENOUS_PEOPLE, Month.JUNE, 20));
+        tc.add(fixed(SAINT_PETER_PAUL, Month.JUNE, 29));
+        tc.add(fixed(VIRGIN_OF_CARMEN, Month.JULY, 16));
+        tc.add(fixed(ASCENSION_DAY, Month.AUGUST, 15));
+        tc.add(fixed(CHILE, Month.SEPTEMBER, 18));
+        tc.add(fixed(CHILE_ARMY, Month.SEPTEMBER, 19));
+        tc.add(fixed(CHILE_EXTRA, Month.SEPTEMBER, 20));
+        tc.add(fixed(COLUMBUS_DAY, Month.OCTOBER, 12));
+        tc.add(fixed(REFORMATION_DAY, Month.OCTOBER, 31));
+        tc.add(fixed(ALL_SAINTS_DAY, Month.NOVEMBER, 1));
+        tc.add(fixed(INMACULATE_CONCEPTION, Month.DECEMBER, 8));
+        tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
+        CACHE.put(tc.getCode(), tc);
+
         // see https://www.gov.uk/bank-holidays
         tc = new TradeCalendar("lse", Messages.LabelTradeCalendarLSE, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
