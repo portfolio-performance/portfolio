@@ -1066,10 +1066,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                                         // @formatter:off
                                         // This is for interest charge
+                                        //
                                         // 02.10.2023 Abrechnung 29.09.2023 / Wert: 01.10.2023
+                                        // 01.07.2024 Abrechnung 28.06.2024
                                         // @formatter:on
                                         .section("date").optional() //
-                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\/ .*") //
+                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*") //
                                         .assign((ctx, v) -> ctx.put("date", v.get("date"))));
 
         this.addDocumentTyp(type);
