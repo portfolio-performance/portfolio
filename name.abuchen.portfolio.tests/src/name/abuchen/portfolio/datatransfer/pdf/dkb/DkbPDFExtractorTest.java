@@ -4609,6 +4609,28 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testTagesgeldKontoauszug01()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TagesgeldKontoauszug01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-07-01"), hasAmount("EUR", 11.51), //
+                        hasSource("TagesgeldKontoauszug01.txt"), hasNote("Abrechnungszeitraum vom 01.04.2024 bis 30.06.2024"))));
+    }
+
+    @Test
     public void testKreditKontoauszug01()
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
