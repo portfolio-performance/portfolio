@@ -75,7 +75,6 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         public final Label label;
         public final Text value;
         public final Label currency;
-        public static final char DECIMAL_SEPARATOR = new DecimalFormatSymbols().getDecimalSeparator();
 
         public Input(Composite editArea, String text)
         {
@@ -94,8 +93,9 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
             // on French keyboard, the numpad decimal is '.'
             // which should be catched and replaced by a ',' as
             // decimal separator
-            if ("FR".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$
+            if ("FR".equals(Locale.getDefault().getCountry()) || "BE".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$ //$NON-NLS-2$
             {
+                char decimalSeparator = new DecimalFormatSymbols().getDecimalSeparator();
                 value.addKeyListener(new KeyAdapter()
                 {
                     @Override
@@ -104,7 +104,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
                         if ((e.keyCode == SWT.KEYPAD_DECIMAL))
                         {
                             e.doit = false;
-                            value.insert(String.valueOf(DECIMAL_SEPARATOR));
+                            value.insert(String.valueOf(decimalSeparator));
                         }
                     }
                 });

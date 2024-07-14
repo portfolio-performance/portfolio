@@ -4,10 +4,12 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.getAverageCharWidth;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.databinding.AggregateValidationStatus;
@@ -34,6 +36,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Button;
@@ -401,6 +405,27 @@ public class BindingHelper
     public final Control bindMandatoryQuoteInput(Composite editArea, final String label, String property)
     {
         Text txtValue = createTextInput(editArea, label);
+
+        // on French keyboard, the numpad decimal is '.'
+        // which should be catched and replaced by a ',' as
+        // decimal separator
+        if ("FR".equals(Locale.getDefault().getCountry()) || "BE".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$ //$NON-NLS-2$
+        {
+            char decimalSeparator = new DecimalFormatSymbols().getDecimalSeparator();
+            txtValue.addKeyListener(new KeyAdapter()
+            {
+                @Override
+                public void keyPressed(KeyEvent e)
+                {
+                    if (e.keyCode == SWT.KEYPAD_DECIMAL)
+                    {
+                        e.doit = false;
+                        txtValue.insert(String.valueOf(decimalSeparator));
+                    }
+                }
+            });
+        }
+
         bindMandatoryDecimalInput(label, property, txtValue, Values.Quote);
         return txtValue;
     }
