@@ -61,7 +61,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|WERTPAPIERABRECHNUNG ROUND UP" //
                         + "|WERTPAPIERABRECHNUNG SAVEBACK" //
                         + "|SECURITIES SETTLEMENT SAVINGS PLAN" //
-                        + "|SECURITIES SETTLEMENT" //
+                        + "|SECURITIES SETTLEMENT"
+                        + "|LIQUIDACI.N DE VALORES" //
                         + "|REINVESTIERUNG" //
                         + "|CONFIRMATION DE L.INVESTISSEMENT PROGRAMM."
                         + "|RELEV. DE TRANSACTION"
@@ -94,7 +95,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         + "|Achat" //
                                         + "|Acquisto" //
                                         + "|Verkauf"
-                                        + "|Sell" //
+                                        + "|Sell"
+                                        + "|Compra"
+                                        + "|Venta" //
                                         + "|Sparplanausf.hrung" //
                                         + "|SAVINGS PLAN" //
                                         + "|Ex.cution de l.investissement programm." //
@@ -106,6 +109,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             if ("Verkauf".equalsIgnoreCase(v.get("type")) //
                                             || "Sell".equalsIgnoreCase(v.get("type")) //
+                                            || "Venta".equalsIgnoreCase(v.get("type")) //
                                             || "ZWANGSÜBERNAHME".equalsIgnoreCase(v.get("type")) //
                                             || "TILGUNG".equalsIgnoreCase(v.get("type")) //
                                             || "REPAYMENT".equalsIgnoreCase(v.get("type")))
@@ -180,7 +184,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin", "nameContinued") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                                                         .match("^(?<nameContinued>.*) [\\w]{4} [\\w]{3,4} [\\.,\\d]+$")
                                                         .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -195,7 +199,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin", "nameContinued") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -205,7 +209,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                                                         .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -214,10 +218,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
                                         // Tencent Holdings Ltd. 0,3773 titre(s) 53,00 EUR 20,00 EUR
                                         // zjBAM Corp. 125 Pz. 29,75 EUR 3.718,75 EUR
+                                        // Vonovia SE 0,781379 tít. 24,06 EUR 18,80 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|titre\\(s\\)|Pz\\.) .*$") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|titre\\(s\\)|Pz\\.|t.t\\.) .*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Berkshire Hathaway Inc. 0.3367 Pcs. 297.00 EUR 100.00 EUR
@@ -274,14 +279,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Market-OrderAcquisto il 01.06.2023 alle 10:46 (Europe/Berlin) su Lang & Schwarz Exchange.
                                         // Market-Order Sell on 02.05.2023 at 18:18 (Europe/Berlin).
                                         // Market-Order Achat le 10/04/2024 à 17:33 (Europe/Berlin).
+                                        // Market-OrderCompra el día 01.12.2022 a las 11:56 (Europe/Berlin).
+                                        // Market-OrderVenta a día 15.02.2024, a las 16:15 (Europe/Berlin) en Lang & Schwarz Exchange.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^(?i)((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Buy|Achat|Acquisto|Kauf|Verkauf|Sell) .*" //
+                                                        .match("^(?i)((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Buy|Achat|Acquisto|Kauf|Verkauf|Sell|Compra|Venta) .*" //
                                                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}" //
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}" //
                                                                         + "|[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}))" //
-                                                                        + "(,)? (um|at|alle|.) (?<time>[\\d]{2}:[\\d]{2}).*$") //
+                                                                        + "(,)? (um|at|alle|.|a las) (?<time>[\\d]{2}:[\\d]{2}).*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
                                         // Exécution de l'investissement programmé le 17/01/2022 sur le Lang & Schwarz Exchange.
@@ -294,10 +301,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Sparplanausführung am 18.11.2019 an der Lang & Schwarz Exchange.
                                         // Savings plan execution on 16.05.2023 on the Lang & Schwarz Exchange.
                                         // Saveback execution on 02.05.2024 on the Lang & Schwarz Exchange.
+                                        // Ejecución del plan de inversión el día 02.05.2024 en Lang & Schwarz Exchange.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^(Sparplanausf.hrung|(Savings plan|Saveback) execution) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
+                                                        .match("^(Sparplanausf.hrung"
+                                                                        + "|Ejecuci.n del plan de inversi.n"
+                                                                        + "|(Savings plan|Saveback) execution) .* "
+                                                                        + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
+                                                                        + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Ausführung von Round up am 09.02.2024 an der Lang & Schwarz Exchange.
@@ -305,7 +317,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Ausf.hrung von (Round up|Saveback) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
+                                                        .match("^Ausf.hrung von (Round up|Saveback) .* "
+                                                                        + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
+                                                                        + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))),
                                         // @formatter:off
                                         // This is for the reinvestment of dividends
@@ -482,6 +496,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.*ORDER (?<note>.*\\-.*)$") //
                                                         .assign((t, v) -> t.setNote("Order: " + trim(v.get("note")))),
                                         // @formatter:off
+                                        // 12345 CIudad ORDEN 1b03-784c
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*ORDEN (?<note>.*\\-.*)$") //
+                                                        .assign((t, v) -> t.setNote("Orden: " + trim(v.get("note")))),
+                                        // @formatter:off
                                         // 75000 Paris ORDRE 69da-1c6f
                                         // @formatter:on
                                         section -> section //
@@ -509,6 +530,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("note") //
                                                         .match("^.*EXECUTION (?<note>.*\\-.*)$") //
                                                         .assign((t, v) -> t.setNote("Execution: " + trim(v.get("note")))),
+                                        // @formatter:off
+                                        // 12345 CIudad EJECUCIÓN ff4d-982a
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*EJECUCI.N (?<note>.*\\-.*)$") //
+                                                        .assign((t, v) -> t.setNote("Ejecución: " + trim(v.get("note")))),
                                         // @formatter:off
                                         // 51670 cyuzKxpHr ORDINE cY43-6m6l
                                         // @formatter:on
@@ -540,6 +568,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^SAVINGS PLAN (?<note>.*\\-.*)$") //
                                                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Savings plan: "))),
                                         // @formatter:off
+                                        // PLAN DE INVERSIÓN 21ef-595a
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^PLAN DE INVERSIÓN (?<note>.*\\-.*)$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Plan de Invesión: "))),
+                                        // @formatter:off
                                         // ROUND UP 42c2-50a7
                                         // @formatter:on
                                         section -> section //
@@ -567,6 +602,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("note") //
                                                         .match("^EXECUTION (?<note>.*\\-.*)$") //
                                                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Execution: "))),
+                                        // @formatter:off
+                                        // EJECUCIÓN d4e7-9ecc
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^EJECUCI.N (?<note>.*\\-.*)$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Ejecución: "))),
                                         // @formatter:off
                                         // ESECUZIONE V711-7789
                                         // @formatter:on
@@ -599,7 +641,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("(WERTPAPIERABRECHNUNG" //
                         + "|SECURITIES SETTLEMENT" //
-                        + "|REGOLAMENTO TITOLI)", //
+                        + "|REGOLAMENTO TITOLI"
+                        + "|LIQUIDACI.N DE VALORES)", //
                         "(ABRECHNUNG CRYPTOGESCH.FT|CRYPTO SPARPLAN)");
         this.addDocumentTyp(type);
 
@@ -626,7 +669,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin", "nameContinued") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -656,10 +699,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
                                         // Tencent Holdings Ltd. 0,3773 titre(s) 53,00 EUR 20,00 EUR
                                         // zjBAM Corp. 125 Pz. 29,75 EUR 3.718,75 EUR
+                                        // Vonovia SE 0,781379 tít. 24,06 EUR 18,80 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|titre\\(s\\)|Pz\\.) .*$") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|titre\\(s\\)|Pz\\.|t.t\\.) .*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Berkshire Hathaway Inc. 0.3367 Pcs. 297.00 EUR 100.00 EUR
@@ -688,9 +732,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // Limit-Order Verkauf am 21.07.2020, um 09:30 Uhr an der Lang & Schwarz Exchange.
                         // Verkauf am 26.02.2021, um 11:44 Uhr.
                         // Market-Order Sell on 02.05.2023 at 18:18 (Europe/Berlin).
+                        // Market-OrderVenta a día 15.02.2024, a las 16:15 (Europe/Berlin) en Lang & Schwarz Exchange.
                         // @formatter:on
                         .section("date", "time") //
-                        .match("^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Verkauf|Sell) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}))(,)? (um|at|alle|.) (?<time>[\\d]{2}:[\\d]{2}).*$") //
+                        .match("^((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Verkauf|Sell|Venta) .* "
+                                        + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
+                                        + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}))(,)?"
+                                        + " (um|at|alle|.) (?<time>[\\d]{2}:[\\d]{2}).*$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
 
                         // @formatter:off
@@ -1512,9 +1560,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction_Format02()
     {
-        final DocumentType type = new DocumentType("KONTO.BERSICHT", (context, lines) -> {
+        final DocumentType type = new DocumentType("(KONTO.BERSICHT|RESUMEN DE ESTADO DE CUENTA)", (context, lines) -> {
             Pattern pAccountAmountTransaction = Pattern.compile("^.* [\\.,\\d]+ \\p{Sc} (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}).*$");
-            Pattern pAccountInitialSaldoTransaction = Pattern.compile("^Depotkonto (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc}$");
+            Pattern pAccountInitialSaldoTransaction = Pattern.compile("^(Depotkonto|Cuenta de valores) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc}$");
 
             AccountAmountTransactionHelper accountAmountTransactionHelper = new AccountAmountTransactionHelper();
             context.putType(accountAmountTransactionHelper);
@@ -1578,6 +1626,17 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }),
                                         // @formatter:off
+                                        // 16 Apr. 2024 Überweisung Einzahlung akzeptiert: DE5987654321 auf DE12334567658 3.500,00 € 16.347,54 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount", "currency") //
+                                                        .match("^(?<date>[\\d]{2} [\\wä]{3,4}([\\.]{1})? [\\d]{4}) .berweisung Einzahlung .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
                                         // 01 Apr. 2024 Überweisung PayOut to transit 172,23 € 50.000,00 €
                                         // @formatter:on
                                         section -> section //
@@ -1589,22 +1648,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                        }),
-                                        // @formatter:off
-                                        // 16 Apr. 2024 Überweisung Einzahlung akzeptiert: DE5987654321 auf DE12334567658 3.500,00 € 16.347,54 €
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\wä]{3,4}([\\.]{1})? [\\d]{4}) .berweisung Einzahlung .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
-                                                        .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }))
 
                         .wrap(TransactionItem::new));
 
-        Block depositRemovalBlock_Format02 = new Block("^[\\d]{2} [\\wä]{3,4}([\\.]{1})?[\\s]$");
+        Block depositRemovalBlock_Format02 = new Block("^[\\d]{2} [\\wä]{3,4}([\\.]{1})?[\\s](Transacci.n.*)?$");
         type.addBlock(depositRemovalBlock_Format02);
         depositRemovalBlock_Format02.setMaxSize(4);
         depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
@@ -1617,16 +1665,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .optionalOneOf( //
                                         // @formatter:off
-                                        // 07 Apr.
-                                        // 2024 Kartentransaktion Backerei XAXRs 798 2,50 € 51.194,91 €
-                                        //
-                                        // 16 Apr.
-                                        // 2024 Kartentransaktion Visa Geld zurueck Aktion 0,08 € 18.584,55 €
+                                        // 20 may Transacción BACKBLAZE INC, 7,38 $, exchange rate: 0,9227642, ECB rate: 0,9221689414, markup:
+                                        // 2024 con tarjeta 0,06454984 % 6,81 € 8.204,96 €
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "note", "amount", "currency", "amountAfter", "currencyAfter") //
-                                                        .match("^(?<date>[\\d]{2} [\\wä]{3,4}([\\.]{1})?)[\\s]$") //
-                                                        .match("^(?<year>[\\d]{4}) Kartentransaktion (?<note>.*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
+                                                        .match("^(?<date>[\\d]{2} [\\wä]{3,4}([\\.]{1})?)[\\s]Transacci.n (?<note>.*), [\\.,\\d]+ \\p{Sc}.*$") //
+                                                        .match("^(?<year>[\\d]{4}) con tarjeta .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .assign((t, v) -> {
                                                             DocumentContext context = type.getCurrentContext();
                                                             Money amountAfter = Money.of(asCurrencyCode(v.get("currencyAfter")), asAmount(v.get("amountAfter")));
@@ -1648,19 +1693,38 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
-                                        // 20 Mai
-                                        // 2024 Überweisung PayOut to transit 18.085,60 € 18.939,80 €
+                                        // 07 Apr.
+                                        // 2024 Kartentransaktion Backerei XAXRs 798 2,50 € 51.194,91 €
+                                        //
+                                        // 16 Apr.
+                                        // 2024 Kartentransaktion Visa Geld zurueck Aktion 0,08 € 18.584,55 €
+                                        //
+                                        // 02 may Transacción
+                                        // 2024 con tarjeta WATSON RESTAURANTS 30,99 € 18.261,16 €
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("date", "year", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\wä]{3,4}([\\.]{1})?)[\\s]$") //
-                                                        .match("^(?<year>[\\d]{4}) .berweisung PayOut .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .attributes("date", "year", "note", "amount", "currency", "amountAfter", "currencyAfter") //
+                                                        .match("^(?<date>[\\d]{2} [\\wä]{3,4}([\\.]{1})?)[\\s](Transacci.n.*)?$") //
+                                                        .match("^(?<year>[\\d]{4}) (Kartentransaktion|con tarjeta) (?<note>.*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .assign((t, v) -> {
-                                                            t.setType(AccountTransaction.Type.REMOVAL);
+                                                            DocumentContext context = type.getCurrentContext();
+                                                            Money amountAfter = Money.of(asCurrencyCode(v.get("currencyAfter")), asAmount(v.get("amountAfter")));
+
+                                                            AccountAmountTransactionHelper accountAmountTransactionHelper = context.getType(AccountAmountTransactionHelper.class).orElseGet(AccountAmountTransactionHelper::new);
+                                                            Optional<AccountAmountTransactionItem> item = accountAmountTransactionHelper.findItem(v.getStartLineNumber(), amountAfter);
+
+                                                            if (item.isPresent())
+                                                            {
+                                                                Money amountBefore = Money.of(item.get().currency, item.get().amount);
+
+                                                                if (amountBefore.isGreaterThan(amountAfter))
+                                                                    t.setType(AccountTransaction.Type.REMOVAL);
+                                                            }
 
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
                                         // 30 Apr.
@@ -1685,15 +1749,41 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         //
                                         // 02 Mai
                                         // 2024 Prämie Your Saveback payment 4,94 € 18.524,98 €
+                                        //
+                                        // 02 may
+                                        // 2024 Transferencia Ingreso aceptado: ES00000000000000000000000 a DE00000000000000000000000 2.600,00 € 18.292,15 €
+                                        //
+                                        // 02 may
+                                        // 2024 Recompensa Your Saveback payment 3,89 € 18.265,05 €
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "amount", "currency") //
                                                         .match("^(?<date>[\\d]{2} [\\wä]{3,4}([\\.]{1})?)[\\s]$") //
                                                         .match("^(?<year>[\\d]{4}) " //
                                                                         + "(.berweisung Einzahlung akzeptiert:"
-                                                                        + "|Pr.mie Your Saveback)" //
+                                                                        + "|Transferencia Ingreso aceptado:"
+                                                                        + "|Pr.mie Your Saveback"
+                                                                        + "|Recompensa Your Saveback payment)" //
                                                                         + ".* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // 20 Mai
+                                        // 2024 Überweisung PayOut to transit 18.085,60 € 18.939,80 €
+                                        //
+                                        // 03 may
+                                        // 2024 Transferencia PayOut to transit 8.000,00 € 10.265,05 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "year", "amount", "currency") //
+                                                        .match("^(?<date>[\\d]{2} [\\wä]{3,4}([\\.]{1})?)[\\s]$") //
+                                                        .match("^(?<year>[\\d]{4}) (.berweisung|Transferencia) PayOut .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.REMOVAL);
+
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -1850,8 +1940,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 01 Apr.
         // 2024 Zinszahlung Your interest payment 147,34 € 50.152,41 €
+        //
+        // 01 may Pago de
+        // 2024 intereses Your interest payment 26,13 € 15.692,15 €
         // @formatter:on
-        Block interestBlock_Format02 = new Block("^[\\d]{2} [\\wä]{3,4}([\\.]{1})?[\\s]$");
+        Block interestBlock_Format02 = new Block("^[\\d]{2} [\\wä]{3,4}([\\.]{1})?[\\s](Pago.*)?$");
         type.addBlock(interestBlock_Format02);
         interestBlock_Format02.setMaxSize(2);
         interestBlock_Format02.set(new Transaction<AccountTransaction>()
@@ -1863,8 +1956,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "year", "amount", "currency").optional() //
-                        .match("^(?<date>[\\d]{2} [\\wä]{3,4}([\\.]{1})?)[\\s]$")
-                        .match("^(?<year>[\\d]{4}) Zinszahlung Your interest payment (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                        .match("^(?<date>[\\d]{2} [\\wä]{3,4}([\\.]{1})?)[\\s](Pago.*)?$")
+                        .match("^(?<year>[\\d]{4}) (Zinszahlung|intereses) Your interest payment (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -2449,7 +2542,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin", "nameContinued") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                                                         .match("^(?<nameContinued>.*) [\\w]{4} [\\w]{3,4} [\\.,\\d]+$")
                                                         .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -2464,7 +2557,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin", "nameContinued") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -2474,7 +2567,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                                                         .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -2483,10 +2576,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
                                         // Tencent Holdings Ltd. 0,3773 titre(s) 53,00 EUR 20,00 EUR
                                         // zjBAM Corp. 125 Pz. 29,75 EUR 3.718,75 EUR
+                                        // Vonovia SE 0,781379 tít. 24,06 EUR 18,80 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|titre\\(s\\)|Pz\\.) .*$") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) (Stk\\.|titre\\(s\\)|Pz\\.|t.t\\.) .*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Berkshire Hathaway Inc. 0.3367 Pcs. 297.00 EUR 100.00 EUR
@@ -2542,14 +2636,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Verkauf am 26.02.2021, um 11:44 Uhr.
                                         // Market-OrderAcquisto il 01.06.2023 alle 10:46 (Europe/Berlin) su Lang & Schwarz Exchange.
                                         // Market-Order Achat le 10/04/2024 à 17:33 (Europe/Berlin).
+                                        // Market-OrderCompra el día 01.12.2022 a las 11:56 (Europe/Berlin).
+                                        // Market-OrderVenta a día 15.02.2024, a las 16:15 (Europe/Berlin) en Lang & Schwarz Exchange.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^(?i)((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Buy|Achat|Acquisto|Kauf|Verkauf|Sell) .* " //
+                                                        .match("^(?i)((Limit|Stop\\-Market|Market)\\-Order(\\s)?)?(Buy|Achat|Acquisto|Kauf|Verkauf|Sell|Compra|Venta) .* " //
                                                                         + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}" //
                                                                         + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}" //
                                                                         + "|[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}))" //
-                                                                        + "(,)? (um|at|alle|.) (?<time>[\\d]{2}:[\\d]{2}).*$") //
+                                                                        + "(,)? (um|at|alle|.|a las) (?<time>[\\d]{2}:[\\d]{2}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time")))),
                                         // @formatter:off
                                         // Exécution de l'investissement programmé le 17/01/2022 sur le Lang & Schwarz Exchange.
@@ -2562,10 +2658,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Sparplanausführung am 18.11.2019 an der Lang & Schwarz Exchange.
                                         // Savings plan execution on 16.05.2023 on the Lang & Schwarz Exchange.
                                         // Saveback execution on 02.05.2024 on the Lang & Schwarz Exchange.
+                                        // Ejecución del plan de inversión el día 02.05.2024 en Lang & Schwarz Exchange.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^(Sparplanausf.hrung|(Savings plan|Saveback) execution) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
+                                                        .match("^(Sparplanausf.hrung"
+                                                                        + "|Ejecuci.n del plan de inversi.n"
+                                                                        + "|(Savings plan|Saveback) execution) .* "
+                                                                        + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
+                                                                        + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Ausführung von Round up am 09.02.2024 an der Lang & Schwarz Exchange.
@@ -2573,7 +2674,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Ausf.hrung von (Round up|Saveback) .* (?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
+                                                        .match("^Ausf.hrung von (Round up|Saveback) .* "
+                                                                        + "(?<date>([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}"
+                                                                        + "|[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})) .*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // This is for the reinvestment of dividends
@@ -3048,6 +3151,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("fee", "currency").optional() //
                         .match("^Supplemento spese di terzi \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative"))
+                                processFeeEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Tarifa plana por costes del servicio de ejecución de terceros -1,00 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Tarifa plana por costes del servicio de ejecuci.n de terceros \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);

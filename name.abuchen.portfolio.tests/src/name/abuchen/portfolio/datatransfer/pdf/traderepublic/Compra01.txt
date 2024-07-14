@@ -1,0 +1,55 @@
+PDFBox Version: 1.8.17
+
+Portfolio Performance Version: 0.69.1
+
+-----------------------------------------
+
+TRADE REPUBLIC BANK GMBH KÖPENICKER STRASSE 40C 10179 BERLIN
+
+DGKDRJG RIE K KREG PÁGINA 1 de 1
+
+Calle DGSGR 12FECHA 01.12.2022
+
+12345 CIudad ORDEN 1b03-784c
+
+EJECUCIÓN d4e7-9ecc
+
+CUENTA DE VALORES 0786338401
+
+LIQUIDACIÓN DE VALORES
+
+RESUMEN
+
+Market-OrderCompra el día 01.12.2022 a las 11:56 (Europe/Berlin).
+
+La contraparte de la transacción es Trade Republic Bank GmbH.
+
+POSICIÓN CANTIDAD COTIZACIÓN IMPORTE
+
+Vonovia SE 0,781379 tít. 24,06 EUR 18,80 EUR
+
+Namens-Aktien o.N.
+
+ISIN: DE000A1ML7J1
+
+TOTAL 18,80 EUR
+
+RESERVA
+
+CUENTA DE EFECTIVO FECHA VALOR IMPORTE
+
+DE75502109007008349007 05.12.2022 -18,80 EUR
+
+Vonovia SE Namens-Aktien o.N. en custodia colectiva en Alemania.
+
+Este documento ha sido creado automáticamente y por lo tanto no necesita firma.
+
+Si no se indica IVA, se trata de un servicio libre de IVA según § 4 núm. 8 UStG.
+
+Trade Republic Bank GmbH www.traderepublic.com Domicilio social de la empresa: Berlin Directores
+
+Köpenicker Straße 40c service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+
+10179 Berlin NIF DE307510626 Gernot Mittendorfer
+
+ABRE / 01.12.2022 / 46681541 / ddb1-1b03
