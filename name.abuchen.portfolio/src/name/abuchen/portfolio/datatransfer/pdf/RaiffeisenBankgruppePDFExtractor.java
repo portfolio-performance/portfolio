@@ -688,7 +688,10 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("H".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.DEPOSIT);
 
-                            setDateAndAmountForAccountStatement(t, v);
+                            setTransactionDate(t, v);
+
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
 
                             // Formatting some notes
                             if ("LOHN/GEHALT".equals(v.get("note")))
@@ -741,7 +744,10 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("H".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.DEPOSIT);
 
-                            setDateAndAmountForAccountStatement(t, v);
+                            setTransactionDate(t, v);
+
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
 
                             if (!v.get("note").contains("Cashback"))
                                 t.setNote(v.get("note2"));
@@ -781,15 +787,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setType(Type.INTEREST_CHARGE);
 
-                                                            if (v.get("nr").compareTo("01") == 0 && Integer.parseInt(v.get("month")) < 3)
-                                                            {
-                                                                int year = Integer.parseInt(v.get("year")) + 1;
-                                                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
-                                                            }
-                                                            else
-                                                            {
-                                                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
-                                                            }
+                                                            setTransactionDate(t, v);
 
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount1")) + asAmount(v.get("amount2")));
@@ -807,7 +805,10 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                             if ("S".equals(v.get("sign")))
                                                                 t.setType(Type.INTEREST_CHARGE);
 
-                                                            setDateAndAmountForAccountStatement(t, v);
+                                                            setTransactionDate(t, v);
+
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
                                                         }))
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
@@ -849,15 +850,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("H".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.FEES_REFUND);
 
-                            if (v.get("nr").compareTo("01") == 0 && Integer.parseInt(v.get("month")) < 3)
-                            {
-                                int year = Integer.parseInt(v.get("year")) + 1;
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
-                            }
-                            else
-                            {
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
-                            }
+                            setTransactionDate(t, v);
 
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount1")) + asAmount(v.get("amount2")) + asAmount(v.get("amount3")));
@@ -883,15 +876,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("H".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.FEES_REFUND);
 
-                            if (v.get("nr").compareTo("01") == 0 && Integer.parseInt(v.get("month")) < 3)
-                            {
-                                int year = Integer.parseInt(v.get("year")) + 1;
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
-                            }
-                            else
-                            {
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
-                            }
+                            setTransactionDate(t, v);
 
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount1")) + asAmount(v.get("amount2")));
@@ -934,7 +919,10 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("H".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.TAX_REFUND);
 
-                            setDateAndAmountForAccountStatement(t, v);
+                            setTransactionDate(t, v);
+
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
                         })
 
                         .wrap(t -> {
@@ -1253,7 +1241,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
     }
 
-    private void setDateAndAmountForAccountStatement(AccountTransaction t, ParsedData v)
+    private void setTransactionDate(AccountTransaction t, ParsedData v)
     {
         if (v.get("nr").compareTo("01") == 0 && Integer.parseInt(v.get("month")) < 3)
         {
@@ -1264,8 +1252,5 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         {
             t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
         }
-
-        t.setCurrencyCode(v.get("currency"));
-        t.setAmount(asAmount(v.get("amount")));
     }
 }
