@@ -688,7 +688,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("H".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.DEPOSIT);
 
-                            setTransactionDate(t, v);
+                            dateTranactionHelper(t, v);
 
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
@@ -744,7 +744,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("H".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.DEPOSIT);
 
-                            setTransactionDate(t, v);
+                            dateTranactionHelper(t, v);
 
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
@@ -787,7 +787,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setType(Type.INTEREST_CHARGE);
 
-                                                            setTransactionDate(t, v);
+                                                            dateTranactionHelper(t, v);
 
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount1")) + asAmount(v.get("amount2")));
@@ -805,7 +805,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                             if ("S".equals(v.get("sign")))
                                                                 t.setType(Type.INTEREST_CHARGE);
 
-                                                            setTransactionDate(t, v);
+                                                            dateTranactionHelper(t, v);
 
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -850,7 +850,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("H".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.FEES_REFUND);
 
-                            setTransactionDate(t, v);
+                            dateTranactionHelper(t, v);
 
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount1")) + asAmount(v.get("amount2")) + asAmount(v.get("amount3")));
@@ -876,7 +876,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("H".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.FEES_REFUND);
 
-                            setTransactionDate(t, v);
+                            dateTranactionHelper(t, v);
 
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount1")) + asAmount(v.get("amount2")));
@@ -919,7 +919,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("H".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.TAX_REFUND);
 
-                            setTransactionDate(t, v);
+                            dateTranactionHelper(t, v);
 
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
@@ -1241,16 +1241,30 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
     }
 
-    private void setTransactionDate(AccountTransaction t, ParsedData v)
+    /**
+     * Helper method to set the date of an AccountTransaction based on the provided ParsedData.
+     * 
+     * This method checks if the transaction's "nr" field is "01" and if the month is less than 3 (January or February).
+     * If both conditions are met, it assumes the transaction should be recorded in the next year.
+     * Otherwise, it uses the year provided in the ParsedData.
+     * 
+     * @param t The AccountTransaction object to set the date for.
+     * @param v The ParsedData object containing the date information.
+     */
+    private void dateTranactionHelper(AccountTransaction t, ParsedData v)
     {
-        if (v.get("nr").compareTo("01") == 0 && Integer.parseInt(v.get("month")) < 3)
+        final String SPECIAL_NR = "01";
+        final int THRESHOLD_MONTH = 3;
+
+        String nr = v.get("nr");
+        int month = Integer.parseInt(v.get("month"));
+        int year = Integer.parseInt(v.get("year"));
+
+        if (SPECIAL_NR.equals(nr) && month < THRESHOLD_MONTH)
         {
-            int year = Integer.parseInt(v.get("year")) + 1;
-            t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
+            year++;
         }
-        else
-        {
-            t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
-        }
+
+        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
     }
 }
