@@ -11,6 +11,7 @@ import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
@@ -687,15 +688,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("H".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.DEPOSIT);
 
-                            if (v.get("nr").compareTo("01") == 0 && Integer.parseInt(v.get("month")) < 3)
-                            {
-                                int year = Integer.parseInt(v.get("year")) + 1;
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
-                            }
-                            else
-                            {
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
-                            }
+                            dateTranactionHelper(t, v);
 
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
@@ -726,6 +719,40 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                 v.put("note", "Übertrag");
 
                             t.setNote(v.get("note"));
+                        })
+
+                        // @formatter:off
+                        // 23.04. 22.04. Mol*Heinrich Dittmar G PN:4444 63,39 S
+                        //  DEU 495522500131 EUR 63,39
+                        //  Umsatz vom 21.04.2024 MC Hauptkarte
+                        // 25.04. 24.04. Ihr MastercardCashback PN:4444 5,00 H
+                        //  DEU Cashback EUR 5,00
+                        //  Umsatz vom 23.04.2024 MC Hauptkarte
+                        // 25.04. 24.04. Mol*Heinrich Dittmar G PN:4444 5,52 H
+                        //  DEU 495522500131 EUR 5,52
+                        //  Umsatz vom 23.04.2024 MC Hauptkarte
+                        // @formatter:on
+                        .section("day", "month", "note", "note2", "amount", "sign").optional() //
+                        .documentContext("currency", "nr", "year") //
+                        .match("^(?i)[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. (?<note>.*) PN:4444 (?<amount>[\\.,\\d]+) (?<sign>[S|H])$") //
+                        .match("^.*$") //
+                        .match("^ (?<note2>.*)$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Is sign --> "H" change from DEPOSIT to REMOVAL
+                            // @formatter:on
+                            if ("H".equals(v.get("sign")))
+                                t.setType(AccountTransaction.Type.DEPOSIT);
+
+                            dateTranactionHelper(t, v);
+
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+
+                            if (!v.get("note").contains("Cashback"))
+                                t.setNote(v.get("note2"));
+                            else
+                                t.setNote(v.get("note"));
                         })
 
                         .wrap(t -> {
@@ -760,15 +787,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setType(Type.INTEREST_CHARGE);
 
-                                                            if (v.get("nr").compareTo("01") == 0 && Integer.parseInt(v.get("month")) < 3)
-                                                            {
-                                                                int year = Integer.parseInt(v.get("year")) + 1;
-                                                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
-                                                            }
-                                                            else
-                                                            {
-                                                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
-                                                            }
+                                                            dateTranactionHelper(t, v);
 
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount1")) + asAmount(v.get("amount2")));
@@ -776,21 +795,17 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                         }),
                                         // @formatter:off
                                         // 29.12. 31.12. Abschluss lt. Anlage 1 PN:905 534,59 H
+                                        // 30.04. 30.04. Abschluss lt. Anlage 1 PN:905 0,11 S
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("day", "month", "amount") //
+                                                        .attributes("day", "month", "amount", "sign") //
                                                         .documentContext("currency", "nr", "year") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2}).(?<month>[\\d]{2}). Abschluss lt\\. Anlage [\\d] .* (?<amount>[\\.,\\d]+) ([H])$") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2}).(?<month>[\\d]{2}). Abschluss lt\\. Anlage [\\d] .* (?<amount>[\\.,\\d]+) (?<sign>[S|H])$") //
                                                         .assign((t, v) -> {
-                                                            if (v.get("nr").compareTo("01") == 0 && Integer.parseInt(v.get("month")) < 3)
-                                                            {
-                                                                int year = Integer.parseInt(v.get("year")) + 1;
-                                                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
-                                                            }
-                                                            else
-                                                            {
-                                                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
-                                                            }
+                                                            if ("S".equals(v.get("sign")))
+                                                                t.setType(Type.INTEREST_CHARGE);
+
+                                                            dateTranactionHelper(t, v);
 
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -835,15 +850,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("H".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.FEES_REFUND);
 
-                            if (v.get("nr").compareTo("01") == 0 && Integer.parseInt(v.get("month")) < 3)
-                            {
-                                int year = Integer.parseInt(v.get("year")) + 1;
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
-                            }
-                            else
-                            {
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
-                            }
+                            dateTranactionHelper(t, v);
 
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount1")) + asAmount(v.get("amount2")) + asAmount(v.get("amount3")));
@@ -869,15 +876,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("H".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.FEES_REFUND);
 
-                            if (v.get("nr").compareTo("01") == 0 && Integer.parseInt(v.get("month")) < 3)
-                            {
-                                int year = Integer.parseInt(v.get("year")) + 1;
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
-                            }
-                            else
-                            {
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
-                            }
+                            dateTranactionHelper(t, v);
 
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount1")) + asAmount(v.get("amount2")));
@@ -920,15 +919,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             if ("H".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.TAX_REFUND);
 
-                            if (v.get("nr").compareTo("01") == 0 && Integer.parseInt(v.get("month")) < 3)
-                            {
-                                int year = Integer.parseInt(v.get("year")) + 1;
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
-                            }
-                            else
-                            {
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
-                            }
+                            dateTranactionHelper(t, v);
 
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
@@ -1248,5 +1239,32 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
         }
 
         return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, language, country);
+    }
+
+    /**
+     * Helper method to set the date of an AccountTransaction based on the provided ParsedData.
+     * 
+     * This method checks if the transaction's "nr" field is "01" and if the month is less than 3 (January or February).
+     * If both conditions are met, it assumes the transaction should be recorded in the next year.
+     * Otherwise, it uses the year provided in the ParsedData.
+     * 
+     * @param t The AccountTransaction object to set the date for.
+     * @param v The ParsedData object containing the date information.
+     */
+    private void dateTranactionHelper(AccountTransaction t, ParsedData v)
+    {
+        final String SPECIAL_NR = "01";
+        final int THRESHOLD_MONTH = 3;
+
+        String nr = v.get("nr");
+        int month = Integer.parseInt(v.get("month"));
+        int year = Integer.parseInt(v.get("year"));
+
+        if (SPECIAL_NR.equals(nr) && month < THRESHOLD_MONTH)
+        {
+            year++;
+        }
+
+        t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + year));
     }
 }
