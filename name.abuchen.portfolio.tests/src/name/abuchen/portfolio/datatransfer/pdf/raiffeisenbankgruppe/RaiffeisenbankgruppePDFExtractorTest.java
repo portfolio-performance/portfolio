@@ -19,6 +19,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
@@ -2244,6 +2245,42 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(results, hasItem(removal(hasDate("2024-01-31"), hasAmount("EUR", 25000.00), //
                         hasSource("Kontoauszug07.txt"), hasNote("Überweisung"))));
 
+    }
+
+    @Test
+    public void testKontoauszug08()
+    {
+        RaiffeisenBankgruppePDFExtractor extractor = new RaiffeisenBankgruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-04-24"), hasAmount("EUR", 5.00), //
+                        hasSource("Kontoauszug08.txt"), hasNote("Ihr MastercardCashback"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2024-04-24"), hasAmount("EUR", 5.52), //
+                        hasSource("Kontoauszug08.txt"), hasNote("Umsatz vom 23.04.2024 MC Hauptkarte"))));
+
+        assertThat(results, hasItem(deposit(hasDate("2024-04-26"), hasAmount("EUR", 0.55), //
+                        hasSource("Kontoauszug08.txt"), hasNote("Ihr MastercardCashback"))));
+
+        assertThat(results, hasItem(removal(hasDate("2024-04-22"), hasAmount("EUR", 63.39), //
+                        hasSource("Kontoauszug08.txt"), hasNote("Umsatz vom 21.04.2024 MC Hauptkarte"))));
+
+        assertThat(results, hasItem(removal(hasDate("2024-04-29"), hasAmount("EUR", 36.00), //
+                        hasSource("Kontoauszug08.txt"), hasNote("Umsatz vom 26.04.2024 MC Hauptkarte"))));
+
+        assertThat(results, hasItem(interestCharge(hasDate("2024-04-30"), hasAmount("EUR", 0.11), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null))));
     }
 
     @Test
