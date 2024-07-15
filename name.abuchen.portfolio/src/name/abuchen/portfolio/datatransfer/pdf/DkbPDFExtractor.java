@@ -1244,8 +1244,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
-        Block taxesBlock = new Block(
-                        "^(Kapitalertrags(s)?teuer|Solidarit.tszuschlag|Kirchensteuer)[\\s]{1,}[\\.,\\d]+(([\\-|\\+]))$");
+        Block taxesBlock = new Block("^(Kapitalertrags(s)?teuer|Solidarit.tszuschlag|Kirchensteuer)[\\s]{1,}[\\.,\\d]+(([\\-|\\+]))$");
         type.addBlock(taxesBlock);
         taxesBlock.set(new Transaction<AccountTransaction>()
 
@@ -1259,7 +1258,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .documentContext("date", "currency") //
                         .match("^(?<note>(Kapitalertrags(s)?teuer|Solidarit.tszuschlag|Kirchensteuer))[\\s]{1,}(?<amount>[\\.,\\d]+)(?<type>([\\-|\\+]))$") //
                         .assign((t, v) -> {
-                        // @formatter:off
+                            // @formatter:off
                             // Is type is "+" change from TAXES to TAX_REFUND
                             // @formatter:on
                             if ("+".equals(v.get("type")))
