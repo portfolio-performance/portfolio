@@ -1,7 +1,13 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
@@ -26,6 +32,27 @@ public class AttributeEditingSupport extends ColumnEditingSupport
         TextCellEditor textEditor = new TextCellEditor(composite);
         if (attribute.isNumber())
             ((Text) textEditor.getControl()).addVerifyListener(new NumberVerifyListener(true));
+
+        if (attribute.getConverter() instanceof AttributeType.LimitPriceConverter
+                        && ("FR".equals(Locale.getDefault().getCountry()) //$NON-NLS-1$
+                                        || "BE".equals(Locale.getDefault().getCountry()))) //$NON-NLS-1$
+        {
+            char decimalSeparator = new DecimalFormatSymbols().getDecimalSeparator();
+            Text textEditorValue = (Text) textEditor.getControl();
+            ((Text) textEditor.getControl()).addKeyListener(new KeyAdapter()
+            {
+                @Override
+                public void keyPressed(KeyEvent e)
+                {
+                    if ((e.keyCode == SWT.KEYPAD_DECIMAL))
+                    {
+                        e.doit = false;
+                        textEditorValue.insert(String.valueOf(decimalSeparator));
+                    }
+                }
+            });
+        }
+
         return textEditor;
     }
 

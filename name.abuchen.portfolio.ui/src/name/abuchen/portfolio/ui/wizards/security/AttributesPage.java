@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
 import java.io.IOException;
+import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import org.eclipse.core.databinding.Binding;
@@ -23,6 +25,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -270,6 +274,26 @@ public class AttributesPage extends AbstractPage implements IMenuListener
         else
         {
             value = new Text(container, SWT.BORDER);
+            if ((attribute.getType().isNumber()
+                            || attribute.getType().getConverter() instanceof AttributeType.LimitPriceConverter)
+                            && ("FR".equals(Locale.getDefault().getCountry()) //$NON-NLS-1$
+                            || "BE".equals(Locale.getDefault().getCountry()))) //$NON-NLS-1$
+            {
+                char decimalSeparator = new DecimalFormatSymbols().getDecimalSeparator();
+                Text valueAsText = (Text) value;
+                valueAsText.addKeyListener(new KeyAdapter()
+                {
+                    @Override
+                    public void keyPressed(KeyEvent e)
+                    {
+                        if ((e.keyCode == SWT.KEYPAD_DECIMAL))
+                        {
+                            e.doit = false;
+                            valueAsText.insert(String.valueOf(decimalSeparator));
+                        }
+                    }
+                });
+            }
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(value);
 
             ToAttributeObjectConverter input2model = new ToAttributeObjectConverter(attribute);
