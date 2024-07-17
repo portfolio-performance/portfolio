@@ -78,6 +78,11 @@ public class DataSeriesSet
         series.setLineChart(false);
         availableSeries.add(series);
 
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.SAVINGS, Messages.LabelSaving,
+                        Display.getDefault().getSystemColor(SWT.COLOR_YELLOW).getRGB());
+        series.setShowArea(true);
+        availableSeries.add(series);
+
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INVESTED_CAPITAL,
                         Messages.LabelInvestedCapital, Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
         series.setShowArea(true);
