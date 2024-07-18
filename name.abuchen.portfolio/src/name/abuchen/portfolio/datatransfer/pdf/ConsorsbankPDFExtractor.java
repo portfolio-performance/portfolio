@@ -115,7 +115,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
                                                         .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .match("^(Kurs|Preis pro Anteil) [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                                                        .match("^(?i)(Kurs|Preis pro Anteil) [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // ST 15,75243 WKN: 625952
@@ -129,21 +129,26 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^ST [\\.,\\d]+ WKN: (?<wkn>[A-Z0-9]{6})$") //
                                                         .match("^(?<name>.*)$") //
                                                         .match("^(?<nameContinued>.*)$") //
-                                                        .match("^KURS [\\.,\\d]+ .*$") //
-                                                        .match("^KURSWERT (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                                        .match("^(?i)KURS [\\.,\\d]+ .*$") //
+                                                        .match("^(?i)KURSWERT (?<currency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // ST 334,00000 WKN: A0MZBE
                                         // AHOLD, KON. EO-,30
                                         // Kurs 9,890000 EUR P.ST. FRANCO COURTAGE
                                         // Kurswert EUR 3.303,26
+                                        //
+                                        // ST 5.555,00000 WKN: 600720
+                                        // ESCOM AG I.A.
+                                        // KURS 0,040000 P.ST.
+                                        // KURSWERT EUR 222,20
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("wkn", "name", "currency") //
                                                         .match("^ST [\\.,\\d]+ WKN: (?<wkn>[A-Z0-9]{6})$") //
                                                         .match("^(?<name>.*)$") //
-                                                        .match("^Kurs [\\.,\\d]+ .*$") //
-                                                        .match("^Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                                                        .match("^(?i)Kurs [\\.,\\d]+ .*$") //
+                                                        .match("^(?i)Kurswert (?<currency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         //       ST                        50,00000               WKN: 851144
@@ -156,7 +161,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^([\\s]+)?ST[\\s]{1,}[\\.,\\d]+[\\s]{1,}WKN: (?<wkn>[A-Z0-9]{6}).*$") //
                                                         .match("^[\\s]+ (?<name>.*)$") //
                                                         .match("^[\\s]+ (?<nameContinued>.*)$") //
-                                                        .match("^[\\s]+ KURSWERT[\\s]{1,}(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+$") //
+                                                        .match("^(?i)[\\s]+ KURSWERT[\\s]{1,}(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // ST 11,87891 WKN: 625952
@@ -167,7 +172,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("wkn", "name", "currency") //
                                                         .match("^ST [\\.,\\d]+ WKN: (?<wkn>[A-Z0-9]{6})$") //
                                                         .match("^(?<name>.*)$") //
-                                                        .match("^Preis pro Anteil [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^(?i)Preis pro Anteil [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // 0,375 % VOLKSWAGEN LEASING 21/26 20.JULI A2YN0C XS2343822842
@@ -1365,6 +1370,13 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
+
+                        // @formatter:off
+                        // BOERSENPLATZGEBUEHR EUR 0,95
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^(?i)(abzgl\\. )?BOERSENPLATZGEBUEHR (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Börsenplatzgebühr EUR 2,95
