@@ -1,0 +1,57 @@
+PDFBox Version: 1.8.17
+
+Portfolio Performance Version: 0.69.1
+
+-----------------------------------------
+
+TRADE REPUBLIC BANK GMBH BRUNNENSTRASSE 19-21 10119 BERLIN
+
+DGKDRJG RIE K KREG PÁGINA 1 de 1
+
+Calle DGSGR 12FECHA 02.05.2024
+
+12345 CIudad EJECUCIÓN ff4d-982a
+
+PLAN DE INVERSIÓN 21ef-595a
+
+CUENTA DE VALORES 0786338401
+
+LIQUIDACIÓN DE VALORES DEL PLAN DE INVERSIÓN
+
+RESUMEN
+
+Ejecución del plan de inversión el día 02.05.2024 en Lang & Schwarz Exchange.
+
+La contraparte de la transacción es Lang & Schwarz TradeCenter AG & Co. KG.
+
+POSICIÓN CANTIDAD COTIZACIÓN PROMEDIO IMPORTE
+
+iShsIII-Core MSCI World U.ETF 2,245424 tít. 89,07 EUR 200,00 EUR
+
+Registered Shs USD (Acc) o.N.
+
+ISIN: IE00B4L5Y983
+
+TOTAL 200,00 EUR
+
+RESERVA
+
+CUENTA DE EFECTIVO FECHA VALOR IMPORTE
+
+DE75502109007008349007 06.05.2024 -200,00 EUR
+
+iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N. en cuenta de valores en Alemania.
+
+País de custodia: Irlanda
+
+Este documento ha sido creado automáticamente y por lo tanto no necesita firma.
+
+Si no se indica IVA, se trata de un servicio libre de IVA según § 4 núm. 8 UStG.
+
+Trade Republic Bank GmbH www.traderepublic.com Domicilio social de la empresa: Berlin Directores
+
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+
+10119 Berlin NIF DE307510626 Gernot Mittendorfer
+
+ABRE / 02.05.2024 / 83813901 / f815-3cf3
