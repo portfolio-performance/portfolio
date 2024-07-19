@@ -1083,6 +1083,17 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+ St.cke [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
+                                        // POSITION QUANTITY YIELD AMOUNT
+                                        // Mondelez
+                                        // US6092071058 2.000000 Pcs. 0.425 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .find("POSITION QUANTITY YIELD AMOUNT")
+                                                        .match("^(?<name>.*)")
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+ Pcs\\. [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
                                         // 1 Reinvestierung Vodafone Group PLC 699 Stk.
                                         // Registered Shares DL 0,2095238
                                         // GB00BH4HKS39
@@ -1122,6 +1133,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^.* (?<shares>[\\.,\\d]+) Pcs\\. [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
+                                        // @formatter:off
+                                        // US6092071058 2.000000 Pcs. 0.425 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) Pcs\\. [\\.,\\d]+ [\\w]{3}$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // 1 Reinvestierung Vodafone Group PLC 699 Stk.
@@ -1254,11 +1272,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         //
                                         // Zwischensumme 21.42 USD
                                         // Zwischensumme 1.073 USD/EUR 19.97 EUR
+                                        //
+                                        // Sub Total 0.72 USD
+                                        // Sub Total 1.0855 USD/EUR 0.66 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("fxGross", "fxCurrency", "exchangeRate", "baseCurrency", "termCurrency", "gross", "currency") //
-                                                        .match("^(Zwischensumme|GESAMT|TOTALE|TOTAL) (\\-)?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
-                                                        .match("^(Zwischensumme|Subtotale|Subtotal|Sous\\-total) (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?(?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^(Zwischensumme|GESAMT|TOTALE|TOTAL|Sub Total) (\\-)?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
+                                                        .match("^(Zwischensumme|Subtotale|Subtotal|Sous\\-total|Sub Total) (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?(?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             if (!asCurrencyCode(v.get("currency")).equals(asCurrencyCode(v.get("baseCurrency"))))
                                                             {
@@ -2832,6 +2853,17 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+ St.cke [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
+                                        // POSITION QUANTITY YIELD AMOUNT
+                                        // Mondelez
+                                        // US6092071058 2.000000 Pcs. 0.425 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .find("POSITION QUANTITY YIELD AMOUNT")
+                                                        .match("^(?<name>.*)")
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+ Pcs\\. [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
                                         // 1 Reinvestierung Vodafone Group PLC 699 Stk.
                                         // Registered Shares DL 0,2095238
                                         // GB00BH4HKS39
@@ -2872,6 +2904,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^.* (?<shares>[\\.,\\d]+) Pcs\\. [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
+                                        // @formatter:off
+                                        // US6092071058 2.000000 Pcs. 0.425 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) Pcs\\. [\\.,\\d]+ [\\w]{3}$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // 1 Reinvestierung Vodafone Group PLC 699 Stk.
@@ -2991,9 +3030,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Zwischensumme 1,095514 EUR/USD 63,31 EUR
                         // Sous-total 1,0802 EUR/USD 0,38 EUR
+                        // Sub Total 1.0855 USD/EUR 0.66 EUR
                         // @formatter:on
                         .section("exchangeRate", "baseCurrency", "termCurrency").optional() //
-                        .match("^(Zwischensumme|Subtotale|Subtotal|Sous\\-total) (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?[\\.,\\d]+ [\\w]{3}$")
+                        .match("^(Zwischensumme|Subtotale|Subtotal|Sous\\-total|Sub Total) (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (\\-)?[\\.,\\d]+ [\\w]{3}$")
                         .assign((t, v) -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                             {
@@ -3025,9 +3065,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Quellensteuer DE für US-Emittent -7,56 USD
+                        // Withholding Tax for US issuer -0.13 USD
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^([\\d] )?Quellensteuer .* (\\-)?(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^([\\d] )?(Quellensteuer|Withholding Tax) .* (\\-)?(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off

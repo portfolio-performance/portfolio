@@ -1,0 +1,31 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Name Surname PAGE 1 from 1
+My address 1 DATE 12.07.2024
+9999 City SECURITIES ACCOUNT 1234567890
+CASH DIVIDEND
+OVERVIEW
+Cash Dividend with Ex-Date 28.06.2024.
+POSITION QUANTITY YIELD AMOUNT
+Mondelez
+US6092071058 2.000000 Pcs. 0.425 USD
+0.85 USD
+TOTAL 0.85 USD
+INVOICE
+POSITION AMOUNT
+Withholding Tax for US issuer -0.13 USD
+Sub Total 0.72 USD
+Sub Total 1.0855 USD/EUR 0.66 EUR
+TOTAL 0.66 EUR
+BOOKING
+SETTLEMENT ACCOUNT PAYMENT DATE AMOUNT
+DE12345678901234567890 12.07.2024 0.66 EUR
+US6092071058 in giro collection storage in Germany
+This statement is generated automatically and therefore not signed.
+If no sales tax is shown, this is a sales tax-free service in accordance with Section § 4 Nr. 8 UStG
+Trade Republic Bank GmbH www.traderepublic.com Headquarters: Berlin DirectorsBrunnenstraße 19-21
+10119 Berlin service@traderepublic.com
+AG Charlottenburg HRB 244347 B Andreas Torner
+VAT-ID DE307510626 Gernot Mittendorfer
