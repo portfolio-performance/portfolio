@@ -4417,6 +4417,76 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testDividend02()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US6092071058"), hasWkn(null), hasTicker(null), //
+                        hasName("Mondelez"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-07-12T00:00"), hasShares(2.00), //
+                        hasSource("Dividend02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.66), hasGrossValue("EUR", 0.78), //
+                        hasForexGrossValue("USD", 0.85), //
+                        hasTaxes("EUR", 0.12), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividend02WithSecurityInEUR()
+    {
+        Security security = new Security("Mondelez", CurrencyUnit.EUR);
+        security.setIsin("US6092071058");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-07-12T00:00"), hasShares(2.00), //
+                        hasSource("Dividend02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.66), hasGrossValue("EUR", 0.78), //
+                        hasTaxes("EUR", 0.12), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testDividend01WithSecurityInEUR()
     {
         Security security = new Security("Apple Inc. Registered Shares o.N.", CurrencyUnit.EUR);
