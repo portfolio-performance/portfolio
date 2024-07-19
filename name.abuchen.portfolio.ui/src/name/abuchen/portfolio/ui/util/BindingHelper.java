@@ -409,7 +409,7 @@ public class BindingHelper
         // on French keyboard, the numpad decimal is '.'
         // which should be catched and replaced by a ',' as
         // decimal separator
-        if ("FR".equals(Locale.getDefault().getCountry()) || "BE".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$ //$NON-NLS-2$
+        if ("FR".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$
         {
             char decimalSeparator = new DecimalFormatSymbols().getDecimalSeparator();
             txtValue.addKeyListener(new KeyAdapter()

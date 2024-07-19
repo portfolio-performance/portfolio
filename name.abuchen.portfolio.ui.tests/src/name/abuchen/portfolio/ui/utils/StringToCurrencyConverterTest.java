@@ -145,6 +145,31 @@ public class StringToCurrencyConverterTest
         converter.convert("1.234,56");
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidFRfrAmount()
+    {
+        Locale.setDefault(new Locale("fr", "FR"));
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount, false);
+        converter.convert("1.234,56");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidFRfrAmount2()
+    {
+        Locale.setDefault(new Locale("fr", "FR"));
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount, false);
+        converter.convert("123.45");
+    }
+
+    @Test
+    public void testValidFRfrAmount()
+    {
+        Locale.setDefault(new Locale("fr", "FR"));
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount);
+        assertThat(converter.convert("12,34"), is(1234l));
+        assertThat(converter.convert("1 234,56"), is(123456l));
+    }
+
     @Test
     public void testValidArithmetic()
     {

@@ -276,8 +276,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
             value = new Text(container, SWT.BORDER);
             if ((attribute.getType().isNumber()
                             || attribute.getType().getConverter() instanceof AttributeType.LimitPriceConverter)
-                            && ("FR".equals(Locale.getDefault().getCountry()) //$NON-NLS-1$
-                            || "BE".equals(Locale.getDefault().getCountry()))) //$NON-NLS-1$
+                            && "FR".equals(Locale.getDefault().getCountry())) //$NON-NLS-1$
             {
                 char decimalSeparator = new DecimalFormatSymbols().getDecimalSeparator();
                 Text valueAsText = (Text) value;

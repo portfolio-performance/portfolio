@@ -34,8 +34,7 @@ public class AttributeEditingSupport extends ColumnEditingSupport
             ((Text) textEditor.getControl()).addVerifyListener(new NumberVerifyListener(true));
 
         if (attribute.getConverter() instanceof AttributeType.LimitPriceConverter
-                        && ("FR".equals(Locale.getDefault().getCountry()) //$NON-NLS-1$
-                                        || "BE".equals(Locale.getDefault().getCountry()))) //$NON-NLS-1$
+                        && ("FR".equals(Locale.getDefault().getCountry()))) //$NON-NLS-1$
         {
             char decimalSeparator = new DecimalFormatSymbols().getDecimalSeparator();
             Text textEditorValue = (Text) textEditor.getControl();
