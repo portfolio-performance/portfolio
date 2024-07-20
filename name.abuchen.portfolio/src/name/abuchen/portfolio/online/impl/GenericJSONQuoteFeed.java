@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -343,8 +344,18 @@ public class GenericJSONQuoteFeed implements QuoteFeed
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat.get());
             return LocalDate.parse(object.toString(), formatter);
         }
+
         if (object instanceof String s)
-            return YahooHelper.fromISODate(s);
+        {
+            try
+            {
+                return YahooHelper.fromISODate(s);
+            }
+            catch (DateTimeParseException e)
+            {
+                return parseDateTimestamp(Long.parseLong(s));
+            }
+        }
         else if (object instanceof Long l)
             return parseDateTimestamp(l);
         else if (object instanceof Integer i)
