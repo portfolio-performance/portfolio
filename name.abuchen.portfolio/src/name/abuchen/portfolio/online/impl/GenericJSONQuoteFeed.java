@@ -344,7 +344,16 @@ public class GenericJSONQuoteFeed implements QuoteFeed
             return LocalDate.parse(object.toString(), formatter);
         }
         if (object instanceof String s)
-            return YahooHelper.fromISODate(s);
+        {
+            try
+            {
+                return parseDateTimestamp(Long.parseLong(s));
+            }
+            catch (NumberFormatException e)
+            {
+                return YahooHelper.fromISODate(s);
+            }
+        }
         else if (object instanceof Long l)
             return parseDateTimestamp(l);
         else if (object instanceof Integer i)
