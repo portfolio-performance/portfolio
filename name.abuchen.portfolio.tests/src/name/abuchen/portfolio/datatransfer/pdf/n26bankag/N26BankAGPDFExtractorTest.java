@@ -55,7 +55,7 @@ public class N26BankAGPDFExtractorTest
                         hasDate("2024-06-01T00:00"), //
                         hasSource("Kontoauszug01.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 252.16), hasGrossValue("EUR", 318.66), //
+                        hasAmount("EUR", 185.66), hasGrossValue("EUR", 252.16), //
                         hasTaxes("EUR", 63.04 + 3.46), hasFees("EUR", 0.00))));
 
         // assert transaction
@@ -85,7 +85,7 @@ public class N26BankAGPDFExtractorTest
                         hasDate("2024-07-01T00:00"), //
                         hasSource("Kontoauszug02.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 267.12), hasGrossValue("EUR", 337.57), //
+                        hasAmount("EUR", 196.67), hasGrossValue("EUR", 267.12), //
                         hasTaxes("EUR", 66.78 + 3.67), hasFees("EUR", 0.00))));
 
         // assert transaction
