@@ -23,6 +23,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.views.dashboard.charts.CommonDataChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.HoldingsChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.TaxonomyChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsByTaxonomyChartWidget;
@@ -140,6 +141,8 @@ public enum WidgetFactory
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
+
+    COMMON_METRIC_CHART(Messages.LabelCommonMetricChart, Messages.LabelStatementOfAssets, CommonDataChartWidget::new),
 
     RATIO(Messages.LabelRatio, Messages.LabelStatementOfAssets, RatioWidget::new),
 
