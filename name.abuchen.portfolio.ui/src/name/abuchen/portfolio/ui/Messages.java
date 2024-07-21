@@ -626,6 +626,7 @@ public class Messages extends NLS
     public static String LabelDescription;
     public static String LabelDoImport;
     public static String LabelDoNotImport;
+    public static String LabelDrawdown;
     public static String LabelEarnings;
     public static String LabelEarningsPerMonth;
     public static String LabelEarningsPerQuarter;
@@ -815,6 +816,7 @@ public class Messages extends NLS
     public static String LabelJSONPathToVolume;
     public static String LabelKeyIndicators;
     public static String LabelMaxDrawdown;
+    public static String LabelMaxDrawdownChart;
     public static String LabelMaxDrawdownDuration;
     public static String LabelMeasureDistance;
     public static String LabelMetricCheckInterval;
