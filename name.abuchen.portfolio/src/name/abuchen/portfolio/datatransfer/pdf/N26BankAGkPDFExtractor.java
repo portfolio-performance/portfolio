@@ -7,6 +7,7 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
 public class N26BankAGkPDFExtractor extends AbstractPDFExtractor
@@ -102,13 +103,17 @@ public class N26BankAGkPDFExtractor extends AbstractPDFExtractor
                         // Zinsertrag +252,16€
                         // Gesamt +252,16€
                         // @formatter:on
-                        .section("date", "amount", "currency") //
+                        .section("date", "tax", "taxCurrency", "amount", "currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .find("Steuer")
+                        .match("^Gesamt \\-(?<tax>[\\.,\\d]+)(?<taxCurrency>\\p{Sc})$") //
                         .match("^Zinsertrag \\+(?<amount>[\\.,\\d]+)(?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("taxCurrency")), asAmount(v.get("tax")));
+                            Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+
                             t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setMonetaryAmount(amount.subtract(tax));
                         })
 
                         .wrap(t -> {
