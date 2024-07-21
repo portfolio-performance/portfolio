@@ -532,6 +532,7 @@ public class Messages extends NLS
     public static String LabelAllSecurities;
     public static String LabelAllTrades;
     public static String LabelAllTransactions;
+    public static String LabelAspect;
     public static String LabelAssetChart;
     public static String LabelAutomaticDarkLightTheme;
     public static String LabelAvailableAttributes;
@@ -836,6 +837,7 @@ public class Messages extends NLS
     public static String LabelSmallerSize;
     public static String LabelStartTyping;
     public static String LabelStatementOfAssets;
+    public static String LabelStatementOfAssetsDerivedDataSeries;
     public static String LabelStatementOfAssetsHistory;
     public static String LabelStatementOfAssetsHoldings;
     public static String LabelSuffix_HICP;
