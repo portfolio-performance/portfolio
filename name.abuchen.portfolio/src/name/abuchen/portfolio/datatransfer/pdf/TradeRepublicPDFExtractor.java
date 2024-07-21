@@ -990,6 +990,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|DIVIDEND" //
                         + "|DIVIDENDO" //
                         + "|DISTRIBUZIONE"
+                        + "|Distribution"
                         + "|KAPITALREDUKTION)",
                         "ABRECHNUNG ZINSEN");
         this.addDocumentTyp(type);
