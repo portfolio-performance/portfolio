@@ -157,7 +157,10 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Gutschrift von .*|Aussch.ttung Investmentfonds|Dividendengutschrift)");
+        DocumentType type = new DocumentType("(Gutschrift von .*" //
+                        + "|Aussch.ttung Investmentfonds" //
+                        + "|Aussch.ttung aus Genussschein" //
+                        + "|Dividendengutschrift)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
