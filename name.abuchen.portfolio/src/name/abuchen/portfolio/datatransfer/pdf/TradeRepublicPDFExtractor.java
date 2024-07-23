@@ -2082,6 +2082,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     private void addTaxesStatementTransaction()
     {
         final DocumentType type = new DocumentType("(STEUERABRECHNUNG" //
+                        + "|STEUERLICHE OPTIMIERUNG" //
                         + "|ABRECHNUNG (ZINSEN|DIVIDENDE))", //
                         documentContext -> documentContext //
                                         // @formatter:off
@@ -2095,7 +2096,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // DE30501108019081234567 11.04.2024 2,21 EUR
                                         // @formatter:on
                                         .section("date") //
-                                        .find("(IBAN BUCHUNGSDATUM GUTSCHRIFT NACH STEUERN|VERRECHNUNGSKONTO (VALUTA|WERTSTELLUNG) BETRAG)") //
+                                        .find("(IBAN BUCHUNGSDATUM GUTSCHRIFT NACH STEUERN|VERRECHNUNGSKONTO (VALUTA|WERTSTELLUNG|DATUM DER ZAHLUNG) BETRAG)") //
                                         .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+( [\\w]{3})?$") //
                                         .assign((ctx, v) -> ctx.put("date", v.get("date")))
 
@@ -2153,12 +2154,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Kapitalertragsteuer Optimierung 3,75 EUR
                                         // GESAMT 4,26
+                                        //
+                                        // Kapitalertragssteuer 735.67 EUR
+                                        // Solidaritätszuschlag 40.46 EUR
+                                        // GESAMT 776.13 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
                                                         .documentContext("date")
-                                                        .match("^Kapitalertrags(s)?teuer Optimierung [\\.,\\d]+ (?<currency>[\\w]{3})$") //
-                                                        .match("^GESAMT (?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Kapitalertrags(s)?teuer( Optimierung)? [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^GESAMT (?<amount>[\\.,\\d]+)( [\\w]{3})?$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.TAX_REFUND);
 
