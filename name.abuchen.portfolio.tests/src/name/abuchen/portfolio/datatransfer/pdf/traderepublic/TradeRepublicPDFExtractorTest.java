@@ -2497,6 +2497,25 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testSteueroptimierung01()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steueroptimierung01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(taxRefund(hasDate("2024-07-18"), hasAmount("EUR", 776.13), //
+                        hasSource("Steueroptimierung01.txt"), hasNote(null))));
+    }
+
+    @Test
     public void testSteuerkorrektur01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
