@@ -1,0 +1,39 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+Postbank
+Beratungsteam
+QHYFZS ZuVlMl 24/7-Kundenservice (0228) 5500-5500
+rpjiGCkUkx. 12
+48451 mtUpxeKu
+23. Juli 2024
+Abrechnung: Kauf von Wertpapieren
+Depotinhaber: YGQACz LWBniw
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+168 4367664 00 AIS-M.EUR.ESG BR.CTB AEOA FUNDS 1/1
+WKN A2H567 Nominal ST 22
+ISIN LU1681042609 Kurs EUR 336,40
+Verwahrart Girosammeldepot
+Geschäft Kommissionsgeschäft im XETRA-Handel
+Börse Frankfurt a.M. - Deutsche Börse - Frankfurter Wertpapierbörse (FWB) - Xetra
+Belegnummer 1222222222 / 22212322 Schlusstag/-zeit MEZ 23.07.2024 09:04
+Auftragsart Marktpreisauftrag
+Überschreitung Ihrer persönlichen Risikoklasse. Produkt ist ggf. unangemessen.
+Abrechnung Währung Betrag
+Kurswert EUR 7.400,80
+Provision EUR 39,95
+XETRA-Kosten EUR 0,60
+Belastung
+Buchung auf Kontonummer 5428750 00 mit Wertstellung 25.07.2024 EUR 7.441,35
+Summe der in der Abrechnung enthaltenen Provisionen und Auslagen EUR 40,55
+DieWertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen
+und die Sonderbedingungen fürWertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen
+in den Geschäftsräumen der Bank oder schriftlich an Deutsche Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt.
+Die unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert
+ausgewiesen ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat hat und die Bank
+und Finanzdienstleistungen nach dortigem Recht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers. Umsatzsteuer ID
+Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+Postbank - eine Niederlassung der Deutsche Bank AG - Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts - Vorstand: Christian Sewing (Vorsitzender),
+James von Moltke, Fabrizio Campelli, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, Claudio de Sanctis, Rebecca Short, Stefan Simon, Olivier Vigneron
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main, Amtsgericht Frankfurt am Main, HRB Nr. 30 000, Umsatzsteuer-Id.-Nr. DE114103379; www.postbank.de
+TR00000001 20240723 789_000_
