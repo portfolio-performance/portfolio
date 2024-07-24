@@ -61,7 +61,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
     private void addBuySellTransaction()
     {
         DocumentType type = new DocumentType("(Wertpapier )?Abrechnung(:)? "//
-                        + "(Kauf"
+                        + "(Kauf" //
                         + "|Kauf von Wertpapieren" //
                         + "|Verkauf" //
                         + "|Verkauf\\-Festpreisgesch.ft" //
@@ -771,9 +771,9 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
     {
         transaction //
 
-                         // @formatter:off
-                         // Provision 39,95- EUR
-                         // @formatter:on
+                        // @formatter:off
+                        // Provision 39,95- EUR
+                        // @formatter:on
                         .section("fee", "currency").optional() //
                         .match("^Provision (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
@@ -781,15 +781,15 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Provision EUR 39,95
                         // @formatter:on
-                        .section("fee", "currency").optional() //
+                        .section("currency", "fee").optional() //
                         .match("^Provision (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // XETRA-Kosten EUR 0,60
                         // @formatter:on
-                        .section("fee", "currency").optional() //
-                        .match("^XETRA-Kosten (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)$") //
+                        .section("currency", "fee").optional() //
+                        .match("^XETRA\\-Kosten (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
