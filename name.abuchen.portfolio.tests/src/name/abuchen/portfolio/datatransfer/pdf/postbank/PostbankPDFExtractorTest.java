@@ -345,6 +345,37 @@ public class PostbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf06()
+    {
+        PostbankPDFExtractor extractor = new PostbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1681042609"), hasWkn("A2H567"), hasTicker(null), //
+                        hasName("AIS-M.EUR.ESG BR.CTB AEOA FUNDS"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-23T09:04"), hasShares(22), //
+                        hasSource("Kauf06.txt"), //
+                        hasNote("Belegnummer 1222222222 / 22212322"), //
+                        hasAmount("EUR", 7441.35), hasGrossValue("EUR", 7400.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 39.95 + 0.6))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         PostbankPDFExtractor extractor = new PostbankPDFExtractor(new Client());
