@@ -101,6 +101,13 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "time") //
                                                         .match("^Belegnummer .* Schlusstag\\/\\-zeit .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ (?<time>[\\d]{2}:[\\d]{2})$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Belegnummer 1039975477 / 91752537 Schlusstag/-zeit MEZ 23.07.2024 18:20
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Belegnummer .* Schlusstag\\/\\-zeit .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2})$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
 
                         // @formatter:off
