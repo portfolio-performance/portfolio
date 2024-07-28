@@ -924,7 +924,14 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
             @Override
             public String getText(Object r)
             {
-                return String.valueOf(((LazySecurityPerformanceRecord) r).getDrawdown().get().getMaxDrawdownDuration());
+                return String.valueOf(((LazySecurityPerformanceRecord) r).getDrawdown().get().getMaxDrawdownDuration()
+                                .getDays());
+            }
+
+            @Override
+            public String getToolTipText(Object r)
+            {
+                return ((LazySecurityPerformanceRecord) r).getDrawdown().get().getMaxDrawdownDuration().toString();
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getDrawdown().get()
