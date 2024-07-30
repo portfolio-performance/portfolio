@@ -72,6 +72,7 @@ Optionally, install via the Eclipse Marketplace (drag and drop the *Install* but
 * [Checkstyle Plug-In](https://marketplace.eclipse.org/content/checkstyle-plug)
 * [SonarLint](https://marketplace.eclipse.org/content/sonarlint)
 * [Launch Configuration DSL](https://marketplace.eclipse.org/content/launch-configuration-dsl)
+* [Darkest Dark Theme with DevStyle](https://marketplace.eclipse.org/content/darkest-dark-theme-devstyle) (Programming and chilling in DarkMode :sunglasses:)
 
 
 #### Install from the simulatenous release update site
