@@ -1,0 +1,43 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+VZ Depotbank AG
+Innere Güterstrasse 2
+6300 Zug
+058 411 88 88
+contact@vzdepotbank.ch
+www.vzdepotbank.ch
+CHE-116.326.867 MWST
+e-Dokument
+Herr Ver Portfolio Anlageberatung
+Max Musterman Depot DB TF 123.456.78.500 / CHF
+Musterstrasse 12
+1234 Musterstadt
+Auftragsnummer AUF223377-44378629
+Zug, 09.02.2022 Auftragsdatum 07.02.2022
+Börsenabrechnung - Emission
+Wir haben für Sie am 08.02.2022 gezeichnet.
+120 Anteile -UB- CS Investment Funds 14 FCP
+- Credit Suisse (Lux) Inflation Linked CHF Bond Fd
+Valor: 26377052
+ISIN: LU1144400782
+Börsenplatz: Anlagefonds
+Total Kurswert CHF -12'116.40
+Eidg. Umsatz Stempel CHF -18.15
+Courtage * CHF -140.00
+Netto CHF -12'274.55
+Valuta: 10.02.2022
+* Tarifreduktion E-Banking Auftrag
+Die Belastung erfolgt auf Konto 123.456.78.100
+Die entsprechende Buchung werden wir in Ihrem Depot 123.456.78.500 vornehmen.
+Die Anlage erfolgt ohne Beratung durch uns (Execution only). Es wurde keine Bedürfnisabklärung, keine
+Risikoaufklärung und kein Abgleich mit einem allenfalls vereinbarten Anlageprofil gemacht.
+Ausführung Menge Preis Kurswert
+12:00:00 120 100.97 CHF -12'116.40
+Das Basisinformationsblatt finden Sie unter www.vermoegenszentrum.ch/kurse
+Sofern relevant, war dem Kunden vor oder nach der Ausführung des Auftrages ein Basisinformationsblatt bereitgestellt
+worden.
+Freundliche Grüsse
+VZ Depotbank AG
+Anzeige ohne Unterschrift
+3425234 | 760845624298875 | 9898 Seite 1 / 1
