@@ -23,7 +23,6 @@ public class Messages extends NLS
     public static String AttributeSettings_LimitPrice_ColorSettings;
     public static String AttributeSettings_LimitPrice_ColorSettings_LimitExceededPositively;
     public static String AttributeSettings_LimitPrice_ColorSettings_LimitExceededNegatively;
-    public static String AttributeSettings_LimitPrice_ColorSettings_ResetColors;
     public static String AttributeSettings_LimitPrice_ColorSettings_SwapColors;
     public static String AttributeSettings_LimitPrice_ColumnSettings;
     public static String AttributeSettings_LimitPrice_ColumnSettings_ShowAbsoluteDiff;
@@ -58,6 +57,7 @@ public class Messages extends NLS
     public static String BtnLabelApply;
     public static String BtnLabelApplyAndClose;
     public static String BtnLabelOpenInvestmentPlanView;
+    public static String BtnLabelResetToDefault;
     public static String BtnLabelRestartLater;
     public static String BtnLabelRestartNow;
     public static String BtnTooltipInvertExchangeRate;

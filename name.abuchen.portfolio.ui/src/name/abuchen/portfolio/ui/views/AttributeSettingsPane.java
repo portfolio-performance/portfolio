@@ -197,7 +197,7 @@ public class AttributeSettingsPane implements InformationPanePage
 
             // reset to default colors button
             Button resetButton = new Button(gpColors, SWT.PUSH);
-            resetButton.setText(Messages.AttributeSettings_LimitPrice_ColorSettings_ResetColors);
+            resetButton.setText(Messages.BtnLabelResetToDefault);
             resetButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> {
                 // reset settings
                 settings.setLimitExceededPositivelyColor(null);
