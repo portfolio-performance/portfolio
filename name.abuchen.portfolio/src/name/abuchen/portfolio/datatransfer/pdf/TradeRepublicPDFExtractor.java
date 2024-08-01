@@ -1583,7 +1583,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     private void addAccountStatementTransaction_Format02()
     {
         final DocumentType type = new DocumentType("(KONTO.BERSICHT|RESUMEN DE ESTADO DE CUENTA)", (context, lines) -> {
-            Pattern pAccountAmountTransaction = Pattern.compile("^.*(?<!\\p{Sc}) [\\.,\\d]+ \\p{Sc} (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}).*$");
+            Pattern pAccountAmountTransaction = Pattern.compile("^(?!(Depotkonto|Cuenta de valores)).* [\\.,\\d]+ \\p{Sc} (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}).*$");
             Pattern pAccountInitialSaldoTransaction = Pattern.compile("^(Depotkonto|Cuenta de valores) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc}$");
 
             AccountAmountTransactionHelper accountAmountTransactionHelper = new AccountAmountTransactionHelper();
