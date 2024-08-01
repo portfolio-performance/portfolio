@@ -6,16 +6,17 @@ Keytrade Bank Luxembourg S.A. T +352 45 04 39
 L-2134 - Luxembourg info@keytradebank.lu
 Grand Duché de Luxembourg www.keytradebank.lu
 RCS B69935 Skype keytradebank.lu
-Compte-titres 260745
-Numéro de Bordereau 1910356
-Vente 310 VERBIO VER.BIOENERGIE ON (DE000A0JL9W6) à 33,95 EUR
-Type d' instrument: Actions
-Ordre créé à : 10/02/2021 15:23:42 CET
-Type d' ordre : Market
-Validité : GTC
-Date et heure d'exécution : 10/02/2021 15:23:42 CET
-Lieu d'exécution : XETRA
-Montant brut 10.524,50 EUR
-Frais de transaction 24,95 EUR
-10.499,55 EUR
-Crédit 10.499,55 EUR Date valeur 12/02/2021
+Wertschriftenkonto 260745
+Belegnummer 1820896
+Verkauf 22 SARTORIUS AG O.N. (DE0007165607) für 247 EUR
+Instrument: Aktien
+Auftragserstellung : 01/07/2020 12:34:24 CET
+Auftragstyp : Market
+Gültigkeit : GTC
+Ausführungsdatum und -zeit : 01/07/2020 12:34:24 CET 
+Ausführungsort : XETRA
+Bruttobetrag 5.434,00 EUR
+Transaktionskosten 24,95 EUR
+5.409,05 EUR
+Gutschrift 5.409,05 EUR Valutadatum 03/07/2020
+DUPLICATE

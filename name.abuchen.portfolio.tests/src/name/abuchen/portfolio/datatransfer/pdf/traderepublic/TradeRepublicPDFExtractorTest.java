@@ -1983,6 +1983,60 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug16()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug16.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-07-26"), hasAmount("EUR", 22000.00), //
+                        hasSource("Kontoauszug16.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-07-27"), hasAmount("EUR", 3.00), //
+                        hasSource("Kontoauszug16.txt"), hasNote("PARKEN FLUGHAFENSTUTTG"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-07-27"), hasAmount("EUR", 26.30), //
+                        hasSource("Kontoauszug16.txt"), hasNote("AMZN Mktp DE*000000000"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-07-30"), hasAmount("EUR", 2000.00), //
+                        hasSource("Kontoauszug16.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testKontoauszug17()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug17.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-07-01"), hasAmount("EUR", 14.64),
+                        hasSource("Kontoauszug17.txt"), hasNote("KAUFLAND STUTTGART MUEHLH"))));
+    }
+
+    @Test
     public void testTransaccionesDeCuenta01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
