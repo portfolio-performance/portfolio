@@ -1777,15 +1777,23 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         //
                                         // 02 may
                                         // 2024 Recompensa Your Saveback payment 3,89 € 18.265,05 €
+                                        //
+                                        // 30 Juli
+                                        // 2024 Überweisung Incoming transfer from Vorname Nachname 2.000,00 € 17.796,12 €
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "amount", "currency") //
                                                         .match("^(?<date>[\\d]{2} [\\wä]{3,4}([\\.]{1})?)[\\s]$") //
                                                         .match("^(?<year>[\\d]{4}) " //
-                                                                        + "(.berweisung Einzahlung akzeptiert:"
-                                                                        + "|Transferencia Ingreso aceptado:"
-                                                                        + "|Pr.mie Your Saveback"
-                                                                        + "|Recompensa Your Saveback payment)" //
+                                                                        + "(.berweisung"
+                                                                        + "|Pr.mie"
+                                                                        + "|Transferencia"
+                                                                        + "|Recompensa) "
+                                                                        + "(Einzahlung akzeptiert:"
+                                                                        + "|Ingreso aceptado:"
+                                                                        + "|Your Saveback"
+                                                                        + "|Your Saveback payment"
+                                                                        + "|Incoming transfer from)" //
                                                                         + ".* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
@@ -1798,11 +1806,20 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         //
                                         // 03 may
                                         // 2024 Transferencia PayOut to transit 8.000,00 € 10.265,05 €
+                                        //
+                                        // 26 Juli
+                                        // 2024 Überweisung Outgoing transfer for Vorname Nachname 22.000,00 € 15.825,42 €
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "amount", "currency") //
                                                         .match("^(?<date>[\\d]{2} [\\wä]{3,4}([\\.]{1})?)[\\s]$") //
-                                                        .match("^(?<year>[\\d]{4}) (.berweisung|Transferencia) PayOut .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<year>[\\d]{4}) "
+                                                                        + "(.berweisung"
+                                                                        + "|Transferencia) "
+                                                                        + "(PayOut to transit"
+                                                                        + "|Outgoing transfer for.*) "
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) "
+                                                                        + "[\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
