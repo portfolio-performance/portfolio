@@ -71,7 +71,8 @@ public class ReportingPeriods
                             clientInput.getPreferenceStore().getString("AbstractHistoricView")); //$NON-NLS-1$
 
             // immediately store periods in case they were loaded from legacy
-            storeReportingPeriods();
+            if (!periods.isEmpty())
+                storeReportingPeriods();
         }
 
         if (periods.isEmpty())
