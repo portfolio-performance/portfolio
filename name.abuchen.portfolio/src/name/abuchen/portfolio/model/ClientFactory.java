@@ -839,8 +839,10 @@ public class ClientFactory
                 fixNullSecurityProperties(client);
             case 60: // NOSONAR
                 addInvestmentPlanTypes(client);
-            case 61:
+            case 61: // NOSONAR
                 removePortfolioReportMarketProperties(client);
+            case 62:
+                updateSecurityChartLabelConfiguration(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1604,6 +1606,22 @@ public class ClientFactory
                             && ("PORTFOLIO-REPORT-MARKETS".equals(p.getName()) //$NON-NLS-1$
                                             || "PORTFOLIO-REPORT-MARKET".equals(p.getName()))); //$NON-NLS-1$
         }
+    }
+
+    private static void updateSecurityChartLabelConfiguration(Client client)
+    {
+        // PR 4120 splits SHOW_DATA_LABELS into
+        // SHOW_DATA_DIVESTMENT_INVESTMENT_LABEL, SHOW_DATA_DIVIDEND_LABEL,
+        // SHOW_DATA_EXTREMES_LABEL
+
+        var propertyKey = "security-chart-details"; //$NON-NLS-1$
+
+        var chartConfig = client.getProperty(propertyKey);
+        if (chartConfig == null)
+            return;
+
+        client.setProperty(propertyKey, chartConfig.replace("SHOW_DATA_LABELS", //$NON-NLS-1$
+                        "SHOW_DATA_DIVESTMENT_INVESTMENT_LABEL,SHOW_DATA_DIVIDEND_LABEL,SHOW_DATA_EXTREMES_LABEL")); //$NON-NLS-1$
     }
 
     @SuppressWarnings("nls")
