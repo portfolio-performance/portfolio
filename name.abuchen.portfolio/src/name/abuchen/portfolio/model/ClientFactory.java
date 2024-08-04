@@ -1730,7 +1730,6 @@ public class ClientFactory
             xstream.alias("security", Security.class);
             xstream.addImplicitCollection(Security.class, "properties");
             xstream.alias("latest", LatestSecurityPrice.class);
-            xstream.addImmutableType(LatestSecurityPrice.class, false);
             xstream.alias("category", Category.class); // NOSONAR
             xstream.alias("watchlist", Watchlist.class);
             xstream.alias("investment-plan", InvestmentPlan.class);
