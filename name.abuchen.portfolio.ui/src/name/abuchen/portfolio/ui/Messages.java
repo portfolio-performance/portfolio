@@ -600,6 +600,7 @@ public class Messages extends NLS
     public static String LabelClientFilterDialogTitle;
     public static String LabelClientFilterEditTooltip;
     public static String LabelClientFilterManage;
+    public static String LabelClientFilterMenu;
     public static String LabelClientFilterNew;
     public static String LabelClientFilterNoCustomFilterExisting;
     public static String LabelClose;

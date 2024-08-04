@@ -58,7 +58,7 @@ public class Column
     private ColumnViewerSorter sorter;
     private Integer defaultSortDirection;
     private Supplier<CellLabelProvider> labelProvider;
-    private UnaryOperator<Object> toolTipProvider;
+    private ElementOptionFunction<Object> toolTipProvider;
     private Images image;
     private Options<Object> options;
 
@@ -158,6 +158,11 @@ public class Column
 
     public void setToolTipProvider(UnaryOperator<Object> toolTipProvider)
     {
+        this.toolTipProvider = (element, option) -> toolTipProvider.apply(element);
+    }
+
+    public void setToolTipProvider(ElementOptionFunction<Object> toolTipProvider)
+    {
         this.toolTipProvider = toolTipProvider;
     }
 
@@ -247,7 +252,7 @@ public class Column
         return labelProvider != null ? labelProvider : () -> null;
     }
 
-    public UnaryOperator<Object> getToolTipProvider()
+    public ElementOptionFunction<Object> getToolTipProvider()
     {
         return toolTipProvider;
     }
