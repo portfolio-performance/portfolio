@@ -63,6 +63,8 @@
 				<string>AboutTextDeveloped</string>
 				<!-- exclude labels starting with Site = language dependent URLs --> 
 				<string>^Site.*</string>
+				<!-- exclude labels starting with Experimental = experimental features with limited translations --> 
+				<string>^Experimental.*</string>
 			</excludes>
 		</artifact>
 		<artifact>

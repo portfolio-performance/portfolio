@@ -41,6 +41,7 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -48,6 +49,7 @@ import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
@@ -74,6 +76,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientLi
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ElementOptionFunction;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
@@ -287,6 +290,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         createRiskColumns();
         createAdditionalColumns();
         createClientFilteredColumns();
+        createExperimentalEDivColumn();
 
         recordColumns.createColumns(true);
 
@@ -1160,6 +1164,60 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         }));
         column.setVisible(false);
         recordColumns.addColumn(column);
+    }
+
+    private void createExperimentalEDivColumn()
+    {
+        // retrieve attribute
+
+        Optional<AttributeType> attribute = getClient().getSettings().getAttributeTypes()
+                        .filter(a -> a.supports(Security.class)) //
+                        .filter(a -> a.getType() == Double.class) //
+                        .filter(a -> "ediv".equalsIgnoreCase(a.getSource())) //$NON-NLS-1$
+                        .findAny();
+
+        if (attribute.isPresent())
+        {
+            var suffix = " [{0}]"; //$NON-NLS-1$
+            var edivAttribute = attribute.get();
+
+            // market value * expected dividend yield = expected dividends
+            ElementOptionFunction<Money> valueProvider = (element, option) -> {
+                var dataRecord = getRecord(element, (ClientFilterMenu.Item) option);
+                if (dataRecord == null)
+                    return null;
+
+                var dive = (Double) dataRecord.getSecurity().getAttributes().get(edivAttribute);
+                if (dive == null)
+                    return null;
+
+                var marketValue = dataRecord.getMarketValue().get();
+
+                double expected = marketValue.getAmount() * dive;
+                if (attribute.get().getConverter().getClass() == AttributeType.PercentPlainConverter.class)
+                    expected /= 100;
+
+                return Money.of(marketValue.getCurrencyCode(), Math.round(expected));
+            };
+
+            Column column = new Column("filter:expecteddividends", //$NON-NLS-1$
+                            Messages.ExperimentalColumnExpectedDividends_MenuLabel, SWT.RIGHT, 80);
+            column.setOptions(new ClientFilterColumnOptions(Messages.ExperimentalColumnExpectedDividends + suffix,
+                            new ClientFilterMenu(getClient(), getPreferenceStore())));
+            column.setGroupLabel(Messages.LabelClientFilterMenu);
+            column.setLabelProvider(new OptionLabelProvider<ClientFilterMenu.Item>()
+            {
+                @Override
+                public String getText(Object element, ClientFilterMenu.Item option)
+                {
+                    var amount = valueProvider.apply(element, option);
+                    return amount == null ? null : Values.Money.format(amount, getClient().getBaseCurrency());
+                }
+            });
+            column.setSorter(ColumnViewerSorter.createWithOption(valueProvider::apply));
+            column.setVisible(false);
+            recordColumns.addColumn(column);
+        }
     }
 
     @Override
