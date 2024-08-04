@@ -37,6 +37,14 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.70.2" date="2024-08-04">
+      <description>
+        <ul>
+          <li>Fix: Reverts the change to support better scaled images on high-resolution displays as it seems to have side effects</li>
+          <li xml:lang="de">Fix: Macht die Änderung zur Unterstützung besser skalierter Icons auf hochauflösenden Bildschirmen rückgängig, da sie Nebenwirkungen zu haben scheint</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.70.1" date="2024-08-04">
       <description>
         <ul>
