@@ -880,7 +880,12 @@ public final class Security implements Attributable, InvestmentVehicle
     @Override
     public String toString()
     {
-        return getName();
+        if (getTickerSymbol() == null)
+            return getName();
+        else if (getTickerSymbol().equals(getName()))
+            return getTickerSymbol();
+        else
+            return getTickerSymbol() + " (" + getName() + ")";
     }
 
     public String toInfoString()
