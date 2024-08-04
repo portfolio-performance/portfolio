@@ -9,12 +9,10 @@
    <launcherArgs>
       <vmArgs>-XX:+IgnoreUnrecognizedVMOptions -Dosgi.requiredJavaVersion=17 --add-modules=ALL-SYSTEM -XX:+UseG1GC -XX:+UseStringDeduplication -Xms512m -Xmx1g
       </vmArgs>
-      <vmArgsLin>-Djdk.gtk.version=3 -Dswt.autoScale=quarter -Dswt.autoScale.method=nearest
+      <vmArgsLin>-Djdk.gtk.version=3
       </vmArgsLin>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
-      <vmArgsWin>-Dswt.autoScale=quarter -Dswt.autoScale.method=nearest
-      </vmArgsWin>
    </launcherArgs>
 
    <splash
