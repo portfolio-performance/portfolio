@@ -441,6 +441,7 @@
 									<goal>attach-artifact</goal>
 								</goals>
 								<configuration>
+									<skipAttach>${applesigner.skip}</skipAttach>
 									<artifacts>
 										<artifact>
 											<file>${project.build.directory}/products/PortfolioPerformance-${project.version}-x86_64.dmg</file>
@@ -452,6 +453,18 @@
 											<classifier>aarch64</classifier>
 											<type>dmg</type>
 										</artifact>
+									</artifacts>
+								</configuration>
+							</execution>
+							<execution>
+								<id>attach-exe</id>
+								<phase>package</phase>
+								<goals>
+									<goal>attach-artifact</goal>
+								</goals>
+								<configuration>
+									<skipAttach>${installer.skip}</skipAttach>
+									<artifacts>
 										<artifact>
 											<file>${project.build.directory}/products/PortfolioPerformance-${project.version}-setup.exe</file>
 											<type>exe</type>
