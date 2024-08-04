@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.util;
 
+import static name.abuchen.portfolio.util.HolidayName.ALL_SAINTS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.ALL_SOULS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.ANZAC_DAY;
 import static name.abuchen.portfolio.util.HolidayName.ASCENSION_DAY;
@@ -8,10 +9,15 @@ import static name.abuchen.portfolio.util.HolidayName.AUSTRALIA_DAY;
 import static name.abuchen.portfolio.util.HolidayName.BERCHTOLDSTAG;
 import static name.abuchen.portfolio.util.HolidayName.BOXING_DAY;
 import static name.abuchen.portfolio.util.HolidayName.CARNIVAL;
+import static name.abuchen.portfolio.util.HolidayName.CHILE;
+import static name.abuchen.portfolio.util.HolidayName.CHILE_ARMY;
+import static name.abuchen.portfolio.util.HolidayName.CHILE_EXTRA;
+import static name.abuchen.portfolio.util.HolidayName.CHILE_NAVY_DAY;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS_EVE;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS_EVE_RUSSIA;
 import static name.abuchen.portfolio.util.HolidayName.CIVIC_DAY;
+import static name.abuchen.portfolio.util.HolidayName.COLUMBUS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.CORONATION;
 import static name.abuchen.portfolio.util.HolidayName.CORPUS_CHRISTI;
 import static name.abuchen.portfolio.util.HolidayName.DEFENDER_OF_THE_FATHERLAND_DAY;
@@ -23,6 +29,8 @@ import static name.abuchen.portfolio.util.HolidayName.FIRST_CHRISTMAS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.GOOD_FRIDAY;
 import static name.abuchen.portfolio.util.HolidayName.HURRICANE_SANDY;
 import static name.abuchen.portfolio.util.HolidayName.INDEPENDENCE;
+import static name.abuchen.portfolio.util.HolidayName.INDIGENOUS_PEOPLE;
+import static name.abuchen.portfolio.util.HolidayName.INMACULATE_CONCEPTION;
 import static name.abuchen.portfolio.util.HolidayName.INTERNATION_WOMENS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.JUNETEENTH;
 import static name.abuchen.portfolio.util.HolidayName.KINGS_BIRTHDAY;
@@ -40,6 +48,7 @@ import static name.abuchen.portfolio.util.HolidayName.REPENTANCE_AND_PRAYER;
 import static name.abuchen.portfolio.util.HolidayName.REPUBLIC_PROCLAMATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.ROYAL_JUBILEE;
 import static name.abuchen.portfolio.util.HolidayName.ROYAL_WEDDING;
+import static name.abuchen.portfolio.util.HolidayName.SAINT_PETER_PAUL;
 import static name.abuchen.portfolio.util.HolidayName.SAINT_STEPHEN;
 import static name.abuchen.portfolio.util.HolidayName.SECOND_CHRISTMAS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.SPRING_MAY_BANK_HOLIDAY;
@@ -52,6 +61,7 @@ import static name.abuchen.portfolio.util.HolidayName.UNIFICATION_GERMANY;
 import static name.abuchen.portfolio.util.HolidayName.UNITY_DAY;
 import static name.abuchen.portfolio.util.HolidayName.VICTORIA_DAY;
 import static name.abuchen.portfolio.util.HolidayName.VICTORY_DAY;
+import static name.abuchen.portfolio.util.HolidayName.VIRGIN_OF_CARMEN;
 import static name.abuchen.portfolio.util.HolidayName.WASHINGTONS_BIRTHDAY;
 import static name.abuchen.portfolio.util.HolidayName.WHIT_MONDAY;
 import static name.abuchen.portfolio.util.HolidayType.easter;
@@ -139,6 +149,26 @@ public class TradeCalendarManager
         tc.add(fixed(HURRICANE_SANDY, Month.OCTOBER, 29).onlyIn(2012));
         tc.add(fixed(HURRICANE_SANDY, Month.OCTOBER, 30).onlyIn(2012));
         tc.add(fixed(STATE_FUNERAL, Month.DECEMBER, 5).onlyIn(2018)); // funeral of former president Bush Sr.
+        CACHE.put(tc.getCode(), tc);
+
+        // see https://www.bolsadesantiago.com/mercado_horarios_feriados
+        tc = new TradeCalendar("sse", Messages.LabelTradeCalendarSSE, STANDARD_WEEKEND); //$NON-NLS-1$
+        tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
+        tc.add(easter(GOOD_FRIDAY, -2));
+        tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
+        tc.add(fixed(CHILE_NAVY_DAY, Month.MAY, 21));
+        tc.add(fixed(INDIGENOUS_PEOPLE, Month.JUNE, 20));
+        tc.add(fixed(SAINT_PETER_PAUL, Month.JUNE, 29));
+        tc.add(fixed(VIRGIN_OF_CARMEN, Month.JULY, 16));
+        tc.add(fixed(ASCENSION_DAY, Month.AUGUST, 15));
+        tc.add(fixed(CHILE, Month.SEPTEMBER, 18));
+        tc.add(fixed(CHILE_ARMY, Month.SEPTEMBER, 19));
+        tc.add(fixed(CHILE_EXTRA, Month.SEPTEMBER, 20));
+        tc.add(fixed(COLUMBUS_DAY, Month.OCTOBER, 12));
+        tc.add(fixed(REFORMATION_DAY, Month.OCTOBER, 31));
+        tc.add(fixed(ALL_SAINTS_DAY, Month.NOVEMBER, 1));
+        tc.add(fixed(INMACULATE_CONCEPTION, Month.DECEMBER, 8));
+        tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         CACHE.put(tc.getCode(), tc);
 
         // see https://www.gov.uk/bank-holidays

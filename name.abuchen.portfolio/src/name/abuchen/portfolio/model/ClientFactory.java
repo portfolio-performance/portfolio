@@ -115,11 +115,33 @@ public class ClientFactory
 
     /* package */ static class XmlSerialization
     {
+        private boolean idReferences;
+
+        public XmlSerialization(boolean idReferences)
+        {
+            this.idReferences = idReferences;
+        }
+
+        public XmlSerialization()
+        {
+            this(false);
+        }
+
+        private XStream makeXStream()
+        {
+            XStream xs = xstream();
+            if (idReferences)
+                xs.setMode(XStream.ID_REFERENCES);
+            else
+                xs.setMode(XStream.XPATH_RELATIVE_REFERENCES);
+            return xs;
+        }
+
         public Client load(Reader input) throws IOException
         {
             try
             {
-                Client client = (Client) xstream().fromXML(input);
+                Client client = (Client) makeXStream().fromXML(input);
 
                 if (client.getVersion() > Client.CURRENT_VERSION)
                     throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
@@ -139,7 +161,7 @@ public class ClientFactory
         {
             Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
 
-            xstream().toXML(client, writer);
+            makeXStream().toXML(client, writer);
 
             writer.flush();
         }
@@ -154,20 +176,35 @@ public class ClientFactory
 
     private static class PlainWriter implements ClientPersister
     {
+        boolean idReferences;
+
+        public PlainWriter(boolean idReferences)
+        {
+            this.idReferences = idReferences;
+        }
+
+        public PlainWriter()
+        {
+            this(false);
+        }
+
         @Override
         public Client load(InputStream input) throws IOException
         {
-            Client client = new XmlSerialization().load(new InputStreamReader(input, StandardCharsets.UTF_8));
+            Client client = new XmlSerialization(idReferences)
+                            .load(new InputStreamReader(input, StandardCharsets.UTF_8));
             client.getSaveFlags().add(SaveFlag.XML);
+            if (idReferences)
+            {
+                client.getSaveFlags().add(SaveFlag.ID_REFERENCES);
+            }
             return client;
         }
 
         @Override
         public void save(Client client, OutputStream output) throws IOException
         {
-            Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
-            xstream().toXML(client, writer);
-            writer.flush();
+            new XmlSerialization(idReferences).save(client, output);
         }
     }
 
@@ -481,7 +518,18 @@ public class ClientFactory
         }
 
         if (flags.isEmpty())
+        {
             flags.add(SaveFlag.XML);
+            try (Reader input = new InputStreamReader(new FileInputStream(file)))
+            {
+                char[] buffer = new char[80];
+                input.read(buffer);
+                if (new String(buffer).contains("<client id=")) //$NON-NLS-1$
+                {
+                    flags.add(SaveFlag.ID_REFERENCES);
+                }
+            }
+        }
 
         return flags;
     }
@@ -661,7 +709,7 @@ public class ClientFactory
         if (flags.contains(SaveFlag.BINARY))
             body = new ProtobufWriter();
         else if (flags.contains(SaveFlag.XML))
-            body = new PlainWriter();
+            body = new PlainWriter(flags.contains(SaveFlag.ID_REFERENCES));
 
         if (flags.contains(SaveFlag.ENCRYPTED))
             return new Decryptor(body, flags, password);
@@ -839,8 +887,10 @@ public class ClientFactory
                 fixNullSecurityProperties(client);
             case 60: // NOSONAR
                 addInvestmentPlanTypes(client);
-            case 61:
+            case 61: // NOSONAR
                 removePortfolioReportMarketProperties(client);
+            case 62:
+                updateSecurityChartLabelConfiguration(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1606,6 +1656,22 @@ public class ClientFactory
         }
     }
 
+    private static void updateSecurityChartLabelConfiguration(Client client)
+    {
+        // PR 4120 splits SHOW_DATA_LABELS into
+        // SHOW_DATA_DIVESTMENT_INVESTMENT_LABEL, SHOW_DATA_DIVIDEND_LABEL,
+        // SHOW_DATA_EXTREMES_LABEL
+
+        var propertyKey = "security-chart-details"; //$NON-NLS-1$
+
+        var chartConfig = client.getProperty(propertyKey);
+        if (chartConfig == null)
+            return;
+
+        client.setProperty(propertyKey, chartConfig.replace("SHOW_DATA_LABELS", //$NON-NLS-1$
+                        "SHOW_DATA_DIVESTMENT_INVESTMENT_LABEL,SHOW_DATA_DIVIDEND_LABEL,SHOW_DATA_EXTREMES_LABEL")); //$NON-NLS-1$
+    }
+
     @SuppressWarnings("nls")
     private static synchronized XStream xstream()
     {
@@ -1623,6 +1689,17 @@ public class ClientFactory
             xstream.addImmutableType(LocalDate.class, true);
             xstream.addImmutableType(LocalDateTime.class, true);
 
+            // Java types which aren't multiple-referenced in PP data model, so
+            // skip giving "id" attribute to these, as that adds a lot of noise
+            // to the produced XML.
+            xstream.addImmutableType(HashMap.class, false);
+            xstream.addImmutableType(ArrayList.class, false);
+
+            // PP's wrappers around Java types, again not multiple-reference,
+            // skip adding "id" attribute for the same reason.
+            xstream.addImmutableType(TypedMap.class, false);
+            xstream.addImmutableType(Attributes.class, false);
+
             xstream.registerConverter(new XStreamLocalDateConverter());
             xstream.registerConverter(new XStreamLocalDateTimeConverter());
             xstream.registerConverter(new XStreamInstantConverter());
@@ -1636,31 +1713,39 @@ public class ClientFactory
             xstream.useAttributeFor(Money.class, "amount");
             xstream.useAttributeFor(Money.class, "currencyCode");
             xstream.aliasAttribute(Money.class, "currencyCode", "currency");
+            xstream.addImmutableType(Money.class, false);
 
             xstream.alias("account", Account.class);
             xstream.alias("client", Client.class);
             xstream.alias("settings", ClientSettings.class);
+            xstream.addImmutableType(ClientSettings.class, false);
             xstream.alias("bookmark", Bookmark.class);
+            xstream.addImmutableType(Bookmark.class, false);
             xstream.alias("portfolio", Portfolio.class);
             xstream.alias("unit", Transaction.Unit.class);
             xstream.useAttributeFor(Transaction.Unit.class, "type");
+            xstream.addImmutableType(Transaction.Unit.class, false);
             xstream.alias("account-transaction", AccountTransaction.class);
             xstream.alias("portfolio-transaction", PortfolioTransaction.class);
             xstream.alias("security", Security.class);
             xstream.addImplicitCollection(Security.class, "properties");
             xstream.alias("latest", LatestSecurityPrice.class);
+            xstream.addImmutableType(LatestSecurityPrice.class, false);
             xstream.alias("category", Category.class); // NOSONAR
             xstream.alias("watchlist", Watchlist.class);
             xstream.alias("investment-plan", InvestmentPlan.class);
             xstream.alias("attribute-type", AttributeType.class);
+            xstream.addImmutableType(AttributeType.class, false);
 
             xstream.alias("price", SecurityPrice.class);
             xstream.useAttributeFor(SecurityPrice.class, "date");
             xstream.aliasField("t", SecurityPrice.class, "date");
             xstream.useAttributeFor(SecurityPrice.class, "value");
             xstream.aliasField("v", SecurityPrice.class, "value");
+            xstream.addImmutableType(SecurityPrice.class, false);
 
             xstream.alias("limitPrice", LimitPrice.class);
+            xstream.addImmutableType(LimitPrice.class, false);
 
             xstream.alias("cpi", ConsumerPriceIndex.class); // NOSONAR
             xstream.useAttributeFor(ConsumerPriceIndex.class, "year"); // NOSONAR
@@ -1675,21 +1760,30 @@ public class ClientFactory
             xstream.alias("portfolio-transfer", PortfolioTransferEntry.class);
 
             xstream.alias("taxonomy", Taxonomy.class);
+            xstream.addImmutableType(Taxonomy.class, false);
             xstream.alias("classification", Classification.class);
             xstream.alias("assignment", Assignment.class);
+            xstream.addImmutableType(Assignment.class, false);
 
             xstream.alias("dashboard", Dashboard.class);
             xstream.useAttributeFor(Dashboard.class, "name");
+            xstream.addImmutableType(Dashboard.class, false);
             xstream.alias("column", Dashboard.Column.class);
+            xstream.addImmutableType(Dashboard.Column.class, false);
             xstream.alias("widget", Dashboard.Widget.class);
             xstream.useAttributeFor(Dashboard.Widget.class, "type");
+            xstream.addImmutableType(Dashboard.Widget.class, false);
 
             xstream.alias("event", SecurityEvent.class);
+            xstream.addImmutableType(SecurityEvent.class, false);
             xstream.alias("dividendEvent", SecurityEvent.DividendEvent.class);
             xstream.alias("config-set", ConfigurationSet.class);
+            xstream.addImmutableType(ConfigurationSet.class, false);
             xstream.alias("config", ConfigurationSet.Configuration.class);
+            xstream.addImmutableType(ConfigurationSet.Configuration.class, false);
 
             xstream.processAnnotations(SecurityProperty.class);
+            xstream.addImmutableType(SecurityProperty.class, false);
         }
         return xstream;
     }

@@ -566,7 +566,8 @@ public class DashboardView extends AbstractHistoricView
                 subMenu.add(groupMenu);
                 return groupMenu;
             });
-            mm.add(new SimpleAction(type.getLabel(), a -> addNewWidget(columnControl, type)));
+            mm.add(new SimpleAction(type.getLabel(), type.getImage() != null ? type.getImage().descriptor() : null,
+                            a -> addNewWidget(columnControl, type)));
         }
 
         manager.add(new Separator());

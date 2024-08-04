@@ -1,12 +1,5 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
-import static name.abuchen.portfolio.datatransfer.csv.CSVExtractorTestUtil.buildField2Column;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -17,7 +10,14 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
+import static name.abuchen.portfolio.datatransfer.csv.CSVExtractorTestUtil.buildField2Column;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -368,6 +368,90 @@ public class CSVAccountTransactionExtractorTest
     }
 
     @Test
+    public void testTransferOutTransactionWithCurrencyConversion()
+    {
+        Client client = new Client();
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
+                        new String[] { "2013-01-01", "", "", "", "", "110", "EUR", "TRANSFER_OUT", "", "", "Notiz", "",
+                                        "", "", "", "", "100", "USD", "1,1" }),
+                        buildField2Column(extractor), errors);
+
+        assertThat(results.size(), is(1));
+        assertThat(errors, empty());
+
+        AccountTransferEntry entry = (AccountTransferEntry) results.get(0).getSubject();
+        AccountTransaction source = entry.getSourceTransaction();
+        assertThat(source.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+        assertThat(source.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 110_00)));
+        assertThat(source.getNote(), is("Notiz"));
+        assertThat(source.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
+        assertThat(source.getShares(), is(0L));
+        assertThat(source.getSecurity(), is(nullValue()));
+
+        List<Unit> units = source.getUnits().toList();
+        assertThat(units.size(), is(1));
+        assertThat(units.get(0).getType(), is(Unit.Type.GROSS_VALUE));
+        assertThat(units.get(0).getAmount(), is(Money.of(CurrencyUnit.EUR, 110_00)));
+        assertThat(units.get(0).getForex(), is(Money.of(CurrencyUnit.USD, 100_00)));
+        assertThat(units.get(0).getExchangeRate(), is(BigDecimal.valueOf(1.1)));
+
+        AccountTransaction target = entry.getTargetTransaction();
+        assertThat(target.getType(), is(AccountTransaction.Type.TRANSFER_IN));
+        assertThat(target.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, 100_00)));
+        assertThat(target.getNote(), is("Notiz"));
+        assertThat(target.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
+        assertThat(target.getShares(), is(0L));
+        assertThat(target.getSecurity(), is(nullValue()));
+        assertThat(target.getUnits().toList(), empty());
+    }
+
+    @Test
+    public void testTransferInTransactionWithCurrencyConversion()
+    {
+        Client client = new Client();
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(0,
+                        Arrays.<String[]>asList(new String[] { "2013-01-01", "", "", "", "", "110", "EUR",
+                                        "TRANSFER_IN", "", "", "Notiz", "", "", "", "", "", "100", "USD", "1,1" }),
+                        buildField2Column(extractor), errors);
+
+        assertThat(results.size(), is(1));
+        assertThat(errors, empty());
+
+        AccountTransferEntry entry = (AccountTransferEntry) results.get(0).getSubject();
+        AccountTransaction source = entry.getSourceTransaction();
+        assertThat(source.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+        assertThat(source.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 110_00)));
+        assertThat(source.getNote(), is("Notiz"));
+        assertThat(source.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
+        assertThat(source.getShares(), is(0L));
+        assertThat(source.getSecurity(), is(nullValue()));
+
+        List<Unit> units = source.getUnits().toList();
+        assertThat(units.size(), is(1));
+        assertThat(units.get(0).getType(), is(Unit.Type.GROSS_VALUE));
+        assertThat(units.get(0).getAmount(), is(Money.of(CurrencyUnit.EUR, 110_00)));
+        assertThat(units.get(0).getForex(), is(Money.of(CurrencyUnit.USD, 100_00)));
+        assertThat(units.get(0).getExchangeRate(), is(BigDecimal.valueOf(1.1)));
+
+        AccountTransaction target = entry.getTargetTransaction();
+        assertThat(target.getType(), is(AccountTransaction.Type.TRANSFER_IN));
+        assertThat(target.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, 100_00)));
+        assertThat(target.getNote(), is("Notiz"));
+        assertThat(target.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
+        assertThat(target.getShares(), is(0L));
+        assertThat(target.getSecurity(), is(nullValue()));
+        assertThat(target.getUnits().toList(), empty());
+    }
+
+    @Test
     public void testRequiredFieldDate()
     {
         Client client = new Client();
@@ -532,7 +616,7 @@ public class CSVAccountTransactionExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(interest(
-                        hasDate("2013-01-01T11:00"), 
+                        hasDate("2013-01-01T11:00"),
                         hasAmount("EUR", 7.50), hasGrossValue("EUR", 10.00), //
                         hasTaxes("EUR", 2.50),  hasFees("EUR", 0.00), //
                         hasSource(null), hasNote("Notiz"))));

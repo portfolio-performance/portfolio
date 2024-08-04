@@ -13,6 +13,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
 import name.abuchen.portfolio.ui.util.NumberVerifyListener;
 import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
+import name.abuchen.portfolio.ui.util.text.FrenchKeypadSupport;
 
 public class ValueEditingSupport extends PropertyEditingSupport
 {
@@ -46,8 +47,10 @@ public class ValueEditingSupport extends PropertyEditingSupport
     public CellEditor createEditor(Composite composite)
     {
         TextCellEditor textEditor = new TextCellEditor(composite);
-        ((Text) textEditor.getControl()).setTextLimit(20);
-        ((Text) textEditor.getControl()).addVerifyListener(new NumberVerifyListener());
+        var text = (Text) textEditor.getControl();
+        text.setTextLimit(20);
+        text.addVerifyListener(new NumberVerifyListener());
+        FrenchKeypadSupport.configure(text);
         return textEditor;
     }
 

@@ -29,7 +29,7 @@ public class Client
         String WATCHLISTS = "watchlists"; //$NON-NLS-1$
     }
 
-    public static final int CURRENT_VERSION = 62;
+    public static final int CURRENT_VERSION = 63;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
     public static final int VERSION_WITH_UNIQUE_FILTER_KEY = 57;
 
