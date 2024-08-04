@@ -37,6 +37,14 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.70.1" date="2024-08-04">
+      <description>
+        <ul>
+          <li>Fix: Resolves an issue where some XML files could not be opened due to the error message 'invalid reference'.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem bei dem machen XML Dateien mit dem Fehler 'invalid reference' nicht mehr geöffnet werden konnten.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.70.0" date="2024-08-04">
       <description>
         <ul>
