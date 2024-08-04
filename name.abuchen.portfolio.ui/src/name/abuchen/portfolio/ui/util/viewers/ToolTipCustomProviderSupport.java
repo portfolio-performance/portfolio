@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Tree;
 
 import name.abuchen.portfolio.snapshot.trail.Trail;
 import name.abuchen.portfolio.ui.util.MoneyTrailDataSource;
@@ -64,9 +65,14 @@ public class ToolTipCustomProviderSupport extends ColumnViewerToolTipSupport
 
         if (toolTipProvider != null)
         {
-            Table table = (Table) cell.getControl();
             int columnIndex = cell.getColumnIndex();
-            var option = table.getColumn(columnIndex).getData(ShowHideColumnHelper.OPTIONS_KEY);
+
+            Object option = null;
+
+            if (cell.getControl() instanceof Table table)
+                option = table.getColumn(columnIndex).getData(ShowHideColumnHelper.OPTIONS_KEY);
+            else if (cell.getControl() instanceof Tree tree)
+                option = tree.getColumn(columnIndex).getData(ShowHideColumnHelper.OPTIONS_KEY);
 
             Object toolTip = toolTipProvider.apply(cell.getElement(), option);
             if (toolTip != null)
