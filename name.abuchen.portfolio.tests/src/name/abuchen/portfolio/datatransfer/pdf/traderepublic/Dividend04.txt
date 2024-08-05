@@ -1,0 +1,27 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.2
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Name Surname PAGE 1 from 1
+Address 1 DATE 17.06.2024
+1234 PostName SECURITIES ACCOUNT 1234567890
+CASH DIVIDEND
+OVERVIEW
+Cash Dividend with Ex-Date 03.06.2024.
+POSITION QUANTITY YIELD AMOUNT
+Realty Income
+US7561091049 15 Pcs. 0.26 USD
+3.94 USD
+TOTAL 3.94 USD
+INVOICE
+POSITION AMOUNT
+Withholding Tax for US issuer -0.59 USD
+Sub Total 3.35 USD
+Sub Total 1.0759 EUR/USD 3.11 EUR
+TOTAL 3.11 EUR
+BOOKING
+SETTLEMENT ACCOUNT PAYMENT DATE AMOUNT
+DE12345678901234567890 14.06.2024 3.11 EUR
+This statement is generated automatically and therefore not signed.
+If no sales tax is shown, this is a sales tax-free service in accordance with Section § 4 Nr. 8 UStG
+Trade Republic Bank GmbH www.traderepublic.com Headquarters: Berlin DirectorsBrunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner10119 Berlin VAT-ID DE307510626 Gernot Mittendorfer
