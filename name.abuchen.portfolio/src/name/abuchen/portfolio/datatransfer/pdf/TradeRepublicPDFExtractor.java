@@ -1090,11 +1090,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // POSITION ANZAHL ERTRAG BETRAG
                                         // Euro iSTOXX ex FIN Dividend+ EUR (Dist) 206.651869 Stücke 0.48 EUR 99.19 EURDE000ETFL482
+                                        //
+                                        // POSITION QUANTITY YIELD AMOUNT
+                                        // Vici Properties 30.000000 Pcs. 0.415 USD 12.45 USDUS9256521090
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .find("POSITION ANZAHL (Ertrag|ERTRAG|ERTR.GNIS) BETRAG")
-                                                        .match("^(?<name>.*) [\\.,\\d]+ St.cke [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .find("POSITION (ANZAHL|QUANTITY) (Ertrag|ERTRAG|ERTR.GNIS|YIELD) (BETRAG|AMOUNT)")
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (St.cke|Pcs\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // POSITION ANZAHL ERTRAG BETRAG
@@ -1158,10 +1161,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // IE00BK1PV551 123 Stücke 0.36 USD
                                         // NL0011683594 90.537929 Stücke 0.87 EUR
                                         // Euro iSTOXX ex FIN Dividend+ EUR (Dist) 206.651869 Stücke 0.48 EUR 99.19 EURDE000ETFL482
+                                        // Vici Properties 30.000000 Pcs. 0.415 USD 12.45 USDUS9256521090
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^.* (?<shares>[\\.,\\d]+) St.cke [\\.,\\d]+ [\\w]{3}.*$") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) (St.cke|Pcs\\.) [\\.,\\d]+ [\\w]{3}.*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // Apple Inc. 0.0929 Pcs. 0.24 USD 0.02 USD
@@ -3047,11 +3051,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // POSITION ANZAHL ERTRAG BETRAG
                                         // Euro iSTOXX ex FIN Dividend+ EUR (Dist) 206.651869 Stücke 0.48 EUR 99.19 EURDE000ETFL482
+                                        //
+                                        // POSITION QUANTITY YIELD AMOUNT
+                                        // Vici Properties 30.000000 Pcs. 0.415 USD 12.45 USDUS9256521090
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .find("POSITION ANZAHL (Ertrag|ERTRAG|ERTR.GNIS) BETRAG")
-                                                        .match("^(?<name>.*) [\\.,\\d]+ St.cke [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .find("POSITION (ANZAHL|QUANTITY) (Ertrag|ERTRAG|ERTR.GNIS|YIELD) (BETRAG|AMOUNT)")
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (St.cke|Pcs\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // POSITION ANZAHL ERTRAG BETRAG
@@ -3116,10 +3123,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // IE00BK1PV551 123 Stücke 0.36 USD
                                         // NL0011683594 90.537929 Stücke 0.87 EUR
                                         // Euro iSTOXX ex FIN Dividend+ EUR (Dist) 206.651869 Stücke 0.48 EUR 99.19 EURDE000ETFL482
+                                        // Vici Properties 30.000000 Pcs. 0.415 USD 12.45 USDUS9256521090
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^.* (?<shares>[\\.,\\d]+) St.cke [\\.,\\d]+ [\\w]{3}.*$") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) (St.cke|Pcs\\.) [\\.,\\d]+ [\\w]{3}.*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // Apple Inc. 0.0929 Pcs. 0.24 USD 0.02 USD
