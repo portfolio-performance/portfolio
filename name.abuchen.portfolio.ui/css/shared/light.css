@@ -107,6 +107,13 @@ SecuritiesChart {
 	shares-held-color: #EBC934
 }
 
+PortfolioBalanceChart {
+	invested-capital-color: #EBC934;
+	absolute-delta-color: #6a58db;
+	delta-area-positive-color: #8396f2;
+	delta-area-negative-color: #ed6766;
+}
+
 * {
 	font-family: "#systemfont";
 }
