@@ -37,6 +37,18 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.70.3" date="2024-08-05">
+      <description>
+        <ul>
+          <li>Fix: Resolves - now hopefully all - issues where some XML files could not be opened due to the error message 'invalid reference'.</li>
+          <li>Fix: Fixes a ClassCastException when displaying tooltips</li>
+          <li>Improvements to the PDF importers for Trade Republic</li>
+          <li xml:lang="de">Fix: Behebt - jetzt hoffentlich alle - Probleme bei dem machen XML Dateien mit dem Fehler 'invalid reference' nicht mehr geöffnet werden konnten.</li>
+          <li xml:lang="de">Fix: Behebt eine ClassCastException bei der Anzeige von Tooltips</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Trade Republic</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.70.2" date="2024-08-04">
       <description>
         <ul>

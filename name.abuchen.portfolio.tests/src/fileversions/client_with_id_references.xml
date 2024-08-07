@@ -1,0 +1,43 @@
+<client id="1">
+  <version>63</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security id="2">
+      <uuid>987f74dd-2308-4b6b-a5b8-4918e3a73d95</uuid>
+      <currencyCode>EUR</currencyCode>
+      <prices/>
+      <latest id="3" t="2024-08-05" v="10">
+        <high>0</high>
+        <low>0</low>
+        <volume>0</volume>
+      </latest>
+      <attributes>
+        <map/>
+      </attributes>
+      <isRetired>false</isRetired>
+    </security>
+    <security id="4">
+      <uuid>35b3ba7d-20f4-45be-8804-9d5778f40b52</uuid>
+      <currencyCode>EUR</currencyCode>
+      <prices/>
+      <latest reference="3"/>
+      <attributes>
+        <map/>
+      </attributes>
+      <isRetired>false</isRetired>
+    </security>
+  </securities>
+  <watchlists/>
+  <accounts/>
+  <portfolios/>
+  <plans/>
+  <taxonomies/>
+  <dashboards/>
+  <properties/>
+  <settings>
+    <bookmarks/>
+    <attributeTypes>Ï
+    </attributeTypes>
+    <configurationSets/>
+  </settings>
+</client>

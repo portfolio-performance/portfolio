@@ -13,6 +13,11 @@ public class ClientTestUtilities
 {
     public static String toString(Client client)
     {
+        return toString(client, false);
+    }
+
+    public static String toString(Client client, boolean withIdReferences)
+    {
         // prune client - remove empty yet lazily created objects that should
         // not show up in XML
 
@@ -26,7 +31,7 @@ public class ClientTestUtilities
         try
         {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            new ClientFactory.XmlSerialization().save(client, stream);
+            new ClientFactory.XmlSerialization(withIdReferences).save(client, stream);
             stream.close();
             return new String(stream.toByteArray());
         }
