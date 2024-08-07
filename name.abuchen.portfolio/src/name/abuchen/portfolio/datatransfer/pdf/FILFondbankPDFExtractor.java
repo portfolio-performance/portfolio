@@ -65,6 +65,17 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}: (?<type>(Kauf( aus VL\\-Sparplan)|Gesamtverkauf)?)$") //
+                        .assign((t, v) -> {
+                            if ("Gesamtverkauf".equals(v.get("type")))
+                            {
+                                t.setType(PortfolioTransaction.Type.SELL);
+                                type.getCurrentContext().putBoolean("sale", true);
+                            }
+                        })
+
                         .oneOf( //
                                         // @formatter:off
                                         // Fondsname (WKN / ISIN) Xtrackers MSCI World UCITS ETF 1C (A1XB5U / IE00BJ0KDQ92)
@@ -132,19 +143,22 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
                                                         }),
                                         // @formatter:off
                                         // 30.04.2024: Kauf aus VL-Sparplan
+                                        // 24.06.2024: Kauf
+                                        // 17.07.2024: Gesamtverkauf
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}): Kauf aus VL\\-Sparplan$") //
+                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}): (Kauf( aus VL\\-Sparplan)?|Gesamtverkauf)$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Abrechnungsbetrag 1,77 EUR
                         // Auszahlungsbetrag 0,00 EUR
                         // Abrechnungsbetrag 26,00 EUR (inkl. Kosten)
+                        // Abrechnungsbetrag 50,30 EUR (exkl. Kosten)
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^(Abrechnungsbetrag|Auszahlungsbetrag) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})( \\(inkl\\. Kosten\\))?$") //
+                        .match("^(Abrechnungsbetrag|Auszahlungsbetrag) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})( \\((inkl|exkl)\\. Kosten\\))?$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -572,9 +586,10 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // abgeführte Kapitalertragsteuer 21,15 EUR
+                        // Abgeführte Kapitalertragsteuer 0,06 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^abgef.hrte Kapitalertrags(s)?teuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^(Abgef.hrte|abgef.hrte) Kapitalertrags(s)?teuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().getBoolean("sale"))
                                 processTaxEntries(t, v, type);
@@ -592,16 +607,17 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // abgeführter Solidaritätszuschlag 1,16 EUR
+                        // Abgeführter Solidaritätszuschlag 0,00 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^abgef.hrter Solidarit.tszuschlag ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^(Abgef.hrter|abgef.hrter) Solidarit.tszuschlag ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().getBoolean("sale"))
                                 processTaxEntries(t, v, type);
                         })
 
                         // @formatter:off
-                        // Kirchensteuer               0,00 EURR
+                        // Kirchensteuer               0,00 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Kirchensteuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
@@ -612,9 +628,10 @@ public class FILFondbankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // abgeführte Kirchensteuer 0,91 EUR
+                        // Abgeführte Kirchensteuer 2 0,00 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^abgef.hrte Kirchensteuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^(Abgef.hrte|abgef.hrte) Kirchensteuer ([\\s]+)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().getBoolean("sale"))
                                 processTaxEntries(t, v, type);
