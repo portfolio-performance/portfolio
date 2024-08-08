@@ -11,6 +11,7 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.services.IStylingEngine;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
@@ -23,10 +24,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -72,6 +77,12 @@ public abstract class AbstractFinanceView
 
     private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
     private List<Menu> contextMenus = new ArrayList<>();
+
+    /**
+     * Listener used for detecting whether CTRL + F shortcut is pressed on the
+     * keyboard.
+     */
+    private Listener keyListener;
 
     protected abstract String getDefaultTitle();
     
@@ -185,6 +196,8 @@ public abstract class AbstractFinanceView
 
         viewToolBar.update(false);
         actionToolBar.update(false);
+
+        addCtrlFKeyListener(getToolBarManager().find("searchbox")); //$NON-NLS-1$
 
         notifyViewCreationCompleted();
     }
@@ -304,8 +317,52 @@ public abstract class AbstractFinanceView
         return contextMenu;
     }
 
+    /**
+     * Method to add or remove the "CTRL+F" key listener on the display. The key
+     * listener is used to set the focus on the search bar when shortcut is
+     * pressed.
+     */
+    private void addCtrlFKeyListener(IContributionItem search)
+    {
+        // When the keyListener is set and the view contains a search bar
+        // => Add the listener for shortcut "CTRL + F"
+        if (search != null)
+        {
+            // Iterating over the items of the actionToolBar to get the search
+            // bar.
+            for (ToolItem toolItem : getToolBarManager().getControl().getItems())
+            {
+                // If the search bar is found in the actionToolBar
+                if (toolItem.getControl() instanceof Text)
+                {
+                    // Create the listener for CTRL + F.
+                    // When pressed, the focus is set on search box.
+                    keyListener = new Listener()
+                    {
+                        @Override
+                        public void handleEvent(Event e)
+                        {
+                            if (e.stateMask == SWT.MOD1 && e.keyCode == 'f')
+                            {
+                                toolItem.getControl().setFocus();
+                            }
+                        }
+                    };
+                    Display.getDefault().addFilter(SWT.KeyDown, keyListener);
+                    break;
+                }
+            }
+        }
+    }
+
     public void dispose()
     {
+        if (keyListener != null)
+        {
+            Display.getDefault().removeFilter(SWT.KeyDown, keyListener);
+            keyListener = null;
+        }
+
         viewToolBar.dispose();
         actionToolBar.dispose();
 
