@@ -1642,9 +1642,9 @@ public class ClientFactory
     {
         // see https://forum.portfolio-performance.info/t/fehlermeldung-cannot-invoke-name-abuchen-portfolio-model-securityevent-gettype-because-event-is-null/29406
 
-        for (Security security : new ArrayList<>(client.getSecurities()))
+        for (Security security : client.getSecurities())
         {
-            var events = security.getEvents().toList();
+            var events = new ArrayList<>(security.getEvents());
 
             for (SecurityEvent e : events)
             {
