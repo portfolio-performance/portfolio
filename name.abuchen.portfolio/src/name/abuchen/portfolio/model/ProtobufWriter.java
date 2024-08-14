@@ -871,6 +871,9 @@ import name.abuchen.portfolio.money.Money;
             newSecurity.addAllAttributes(security.getAttributes().toProto(client));
 
             security.getEvents().forEach(event -> {
+                if (event == null)
+                    return;
+                
                 PSecurityEvent.Builder newEvent = PSecurityEvent.newBuilder();
 
                 switch (event.getType())
