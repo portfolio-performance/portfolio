@@ -901,6 +901,8 @@ public class ClientFactory
                 removePortfolioReportMarketProperties(client);
             case 62:
                 updateSecurityChartLabelConfiguration(client);
+            case 63:
+                fixNullSecurityEvents(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1631,6 +1633,24 @@ public class ClientFactory
                 if (p == null)
                 {
                     security.removeProperty(null);
+                }
+            }
+        }
+    }
+
+    private static void fixNullSecurityEvents(Client client)
+    {
+        // see https://forum.portfolio-performance.info/t/fehlermeldung-cannot-invoke-name-abuchen-portfolio-model-securityevent-gettype-because-event-is-null/29406
+
+        for (Security security : client.getSecurities())
+        {
+            var events = new ArrayList<>(security.getEvents());
+
+            for (SecurityEvent e : events)
+            {
+                if (e == null)
+                {
+                    security.removeEvent(null);
                 }
             }
         }
