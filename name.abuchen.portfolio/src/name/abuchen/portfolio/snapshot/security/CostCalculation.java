@@ -218,6 +218,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                 // ignore -> handled via TRANSFER_IN
                 break;
             case DIVIDENDS:
+                break;
             default:
                 throw new UnsupportedOperationException();
         }
