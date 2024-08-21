@@ -680,6 +680,7 @@ import name.abuchen.portfolio.money.Money;
         for (PDashboard newDashboard : newClient.getDashboardsList())
         {
             Dashboard dashboard = new Dashboard();
+            dashboard.setId(newDashboard.getId());
             dashboard.setName(newDashboard.getName());
             dashboard.getConfiguration().putAll(newDashboard.getConfigurationMap());
 
@@ -1254,6 +1255,7 @@ import name.abuchen.portfolio.money.Money;
         client.getDashboards().forEach(dashboard -> {
             PDashboard.Builder newDashboard = PDashboard.newBuilder();
 
+            newDashboard.setId(dashboard.getId());
             newDashboard.setName(dashboard.getName());
             newDashboard.putAllConfiguration(dashboard.getConfiguration());
 

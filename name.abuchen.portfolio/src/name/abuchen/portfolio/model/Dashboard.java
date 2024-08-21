@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public final class Dashboard
 {
@@ -99,9 +100,29 @@ public final class Dashboard
         }
     }
 
+    private String id;
     private String name;
     private Map<String, String> configuration;
     private List<Column> columns;
+
+    /* package */ Dashboard()
+    {
+    }
+
+    public Dashboard(String id)
+    {
+        this.id = id;
+    }
+
+    public String getId()
+    {
+        return id;
+    }
+
+    /* package */ void setId(String id)
+    {
+        this.id = id;
+    }
 
     public String getName()
     {
@@ -136,7 +157,7 @@ public final class Dashboard
 
     public Dashboard copy()
     {
-        Dashboard copy = new Dashboard();
+        Dashboard copy = new Dashboard(UUID.randomUUID().toString());
         copy.setName(this.name);
         copy.getConfiguration().putAll(this.getConfiguration());
 

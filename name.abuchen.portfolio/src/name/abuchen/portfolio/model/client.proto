@@ -257,6 +257,7 @@ message PDashboard {
   string name = 1;
   map<string, string> configuration = 2;
   repeated Column columns = 3;
+  string id = 4;
 }
 
 message PBookmark {

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -923,7 +924,7 @@ public class DashboardView extends AbstractHistoricView
 
     private Dashboard createDefaultDashboard()
     {
-        Dashboard newDashboard = new Dashboard();
+        Dashboard newDashboard = new Dashboard(UUID.randomUUID().toString());
         newDashboard.setName(Messages.LabelDashboard);
 
         NewDashboardDialog.buildIndicatorDashboard(newDashboard);
