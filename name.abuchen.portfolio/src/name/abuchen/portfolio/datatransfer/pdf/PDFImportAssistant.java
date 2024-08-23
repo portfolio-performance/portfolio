@@ -28,6 +28,7 @@ public class PDFImportAssistant
         this.client = client;
         this.files = files;
 
+        extractors.add(new ABNAMROGroupPDFExtractor(client));
         extractors.add(new AdvanziaBankPDFExtractor(client));
         extractors.add(new AJBellSecuritiesLimitedPDFExtractor(client));
         extractors.add(new AkfBankPDFExtractor(client));
