@@ -8,7 +8,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 
 @SuppressWarnings("nls")
-public class MoneyouPDFExtractor extends AbstractPDFExtractor
+public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
 {
     // 24.10.2011 19.10.2011 12030000-001 Zahlungseingang 100,00
     // 11.10.2012 11.10.2012 B2D11BI5S00A Ru¨ckzahlung Ihres Festgeldes
@@ -25,11 +25,11 @@ public class MoneyouPDFExtractor extends AbstractPDFExtractor
     // 31.12.2012 01.01.2013 1000130541 Solidarita¨tszuschlag 2,73
     private static final String TAXES = "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* (Abgeltungssteuer|Solidarita.tszuschlag)[\\s]{1,}(?<amount>[\\.,\\d]+)";
 
-    public MoneyouPDFExtractor(Client client)
+    public ABNAMROGroupPDFExtractor(Client client)
     {
         super(client);
 
-        addBankIdentifier("MoneYou");
+        addBankIdentifier("MoneYou/ ABN AMRO Bank N.V.");
 
         addTransactions();
     }
@@ -37,7 +37,7 @@ public class MoneyouPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "MoneYou";
+        return "MoneYou/ ABN AMRO Bank N.V.";
     }
 
     private void addTransactions()
