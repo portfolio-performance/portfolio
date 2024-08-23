@@ -29,7 +29,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("MoneYou/ ABN AMRO Bank N.V.");
+        addBankIdentifier("ABN AMRO Bank N.V.");
 
         addTransactions();
     }
@@ -37,7 +37,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "MoneYou/ ABN AMRO Bank N.V.";
+        return "ABN AMRO Group / MoneYou";
     }
 
     private void addTransactions()

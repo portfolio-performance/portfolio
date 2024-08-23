@@ -28,6 +28,7 @@ public class PDFImportAssistant
         this.client = client;
         this.files = files;
 
+        extractors.add(new ABNAMROGroupPDFExtractor(client));
         extractors.add(new AdvanziaBankPDFExtractor(client));
         extractors.add(new AJBellSecuritiesLimitedPDFExtractor(client));
         extractors.add(new AkfBankPDFExtractor(client));
@@ -79,7 +80,6 @@ public class PDFImportAssistant
         extractors.add(new KeytradeBankPDFExtractor(client));
         extractors.add(new MerkurPrivatBankPDFExtractor(client));
         extractors.add(new MLPBankingAGPDFExtractor(client));
-        extractors.add(new ABNAMROGroupPDFExtractor(client));
         extractors.add(new N26BankAGkPDFExtractor(client));
         extractors.add(new NIBCBankPDFExtractor(client));
         extractors.add(new OldenburgischeLandesbankAGPDFExtractor(client));
