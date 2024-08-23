@@ -43,7 +43,7 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Depotnummer.*$");
+        Block firstRelevantLine = new Block("^Santander Consumer Bank.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -112,12 +112,12 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Dividendengutschrift");
+        DocumentType type = new DocumentType("(Dividendengutschrift|Aussch.ttung Investmentfonds)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Depotnummer.*$");
+        Block firstRelevantLine = new Block("^Santander Consumer Bank.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -134,6 +134,11 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         // Stück 2 3M CO. US88579Y1010 (851745)
                         // REGISTERED SHARES DL -,01
                         // Zahlbarkeitstag 14.06.2021 Dividende pro Stück 1,48 USD
+                        //
+                        // Nominale Wertpapierbezeichnung ISIN (WKN)
+                        // Stück 495 VANGUARD FTSE ALL-WORLD U.ETF IE00B3RBWM25 (A1JX52)
+                        // REGISTERED SHARES USD DIS.ON
+                        // Zahlbarkeitstag 28.06.2023 Ausschüttung pro St. 0,727274000 USD
                         // @formatter:off
                         .section("name", "isin", "wkn", "nameContinued", "currency") //
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
@@ -168,11 +173,16 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Devisenkurs EUR / USD 1,2137
+                        // Devisenkursdatum 14.06.2021
                         // Dividendengutschrift 2,96 USD 2,44+ EUR
+                        //
+                        // Devisenkurs EUR / USD  1,0977
+                        // Devisenkursdatum 29.06.2023
+                        // Ausschüttung 360,00 USD 327,96+ EUR
                         // @formatter:on
                         .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross").optional() //
                         .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) ([\\s]+)?(?<exchangeRate>[\\.,\\d]+)$") //
-                        .match("^Dividendengutschrift (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)\\+ [\\w]{3}$") //
+                        .match("^(Dividendengutschrift|Aussch.ttung) (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)\\+ [\\w]{3}$") //
                         .assign((t, v) -> {
                             ExtrExchangeRate rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -332,13 +342,34 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("creditableWithHoldingTax", "currency").optional() //
                         .match("^Anrechenbare Quellensteuer [\\d]+ % .* [\\.,\\d]+ [\\w]{3} (?<creditableWithHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})") //
-                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type))
+
+                        // @formatter:off
+                        // Kapitalertragsteuer 24,45 % auf 254,18 EUR 62,15- EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Solidaritätszuschlag 5,5 % auf 62,15 EUR 3,41- EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Kirchensteuer 9 % auf 62,15 EUR 5,59- EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
-        
+
                  // @formatter:off
                  // Provision 7,90- EUR
                  // @formatter:on
