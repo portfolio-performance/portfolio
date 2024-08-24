@@ -906,6 +906,8 @@ public class ClientFactory
                 fixNullSecurityEvents(client);
             case 64: // NOSONAR
                 assignDashboardIds(client);
+            case 65: // NOSOANR
+                // moved 'source' field to security event
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
