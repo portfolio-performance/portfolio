@@ -205,6 +205,7 @@
   <handlers xmi:id="_ytClQNoAEe2p9IMNrIn2tQ" elementId="name.abuchen.portfolio.ui.handler.uploadToMyDividends24" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UploadToMyDividends24Handler" command="_61mn0NoAEe2p9IMNrIn2tQ"/>
   <handlers xmi:id="_pXfGIBJeEe6zcsTRWurRkg" elementId="name.abuchen.portfolio.ui.handler.newDomainElement" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.NewDomainElementHandler" command="_bzKa8BJdEe6zcsTRWurRkg"/>
   <handlers xmi:id="_WsrrsOIWEe6pEIPYaDGzWA" elementId="name.abuchen.portfolio.ui.handler.restoresourceattribute" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.RestoreSourceAttributeHandler" command="_FunoEOIWEe6pEIPYaDGzWA"/>
+  <handlers xmi:id="_In2tQGJCEe-2EbXDPkYHbQ" elementId="name.abuchen.portfolio.ui.handler.focussearch" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.FocusSearchBarHandler" command="_Ca3mkGJCEe-2EbXDPkYHbQ"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4RjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
     <bindings xmi:id="_C46kcBi9EeO8gYEHAOvLsA" elementId="" keySequence="M1+Q" command="_1mco0Bi8EeO8gYEHAOvLsA"/>
@@ -232,7 +233,8 @@
       <parameters xmi:id="_Py2zMapPEeuHB9RTOqgi4A" elementId="name.abuchen.portfolio.ui.parameter.2" name="name.abuchen.portfolio.ui.param.tag" value="informationpane"/>
     </bindings>
     <bindings xmi:id="_OEzOoKHiEeq-w_-gdNqxzA" elementId="" keySequence="M1+M2+S" command="_lcgCQBfWEeOders_POVQHQ"/>
-    <bindings xmi:id="_oqXi0DFPEeuGXeKVI3KJtQ" elementId="name.abuchen.portfolio.bootstrap.keybinding.0" keySequence="M1+A" command="_gxx18DFPEeuGXeKVI3KJtQ"/>
+    <bindings xmi:id="_oqXi0DFPEeuGXeKVI3KJtQ" elementId="" keySequence="M1+A" command="_gxx18DFPEeuGXeKVI3KJtQ"/>
+    <bindings xmi:id="_8DjfMGJBEe-2EbXDPkYHbQ" elementId="" keySequence="M1+F" command="_Ca3mkGJCEe-2EbXDPkYHbQ"/>
   </bindingTables>
   <bindingTables xmi:id="_mbUm4KBzEemgtous_Qs3nA" elementId="" bindingContext="_7d8q4hjAEeO8gYEHAOvLsA"/>
   <rootContext xmi:id="_7d8q4BjAEeO8gYEHAOvLsA" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
@@ -309,6 +311,7 @@
     <parameters xmi:id="_gu244BJdEe6zcsTRWurRkg" elementId="name.abuchen.portfolio.ui.param.type" name="type" optional="false"/>
   </commands>
   <commands xmi:id="_FunoEOIWEe6pEIPYaDGzWA" elementId="name.abuchen.portfolio.ui.command.restoresourceattribute" commandName="restoresourceattribute"/>
+  <commands xmi:id="_Ca3mkGJCEe-2EbXDPkYHbQ" elementId="name.abuchen.portfolio.ui.command.focussearch" commandName="focussearch"/>
   <addons xmi:id="_4SwvYLOQEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.addon.proxy" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>
   <addons xmi:id="_D8SDoRfFEeOders_POVQHQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
