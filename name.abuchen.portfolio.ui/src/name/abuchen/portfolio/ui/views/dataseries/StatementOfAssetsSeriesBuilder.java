@@ -51,7 +51,7 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
             case TRANSFERALS:
                 values = toDouble(clientIndex.getTransferals(), Values.Amount.divider());
                 break;
-            case SAVINGS:
+            case TRANSFERALS_ACCUMULATED:
                 values = accumulateAndToDouble(clientIndex.getTransferals(), Values.Amount.divider());
                 break;
             case INVESTED_CAPITAL:
