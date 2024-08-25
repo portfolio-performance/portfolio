@@ -1100,6 +1100,37 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testAchat04()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US88160R1014"), hasWkn(null), hasTicker(null), //
+                        hasName("Tesla Inc. Registered Shares DL-,001"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-05-24T17:10"), hasShares(0.1127), //
+                        hasSource("Achat04.txt"), //
+                        hasNote("Ordre : f023-fccb | Exécution : d275-d0b1"), //
+                        hasAmount("EUR", 18.81), hasGrossValue("EUR", 18.81), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testKontoauszug01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
@@ -2034,6 +2065,47 @@ public class TradeRepublicPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-07-01"), hasAmount("EUR", 14.64),
                         hasSource("Kontoauszug17.txt"), hasNote("KAUFLAND STUTTGART MUEHLH"))));
+    }
+
+    @Test
+    public void testReleveDeCompte01()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ReleveDeCompte01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-07-01"), hasAmount("EUR", 1.24),
+                        hasSource("ReleveDeCompte01.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-07-01"), hasAmount("EUR", 500.00), //
+                        hasSource("ReleveDeCompte01.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-07-28"), hasAmount("EUR", 100.00), //
+                        hasSource("ReleveDeCompte01.txt"), hasNote("Apple Pay Top up"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-07-29"), hasAmount("EUR", 500.00), //
+                        hasSource("ReleveDeCompte01.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-08-01"), hasAmount("EUR", 1.30),
+                        hasSource("ReleveDeCompte01.txt"), hasNote(null))));
+
+        // assert transaction ---> ZEILE 37
+        assertThat(results, hasItem(deposit(hasDate("2024-08-01"), hasAmount("EUR", 500.00), //
+                        hasSource("ReleveDeCompte01.txt"), hasNote(null))));
     }
 
     @Test
@@ -3191,6 +3263,37 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testVente01()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vente01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BF4TW784"), hasWkn(null), hasTicker(null), //
+                        hasName("WisdomTree Multi Ass.Iss.PLC ETP 30.11.62 3X Short Daily"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-11-16T16:41"), hasShares(0.477676), //
+                        hasSource("Vente01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 53.70), hasGrossValue("EUR", 53.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testRepayment01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
@@ -3510,6 +3613,39 @@ public class TradeRepublicPDFExtractorTest
         Unit grossValueUnit = ((Transaction) cancellation.getSubject()).getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(37.92))));
+    }
+
+    @Test
+    public void testDividendeStorno03()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000ETFL482"), hasWkn(null), hasTicker(null), //
+                        hasName("Euro iSTOXX ex FIN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        dividend( //
+                                        hasDate("2024-01-01T00:00"), hasShares(1.525759), //
+                                        hasSource("DividendeStorno03.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.25), hasGrossValue("EUR", 0.33), //
+                                        hasTaxes("EUR", 0.08), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -5244,6 +5380,76 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testDividende27()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende27.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5949181045"), hasWkn(null), hasTicker(null), //
+                        hasName("Microsoft"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-13T00:00"), hasShares(0.561914), //
+                        hasSource("Dividende27.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.33), hasGrossValue("EUR", 0.39), //
+                        hasForexGrossValue("USD", 0.42), //
+                        hasTaxes("EUR", 0.06), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende27WithSecurityInEUR()
+    {
+        Security security = new Security("Microsoft", CurrencyUnit.EUR);
+        security.setIsin("US5949181045");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende27.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-13T00:00"), hasShares(0.561914), //
+                        hasSource("Dividende27.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.33), hasGrossValue("EUR", 0.39), //
+                        hasTaxes("EUR", 0.06), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testDividend01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
@@ -5545,6 +5751,286 @@ public class TradeRepublicPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 9.86), hasGrossValue("EUR", 11.60), //
                         hasTaxes("EUR", 1.74), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividend06()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7561091049"), hasWkn(null), hasTicker(null), //
+                        hasName("Realty Income"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-07-15T00:00"), hasShares(15.00), //
+                        hasSource("Dividend06.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 3.09), hasGrossValue("EUR", 3.63), //
+                        hasForexGrossValue("USD", 3.95), //
+                        hasTaxes("EUR", 0.54), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividend06WithSecurityInEUR()
+    {
+        Security security = new Security("Realty Income", CurrencyUnit.EUR);
+        security.setIsin("US7561091049");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-07-15T00:00"), hasShares(15.00), //
+                        hasSource("Dividend06.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 3.09), hasGrossValue("EUR", 3.63), //
+                        hasTaxes("EUR", 0.54), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividend07()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US9256521090"), hasWkn(null), hasTicker(null), //
+                        hasName("Vici Properties"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-07-03T00:00"), hasShares(30.00), //
+                        hasSource("Dividend07.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 9.86), hasGrossValue("EUR", 11.60), //
+                        hasForexGrossValue("USD", 12.45), //
+                        hasTaxes("EUR", 1.74), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividend07WithSecurityInEUR()
+    {
+        Security security = new Security("Vici Properties", CurrencyUnit.EUR);
+        security.setIsin("US9256521090");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-07-03T00:00"), hasShares(30.00), //
+                        hasSource("Dividend07.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 9.86), hasGrossValue("EUR", 11.60), //
+                        hasTaxes("EUR", 1.74), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividend08()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US02079K3059"), hasWkn(null), hasTicker(null), //
+                        hasName("Alphabet (A)"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-17T00:00"), hasShares(2.00), //
+                        hasSource("Dividend08.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.31), hasGrossValue("EUR", 0.37), //
+                        hasForexGrossValue("USD", 0.40), //
+                        hasTaxes("EUR", 0.06), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividend08WithSecurityInEUR()
+    {
+        Security security = new Security("Alphabet (A)", CurrencyUnit.EUR);
+        security.setIsin("US02079K3059");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-17T00:00"), hasShares(2.00), //
+                        hasSource("Dividend08.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.31), hasGrossValue("EUR", 0.37), //
+                        hasTaxes("EUR", 0.06), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividend09()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US7561091049"), hasWkn(null), hasTicker(null), //
+                        hasName("Realty Income"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-14T00:00"), hasShares(15.00), //
+                        hasSource("Dividend09.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 3.11), hasGrossValue("EUR", 3.66), //
+                        hasForexGrossValue("USD", 3.94), //
+                        hasTaxes("EUR", 0.55), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividend09WithSecurityInEUR()
+    {
+        Security security = new Security("Realty Income", CurrencyUnit.EUR);
+        security.setIsin("US7561091049");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-14T00:00"), hasShares(15.00), //
+                        hasSource("Dividend09.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 3.11), hasGrossValue("EUR", 3.66), //
+                        hasTaxes("EUR", 0.55), hasFees("EUR", 0.00), //
                         check(tx -> {
                             CheckCurrenciesAction c = new CheckCurrenciesAction();
                             Account account = new Account();
@@ -6701,6 +7187,32 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testReglementDuVersement01()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ReglementDuVersement01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check deposit transaction
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2023-05-24T00:00"), //
+                        hasSource("ReglementDuVersement01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1000.00), hasGrossValue("EUR", 1000.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testZinsabrechnung01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
@@ -6938,6 +7450,32 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("InterestInvoice02.txt"), //
                         hasNote("Interest 12.06.2024 - 30.06.2024 (3,75%)"), //
                         hasAmount("EUR", 11.56), hasGrossValue("EUR", 11.56), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSynthese01()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Synthese01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check interest transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-04-19T00:00"), //
+                        hasSource("Synthese01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 50.00), hasGrossValue("EUR", 50.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 }

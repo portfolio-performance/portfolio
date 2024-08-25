@@ -1,0 +1,27 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.3
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+WrbZjI eQRv SEITE 1 von 1
+gPiUPcaiBRez hZgbyK 4 DATUM 01.01.2024
+00000 HRrBIHLmn YR piTO DEPOT 0000000000
+STORNIERUNG DER DIVIDENDE
+ÜBERSICHT
+Dividende mit Ex-Datum01.01.2024.
+POSITION ANZAHL ERTRAG BETRAG
+Euro iSTOXX ex FIN 0.33 EUR
+DE000ETFL482 1.525759 Stücke -0.215 EUR
+GESAMT 0.33 EUR
+ABRECHNUNG
+POSITION BETRAG
+Zwischensumme -0.33 EUR
+Kapitalertragssteuer 0.08 EUR
+GESAMT -0.25 EUR
+BUCHUNG
+VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
+DE07123412341234123412 01.01.2024 -0.25 EUR
+AB0000000000 im Girosammelverwahrung in Deutschland
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich um eine umsatzsteuerfreie Leistung gemäß § 4 Nr. 8 UStG
+Trade Republic Bank GmbH Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 www.traderepublic.comservice@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
