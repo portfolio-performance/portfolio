@@ -37,6 +37,22 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.70.4" date="2024-08-25">
+      <description>
+        <ul>
+          <li>New: PDF importer for ABN AMRO Group</li>
+          <li>New: Use Ctrl-F (Command-F) to focus the search boxes</li>
+          <li>New: Data series with the accumulated movements in the asset diagram (= value that has flowed into or out of the portfolio through deposits/withdrawals or deliveries/shipments)</li>
+          <li>Improvement: Adjusted colors in light and dark mode for charts in the security accounts view</li>
+          <li>Improvements to the PDF importers for Santander Consumer Bank AG, FFB, and C24 Bank GmbH</li>
+          <li xml:lang="de">Neu: PDF-Importer für die ABN AMRO Group</li>
+          <li xml:lang="de">Neu: Nutze Ctrl-F (Command-F) um die Suchfelder zu aktivieren</li>
+          <li xml:lang="de">Neu: Datenreihe mit den akkumulierten Bewegungen im Vermögensdiagramm (= Wert der in oder aus dem Portfolio durch Einlagen/Entnahmen oder Einlieferungen/Auslieferungen geflossen ist)</li>
+          <li xml:lang="de">Verbesserung: Angepasste Farben im Hell- und Dunkelmodus für Diagramme in der Depotansicht</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Santander Consumer Bank AG, FFB und C24 Bank GmBH</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.70.3" date="2024-08-05">
       <description>
         <ul>
