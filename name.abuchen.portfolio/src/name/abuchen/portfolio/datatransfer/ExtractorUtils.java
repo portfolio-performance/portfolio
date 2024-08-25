@@ -31,6 +31,10 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class ExtractorUtils
 {
+    private ExtractorUtils()
+    {
+    }
+
     // Helper method to create case-insensitive DateTimeFormatter instances
     private static DateTimeFormatter createFormatter(String pattern, Locale locale)
     {
@@ -65,10 +69,19 @@ public class ExtractorUtils
                     createFormatter("yyyy-M-dd", Locale.GERMANY), //
                     createFormatter("yyyy-MM-d", Locale.GERMANY), //
                     createFormatter("yyyy-MM-dd", Locale.GERMANY), //
-                    createFormatter("d/MM/yyyy", Locale.GERMANY),
-                    createFormatter("dd/MM/yyyy", Locale.GERMANY),
-                    createFormatter("d/M/yyyy", Locale.GERMANY),
+                    createFormatter("d/MM/yyyy", Locale.GERMANY), //
+                    createFormatter("dd/MM/yyyy", Locale.GERMANY), //
+                    createFormatter("d/M/yyyy", Locale.GERMANY), //
                     createFormatter("dd/M/yyyy", Locale.GERMANY) };
+
+    // Date formatters with case-insensitive support for French
+    private static final DateTimeFormatter[] DATE_FORMATTER_FRENCH = { //
+                    createFormatter("d MMM yyyy", Locale.FRENCH), //
+                    createFormatter("dd MMM yyyy", Locale.FRENCH), //
+                    createFormatter("d MMMM yyyy", Locale.FRENCH), //
+                    createFormatter("dd MMMM yyyy", Locale.FRENCH), //
+                    createFormatter("d MMM. yyyy", Locale.FRENCH), //
+                    createFormatter("dd MMM. yyyy", Locale.FRENCH) };
 
     // Date formatters with case-insensitive support for the United States
     private static final DateTimeFormatter[] DATE_FORMATTER_US = { //
@@ -94,18 +107,18 @@ public class ExtractorUtils
                     createFormatter("LLL dd, yyyy", Locale.US), //
                     createFormatter("LLLL/d/yyyy", Locale.US), //
                     createFormatter("LLLL/dd/yyyy", Locale.US), //
-                    createFormatter("LLLL d, yyyy", Locale.US),
+                    createFormatter("LLLL d, yyyy", Locale.US), //
                     createFormatter("LLLL dd, yyyy", Locale.US), };
 
     // Date formatters with case-insensitive support for Canada
     private static final DateTimeFormatter[] DATE_FORMATTER_CANADA = { //
                     createFormatter("LLL dd, yyyy", Locale.CANADA), //
-                    createFormatter("LLL d, yyyy", Locale.CANADA)};
+                    createFormatter("LLL d, yyyy", Locale.CANADA) };
 
     // Date formatters with case-insensitive support for Canadian French
     private static final DateTimeFormatter[] DATE_FORMATTER_CANADA_FRENCH = { //
                     createFormatter("d LLL yyyy", Locale.CANADA_FRENCH), //
-                    createFormatter("dd LLL yyyy", Locale.CANADA_FRENCH)};
+                    createFormatter("dd LLL yyyy", Locale.CANADA_FRENCH) };
 
     // Date formatters with case-insensitive support for the United Kingdom
     private static final DateTimeFormatter[] DATE_FORMATTER_UK = { //
@@ -127,6 +140,7 @@ public class ExtractorUtils
     // Map associating locales with their respective date formatters
     private static final Map<Locale, DateTimeFormatter[]> LOCALE2DATE = Map.of( //
                     Locale.GERMANY, DATE_FORMATTER_GERMANY, //
+                    Locale.FRENCH, DATE_FORMATTER_FRENCH, //
                     Locale.US, DATE_FORMATTER_US, //
                     Locale.CANADA, DATE_FORMATTER_CANADA, //
                     Locale.CANADA_FRENCH, DATE_FORMATTER_CANADA_FRENCH, //
@@ -168,12 +182,8 @@ public class ExtractorUtils
                     createFormatter("dd LLL yyyy HH:mm:ss", Locale.UK), //
                     createFormatter("d/LL/yy HH.mm", Locale.UK), //
                     createFormatter("dd/LL/yy HH.mm", Locale.UK), //
-                    createFormatter("d/LL/yy HH.mm", Locale.UK),
-                    createFormatter("dd/LL/yy HH.mm", Locale.UK)};
-
-    private ExtractorUtils()
-    {
-    }
+                    createFormatter("d/LL/yy HH.mm", Locale.UK), //
+                    createFormatter("dd/LL/yy HH.mm", Locale.UK) };
 
     public static void checkAndSetGrossUnit(Money gross, Money fxGross, Object transaction, DocumentContext context)
     {
@@ -373,10 +383,16 @@ public class ExtractorUtils
         value = value.replaceAll("(?i)\\bMrz\\b", "Mär");
 
         Locale[] locales = hints.length > 0 ? hints
-                        : new Locale[] { Locale.GERMANY, Locale.US, Locale.CANADA, Locale.CANADA_FRENCH, Locale.UK };
+                        :  new Locale[] { Locale.GERMANY, Locale.FRENCH, Locale.US, Locale.CANADA, Locale.CANADA_FRENCH, Locale.UK };
 
         for (Locale l : locales)
         {
+            DateTimeFormatter[] formatters = LOCALE2DATE.get(l);
+            if (formatters == null)
+            {
+                continue; // Skip this locale if no formatters are found
+            }
+
             for (DateTimeFormatter formatter : LOCALE2DATE.get(l))
             {
                 try

@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.3
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+lOuO wKwD jzyoHH EpseOy PAGE 1 1
+297 kGV VcouXy DATE 17.06.2024
+93814 TxCtxrGy 5305567903
+DIVIDENDE EN ESPÈCES
+RÉCAPITULATIF
+Dividende en espèces avec la date d'exécution au -15.05.2024.
+POSITION QUANTITÉ TAUX MONTANT
+Microsoft
+US5949181045 0.561914 unit. 0.75 USD
+0.42 USD
+TOTAL 0.42 USD
+RELEVÉ
+POSITION MONTANT
+Impôt à la source pour les émetteurs américains -0.06 USD
+Sous-total 0.36 USD
+Sous-total 1.0781 EUR/USD 0.33 EUR
+TOTAL 0.33 EUR
+RÉGLEMENT
+COMPTE DE RÈGLEMENT DATE DE PAIEMENT MONTANT
+DE13502109007011547146 13.06.2024 0.33 EUR
+Ce document est généré automatiquement et n'est donc pas signé.
+Si aucune taxe de vente n'est indiquée, il s'agit d'un service exempt de taxe de vente conformément à l'article § 4 Nr. 8 UStG
+Trade Republic Bank GmbH Siège de la Société: Berlin Directeurs
+Brunnenstraße 19-21 www.traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Identifiant TVA DE307510626 Gernot Mittendorfer
