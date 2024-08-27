@@ -47,6 +47,7 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
     private static final Color colorInvestedCapital = Colors.getColor(235, 201, 52); // #EBC934
     private static final Color colorAbsoluteInvestedCapital = Colors.getColor(235, 201, 52); // #EBC934
     private static final Color colorTransferals = Colors.DARK_GRAY;
+    private static final Color colorTransferalsAccumulated = Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
     private static final Color colorTaxes = Colors.RED;
     private static final Color colorTaxesAccumulated = Colors.RED;
     private static final Color colorAbsoluteDelta = Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
@@ -69,6 +70,7 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
     {
         TOTALS(Messages.LabelTotalSum), //
         TRANSFERALS(Messages.LabelTransferals), //
+        TRANSFERALS_ACCUMULATED(Messages.LabelAccumulatedTransferals), //
         INVESTED_CAPITAL(Messages.LabelInvestedCapital), //
         ABSOLUTE_INVESTED_CAPITAL(Messages.LabelAbsoluteInvestedCapital), //
         ABSOLUTE_DELTA(Messages.LabelDelta), //
@@ -210,6 +212,13 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
             {
                 double[] values = toDouble(index.getTransferals(), Values.Amount.divider());
                 addBarSerie(values, index.getDates(), colorTransferals, Messages.LabelTransferals);
+            }
+
+            if (metrics.contains(ClientDataSeriesType.TRANSFERALS_ACCUMULATED))
+            {
+                double[] values = accumulateAndToDouble(index.getTransferals(), Values.Amount.divider());
+                addLineSerie(values, index.getDates(), colorTransferalsAccumulated,
+                                Messages.LabelAccumulatedTransferals, true);
             }
 
             if (metrics.contains(ClientDataSeriesType.TAXES))
