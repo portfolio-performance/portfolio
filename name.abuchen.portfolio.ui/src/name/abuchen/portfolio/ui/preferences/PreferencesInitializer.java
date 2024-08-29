@@ -23,6 +23,7 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
                                         : "https://updates.portfolio-performance.info/portfolio"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.FORMAT_SHARES_DIGITS, 1);
         store.setDefault(UIConstants.Preferences.FORMAT_CALCULATED_QUOTE_DIGITS, 2);
+        store.setDefault(UIConstants.Preferences.FORMAT_PREFER_SECURITY_SYMBOL, false);
         store.setDefault(UIConstants.Preferences.USE_INDIRECT_QUOTATION, true);
         store.setDefault(UIConstants.Preferences.ALWAYS_DISPLAY_CURRENCY_CODE, false);
         store.setDefault(UIConstants.Preferences.DISPLAY_PER_ANNUM, false);

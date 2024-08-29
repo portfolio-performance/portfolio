@@ -126,6 +126,11 @@ public interface UIConstants
         String FORMAT_CALCULATED_QUOTE_DIGITS = "FORMAT_CALCULATED_QUOTE_DIGITS"; //$NON-NLS-1$
 
         /**
+         * Preference key to display symbol (not just name) to identify security
+         */
+        String FORMAT_PREFER_SECURITY_SYMBOL = "FORMAT_PREFER_SECURITY_SYMBOL"; //$NON-NLS-1$
+
+        /**
          * Preference key to use indirect quotation ("Mengennotierung") when
          * displaying exchange rates.
          */
