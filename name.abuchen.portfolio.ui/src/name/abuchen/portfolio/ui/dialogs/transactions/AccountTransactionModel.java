@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -23,6 +24,7 @@ import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
 
@@ -42,6 +44,9 @@ public class AccountTransactionModel extends AbstractModel
 
     private Account sourceAccount;
     private AccountTransaction sourceTransaction;
+
+    /** if given, it can be used to pre-fill the number of shares */
+    private Portfolio portfolio;
 
     private Security security;
     private Account account;
@@ -324,6 +329,16 @@ public class AccountTransactionModel extends AbstractModel
         return security;
     }
 
+    public void setPortfolio(Portfolio portfolio)
+    {
+        this.portfolio = portfolio;
+    }
+
+    public Portfolio getPortfolio()
+    {
+        return portfolio;
+    }
+
     public void setSecurity(Security security)
     {
         if (!supportsSecurity())
@@ -386,6 +401,21 @@ public class AccountTransactionModel extends AbstractModel
 
         CurrencyConverter converter = new CurrencyConverterImpl(getExchangeRateProviderFactory(),
                         client.getBaseCurrency());
+
+        // if a portfolio is given, then let's prefill the number of shares with
+        // the holdings of that given portfolio. If none exist, fallback to the
+        // total holdings.
+        if (portfolio != null)
+        {
+            PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, converter, date);
+            SecurityPosition p = snapshot.getPositionsBySecurity().get(security);
+            if (p != null && p.getShares() != 0)
+            {
+                setShares(p.getShares());
+                return;
+            }
+        }
+
         ClientSnapshot snapshot = ClientSnapshot.create(client, converter, date);
         SecurityPosition p = snapshot.getJointPortfolio().getPositionsBySecurity().get(security);
         setShares(p != null ? p.getShares() : 0);
