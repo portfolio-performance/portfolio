@@ -19,6 +19,7 @@ import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.ClientProperties;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.util.text.FrenchKeypadSupport;
 
 public class EditClientPropertiesDialog extends AbstractDialog
 {
@@ -109,6 +110,7 @@ public class EditClientPropertiesDialog extends AbstractDialog
         l.setText(label);
 
         final Text txtValue = new Text(editArea, SWT.BORDER);
+        FrenchKeypadSupport.configure(txtValue);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(txtValue);
 
         UpdateValueStrategy<String, Double> input2model = new UpdateValueStrategy<>();
