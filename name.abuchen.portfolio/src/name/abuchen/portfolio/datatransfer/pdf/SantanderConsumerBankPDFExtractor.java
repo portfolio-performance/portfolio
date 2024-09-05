@@ -25,9 +25,13 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Santander Consumer Bank AG");
         addBankIdentifier("Santander Consumer Bank GmbH");
 
+        addBankIdentifier("sa nta nder");
+        addBankIdentifier("santander");
+
         addBuySellTransaction();
         addDividendeTransaction();
-        addAccountStatementTransaction();
+        addAccountStatementTransactionAT();
+        addAccountStatementTransactionDE();
     }
 
     @Override
@@ -213,9 +217,9 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addAccountStatementTransaction()
+    private void addAccountStatementTransactionAT()
     {
-        final DocumentType type = new DocumentType("Kontoauszug", //
+        final DocumentType type = new DocumentType("Kontoauszug", "KONTOAUSZUG", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // € 0,00 € 37,98 € 40,64 € 2,66 € 6,63 € 1,66
@@ -321,6 +325,78 @@ public class SantanderConsumerBankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
+                        })
+
+                        .wrap(TransactionItem::new));
+    }
+
+    private void addAccountStatementTransactionDE()
+    {
+        final DocumentType type = new DocumentType("KONTOAUSZUG", //
+                        documentContext -> documentContext //
+                        // @formatter:off
+                                        // Ihre IBAN: DE93  3 1 01  083 3  2 2 64  01 3 1  2 0 BIC: SCFBDE3 3 Ko nto -Nr.  2 2 64 01 3 1 2 0 EUR
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("Ihre IBAN: .* (?<currency>\\w{3})$")
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
+
+                                        // @formatter:off
+                                        // 04.01 .2 02 2  BIS 02 .01 .2 02 3
+                                        // @formatter:on
+                                        .section("year") //
+                                        .find("[\\s]*DIESER KONTOAUSZUG UMFASST DIE UMS.TZE VOM")
+                                        .match("^[\\s]*[\\d]{2}[\\s]?\\.[\\d]{2}[\\s]?\\.(?<year>[\\d][\\s]?[\\d]{2}[\\s]?[\\d]).*BIS.*$") //
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year").replaceAll("\\s", ""))));
+
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 31.03. 31.03. 5,87 ÜBERWEISUNG VON MAX MUSTER 32930011633BBDBMFG IBAN
+        // @formatter:on
+        Block depositBlock = new Block("^[\\d].*[\\s]*.BERWEISUNG VON .*$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "amount", "note") //
+                        .documentContext("year", "currency") //
+                        .match("^.*[\\s]*(?<date>[\\d][\\s]?[\\d][\\s]?\\.[\\d][\\s]?[\\d][\\s]?\\.)[\\s]*(?<amount>[\\.,\\d]+)[\\s]*(?<note>.BERWEISUNG).*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date").replaceAll("\\s", "") + v.get("year")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(trim(replaceMultipleBlanks(v.get("note").replaceAll("\\s", ""))));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 02 .01 .  3 0.1 2 . 0,01       Ha benzinsen 0,01
+        // @formatter:on
+        Block interestBlock = new Block("^[\\d].*[\\s]*Ha[\\s]?benzinsen.*$");
+        type.addBlock(interestBlock);
+        interestBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "amount", "note") //
+                        .documentContext("year", "currency") //
+                        .match("^.*[\\s]*(?<date>[\\d][\\s]?[\\d][\\s]?\\.[\\d][\\s]?[\\d][\\s]?\\.)[\\s]*(?<amount>[\\.,\\d]+)[\\s]*(?<note>Ha[\\s]?benzinsen).*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date").replaceAll("\\s", "") + v.get("year")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(trim(replaceMultipleBlanks(v.get("note").replaceAll("\\s", ""))));
                         })
 
                         .wrap(TransactionItem::new));
