@@ -70,6 +70,7 @@ import name.abuchen.portfolio.snapshot.AssetCategory;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
+import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
@@ -250,9 +251,21 @@ public class StatementOfAssetsViewer
             if (calculated.contains(key))
                 return;
 
+            List<Exception> warnings = new ArrayList<>();
+            
+            // performance for sub totals (category)
+            elements.stream().filter(Element::isCategory).forEach(e -> e.setPerformanceForCategoryTotals(currencyCode,interval,
+                                PerformanceIndex.forClassification(filteredClient, converter.with(currencyCode),
+                                                e.getCategory().getClassification(), interval, warnings)));
+            // performance for total
+            elements.stream().filter(Element::isGroupByTaxonomy)
+                            .forEach(e -> e.setPerformanceForCategoryTotals(currencyCode, interval,
+                                            PerformanceIndex.forClient(filteredClient, converter.with(currencyCode),
+                                                            interval, warnings)));
+
+            // performance for securities
             var snapshot = LazySecurityPerformanceSnapshot.create(filteredClient, converter.with(currencyCode),
                             interval);
-
             Map<Security, LazySecurityPerformanceRecord> map = snapshot.getRecords().stream()
                             .collect(Collectors.toMap(LazySecurityPerformanceRecord::getSecurity, r -> r));
 
@@ -605,7 +618,8 @@ public class StatementOfAssetsViewer
 
         Column column = new Column("ttwror", Messages.ColumnTTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(
-                        LazySecurityPerformanceRecord::getTrueTimeWeightedRateOfReturn);
+                        LazySecurityPerformanceRecord::getTrueTimeWeightedRateOfReturn, true,
+                        PerformanceIndex::getFinalAccumulatedPercentage);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWROR_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.LabelTTWROR);
@@ -616,7 +630,8 @@ public class StatementOfAssetsViewer
 
         column = new Column("ttwror_pa", Messages.ColumnTTWRORpa, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(
-                        LazySecurityPerformanceRecord::getTrueTimeWeightedRateOfReturnAnnualized);
+                        LazySecurityPerformanceRecord::getTrueTimeWeightedRateOfReturnAnnualized, true,
+                        PerformanceIndex::getFinalAccumulatedAnnualizedPercentage);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWRORpa_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.LabelTTWROR_Annualized);
@@ -626,7 +641,8 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("irr", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
-        labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getIrr);
+        labelProvider = new ReportingPeriodLabelProvider(LazySecurityPerformanceRecord::getIrr, true,
+                        PerformanceIndex::getPerformanceIRR);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnIRRPerformanceOption, options));
         column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelPerformance);
@@ -1050,6 +1066,7 @@ public class StatementOfAssetsViewer
         private List<Element> children = new ArrayList<>();
 
         private Map<CacheKey, LazySecurityPerformanceRecord> performance = new HashMap<>();
+        private Map<CacheKey, PerformanceIndex> performanceForCategoryTotals = new HashMap<>();
 
         private Element(GroupByTaxonomy groupByTaxonomy, AssetCategory category, int sortOrder)
         {
@@ -1113,6 +1130,16 @@ public class StatementOfAssetsViewer
         public LazySecurityPerformanceRecord getPerformance(String currencyCode, Interval period)
         {
             return performance.get(new CacheKey(currencyCode, period));
+        }
+
+        public void setPerformanceForCategoryTotals(String currencyCode, Interval period, PerformanceIndex index)
+        {
+            performanceForCategoryTotals.put(new CacheKey(currencyCode, period), index);
+        }
+
+        public PerformanceIndex getPerformanceForCategoryTotals(String currencyCode, Interval period)
+        {
+            return performanceForCategoryTotals.get(new CacheKey(currencyCode, period));
         }
 
         public boolean isGroupByTaxonomy()
@@ -1242,12 +1269,22 @@ public class StatementOfAssetsViewer
     {
         private Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider;
         private Function<Stream<Object>, Object> collector;
+        private Function<PerformanceIndex, ?> valueProviderTotal;
 
         public ElementValueProvider(Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider,
                         Function<Stream<Object>, Object> collector)
         {
             this.valueProvider = valueProvider;
             this.collector = collector;
+        }
+
+        public ElementValueProvider(Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider,
+                        Function<Stream<Object>, Object> collector,
+                        Function<PerformanceIndex, ?> valueProviderTotal)
+        {
+            this.valueProvider = valueProvider;
+            this.collector = collector;
+            this.valueProviderTotal = valueProviderTotal;
         }
 
         public Object getValue(Element element, String currencyCode, Interval interval)
@@ -1297,17 +1334,31 @@ public class StatementOfAssetsViewer
             }
             else if (element.isCategory())
             {
+                if (collector == null && valueProviderTotal != null)
+                {
+                    // assumption: performance index has been calculated
+                    // before by calculatePerformanceAndInjectIntoElements !
+                    PerformanceIndex index = element.getPerformanceForCategoryTotals(currencyCode, interval);
+                    return valueProviderTotal.apply(index);
+                }
                 if (collector == null)
                     return null;
-
-                return collectValue(element.getChildren(), currencyCode, interval);
+                else
+                    return collectValue(element.getChildren(), currencyCode, interval);
             }
             else if (element.isGroupByTaxonomy())
             {
-                if (collector == null)
+                if (collector == null && valueProviderTotal != null)
+                {
+                    // assumption: performance index has been calculated
+                    // before by calculatePerformanceAndInjectIntoElements !
+                    PerformanceIndex index = element.getPerformanceForCategoryTotals(currencyCode, interval);
+                    return valueProviderTotal.apply(index);
+                }
+                else if (collector == null)
                     return null;
-
-                return collectValue(element.getChildren().flatMap(Element::getChildren), currencyCode, interval);
+                else
+                    return collectValue(element.getChildren().flatMap(Element::getChildren), currencyCode, interval);
             }
             else
             {
@@ -1339,6 +1390,12 @@ public class StatementOfAssetsViewer
                         Function<Stream<Object>, Object> collector, boolean showUpAndDownArrows)
         {
             this(new ElementValueProvider(valueProvider, collector), null, showUpAndDownArrows);
+        }
+
+        public ReportingPeriodLabelProvider(Function<LazySecurityPerformanceRecord, LazyValue<?>> valueProvider,
+                        boolean showUpAndDownArrows, Function<PerformanceIndex, ?> valueProviderTotal)
+        {
+            this(new ElementValueProvider(valueProvider, null, valueProviderTotal), null, showUpAndDownArrows);
         }
 
         public ReportingPeriodLabelProvider(ElementValueProvider valueProvider, boolean showUpAndDownArrows)
