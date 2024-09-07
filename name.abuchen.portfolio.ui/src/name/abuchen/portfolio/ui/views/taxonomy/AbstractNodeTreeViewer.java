@@ -12,6 +12,7 @@ import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import jakarta.inject.Inject;
 
@@ -438,8 +439,17 @@ import name.abuchen.portfolio.util.TextUtil;
         nodeViewer.addSelectionChangedListener(event -> {
             TaxonomyNode node = ((TaxonomyNode) ((IStructuredSelection) event.getSelection()).getFirstElement());
             view.setInformationPaneInput(node);
-            if (node != null && node.getBackingSecurity() != null)
-                selectionService.setSelection(new SecuritySelection(getModel().getClient(), node.getBackingSecurity()));
+
+            // use a set because securities can show up multiple times in the
+            // hierarchy of the taxonomy
+            var securities = event.getStructuredSelection().stream()
+                            .filter(e -> ((TaxonomyNode) e).getBackingSecurity() != null)
+                            .map(e -> ((TaxonomyNode) e).getBackingSecurity()).collect(Collectors.toSet());
+            if (!securities.isEmpty())
+                selectionService.setSelection(
+                                new SecuritySelection(getModel().getClient(), new ArrayList<>(securities)));
+            else
+                selectionService.setSelection(null);
         });
 
         nodeViewer.setInput(getModel());

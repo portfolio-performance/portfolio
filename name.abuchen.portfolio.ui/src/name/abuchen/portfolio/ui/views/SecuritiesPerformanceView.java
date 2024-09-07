@@ -796,9 +796,13 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                         ((IStructuredSelection) event.getSelection()).getFirstElement()));
 
         records.addSelectionChangedListener(event -> {
-            var row = (RowElement) ((IStructuredSelection) event.getSelection()).getFirstElement();
-            if (row != null && row.isRecord())
-                selectionService.setSelection(new SecuritySelection(getClient(), row.performanceRecord.getSecurity()));
+            List<Security> securities = event.getStructuredSelection().stream().filter(e -> ((RowElement) e).isRecord())
+                            .map(e -> ((RowElement) e).performanceRecord.getSecurity()).toList();
+            if (!securities.isEmpty())
+                selectionService.setSelection(new SecuritySelection(getClient(), securities));
+            else
+                selectionService.setSelection(null);
+
         });
 
         records.addFilter(new ViewerFilter()
