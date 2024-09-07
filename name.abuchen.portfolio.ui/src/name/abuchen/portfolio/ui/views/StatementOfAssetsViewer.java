@@ -243,7 +243,8 @@ public class StatementOfAssetsViewer
             return answer;
         }
 
-        /* package */ final void calculatePerformanceAndInjectIntoElements(String currencyCode, Interval interval)
+        /* package */ final void calculatePerformanceAndInjectIntoElements(String currencyCode, Interval interval,
+                        boolean calculateTotalsPerformance)
         {
             CacheKey key = new CacheKey(currencyCode, interval);
 
@@ -251,18 +252,22 @@ public class StatementOfAssetsViewer
             if (calculated.contains(key))
                 return;
 
-            List<Exception> warnings = new ArrayList<>();
+            // do not compute the performance index per default
+            if (calculateTotalsPerformance)
+            {
+                List<Exception> warnings = new ArrayList<>();
             
-            // performance for sub totals (category)
-            elements.stream().filter(Element::isCategory).forEach(e -> e.setPerformanceForCategoryTotals(currencyCode,interval,
+                // performance for sub totals (category) lines
+                elements.stream().filter(Element::isCategory).forEach(e -> e.setPerformanceForCategoryTotals(
+                                currencyCode, interval,
                                 PerformanceIndex.forClassification(filteredClient, converter.with(currencyCode),
                                                 e.getCategory().getClassification(), interval, warnings)));
-            // performance for total
-            elements.stream().filter(Element::isGroupByTaxonomy)
+                // performance for total lines
+                elements.stream().filter(Element::isGroupByTaxonomy)
                             .forEach(e -> e.setPerformanceForCategoryTotals(currencyCode, interval,
                                             PerformanceIndex.forClient(filteredClient, converter.with(currencyCode),
                                                             interval, warnings)));
-
+            }
             // performance for securities
             var snapshot = LazySecurityPerformanceSnapshot.create(filteredClient, converter.with(currencyCode),
                             interval);
@@ -1378,6 +1383,7 @@ public class StatementOfAssetsViewer
                     implements Comparator<Object>
     {
         private boolean showColorAndArrows;
+        private boolean calculateTotalsPerformance = false;
         private ElementValueProvider valueProvider;
         private Function<Element, String> currencyProvider;
 
@@ -1396,6 +1402,7 @@ public class StatementOfAssetsViewer
                         boolean showUpAndDownArrows, Function<PerformanceIndex, ?> valueProviderTotal)
         {
             this(new ElementValueProvider(valueProvider, null, valueProviderTotal), null, showUpAndDownArrows);
+            this.calculateTotalsPerformance = true;
         }
 
         public ReportingPeriodLabelProvider(ElementValueProvider valueProvider, boolean showUpAndDownArrows)
@@ -1435,7 +1442,7 @@ public class StatementOfAssetsViewer
             String currencyCode = currencyProvider != null ? currencyProvider.apply(element)
                             : model.getCurrencyConverter().getTermCurrency();
 
-            model.calculatePerformanceAndInjectIntoElements(currencyCode, interval);
+            model.calculatePerformanceAndInjectIntoElements(currencyCode, interval, calculateTotalsPerformance);
 
             return valueProvider.getValue(element, currencyCode, interval);
         }
