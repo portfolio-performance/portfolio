@@ -267,6 +267,7 @@ public class Messages extends NLS
     public static String MsgErrorInvestmentPlanMissingSecurityPricesToGenerateTransaction;
     public static String MsgErrorLeewayAPIKeyMissing;
     public static String MsgErrorMissingAPIKey;
+    public static String MsgErrorMissingIdentifierForSecurity;
     public static String MsgErrorMissingKeyValueInJSON;
     public static String MsgErrorMissingOnlineId;
     public static String MsgErrorMissingPathToDateOrClose;
