@@ -22,6 +22,11 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
 
 public class UpdateQuotesHandler
 {
+    public enum FilterType
+    {
+        SECURITY, ACTIVE
+    }
+
     @CanExecute
     boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part, MMenuItem menuItem,
                     SelectionService selectionService)
@@ -47,18 +52,18 @@ public class UpdateQuotesHandler
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell, SelectionService selectionService,
-                    @Named("name.abuchen.portfolio.ui.param.filter") @Optional String filter)
+                    @Named(UIConstants.Parameter.FILTER) @Optional String filter)
     {
         MenuHelper.getActiveClient(part).ifPresent(client -> {
 
-            if ("security".equals(filter)) //$NON-NLS-1$
+            if (FilterType.SECURITY.name().equalsIgnoreCase(filter))
             {
                 selectionService.getSelection(client).ifPresent(s -> {
                     new UpdateQuotesJob(client, s.getSecurities()).schedule();
                     new UpdateDividendsJob(client, s.getSecurities()).schedule(5000);
                 });
             }
-            else if ("active".equals(filter)) //$NON-NLS-1$
+            else if (FilterType.ACTIVE.name().equalsIgnoreCase(filter))
             {
                 new UpdateQuotesJob(client, s -> !s.isRetired(), EnumSet.allOf(UpdateQuotesJob.Target.class))
                                 .schedule();
