@@ -107,6 +107,14 @@ public interface UIConstants
         String TYPE = "name.abuchen.portfolio.ui.param.type"; //$NON-NLS-1$
     }
 
+    /**
+     * Well-known element ids from the application e4xmi file
+     */
+    interface ElementId // NOSONAR
+    {
+        String MENU_ITEM_UPDATE_QUOTES_SELECTED_SECURITIES = "name.abuchen.portfolio.ui.menu.online.updatequotes.selectedsecurities"; //$NON-NLS-1$
+    }
+
     interface Preferences // NOSONAR
     {
         String UPDATE_SITE = "UPDATE_SITE"; //$NON-NLS-1$

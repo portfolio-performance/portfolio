@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.handlers;
 
+import java.text.MessageFormat;
 import java.util.EnumSet;
 
 import jakarta.inject.Named;
@@ -8,9 +9,12 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
 import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
@@ -19,9 +23,25 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
 public class UpdateQuotesHandler
 {
     @CanExecute
-    boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part)
+    boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part, MMenuItem menuItem,
+                    SelectionService selectionService)
     {
-        return MenuHelper.isClientPartActive(part);
+        var clientInput = MenuHelper.getActiveClientInput(part, false);
+        if (clientInput.isEmpty())
+            return false;
+
+        if (UIConstants.ElementId.MENU_ITEM_UPDATE_QUOTES_SELECTED_SECURITIES.equals(menuItem.getElementId()))
+        {
+            var selection = selectionService.getSelection(clientInput.get().getClient());
+
+            menuItem.setLabel(MessageFormat.format(Messages.MenuUpdatePricesForSelectedInstruments,
+                            selection.isPresent() ? selection.get().getSecurities().size() : 0));
+
+            // disable the menu if there is currently no selection
+            return selection.isPresent();
+        }
+
+        return true;
     }
 
     @Execute

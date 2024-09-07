@@ -1006,6 +1006,7 @@ public class Messages extends NLS
     public static String MenuTaxonomySortTreeBy;
     public static String MenuTaxonomyWeightFix;
     public static String MenuTransactionDelete;
+    public static String MenuUpdatePricesForSelectedInstruments;
     public static String MenuUseDashboardDefaultReportingPeriod;
     public static String MessageDialogProviderAnswerKeep;
     public static String MessageDialogProviderAnswerReplace;
