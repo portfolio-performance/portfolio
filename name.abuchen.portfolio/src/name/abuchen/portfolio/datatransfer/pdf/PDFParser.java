@@ -686,18 +686,34 @@ import name.abuchen.portfolio.model.TypedMap;
                             RangeAttributes ranges = documentContext.getType(RangeAttributes.class)
                                             .orElseThrow(() -> new IllegalArgumentException(
                                                             "In order to use range attribute, you must add range blocks to the document type")); //$NON-NLS-1$
+
+                            // if the section is marked as optional, then also
+                            // do not require all range attributes to be
+                            // available
+                            var allAvailable = true;
                             for (String attribute : rangeAttributes)
                             {
                                 var value = ranges.find(attribute, lineNo);
                                 if (value.isEmpty())
                                 {
-                                    throw new IllegalArgumentException(MessageFormat.format(
-                                                    Messages.MsgErrorMissingValueMatches, values.keySet().toString(),
-                                                    attribute, filename, lineNo + 1, lineNoEnd + 1));
+                                    if (isOptional)
+                                        allAvailable = false;
+                                    else
+                                        // if the section is not optional, then
+                                        // fail early with the missing attribute
+                                        throw new IllegalArgumentException(
+                                                        MessageFormat.format(Messages.MsgErrorMissingValueMatches,
+                                                                        values.keySet().toString(), attribute, filename,
+                                                                        lineNo + 1, lineNoEnd + 1));
                                 }
-
-                                values.put(attribute, value.get());
+                                else
+                                {
+                                    values.put(attribute, value.get());
+                                }
                             }
+
+                            if (!allAvailable)
+                                break;
                         }
 
                         assignment.accept(target, new ParsedData(values, lineNo, lineNoEnd, filename, txContext));
