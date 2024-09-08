@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
@@ -87,11 +88,10 @@ public class IndicatorWidget<N> extends AbstractIndicatorWidget<N>
             Objects.requireNonNull(provider);
 
             IndicatorWidget<N> indicatorWidget = new IndicatorWidget<>(widget, dashboardData, supportsBenchmarks,
-                            predicate);
+                            predicate, isValueColored);
             indicatorWidget.setFormatter(formatter);
             indicatorWidget.setProvider(provider);
             indicatorWidget.setTooltip(tooltip);
-            indicatorWidget.setValueColored(isValueColored);
 
             additionalConfig.forEach(config -> indicatorWidget.addConfig(config.apply(indicatorWidget)));
 
@@ -105,9 +105,15 @@ public class IndicatorWidget<N> extends AbstractIndicatorWidget<N>
     private boolean isValueColored = true;
 
     public IndicatorWidget(Widget widget, DashboardData dashboardData, boolean supportsBenchmarks,
-                    Predicate<DataSeries> predicate)
+                    Predicate<DataSeries> predicate, boolean isValueColored)
     {
         super(widget, dashboardData, supportsBenchmarks, predicate);
+
+        this.isValueColored = isValueColored;
+        if (isValueColored)
+        {
+            addConfigAfter(LabelConfig.class, new ColoredValueConfig(this, isValueColored));
+        }
     }
 
     public static <N> Builder<N> create(Widget widget, DashboardData dashboardData)
@@ -128,11 +134,6 @@ public class IndicatorWidget<N> extends AbstractIndicatorWidget<N>
     void setTooltip(BiFunction<DataSeries, Interval, String> tooltip)
     {
         this.tooltip = tooltip;
-    }
-
-    void setValueColored(boolean isValueColored)
-    {
-        this.isValueColored = isValueColored;
     }
 
     @Override
@@ -160,6 +161,7 @@ public class IndicatorWidget<N> extends AbstractIndicatorWidget<N>
         super.update(value);
 
         boolean isNegative = false;
+        boolean isValueColored = this.isValueColored && get(ColoredValueConfig.class).isValueColored();
 
         if (value instanceof Money money)
         {
@@ -181,6 +183,9 @@ public class IndicatorWidget<N> extends AbstractIndicatorWidget<N>
             indicator.setTextColor(isNegative ? ValueColorScheme.current().negativeForeground()
                             : ValueColorScheme.current().positiveForeground());
         }
-
+        else
+        {
+            indicator.setTextColor(Colors.theme().defaultForeground());
+        }
     }
 }

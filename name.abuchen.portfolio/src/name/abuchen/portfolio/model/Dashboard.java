@@ -17,7 +17,8 @@ public final class Dashboard
         EVENT_TYPE, COST_METHOD, DATE_TYPE_FILTER, SECURITY_FILTER, FIRE_NUMBER, FIRE_MONTHLY_SAVINGS, FIRE_RETURNS, //
         COUNT,
         /** collapsed state (true/false) of widgets */
-        COLLAPSED;
+        COLLAPSED,
+        FLAG_COLORED_VALUE;
     }
 
     public static final class Column

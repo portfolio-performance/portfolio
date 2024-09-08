@@ -8,6 +8,8 @@ import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ValueColorScheme;
 import name.abuchen.portfolio.util.Interval;
 
 public class RatioWidget extends AbstractIndicatorWidget<Object>
@@ -25,6 +27,7 @@ public class RatioWidget extends AbstractIndicatorWidget<Object>
     {
         super(widget, dashboardData, false, null);
 
+        addConfigAfter(LabelConfig.class, new ColoredValueConfig(this, false));
         addConfigAfter(DataSeriesConfig.class, new BaseDataSeriesConfig(this));
     }
 
@@ -67,5 +70,18 @@ public class RatioWidget extends AbstractIndicatorWidget<Object>
 
         Double rate = (Double) rateOrValue;
         this.indicator.setText(!rate.isInfinite() ? Values.Percent2.format(rate) : "-"); //$NON-NLS-1$
+
+        boolean isNegative = rate < 0;
+        boolean isValueColored = get(ColoredValueConfig.class).isValueColored();
+
+        if (isValueColored)
+        {
+            indicator.setTextColor(isNegative ? ValueColorScheme.current().negativeForeground()
+                            : ValueColorScheme.current().positiveForeground());
+        }
+        else
+        {
+            indicator.setTextColor(Colors.theme().defaultForeground());
+        }
     }
 }
