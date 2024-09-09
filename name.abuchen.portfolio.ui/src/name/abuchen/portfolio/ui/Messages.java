@@ -489,6 +489,7 @@ public class Messages extends NLS
     public static String InvestmentPlanOptionDeposit;
     public static String InvestmentPlanOptionInterest;
     public static String InvestmentPlanOptionRemoval;
+    public static String InvestmentPlanSingleTxCreated;
     public static String InvestmentPlanTitleEditPlan;
     public static String InvestmentPlanTitleNewPlan;
     public static String InvestmentPlanTxCreated;

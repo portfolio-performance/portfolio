@@ -72,8 +72,9 @@ public final class CreateInvestmentPlanTxJob extends AbstractClientJob
                     if (tx.size() == 1)
                     {
                         Entry<InvestmentPlan, List<TransactionPair<?>>> entry = tx.entrySet().iterator().next();
-                        message = MessageFormat.format(Messages.InvestmentPlanTxCreated, entry.getKey().getName(),
-                                        entry.getValue().size());
+                        message = MessageFormat.format(
+                                        entry.getValue().size() == 1 ? Messages.InvestmentPlanSingleTxCreated
+                                                        : Messages.InvestmentPlanTxCreated, entry.getKey().getName(), entry.getValue().size());
                     }
                     else
                     {
