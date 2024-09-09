@@ -256,9 +256,12 @@ public class StatementOfAssetsViewer
             if (calculateTotalsPerformance)
             {
                 List<Exception> warnings = new ArrayList<>();
-            
+
                 // performance for sub totals (category) lines
-                elements.stream().filter(Element::isCategory).forEach(e -> e.setPerformanceForCategoryTotals(
+                elements.stream().filter(Element::isCategory)
+                                .filter(e -> !Objects.equals(Classification.UNASSIGNED_ID,
+                                                e.getCategory().getClassification().getId()))
+                                .forEach(e -> e.setPerformanceForCategoryTotals(
                                 currencyCode, interval,
                                 PerformanceIndex.forClassification(filteredClient, converter.with(currencyCode),
                                                 e.getCategory().getClassification(), interval, warnings)));
@@ -1339,14 +1342,14 @@ public class StatementOfAssetsViewer
             }
             else if (element.isCategory())
             {
-                if (collector == null && valueProviderTotal != null)
+                if (collector == null && valueProviderTotal != null && !Objects.equals(Classification.UNASSIGNED_ID,
+                                element.getCategory().getClassification().getId()))
                 {
-                    // assumption: performance index has been calculated
-                    // before by calculatePerformanceAndInjectIntoElements !
+                    // assumption: performance index has been calculated before
                     PerformanceIndex index = element.getPerformanceForCategoryTotals(currencyCode, interval);
                     return valueProviderTotal.apply(index);
                 }
-                if (collector == null)
+                else if (collector == null)
                     return null;
                 else
                     return collectValue(element.getChildren(), currencyCode, interval);
@@ -1355,8 +1358,7 @@ public class StatementOfAssetsViewer
             {
                 if (collector == null && valueProviderTotal != null)
                 {
-                    // assumption: performance index has been calculated
-                    // before by calculatePerformanceAndInjectIntoElements !
+                    // assumption: performance index has been calculated before
                     PerformanceIndex index = element.getPerformanceForCategoryTotals(currencyCode, interval);
                     return valueProviderTotal.apply(index);
                 }
