@@ -33,12 +33,12 @@ public class VBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Kauf|Verkauf)( \\((Zeichnung|Rücknahme)\\))?");
+        DocumentType type = new DocumentType("(Kauf|Verkauf)( \\((Zeichnung|R.cknahme)\\))?");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Kauf|Verkauf)( \\((Zeichnung|Rücknahme)\\))?$", "^Diese Mitteilung wurde maschinell .*$");
+        Block firstRelevantLine = new Block("^(Kauf|Verkauf)( \\((Zeichnung|R.cknahme)\\))?$", "^Diese Mitteilung wurde maschinell .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
