@@ -297,6 +297,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             if (labelProvider instanceof CellItemImageClickedListener listener)
                 setupImageClickedListener(col, listener);
 
+            if (labelProvider instanceof ParameterizedColumnLabelProvider withOptionProvider)
+                withOptionProvider.setTableColumn(tableColumn);
+
             return tableColumn;
         }
 
