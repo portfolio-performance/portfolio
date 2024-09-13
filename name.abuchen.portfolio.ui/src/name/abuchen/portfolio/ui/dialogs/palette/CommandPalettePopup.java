@@ -159,6 +159,7 @@ public class CommandPalettePopup extends PopupDialog
             provider.add(BookmarkElements.class);
             provider.add(TransactionElements.class);
             provider.add(ViewElements.class);
+            provider.add(ActionElements.class);
         }
 
         provider.add(NewDomainElements.class);

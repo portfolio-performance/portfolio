@@ -481,6 +481,7 @@ public class SecurityListView extends AbstractFinanceView
     // top table: securities
     // //////////////////////////////////////////////////////////////
 
+    @SuppressWarnings("unchecked")
     @Override
     protected Control createBody(Composite parent)
     {
