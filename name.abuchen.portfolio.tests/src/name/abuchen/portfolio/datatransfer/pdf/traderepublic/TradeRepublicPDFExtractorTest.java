@@ -1351,16 +1351,22 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("Kontoauszug05.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-04-01"), hasAmount("EUR", 0.01), //
-                        hasSource("Kontoauszug05.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2023-04-01"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug05.txt"), hasNote(null)))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-05-01"), hasAmount("EUR", 0.01), //
-                        hasSource("Kontoauszug05.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2023-05-01"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug05.txt"), hasNote(null)))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-06-01"), hasAmount("EUR", 0.01), //
-                        hasSource("Kontoauszug05.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2023-06-01"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug05.txt"), hasNote(null)))));
     }
 
     @Test
@@ -1380,8 +1386,10 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-04-01"), hasAmount("EUR", 147.34), //
-                        hasSource("Kontoauszug06.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2024-04-01"), hasAmount("EUR", 147.34), //
+                        hasSource("Kontoauszug06.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-04-02"), hasAmount("EUR", 1200.00), //
@@ -1477,8 +1485,10 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-04-01"), hasAmount("EUR", 53.89), //
-                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2024-04-01"), hasAmount("EUR", 53.89), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-04-02"), hasAmount("EUR", 1200.00), //
@@ -1638,8 +1648,10 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("Kontoauszug08.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-10-02"), hasAmount("EUR", 3.81), //
-                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2023-10-02"), hasAmount("EUR", 3.81), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-10-25"), hasAmount("EUR", 1800.00), //
@@ -1654,8 +1666,10 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("Kontoauszug08.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-11-01"), hasAmount("EUR", 13.68), //
-                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2023-11-01"), hasAmount("EUR", 13.68), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-11-29"), hasAmount("EUR", 1500.00), //
@@ -1666,8 +1680,10 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("Kontoauszug08.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-12-01"), hasAmount("EUR", 19.29), //
-                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2023-12-01"), hasAmount("EUR", 19.29), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-12-14"), hasAmount("EUR", 1000.00), //
@@ -1682,8 +1698,10 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("Kontoauszug08.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-12-29"), hasAmount("EUR", 25.50), //
-                        hasSource("Kontoauszug08.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2023-12-29"), hasAmount("EUR", 25.50), //
+                        hasSource("Kontoauszug08.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-01-02"), hasAmount("EUR", 1200.00), //
@@ -1711,8 +1729,10 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-05-01"), hasAmount("EUR", 58.71), //
-                        hasSource("Kontoauszug09.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2024-05-01"), hasAmount("EUR", 58.71), //
+                        hasSource("Kontoauszug09.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-05-01"), hasAmount("EUR", 69.99), //
@@ -1752,8 +1772,10 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-04-01"), hasAmount("EUR", 172.23), //
-                        hasSource("Kontoauszug10.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2024-04-01"), hasAmount("EUR", 172.23), //
+                        hasSource("Kontoauszug10.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-04-01"), hasAmount("EUR", 172.23), //
@@ -1777,8 +1799,10 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-02-01"), hasAmount("EUR", 33.37), //
-                        hasSource("Kontoauszug11.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2024-02-01"), hasAmount("EUR", 33.37), //
+                        hasSource("Kontoauszug11.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(taxRefund(hasDate("2024-02-19"), hasAmount("EUR", 78.17), //
@@ -1789,12 +1813,16 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("Kontoauszug11.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-03-01"), hasAmount("EUR", 12.47), //
-                        hasSource("Kontoauszug11.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2024-03-01"), hasAmount("EUR", 12.47), //
+                        hasSource("Kontoauszug11.txt"), hasNote(null)))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-04-01"), hasAmount("EUR", 7.68), //
-                        hasSource("Kontoauszug11.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2024-04-01"), hasAmount("EUR", 7.68), //
+                        hasSource("Kontoauszug11.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-04-04"), hasAmount("EUR", 2000.00), //
@@ -1830,8 +1858,10 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-04-01"), hasAmount("EUR", 30.15), //
-                        hasSource("Kontoauszug12.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2024-04-01"), hasAmount("EUR", 30.15), //
+                        hasSource("Kontoauszug12.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-04-02"), hasAmount("EUR", 250.00), //
@@ -1858,8 +1888,10 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("Kontoauszug12.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-05-01"), hasAmount("EUR", 48.63), //
-                        hasSource("Kontoauszug12.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2024-05-01"), hasAmount("EUR", 48.63), //
+                        hasSource("Kontoauszug12.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-05-03"), hasAmount("EUR", 200.00), //
@@ -1997,8 +2029,10 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-06-01"), hasAmount("EUR", 123.98), //
-                        hasSource("Kontoauszug15.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported,  //
+                        interest(hasDate("2024-06-01"), hasAmount("EUR", 123.98), //
+                        hasSource("Kontoauszug15.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-06-05"), hasAmount("EUR", 2000.00), //

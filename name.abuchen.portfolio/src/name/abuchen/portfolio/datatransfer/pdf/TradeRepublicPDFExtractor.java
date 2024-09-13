@@ -1653,9 +1653,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
                         })
 
-                        .wrap(TransactionItem::new));
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return item;
+                            return null;
+                        }));
     }
 
     private void addAccountStatementTransaction_Format02()

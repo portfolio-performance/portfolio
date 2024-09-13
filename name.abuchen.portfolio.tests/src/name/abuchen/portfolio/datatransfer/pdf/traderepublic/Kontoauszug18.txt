@@ -7,16 +7,16 @@ Straße 1, 12345 IBAN DE00000000000000000000
 Ort, DE BIC TRBKDEBBXXX
 KONTOÜBERSICHT
 PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
-Depotkonto 18.285,07 € 2.500,00 € 900,00 € 19.885,07 € €
+Depotkonto 18.285,07 € 3.700,00 € 900,00 € 21.085,07 € €
 UMSATZÜBERSICHT
 DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
 02 
-Aug. Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf DE00000000000000000000 1.200,00 € 9.205,89 €2024
+Aug. Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf DE00000000000000000000 1.200,00 € 19.485,07 €2024
 19 
-Aug. Überweisung Outgoing transfer for Vorname Nachname 900,00 € 17.385,07 €
+Aug. Überweisung Outgoing transfer for Vorname Nachname 900,00 € 18.585,07 €
 2024
 29 
-Aug. Überweisung Incoming transfer from Vorname Nachname 2.500,00 € 19.885,07 €
+Aug. Überweisung Incoming transfer from Vorname Nachname 2.500,00 € 21.085,07 €
 2024
 HAFTUNGSAUSSCHLUSS
 Sehr geehrte Kundin, sehr geehrter Kunde
