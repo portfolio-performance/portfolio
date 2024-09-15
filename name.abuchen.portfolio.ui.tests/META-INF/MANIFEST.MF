@@ -14,5 +14,7 @@ Require-Bundle: org.junit,
  org.apache.pdfbox.jempbox,
  org.apache.servicemix.bundles.xpp3,
  name.abuchen.portfolio.junit;bundle-version="0.59.6",
- org.mockito.mockito-core
+ org.mockito.mockito-core,
+ org.apache.commons.commons-io,
+ org.apache.commons.commons-codec
 Automatic-Module-Name: name.abuchen.portfolio.ui.tests
