@@ -52,12 +52,14 @@
 		<unit id="org.eclipse.swtchart.feature.source.feature.group" version="0.14.0.202301260747"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://download.eclipse.org/eclipse/updates/4.30/R-4.30-202312010110/"/>
-		<unit id="org.eclipse.e4.rcp.feature.group" version="4.30.0.v20231113-1355"/>
-		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.30.0.v20231113-1355"/>
-		<unit id="org.eclipse.equinox.executable" version="3.8.2300.v20231106-1826"/>
-		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.2300.v20231106-1826"/>
-		<unit id="org.eclipse.platform.feature.group" version="4.30.0.v20231201-0512"/>
+		<repository location="https://download.eclipse.org/eclipse/updates/4.33/R-4.33-202409030240/"/>
+		<unit id="org.eclipse.e4.rcp.feature.group" version="4.33.0.v20240903-0618"/>
+		<unit id="org.eclipse.e4.rcp.source.feature.group" version="4.33.0.v20240903-0618"/>
+		<unit id="org.eclipse.equinox.executable" version="3.8.2600.v20240722-2106"/>
+		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.2600.v20240722-2106"/>
+		<unit id="org.eclipse.platform.feature.group" version="4.33.0.v20240903-0618"/>
+		<unit id="org.osgi.service.component.annotations" version="1.5.1.202212101352"/>
+		<unit id="org.eclipse.osgi.services" version="3.12.100.v20240327-0645"/>
 	</location>
 	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Apache PDFBox 1.8" missingManifest="generate" type="Maven">
 		<dependencies>

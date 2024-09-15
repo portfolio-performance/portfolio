@@ -73,7 +73,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.httpcomponents.core5.httpcore5,
  org.apache.pdfbox,
  json-path,
- com.google.gson
+ com.google.gson,
+ org.osgi.service.component
 Automatic-Module-Name: name.abuchen.portfolio
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/name.abuchen.portfolio.util.ImageioSpiRegistration.xml
