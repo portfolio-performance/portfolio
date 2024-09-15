@@ -22,8 +22,8 @@
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<argLine>-ea</argLine>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 	</properties>
 
 	<modules>
@@ -64,7 +64,7 @@
 									<version>3.5.2</version>
 								</requireMavenVersion>
 								<requireJavaVersion>
-									<version>17</version>
+									<version>21</version>
 								</requireJavaVersion>
 							</rules>
 						</configuration>
@@ -82,7 +82,7 @@
 				<artifactId>target-platform-configuration</artifactId>
 				<configuration>
 					<pomDependencies>consider</pomDependencies>
-					<executionEnvironment>JavaSE-17</executionEnvironment>
+					<executionEnvironment>JavaSE-21</executionEnvironment>
 					<exclusions>
 						<exclusion>
 							<groupId>com.google.code.findbugs</groupId>
