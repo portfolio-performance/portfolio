@@ -115,7 +115,9 @@ public class ExtractorUtils
     // Date formatters with case-insensitive support for Canada
     private static final DateTimeFormatter[] DATE_FORMATTER_CANADA = { //
                     createFormatter("LLL d, yyyy", Locale.CANADA), //
-                    createFormatter("LLL dd, yyyy", Locale.CANADA) };
+                    createFormatter("LLL. d, yyyy", Locale.CANADA), //
+                    createFormatter("LLL dd, yyyy", Locale.CANADA), //
+                    createFormatter("LLL. dd, yyyy", Locale.CANADA) };
 
     // Date formatters with case-insensitive support for Canadian French
     private static final DateTimeFormatter[] DATE_FORMATTER_CANADA_FRENCH = { //
