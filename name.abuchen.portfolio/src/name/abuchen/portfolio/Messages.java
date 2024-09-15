@@ -327,12 +327,11 @@ public class Messages extends NLS
     public static String VINISAppValueRealizedCapitalGainsCurrentYear;
     public static String VINISAppValueRealizedCapitalGainsLastYear;
     public static String VINISAppValueRealizedCapitalGainsTotal;
-    public static String VINISAppValueSecuritiesMarket; 
-    public static String VINISAppValueSecuritiesPurchase; 
+    public static String VINISAppValueSecuritiesMarket;
+    public static String VINISAppValueSecuritiesPurchase;
     public static String VINISAppValueTotalAssetsMarket;
     public static String VINISAppValueTotalAssetsPurchase;
 
-  
     static
     {
         // initialize resource bundle

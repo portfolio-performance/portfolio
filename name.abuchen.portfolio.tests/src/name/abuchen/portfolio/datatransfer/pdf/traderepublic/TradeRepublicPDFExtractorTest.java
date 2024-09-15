@@ -2145,8 +2145,10 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-07-01"), hasAmount("EUR", 1.24),
-                        hasSource("ReleveDeCompte01.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired,  //
+                        interest(hasDate("2024-07-01"), hasAmount("EUR", 1.24), //
+                        hasSource("ReleveDeCompte01.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-07-01"), hasAmount("EUR", 500.00), //
@@ -2161,8 +2163,10 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("ReleveDeCompte01.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-08-01"), hasAmount("EUR", 1.30),
-                        hasSource("ReleveDeCompte01.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired,  //
+                        interest(hasDate("2024-08-01"), hasAmount("EUR", 1.30), //
+                        hasSource("ReleveDeCompte01.txt"), hasNote(null)))));
 
         // assert transaction ---> ZEILE 37
         assertThat(results, hasItem(deposit(hasDate("2024-08-01"), hasAmount("EUR", 500.00), //
@@ -2186,8 +2190,10 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-05-01"), hasAmount("EUR", 26.13), //
-                        hasSource("TransaccionesDeCuenta01.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired,  //
+                        interest(hasDate("2024-05-01"), hasAmount("EUR", 26.13), //
+                        hasSource("TransaccionesDeCuenta01.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-05-02"), hasAmount("EUR", 2600.00), //
