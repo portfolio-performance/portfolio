@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -165,6 +166,8 @@ public class SecurityListView extends AbstractFinanceView
         private final Predicate<Security> securityIsNotInactive = record -> !record.isRetired();
         private final Predicate<Security> securityIsInactive = record -> record.isRetired();
         private final Predicate<Security> onlySecurities = record -> !record.isExchangeRate();
+        private final Predicate<Security> onlyOpts = record -> record.isOption();
+        private final Predicate<Security> onlyNonOpts = record -> !record.isOption();
         private final Predicate<Security> onlyExchangeRates = record -> record.isExchangeRate();
         private final Predicate<Security> sharesNotZero = record -> getSharesHeld(getClient(), record) != 0;
         private final Predicate<Security> sharesEqualZero = record -> getSharesHeld(getClient(), record) == 0;
@@ -199,6 +202,10 @@ public class SecurityListView extends AbstractFinanceView
                 filter.add(limitPriceExceeded);
             if ((savedFilters & (1 << 7)) != 0)
                 filter.add(securityIsInactive);
+            if ((savedFilters & (1 << 8)) != 0)
+                filter.add(onlyOpts);
+            if ((savedFilters & (1 << 9)) != 0)
+                filter.add(onlyNonOpts);
 
             if (!filter.isEmpty())
                 setImage(Images.FILTER_ON);
@@ -224,6 +231,10 @@ public class SecurityListView extends AbstractFinanceView
                     savedFilter += (1 << 6);
                 if (filter.contains(securityIsInactive))
                     savedFilter += (1 << 7);
+                if (filter.contains(onlyOpts))
+                    savedFilter += (1 << 8);
+                if (filter.contains(onlyNonOpts))
+                    savedFilter += (1 << 9);
                 if (watchlist != null)
                     preferenceStore.setValue(
                                     this.getClass().getSimpleName() + "-filterSettings" + "-" + watchlist.getName(), //$NON-NLS-1$ //$NON-NLS-2$
@@ -294,6 +305,8 @@ public class SecurityListView extends AbstractFinanceView
             manager.add(createAction(Messages.SecurityListFilterOnlyInactive, securityIsInactive));
             manager.add(new Separator());
             manager.add(createAction(Messages.SecurityListFilterOnlySecurities, onlySecurities));
+            manager.add(createAction("  " + Messages.SecurityListFilterOnlySecuritiesOpts, onlyOpts));
+            manager.add(createAction("  " + Messages.SecurityListFilterOnlySecuritiesNonOpts, onlyNonOpts));
             manager.add(createAction(Messages.SecurityListFilterOnlyExchangeRates, onlyExchangeRates));
             manager.add(new Separator());
             manager.add(createAction(Messages.SecurityFilterSharesHeldNotZero, sharesNotZero));
@@ -320,9 +333,13 @@ public class SecurityListView extends AbstractFinanceView
                     if (!isChecked)
                     {
                         if (predicate == onlySecurities)
-                            filter.remove(onlyExchangeRates);
+                            filter.removeAll(Arrays.asList(onlyExchangeRates, onlyOpts, onlyNonOpts));
+                        else if (predicate == onlyOpts)
+                            filter.removeAll(Arrays.asList(onlyExchangeRates, onlySecurities, onlyNonOpts));
+                        else if (predicate == onlyNonOpts)
+                            filter.removeAll(Arrays.asList(onlyExchangeRates, onlySecurities, onlyOpts));
                         else if (predicate == onlyExchangeRates)
-                            filter.remove(onlySecurities);
+                            filter.removeAll(Arrays.asList(onlySecurities, onlyOpts, onlyNonOpts));
                         else if (predicate == sharesEqualZero)
                             filter.remove(sharesNotZero);
                         else if (predicate == sharesNotZero)

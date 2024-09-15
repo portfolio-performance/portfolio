@@ -1280,6 +1280,8 @@ public class Messages extends NLS
     public static String SecurityListFilterOnlyExchangeRates;
     public static String SecurityListFilterOnlyInactive;
     public static String SecurityListFilterOnlySecurities;
+    public static String SecurityListFilterOnlySecuritiesNonOpts;
+    public static String SecurityListFilterOnlySecuritiesOpts;
     public static String SecurityMenuAddEvent;
     public static String SecurityMenuAddNewSecurity;
     public static String SecurityMenuAddNewSecurityDescription;
