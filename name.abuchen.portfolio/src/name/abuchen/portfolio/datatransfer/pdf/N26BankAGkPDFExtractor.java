@@ -102,10 +102,19 @@ public class N26BankAGkPDFExtractor extends AbstractPDFExtractor
                         // Gesamt -66,50€
                         // Zinsertrag +252,16€
                         // Gesamt +252,16€
+                        //
+                        // Zinsen
+                        // Nr. 12/2023
+                        // 01.12.2023 bis 31.12.2023
+                        // Gebühren 0,00€
+                        // Abgeltungssteuer -0,14€
+                        // Gesamt -0,14€
+                        // Zinsertrag +0,56€
+                        // Zinssatz 2.26%
+                        // Gesamt +0,56€
                         // @formatter:on
                         .section("date", "tax", "taxCurrency", "amount", "currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
-                        .find("Steuer")
                         .match("^Gesamt \\-(?<tax>[\\.,\\d]+)(?<taxCurrency>\\p{Sc})$") //
                         .match("^Zinsertrag \\+(?<amount>[\\.,\\d]+)(?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
