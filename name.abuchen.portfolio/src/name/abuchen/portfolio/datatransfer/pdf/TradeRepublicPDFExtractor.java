@@ -63,7 +63,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|WERTPAPIERABRECHNUNG ROUND UP" //
                         + "|WERTPAPIERABRECHNUNG SAVEBACK" //
                         + "|SECURITIES SETTLEMENT SAVINGS PLAN" //
-                        + "|SECURITIES SETTLEMENT"
+                        + "|SECURITIES SETTLEMENT" //
                         + "|LIQUIDACI.N DE VALORES" //
                         + "|REINVESTIERUNG" //
                         + "|CONFIRMATION DE L.INVESTISSEMENT PROGRAMM." //
@@ -1670,9 +1670,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction_Format02()
     {
-        final DocumentType type = new DocumentType("(KONTO.BERSICHT"
-                        + "|RESUMEN DE ESTADO DE CUENTA|"
-                        + "SYNTH.SE DU RELEV. DE COMPTE)", (context, lines) -> {
+        final DocumentType type = new DocumentType("(KONTO.BERSICHT" //
+                        + "|RESUMEN DE ESTADO DE CUENTA|" //
+                        + "SYNTH.SE DU RELEV. DE COMPTE)", (context, lines) -> { //
             Pattern pAccountAmountTransaction = Pattern.compile("^(?!(Depotkonto|Cuenta de valores|Compte titres)).* [\\.,\\d]+ \\p{Sc} (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}).*$");
             Pattern pAccountInitialSaldoTransaction = Pattern.compile("^(Depotkonto|Cuenta de valores|Compte titres) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc}$");
 
@@ -1754,6 +1754,30 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "amount", "currency") //
                                                         .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})? [\\d]{4}) .berweisung PayOut .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.REMOVAL);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // 23 Juli 2024 Überweisung Incoming transfer from KLEslAT zxcWeqg 1.100,00 € 56.457,39 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount", "currency") //
+                                                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})? [\\d]{4}) .berweisung Incoming transfer from .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // 22 Juli 2024 Überweisung Outgoing transfer for EMYRMzk QpSHhzd 200,00 € 55.357,39 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount", "currency") //
+                                                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})? [\\d]{4}) .berweisung Outgoing transfer for .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
@@ -2008,7 +2032,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Juni Prämie Your Saveback payment 5,18 € 3.484,00 €
                                         // 2024
                                         //
-                                        // 29 
+                                        // 29
                                         // Aug. Überweisung Incoming transfer from Vorname Nachname 2.500,00 € 19.885,07 €
                                         // 2024
                                         // @formatter:on
@@ -2027,7 +2051,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }),
                                         // @formatter:off
-                                        // 02 
+                                        // 02
                                         // Aug. Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf DE00000000000000000000 1.200,00 € 9.205,89 €2024
                                         // @formatter:on
                                         section -> section //
@@ -2046,7 +2070,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Juni Überweisung PayOut to transit 6.500,00 € 50.860,76 €
                                         // 2024
                                         //
-                                        // 19 
+                                        // 19
                                         // Aug. Überweisung Outgoing transfer for Vorname Nachname 900,00 € 17.385,07 €
                                         // 2024
                                         // @formatter:on
@@ -2217,6 +2241,35 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
+        // @formatter:off
+        // 02 Aug.
+        // 2024 Steuern Tax Optimisation 6,54 € 55.938,40 €
+        // @formatter:on
+        Block taxesBlock_Format01 = new Block("^[\\d]{2} [\\w]{3,4}([\\.]{1})?[\\s]$");
+        type.addBlock(taxesBlock_Format01);
+        taxesBlock_Format01.setMaxSize(2);
+        taxesBlock_Format01.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "year", "amount", "currency").optional() //
+                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})?)[\\s]$")
+                        .match("^(?<year>[\\d]{4}) Steuern (Steueroptimierung |Tax Optimisation|Kapitalertragssteueroptimierung ).* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
 
         // @formatter:off
         // 19
@@ -2231,10 +2284,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         // Juni Steuern Tax Optimisation 0,01 € 50.860,75 €
         // 2024
         // @formatter:on
-        Block taxBlock_Format03 = new Block("^[\\d]{2}[\\s]$");
-        type.addBlock(taxBlock_Format03);
-        taxBlock_Format03.setMaxSize(3);
-        taxBlock_Format03.set(new Transaction<AccountTransaction>()
+        Block taxesBlock_Format02 = new Block("^[\\d]{2}[\\s]$");
+        type.addBlock(taxesBlock_Format02);
+        taxesBlock_Format02.setMaxSize(3);
+        taxesBlock_Format02.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction accountTransaction = new AccountTransaction();
