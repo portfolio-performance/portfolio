@@ -96,4 +96,30 @@ public class N26BankAGPDFExtractorTest
         assertThat(results, hasItem(removal(hasDate("2024-07-02"), hasAmount("EUR", 100.00), //
                         hasSource("Kontoauszug02.txt"), hasNote(null))));
     }
+
+    @Test
+    public void testKontoauszug03()
+    {
+        N26BankAGkPDFExtractor extractor = new N26BankAGkPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-12-01T00:00"), //
+                        hasSource("Kontoauszug03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.42), hasGrossValue("EUR", 0.56), //
+                        hasTaxes("EUR", 0.14), hasFees("EUR", 0.00))));
+    }
 }
