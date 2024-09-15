@@ -248,6 +248,7 @@ public class Messages extends NLS
     public static String MsgCheckUnsupportedCurrency;
     public static String MsgCoinGeckoRateLimitExceeded;
     public static String MsgDeltaWithoutAssets;
+    public static String MsgErrorTransactionAlternativeDocumentRequired;
     public static String MsgErrorBaseAndTermCurrencyAreEqualWithInvalidExchangeRate;
     public static String MsgErrorCannotConvertToRequestedCurrency;
     public static String MsgErrorCannotRetrieveExchangeRateForCurrency;

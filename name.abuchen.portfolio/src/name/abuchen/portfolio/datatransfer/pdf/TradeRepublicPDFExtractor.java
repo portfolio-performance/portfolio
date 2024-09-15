@@ -1653,7 +1653,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
                         })
 
                         .wrap((t, ctx) -> {
@@ -2120,7 +2120,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
                         })
 
                         .wrap((t, ctx) -> {
@@ -2166,7 +2166,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             if ("Zinszahlung".equals(v.get("type")))
-                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
                         })
 
                         .wrap((t, ctx) -> {
@@ -2204,7 +2204,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
                         })
 
                         .wrap((t, ctx) -> {
