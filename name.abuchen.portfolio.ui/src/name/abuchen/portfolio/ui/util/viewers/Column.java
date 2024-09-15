@@ -57,6 +57,14 @@ public class Column
     private boolean isRemovable = true;
     private ColumnViewerSorter sorter;
     private Integer defaultSortDirection;
+
+    /**
+     * Constructs a LabelProvider. We need to allow a factory method because
+     * some label provider (such as the StyledCellLabelProvider) cannot be
+     * attached to multiple columns. However, we can create multiple visual
+     * columns out of one column definition, for example for different reporting
+     * periods.
+     */
     private Supplier<CellLabelProvider> labelProvider;
     private ElementOptionFunction<Object> toolTipProvider;
     private Images image;

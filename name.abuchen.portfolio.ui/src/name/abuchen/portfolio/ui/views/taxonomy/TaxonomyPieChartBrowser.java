@@ -77,13 +77,13 @@ public class TaxonomyPieChartBrowser implements IPieChart
                         boolean excludeSecurities)
         {
             String name = JSONObject.escape(node.getName());
-            long actual = node.isRoot() ? total.getAmount() : node.getActual().getAmount();
+            Money actual = node.isRoot() ? total : node.getActual();
             long base = node.isRoot() ? total.getAmount() : node.getParent().getActual().getAmount();
 
             String totalPercentage = "";
             if (node.getParent() != null && !node.getParent().isRoot())
                 totalPercentage = "; " + MessageFormat.format(Messages.LabelTotalValuePercent,
-                                Values.Percent2.format(actual / (double) total.getAmount()));
+                                Values.Percent2.format(actual.getAmount() / (double) total.getAmount()));
 
             if (excludeSecurities && node.isAssignment())
             {
@@ -96,8 +96,10 @@ public class TaxonomyPieChartBrowser implements IPieChart
                 buffer.append("{\"uuid\":\"").append(node.getId());
                 buffer.append("\",\"name\":\"").append(name);
                 buffer.append("\",\"caption\":\"");
-                buffer.append(name).append(" ").append(Values.Amount.format(actual)).append(" (")
-                                .append(Values.Percent2.format(actual / (double) base)).append(totalPercentage)
+                buffer.append("<b>").append(name).append("</b> ").append(Values.Money.format(actual))
+                                .append(" (")
+                                .append(Values.Percent2.format(actual.getAmount() / (double) base))
+                                .append(totalPercentage)
                                 .append(")\",");
                 buffer.append("\"value\":").append(node.getActual().getAmount());
                 buffer.append(",\"color\":\"")

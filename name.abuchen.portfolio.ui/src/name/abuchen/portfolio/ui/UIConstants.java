@@ -87,6 +87,7 @@ public interface UIConstants
         String NEW_DOMAIN_ELEMENT = "name.abuchen.portfolio.ui.command.newDomainElement"; //$NON-NLS-1$
         String IMPORT_CSV = "name.abuchen.portfolio.ui.command.import"; //$NON-NLS-1$
         String PREFERENCES = "org.eclipse.ui.window.preferences"; //$NON-NLS-1$
+        String UPDATE_QUOTES = "name.abuchen.portfolio.ui.command.updatequotes"; //$NON-NLS-1$
     }
 
     /**
@@ -105,6 +106,15 @@ public interface UIConstants
         String TAG = "name.abuchen.portfolio.ui.param.tag"; //$NON-NLS-1$
         String PAGE = "name.abuchen.portfolio.ui.param.page"; //$NON-NLS-1$
         String TYPE = "name.abuchen.portfolio.ui.param.type"; //$NON-NLS-1$
+        String FILTER = "name.abuchen.portfolio.ui.param.filter"; //$NON-NLS-1$
+    }
+
+    /**
+     * Well-known element ids from the application e4xmi file
+     */
+    interface ElementId // NOSONAR
+    {
+        String MENU_ITEM_UPDATE_QUOTES_SELECTED_SECURITIES = "name.abuchen.portfolio.ui.menu.online.updatequotes.selectedsecurities"; //$NON-NLS-1$
     }
 
     interface Preferences // NOSONAR

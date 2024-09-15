@@ -348,9 +348,12 @@ public class StatementOfAssetsViewer
         ImportFromFileDropAdapter.attach(this.assets.getControl(), owner.getPart());
 
         assets.addSelectionChangedListener(event -> {
-            Element element = (Element) ((IStructuredSelection) event.getSelection()).getFirstElement();
-            if (element != null && element.isSecurity())
-                selectionService.setSelection(new SecuritySelection(client, element.getSecurity()));
+            List<Security> securities = event.getStructuredSelection().stream().filter(e -> ((Element) e).isSecurity())
+                            .map(e -> ((Element) e).getSecurity()).toList();
+            if (!securities.isEmpty())
+                selectionService.setSelection(new SecuritySelection(client, securities));
+            else
+                selectionService.setSelection(null);
         });
 
         support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, preference, assets, layout);

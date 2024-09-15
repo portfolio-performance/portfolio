@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
@@ -549,6 +550,11 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
         if (contextMenu != null)
             contextMenu.dispose();
+    }
+
+    public Stream<Column> getColumns()
+    {
+        return columns.stream();
     }
 
     public String getConfigurationName()

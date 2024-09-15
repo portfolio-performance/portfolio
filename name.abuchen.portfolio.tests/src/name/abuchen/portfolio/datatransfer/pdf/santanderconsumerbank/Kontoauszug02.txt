@@ -1,0 +1,63 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.5.qualifier
+-----------------------------------------
+ Ko nto inha ber Maxe Ma x Mus termann  
+Auszug-Nr. 001 Bla tt-Nr. 1 Auszug-Da tum 02 .01 .2 02 3 Limit 0,00
+Buchungsta g Wert Umsa tz Buchungstext
+Ihre IBAN: DE93  3 1 01  083 3  2 2 64  01 3 1  2 0 BIC: SCFBDE3 3 Ko nto -Nr.  2 2 64 01 3 1 2 0 EUR
+        SALDENMITTEILUNG:
+        WIR BITTEN SIE, DIE RICHTIGKEIT DES SALDOS ZU PRÜFEN
+        UND UNSTIMMIGKEITEN DER REVISIONSABTEILUNG, POSTFACH
+        1 0 1 2  1 4, 41 052  MÖNCHENGLADBACH, UMGEHEND MITZUTEILEN.
+        DER SALDO GILT ALS ANERKANNT, WENN SIE NICHT INNERHALB
+        VON SECHS WOCHEN SEIT ZUGANG DER SALDOMITTEILUNG
+        WIDERSPRECHEN. DIE ANERKENNUNG DES SALDOS UMFASST AUCH
+        EINE GENEHMIGUNG DER DARIN ENTHALTENEN BELASTUNGEN
+        AUFGRUND VON EINZUGSERMÄCHTIGUNGSLASTSCHRIFTEN UND/ODER
+        SEPA BASISLASTSCHRIFTEN.
+        DIESER KONTOAUSZUG UMFASST DIE UMSÄTZE VOM
+        04.01 .2 02 2  BIS 02 .01 .2 02 3
+ 40,03       ALTER SALDO GEM. KONTOAUSZUG VOM 03 .01 .2 02 2
+02 .01 .  3 0.1 2 . 0,01       Ha benzinsen 0,01
+ 40,04      NEUER SALDO
+   
+   
+   
+Sta nd: 05.2 01 9
+Ko nto a uszug
+ Ko nto inha ber Maxe Ma x Mus termann  
+Auszug-Nr. 001 Bla tt-Nr. Auszug-Da tum 02 .01 .2 02 3 Limit 0,00
+Buchungsta g Wert Umsa tz Buchungstext
+Ihre IBAN: DE93  3 1 01  083 3  2 2 64  01 3 1  2 0 BIC: SCFBDE3 3 Ko nto -Nr.  2 2 64 01 3 1 2 0 EUR
+   
+Wichtige Hinweise
+   
+Wir bitten Sie, die Buchungen zu prüfen und uns evtl. Unstimmigkeiten so fo rt mitzuteilen.
+   Die Gutschrift vo n Schecks, Wechseln und so nstigen Einzugspa pieren erfo lgt unter „Einga ng
+   vo rbeha lten“. Der a ngegebene Ko nto sta nd berücksichtigt nicht die Wertstellung der
+Buchungen und ka nn da her a uch no ch nicht wertgestellte Beträge entha lten, über die bis zur
+   Wertstellung nicht o hne Bela stung mit So llzinsen verfügt werden ka nn. Eine La stschrift so wie
+   Schecks sind eingelöst, wenn die Bela stung nicht spätestens a m zweiten Ba nka rbeitsta g na ch
+Ihrer Vo rna hme rückgängig gema cht wird. Enthält der Ko nto a uszug eine a ls
+   Rechnungsa bschluss gekennzeichnete Buchung, gilt der Abschlusssa ldo  a ls genehmigt, wenn
+   nicht innerha lb vo n 6 Wo chen seit Zuga ng Einwendungen a n unseren Bereich Revisio n,
+Sa nta nder-Pla tz 1 , 41 061  Mönchengla dba ch a bgesa ndt werden. 
+   
+Dieser Ko nto a uszug stellt keine Steuerbescheinigung da r. USt-Id. DE 1 2 0492 3 90
+   Fina nzdienstleistungen sind umsa tzsteuerbefreit.
+   Wir, a ls Fina nzdienstleister, sind gesetzlich verpflichtet, a nfa llende Kirchensteuern direkt a n
+   da s zuständige Fina nza mt a bzuführen. Da zu wird regelmäßig eine a uto ma tische Abfra ge
+Ihres Kirchensteuera bzugsmerkma ls beim Bundeszentra la mt für Steuern durchgeführt. Sie
+   ha ben die Möglichkeit, der Übermittlung des Merkma ls vo m Bundeszentra la mt für Steuern
+   a n Fina nzinstitute bis zum 3 0. Juni eines Ja hres direkt beim Bundeszentra la mt für Steuern
+unter http://www.bzst.de zu widersprechen.
+   
+Gutha ben sind a ls Einla gen na ch Ma ßga be des Einla gensicherungsgesetzes
+   entschädigungsfähig. Nähere Info rma tio nen können Sie dem „Info rma tio nsbo gen für den
+   Einleger“ unter www.sa nta nder.de entnehmen.
+   
+Sta nd: 05.2 01 9
+Ko nto a uszug
+
+```
