@@ -248,6 +248,7 @@ public class Messages extends NLS
     public static String MsgCheckUnsupportedCurrency;
     public static String MsgCoinGeckoRateLimitExceeded;
     public static String MsgDeltaWithoutAssets;
+    public static String MsgErrorTransactionAlternativeDocumentRequired;
     public static String MsgErrorBaseAndTermCurrencyAreEqualWithInvalidExchangeRate;
     public static String MsgErrorCannotConvertToRequestedCurrency;
     public static String MsgErrorCannotRetrieveExchangeRateForCurrency;
@@ -327,12 +328,11 @@ public class Messages extends NLS
     public static String VINISAppValueRealizedCapitalGainsCurrentYear;
     public static String VINISAppValueRealizedCapitalGainsLastYear;
     public static String VINISAppValueRealizedCapitalGainsTotal;
-    public static String VINISAppValueSecuritiesMarket; 
-    public static String VINISAppValueSecuritiesPurchase; 
+    public static String VINISAppValueSecuritiesMarket;
+    public static String VINISAppValueSecuritiesPurchase;
     public static String VINISAppValueTotalAssetsMarket;
     public static String VINISAppValueTotalAssetsPurchase;
 
-  
     static
     {
         // initialize resource bundle
