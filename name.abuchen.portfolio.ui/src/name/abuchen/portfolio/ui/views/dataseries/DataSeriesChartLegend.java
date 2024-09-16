@@ -145,6 +145,11 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
                 setToolTipText(TextUtil.wordwrap(security.toInfoString()));
             else if (series.getInstance() instanceof Classification classification)
                 setToolTipText(classification.getPathName(true));
+            else if (series.getInstance() instanceof GroupedDataSeries groupedDataSeries
+                            && ((GroupedDataSeries) series.getInstance())
+                                            .getParentObject() instanceof Classification classification)
+                setToolTipText(groupedDataSeries.getClientDataSeriesLabel() + " (" + classification.getPathName(true) //$NON-NLS-1$
+                                + ")"); //$NON-NLS-1$
             else
                 setToolTipText(series.getLabel());
         }

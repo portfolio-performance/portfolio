@@ -26,6 +26,7 @@ public class DataSeriesSet
 {
     private DataSeries.UseCase useCase;
     private final List<DataSeries> availableSeries = new ArrayList<>();
+    private final List<DataSeries> availableDerivedSeries = new ArrayList<>();
 
     public DataSeriesSet(Client client, IPreferenceStore preferences, DataSeries.UseCase useCase)
     {
@@ -35,8 +36,9 @@ public class DataSeriesSet
         switch (useCase)
         {
             case STATEMENT_OF_ASSETS:
-                buildStatementOfAssetsDataSeries(client, preferences, wheel);
-                return;
+                buildStatementOfAssetsDataSeries();
+                buildStatementOfAssetsDerivedDataSeries(client, preferences, wheel);
+                break;
             case PERFORMANCE:
                 buildPerformanceDataSeries(client, preferences, wheel);
                 break;
@@ -60,6 +62,11 @@ public class DataSeriesSet
         return availableSeries;
     }
 
+    public List<DataSeries> getAvailableDerivedSeries()
+    {
+        return availableDerivedSeries;
+    }
+
     /**
      * Returns DataSeries matching the given UUID.
      */
@@ -68,44 +75,58 @@ public class DataSeriesSet
         return availableSeries.stream().filter(d -> d.getUUID().equals(uuid)).findAny().orElse(null);
     }
 
-    private void buildStatementOfAssetsDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
+    private void buildStatementOfAssetsDerivedDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
     {
-        for (var entry : DataSeries.statementOfAssetsDataSeriesLabels.entrySet())
+        for (var entry : DataSeries.ClientDataSeriesType.values())
         {
-            // Common folder
-            availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, entry.getKey(), entry.getValue(), wheel.next()));
-            
+            for (Security security : client.getSecurities())
+            {
+                // securities w/o currency code (e.g. a stock index) cannot be
+                // added as equity data series (only as benchmark)
+                if (security.getCurrencyCode() == null)
+                    continue;
+
+                var instance = new GroupedDataSeries(security, entry, DataSeries.Type.SECURITY);
+
+                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, security.getName(),
+                                wheel.next());
+                dataSeries.setLineChart(entry.isLineSerie());
+                dataSeries.setShowArea(entry.isAreaSerie());
+                availableDerivedSeries.add(dataSeries);
+            }
+
             for (Portfolio portfolio : client.getPortfolios())
             {
-                var instance = new GroupedDataSeries(portfolio, entry.getKey(), DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT);
+                var instance = new GroupedDataSeries(portfolio, entry, DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT);
                 instance.setIsPortfolioPlusReferenceAccount(true);
 
                 var name = portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(); //$NON-NLS-1$
 
-                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, name, instance, entry.getValue(),
-                                wheel.next());
-
-                availableSeries.add(dataSeries);
+                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, name, wheel.next());
+                dataSeries.setLineChart(entry.isLineSerie());
+                dataSeries.setShowArea(entry.isAreaSerie());
+                availableDerivedSeries.add(dataSeries);
             }
             
             for (Portfolio portfolio : client.getPortfolios())
             {
-                var instance = new GroupedDataSeries(portfolio, entry.getKey(), DataSeries.Type.PORTFOLIO);
+                var instance = new GroupedDataSeries(portfolio, entry, DataSeries.Type.PORTFOLIO);
 
-                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, portfolio.getName(), instance,
-                                entry.getValue(), wheel.next());
-
-                availableSeries.add(dataSeries);
+                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, portfolio.getName(),
+                                wheel.next());
+                dataSeries.setLineChart(entry.isLineSerie());
+                dataSeries.setShowArea(entry.isAreaSerie());
+                availableDerivedSeries.add(dataSeries);
             }
 
             for (Account account : client.getAccounts())
             {
-                var instance = new GroupedDataSeries(account, entry.getKey(), DataSeries.Type.ACCOUNT);
+                var instance = new GroupedDataSeries(account, entry, DataSeries.Type.ACCOUNT);
 
-                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, account.getName(), instance,
-                                entry.getValue(), wheel.next());
-
-                availableSeries.add(dataSeries);
+                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, account.getName(), wheel.next());
+                dataSeries.setLineChart(entry.isLineSerie());
+                dataSeries.setShowArea(entry.isAreaSerie());
+                availableDerivedSeries.add(dataSeries);
             }
 
             for (Taxonomy taxonomy : client.getTaxonomies())
@@ -118,31 +139,122 @@ public class DataSeriesSet
                         if (classification.getParent() == null)
                             return;
 
-                        Object[] groups = { taxonomy, classification.getPathName(false) };
-
-                        var instance = new GroupedDataSeries(classification, entry.getKey(),
+                        var instance = new GroupedDataSeries(classification, entry,
                                         DataSeries.Type.CLASSIFICATION);
 
-                        var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, groups, instance, entry.getValue(),
+                        var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, taxonomy, instance,
+                                        classification.getPathName(false),
                                         wheel.next());
-
-                        availableSeries.add(dataSeries);
+                        dataSeries.setLineChart(entry.isLineSerie());
+                        dataSeries.setShowArea(entry.isAreaSerie());
+                        availableDerivedSeries.add(dataSeries);
                     }
                 });
             }
-            
+
             ClientFilterMenu menu = new ClientFilterMenu(client, preferences);
 
             for (ClientFilterMenu.Item item : menu.getCustomItems())
             {
-                var instance = new GroupedDataSeries(item, entry.getKey(), DataSeries.Type.CLIENT_FILTER);
+                var instance = new GroupedDataSeries(item, entry, DataSeries.Type.CLIENT_FILTER);
 
-                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, item.getLabel(), instance,
-                                entry.getValue(), wheel.next());
-
-                availableSeries.add(dataSeries);
+                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, item.getLabel(), wheel.next());
+                dataSeries.setLineChart(entry.isLineSerie());
+                dataSeries.setShowArea(entry.isAreaSerie());
+                availableDerivedSeries.add(dataSeries);
             }
         }
+    }
+
+    private void buildStatementOfAssetsDataSeries()
+    {
+        availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS, Messages.LabelTotalSum,
+                        Colors.TOTALS.getRGB()));
+
+        DataSeries series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TRANSFERALS,
+                        Messages.LabelTransferals, Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY).getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TRANSFERALS_ACCUMULATED,
+                        Messages.LabelAccumulatedTransferals,
+                        Display.getDefault().getSystemColor(SWT.COLOR_YELLOW).getRGB());
+        series.setShowArea(true);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INVESTED_CAPITAL,
+                        Messages.LabelInvestedCapital, Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
+        series.setShowArea(true);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.ABSOLUTE_INVESTED_CAPITAL,
+                        Messages.LabelAbsoluteInvestedCapital,
+                        Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
+        series.setShowArea(true);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.ABSOLUTE_DELTA, Messages.LabelDelta,
+                        Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.ABSOLUTE_DELTA_ALL_RECORDS,
+                        Messages.LabelAbsoluteDelta, Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TAXES, Messages.ColumnTaxes,
+                        Display.getDefault().getSystemColor(SWT.COLOR_RED).getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TAXES_ACCUMULATED,
+                        Messages.LabelAccumulatedTaxes, Display.getDefault().getSystemColor(SWT.COLOR_RED).getRGB());
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DIVIDENDS, Messages.LabelDividends,
+                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA).getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DIVIDENDS_ACCUMULATED,
+                        Messages.LabelAccumulatedDividends,
+                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA).getRGB());
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST, Messages.LabelInterest,
+                        Colors.DARK_GREEN.getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST_ACCUMULATED,
+                        Messages.LabelAccumulatedInterest, Colors.DARK_GREEN.getRGB());
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST_CHARGE, Messages.LabelInterestCharge,
+                        Colors.DARK_GREEN.getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST_CHARGE_ACCUMULATED,
+                        Messages.LabelAccumulatedInterestCharge, Colors.DARK_GREEN.getRGB());
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.EARNINGS, Messages.LabelEarnings,
+                        Colors.DARK_GREEN.getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.EARNINGS_ACCUMULATED,
+                        Messages.LabelAccumulatedEarnings, Colors.DARK_GREEN.getRGB());
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.FEES, Messages.LabelFees,
+                        Colors.GRAY.getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.FEES_ACCUMULATED,
+                        Messages.LabelFeesAccumulated, Colors.GRAY.getRGB());
+        availableSeries.add(series);
     }
 
     private void buildPerformanceDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)

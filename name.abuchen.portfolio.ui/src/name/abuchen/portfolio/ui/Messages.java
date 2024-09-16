@@ -65,6 +65,7 @@ public class Messages extends NLS
     public static String ChartSeriesBenchmarkSuffix;
     public static String ChartSeriesCopySeriesFromOtherChart;
     public static String ChartSeriesPickerAddBenchmark;
+    public static String ChartSeriesPickerAddDerivedData;
     public static String ChartSeriesPickerAddItem;
     public static String ChartSeriesPickerColor;
     public static String ChartSeriesPickerDialogMsg;

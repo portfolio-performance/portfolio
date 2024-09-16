@@ -43,18 +43,9 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
     {
         double[] values;
 
-        ClientDataSeries clientDataSeries;
-
-        if (series.getInstance() instanceof GroupedDataSeries instance)
-        {
-            clientDataSeries = instance.getClientDataSeries();
-        }
-        else
-        {
-            clientDataSeries = (ClientDataSeries) series.getInstance();
-        }
-        
-        switch (clientDataSeries)
+        switch (series.getInstance() instanceof GroupedDataSeries groupedDataSeries
+                        ? groupedDataSeries.getClientDataSeries()
+                        : (ClientDataSeries) series.getInstance())
         {
             case TOTALS:
                 values = toDouble(clientIndex.getTotals(), Values.Amount.divider());

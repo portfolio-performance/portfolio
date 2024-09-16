@@ -1,12 +1,10 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -36,6 +34,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries.Type;
 
 public class DataSeriesSelectionDialog extends Dialog
 {
@@ -112,6 +111,7 @@ public class DataSeriesSelectionDialog extends Dialog
         }
     }
 
+    private boolean isTreeExpanded = true;
     private boolean isMultiSelection = true;
 
     private Node[] elements;
@@ -134,6 +134,11 @@ public class DataSeriesSelectionDialog extends Dialog
         this.isMultiSelection = isMultiSelection;
     }
 
+    public void setExpandTree(boolean isTreeExpanded)
+    {
+        this.isTreeExpanded = isTreeExpanded;
+    }
+
     public void setElements(List<DataSeries> elements)
     {
         Map<String, Node> type2node = new HashMap<>();
@@ -144,48 +149,60 @@ public class DataSeriesSelectionDialog extends Dialog
             Node child = new Node(series.getSearchLabel());
             child.dataSeries = series;
 
-            Node parent = type2node.computeIfAbsent(map(series), Node::new);
+            Node parent = type2node.computeIfAbsent(map(series.getType()), Node::new);
 
-            if (series.getGroups() != null)
+            if (series.getGroup() != null)
             {
-                Node lastParentTracker = parent;
-                int index = 0;
+                Node group = group2node.computeIfAbsent(series.getGroup(), g -> {
+                    Node n = new Node(g.toString());
+                    n.parent = parent;
+                    parent.children.add(n);
+                    return n;
+                });
+                child.parent = group;
+                group.children.add(child);
+            }
+            else
+            {
+                child.parent = parent;
+                parent.children.add(child);
+            }
+        }
 
-                for (Object groupGiven : series.getGroups())
-                {
-                    final Node lastParent = lastParentTracker;
-                    
-                    String groupPath = Arrays.asList(series.getGroups())
-                        .stream()
-                        .map(Object::toString)
-                        .limit(index + 1)
-                        .collect(Collectors.joining("|")); //$NON-NLS-1$
+        this.elements = type2node.values().toArray(new Node[0]);
+    }
 
-                    groupPath = map(series) + "|" + groupPath; //$NON-NLS-1$
+    public void setElementsDerivedData(List<DataSeries> elements)
+    {
+        Map<String, Node> type2node = new HashMap<>();
+        Map<Object, Node> group2node = new HashMap<>();
 
-                    Node group = group2node.computeIfAbsent(groupPath, g -> {
-                        Node n = new Node(groupGiven.toString());
-                        n.parent = lastParent;
-                        lastParent.children.add(n);
-                        return n;
-                    });
+        for (DataSeries series : elements)
+        {
+            Node child = new Node(series.getSearchLabel());
+            child.dataSeries = series;
 
-                    // If there are no more nested groups to go through
-                    // we set the data series as the children
-                    if (series.getGroups().length == (index + 1))
-                    {
-                        group.children.add(child);
-                        child.parent = group;
-                    }
-                    else
-                    {
-                        // If there are nested groups, we just set the current
-                        // node ready to be the parent
-                        lastParentTracker = group;
-                    }
+            String topLevelNodeLabel = ((GroupedDataSeries) series.getInstance()).getClientDataSeriesLabel();
+            Node gdparent = type2node.computeIfAbsent(topLevelNodeLabel, Node::new);
 
-                    index++;
-                }
+            String secondLevelNodeLabel = map(((GroupedDataSeries) series.getInstance()).getParentObjectType());
+            Node parent = group2node.computeIfAbsent(topLevelNodeLabel + "|" + secondLevelNodeLabel, g -> { //$NON-NLS-1$
+                Node n = new Node(secondLevelNodeLabel);
+                n.parent = gdparent;
+                gdparent.children.add(n);
+                return n;
+            });
+
+            if (series.getGroup() != null) // for taxonomy
+            {
+                Node group = group2node.computeIfAbsent(topLevelNodeLabel + "|" + series.getGroup(), g -> { //$NON-NLS-1$
+                    Node n = new Node(series.getGroup().toString());
+                    n.parent = parent;
+                    parent.children.add(n);
+                    return n;
+                });
+                child.parent = group;
+                group.children.add(child);
             }
             else
             {
@@ -201,13 +218,10 @@ public class DataSeriesSelectionDialog extends Dialog
      * Reduce number of first-level folders to a meaningful set for the
      * end-user.
      */
-    private String map(DataSeries dataSeries)
+    private String map(Type type)
     {
-        
-        switch (dataSeries.getType())
+        switch (type)
         {
-            case TYPE_PARENT:
-                return ((GroupedDataSeries) dataSeries.getInstance()).getTopLevelLabel();
             case SECURITY:
                 return Messages.LabelSecurities;
             case SECURITY_BENCHMARK:
@@ -300,6 +314,13 @@ public class DataSeriesSelectionDialog extends Dialog
                                 || node.dataSeries.getType() == DataSeries.Type.SECURITY_BENCHMARK)
                     return LogoManager.instance().getDefaultColumnImage(node.dataSeries.getInstance(),
                                     client.getSettings());
+
+                if (node.dataSeries.getType() == DataSeries.Type.TYPE_PARENT
+                                && ((GroupedDataSeries) node.dataSeries.getInstance())
+                                                .getParentObjectType() == DataSeries.Type.SECURITY)
+                    return LogoManager.instance().getDefaultColumnImage(
+                                    ((GroupedDataSeries) node.dataSeries.getInstance()).getParentObject(),
+                                    client.getSettings());
                 else
                     return node.dataSeries.getImage();
             }
@@ -316,6 +337,9 @@ public class DataSeriesSelectionDialog extends Dialog
         treeViewer.setComparator(new ViewerComparator());
 
         hookListener();
+
+        if (isTreeExpanded)
+            treeViewer.expandAll();
 
         return composite;
     }

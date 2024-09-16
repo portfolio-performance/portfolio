@@ -102,11 +102,6 @@ public class DataSeriesCache
                     return PerformanceIndex.forPortfolio(client, converter, (Portfolio) series.getInstance(),
                                     reportingPeriod, warnings);
 
-                case TYPE_PARENT:
-                    var instance = ((GroupedDataSeries) series.getInstance());
-                    
-                    return instance.getPerformanceIndexMethod(client, converter, reportingPeriod, warnings);
-
                 case PORTFOLIO_PRETAX:
                     return calculatePortfolioPretax(series, reportingPeriod, warnings);
 
@@ -139,6 +134,10 @@ public class DataSeriesCache
                     return PerformanceIndex.forClient(
                                     new WithoutTaxesFilter().filter(pretax.getFilter().filter(client)), converter,
                                     reportingPeriod, warnings);
+
+                case TYPE_PARENT:
+                    var instance = ((GroupedDataSeries) series.getInstance());
+                    return instance.getPerformanceIndexMethod(client, converter, reportingPeriod, warnings);
 
                 default:
                     throw new IllegalArgumentException(series.getType().name());
