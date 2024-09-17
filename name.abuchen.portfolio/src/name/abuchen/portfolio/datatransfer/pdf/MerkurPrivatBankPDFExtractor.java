@@ -23,8 +23,11 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("MERKUR PRIVATBANK KGaA");
+        // New documents only seem to have a graphical company logo
+        // addBankIdentifier("MERKUR PRIVATBANK KGaA");
+
         addBankIdentifier("Am Marktplatz 10");
+        addBankIdentifier("97762 Hammelburg");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -121,7 +124,8 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Ertragsgutschrift nach");
+        DocumentType type = new DocumentType("(Ertragsgutschrift nach" //
+                        + "|Aussch.ttung Investmentfonds)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -146,7 +150,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         .section("name", "isin", "wkn", "nameContinued", "currency") //
                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                         .match("^(?<nameContinued>.*)$") //
-                        .match("^.* Ertrag  pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                        .match("^.* (Ertrag|Aussch.ttung)\s+pro St.*? [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -226,6 +230,12 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // Einbehaltene Quellensteuer 15 % auf 914,50 EUR
+                        // 137,18- EUR
+                        .section("tax", "currency").optional()
+                        .match("^Einbehaltene Quellensteuer [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
