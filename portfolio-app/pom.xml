@@ -42,7 +42,7 @@
 		<repository>
 			<id>portfolio-jre</id>
 			<layout>p2</layout>
-			<url>http://portfolio-performance.github.io/bundled-jre/17.0.5</url>
+			<url>http://portfolio-performance.github.io/bundled-jre/21.0.4</url>
 		</repository>
 	</repositories>
 
