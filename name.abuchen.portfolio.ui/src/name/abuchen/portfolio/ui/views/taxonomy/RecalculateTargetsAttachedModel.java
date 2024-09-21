@@ -11,7 +11,11 @@ public class RecalculateTargetsAttachedModel implements TaxonomyModel.AttachedMo
         TaxonomyNode virtualRootNode = model.getVirtualRootNode();
         TaxonomyNode unassignedNode = model.getUnassignedNode();
 
-        virtualRootNode.setTarget(virtualRootNode.getActual().subtract(unassignedNode.getActual()));
+        RebalancingPurchaseValue purchaseValue = new RebalancingPurchaseValue(model.getClient());
+        Money purchaseMoney = Money.of(model.getCurrencyCode(), purchaseValue.getPurchaseValue());
+
+        virtualRootNode.setTarget(virtualRootNode.getActual().subtract(unassignedNode.getActual())
+                        .add(purchaseMoney));
 
         model.visitAll(node -> {
             if (node.isClassification() && !node.isRoot())
