@@ -14,6 +14,9 @@ public class ParameterizedColumnLabelProvider extends ColumnLabelProvider
 
     public void setTableColumn(TableColumn tableColumn)
     {
+        if (this.tableColumn != null)
+            throw new IllegalStateException(
+                            "ParameterizedColumnLabelProvider cannot be reused across multiple columns. Use Column#setLabelProvider(Supplier<CellLabelProvider> labelProvider) method."); //$NON-NLS-1$
         this.tableColumn = tableColumn;
     }
 
