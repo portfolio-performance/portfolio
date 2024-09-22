@@ -400,7 +400,7 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 if (((Element) e).isGroupByTaxonomy())
-                    return Messages.LabelTotalSum;
+                    return Messages.ColumnSum;
                 return super.getText(e);
             }
 

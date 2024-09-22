@@ -855,7 +855,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
         // security name
         column = new NameColumn(getClient());
-        column.setLabelProvider(new RowElementLabelProvider(column, aggregate -> Messages.LabelTotalSum));
+        column.setLabelProvider(new RowElementLabelProvider(column, aggregate -> Messages.ColumnSum));
         column.getEditingSupport().addListener(new TouchClientListener(getClient()));
         column.setSortDirction(SWT.UP);
         recordColumns.addColumn(column);
