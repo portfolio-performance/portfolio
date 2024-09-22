@@ -79,7 +79,7 @@ public final class SyncOnlineSecuritiesJob extends AbstractClientJob
 
                     isDirty = true;
 
-                    PortfolioPlugin.log("Unlinking " + security.getName() + ": " + e.getMessage()); //$NON-NLS-1$
+                    PortfolioPlugin.log("Unlinking " + security.getName() + ": " + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 else
                 {
