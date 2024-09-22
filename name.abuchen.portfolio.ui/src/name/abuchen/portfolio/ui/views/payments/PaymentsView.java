@@ -87,6 +87,9 @@ public class PaymentsView extends AbstractFinanceView
         model.configure(viewInput.getYear(), viewInput.getMode(), viewInput.isUseGrossValue(),
                         viewInput.isUseConsolidateRetired());
 
+        model.setHideTotalsAtTheTop(preferences.getBoolean(PaymentsViewInput.TOP));
+        model.setHideTotalsAtTheBottom(preferences.getBoolean(PaymentsViewInput.BOTTOM));
+
         model.addUpdateListener(() -> {
             viewInput.setYear(model.getStartYear());
             viewInput.setMode(model.getMode());

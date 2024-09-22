@@ -20,6 +20,15 @@ public class PaymentsViewInput
     // for legacy reasons, the key is stored with the name PaymentsViewModel
     private static final String KEY_USED_FILTER = PaymentsViewModel.class.getSimpleName();
 
+    /**
+     * Preference constant to hide the summary row at the top.
+     */
+    public static final String TOP = PaymentsView.class.getSimpleName() + "@top"; //$NON-NLS-1$
+    /**
+     * Preference constant to hide the summary row at the bottom.
+     */
+    public static final String BOTTOM = PaymentsView.class.getSimpleName() + "@bottom"; //$NON-NLS-1$
+
     private int tab;
     private int year;
     private Optional<String> clientFilterId;

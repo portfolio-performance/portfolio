@@ -57,6 +57,7 @@ public class PaymentsPerMonthMatrixTab extends PaymentsMatrixTab
         manager.add(action);
 
         addReverseColumnAction(manager);
+        addSumColumnAction(manager);
     }
 
     @Override
