@@ -135,6 +135,7 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
 
             addListener(SWT.Paint, this);
             addListener(SWT.Resize, this);
+            addListener(SWT.MouseDoubleClick, this);
 
             MenuManager menuManager = new MenuManager();
             menuManager.setRemoveAllWhenShown(true);
@@ -159,6 +160,10 @@ public class DataSeriesChartLegend extends Composite implements ISelectionProvid
                     break;
                 case SWT.Resize:
                     redraw();
+                    break;
+                case SWT.MouseDoubleClick:
+                    series.setVisible(!series.isVisible());
+                    ((DataSeriesChartLegend) getParent()).configurator.fireUpdate();
                     break;
                 default:
                     break;
