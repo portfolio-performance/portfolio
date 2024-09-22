@@ -715,6 +715,23 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
+                                        // This is for the "Ertragsthesaurierung" without importable amount,
+                                        // then we skip the transaction
+                                        //
+                                        // Ertragsthesaurierung Frankfurt am Main, 17.12.2015
+                                        // Steuerpflichtiger Betrag gem.§ 2 Abs. 1 InvStG EUR 3,01
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .find("Ertragsthesaurierung .*") //
+                                                        .match("^Steuerpflichtiger Betrag gem\\..*InvStG (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            type.getCurrentContext().putBoolean("skipTransaction", true);
+
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
                                         // 21.04.2016 172306238 EUR 10,00
                                         // @formatter:on
                                         section -> section //
@@ -872,6 +889,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             // If we have a gross reinvestment, then the "noTax"
                             // flag must be removed.
                             type.getCurrentContext().remove("noTax");
+
+                            if (type.getCurrentContext().getBoolean("skipTransaction"))
+                                return null;
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -1200,14 +1220,19 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // 04.04. 04.04. REF: 000045862247 200,00+
                         // Überweisungseingang SEPA Max Mustermann
+                        //
+                        // 22.05. 22.05. REF: 912315845658 60.000,00-
+                        // Übertrag Referenzkonto
                         // @formatter:on
-                        .section("date", "amount", "note", "sign").optional() //
+                        .section("date", "amount", "note", "type").optional() //
                         .documentContext("year", "currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$") //
-                        .match("^(?<note>.berweisung(seingang|ausgang) SEPA).*$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+)(?<type>([\\+|\\-]))$") //
+                        .match("^(?<note>(.berweisung(seingang|ausgang) SEPA|.bertrag Referenzkonto)).*$") //
                         .assign((t, v) -> {
-                            // Is sign is negative change to REMOVAL
-                            if ("-".equals(v.get("sign")))
+                            // @formatter:off
+                            // Is type is "-" change from DEPOSIT to REMOVAL
+                            // @formatter:on
+                            if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
@@ -1219,11 +1244,14 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // 31.10. 31.10. REF: 000017304356 37,66
                         // Saldenübernahme Nordnet
+                        //
+                        // 19.07. 19.07. REF: 000040720216 5,00
+                        // Überweisungseingang SEPA Max Muster
                         // @formatter:on
                         .section("date", "amount", "note").optional() //
                         .documentContext("year", "currency") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. .* (?<amount>[\\.,\\d]+)$") //
-                        .match("^(?<note>Salden.bernahme).*$") //
+                        .match("^(?<note>(Salden.bernahme|Überweisungseingang SEPA)).*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                             t.setCurrencyCode(v.get("currency"));
@@ -1235,17 +1263,24 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // 07.04. 03.04. REF: 000033640646 0,62-
                         // Portogebühren
                         // Portogebuehren 03/15
+                        //
                         // 24.03. 23.03. REF: 000137060674 42,42+
                         // Erst. BGH-Urteil Sonstige
+                        //
+                        // 11.05. 03.05. REF: 000057140531 0,70+
+                        // Storno: Portogebühren
+                        // Portogebuehren 04/18
                         // @formatter:on
-                        .section("date", "amount", "sign", "note1", "note2").optional() //
+                        .section("date", "amount", "type", "note1", "note2").optional() //
                         .documentContext("year", "currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$") //
-                        .match("^(?<note1>(Portogeb.hren|Erst\\. BGH\\-Urteil Sonstige))$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<type>([\\+|\\-]))$") //
+                        .match("^(?<note1>((Storno: )?Portogeb.hren|Erst\\. BGH\\-Urteil Sonstige))$") //
                         .match("^(Portogebuehren )?(?<note2>([\\d]{2}\\/[\\d]{2}|[\\d]{1}\\. Quartal [\\d]{4}))$") //
                         .assign((t, v) -> {
-                            // Is sign is positiv change to FEES_REFUND
-                            if ("-".equals(v.get("sign")))
+                            // @formatter:off
+                            // Is type is "-" change from FEES to FEES_REFUND
+                            // @formatter:on
+                            if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.FEES);
                             else
                                 t.setType(AccountTransaction.Type.FEES_REFUND);
@@ -1257,16 +1292,41 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
+                        // 02.05. 02.05. REF: 337909771410 7,50-
+                        // Geb. Back Office extern
+                        // @formatter:on
+                        .section("date", "amount", "type", "note").optional() //
+                        .documentContext("year", "currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<type>([\\+|\\-]))$") //
+                        .match("^(?<note>Geb\\. Back Office extern)$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type is "-" change from FEES to FEES_REFUND
+                            // @formatter:on
+                            if ("-".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.FEES);
+                            else
+                                t.setType(AccountTransaction.Type.FEES_REFUND);
+
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        // @formatter:off
                         // 31.03. 30.03. REF: 000137802265 0,77-
                         // Überziehungszinsen
                         // @formatter:on
-                        .section("date", "amount", "sign", "note").optional() //
+                        .section("date", "amount", "type", "note").optional() //
                         .documentContext("year", "currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<sign>([\\+|\\-]))$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. REF: [\\d]+ (?<amount>[\\.,\\d]+)(?<type>([\\+|\\-]))$") //
                         .match("^(?<note>.berziehungszinsen)$") //
                         .assign((t, v) -> {
-                            // Is sign is positiv change to INTEREST
-                            if ("-".equals(v.get("sign")))
+                            // @formatter:off
+                            // Is type is "-" change from INTEREST to INTEREST_CHARGE
+                            // @formatter:on
+                            if ("-".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.INTEREST_CHARGE);
                             else
                                 t.setType(AccountTransaction.Type.INTEREST);
@@ -1293,7 +1353,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         + "|Kapitalerh.hung" //
                         + "|Kapitalherabsetzung" //
                         + "|Umtausch" //
-                        + "|Im Zuge der Geldzahlung erfolgt die Ausbuchung der Rechte)", //
+                        + "|Im Zuge der Geldzahlung erfolgt die Ausbuchung der Rechte" //
+                        + "|Reverse Split)", //
                         "(Kontoauszug|KONTOAUSZUG) Nr\\.");
         this.addDocumentTyp(type);
 
@@ -1306,7 +1367,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         + "|Kapitalerh.hung" //
                         + "|Kapitalherabsetzung" //
                         + "|Umtausch" //
-                        + "|Dividendengutschrift)(?! im Verh.ltnis).*$");
+                        + "|Dividendengutschrift" //
+                        + "|Reverse Split)(?! im Verh.ltnis).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1411,9 +1473,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<type>(Freier Erhalt" //
                                                                         + "|Freie Lieferung" //
                                                                         + "|Einbuchung von Rechten" //
-                                                                        + "|Fusion"
-                                                                        + "|Kapitalerh.hung"
-                                                                        + "|Umtausch)) .*$") //
+                                                                        + "|Fusion" //
+                                                                        + "|Kapitalerh.hung" //
+                                                                        + "|Umtausch)).*$") //
                                                         .assign((t, v) -> {
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
 
@@ -1427,9 +1489,29 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("type") //
                                                         .match("^(?<type>Dividendengutschrift).*$") //
-                                                        .find(".*Ausbuchung der Rechte.*")
+                                                        .find(".*Ausbuchung der Rechte.*") //
                                                         .assign((t, v) -> {
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+
+                                                            t.setCurrencyCode(t.getSecurity().getCurrencyCode());
+                                                            t.setAmount(0L);
+                                                        }),
+                                        // @formatter:off
+                                        // Kapitalherabsetzung ADRESSZEILE1=Herr
+                                        // Durchführungsanzeige ADRESSZEILE2=Max Mustermann
+                                        // Kapitalherabsetzung im Verhältnis 10:1. Weitere Informationen finden Sie im elektronischen Bundesanzeiger
+                                        //
+                                        // Reverse Split ADRESSZEILE1=Herr
+                                        // Durchführungsanzeige ADRESSZEILE2=Max Muster
+                                        // Wir haben Ihrem Depot im Verhältnis 2 : 1 folgende Stücke zugebucht (hinzugefügt):
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("type") //
+                                                        .match("^(?<type>Kapitalherabsetzung|Reverse Split).*$") //
+                                                        .find("Durchf.hrungsanzeige.*") //
+                                                        .find(".* im Verhältnis.*") //
+                                                        .assign((t, v) -> {
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
 
                                                             t.setCurrencyCode(t.getSecurity().getCurrencyCode());
                                                             t.setAmount(0L);
@@ -1437,25 +1519,16 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Kapitalherabsetzung ADRESSZEILE1=Herr
                                         // Umbuchung der Teil- in Vollrechte. Für die eventuell verbleibenden Bruchteile (Nachkommastellen) in den Teilrechten
+                                        //
+                                        // Kapitalherabsetzung ADRESSZEILE1=Herr
+                                        // Durchführungsanzeige ADRESSZEILE2=Max MUSTER
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("type") //
                                                         .match("^(?<type>Kapitalherabsetzung).*$") //
-                                                        .find("Umbuchung der Teil\\- in Vollrechte.*")
+                                                        .find("(Umbuchung der Teil\\- in Vollrechte|Durchf.hrungsanzeige).*") //
                                                         .assign((t, v) -> {
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
-
-                                                            t.setCurrencyCode(t.getSecurity().getCurrencyCode());
-                                                            t.setAmount(0L);
-                                                        }),
-                                        // @formatter:off
-                                        // Kapitalherabsetzung ADRESSZEILE1=Herr
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("type") //
-                                                        .match("^(?<type>Kapitalherabsetzung) .*$") //
-                                                        .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
 
                                                             t.setCurrencyCode(t.getSecurity().getCurrencyCode());
                                                             t.setAmount(0L);
@@ -1475,7 +1548,10 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
     {
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Spitze )?(Kauf|Verkauf|Gesamtf.lligkeit|Umtausch) .*$");
+        Block firstRelevantLine = new Block("^(Spitze )?(Kauf" //
+                        + "|Verkauf" //
+                        + "|Gesamtf.lligkeit" //
+                        + "|Umtausch) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
