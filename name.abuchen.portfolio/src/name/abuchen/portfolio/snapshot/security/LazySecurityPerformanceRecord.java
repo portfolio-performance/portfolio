@@ -190,8 +190,12 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
                         / (double) costs.sharesHeld() * Values.Share.factor() * Values.Quote.factorToMoney()));
     });
 
-    private final LazyValue<DividendCalculationResult> dividendCalculation = new LazyValue<>(
-                    () -> Calculation.perform(DividendCalculation.class, converter, security, lineItems).getResult());
+    private final LazyValue<DividendCalculationResult> dividendCalculation = new LazyValue<>(() -> {
+        // ensure cost calculation is done (and has calculated
+        // moving averages)
+        costCalculation.get();
+        return Calculation.perform(DividendCalculation.class, converter, security, lineItems).getResult();
+    });
 
     private final LazyValue<CapitalGainsCalculation> capitalGains = new LazyValue<>(
                     () -> Calculation.perform(CapitalGainsCalculation.class, converter, security, lineItems));
