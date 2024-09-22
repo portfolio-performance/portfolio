@@ -37,6 +37,40 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.71.0" date="2024-09-22">
+      <description>
+        <ul>
+          <li>New: Summary row in the Performance -> Securities view</li>
+          <li>New: PDF importer for KFintech</li>
+          <li>New: Price provider India's First Free Mutual Fund API</li>
+          <li>Improvement: The asset and performance chart remembers if data series are hidden.</li>
+          <li>Improvement: A double-click on the legend shows or hides a data series in the asset and performance chart.</li>
+          <li>Improvement: When multiple securities are selected, the prices for all selected securities can be updated.</li>
+          <li>Improvement: TTWROR and IRR are now displayed in the asset overview for categories and the total portfolio as well.</li>
+          <li>Improvement: The column "Distance to All-Time High" now has a tooltip with details.</li>
+          <li>Improvement: In a dividend booking, the number of shares is pre-filled based on the current portfolio.</li>
+          <li>Improvement: Securities that no longer exist in Portfolio Report are automatically unlinked.</li>
+          <li>Improvements to the PDF importers for AKF Bank, OnVista, Trade Republic, N26, Hypothekarbank Lenzburg, Santander Bank, and V-Bank</li>
+          <li>Fix: Fixed an issue when removing the column that the table was sorted by.</li>
+          <li>Fix: Fixed an issue where the value 'Div%/Year' was not displayed under Performance -> Securities.</li>
+          <li>Fix: The tooltip for area charts in the classification now shows with the correct axis labels.</li>
+          <li xml:lang="de">Neu: Summenzeile in der Ansicht Performance -> Wertpapiere</li>
+          <li xml:lang="de">Neu: PDF-Importer für KFintech</li>
+          <li xml:lang="de">Neu: Kurslieferant India's First Free Mutual Fund API</li>
+          <li xml:lang="de">Verbesserung: Das Vermögens- und Performance-Diagramm merkt sich, ob Datenreihen ausgeblendet sind.</li>
+          <li xml:lang="de">Verbesserung: Ein Doppelklick auf die Legende blendet eine Datenreihe im Vermögens- und Performance-Diagramm ein oder aus.</li>
+          <li xml:lang="de">Verbesserung: Wenn mehrere Wertpapiere ausgewählt sind, können die Kurse für alle ausgewählten Wertpapiere aktualisiert werden.</li>
+          <li xml:lang="de">Verbesserung: TTWROR und IZF in der Vermögensaufstellung werden auch für die Kategorien und das Gesamtportfolio angezeigt.</li>
+          <li xml:lang="de">Verbesserung: Die Spalte "Abstand zum All-Time High" hat jetzt einen Tooltip mit den Details.</li>
+          <li xml:lang="de">Verbesserung: Bei einer Dividendenbuchung wird die Anzahl der Stücke basierend auf dem aktuellen Depot vorbelegt.</li>
+          <li xml:lang="de">Verbesserung: Wertpapiere, die nicht mehr auf Portfolio Report existieren, werden automatisch entkoppelt.</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für AKF Bank, OnVista, Trade Republic, N26, Hypothekarbank Lenzburg, Santanderbank und V-Bank</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, wenn man die Spalte einer Tabelle entfernt, nach der die Tabelle sortiert ist.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, dass der Wert 'Div%/Jahr' unter Performance -> Wertpapiere nicht angezeigt wurde.</li>
+          <li xml:lang="de">Fix: Der Tooltip für Flächendiagramme bei der Klassifizierung wird mit der richtigen Achsenbeschriftung angezeigt.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.70.4" date="2024-08-25">
       <description>
         <ul>
