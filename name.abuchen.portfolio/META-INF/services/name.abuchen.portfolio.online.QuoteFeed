@@ -8,6 +8,7 @@ name.abuchen.portfolio.online.impl.EODHistoricalDataQuoteFeed
 name.abuchen.portfolio.online.impl.FinnhubQuoteFeed
 name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed
 name.abuchen.portfolio.online.impl.ECBStatisticalDataWarehouseQuoteFeed
+name.abuchen.portfolio.online.impl.MFAPIQuoteFeed
 name.abuchen.portfolio.online.impl.KrakenQuoteFeed
 name.abuchen.portfolio.online.impl.LeewayQuoteFeed
 name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed
