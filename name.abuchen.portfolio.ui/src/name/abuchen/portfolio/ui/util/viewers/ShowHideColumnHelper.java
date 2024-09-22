@@ -809,11 +809,18 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         {
             policy.setRedraw(false);
 
+            var sortColumn = policy.getSortColumn();
+
             for (Widget col : policy.getColumns())
             {
                 Column column = (Column) col.getData(Column.class.getName());
                 if (group.equals(column.getGroupLabel()))
+                {
+                    if (sortColumn == col)
+                        policy.getViewer().setComparator(null);
+
                     col.dispose();
+                }
             }
         }
         finally
