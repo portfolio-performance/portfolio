@@ -73,7 +73,7 @@
       <property name="osgi.instance.area.default" value="$LOCALAPPDATA$/PortfolioPerformance/workspace" os="win32" />
       <property name="osgi.instance.area.default" value="@user.home/Library/Application Support/name.abuchen.portfolio.product/workspace" os="macosx" />
       <property name="osgi.instance.area.default" value="@user.home/.PortfolioPerformance/workspace" os="linux" />
-      <property name="osgi.requiredJavaVersion" value="17" />
+      <property name="osgi.requiredJavaVersion" value="21" />
       <property name="org.eclipse.update.reconcile" value="false" />
       <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
    </configurations>
