@@ -4,7 +4,6 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
-import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
@@ -16,15 +15,12 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 @SuppressWarnings("nls")
 public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 {
-
-    private static final String DEPOSIT_REMOVAL = "^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. (?<note>.*) PN:\\d+[\\s]{1,}(?<amount>[\\.,\\d]+) (?<type>[H|S])$";
-
     public MerkurPrivatBankPDFExtractor(Client client)
     {
         super(client);
 
-        addBankIdentifier("MERKUR PRIVATBANK KGaA");
         addBankIdentifier("Am Marktplatz 10");
+        addBankIdentifier("97762 Hammelburg");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -121,7 +117,8 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Ertragsgutschrift nach");
+        DocumentType type = new DocumentType("(Ertragsgutschrift nach" //
+                        + "|Aussch.ttung Investmentfonds)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -146,7 +143,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         .section("name", "isin", "wkn", "nameContinued", "currency") //
                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                         .match("^(?<nameContinued>.*)$") //
-                        .match("^.* Ertrag  pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                        .match("^.* (Ertrag|Aussch.ttung)\s+pro St.*? [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -205,9 +202,42 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
         this.addDocumentTyp(type);
 
-        Block depositRemovalBlock = new Block(DEPOSIT_REMOVAL);
-        depositRemovalBlock.set(depositRemovalTransaction(type, DEPOSIT_REMOVAL));
+        Block depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* PN:\\d+[\\s]{1,}[\\.,\\d]+ [H|S]$");
         type.addBlock(depositRemovalBlock);
+        depositRemovalBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "note", "amount", "type") //
+                        .documentContext("currency", "year") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. (?<note>.*) PN:\\d+[\\s]{1,}(?<amount>[\\.,\\d]+) (?<type>[H|S])$") //
+                        .assign((t, v) -> {
+                            // Is type is "S" change from DEPOSIT to REMOVAL
+                            if ("S".equals(v.get("type")))
+                                t.setType(Type.REMOVAL);
+
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                            // Formatting some notes
+                            if ("DAUERAUFTRAG".equals(v.get("note")))
+                                v.put("note", "Dauerauftrag");
+
+                            if ("GUTSCHRIFT".equals(v.get("note")))
+                                v.put("note", "Gutschrift");
+
+                            if ("FESTGELDANLAGE".equals(v.get("note")))
+                                v.put("note", "Festgeldanlage");
+
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
@@ -218,7 +248,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer 25,00% auf 12.960,18 EUR 3.240,05- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Kapitalertrags(s?)teuer [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -226,7 +256,21 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type));
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Einbehaltene Quellensteuer 15 % auf 914,50 EUR
+                        // @formatter:on
+                        .section("withHoldingTax", "currency").optional()
+                        .match("^Einbehaltene Quellensteuer [\\.,\\d]+([\\s]+)?% .* (?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
+                        // @formatter:off
+                        // Anrechenbare Quellensteuer pro Stück 0,0465 EUR 137,18 EUR
+                        // @formatter:on
+                        .section("creditableWithHoldingTax", "currency").optional()
+                        .match("^Anrechenbare Quellensteuer pro St.ck [\\.,\\d]+ [\\w]{3} (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -246,48 +290,5 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional()
                         .match("^.bertragungs-\\/Liefergeb.hr (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$")
                         .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    private Transaction<AccountTransaction> depositRemovalTransaction(DocumentType type, String regex)
-    {
-        return new Transaction<AccountTransaction>() //
-
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
-
-                        .section("date", "note", "amount", "type") //
-                        .documentContext("currency", "year") //
-                        .match(regex) //
-                        .assign((t, v) -> {
-                            // Is type is "S" change from DEPOSIT to REMOVAL
-                            if ("S".equals(v.get("type")))
-                                t.setType(Type.REMOVAL);
-
-                            assignmentsProvider(t, v);
-                        })
-
-                        .wrap(TransactionItem::new);
-    }
-
-    private void assignmentsProvider(AccountTransaction t, ParsedData v)
-    {
-        t.setDateTime(asDate(v.get("date") + v.get("year")));
-        t.setAmount(asAmount(v.get("amount")));
-        t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-
-        // Formatting some notes
-        if ("DAUERAUFTRAG".equals(v.get("note")))
-            v.put("note", "Dauerauftrag");
-
-        if ("GUTSCHRIFT".equals(v.get("note")))
-            v.put("note", "Gutschrift");
-
-        if ("FESTGELDANLAGE".equals(v.get("note")))
-            v.put("note", "Festgeldanlage");
-
-        t.setNote(v.get("note"));
     }
 }
