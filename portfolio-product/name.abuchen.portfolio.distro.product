@@ -3,17 +3,20 @@
 
 <product name="Portfolio Performance" uid="name.abuchen.portfolio.distro.product" id="name.abuchen.portfolio.bootstrap.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.71.3.qualifier" type="features" includeLaunchers="true" autoIncludeRequirements="true">
 
+
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-XX:+IgnoreUnrecognizedVMOptions -Dosgi.requiredJavaVersion=17 --add-modules=ALL-SYSTEM -XX:+UseG1GC -XX:+UseStringDeduplication -Xms512m -Xmx1g
+      <vmArgs>-XX:+IgnoreUnrecognizedVMOptions -Dosgi.requiredJavaVersion=21 --add-modules=ALL-SYSTEM -XX:+UseG1GC -XX:+UseStringDeduplication -Xms512m -Xmx1g
       </vmArgs>
       <vmArgsLin>-Djdk.gtk.version=3
       </vmArgsLin>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
    </launcherArgs>
+
+   <windowImages/>
 
    <splash
       location="name.abuchen.portfolio.ui" />
@@ -26,8 +29,10 @@
       </win>
    </launcher>
 
+
    <vm>
    </vm>
+
 
    <plugins>
    </plugins>
@@ -59,13 +64,12 @@
       <feature id="org.eclipse.ecf.filetransfer.feature"/>
       <feature id="org.eclipse.nebula.cwt.feature"/>
       <feature id="org.eclipse.nebula.widgets.cdatetime.feature"/>
-      
       <feature id="name.abuchen.zulu.jre.feature"/>
    </features>
 
    <configurations>
       <plugin id="name.abuchen.portfolio.ui" autoStart="false" startLevel="4" />
-      <plugin id="com.twelvemonkeys.imageio.bmp" autoStart="true" startLevel="4"/>
+      <plugin id="com.twelvemonkeys.imageio.bmp" autoStart="true" startLevel="4" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="4" />
       <plugin id="org.apache.felix.scr" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
@@ -79,5 +83,12 @@
       <property name="org.eclipse.update.reconcile" value="false" />
       <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
    </configurations>
+
+   <preferencesInfo>
+      <targetfile overwrite="false"/>
+   </preferencesInfo>
+
+   <cssInfo>
+   </cssInfo>
 
 </product>
