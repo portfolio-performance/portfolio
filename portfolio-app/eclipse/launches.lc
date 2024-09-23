@@ -29,9 +29,9 @@ eclipse configuration PortfolioPerformance {
 	ignore org.hamcrest.core;
 	ignore org.hamcrest.library;
 	
-    memory min=512M max=1G;
+    memory min=512M max=2G;
     
-    execution-environment 'JavaSE-17';
+    execution-environment 'JavaSE-21';
     
     argument "-consoleLog";
     
