@@ -76,8 +76,10 @@ public class DistanceFromAllTimeHighColumn extends Column
         this.setSorter(ColumnViewerSorter.create((o1, o2) -> {
             ReportingPeriod option = (ReportingPeriod) ColumnViewerSorter.SortingContext.getColumnOption();
 
-            Double v1 = valueProvider.apply(o1, option).getDistance();
-            Double v2 = valueProvider.apply(o2, option).getDistance();
+            var ath1 = valueProvider.apply(o1, option);
+            Double v1 = ath1 == null ? null : ath1.getDistance();
+            var ath2 = valueProvider.apply(o2, option);
+            Double v2 = ath2 == null ? null : ath2.getDistance();
 
             if (v1 == null && v2 == null)
                 return 0;
