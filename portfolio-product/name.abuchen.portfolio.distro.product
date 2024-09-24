@@ -84,9 +84,6 @@
       <property name="eclipse.buildId" value="${unqualifiedVersion}.${buildQualifier}" />
    </configurations>
 
-   <preferencesInfo>
-      <targetfile overwrite="false"/>
-   </preferencesInfo>
 
    <cssInfo>
    </cssInfo>
