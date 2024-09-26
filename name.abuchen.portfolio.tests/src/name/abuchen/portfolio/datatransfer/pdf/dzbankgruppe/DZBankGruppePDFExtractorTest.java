@@ -15,6 +15,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -622,7 +623,7 @@ public class DZBankGruppePDFExtractorTest
     }
 
     @Test
-    public void testWertpapierDividende01()
+    public void testDividende01()
     {
         DZBankGruppePDFExtractor extractor = new DZBankGruppePDFExtractor(new Client());
 
@@ -668,7 +669,7 @@ public class DZBankGruppePDFExtractorTest
     }
 
     @Test
-    public void testWertpapierDividende01WithSecurityinEUR()
+    public void testDividende01WithSecurityinEUR()
     {
         Security security = new Security("CD PROJEKT S.A. INHABER-AKTIEN C ZY 1", CurrencyUnit.EUR);
         security.setIsin("PLOPTTC00011");
@@ -715,7 +716,7 @@ public class DZBankGruppePDFExtractorTest
     }
 
     @Test
-    public void testWertpapierDividende02()
+    public void testDividende02()
     {
         DZBankGruppePDFExtractor extractor = new DZBankGruppePDFExtractor(new Client());
 
@@ -761,7 +762,7 @@ public class DZBankGruppePDFExtractorTest
     }
 
     @Test
-    public void testWertpapierDividende02WithSecurityinEUR()
+    public void testDividende02WithSecurityinEUR()
     {
         Security security = new Security("BARRICK GOLD CORP.  SHARES REGISTERED SHARES O.N.", CurrencyUnit.EUR);
         security.setIsin("CA0679011084");
@@ -808,7 +809,7 @@ public class DZBankGruppePDFExtractorTest
     }
 
     @Test
-    public void testWertpapierDividende03()
+    public void testDividende03()
     {
         DZBankGruppePDFExtractor extractor = new DZBankGruppePDFExtractor(new Client());
 
@@ -851,7 +852,7 @@ public class DZBankGruppePDFExtractorTest
     }
 
     @Test
-    public void testWertpapierDividende04()
+    public void testDividende04()
     {
         DZBankGruppePDFExtractor extractor = new DZBankGruppePDFExtractor(new Client());
 
@@ -897,7 +898,7 @@ public class DZBankGruppePDFExtractorTest
     }
 
     @Test
-    public void testWertpapierDividende04WithSecurityinEUR()
+    public void testDividende04WithSecurityinEUR()
     {
         Security security = new Security("I.M.III-I.FTSE EM H.D.L.V.UETF REG. SHARES DIS O.N.", CurrencyUnit.EUR);
         security.setIsin("IE00BYYXBF44");
@@ -944,7 +945,7 @@ public class DZBankGruppePDFExtractorTest
     }
 
     @Test
-    public void testWertpapierDividende05()
+    public void testDividende05()
     {
         DZBankGruppePDFExtractor extractor = new DZBankGruppePDFExtractor(new Client());
 
@@ -987,7 +988,7 @@ public class DZBankGruppePDFExtractorTest
     }
 
     @Test
-    public void testWertpapierDividende06()
+    public void testDividende06()
     {
         DZBankGruppePDFExtractor extractor = new DZBankGruppePDFExtractor(new Client());
 
@@ -1033,7 +1034,7 @@ public class DZBankGruppePDFExtractorTest
     }
 
     @Test
-    public void testWertpapierDividende06WithSecurityinEUR()
+    public void testDividende06WithSecurityinEUR()
     {
         Security security = new Security("XTR.(IE) - MSCI WORLD REGISTERED SHARES 1D O.N.", CurrencyUnit.EUR);
         security.setIsin("IE00BK1PV551");
@@ -1080,7 +1081,7 @@ public class DZBankGruppePDFExtractorTest
     }
 
     @Test
-    public void testWertpapierDividende07()
+    public void testDividende07()
     {
         DZBankGruppePDFExtractor extractor = new DZBankGruppePDFExtractor(new Client());
 
@@ -1126,7 +1127,7 @@ public class DZBankGruppePDFExtractorTest
     }
 
     @Test
-    public void testWertpapierDividende07WithSecurityinEUR()
+    public void testDividende07WithSecurityinEUR()
     {
         Security security = new Security("SEKISUI HOUSE LTD. REGISTERED SHARES O.N.", "JPY");
         security.setIsin("JP3420600003");
@@ -1196,11 +1197,104 @@ public class DZBankGruppePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-28T00:00"), hasShares(100), //
+                        hasDate("2023-12-28T00:00"), hasShares(100.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 153.02), hasGrossValue("EUR", 212.50), //
                         hasTaxes("EUR", 25.98 + 25.98 + 1.43 + 1.43 + 2.33 + 2.33), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testVorabpauschale01()
+    {
+        DZBankGruppePDFExtractor extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000RHYOR04"), hasWkn("A3DJQJ"), hasTicker(null), //
+                        hasName("ISHSIV-EO ULTRASHORT BD U.ETF REG.SHS EUR ACC. ON"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2024-01-02T00:00"), hasShares(1000.00), //
+                        hasSource("Vorabpauschale01.txt"), //
+                        hasNote("Abrechnungsnr. 99999999999"), //
+                        hasAmount("EUR", 8.26), hasGrossValue("EUR", 8.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testVorabpauschale02()
+    {
+        DZBankGruppePDFExtractor extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0570870567"), hasWkn("A1JJHG"), hasTicker(null), //
+                        hasName("CT (LUX) GLOBAL SMALLER COS NAMENS-ANTEILE AE O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2024-01-02T00:00"), hasShares(100.00), //
+                        hasSource("Vorabpauschale02.txt"), //
+                        hasNote("Abrechnungsnr. 99999999999"), //
+                        hasAmount("EUR", 13.48), hasGrossValue("EUR", 13.48), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testVorabpauschale03()
+    {
+        DZBankGruppePDFExtractor extractor = new DZBankGruppePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000RHYOR04"), hasWkn("A3DJQJ"), hasTicker(null), //
+                        hasName("ISHSIV-EO ULTRASHORT BD U.ETF REG.SHS EUR ACC. ON"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2024-01-02T00:00"), hasShares(2935.00), //
+                        hasSource("Vorabpauschale03.txt"), //
+                        hasNote("Abrechnungsnr. 99999999999"), //
+                        hasAmount("EUR", 24.28), hasGrossValue("EUR", 24.28), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
