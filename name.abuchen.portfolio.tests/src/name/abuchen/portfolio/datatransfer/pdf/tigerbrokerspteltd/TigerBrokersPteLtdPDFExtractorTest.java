@@ -754,4 +754,189 @@ public class TigerBrokersPteLtdPDFExtractorTest
         assertThat(results, hasItem(taxRefund(hasDate("2023-09-21"), hasAmount("USD", 12.29), //
                         hasSource("AccountStatement06.txt"), hasNote(null))));
     }
+
+    @Test
+    public void testAccountStatement07()
+    {
+        TigerBrokersPteLtdPDFExtractor extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(3L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(8));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("QQQ"), //
+                        hasName("Invesco QQQ Trust-ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("VOO"), //
+                        hasName("Vanguard S&P 500 ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("VT"), //
+                        hasName("VANGUARD INTL EQUITY INDEX FUND INC TOTAL WORLD STK INDEX FUND ETF SHS"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-04-08T23:45:38"), hasShares(1), //
+                        hasSource("AccountStatement07.txt"), hasNote(null), //
+                        hasAmount("USD", 442.49), hasGrossValue("USD", 440.50), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 1.99))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-01-08T00:00"), hasShares(53), //
+                        hasSource("AccountStatement07.txt"), hasNote("Ordinary Dividend"), //
+                        hasAmount("USD", 36.41), hasGrossValue("USD", 42.84), //
+                        hasTaxes("USD", 6.43), hasFees("USD", 0.00))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-01-17T00:00"), hasShares(52), //
+                        hasSource("AccountStatement07.txt"), hasNote("Ordinary Dividend"), //
+                        hasAmount("USD", 9.73), hasGrossValue("USD", 11.45), //
+                        hasTaxes("USD", 1.72), hasFees("USD", 0.00))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-03-21T00:00"), hasShares(69), //
+                        hasSource("AccountStatement07.txt"), hasNote("Ordinary Dividend"), //
+                        hasAmount("USD", 24.70), hasGrossValue("USD", 29.06), //
+                        hasTaxes("USD", 4.36), hasFees("USD", 0.00))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-03-28T00:00"), hasShares(25), //
+                        hasSource("AccountStatement07.txt"), hasNote("Ordinary Dividend"), //
+                        hasAmount("USD", 32.78), hasGrossValue("USD", 38.57), //
+                        hasTaxes("USD", 5.79), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testAccountStatement08()
+    {
+        TigerBrokersPteLtdPDFExtractor extractor = new TigerBrokersPteLtdPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatement08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(3L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(12L));
+        assertThat(results.size(), is(16));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("QQQ"), //
+                        hasName("Invesco QQQ Trust"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("VOO"), //
+                        hasName("Vanguard S&P 500 ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("VT"), //
+                        hasName("VANGUARD INTL EQUITY INDEX FUND INC TOTAL WORLD STK INDEX FUND ETF SHS"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-01-06T03:33:08"), hasShares(1), //
+                        hasSource("AccountStatement08.txt"), hasNote(null), //
+                        hasAmount("USD", 264.94), hasGrossValue("USD", 262.79), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.99 + 0.16 + 1.00))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-03-23T00:00"), hasShares(68), //
+                        hasSource("AccountStatement08.txt"), hasNote("Ordinary Dividend"), //
+                        hasAmount("USD", 13.78), hasGrossValue("USD", 19.68), //
+                        hasTaxes("USD", 5.90), hasFees("USD", 0.00))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-03-30T00:00"), hasShares(25), //
+                        hasSource("AccountStatement08.txt"), hasNote("Ordinary Dividend"), //
+                        hasAmount("USD", 26.02), hasGrossValue("USD", 37.18), //
+                        hasTaxes("USD", 11.16), hasFees("USD", 0.00))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-05-02T00:00"), hasShares(53), //
+                        hasSource("AccountStatement08.txt"), hasNote("Ordinary Dividend"), //
+                        hasAmount("USD", 17.52), hasGrossValue("USD", 25.03), //
+                        hasTaxes("USD", 7.51), hasFees("USD", 0.00))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-06-23T00:00"), hasShares(69), //
+                        hasSource("AccountStatement08.txt"), hasNote("Ordinary Dividend"), //
+                        hasAmount("USD", 38.15), hasGrossValue("USD", 44.88), //
+                        hasTaxes("USD", 6.73), hasFees("USD", 0.00))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-07-05T00:00"), hasShares(25), //
+                        hasSource("AccountStatement08.txt"), hasNote("Ordinary Dividend"), //
+                        hasAmount("USD", 33.49), hasGrossValue("USD", 39.40), //
+                        hasTaxes("USD", 5.91), hasFees("USD", 0.00))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-08-01T00:00"), hasShares(53), //
+                        hasSource("AccountStatement08.txt"), hasNote("Ordinary Dividend"), //
+                        hasAmount("USD", 22.70), hasGrossValue("USD", 26.71), //
+                        hasTaxes("USD", 4.01), hasFees("USD", 0.00))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-09-21T00:00"), hasShares(68), //
+                        hasSource("AccountStatement08.txt"), hasNote("Ordinary Dividend"), //
+                        hasAmount("USD", 23.78), hasGrossValue("USD", 27.98), //
+                        hasTaxes("USD", 4.20), hasFees("USD", 0.00))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-10-04T00:00"), hasShares(25), //
+                        hasSource("AccountStatement08.txt"), hasNote("Ordinary Dividend"), //
+                        hasAmount("USD", 31.71), hasGrossValue("USD", 37.31), //
+                        hasTaxes("USD", 5.60), hasFees("USD", 0.00))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-11-01T00:00"), hasShares(53), //
+                        hasSource("AccountStatement08.txt"), hasNote("Ordinary Dividend"), //
+                        hasAmount("USD", 24.12), hasGrossValue("USD", 28.38), //
+                        hasTaxes("USD", 4.26), hasFees("USD", 0.00))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-12-22T00:00"), hasShares(69), //
+                        hasSource("AccountStatement08.txt"), hasNote("Ordinary Dividend"), //
+                        hasAmount("USD", 46.97), hasGrossValue("USD", 55.26), //
+                        hasTaxes("USD", 8.29), hasFees("USD", 0.00))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-12-28T00:00"), hasShares(25), //
+                        hasSource("AccountStatement08.txt"), hasNote("Ordinary Dividend"), //
+                        hasAmount("USD", 38.28), hasGrossValue("USD", 45.03), //
+                        hasTaxes("USD", 6.75), hasFees("USD", 0.00))));
+    }
 }

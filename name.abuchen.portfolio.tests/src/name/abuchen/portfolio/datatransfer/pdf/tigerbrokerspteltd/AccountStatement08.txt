@@ -1,0 +1,184 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2023.01.01 - 2023.12.31
+WMGXYg UlmAUATg
+Account : 50385408
+Address : UQaqAcR BKKfbzJre FPzWaoqYykXBc 831 DweYn 2 jN NVfZMR OfZeYA 57273 Base Currency : USD
+Assets : 40,261.26USD
+Account Capabilities : Cash(Securities)
+Account Overview
+Cash Stock Bond Option Future Funds in Transit Interest Accruals Dividend Accruals Total
+Beginning Of The Period 427.98 28,577.17 0.00 0.00 0.00 0.00 0.00 0.00 29,005.15
+End Of The Period 491.85 39,723.28 0.00 0.00 0.00 0.00 0.00 46.13 40,261.26
+Cash Report
+Currency: USD
+Total Securities Futures
+Starting Cash 427.98 427.98 0.00
+Commissions -0.99 -0.99 0
+Platform Fees -1 -1 0
+GST -0.16 -0.16 0
+Dividends 386.84 386.84 0
+Net Trades (Purchase) -262.79 -262.79 0
+Withholding Tax -58.03 -58.03 0
+Ending Cash 491.85 491.85 0.00
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 1/8
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2023.01.01 - 2023.12.31
+Total Securities Futures
+Ending Settled Cash 491.85 491.85 0.00
+
+Trades
+Stock Currency: USD
+Symbol Market Exchange Open/Close Quantity T.Price C.Price Proceeds
+Accrued Interest in 
+Trade Comm/Fee GST
+Realized P MTM P Code Date/Time Settle /L /L Date
+Commission: 2023-01-06
+QQQ US 1 262.78870 261.58000 262.79 -0.99Platform Fee: -0.16 0.00 -1.21 03:33:08, 
+-1.00 GMT+8
+Total 
+QQQ 1 262.79 -1.99 -0.16 0.00 -1.21
+Total 262.79 -1.99 -0.16 0.00 -1.21
+Open Positions
+
+Stock
+Symbol Quantity Mult Cost Price Close Price Settle Price Value Unrealized P/L Initial Margin Maint Margin Currency
+QQQ 53 1 332.8633717 409.52000 21,704.56 4,062.80 0.00 0.00 USD
+VOO 25 1 391.4812000 436.80000 10,920.00 1,132.97 0.00 0.00 USD
+VT 69 1 96.8340580 102.88000 7,098.72 417.17 0.00 0.00 USD
+Total(In Base) 147 39,723.28 5,612.94 0.00 0.00 USD
+
+Dividends
+Date Description Amount Currency
+2023-03-23 VT Cash Dividend 0.2852 USD per Share (Ordinary Dividend) 19.68 USD
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 2/8
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2023.01.01 - 2023.12.31
+Date Description Amount Currency
+2023-03-30 VOO Cash Dividend 1.4874 USD per Share (Ordinary Dividend) 37.18 USD
+2023-05-02 QQQ Cash Dividend 0.47223 USD per Share (Ordinary Dividend) 25.03 USD
+2023-06-23 VT Cash Dividend 0.6504 USD per Share (Ordinary Dividend) 44.88 USD
+2023-07-05 VOO Cash Dividend 1.5762 USD per Share (Ordinary Dividend) 39.40 USD
+2023-08-01 QQQ Cash Dividend 0.50395 USD per Share (Ordinary Dividend) 26.71 USD
+2023-09-21 VT Cash Dividend 0.4055 USD per Share (Ordinary Dividend) 27.98 USD
+2023-10-04 VOO Cash Dividend 1.4925 USD per Share (Ordinary Dividend) 37.31 USD
+2023-11-01 QQQ Cash Dividend 0.53555 USD per Share (Ordinary Dividend) 28.38 USD
+2023-12-22 VT Cash Dividend 0.8008 USD per Share (Ordinary Dividend) 55.26 USD
+2023-12-28 VOO Cash Dividend 1.8011 USD per Share (Ordinary Dividend) 45.03 USD
+Total(In Base) 386.84 USD
+
+Withholding Tax
+Date Description Amount Currency
+2023-03-23 VT Cash Dividend 0.2852 USD per Share - Tax -5.90 USD
+2023-03-30 VOO Cash Dividend 1.4874 USD per Share - Tax -11.16 USD
+2023-05-02 QQQ Cash Dividend 0.47223 USD per Share - Tax -7.51 USD
+2023-06-23 VT Cash Dividend 0.6504 USD per Share - Tax -6.73 USD
+2023-07-05 VOO Cash Dividend 1.5762 USD per Share - Tax -5.91 USD
+2023-08-01 QQQ Cash Dividend 0.50395 USD per Share - Tax -4.01 USD
+2023-09-21 VT Cash Dividend 0.4055 USD per Share - Tax -4.20 USD
+2023-09-21 Cash Dividend USD per Share - Tax 12.29 USD
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 3/8
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2023.01.01 - 2023.12.31
+Date Description Amount Currency
+2023-10-04 VOO Cash Dividend 1.4925 USD per Share - Tax -5.60 USD
+2023-11-01 QQQ Cash Dividend 0.53555 USD per Share - Tax -4.26 USD
+2023-12-22 VT Cash Dividend 0.8008 USD per Share - Tax -8.29 USD
+2023-12-28 VOO Cash Dividend 1.8011 USD per Share - Tax -6.75 USD
+Total(In Base) -58.03 USD
+Change in Dividend Accruals
+Currency: USD
+Symbol Date Ex Date Pay Date Quantity Tax GST Fee(include ADR) Gross Rate Gross Amount Net Amount
+QQQ 2023-03-20 2023-03-20T00:00-04:00[US/Eastern] 2023-04-28T00:00-04:00[US/Eastern] 53 7.51 0.00 0.00 25.03 17.52
+VT 2023-03-20 2023-03-20T00:00-04:00[US/Eastern] 2023-03-23T00:00-04:00[US/Eastern] 69 5.90 0.00 0.00 19.68 13.78
+VOO 2023-03-24 2023-03-24T00:00-04:00[US/Eastern] 2023-03-29T00:00-04:00[US/Eastern] 25 11.16 0.00 0.00 37.18 26.02
+QQQ 2023-06-20 2023-06-20T00:00-04:00[US/Eastern] 2023-07-31T00:00-04:00[US/Eastern] 53 4.01 0.00 0.00 26.71 22.70
+VT 2023-06-20 2023-06-20T00:00-04:00[US/Eastern] 2023-06-23T00:00-04:00[US/Eastern] 69 6.73 0.00 0.00 44.88 38.15
+VOO 2023-06-29 2023-06-29T00:00-04:00[US/Eastern] 2023-07-05T00:00-04:00[US/Eastern] 25 5.91 0.00 0.00 39.40 33.49
+QQQ 2023-09-18 2023-09-18T00:00-04:00[US/Eastern] 2023-09-22T00:00-04:00[US/Eastern] 53 4.28 0.00 0.00 28.56 24.28
+VT 2023-09-18 2023-09-18T00:00-04:00[US/Eastern] 2023-09-21T00:00-04:00[US/Eastern] 69 4.20 0.00 0.00 27.98 23.78
+VOO 2023-09-28 2023-09-28T00:00-04:00[US/Eastern] 2023-10-03T00:00-04:00[US/Eastern] 25 5.60 0.00 0.00 37.31 31.71
+QQQ 2023-11-01 2023-09-18T00:00-04:00[US/Eastern] 2023-10-31T00:00-04:00[US/Eastern] 53 0.02 0.00 0.00 0.18 -0.16
+QQQ 2023-12-18 2023-12-18T00:00-05:00[US/Eastern] 2023-12-29T00:00-05:00[US/Eastern] 53 6.43 0.00 0.00 42.84 36.41
+VT 2023-12-18 2023-12-18T00:00-05:00[US/Eastern] 2023-12-21T00:00-05:00[US/Eastern] 69 8.29 0.00 0.00 55.26 46.97
+VOO 2023-12-20 2023-12-20T00:00-05:00[US/Eastern] 2023-12-26T00:00-05:00[US/Eastern] 25 6.75 0.00 0.00 45.03 38.28
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 4/8
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2023.01.01 - 2023.12.31
+Symbol Date Ex Date Pay Date Quantity Tax GST Fee(include ADR) Gross Rate Gross Amount Net Amount
+VOO 2023-12-27 2023-12-20T00:00-05:00[US/Eastern] 2023-12-26T00:00-05:00[US/Eastern] 25 0.00 0.00 0.00 0.00 0.00
+QQQ 2023-12-28 2023-12-27T00:00-05:00[US/Eastern] 2024-01-15T00:00-05:00[US/Eastern] 53 1.72 0.00 0.00 11.44 9.72
+Total 362.65
+Others
+Date Segment Description Amount GST Currency
+2023-01-05 GST 0.00 -0.16 USD
+Total(In Base) 0.00 -0.16 USD
+Financial Instrument Information
+
+Stock
+Symbol Issuer Description Multiplier Expiry Strike Right
+QQQ Invesco QQQ Trust 1
+VOO Vanguard S&P 500 ETF 1
+VT VANGUARD INTL EQUITY INDEX FUND INC TOTAL WORLD STK INDEX FUND ETF SHS 1
+Base Currency Exchange Rate
+Date 2023-12-31
+USD 1
+AUD 0.68120
+CAD 0.75472
+CNH 0.14034
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 5/8
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2023.01.01 - 2023.12.31
+Date 2023-12-31
+EUR 1.10377
+GBP 1.27300
+HKD 0.12806
+IDR 0.00006
+JPY 0.00709
+NZD 0.63184
+SGD 0.75785
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 6/8
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2023.01.01 - 2023.12.31
+Annotation
+1.Accrued dividends: when the company declares the dividends of shares, this part will calculate the dividends to be paid to the account, and the dividends paid to the account during form checking period will be included into cash.
+2.Accrued interest: interest is charged on a monthly basis, so this part will calculate the total interest earned by the account during the statement period, not including the interest received.
+3.Net Trades (Sales): Cash from selling securities
+4.Net Trades (Purchase): Cash spent on buying securities
+5.Other Fees: Including ADR fees, IPO fees, withdraw fees, dividends, bond custody fees and other expenses.
+6.Withholding Tax: Hong Kong stocks dividend tax
+7.Segment Transfer: The transfer of funds between securities and futures
+8.Multiplier: in an individual stock option or futures transaction, the value of the contract is expressed as the product of a certain monetary amount and the underlying index. The certain monetary amount is fixed by the contract, 
+which is referred to as the contract multiplier. At present, the stock is 1 by default and the individual stock option is 100.
+9.Settle Price: Futures settlement price is not equal to the closing price, futures is based on the settlement price to calculate the profit and loss of position.
+10.Proceeds: Trading amount is trading price multiplied by trading volume
+11.Net Amount: When buying, the net amount is recorded as the transaction amount of the purchased financial asset plus the amount of commission and tax
+when selling, the net amount is recorded as the cost amortization when selling the financial asset, including the realized profit and loss.
+12.Comm/Fee: In the trades module, for trades before December 2021, 'commission' includes commission + platform fee + transaction levy + stamp tax + transaction fee + settlement fee, etc. For trades after December 2021, 
+'commission' only includes commission, and other expenses are shown separately.
+13.Custodian fees: no charge, $0
+14.Exchange rate: You could view U.S. Dollar Currency Index chart to see the exchange rate at the last day for searching. (USD is transaction currency)
+15.Transaction is based on FIFO method
+16.Futures' Starting Cash and Ending Cash represents the starting and ending asset value of futures account, the difference between Starting and Ending Cash includes changes in position value and cash transactions (not showing 
+up on statement)
+17.Funds in Transit includes IPO transit subscription and IPO transit subscription fee
+Notes:
+1. Please examine the details in the monthly statement and promptly report any inaccuracy or discrepancy found to service@tigerbrokers.com.sg within 14 calendar days from the date of the statement. All the above details shall be 
+deemed correct and conclusive if no written notice of objection is received by us within 14 days from the date of the monthly statement.
+2. Tiger Brokers (Singapore) Pte Ltd is a member of Financial Institutions Dispute Resolution Centre (FIDReC), which is an independent and impartial institution specialising in the resolution of disputes between financial institutions 
+and consumers. Unresolved issues can also be brought up to FIDReC at www.fidrec.com.sg for mediation.
+3. Information on our fees can be found at https://www.tigerbrokers.com.sg/commissions/fees
+4. Information regarding your account can be found in the Terms and Conditions at https://www.tigerbrokers.com.sg/info/terms-n-conditions
+5. Customer money and assets are deposited in trust and held in custody, respectively in accordance with the Securities and Futures (Licensing and Conduct of Business) Regulations, governing the protection of client money and 
+assets.;
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 7/8
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2023.01.01 - 2023.12.31
+[1] TIGER BROKERS (HK) GLOBAL LIMITED AS THE PRINCIPAL
+TIGER BROKERS (SINGAPORE) PTE. LTD.
++65 6331 2277
+WhatsApp +65 6331 2277
+service@tigerbrokers.com.sg
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 8/8
