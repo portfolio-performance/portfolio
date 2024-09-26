@@ -150,6 +150,22 @@
                name="shares-held-color">
          </property-name>
       </handler>
+      <handler
+            adapter="name.abuchen.portfolio.ui.theme.PortfolioBalanceChartElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.PortfolioBalanceChartCSSHandler">
+         <property-name
+               name="invested-capital-color">
+         </property-name>
+         <property-name
+               name="absolute-delta-color">
+         </property-name>
+         <property-name
+               name="delta-area-positive-color">
+         </property-name>
+         <property-name
+               name="delta-area-negative-color">
+         </property-name>
+      </handler>
    </extension>
    <extension
          point="org.eclipse.e4.ui.css.core.elementProvider">
@@ -181,6 +197,9 @@
          </widget>
          <widget
                class="name.abuchen.portfolio.ui.views.SecuritiesChart">
+         </widget>
+         <widget
+               class="name.abuchen.portfolio.ui.views.PortfolioBalanceChart">
          </widget>
       </provider>
    </extension>

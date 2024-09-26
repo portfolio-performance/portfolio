@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.4
+-----------------------------------------
+sBFlyGyF-HnXmavKH fXUDQD-eARIIZV
+Overzicht transacties en rekeninguittreksels voor klantnummer 9914078
+24/01/2024
+EUR-REKENING - 34
+Borderel 003308592
+24/01/2024 02:35:28 Valuta 24/01/2024
+Uw Uitbetaling dividenden van 2.065 ISHAR.III CORE EUR CORP BD UC ETF-D 4.173,16 EUR
+aan 2,020901 EUR
+Buitenlandse bronheffing (basisbedrag 4.173,16 EUR) 0,00 EUR
+Roerende voorheffing (basisbedrag 4.173,16 EUR) 1.251,95 EUR
+Kosten incassostelling (basisbedrag 2.921,21 EUR) 48,28 EUR
+BTW (basisbedrag 48,28 EUR) 10,14 EUR
+Netto credit 2.862,79 EUR
+Wettelijke fiscale informatie Basisbedrag RV 4.173,16 EUR
+Roerende voorheffing 30,00% 1.251,95 EUR
+Waardecode 3081035529
+A
+Cash Dividend IE00B3F81R35ex 2024-01-11 pd 2024-01-24
+Rekeninguittreksel Nr 28 Vorig Saldo: 6.760,69 EUR
+24/01/2024 Uitbetaling dividenden ISHAR.III CORE EUR Valuta 24/01/2024 2.862,79 EUR
+CORP BD UC E
+Nieuw Saldo 9.623,48 EUR
+Dit deposito komt in aanmerking voor depositobescherming. Meer info: www.kbc.be/depositobescherming
+ncMnGzln-EtFGTTsi xGhohX-WgCeHIV Pagina 1
+1977443
+_______________________________________________________________________________________
+KBC BANK NV Documentreferte: 35
+Havenlaan 2, 1080 Brussels, Belgium VAT BE 0462.920.226
+Account N° BE77 4096 5474 0142 - BIC KREDBEBB

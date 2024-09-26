@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
@@ -296,6 +297,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             if (labelProvider instanceof CellItemImageClickedListener listener)
                 setupImageClickedListener(col, listener);
 
+            if (labelProvider instanceof ParameterizedColumnLabelProvider parametrized)
+                parametrized.setTableColumn(tableColumn);
+
             return tableColumn;
         }
 
@@ -551,6 +555,11 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             contextMenu.dispose();
     }
 
+    public Stream<Column> getColumns()
+    {
+        return columns.stream();
+    }
+
     public String getConfigurationName()
     {
         return store != null ? store.getActiveName() : null;
@@ -800,11 +809,18 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         {
             policy.setRedraw(false);
 
+            var sortColumn = policy.getSortColumn();
+
             for (Widget col : policy.getColumns())
             {
                 Column column = (Column) col.getData(Column.class.getName());
                 if (group.equals(column.getGroupLabel()))
+                {
+                    if (sortColumn == col)
+                        policy.getViewer().setComparator(null);
+
                     col.dispose();
+                }
             }
         }
         finally

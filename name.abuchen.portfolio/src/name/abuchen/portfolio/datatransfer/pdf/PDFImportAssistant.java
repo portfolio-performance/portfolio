@@ -28,6 +28,7 @@ public class PDFImportAssistant
         this.client = client;
         this.files = files;
 
+        extractors.add(new ABNAMROGroupPDFExtractor(client));
         extractors.add(new AdvanziaBankPDFExtractor(client));
         extractors.add(new AJBellSecuritiesLimitedPDFExtractor(client));
         extractors.add(new AkfBankPDFExtractor(client));
@@ -77,13 +78,15 @@ public class PDFImportAssistant
         extractors.add(new JTDirektbankPDFExtractor(client));
         extractors.add(new KBCGroupNVPDFExtractor(client));
         extractors.add(new KeytradeBankPDFExtractor(client));
+        extractors.add(new KFintechPDFExtractor(client));
+        extractors.add(new MerkurPrivatBankPDFExtractor(client));
         extractors.add(new MLPBankingAGPDFExtractor(client));
+        extractors.add(new N26BankAGkPDFExtractor(client));
         extractors.add(new NIBCBankPDFExtractor(client));
         extractors.add(new OldenburgischeLandesbankAGPDFExtractor(client));
         extractors.add(new LGTBankPDFExtractor(client));
         extractors.add(new LiechtensteinischeLandesbankAGPDFExtractor(client));
         extractors.add(new LimeTradingCorpPDFExtractor(client));
-        extractors.add(new MerkurPrivatBankPDFExtractor(client));
         extractors.add(new OnvistaPDFExtractor(client));
         extractors.add(new OpenBankSAPDFExtractor(client));
         extractors.add(new PictetCieGruppeSAPDFExtractor(client));
@@ -114,6 +117,7 @@ public class PDFImportAssistant
         extractors.add(new UnicreditPDFExtractor(client));
         extractors.add(new VanguardGroupEuropePDFExtractor(client));
         extractors.add(new VBankAGPDFExtractor(client));
+        extractors.add(new VZVermoegenszentrumAGPDFExtractor(client));
         extractors.add(new WealthsimpleInvestmentsIncPDFExtractor(client));
         extractors.add(new WirBankPDFExtractor(client));
         extractors.add(new WeberbankPDFExtractor(client));

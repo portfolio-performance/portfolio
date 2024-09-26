@@ -1,0 +1,41 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+VZ Depotbank AG
+Innere Güterstrasse 2
+6300 Zug
+058 411 88 88
+contact@vzdepotbank.ch
+www.vzdepotbank.ch
+CHE-116.326.867 MWST
+e-Dokument
+Herr Ver Portfolio Anlageberatung
+Max Mustermann Depot DB TF 123.456.78.500 / CHF
+Musterstrasse 12
+1234 Musterstadt
+Auftragsnummer AUF221133-43219876
+Zug, 31.01.2022 Auftragsdatum 31.01.2022
+Börsenabrechnung - Kauf
+Wir haben für Sie am 31.01.2022 gekauft.
+20 Namen-Aktie
+Calida Holding AG
+Valor: 12663946
+ISIN: CH0126639464
+Börsenplatz: SIX Swiss Exchange
+Total Kurswert CHF -986.00
+Börsengebühren CHF -1.55
+Eidg. Umsatz Stempel CHF -0.75
+Courtage * CHF -39.00
+Netto CHF -1'027.30
+Valuta: 02.02.2022
+* Tarifreduktion E-Banking Auftrag
+Die Belastung erfolgt auf Konto 123.456.78.100
+Die entsprechende Buchung werden wir in Ihrem Depot 123.456.78.500 vornehmen.
+Die Anlage erfolgt ohne Beratung durch uns (Execution only). Es wurde keine Bedürfnisabklärung, keine
+Risikoaufklärung und kein Abgleich mit einem allenfalls vereinbarten Anlageprofil gemacht.
+Ausführung Menge Preis Kurswert
+10:19:24 20 49.30 CHF -986.00
+Freundliche Grüsse
+VZ Depotbank AG
+Anzeige ohne Unterschrift
+3425234 | 23234567345987 | 8978 Seite 1 / 1

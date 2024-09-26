@@ -70,6 +70,7 @@ public class SecurityContextMenu
                         .parameters(AccountTransaction.Type.DIVIDENDS) //
                         .with(portfolio != null ? portfolio.getReferenceAccount() : null) //
                         .with(security) //
+                        .with(portfolio) //
                         .addTo(manager);
 
         new OpenDialogAction(owner, AccountTransaction.Type.TAXES + "...") //$NON-NLS-1$

@@ -6,25 +6,45 @@ import java.util.function.IntPredicate;
 
 import name.abuchen.portfolio.util.Interval;
 
+/**
+ * The Risk class encapsulates financial risk metrics including drawdown and
+ * volatility.
+ * <p>
+ * The Drawdown class calculates the maximum drawdown, the duration of the
+ * drawdown, and the recovery time for a given series of asset values over time.
+ * <p>
+ * The Volatility class calculates standard deviation and semi-deviation of
+ * asset returns, which are key measures of an asset's risk and return profile.
+ */
+
 public final class Risk
 {
 
+    /**
+     * The Drawdown class calculates the drawdown metrics for a series of asset
+     * values.
+     * <p>
+     * Drawdown represents the decline from a historical peak in some variable
+     * (typically the value of an investment), and is usually quoted as a
+     * percentage. This class provides methods to get the maximum drawdown, the
+     * interval of the maximum drawdown, the maximum drawdown duration, and the
+     * longest recovery time.
+     */
     public static class Drawdown
     {
         private double maxDD;
         private Interval maxDDDuration;
         private Interval intervalMaxDD;
         private Interval recoveryTime;
+        private double[] drawdownDataSerie;
 
         public Drawdown(double[] values, LocalDate[] dates, int startAt)
         {
             if (values.length != dates.length)
-                throw new IllegalArgumentException(
-                                "values and dates mismatch: " + values.length + " != " + dates.length); //$NON-NLS-1$ //$NON-NLS-2$
+                throw new IllegalArgumentException("Values and dates mismatch: " + values.length + " != " + dates.length); //$NON-NLS-1$ //$NON-NLS-2$
 
             if (startAt >= values.length)
-                throw new IllegalArgumentException("unable to start at " + startAt + ": values only conatins " //$NON-NLS-1$ //$NON-NLS-2$
-                                + values.length + " elements"); //$NON-NLS-1$
+                throw new IllegalArgumentException("Unable to start at " + startAt + ": Values only contains "  + values.length + " elements"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
             double peak = values[startAt] + 1;
             double bottom = values[startAt] + 1;
@@ -37,6 +57,7 @@ public final class Risk
             recoveryTime = Interval.of(lastBottomDate, lastPeakDate);
             Interval currentDrawdownDuration = null;
             Interval currentRecoveryTime = null;
+            drawdownDataSerie = new double[values.length];
 
             for (int ii = startAt; ii < values.length; ii++)
             {
@@ -48,40 +69,34 @@ public final class Risk
                 {
                     peak = value;
                     lastPeakDate = dates[ii];
-
-                    if (currentDrawdownDuration.isLongerThan(maxDDDuration))
-                        maxDDDuration = currentDrawdownDuration;
+                    drawdownDataSerie[ii] = 0;
 
                     if (currentRecoveryTime.isLongerThan(recoveryTime))
                         recoveryTime = currentRecoveryTime;
-                    // Reset the recovery time calculation, as the recovery is
-                    // now complete
+
                     lastBottomDate = dates[ii];
                     bottom = value;
                 }
                 else
                 {
                     double drawdown = (peak - value) / peak;
+                    drawdownDataSerie[ii] = -drawdown;
                     if (drawdown > maxDD)
                     {
                         maxDD = drawdown;
                         intervalMaxDD = Interval.of(lastPeakDate, dates[ii]);
                     }
+
+                    if (value < bottom)
+                    {
+                        bottom = value;
+                        lastBottomDate = dates[ii];
+                    }
                 }
-                if (value < bottom)
-                {
-                    bottom = value;
-                    lastBottomDate = dates[ii];
-                }
+
+                if (currentDrawdownDuration != null && currentDrawdownDuration.isLongerThan(maxDDDuration))
+                    maxDDDuration = currentDrawdownDuration;
             }
-
-            // check if current drawdown duration is longer than the max
-            // drawdown duration currently calculated --> use it because it is
-            // the longest duration even if we do not know how much longer it
-            // will get
-
-            if (currentDrawdownDuration != null && currentDrawdownDuration.isLongerThan(maxDDDuration))
-                maxDDDuration = currentDrawdownDuration;
 
             if (currentRecoveryTime != null && currentRecoveryTime.isLongerThan(recoveryTime))
                 recoveryTime = currentRecoveryTime;
@@ -105,6 +120,11 @@ public final class Risk
         public Interval getMaxDrawdownDuration()
         {
             return maxDDDuration;
+        }
+
+        public double[] getMaxDrawdownSerie()
+        {
+            return drawdownDataSerie;
         }
     }
 
@@ -131,11 +151,11 @@ public final class Risk
                 double logReturn = Math.log(1 + returns[ii]);
                 double add = Math.pow(logReturn - averageLogReturn, 2);
 
-                tempStandard = tempStandard + add;
+                tempStandard += add;
                 count++;
 
                 if (logReturn < averageLogReturn)
-                    tempSemi = tempSemi + add;
+                    tempSemi += add;
             }
 
             if (count <= 1)
@@ -164,10 +184,7 @@ public final class Risk
                 count++;
             }
 
-            if (count == 0)
-                return 0;
-
-            return sum / count;
+            return count == 0 ? 0 : sum / count;
         }
 
         public double getStandardDeviation()

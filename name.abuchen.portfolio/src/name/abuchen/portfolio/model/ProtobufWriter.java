@@ -206,7 +206,13 @@ import name.abuchen.portfolio.money.Money;
                         ((DividendEvent) event).setPaymentDate(LocalDate.ofEpochDay(newEvent.getData(0).getInt64()));
                         ((DividendEvent) event).setAmount(
                                         Money.of(newEvent.getData(1).getString(), newEvent.getData(2).getInt64()));
-                        ((DividendEvent) event).setSource(newEvent.getData(3).getString());
+
+                        // read legacy source, if it exists
+                        if (newEvent.getDataCount() >= 4)
+                        {
+                            ((DividendEvent) event).setSource(newEvent.getData(3).getString());
+                        }
+
                         break;
                     default:
                         throw new UnsupportedOperationException(
@@ -215,6 +221,10 @@ import name.abuchen.portfolio.money.Money;
 
                 event.setDate(LocalDate.ofEpochDay(newEvent.getDate()));
                 event.setDetails(newEvent.getDetails());
+
+                var source = newEvent.getSource();
+                if (!source.isEmpty())
+                    event.setSource(newEvent.getSource());
 
                 security.addEvent(event);
             }
@@ -680,6 +690,7 @@ import name.abuchen.portfolio.money.Money;
         for (PDashboard newDashboard : newClient.getDashboardsList())
         {
             Dashboard dashboard = new Dashboard();
+            dashboard.setId(newDashboard.getId());
             dashboard.setName(newDashboard.getName());
             dashboard.getConfiguration().putAll(newDashboard.getConfigurationMap());
 
@@ -871,6 +882,9 @@ import name.abuchen.portfolio.money.Money;
             newSecurity.addAllAttributes(security.getAttributes().toProto(client));
 
             security.getEvents().forEach(event -> {
+                if (event == null)
+                    return;
+
                 PSecurityEvent.Builder newEvent = PSecurityEvent.newBuilder();
 
                 switch (event.getType())
@@ -888,7 +902,8 @@ import name.abuchen.portfolio.money.Money;
                         newEvent.addData(PAnyValue.newBuilder().setInt64(dividendEvent.getPaymentDate().toEpochDay()));
                         newEvent.addData(PAnyValue.newBuilder().setString(dividendEvent.getAmount().getCurrencyCode()));
                         newEvent.addData(PAnyValue.newBuilder().setInt64(dividendEvent.getAmount().getAmount()));
-                        newEvent.addData(PAnyValue.newBuilder().setString(dividendEvent.getSource()));
+                        // Important: the 'source' attribute used to be written
+                        // as 4th element
                         break;
                     default:
                         throw new UnsupportedOperationException();
@@ -897,6 +912,8 @@ import name.abuchen.portfolio.money.Money;
                 newEvent.setDate(event.getDate().toEpochDay());
                 if (event.getDetails() != null)
                     newEvent.setDetails(event.getDetails());
+                if (event.getSource() != null)
+                    newEvent.setSource(event.getSource());
                 newSecurity.addEvents(newEvent);
 
             });
@@ -1251,6 +1268,7 @@ import name.abuchen.portfolio.money.Money;
         client.getDashboards().forEach(dashboard -> {
             PDashboard.Builder newDashboard = PDashboard.newBuilder();
 
+            newDashboard.setId(dashboard.getId());
             newDashboard.setName(dashboard.getName());
             newDashboard.putAllConfiguration(dashboard.getConfiguration());
 

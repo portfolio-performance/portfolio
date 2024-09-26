@@ -1,0 +1,58 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.1
+-----------------------------------------
+VR-Bank Musterort eG · Musterstr. 23 · 12345 Musterort    Seite 1
+Depotnummer
+ 99999999
+ Kundennummer 99999999
+Max und Maria Mustermann Max und
+ Maria Mustermann
+Max und Maria Mustermann Abrechnungsnr. 99999999999
+Musterweg 42 Datum 12.01.2024
+12345 Musterort
+Vorabpauschale Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 100 CT (LUX) GLOBAL SMALLER COS LU0570870567 (A1JJHG)
+NAMENS-ANTEILE AE O.N.
+Zahlbarkeitstag 02.01.2024 Vorabpauschale pro St. 0,693818790 EUR
+Bestandsstichtag 29.12.2023 mit Teilfreistellung (Aktien-
+Ex-Tag 02.01.2024 fonds) 0,485673150 EUR
+Geschäftsjahr 01.01.2023 - 31.12.2023 Herkunftsland Luxemburg
+Steuerpflichtige Vorabpauschale 69,38+ EUR
+davon steuerfreier Anteil wg. Teilfreistellung 20,81- EUR
+Kapitalertragsteuerpfl. Ertrag nach Teilfreistellung 48,57+ EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 48,57+ EUR
+Anteilige Berechnungsgrundlage für Maria Mustermann (50,00 %) entspricht 24,29 EUR
+Kapitalertragsteuer 24,51 % auf 24,29 EUR 5,95- EUR
+Solidaritätszuschlag 5,5 % auf 5,95 EUR 0,32- EUR
+Kirchensteuer 8 % auf 5,95 EUR 0,47- EUR
+Anteilige Berechnungsgrundlage für Max Mustermann (50,00 %) entspricht 24,28 EUR
+Kapitalertragsteuer 24,51 % auf 24,28 EUR 5,95- EUR
+Solidaritätszuschlag 5,5 % auf 5,95 EUR 0,32- EUR
+Kirchensteuer 8 % auf 5,95 EUR 0,47- EUR
+Ausmachender Betrag 13,48- EUR
+Lagerstelle CBFI (999999 / 99999)
+Den Betrag buchen wir mit Wertstellung 02.01.2024 zu Lasten des Kontos 999999 (IBAN DE99 9999 9999 9999 9999 99),
+BLZ 999 999 99 (BIC XYXYZYX9XYZ).
+Keine Steuerbescheinigung. 
+Bitte ggf. Rückseite beachten.
+9999.99999999.99999999X99
+
+Seite 2
+Depotnummer 99999999
+Kundennummer 99999999
+Abrechnungsnr. 99999999999
+Datum 12.01.2024
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2024 ohne Vorjahressaldo Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 0,00
+Ertrag 0,00 0,00 0,00 0,00 48,57
+Nachher 0,00 0,00 0,00 0,00 48,57
+Nachrichtlich zur Ermittlung des Bruttowertes zur Vorabpauschale berücksichtigte Anschaffungsgeschäfte.
+Anschaffungen Summe Nominale Anzahl Monat(e) anteiliger Bruttowert
+Summe vorherige Kalenderjahre 100,0000 12/12 69,38 €
+Bestand zum 29.12.2023 100,0000 69,38 €
+9999.99999999.99999999X99

@@ -15,6 +15,7 @@ import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.ParsedData;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -861,17 +862,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "|.berweis\\. entgeltfr\\.)) " //
                                         + "(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            // since year is not within the date correction
-                            // necessary in first receipt of year
-                            if (v.get("nr").compareTo("1") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
-                            {
-                                int year = Integer.parseInt(v.get("year")) - 1;
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + year));
-                            }
-                            else
-                            {
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + v.get("year")));
-                            }
+                            dateTranactionHelper(t, v);
 
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
@@ -930,17 +921,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "|Eingang Echtzeit.berw)) " //
                                         + "(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            // since year is not within the date correction
-                            // necessary in first receipt of year
-                            if (v.get("nr").compareTo("1") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
-                            {
-                                int year = Integer.parseInt(v.get("year")) - 1;
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + year));
-                            }
-                            else
-                            {
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + v.get("year")));
-                            }
+                            dateTranactionHelper(t, v);
 
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
@@ -973,17 +954,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "(?<note>Steuerausgleich) " //
                                         + "(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            // since year is not within the date correction
-                            // necessary in first receipt of year
-                            if (v.get("nr").compareTo("1") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
-                            {
-                                int year = Integer.parseInt(v.get("year")) - 1;
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + year));
-                            }
-                            else
-                            {
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + v.get("year")));
-                            }
+                            dateTranactionHelper(t, v);
 
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
@@ -1026,17 +997,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if ("Stornorechnung".equals(v.get("note2")))
                                 t.setType(AccountTransaction.Type.FEES_REFUND);
 
-                            // since year is not within the date correction
-                            // necessary in first receipt of year
-                            if (v.get("nr").compareTo("1") == 0 && Integer.parseInt(v.get("month1")) != Integer.parseInt(v.get("month2")))
-                            {
-                                int year = Integer.parseInt(v.get("year")) - 1;
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + year));
-                            }
-                            else
-                            {
-                                t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + v.get("year")));
-                            }
+                            dateTranactionHelper(t, v);
 
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
@@ -1066,10 +1027,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                                         // @formatter:off
                                         // This is for interest charge
+                                        //
                                         // 02.10.2023 Abrechnung 29.09.2023 / Wert: 01.10.2023
+                                        // 01.07.2024 Abrechnung 28.06.2024
                                         // @formatter:on
                                         .section("date").optional() //
-                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\/ .*") //
+                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*") //
                                         .assign((ctx, v) -> ctx.put("date", v.get("date"))));
 
         this.addDocumentTyp(type);
@@ -1241,6 +1204,34 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                 return new TransactionItem(t);
                             return null;
                         }));
+
+        Block taxesBlock = new Block("^(Kapitalertrags(s)?teuer|Solidarit.tszuschlag|Kirchensteuer)[\\s]{1,}[\\.,\\d]+(([\\-|\\+]))$");
+        type.addBlock(taxesBlock);
+        taxesBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        .section("note", "amount", "type") //
+                        .documentContext("date", "currency") //
+                        .match("^(?<note>(Kapitalertrags(s)?teuer|Solidarit.tszuschlag|Kirchensteuer))[\\s]{1,}(?<amount>[\\.,\\d]+)(?<type>([\\-|\\+]))$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type is "+" change from TAXES to TAX_REFUND
+                            // @formatter:on
+                            if ("+".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private void addCreditcardStatementTransaction()
@@ -1697,5 +1688,32 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional() //
                         .match("^Fremde Auslagen (?<fee>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
+    }
+
+    /**
+     * Helper method to set the date of an AccountTransaction based on the provided ParsedData.
+     *
+     * This method checks if the transaction's "nr" field is "1" and if the months "month1" and "month2" are different.
+     * If both conditions are met, it assumes the transaction should be recorded in the previous year.
+     * Otherwise, it uses the year provided in the ParsedData. The final date is set using "day", "month2", and the determined year.
+     *
+     * @param t The AccountTransaction object to set the date for.
+     * @param v The ParsedData object containing the date information. It should provide "nr", "day", "month1", "month2", and "year".
+     */
+    private void dateTranactionHelper(AccountTransaction t, ParsedData v)
+    {
+        final String SPECIAL_NR = "1";
+
+        String nr = v.get("nr");
+        int month1 = Integer.parseInt(v.get("month1"));
+        int month2 = Integer.parseInt(v.get("month2"));
+        int year = Integer.parseInt(v.get("year"));
+
+        if (nr.compareTo(SPECIAL_NR) == 0 && month1 != month2)
+        {
+            year--;
+        }
+
+        t.setDateTime(asDate(v.get("day") + "." + v.get("month2") + "." + year));
     }
 }

@@ -1,19 +1,32 @@
 package name.abuchen.portfolio.datatransfer.pdf.santanderconsumerbank;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNull;
 
@@ -270,6 +283,148 @@ public class SantanderConsumerBankPDFExtractorTest
     }
 
     @Test
+    public void testDividende03()
+    {
+        SantanderConsumerBankPDFExtractor extractor = new SantanderConsumerBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3RBWM25"), hasWkn("A1JX52"), hasTicker(null), //
+                        hasName("VANGUARD FTSE ALL-WORLD U.ETF REGISTERED SHARES USD DIS.ON"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-06-30T00:00"), hasShares(495.00), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote("Abrechnungsnr. 00000000000"), //
+                        hasAmount("EUR", 327.96), hasGrossValue("EUR", 327.96), //
+                        hasForexGrossValue("USD", 360.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende03WithSecurityInEUR()
+    {
+        Security security = new Security("VANGUARD FTSE ALL-WORLD U.ETF REGISTERED SHARES USD DIS.ON", CurrencyUnit.EUR);
+        security.setIsin("IE00B3RBWM25");
+        security.setWkn("A1JX52");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        SantanderConsumerBankPDFExtractor extractor = new SantanderConsumerBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-06-30T00:00"), hasShares(495.00), //
+                        hasSource("Dividende03.txt"), //
+                        hasNote("Abrechnungsnr. 00000000000"), //
+                        hasAmount("EUR", 327.96), hasGrossValue("EUR", 327.96), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende04()
+    {
+        SantanderConsumerBankPDFExtractor extractor = new SantanderConsumerBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3RBWM25"), hasWkn("A1JX52"), hasTicker(null), //
+                        hasName("VANGUARD FTSE ALL-WORLD U.ETF REGISTERED SHARES USD DIS.ON"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-27T00:00"), hasShares(495.00), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("Abrechnungsnr. 00000000000"), //
+                        hasAmount("EUR", 291.95), hasGrossValue("EUR", 363.10), //
+                        hasForexGrossValue("USD", 390.48), //
+                        hasTaxes("EUR", 62.15 + 3.41 + 5.59), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende04WithSecurityInEUR()
+    {
+        Security security = new Security("VANGUARD FTSE ALL-WORLD U.ETF REGISTERED SHARES USD DIS.ON", CurrencyUnit.EUR);
+        security.setIsin("IE00B3RBWM25");
+        security.setWkn("A1JX52");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        SantanderConsumerBankPDFExtractor extractor = new SantanderConsumerBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-06-27T00:00"), hasShares(495.00), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("Abrechnungsnr. 00000000000"), //
+                        hasAmount("EUR", 291.95), hasGrossValue("EUR", 363.10), //
+                        hasTaxes("EUR", 62.15 + 3.41 + 5.59), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testKontoauszug01()
     {
         SantanderConsumerBankPDFExtractor extractor = new SantanderConsumerBankPDFExtractor(new Client());
@@ -308,4 +463,133 @@ public class SantanderConsumerBankPDFExtractorTest
                         hasSource("Kontoauszug01.txt"),
                         hasNote("von Konto AT123456789012345678 lautend auf Max Muster"))));
     }
+
+    @Test
+    public void testKontoauszug02()
+    {
+        SantanderConsumerBankPDFExtractor extractor = new SantanderConsumerBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2022-12-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug02.txt"), hasNote("Habenzinsen"))));
+    }
+
+    @Test
+    public void testKontoauszug03()
+    {
+        SantanderConsumerBankPDFExtractor extractor = new SantanderConsumerBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(12L));
+        assertThat(results.size(), is(12));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-01-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Habenzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-02-28"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Habenzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-03-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Habenzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-04-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Habenzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-05-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Habenzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-06-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Habenzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-07-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Habenzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-08-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Habenzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-09-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Habenzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-10-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Habenzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-11-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Habenzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-12-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Habenzinsen"))));
+    }
+
+    @Test
+    public void testKontoauszug04()
+    {
+        SantanderConsumerBankPDFExtractor extractor = new SantanderConsumerBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2017-01-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Habenzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2017-03-31"), hasAmount("EUR", 5.87), //
+                        hasSource("Kontoauszug04.txt"), hasNote("ÜBERWEISUNG"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2017-04-28"), hasAmount("EUR", 10.00), //
+                        hasSource("Kontoauszug04.txt"), hasNote("ÜBERWEISUNG"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2017-06-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Habenzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2017-07-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Habenzinsen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2017-08-30"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug04.txt"), hasNote("Habenzinsen"))));
+
+    }
+
 }

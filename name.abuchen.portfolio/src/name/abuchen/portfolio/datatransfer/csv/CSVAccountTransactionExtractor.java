@@ -99,8 +99,18 @@ import name.abuchen.portfolio.money.Money;
             case TRANSFER_IN:
             case TRANSFER_OUT:
                 AccountTransferEntry entry = new AccountTransferEntry();
-                entry.setAmount(Math.abs(amount.getAmount()));
-                entry.setCurrencyCode(amount.getCurrencyCode());
+                if (grossAmount.isPresent())
+                {
+                    Unit grossAmountUnit = grossAmount.get();
+                    entry.getSourceTransaction().setMonetaryAmount(grossAmountUnit.getAmount());
+                    entry.getTargetTransaction().setMonetaryAmount(grossAmountUnit.getForex());
+                    entry.getSourceTransaction().addUnit(grossAmountUnit);
+                }
+                else
+                {
+                    entry.setAmount(Math.abs(amount.getAmount()));
+                    entry.setCurrencyCode(amount.getCurrencyCode());
+                }
                 entry.setDate(date);
                 entry.setNote(note);
                 item = new AccountTransferItem(entry, type == Type.TRANSFER_OUT);

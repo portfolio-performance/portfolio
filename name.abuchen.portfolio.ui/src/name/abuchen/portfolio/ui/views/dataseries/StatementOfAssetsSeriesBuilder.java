@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
 import static name.abuchen.portfolio.util.ArraysUtil.accumulateAndToDouble;
+import static name.abuchen.portfolio.util.ArraysUtil.add;
 import static name.abuchen.portfolio.util.ArraysUtil.toDouble;
 
 import org.swtchart.IBarSeries;
@@ -49,6 +50,9 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
                 break;
             case TRANSFERALS:
                 values = toDouble(clientIndex.getTransferals(), Values.Amount.divider());
+                break;
+            case TRANSFERALS_ACCUMULATED:
+                values = accumulateAndToDouble(clientIndex.getTransferals(), Values.Amount.divider());
                 break;
             case INVESTED_CAPITAL:
                 values = toDouble(clientIndex.calculateInvestedCapital(), Values.Amount.divider());
@@ -115,17 +119,5 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
                             series.getLabel());
             configure(series, barSeries);
         }
-    }
-
-    private long[] add(long[] a, long[] b)
-    {
-        if (a.length != b.length)
-            throw new IllegalArgumentException("length mismatch " + a.length + " != " + b.length); //$NON-NLS-1$ //$NON-NLS-2$
-
-        long[] result = new long[a.length];
-        for (int ii = 0; ii < result.length; ii++)
-            result[ii] = a[ii] + b[ii];
-
-        return result;
     }
 }

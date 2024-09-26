@@ -82,6 +82,17 @@ public class ExtractorUtilsDateParserTest
         assertEquals(expected, ExtractorUtils.asDate("2023-04-01", Locale.GERMANY));
 
         // Test valid date strings for each pattern in
+        // DATE_FORMATTER_FRENCH with hints
+        expected = LocalDateTime.of(2024, 7, 1, 0, 0);
+        assertEquals(expected, ExtractorUtils.asDate("01 juil. 2024", Locale.FRENCH));
+
+        expected = LocalDateTime.of(2024, 8, 1, 0, 0);
+        assertEquals(expected, ExtractorUtils.asDate("01 août 2024", Locale.FRENCH));
+
+        expected = LocalDateTime.of(2024, 2, 1, 0, 0);
+        assertEquals(expected, ExtractorUtils.asDate("01 Février 2024", Locale.FRENCH));
+
+        // Test valid date strings for each pattern in
         // DATE_FORMATTER_US with hints
         expected = LocalDateTime.of(2023, 4, 11, 0, 0);
         assertEquals(expected, ExtractorUtils.asDate("11 Apr 2023", Locale.US));

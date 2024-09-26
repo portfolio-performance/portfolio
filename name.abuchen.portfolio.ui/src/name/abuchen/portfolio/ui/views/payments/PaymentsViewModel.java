@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -83,6 +84,7 @@ public class PaymentsViewModel
     {
         private InvestmentVehicle vehicle;
         private boolean consolidateRetired;
+        private boolean isHeader;
         private long[] values;
         private long sum;
 
@@ -95,6 +97,17 @@ public class PaymentsViewModel
             this.consolidateRetired = consolidateRetired;
             this.values = new long[length];
             this.numTransactions = new int[length];
+        }
+
+        public Line(Line other, boolean isHeader)
+        {
+            this.vehicle = other.vehicle;
+            this.consolidateRetired = other.consolidateRetired;
+            this.values = Arrays.copyOf(other.values, other.values.length);
+            this.numTransactions = Arrays.copyOf(other.numTransactions, other.numTransactions.length);
+            this.sum = other.sum;
+
+            this.isHeader = isHeader;
         }
 
         public InvestmentVehicle getVehicle()
@@ -127,6 +140,11 @@ public class PaymentsViewModel
             return values.length;
         }
 
+        public boolean isHeader()
+        {
+            return isHeader;
+        }
+
         @Override
         public <T> T adapt(Class<T> type)
         {
@@ -151,6 +169,8 @@ public class PaymentsViewModel
     private Mode mode = Mode.ALL;
     private boolean useGrossValue = true;
     private boolean useConsolidateRetired = true;
+    private boolean hideTotalsAtTheTop = true;
+    private boolean hideTotalsAtTheBottom = false;
 
     public PaymentsViewModel(CurrencyConverter converter, Client client)
     {
@@ -237,16 +257,39 @@ public class PaymentsViewModel
         recalculate();
     }
 
+    public boolean isHideTotalsAtTheTop()
+    {
+        return hideTotalsAtTheTop;
+    }
+
+    public void setHideTotalsAtTheTop(boolean hideTotalsAtTheTop)
+    {
+        this.hideTotalsAtTheTop = hideTotalsAtTheTop;
+    }
+
+    public boolean isHideTotalsAtTheBottom()
+    {
+        return hideTotalsAtTheBottom;
+    }
+
+    public void setHideTotalsAtTheBottom(boolean hideTotalsAtTheBottom)
+    {
+        this.hideTotalsAtTheBottom = hideTotalsAtTheBottom;
+    }
+
     /**
      * Returns all lines including the sum line
      */
     public List<Line> getAllLines()
     {
         List<Line> answer = new ArrayList<>();
+        if (!hideTotalsAtTheTop)
+            answer.add(new Line(sum, true));
         answer.addAll(lines);
         if (useConsolidateRetired)
             answer.add(sumRetired);
-        answer.add(sum);
+        if (!hideTotalsAtTheBottom)
+            answer.add(sum);
         return answer;
     }
 
@@ -470,8 +513,7 @@ public class PaymentsViewModel
                 }
             }
         }
-        this.transactions = transactions.stream()
-                            .sorted(TransactionPair.BY_DATE).toList();
+        this.transactions = transactions.stream().sorted(TransactionPair.BY_DATE).toList();
         this.lines = new ArrayList<>(vehicle2line.values());
     }
 
@@ -480,7 +522,7 @@ public class PaymentsViewModel
         this.listeners.add(listener);
     }
 
-    protected void fireUpdateChange()
+    /* package */ void fireUpdateChange()
     {
         this.listeners.stream().forEach(UpdateListener::onUpdate);
     }

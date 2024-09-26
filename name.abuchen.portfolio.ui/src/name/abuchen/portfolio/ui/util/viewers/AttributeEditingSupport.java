@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.ui.util.NumberVerifyListener;
+import name.abuchen.portfolio.ui.util.text.FrenchKeypadSupport;
 
 public class AttributeEditingSupport extends ColumnEditingSupport
 {
@@ -26,6 +27,10 @@ public class AttributeEditingSupport extends ColumnEditingSupport
         TextCellEditor textEditor = new TextCellEditor(composite);
         if (attribute.isNumber())
             ((Text) textEditor.getControl()).addVerifyListener(new NumberVerifyListener(true));
+
+        if (attribute.isNumber() || attribute.getConverter() instanceof AttributeType.LimitPriceConverter)
+            FrenchKeypadSupport.configure((Text) textEditor.getControl());
+
         return textEditor;
     }
 

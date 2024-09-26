@@ -658,6 +658,94 @@ public class TradeCalendarTest
     }
 
     @Test
+    public void testTradeCalendarSSE()
+    {
+        // Initialize the trade calendar for "sse"
+        TradeCalendar calendar = TradeCalendarManager.getInstance("sse");
+
+
+        // Test New Year
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-01-01")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-01-01")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-01-01")), is(true));
+
+        // Test Good Friday (Easter-related)
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-04-02")), is(true)); // Good Friday in 2021
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-04-15")), is(true)); // Good Friday in 2022
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-04-07")), is(true)); // Good Friday in 2023
+
+        // Test Labour Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-05-01")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-05-01")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-05-01")), is(true));
+
+        // Test Chile Navy Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-05-21")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-05-21")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-05-21")), is(true));
+
+        // Test Indigenous People Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-06-20")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-06-20")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-06-20")), is(true));
+
+        // Test Saint Peter and Paul Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-06-29")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-06-29")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-06-29")), is(true));
+
+        // Test Virgin of Carmen Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-07-16")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-07-16")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-07-16")), is(true));
+
+        // Test Ascension Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-08-15")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-08-15")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-08-15")), is(true));
+
+        // Test Chile National Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-09-18")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-09-18")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-09-18")), is(true));
+
+        // Test Chile Army Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-09-19")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-09-19")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-09-19")), is(true));
+
+        // Test Chile Extra Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-09-20")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-09-20")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-09-20")), is(true));
+
+        // Test Columbus Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-10-12")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-10-12")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-10-12")), is(true));
+
+        // Test Reformation Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-10-31")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-10-31")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-10-31")), is(true));
+
+        // Test All Saints' Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-11-01")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-11-01")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-11-01")), is(true));
+
+        // Test Inmaculate Conception Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-12-08")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-12-08")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-12-08")), is(true));
+
+        // Test First Christmas Day
+        assertThat(calendar.isHoliday(LocalDate.parse("2021-12-25")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2022-12-25")), is(true));
+        assertThat(calendar.isHoliday(LocalDate.parse("2023-12-25")), is(true));
+    }
+
+    @Test
     public void testEmptyCalendar()
     {
         TradeCalendar calendar = TradeCalendarManager.getInstance("empty");

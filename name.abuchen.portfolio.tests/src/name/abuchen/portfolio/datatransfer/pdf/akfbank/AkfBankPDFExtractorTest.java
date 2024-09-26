@@ -4,8 +4,10 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -308,5 +310,29 @@ public class AkfBankPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2024-02-29"), hasAmount("EUR", 0.01), //
                         hasSource("Kontoauszug12.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testKontoauszug13()
+    {
+        AkfBankPDFExtractor extractor = new AkfBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-09-30"), //
+                        hasAmount("EUR", 1.03), //
+                        hasGrossValue("EUR", 1.31),
+                        hasTaxes("EUR", 0.25 + 0.01 + 0.02), //
+                        hasSource("Kontoauszug13.txt"), hasNote(null))));
     }
 }

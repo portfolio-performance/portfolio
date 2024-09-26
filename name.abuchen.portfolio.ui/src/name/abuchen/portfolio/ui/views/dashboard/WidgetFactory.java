@@ -22,7 +22,10 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.views.dashboard.charts.ClientDataSeriesChartWidget;
+import name.abuchen.portfolio.ui.views.dashboard.charts.DrawdownChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.HoldingsChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.TaxonomyChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsByTaxonomyChartWidget;
@@ -167,6 +170,9 @@ public enum WidgetFactory
     MAXDRAWDOWNDURATION(Messages.LabelMaxDrawdownDuration, Messages.LabelRiskIndicators,
                     MaxDrawdownDurationWidget::new),
 
+    DRAWDOWN_CHART(Messages.LabelMaxDrawdownChart, Messages.LabelRiskIndicators, Images.VIEW_LINECHART,
+                    DrawdownChartWidget::new),
+
     VOLATILITY(Messages.LabelVolatility, Messages.LabelRiskIndicators, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
@@ -230,15 +236,20 @@ public enum WidgetFactory
     CALCULATION(Messages.LabelPerformanceCalculation, Messages.ClientEditorLabelPerformance,
                     PerformanceCalculationWidget::new),
 
-    CHART(Messages.LabelPerformanceChart, Messages.ClientEditorLabelPerformance,
+    CHART(Messages.LabelPerformanceChart, Messages.ClientEditorLabelPerformance, Images.VIEW_LINECHART,
                     (widget, data) -> new ChartWidget(widget, data, DataSeries.UseCase.PERFORMANCE)),
 
-    ASSET_CHART(Messages.LabelAssetChart, Messages.LabelStatementOfAssets,
+    ASSET_CHART(Messages.LabelAssetChart, Messages.LabelStatementOfAssets, Images.VIEW_LINECHART,
                     (widget, data) -> new ChartWidget(widget, data, DataSeries.UseCase.STATEMENT_OF_ASSETS)),
 
-    HOLDINGS_CHART(Messages.LabelStatementOfAssetsHoldings, Messages.LabelStatementOfAssets, HoldingsChartWidget::new),
+    HOLDINGS_CHART(Messages.LabelStatementOfAssetsHoldings, Messages.LabelStatementOfAssets, Images.VIEW_PIECHART,
+                    HoldingsChartWidget::new),
 
-    TAXONOMY_CHART(Messages.LabelTaxonomies, Messages.LabelStatementOfAssets, TaxonomyChartWidget::new),
+    CLIENT_DATA_SERIES_CHART(Messages.LabelStatementOfAssetsDerivedDataSeries, Messages.LabelStatementOfAssets,
+                    Images.VIEW_LINECHART, ClientDataSeriesChartWidget::new),
+
+    TAXONOMY_CHART(Messages.LabelTaxonomies, Messages.LabelStatementOfAssets, Images.VIEW_PIECHART,
+                    TaxonomyChartWidget::new),
 
     HEATMAP(Messages.LabelHeatmap, Messages.ClientEditorLabelPerformance, PerformanceHeatmapWidget::new),
 
@@ -251,13 +262,17 @@ public enum WidgetFactory
 
     HEATMAP_EARNINGS(Messages.LabelHeatmapEarnings, Messages.LabelEarnings, EarningsHeatmapWidget::new),
 
-    EARNINGS_PER_YEAR_CHART(Messages.LabelEarningsPerYear, Messages.LabelEarnings, EarningsChartWidget::perYear),
+    EARNINGS_PER_YEAR_CHART(Messages.LabelEarningsPerYear, Messages.LabelEarnings, Images.VIEW_BARCHART,
+                    EarningsChartWidget::perYear),
 
-    EARNINGS_PER_QUARTER_CHART(Messages.LabelEarningsPerQuarter, Messages.LabelEarnings, EarningsChartWidget::perQuarter),
+    EARNINGS_PER_QUARTER_CHART(Messages.LabelEarningsPerQuarter, Messages.LabelEarnings, Images.VIEW_BARCHART,
+                    EarningsChartWidget::perQuarter),
 
-    EARNINGS_PER_MONTH_CHART(Messages.LabelEarningsPerMonth, Messages.LabelEarnings, EarningsChartWidget::perMonth),
+    EARNINGS_PER_MONTH_CHART(Messages.LabelEarningsPerMonth, Messages.LabelEarnings, Images.VIEW_BARCHART,
+                    EarningsChartWidget::perMonth),
 
-    EARNINGS_BY_TAXONOMY(Messages.LabelEarningsByTaxonomy, Messages.LabelEarnings, EarningsByTaxonomyChartWidget::new),
+    EARNINGS_BY_TAXONOMY(Messages.LabelEarningsByTaxonomy, Messages.LabelEarnings, Images.VIEW_PIECHART,
+                    EarningsByTaxonomyChartWidget::new),
 
     TRADES_BASIC_STATISTICS(Messages.LabelTradesBasicStatistics, Messages.LabelTrades, TradesWidget::new),
 
@@ -322,7 +337,7 @@ public enum WidgetFactory
 
     EXCHANGE_RATE(Messages.LabelExchangeRate, Messages.LabelCommon, ExchangeRateWidget::new),
 
-    ACTIVITY_CHART(Messages.LabelTradingActivityChart, Messages.LabelCommon, ActivityWidget::new),
+    ACTIVITY_CHART(Messages.LabelTradingActivityChart, Messages.LabelCommon, Images.VIEW_BARCHART, ActivityWidget::new),
 
     LIMIT_EXCEEDED(Messages.SecurityListFilterLimitPriceExceeded, Messages.LabelCommon, LimitExceededWidget::new),
 
@@ -397,22 +412,36 @@ public enum WidgetFactory
 
     private String label;
     private String group;
+    private Images image;
     private Consumer<Map<String, String>> defaultConfigFunction;
     private BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate<?>> createFunction;
 
-    private WidgetFactory(String label, String group, Consumer<Map<String, String>> defaultConfigFunction,
+    private WidgetFactory(String label, String group, Images image, Consumer<Map<String, String>> defaultConfigFunction,
                     BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate<?>> createFunction)
     {
         this.label = label;
         this.group = group;
+        this.image = image;
         this.defaultConfigFunction = defaultConfigFunction;
         this.createFunction = createFunction;
+    }
+
+    private WidgetFactory(String label, String group, Consumer<Map<String, String>> defaultConfigFunction,
+                    BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate<?>> createFunction)
+    {
+        this(label, group, null, defaultConfigFunction, createFunction);
+    }
+
+    private WidgetFactory(String label, String group, Images image,
+                    BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate<?>> createFunction)
+    {
+        this(label, group, image, null, createFunction);
     }
 
     private WidgetFactory(String label, String group,
                     BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate<?>> createFunction)
     {
-        this(label, group, null, createFunction);
+        this(label, group, null, null, createFunction);
     }
 
     public String getLabel()
@@ -423,6 +452,11 @@ public enum WidgetFactory
     public String getGroup()
     {
         return group;
+    }
+
+    public Images getImage()
+    {
+        return image;
     }
 
     public WidgetDelegate<?> constructDelegate(Dashboard.Widget widget, DashboardData data)

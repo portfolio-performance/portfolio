@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util.chart;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.eclipse.jface.action.IMenuManager;
@@ -19,6 +20,8 @@ import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
 
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.util.Dates;
 
@@ -41,6 +44,7 @@ public class StackedTimelineChart extends Chart // NOSONAR
         // x axis
         IAxis xAxis = getAxisSet().getXAxis(0);
         xAxis.getTitle().setVisible(false);
+        xAxis.getTitle().setText(Messages.ColumnDate);
         xAxis.getTick().setVisible(false);
         xAxis.getGrid().setStyle(LineStyle.NONE);
         setDates(dates);
@@ -68,6 +72,11 @@ public class StackedTimelineChart extends Chart // NOSONAR
         toolTip = new TimelineChartToolTip(this);
         toolTip.enableCategory(true);
         toolTip.reverseLabels(true);
+        toolTip.setXAxisFormat(obj -> {
+            Integer index = (Integer) obj;
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+            return Values.Date.format(LocalDate.parse(getAxisSet().getXAxis(0).getCategorySeries()[index], formatter));
+        });
 
         this.contextMenu = new ChartContextMenu(this);
     }

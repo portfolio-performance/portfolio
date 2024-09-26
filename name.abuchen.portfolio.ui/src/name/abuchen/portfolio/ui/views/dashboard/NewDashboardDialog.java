@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.util.UUID;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
@@ -87,7 +89,7 @@ public class NewDashboardDialog extends Dialog
 
     public Dashboard createDashboard()
     {
-        Dashboard newDashboard = new Dashboard();
+        Dashboard newDashboard = new Dashboard(UUID.randomUUID().toString());
         newDashboard.setName(selectedName);
 
         switch (selectedTemplate)

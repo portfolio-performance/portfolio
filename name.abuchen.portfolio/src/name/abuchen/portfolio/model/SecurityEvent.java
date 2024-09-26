@@ -37,7 +37,6 @@ public class SecurityEvent
     {
         private LocalDate paymentDate;
         private Money amount;
-        private String source;
 
         public DividendEvent()
         {
@@ -46,10 +45,9 @@ public class SecurityEvent
 
         public DividendEvent(LocalDate exDate, LocalDate payDate, Money amount, String source)
         {
-            super(exDate, Type.DIVIDEND_PAYMENT, null);
+            super(exDate, Type.DIVIDEND_PAYMENT, null, source);
             this.paymentDate = payDate;
             this.amount = amount;
-            this.source = source;
         }
 
         @Override
@@ -79,22 +77,12 @@ public class SecurityEvent
             this.amount = amount;
         }
 
-        public String getSource()
-        {
-            return source;
-        }
-
-        public void setSource(String source)
-        {
-            this.source = source;
-        }
-
         @Override
         public int hashCode()
         {
             final int prime = 31;
             int result = super.hashCode();
-            result = prime * result + Objects.hash(amount, paymentDate, source);
+            result = prime * result + Objects.hash(amount, paymentDate);
             return result;
         }
 
@@ -108,14 +96,19 @@ public class SecurityEvent
             if (getClass() != obj.getClass())
                 return false;
             DividendEvent other = (DividendEvent) obj;
-            return Objects.equals(amount, other.amount) && Objects.equals(paymentDate, other.paymentDate)
-                            && Objects.equals(source, other.source);
+            return Objects.equals(amount, other.amount) && Objects.equals(paymentDate, other.paymentDate);
         }
     }
 
     private LocalDate date;
     private Type type;
     private String details;
+
+    /**
+     * Machine-readable identifier of external source used to create (and
+     * manage) this event.
+     */
+    private String source;
 
     public SecurityEvent()
     {
@@ -124,9 +117,15 @@ public class SecurityEvent
 
     public SecurityEvent(LocalDate date, Type type, String details)
     {
+        this(date, type, details, null);
+    }
+
+    public SecurityEvent(LocalDate date, Type type, String details, String source)
+    {
         this.date = date;
         this.type = type;
         this.details = details;
+        this.source = source;
     }
 
     public LocalDate getDate()
@@ -159,10 +158,20 @@ public class SecurityEvent
         this.details = details;
     }
 
+    public String getSource()
+    {
+        return source;
+    }
+
+    public void setSource(String source)
+    {
+        this.source = source;
+    }
+
     @Override
     public int hashCode()
     {
-        return Objects.hash(date, details, type);
+        return Objects.hash(date, details, type, source);
     }
 
     @Override
@@ -175,6 +184,7 @@ public class SecurityEvent
         if (getClass() != obj.getClass())
             return false;
         SecurityEvent other = (SecurityEvent) obj;
-        return Objects.equals(date, other.date) && Objects.equals(details, other.details) && type == other.type;
+        return Objects.equals(date, other.date) && Objects.equals(details, other.details)
+                        && Objects.equals(source, other.source) && type == other.type;
     }
 }

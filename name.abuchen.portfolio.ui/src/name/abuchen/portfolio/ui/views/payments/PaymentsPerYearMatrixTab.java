@@ -34,6 +34,7 @@ public class PaymentsPerYearMatrixTab extends PaymentsMatrixTab
     public void addConfigActions(IMenuManager manager)
     {
         addReverseColumnAction(manager);
+        addSumColumnAction(manager);
     }
 
     @Override

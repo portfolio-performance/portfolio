@@ -1,0 +1,63 @@
+PDFBox Version: 1.8.17
+
+Portfolio Performance Version: 0.69.1
+
+-----------------------------------------
+
+TRADE REPUBLIC BANK GMBH BRUNNENSTRASSE 19-21 10119 BERLIN
+
+DGKDRJG RIE K KREG PÁGINA 1 de 1
+
+Calle DGSGR 12FECHA 15.02.2024
+
+12345 CIudad ORDEN 4152-cdd0
+
+EJECUCIÓN f46e-e2ae
+
+CUENTA DE VALORES 0786338401
+
+LIQUIDACIÓN DE VALORES
+
+RESUMEN
+
+Market-OrderVenta a día 15.02.2024, a las 16:15 (Europe/Berlin) en Lang & Schwarz Exchange.
+
+La contraparte de la transacción es Lang & Schwarz TradeCenter AG & Co. KG.
+
+POSICIÓN CANTIDAD COTIZACIÓN IMPORTE
+
+Deutsche Pfandbriefbank AG 100 tít. 3,882 EUR 388,20 EUR
+
+Inhaber-Aktien o.N.
+
+ISIN: DE0008019001
+
+TOTAL 388,20 EUR
+
+CUENTA
+
+POSICIÓN IMPORTE
+
+Tarifa plana por costes del servicio de ejecución de terceros -1,00 EUR
+
+TOTAL 387,20 EUR
+
+RESERVA
+
+CUENTA DE EFECTIVO FECHA VALOR IMPORTE
+
+DE75502109007008349007 19.02.2024 387,20 EUR
+
+Deutsche Pfandbriefbank AG Inhaber-Aktien o.N. en custodia colectiva en Alemania.
+
+Este documento ha sido creado automáticamente y por lo tanto no necesita firma.
+
+Si no se indica IVA, se trata de un servicio libre de IVA según § 4 núm. 8 UStG.
+
+Trade Republic Bank GmbH www.traderepublic.com Domicilio social de la empresa: Berlin Directores
+
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+
+10119 Berlin NIF DE307510626 Gernot Mittendorfer
+
+ABRE / 15.02.2024 / 12386896 / dbe8-2524

@@ -76,4 +76,16 @@ java.lang.String defaultValue);
    */
   name.abuchen.portfolio.model.proto.v1.PDashboard.ColumnOrBuilder getColumnsOrBuilder(
       int index);
+
+  /**
+   * <code>string id = 4;</code>
+   * @return The id.
+   */
+  java.lang.String getId();
+  /**
+   * <code>string id = 4;</code>
+   * @return The bytes for id.
+   */
+  com.google.protobuf.ByteString
+      getIdBytes();
 }

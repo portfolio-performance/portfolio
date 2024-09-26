@@ -59,6 +59,7 @@ message PSecurityEvent {
   int64 date = 2; // epoch day
   string details = 3;
   repeated PAnyValue data = 4;
+  string source = 5;
 }
 
 message PSecurity {
@@ -257,6 +258,7 @@ message PDashboard {
   string name = 1;
   map<string, string> configuration = 2;
   repeated Column columns = 3;
+  string id = 4;
 }
 
 message PBookmark {

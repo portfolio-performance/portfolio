@@ -96,11 +96,25 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Belegnummer .* Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))),
                                         // @formatter:off
+                                        // Belegnummer 1522788379 / 181373046 Schlusstag 23.07.2024 18:21
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Belegnummer .* Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2})$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
                                         // Belegnummer 1234567890 / 123456 Schlusstag/-zeit MEZ 02.04.2015 / 09:04
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
                                                         .match("^Belegnummer .* Schlusstag\\/\\-zeit .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\/ (?<time>[\\d]{2}:[\\d]{2})$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Belegnummer 1039975477 / 91752537 Schlusstag/-zeit MEZ 23.07.2024 18:20
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Belegnummer .* Schlusstag\\/\\-zeit .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2})$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
 
                         // @formatter:off
@@ -650,6 +664,39 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                 }
 
                                 type.getCurrentContext().putBoolean("noProvision", true);
+                            }
+                        })
+
+                        // @formatter:off
+                        // ISIN DE0008476524 Kurs EUR 319,49
+                        // Ihre Referenz DBM01 Ausgabeaufschlag 5,00 %
+                        // Preisnachlass EUR -4,88
+                        // @formatter:on
+                        .section("currency", "amount", "discountCurrency", "discount", "percentageFee").optional() //
+                        .match("^.* Kurs (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^.* Ausgabeaufschlag (?<percentageFee>[\\.,\\d]+) %$") //
+                        .match("^Preisnachlass (?<discountCurrency>[\\w]{3}) \\-(?<discount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            BigDecimal percentageFee = asBigDecimal(v.get("percentageFee"));
+                            BigDecimal amount = asBigDecimal(v.get("amount"));
+                            Money discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
+
+                            if (percentageFee.compareTo(BigDecimal.ZERO) != 0 && discount.isPositive())
+                            {
+                                // @formatter:off
+                                // feeAmount = (amount / (1 + percentageFee / 100)) * (percentageFee / 100)
+                                // @formatter:on
+                                BigDecimal fxFee = amount //
+                                                .divide(percentageFee.divide(BigDecimal.valueOf(100)) //
+                                                                .add(BigDecimal.ONE), Values.MC) //
+                                                .multiply(percentageFee, Values.MC); //
+
+                                Money fee = Money.of(asCurrencyCode(v.get("currency")), fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
+
+                                // fee = fee - discount
+                                fee = fee.subtract(discount);
+
+                                checkAndSetFee(fee, t, type.getCurrentContext());
                             }
                         });
 

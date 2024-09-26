@@ -4609,6 +4609,97 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testTagesgeldKontoauszug01()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TagesgeldKontoauszug01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-07-01"), hasAmount("EUR", 11.51), //
+                        hasSource("TagesgeldKontoauszug01.txt"), hasNote("Abrechnungszeitraum vom 01.04.2024 bis 30.06.2024"))));
+    }
+
+    @Test
+    public void testTagesgeldKontoauszug02()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TagesgeldKontoauszug02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-06-13"), hasAmount("EUR", 2000.00), //
+                        hasSource("TagesgeldKontoauszug02.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-06-26"), hasAmount("EUR", 400.00), //
+                        hasSource("TagesgeldKontoauszug02.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-06-27"), hasAmount("EUR", 9180.74), //
+                        hasSource("TagesgeldKontoauszug02.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-07-04"), hasAmount("EUR", 9982.07), //
+                        hasSource("TagesgeldKontoauszug02.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-07-01"), hasAmount("EUR", 17.93), //
+                        hasSource("TagesgeldKontoauszug02.txt"), hasNote("Abrechnungszeitraum vom 01.04.2024 bis 30.06.2024"))));
+    }
+
+    @Test
+    public void testTagesgeldKontoauszug03()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TagesgeldKontoauszug03.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-07-01"), hasAmount("EUR", 76.70), //
+                        hasSource("TagesgeldKontoauszug03.txt"),
+                        hasNote("Abrechnungszeitraum vom 01.04.2024 bis 30.06.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxes(hasDate("2024-07-01"), hasAmount("EUR", 19.18), //
+                        hasSource("TagesgeldKontoauszug03.txt"), hasNote("Kapitalertragsteuer"))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxes(hasDate("2024-07-01"), hasAmount("EUR", 1.05), //
+                        hasSource("TagesgeldKontoauszug03.txt"), hasNote("Solidaritätszuschlag"))));
+    }
+
+    @Test
     public void testKreditKontoauszug01()
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());

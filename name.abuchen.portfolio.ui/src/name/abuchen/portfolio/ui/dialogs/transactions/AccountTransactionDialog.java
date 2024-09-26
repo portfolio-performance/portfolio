@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Text;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
@@ -474,6 +475,13 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
     public void setSecurity(Security security)
     {
         model().setSecurity(security);
+    }
+
+    @Override
+    public void setPortfolio(Portfolio portfolio)
+    {
+        // used to calculate the number of shares for dividend transactions
+        model().setPortfolio(portfolio);
     }
 
     public void setTransaction(Account account, AccountTransaction transaction)

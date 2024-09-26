@@ -1,0 +1,172 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.2.qualifier
+-----------------------------------------
+Kontoauszug
+Max Muster Seite
+Musterstr. 2 0001
+54321 Musterhausen
+* = letzte Seite
+Bankleitzahl - Kontonummer Gesamtbelastungen Vorheriger
+50324040 - 5000510765 0,00 Saldo 0,00
+Kontoart Gesamtgutschriften Buchungsdatum Neuer Saldo
+Tagesgeldkonto 100,00 24.10.2011 100,00
+Anzahl Belastungen Anzahl Gutschriften
+000 001
+Buchungs- Wert-
+datum stellung von/nach Konto Buchungstext Belastungen Gutschriften
+24.10.2011 19.10.2011 12030000-001 Zahlungseingang 100,00
+6664096 Max Muster
+EINZAHLUNG 01 MONEYOU
+Fu¨r weitere Fragen, Informationen sowie Einwendungen steht Ihnen unser Kundenservice unter der Rufnummer 069 - 90 73 23 23 oder per E-Mail
+unter kundenservice@moneyou.de gerne zur Verfu¨nung.
+Postalisch erreichen Sie uns unter MoneYou/ ABN AMRO Bank N.V., Postfach 10 15 36, 60015 Frankfurt.
+Das Konto wird angeboten von :
+ABN AMRO Bank N.V.
+Frankfurt Branch
+Ulmenstr. 23 - 25
+60325 Frankfurt
+Kontoauszug
+Max Muster Seite
+Musterstr. 2 0002
+54321 Musterhausen
+* = letzte Seite
+Bankleitzahl - Kontonummer Gesamtbelastungen Vorheriger
+50324040 - 5000510765 0,00 Saldo 100,00
+Kontoart Gesamtgutschriften Buchungsdatum Neuer Saldo
+Tagesgeldkonto 2.900,00 27.10.2011 3.000,00
+Anzahl Belastungen Anzahl Gutschriften
+000 001
+Buchungs- Wert-
+datum stellung von/nach Konto Buchungstext Belastungen Gutschriften
+27.10.2011 27.10.2011 12030000-001 Zahlungseingang 2.900,00
+6664096 Max Muster
+EINZAHLUNG 02 MONEYOU
+Fu¨r weitere Fragen, Informationen sowie Einwendungen steht Ihnen unser Kundenservice unter der Rufnummer 069 - 90 73 23 23 oder per E-Mail
+unter kundenservice@moneyou.de gerne zur Verfu¨nung.
+Postalisch erreichen Sie uns unter MoneYou/ ABN AMRO Bank N.V., Postfach 10 15 36, 60015 Frankfurt.
+Das Konto wird angeboten von :
+ABN AMRO Bank N.V.
+Frankfurt Branch
+Ulmenstr. 23 - 25
+60325 Frankfurt
+Kontoauszug
+Max Muster Seite
+Musterstr. 2 0003
+54321 Musterhausen
+* = letzte Seite
+Bankleitzahl - Kontonummer Gesamtbelastungen Vorheriger
+50324040 - 5000510765 0,00 Saldo 3.000,00
+Kontoart Gesamtgutschriften Buchungsdatum Neuer Saldo
+Tagesgeldkonto 40.500,00 16.11.2011 43.500,00
+Anzahl Belastungen Anzahl Gutschriften
+000 001
+Buchungs- Wert-
+datum stellung von/nach Konto Buchungstext Belastungen Gutschriften
+16.11.2011 16.11.2011 12030000-001 Zahlungseingang 40.500,00
+6664096 Max Muster
+EINZAHLUNG 03 MONEYOU
+Fu¨r weitere Fragen, Informationen sowie Einwendungen steht Ihnen unser Kundenservice unter der Rufnummer 069 - 90 73 23 23 oder per E-Mail
+unter kundenservice@moneyou.de gerne zur Verfu¨nung.
+Postalisch erreichen Sie uns unter MoneYou/ ABN AMRO Bank N.V., Postfach 10 15 36, 60015 Frankfurt.
+Das Konto wird angeboten von :
+ABN AMRO Bank N.V.
+Frankfurt Branch
+Ulmenstr. 23 - 25
+60325 Frankfurt
+Kontoauszug
+Max Muster Seite
+Musterstr. 2 0004
+54321 Musterhausen
+* = letzte Seite
+Bankleitzahl - Kontonummer Gesamtbelastungen Vorheriger
+50324040 - 5000510765 2.000,00 Saldo 43.500,00
+Kontoart Gesamtgutschriften Buchungsdatum Neuer Saldo
+Tagesgeldkonto 0,00 16.12.2011 41.500,00
+Anzahl Belastungen Anzahl Gutschriften
+001 000
+Buchungs- Wert-
+datum stellung von/nach Konto Buchungstext Belastungen Gutschriften
+16.12.2011 16.12.2011 12030000-001 Zahlungsausgang 2.000,00
+6664096 Max Muster
+AG Giro
+Fu¨r weitere Fragen, Informationen sowie Einwendungen steht Ihnen unser Kundenservice unter der Rufnummer 069 - 90 73 23 23 oder per E-Mail
+unter kundenservice@moneyou.de gerne zur Verfu¨nung.
+Postalisch erreichen Sie uns unter MoneYou/ ABN AMRO Bank N.V., Postfach 10 15 36, 60015 Frankfurt.
+Das Konto wird angeboten von :
+ABN AMRO Bank N.V.
+Frankfurt Branch
+Ulmenstr. 23 - 25
+60325 Frankfurt
+Kontoauszug
+Max Muster Seite
+Musterstr. 2 0005
+54321 Musterhausen
+* = letzte Seite
+Bankleitzahl - Kontonummer Gesamtbelastungen Vorheriger
+50324040 - 5000510765 0,00 Saldo 41.500,00
+Kontoart Gesamtgutschriften Buchungsdatum Neuer Saldo
+Tagesgeldkonto 1.500,00 21.12.2011 43.000,00
+Anzahl Belastungen Anzahl Gutschriften
+000 001
+Buchungs- Wert-
+datum stellung von/nach Konto Buchungstext Belastungen Gutschriften
+21.12.2011 21.12.2011 12030000-001 Zahlungseingang 1.500,00
+6664096 Max Muster
+EINZAHLUNG 03 MONEYOU
+Fu¨r weitere Fragen, Informationen sowie Einwendungen steht Ihnen unser Kundenservice unter der Rufnummer 069 - 90 73 23 23 oder per E-Mail
+unter kundenservice@moneyou.de gerne zur Verfu¨nung.
+Postalisch erreichen Sie uns unter MoneYou/ ABN AMRO Bank N.V., Postfach 10 15 36, 60015 Frankfurt.
+Das Konto wird angeboten von :
+ABN AMRO Bank N.V.
+Frankfurt Branch
+Ulmenstr. 23 - 25
+60325 Frankfurt
+Kontoauszug
+Max Muster Seite
+Musterstr. 2 0006
+54321 Musterhausen
+* = letzte Seite
+Bankleitzahl - Kontonummer Gesamtbelastungen Vorheriger
+50324040 - 5000510765 0,00 Saldo 43.000,00
+Kontoart Gesamtgutschriften Buchungsdatum Neuer Saldo
+Tagesgeldkonto 3.000,00 23.12.2011 46.000,00
+Anzahl Belastungen Anzahl Gutschriften
+000 001
+Buchungs- Wert-
+datum stellung von/nach Konto Buchungstext Belastungen Gutschriften
+23.12.2011 23.12.2011 12030000-001 Zahlungseingang 3.000,00
+6664096 Max Muster
+EINZAHLUNG 04 MONEYOU
+Fu¨r weitere Fragen, Informationen sowie Einwendungen steht Ihnen unser Kundenservice unter der Rufnummer 069 - 90 73 23 23 oder per E-Mail
+unter kundenservice@moneyou.de gerne zur Verfu¨nung.
+Postalisch erreichen Sie uns unter MoneYou/ ABN AMRO Bank N.V., Postfach 10 15 36, 60015 Frankfurt.
+Das Konto wird angeboten von :
+ABN AMRO Bank N.V.
+Frankfurt Branch
+Ulmenstr. 23 - 25
+60325 Frankfurt
+Kontoauszug
+Max Muster Seite
+Musterstr. 2 0007 *
+54321 Musterhausen
+* = letzte Seite
+Bankleitzahl - Kontonummer Gesamtbelastungen Vorheriger
+50324040 - 5000510765 0,00 Saldo 46.000,00
+Kontoart Gesamtgutschriften Buchungsdatum Neuer Saldo
+Tagesgeldkonto 114,34 30.12.2011 46.114,34
+Anzahl Belastungen Anzahl Gutschriften
+000 001
+Buchungs- Wert-
+datum stellung von/nach Konto Buchungstext Belastungen Gutschriften
+30.12.2011 01.01.2012 5000510765 Ihre Tagesgeldzinsen 114,34
+Fu¨r weitere Fragen, Informationen sowie Einwendungen steht Ihnen unser Kundenservice unter der Rufnummer 069 - 90 73 23 23 oder per E-Mail
+unter kundenservice@moneyou.de gerne zur Verfu¨nung.
+Postalisch erreichen Sie uns unter MoneYou/ ABN AMRO Bank N.V., Postfach 10 15 36, 60015 Frankfurt.
+Das Konto wird angeboten von :
+ABN AMRO Bank N.V.
+Frankfurt Branch
+Ulmenstr. 23 - 25
+60325 Frankfurt
+
+```

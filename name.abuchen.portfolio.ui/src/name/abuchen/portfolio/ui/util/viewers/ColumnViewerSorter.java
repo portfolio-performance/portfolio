@@ -406,6 +406,18 @@ public final class ColumnViewerSorter
         return create(new ValueProviderComparator(valueProvider));
     }
 
+    /**
+     * Creates a sorter that takes the row element and the row option as an
+     * input.
+     */
+    public static ColumnViewerSorter createWithOption(ElementOptionFunction<Comparable<?>> valueProvider)
+    {
+        return create(new ValueProviderComparator(element -> {
+            var option = ColumnViewerSorter.SortingContext.getColumnOption();
+            return valueProvider.apply(element, option);
+        }));
+    }
+
     public static ColumnViewerSorter createIgnoreCase(Function<Object, String> valueProvider)
     {
         return create(new StringValueProviderComparator(valueProvider));

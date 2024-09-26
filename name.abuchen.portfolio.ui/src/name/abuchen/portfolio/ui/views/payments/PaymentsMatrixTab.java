@@ -13,6 +13,8 @@ import jakarta.inject.Inject;
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.FontDescriptor;
@@ -98,6 +100,33 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
         });
         action.setChecked(columnsInReverseOrder);
         manager.add(action);
+    }
+
+    protected void addSumColumnAction(IMenuManager manager)
+    {
+        manager.add(new Separator());
+        MenuManager submenu = new MenuManager(Messages.PrefTitlePresentation);
+        manager.add(submenu);
+
+        Action action = new SimpleAction(Messages.LabelTotalsAtTheTop, a -> {
+            model.setHideTotalsAtTheTop(!model.isHideTotalsAtTheTop());
+            preferences.setValue(PaymentsViewInput.TOP, model.isHideTotalsAtTheTop());
+
+            // make sure *all* sum rows are updated (not only from this view)
+            model.fireUpdateChange();
+        });
+        action.setChecked(!model.isHideTotalsAtTheTop());
+        submenu.add(action);
+
+        action = new SimpleAction(Messages.LabelTotalsAtTheBottom, a -> {
+            model.setHideTotalsAtTheBottom(!model.isHideTotalsAtTheBottom());
+            preferences.setValue(PaymentsViewInput.BOTTOM, model.isHideTotalsAtTheBottom());
+
+            // make sure *all* sum rows are updated (not only from this view)
+            model.fireUpdateChange();
+        });
+        action.setChecked(!model.isHideTotalsAtTheBottom());
+        submenu.add(action);
     }
 
     @Override
@@ -229,9 +258,9 @@ public abstract class PaymentsMatrixTab implements PaymentsTab
             PaymentsViewModel.Line line2 = (PaymentsViewModel.Line) o2;
 
             if (line1.getVehicle() == null)
-                return direction == SWT.UP ? 1 : -1;
+                return direction == SWT.UP ^ line1.isHeader() ? 1 : -1;
             if (line2.getVehicle() == null)
-                return direction == SWT.UP ? -1 : 1;
+                return direction == SWT.UP ^ line2.isHeader() ? -1 : 1;
 
             return comparator.compare(line1, line2);
         });

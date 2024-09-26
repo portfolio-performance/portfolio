@@ -232,6 +232,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
                 return ((AttributeType) element).getSource();
             }
         });
+        new StringEditingSupport(AttributeType.class, "source").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
     }

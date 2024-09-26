@@ -258,6 +258,37 @@ public class MerkurPrivatBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierDividende02()
+    {
+        MerkurPrivatBankPDFExtractor extractor = new MerkurPrivatBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0011683594"), hasWkn("A2JAHJ"), hasTicker(null), //
+                        hasName("VANECK MSTR.DM DIVIDEND.UC.ETF AANDELEN OOP TOONDER O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-09-11T00:00"), hasShares(2950), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Abrechnungsnr. 13354957156"), //
+                        hasAmount("EUR", 753.20), hasGrossValue("EUR", 914.50), //
+                        hasTaxes("EUR", 137.18 + 22.86 + 1.26), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testKontoauszug01()
     {
         MerkurPrivatBankPDFExtractor extractor = new MerkurPrivatBankPDFExtractor(new Client());

@@ -37,6 +37,122 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+      <release version="0.71.1" date="2024-09-23">
+      <description>
+        <ul>
+          <li>Fix: Resolves an issue when the table is sorted by the column "distance from all-time high".</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, wenn die Tabelle nach der Spalte "Abstand zum All-Time High" sortiert ist.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.71.0" date="2024-09-22">
+      <description>
+        <ul>
+          <li>New: Summary row in the Performance -> Securities view</li>
+          <li>New: PDF importer for KFintech</li>
+          <li>New: Price provider India's First Free Mutual Fund API</li>
+          <li>Improvement: The asset and performance chart remembers if data series are hidden.</li>
+          <li>Improvement: A double-click on the legend shows or hides a data series in the asset and performance chart.</li>
+          <li>Improvement: When multiple securities are selected, the prices for all selected securities can be updated.</li>
+          <li>Improvement: TTWROR and IRR are now displayed in the asset overview for categories and the total portfolio as well.</li>
+          <li>Improvement: The column "Distance to All-Time High" now has a tooltip with details.</li>
+          <li>Improvement: In a dividend booking, the number of shares is pre-filled based on the current portfolio.</li>
+          <li>Improvement: Securities that no longer exist in Portfolio Report are automatically unlinked.</li>
+          <li>Improvements to the PDF importers for AKF Bank, OnVista, Trade Republic, N26, Hypothekarbank Lenzburg, Santander Bank, and V-Bank</li>
+          <li>Fix: Fixed an issue when removing the column that the table was sorted by.</li>
+          <li>Fix: Fixed an issue where the value 'Div%/Year' was not displayed under Performance -> Securities.</li>
+          <li>Fix: The tooltip for area charts in the classification now shows with the correct axis labels.</li>
+          <li xml:lang="de">Neu: Summenzeile in der Ansicht Performance -> Wertpapiere</li>
+          <li xml:lang="de">Neu: PDF-Importer für KFintech</li>
+          <li xml:lang="de">Neu: Kurslieferant India's First Free Mutual Fund API</li>
+          <li xml:lang="de">Verbesserung: Das Vermögens- und Performance-Diagramm merkt sich, ob Datenreihen ausgeblendet sind.</li>
+          <li xml:lang="de">Verbesserung: Ein Doppelklick auf die Legende blendet eine Datenreihe im Vermögens- und Performance-Diagramm ein oder aus.</li>
+          <li xml:lang="de">Verbesserung: Wenn mehrere Wertpapiere ausgewählt sind, können die Kurse für alle ausgewählten Wertpapiere aktualisiert werden.</li>
+          <li xml:lang="de">Verbesserung: TTWROR und IZF in der Vermögensaufstellung werden auch für die Kategorien und das Gesamtportfolio angezeigt.</li>
+          <li xml:lang="de">Verbesserung: Die Spalte "Abstand zum All-Time High" hat jetzt einen Tooltip mit den Details.</li>
+          <li xml:lang="de">Verbesserung: Bei einer Dividendenbuchung wird die Anzahl der Stücke basierend auf dem aktuellen Depot vorbelegt.</li>
+          <li xml:lang="de">Verbesserung: Wertpapiere, die nicht mehr auf Portfolio Report existieren, werden automatisch entkoppelt.</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für AKF Bank, OnVista, Trade Republic, N26, Hypothekarbank Lenzburg, Santanderbank und V-Bank</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, wenn man die Spalte einer Tabelle entfernt, nach der die Tabelle sortiert ist.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, dass der Wert 'Div%/Jahr' unter Performance -> Wertpapiere nicht angezeigt wurde.</li>
+          <li xml:lang="de">Fix: Der Tooltip für Flächendiagramme bei der Klassifizierung wird mit der richtigen Achsenbeschriftung angezeigt.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.70.4" date="2024-08-25">
+      <description>
+        <ul>
+          <li>New: PDF importer for ABN AMRO Group</li>
+          <li>New: Use Ctrl-F (Command-F) to focus the search boxes</li>
+          <li>New: Data series with the accumulated movements in the asset diagram (= value that has flowed into or out of the portfolio through deposits/withdrawals or deliveries/shipments)</li>
+          <li>Improvement: Adjusted colors in light and dark mode for charts in the security accounts view</li>
+          <li>Improvements to the PDF importers for Santander Consumer Bank AG, FFB, and C24 Bank GmbH</li>
+          <li xml:lang="de">Neu: PDF-Importer für die ABN AMRO Group</li>
+          <li xml:lang="de">Neu: Nutze Ctrl-F (Command-F) um die Suchfelder zu aktivieren</li>
+          <li xml:lang="de">Neu: Datenreihe mit den akkumulierten Bewegungen im Vermögensdiagramm (= Wert der in oder aus dem Portfolio durch Einlagen/Entnahmen oder Einlieferungen/Auslieferungen geflossen ist)</li>
+          <li xml:lang="de">Verbesserung: Angepasste Farben im Hell- und Dunkelmodus für Diagramme in der Depotansicht</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Santander Consumer Bank AG, FFB und C24 Bank GmBH</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.70.3" date="2024-08-05">
+      <description>
+        <ul>
+          <li>Fix: Resolves - now hopefully all - issues where some XML files could not be opened due to the error message 'invalid reference'.</li>
+          <li>Fix: Fixes a ClassCastException when displaying tooltips</li>
+          <li>Improvements to the PDF importers for Trade Republic</li>
+          <li xml:lang="de">Fix: Behebt - jetzt hoffentlich alle - Probleme bei dem machen XML Dateien mit dem Fehler 'invalid reference' nicht mehr geöffnet werden konnten.</li>
+          <li xml:lang="de">Fix: Behebt eine ClassCastException bei der Anzeige von Tooltips</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Trade Republic</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.70.2" date="2024-08-04">
+      <description>
+        <ul>
+          <li>Fix: Reverts the change to support better scaled images on high-resolution displays as it seems to have side effects</li>
+          <li xml:lang="de">Fix: Macht die Änderung zur Unterstützung besser skalierter Icons auf hochauflösenden Bildschirmen rückgängig, da sie Nebenwirkungen zu haben scheint</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.70.1" date="2024-08-04">
+      <description>
+        <ul>
+          <li>Fix: Resolves an issue where some XML files could not be opened due to the error message 'invalid reference'.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem bei dem machen XML Dateien mit dem Fehler 'invalid reference' nicht mehr geöffnet werden konnten.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.70.0" date="2024-08-04">
+      <description>
+        <ul>
+          <li>New: Drawdown chart for the dashboard</li>
+          <li>New: Dashboard chart with derived metrics of a data series: total sum, taxes, fees, invested capital, delta, etc.</li>
+          <li>New: Filter-based columns in the Performance -> Securities view</li>
+          <li>New: Trading calendar for the Santiago Stock Exchange</li>
+          <li>New: Alternative XML format that uses "id" attributes for references (and is therefore easier to read/manipulate by other programs)</li>
+          <li>Improvements to the PDF importers for Trade Republic, VZ Depotbank, KeyTrade, Deutsche Bank, Postbank, N26, Direkt1822, DKB, Consorsbank, and Raiffeisenbank</li>
+          <li>Improvement: Icons on Windows will be scaled more appropriately on high-resolution displays</li>
+          <li>Improvement: In the securities chart, the labeling of data points can be separately toggled on and off to improve readability</li>
+          <li>Improvement: Support for the decimal separator on the numeric keypad of French keyboards</li>
+          <li>Improvement: CSV import of transfers between two accounts with different currencies</li>
+          <li>Fix: Correction of the max drawdown calculation, which could be off by one day</li>
+          <li>Fix: Resolves an issue when importing prices from JSON, where the date was provided as a Unix timestamp within a string</li>
+          <li xml:lang="de">Neu: Drawdown-Diagramm für das Dashboard</li>
+          <li xml:lang="de">Neu: Dashboard-Chart mit den abgeleiteten Metriken einer Datenreihe: Gesamtsumme, Steuern, Gebühren, investiertes Kapital, Delta, etc.</li>
+          <li xml:lang="de">Neu: Filterbasierte Spalten in der Ansicht Performance -> Wertpapiere</li>
+          <li xml:lang="de">Neu: Handelskalender der chilenischen Börse von Santiago</li>
+          <li xml:lang="de">Neu: Alternatives XML-Format, das "id"-Attribute für Verweise nutzt (und darum von anderen Programmen einfacher zu lesen/manipulieren ist)</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Trade Republic, VZ Depotbank, KeyTrade, Deutsche Bank, Postbank, N26, Direkt1822, DKB, Consorsbank und Raiffeisenbank</li>
+          <li xml:lang="de">Verbesserung: Icons unter Windows werden auf hochauflösenden Displays passender skaliert sein</li>
+          <li xml:lang="de">Verbesserung: Im Wertpapier-Diagramm kann die Beschriftung von Datenpunkten separat ein- und ausgeschaltet werden, um deren Lesbarkeit zu erhöhen</li>
+          <li xml:lang="de">Verbesserung: Unterstützung des Dezimaltrennzeichen auf dem Ziffernblatt von französischen Tastaturen</li>
+          <li xml:lang="de">Verbesserung: CSV Import von Umbuchungen zwischen zwei Konten mit unterschiedlicher Währung</li>
+          <li xml:lang="de">Fix: Korrektur der Max-Drawdown-Berechnung, die einen Tag zu lange sein konnte</li>
+          <li xml:lang="de">Fix: Behebt ein Problem beim Import von Kursen aus JSON, wenn das Datum als Unix Timestamp in einem String vorlag</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.69.1" date="2024-07-07">
       <description>
         <ul>

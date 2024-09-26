@@ -74,9 +74,9 @@ public abstract class AbstractFinanceView
     private List<Menu> contextMenus = new ArrayList<>();
 
     protected abstract String getDefaultTitle();
-    
+
     SashLayout sashLayout;
-    
+
     protected String getTitle()
     {
         return titleText;
@@ -140,6 +140,11 @@ public abstract class AbstractFinanceView
             pane.setInput(input);
     }
 
+    public Optional<InformationPane> getInformationPane()
+    {
+        return Optional.ofNullable(pane);
+    }
+
     public Shell getActiveShell()
     {
         return Display.getDefault().getActiveShell();
@@ -188,20 +193,20 @@ public abstract class AbstractFinanceView
 
         notifyViewCreationCompleted();
     }
-    
+
     public void flipPane()
     {
         if (sashLayout != null)
             sashLayout.flip();
     }
-    
+
     public boolean isPaneHidden()
     {
         if (sashLayout == null)
             return false;
-            
+
         return sashLayout.isHidden();
-        
+
     }
 
     protected abstract Control createBody(Composite parent);
@@ -258,7 +263,7 @@ public abstract class AbstractFinanceView
         return this.viewToolBar;
     }
 
-    protected ToolBarManager getToolBarManager()
+    public ToolBarManager getToolBarManager()
     {
         return this.actionToolBar;
     }

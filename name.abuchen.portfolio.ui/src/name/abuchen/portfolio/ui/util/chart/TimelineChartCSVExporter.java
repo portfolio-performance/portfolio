@@ -62,23 +62,43 @@ public class TimelineChartCSVExporter extends AbstractCSVExporter
                         new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), STRATEGY))
         {
             ISeries[] series = chart.getSeriesSet().getSeries();
+            int seriescounter = 0;
 
             // write header
             printer.print(Messages.ColumnDate);
             for (ISeries s : series)
-                printer.print(s.getDescription() != null ? s.getDescription() : s.getId());
+            {
+                if (s.isVisibleInLegend())
+                {
+                    printer.print(s.getDescription() != null ? s.getDescription() : s.getId());
+                    seriescounter++;
+                }
+            }
             printer.println();
 
-            // write body
-            Date[] dateSeries = series[0].getXDateSeries();
-
-            SeriesAdapter[] adapters = new SeriesAdapter[series.length];
-            for (int ii = 0; ii < series.length; ii++)
+            int j = 0;
+            ISeries[] seriesToExport = new ISeries[seriescounter];
+            for (int i = 0; i < series.length; i++)
             {
-                if (discontinousSeries.contains(series[ii].getId()))
-                    adapters[ii] = new DiscontinousAdapter(series[ii]);
+                // the goal is to NOT export virtual series such as the positive
+                // and negative colored area in Securities Account chart
+                if (series[i].isVisibleInLegend())
+                {
+                    seriesToExport[j] = series[i];
+                    j++;
+                }
+            }
+
+            // write body
+            Date[] dateSeries = seriesToExport[0].getXDateSeries();
+
+            SeriesAdapter[] adapters = new SeriesAdapter[seriesToExport.length];
+            for (int ii = 0; ii < seriesToExport.length; ii++)
+            {
+                if (discontinousSeries.contains(seriesToExport[ii].getId()))
+                    adapters[ii] = new DiscontinousAdapter(seriesToExport[ii]);
                 else
-                    adapters[ii] = new DefaultAdapter(series[ii]);
+                    adapters[ii] = new DefaultAdapter(seriesToExport[ii]);
             }
 
             for (int line = 0; line < dateSeries.length; line++)

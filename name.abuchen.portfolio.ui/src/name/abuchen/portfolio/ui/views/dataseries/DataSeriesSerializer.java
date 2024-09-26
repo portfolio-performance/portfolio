@@ -59,6 +59,10 @@ public class DataSeriesSerializer
                 {
                     s.setLineWidth(Integer.parseInt(data[4]));
                 }
+                if (data.length >= 6)
+                {
+                    s.setVisible(Boolean.parseBoolean(data[5]));
+                }
             }
         }
     }
@@ -74,7 +78,8 @@ public class DataSeriesSerializer
             buf.append(Colors.toHex(s.getColor())).append(';');
             buf.append(s.getLineStyle().name()).append(';');
             buf.append(s.isShowArea()).append(';');
-            buf.append(s.getLineWidth());
+            buf.append(s.getLineWidth()).append(';');
+            buf.append(s.isVisible());
         }
         return buf.toString();
     }

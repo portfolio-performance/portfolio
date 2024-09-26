@@ -2176,6 +2176,37 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf15()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf15.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn("600720"), hasTicker(null), //
+                        hasName("ESCOM AG I.A."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2007-03-05T00:00"), hasShares(5555.00), //
+                        hasSource("Verkauf15.txt"), //
+                        hasNote("15681369.001"), //
+                        hasAmount("EUR", 211.30), hasGrossValue("EUR", 222.20), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.95 + 5.00 + 4.95))));
+    }
+
+    @Test
     public void testWertpapierEinloesung01()
     {
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());

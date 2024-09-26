@@ -26,6 +26,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.impl.AMFIIndiaQuoteFeed;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.BinanceQuoteFeed;
 import name.abuchen.portfolio.online.impl.BitfinexQuoteFeed;
@@ -35,6 +36,7 @@ import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
 import name.abuchen.portfolio.online.impl.KrakenQuoteFeed;
 import name.abuchen.portfolio.online.impl.LeewayQuoteFeed;
+import name.abuchen.portfolio.online.impl.MFAPIQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
@@ -215,6 +217,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
             return PortfolioReportQuoteFeed.ID + getModel().getCurrencyCode();
         else if (AlphavantageQuoteFeed.ID.equals(getFeed()))
             return AlphavantageQuoteFeed.ID + getModel().getTickerSymbol();
+        else if (AMFIIndiaQuoteFeed.ID.equals(getFeed()))
+            return AMFIIndiaQuoteFeed.ID + getModel().getIsin();
         else if (FinnhubQuoteFeed.ID.equals(getFeed()))
             return FinnhubQuoteFeed.ID + getModel().getTickerSymbol();
         else if (BinanceQuoteFeed.ID.equals(getFeed()))
@@ -232,6 +236,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                             + getModel().getTickerSymbol() //
                             + getModel().getCurrencyCode()
                             + String.valueOf(getModel().getFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID));
+        else if (MFAPIQuoteFeed.ID.equals(getFeed()))
+            return MFAPIQuoteFeed.ID + String.valueOf(getModel().getFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID));
         else if (EODHistoricalDataQuoteFeed.ID.equals(getFeed()))
             return EODHistoricalDataQuoteFeed.ID + getModel().getTickerSymbol();
         else if (QuandlQuoteFeed.ID.equals(getFeed()))

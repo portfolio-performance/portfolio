@@ -258,4 +258,9 @@ public class InformationPane
     {
         return area;
     }
+
+    public ToolBarManager getControlsToolBar()
+    {
+        return toolBarPaneControls;
+    }
 }

@@ -33,7 +33,6 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -250,7 +249,7 @@ public class SecuritiesChart
         CLOSING(Messages.LabelChartDetailChartDevelopmentClosing), //
         PURCHASEPRICE(Messages.LabelChartDetailChartDevelopmentClosingFIFO), //
         INVESTMENT(Messages.LabelChartDetailMarkerInvestments), //
-        SHARES_HELD(Messages.ColumnSharesOwned),
+        SHARES_HELD(Messages.ColumnSharesOwned), //
         DIVIDENDS(Messages.LabelChartDetailMarkerDividends), //
         EVENTS(Messages.LabelChartDetailMarkerEvents), //
         EXTREMES(Messages.LabelChartDetailMarkerHighLow), //
@@ -275,7 +274,9 @@ public class SecuritiesChart
         EMA_100DAYS(Messages.LabelChartDetailMovingAverage_100days), //
         EMA_200DAYS(Messages.LabelChartDetailMovingAverage_200days), //
         SHOW_MARKER_LINES(Messages.LabelChartDetailSettingsShowMarkerLines), //
-        SHOW_DATA_LABELS(Messages.LabelChartDetailSettingsShowDataLabel), //
+        SHOW_DATA_DIVESTMENT_INVESTMENT_LABEL(Messages.LabelChartDetailSettingsShowDivestmentInvestmentDataLabel), //
+        SHOW_DATA_DIVIDEND_LABEL(Messages.LabelChartDetailSettingsShowDividendDataLabel), //
+        SHOW_DATA_EXTREMES_LABEL(Messages.LabelChartDetailSettingsShowExtremeDataLabel), //
         SHOW_MISSING_TRADING_DAYS(Messages.LabelChartDetailSettingsShowMissingTradingDays), //
         SHOW_LIMITS(Messages.LabelChartDetailSettingsShowLimits), //
         SHOW_PERCENTAGE_AXIS(Messages.LabelChartDetailSettingsShowPercentageAxis), //
@@ -361,7 +362,7 @@ public class SecuritiesChart
     private Color colorNonTradingDay = Colors.getColor(255, 137, 89); // #FF8959
 
     private Color colorSharesHeld = Colors.getColor(235, 201, 52); // #EBC934
-    
+
     private static final Color colorFifoPurchasePrice = Colors.getColor(226, 122, 121); // #E27A79
     private static final Color colorMovingAveragePurchasePrice = Colors.getColor(150, 82, 81); // #965251
     private static final Color colorBollingerBands = Colors.getColor(201, 141, 68); // #C98D44
@@ -492,27 +493,27 @@ public class SecuritiesChart
     {
         this.colorNonTradingDay = color;
     }
-    
+
     public Color getSharesHeldColor()
     {
         return colorSharesHeld;
     }
-    
+
     public void setSharesHeldColor(Color color)
     {
         this.colorSharesHeld = color;
     }
-    
+
     public Client getClient()
     {
         return this.client;
     }
-    
+
     public Security getSecurity()
     {
         return this.security;
     }
-    
+
     public int getAntialias()
     {
         return this.swtAntialias;
@@ -747,7 +748,9 @@ public class SecuritiesChart
         subMenuChartMovingAverageEMA.add(addMenuAction(ChartDetails.EMA_100DAYS));
         subMenuChartMovingAverageEMA.add(addMenuAction(ChartDetails.EMA_200DAYS));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MARKER_LINES));
-        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_LABELS));
+        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_DIVIDEND_LABEL));
+        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_EXTREMES_LABEL));
+        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_DIVESTMENT_INVESTMENT_LABEL));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MISSING_TRADING_DAYS));
         subMenuChartSettings.add(new Separator());
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_PERCENTAGE_AXIS));
@@ -1117,7 +1120,7 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.INVESTMENT))
             addInvestmentMarkerLines(chartInterval);
-        
+
         if (chartConfig.contains(ChartDetails.SHARES_HELD))
             new SharesHeldChartSeries().configure(this, chart, chartInterval);
 
@@ -1249,7 +1252,7 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
         {
-            var showLabels = chartConfig.contains(ChartDetails.SHOW_DATA_LABELS);
+            var showLabels = chartConfig.contains(ChartDetails.SHOW_DATA_DIVESTMENT_INVESTMENT_LABEL);
             transactions.forEach(t -> {
                 if (showLabels)
                 {
@@ -1296,11 +1299,14 @@ public class SecuritiesChart
             inner.setSymbolColor(color);
             configureSeriesPainter(inner, dates, values, color, 0, LineStyle.NONE, false, true);
 
-            if (chartConfig.contains(ChartDetails.SHOW_DATA_LABELS))
+            if (chartConfig.contains(ChartDetails.SHOW_DATA_DIVESTMENT_INVESTMENT_LABEL))
             {
                 customPaintListeners.add(event -> {
                     Color defaultForeground = Colors.theme().defaultForeground();
+                    event.gc.setForeground(defaultForeground);
+
                     int symbolSize = border.getSymbolSize();
+                    int lastLabelEndX = Integer.MIN_VALUE;
 
                     IAxis xAxis = chart.getAxisSet().getXAxis(0);
                     IAxis yAxis = chart.getAxisSet().getYAxis(0);
@@ -1315,14 +1321,22 @@ public class SecuritiesChart
                         int y = yAxis.getPixelCoordinate(values[index]);
 
                         String label = Values.Share.format(t.getType().isPurchase() ? t.getShares() : -t.getShares());
-                        Point textExtent = event.gc.textExtent(label);
 
-                        // If the label does not start in negative, then we
-                        // print it.
-                        if (x - textExtent.x / 2 >= 0)
+                        Point textExtent = event.gc.textExtent(label);
+                        int labelWidth = textExtent.x;
+                        int halfLabelWidth = labelWidth / 2;
+
+                        int labelStartX = x - halfLabelWidth;
+                        int labelEndX = x + halfLabelWidth;
+
+                        // Check if the label starts in a non-negative position
+                        // and does not overlap with the previous label
+                        if (labelStartX > lastLabelEndX && labelStartX >= 0)
                         {
-                            event.gc.setForeground(defaultForeground);
-                            event.gc.drawText(label, x - textExtent.x / 2, y + symbolSize, true);
+                            event.gc.drawText(label, x - halfLabelWidth, y + symbolSize, true);
+
+                            // Update the end position of the last drawn label
+                            lastLabelEndX = labelEndX;
                         }
                     }
                 });
@@ -1346,7 +1360,7 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
         {
-            var showLabels = chartConfig.contains(ChartDetails.SHOW_DATA_LABELS);
+            var showLabels = chartConfig.contains(ChartDetails.SHOW_DATA_DIVIDEND_LABEL);
             dividends.forEach(t -> chart.addMarkerLine(t.getDateTime().toLocalDate(), colorEventDividend,
                             showLabels ? getDividendLabel(t) : null));
         }
@@ -1393,18 +1407,16 @@ public class SecuritiesChart
             inner.setSymbolColor(colorEventDividend);
             configureSeriesPainter(inner, dates, values, null, 0, LineStyle.NONE, false, true);
 
-            if (chartConfig.contains(ChartDetails.SHOW_DATA_LABELS))
+            if (chartConfig.contains(ChartDetails.SHOW_DATA_DIVIDEND_LABEL))
             {
                 customPaintListeners.add(event -> {
-                    FontMetrics fontMetrics = event.gc.getFontMetrics();
+                    Color defaultForeground = Colors.theme().defaultForeground();
+                    event.gc.setForeground(defaultForeground);
 
                     // Three levels of the label
                     int[] labelExtendX = new int[3];
 
                     int symbolSize = border.getSymbolSize();
-                    int labelHeight = fontMetrics.getHeight();
-                    int halfLabelHeight = labelHeight / 2;
-
                     IAxis xAxis = chart.getAxisSet().getXAxis(0);
                     IAxis yAxis = chart.getAxisSet().getYAxis(0);
 
@@ -1415,8 +1427,12 @@ public class SecuritiesChart
 
                         String label = getDividendLabel(dividends.get(index));
 
-                        int labelWidth = event.gc.stringExtent(label).x;
+                        // Measure the label width and height using GC
+                        Point labelSize = event.gc.stringExtent(label);
+                        int labelWidth = labelSize.x;
+                        int labelHeight = labelSize.y;
                         int halfLabelWidth = labelWidth / 2;
+                        int halfLabelHeight = labelHeight / 2;
 
                         for (int level = 0; level < 3; level++)
                         {
@@ -1486,7 +1502,7 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
         {
-            if (chartConfig.contains(ChartDetails.SHOW_DATA_LABELS))
+            if (chartConfig.contains(ChartDetails.SHOW_DATA_EXTREMES_LABEL))
             {
                 String valueFormat = Values.Quote.format(price.getValue());
                 chart.addMarkerLine(eventDate, color, valueFormat, value);
@@ -1507,17 +1523,20 @@ public class SecuritiesChart
             configureSeriesPainter(inner, new Date[] { zonedDate }, new double[] { value }, color, 0, LineStyle.NONE,
                             false, true);
 
-            if (chartConfig.contains(ChartDetails.SHOW_DATA_LABELS))
+            if (chartConfig.contains(ChartDetails.SHOW_DATA_EXTREMES_LABEL))
             {
                 customPaintListeners.add(event -> {
+                    Color defaultForeground = Colors.theme().defaultForeground();
+                    event.gc.setForeground(defaultForeground);
+
                     IAxis xAxis = chart.getAxisSet().getXAxis(0);
                     IAxis yAxis = chart.getAxisSet().getYAxis(0);
 
                     int x = xAxis.getPixelCoordinate(zonedDate.getTime());
                     int y = yAxis.getPixelCoordinate(value);
                     Point textExtent = event.gc.textExtent(valueFormat);
-
-                    event.gc.setForeground(Colors.theme().defaultForeground());
+                    int labelWidth = textExtent.x;
+                    int halfLabelWidth = labelWidth / 2;
 
                     if (inner.getSymbolColor() == colorExtremeMarkerHigh)
                         y = y - textExtent.y - inner.getSymbolSize();
@@ -1526,8 +1545,10 @@ public class SecuritiesChart
 
                     // If the label does not start in negative, then we print
                     // it.
-                    if (x - (textExtent.x / 2) >= 0)
-                        event.gc.drawText(valueFormat, x - (textExtent.x / 2), y, true);
+                    if (x - halfLabelWidth >= 0)
+                    {
+                        event.gc.drawText(valueFormat, x - halfLabelWidth, y, true);
+                    }
                 });
             }
         }

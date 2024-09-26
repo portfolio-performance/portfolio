@@ -57,8 +57,16 @@ public class Column
     private boolean isRemovable = true;
     private ColumnViewerSorter sorter;
     private Integer defaultSortDirection;
+
+    /**
+     * Constructs a LabelProvider. We need to allow a factory method because
+     * some label provider (such as the StyledCellLabelProvider) cannot be
+     * attached to multiple columns. However, we can create multiple visual
+     * columns out of one column definition, for example for different reporting
+     * periods.
+     */
     private Supplier<CellLabelProvider> labelProvider;
-    private UnaryOperator<Object> toolTipProvider;
+    private ElementOptionFunction<Object> toolTipProvider;
     private Images image;
     private Options<Object> options;
 
@@ -158,6 +166,11 @@ public class Column
 
     public void setToolTipProvider(UnaryOperator<Object> toolTipProvider)
     {
+        this.toolTipProvider = (element, option) -> toolTipProvider.apply(element);
+    }
+
+    public void setToolTipProvider(ElementOptionFunction<Object> toolTipProvider)
+    {
         this.toolTipProvider = toolTipProvider;
     }
 
@@ -247,7 +260,7 @@ public class Column
         return labelProvider != null ? labelProvider : () -> null;
     }
 
-    public UnaryOperator<Object> getToolTipProvider()
+    public ElementOptionFunction<Object> getToolTipProvider()
     {
         return toolTipProvider;
     }

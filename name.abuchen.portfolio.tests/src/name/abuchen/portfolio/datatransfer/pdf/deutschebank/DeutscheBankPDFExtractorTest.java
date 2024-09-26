@@ -92,7 +92,8 @@ public class DeutscheBankPDFExtractorTest
                         hasDate("2014-12-15"), hasShares(380), //
                         hasSource("Dividende01.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 64.88), hasGrossValue("EUR", 87.13), hasForexGrossValue("USD", 98.80), //
+                        hasAmount("EUR", 64.88), hasGrossValue("EUR", 87.13), //
+                        hasForexGrossValue("USD", 98.80), //
                         hasTaxes("EUR", 8.71 + 0.47 + 13.07), hasFees("EUR", 0.00))));
     }
 
@@ -472,7 +473,7 @@ public class DeutscheBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2015-04-02T09:04"), hasShares(19), //
+                        hasDate("2015-04-02T09:04"), hasShares(19.00), //
                         hasSource("Kauf01.txt"), //
                         hasNote("Belegnummer 1234567890 / 123456"), //
                         hasAmount("EUR", 675.50), hasGrossValue("EUR", 665.00), //
@@ -697,6 +698,68 @@ public class DeutscheBankPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf07()
+    {
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0321464652"), hasWkn("DBX0A1"), hasTicker(null), //
+                        hasName("XTRACKERS II GBP OVER.RATE SW.INH.ANT.1D ON 1/1"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-23T18:20"), hasShares(17.00), //
+                        hasSource("Kauf07.txt"), //
+                        hasNote("Belegnummer 1039975477 / 91752537"), //
+                        hasAmount("EUR", 3733.27), hasGrossValue("EUR", 3728.61), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 9.32 - 4.66))));
+    }
+
+    @Test
+    public void testWertpapierKauf08()
+    {
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0008476524"), hasWkn("847652"), hasTicker(null), //
+                        hasName("DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD 1/1"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-23T18:21"), hasShares(0.6413), //
+                        hasSource("Kauf08.txt"), //
+                        hasNote("Belegnummer 1522788379 / 181373046"), //
+                        hasAmount("EUR", 200.01), hasGrossValue("EUR", 189.68), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 15.21 - 4.88))));
     }
 
     @Test
@@ -2332,7 +2395,7 @@ public class DeutscheBankPDFExtractorTest
                         "Deutsche Bank Privat- und Geschäftskunden AG", "GiroKontoauszug05.txt");
         assertEquals(expectedErrorMessage, firstError.getMessage());
     }
-    
+
     @Test
     public void testGiroKontoauszug06()
     {

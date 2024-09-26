@@ -354,7 +354,7 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
         Display.getCurrent().asyncExec(() -> {
             try
             {
-                ModalContext.run(job, true, progressMonitor, getShell().getDisplay());
+                ModalContext.run(job, true, progressMonitor, Display.getDefault());
             }
             catch (InvocationTargetException | InterruptedException e)
             {

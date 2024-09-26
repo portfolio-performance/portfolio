@@ -1,0 +1,57 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+Postfach · 60255 Frankfurt am Main Seite 1
+Depotnummer 1965900098
+Kundennummer 3497256
+Marco lfKwIZ
+Abrechnungsnr. 45977616427
+Herrn Datum 18.03.2024
+Marco WhnWCk Ihr Berater 1822direkt
+ZwVhQQe-ZwVhQQe-Str. 90 Telefon 069 94170-0
+78982 ZwVhQQe
+Ausschüttung aus Genussschein
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 20 ROCHE HOLDING AG CH0012032048 (855167)
+INHABER-GENUSSCHEINE O.N.
+Zahlbarkeitstag 18.03.2024 Ertrag pro St. 9,60 CHF
+Bestandsstichtag 13.03.2024 Herkunftsland Schweiz
+Ex-Tag 14.03.2024 Kupon-Nr. 023
+Zahlungszeitraum 01.01.2023 - 31.12.2023
+Devisenkurs EUR / CHF 0,9678
+Devisenkursdatum 18.03.2024
+Ausschüttung 192,00 CHF 198,39+ EUR
+Umrechnung in EUR 198,39 EUR
+Einbehaltene Quellensteuer 35 % auf 192,00 CHF 69,44- EUR
+Anrechenbare Quellensteuer 15 % auf 198,39 EUR 29,76 EUR
+Kapitalertragsteuerpflichtige Dividende 198,39 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 29,76 EUR 119,04 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 79,35 EUR
+Kapitalertragsteuer 25 % auf 79,35 EUR 19,84- EUR
+Solidaritätszuschlag 5,5 % auf 19,84 EUR 1,09- EUR
+Ausmachender Betrag 108,02+ EUR
+20 % rückforderbare Quellensteuer 38,40 CHF
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Den Betrag buchen wir mit Wertstellung 20.03.2024 zu Gunsten des Kontos 3642174872 (IBAN tN79 9680 2732 1363
+2235 35), BLZ 500 502 01 (BIC HELADEF1822).
+Bitte ggf. Rückseite beachten.
+2158.03190101.0004094ER01
+
+Seite 2
+Depotnummer 4759010775
+Kundennummer 1193284
+Abrechnungsnr. 07667972881
+Datum 18.03.2024
+Keine Steuerbescheinigung.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2024 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 620,87
+Ertrag 29,76
+0,00 0,00 0,00 29,76- 79,35
+Nachher 0,00 0,00 0,00 0,00 700,22
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+2158.03190101.0004095ER01
