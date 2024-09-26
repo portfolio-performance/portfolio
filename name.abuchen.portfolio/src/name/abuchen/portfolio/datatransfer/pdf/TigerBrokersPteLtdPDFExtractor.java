@@ -156,9 +156,9 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                         + "(?<shares>[\\.,\\d]+) " //
                                         + "[\\.,\\d]+ [\\.,\\d]+ " //
                                         + "(?<gross>[\\.,\\d]+) " //
-                                        + "Commission: \\-(?<fee1>[\\.,\\d]+) "
-                                        + "\\-(?<fee2>[\\.,\\d]+) "
-                                        + "(\\-)?[\\.,\\d]+ (\\-)?[\\.,\\d]+$")
+                                        + "Commission: \\-(?<fee1>[\\.,\\d]+) " //
+                                        + "\\-(?<fee2>[\\.,\\d]+) " //
+                                        + "(\\-)?[\\.,\\d]+ (\\-)?[\\.,\\d]+$") //
                         .match("^Platform Fee: \\-(?<fee3>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             DocumentContext context = type.getCurrentContext();
@@ -212,16 +212,16 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                             return portfolioTransaction;
                         })
 
-                        .section("tickerSymbol", "date", "time", "shares", "gross", "fee1", "fee2", "fee3").optional()//
+                        .section("tickerSymbol", "date", "time", "shares", "gross", "fee1", "fee2", "fee3").optional() //
                         .match("^(?<tickerSymbol>[A-Z0-9]{2,4}) " //
                                         + "(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}), " //
                                         + "(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .* " //
                                         + "(?<shares>[\\.,\\d]+) " //
                                         + "[\\.,\\d]+ [\\.,\\d]+ " //
                                         + "(?<gross>[\\.,\\d]+) " //
-                                        + "Commission: \\-(?<fee1>[\\.,\\d]+)"
-                                        + "(\\s)?Platform Fee: \\-(?<fee2>[\\.,\\d]+) "
-                                        + "\\-(?<fee3>[\\.,\\d]+) "
+                                        + "Commission: \\-(?<fee1>[\\.,\\d]+)" //
+                                        + "(\\s)?Platform Fee: \\-(?<fee2>[\\.,\\d]+) " //
+                                        + "\\-(?<fee3>[\\.,\\d]+) " //
                                         + "(\\-)?[\\.,\\d]+ (\\-)?[\\.,\\d]+$") //
                         .assign((t, v) -> {
                             DocumentContext context = type.getCurrentContext();
@@ -262,7 +262,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // QQQ 2023-01-06, 03:33:08, GMT+8 1 262.78870 261.58000 262.79 Commission: -0.99Platform Fee: -1.00 -0.16 0.00 -1.21
         // @formatter:on
-        Block firstRelevantLineForBuyBlock_Format03 = new Block("^[A-Z0-9]{2,4} [A-Z]+ (?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+ .*$");
+        Block firstRelevantLineForBuyBlock_Format03 = new Block("^[A-Z0-9]{2,4} [A-Z]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ .*$");
         type.addBlock(firstRelevantLineForBuyBlock_Format03);
         firstRelevantLineForBuyBlock_Format03.setMaxSize(1);
         firstRelevantLineForBuyBlock_Format03.set(buyBlock_Format03);
@@ -280,10 +280,10 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                         + "(?<shares>[\\.,\\d]+) " //
                                         + "[\\.,\\d]+ [\\.,\\d]+ " //
                                         + "(?<gross>[\\.,\\d]+) " //
-                                        + "Commission: \\-(?<fee1>[\\.,\\d]+) "
-                                        + "\\-(?<fee2>[\\.,\\d]+) "
+                                        + "Commission: \\-(?<fee1>[\\.,\\d]+) " //
+                                        + "\\-(?<fee2>[\\.,\\d]+) " //
                                         + "(\\-)?[\\.,\\d]+ (\\-)?[\\.,\\d]+ " //
-                                        + "(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})"
+                                        + "(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})" //
                                         + "(\\s)?Platform Fee: \\-(?<fee3>[\\.,\\d]+) " //
                                         + "(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .*$") //
                         .assign((t, v) -> {
@@ -319,6 +319,114 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         });
 
         addFeesSectionsTransaction(buyBlock_Format03, type);
+
+        Transaction<BuySellEntry> buyBlock_Format04 = new Transaction<>();
+
+        Block firstRelevantLineForBuyBlock_Format04 = new Block("^Commission: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$");
+        type.addBlock(firstRelevantLineForBuyBlock_Format04);
+        firstRelevantLineForBuyBlock_Format04.setMaxSize(3);
+        firstRelevantLineForBuyBlock_Format04.set(buyBlock_Format04);
+
+        buyBlock_Format04 //
+
+                        .subject(() -> {
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Commission: 2024-04-08
+                                        // QQQ US NASDAQ Open 1 440.50000 440.60000 440.50 0.00 -0.99 2024-04-Platform Fee: 0.00 0.00 0.10 23:45:38,
+                                        // -1.00 GMT+8 10
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "tickerSymbol", "shares", "gross", "fee1", "fee2", "time", "fee3") //
+                                                        .match("^Commission: (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})$") //
+                                                        .match("^(?<tickerSymbol>[A-Z0-9]{2,4}) .* "
+                                                                        + "(?<shares>[\\.,\\d]+) "
+                                                                        + "[\\.,\\d]+ [\\.,\\d]+ "
+                                                                        + "(?<gross>[\\.,\\d]+) "
+                                                                        + "[\\.,\\d]+ "
+                                                                        + "\\-(?<fee1>[\\.,\\d]+) .*Platform Fee: "
+                                                                        + "(\\-)?(?<fee2>[\\.,\\d]+) "
+                                                                        + "[\\.,\\d]+ [\\.,\\d]+ "
+                                                                        + "(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .*$") //
+                                                        .match("^\\-(?<fee3>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            DocumentContext context = type.getCurrentContext();
+
+                                                            SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class)
+                                                                            .orElseGet(SecurityListHelper::new);
+                                                            Optional<SecurityItem> securityItem = securityListHelper.findItem(v.get("tickerSymbol"));
+
+                                                            if (securityItem.isPresent())
+                                                            {
+                                                                v.put("name", securityItem.get().name);
+                                                                v.put("tickerSymbol", securityItem.get().tickerSymbol);
+                                                                v.put("currency", securityItem.get().currency);
+                                                            }
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setDate(asDate(v.get("date"), v.get("time")));
+                                                            t.setShares(asShares(v.get("shares")));
+
+                                                            // The amount is stated in gross
+                                                            t.setAmount(asAmount(v.get("gross")) + asAmount(v.get("fee1")) + asAmount(v.get("fee2")) + asAmount(v.get("fee3")));
+                                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // Commission: 2023-01-06
+                                        // QQQ US 1 262.78870 261.58000 262.79 -0.99Platform Fee: -0.16 0.00 -1.21 03:33:08,
+                                        // -1.00 GMT+8
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "tickerSymbol", "shares", "gross", "fee1", "fee2", "time", "fee3") //
+                                                        .match("^Commission: (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})$") //
+                                                        .match("^(?<tickerSymbol>[A-Z0-9]{2,4}) .* "
+                                                                        + "(?<shares>[\\.,\\d]+) "
+                                                                        + "[\\.,\\d]+ [\\.,\\d]+ "
+                                                                        + "(?<gross>[\\.,\\d]+) "
+                                                                        + "\\-(?<fee1>[\\.,\\d]+)Platform Fee: "
+                                                                        + "(\\-)?(?<fee2>[\\.,\\d]+) "
+                                                                        + "[\\.,\\d]+ (\\-)[\\.,\\d]+ "
+                                                                        + "(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .*$") //
+                                                        .match("^\\-(?<fee3>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            DocumentContext context = type.getCurrentContext();
+
+                                                            SecurityListHelper securityListHelper = context.getType(SecurityListHelper.class)
+                                                                            .orElseGet(SecurityListHelper::new);
+                                                            Optional<SecurityItem> securityItem = securityListHelper.findItem(v.get("tickerSymbol"));
+
+                                                            if (securityItem.isPresent())
+                                                            {
+                                                                v.put("name", securityItem.get().name);
+                                                                v.put("tickerSymbol", securityItem.get().tickerSymbol);
+                                                                v.put("currency", securityItem.get().currency);
+                                                            }
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setDate(asDate(v.get("date"), v.get("time")));
+                                                            t.setShares(asShares(v.get("shares")));
+
+                                                            // The amount is stated in gross
+                                                            t.setAmount(asAmount(v.get("gross")) + asAmount(v.get("fee1")) + asAmount(v.get("fee2")) + asAmount(v.get("fee3")));
+                                                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                                                        }))
+
+                        .wrap(t -> {
+                            type.getCurrentContext().removeType(SecurityItem.class);
+
+                            if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
+                                return new BuySellEntryItem(t);
+                            return null;
+                        });
+
+        addFeesSectionsTransaction(buyBlock_Format04, type);
 
         Transaction<AccountTransaction> dividendBlock = new Transaction<>();
 
@@ -420,7 +528,9 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount", "currency") //
-                        .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) Cash Dividend [\\w]{3} per Share \\- Tax (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) " //
+                                        + "Cash Dividend [\\w]{3} per Share \\- Tax " //
+                                        + "(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -447,7 +557,9 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "note", "amount") //
-                        .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) Deposit (?<note>.*) (?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) Deposit " //
+                                        + "(?<note>.*) " //
+                                        + "(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
 
@@ -519,6 +631,78 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         .section("fee").optional() //
                         .documentContext("currency") //
                         .match("^[A-Z0-9]{2,4} [\\w]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ Commission: \\-[\\.,\\d]+ \\-[\\.,\\d]+ (\\-)?[\\.,\\d]+ (\\-)?[\\.,\\d]+ [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}(\\s)?Platform Fee: (?<fee>\\-[\\.,\\d]+) [\\d]{2}:[\\d]{2}:[\\d]{2}, .*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Commission: 2024-04-08
+                        // QQQ US NASDAQ Open 1 440.50000 440.60000 440.50 0.00 -0.99 2024-04-Platform Fee: 0.00 0.00 0.10 23:45:38,
+                        // -1.00 GMT+8 10
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .match("^Commission: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$") //
+                        .match("^[A-Z0-9]{2,4} .* [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ (?<gross>[\\.,\\d]+) [\\.,\\d]+ \\-[\\.,\\d]+ .*Platform Fee: (\\-)?[\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ [\\d]{2}:[\\d]{2}:[\\d]{2}, .*$") //
+                        .match("^\\-(?<fee>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Commission: 2024-04-08
+                        // QQQ US NASDAQ Open 1 440.50000 440.60000 440.50 0.00 -0.99 2024-04-Platform Fee: 0.00 0.00 0.10 23:45:38,
+                        // -1.00 GMT+8 10
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .match("^Commission: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$") //
+                        .match("^[A-Z0-9]{2,4} .* [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ \\-(?<fee>[\\.,\\d]+) .*Platform Fee: (\\-)?[\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ [\\d]{2}:[\\d]{2}:[\\d]{2}, .*$") //
+                        .match("^\\-[\\.,\\d]+.*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Commission: 2024-04-08
+                        // QQQ US NASDAQ Open 1 440.50000 440.60000 440.50 0.00 -0.99 2024-04-Platform Fee: 0.00 0.00 0.10 23:45:38,
+                        // -1.00 GMT+8 10
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .match("^Commission: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$") //
+                        .match("^[A-Z0-9]{2,4} .* [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ \\-[\\.,\\d]+ .*Platform Fee: (\\-)?(?<fee>[\\.,\\d]+) [\\.,\\d]+ [\\.,\\d]+ [\\d]{2}:[\\d]{2}:[\\d]{2}, .*$") //
+                        .match("^\\-[\\.,\\d]+.*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Commission: 2023-01-06
+                        // QQQ US 1 262.78870 261.58000 262.79 -0.99Platform Fee: -0.16 0.00 -1.21 03:33:08,
+                        // -1.00 GMT+8
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .match("^Commission: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$") //
+                        .match("^[A-Z0-9]{2,4} .* [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ \\-[\\.,\\d]+Platform Fee: (\\-)?[\\.,\\d]+ [\\.,\\d]+ (\\-)[\\.,\\d]+ [\\d]{2}:[\\d]{2}:[\\d]{2}, .*$") //
+                        .match("^\\-(?<fee>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Commission: 2023-01-06
+                        // QQQ US 1 262.78870 261.58000 262.79 -0.99Platform Fee: -0.16 0.00 -1.21 03:33:08,
+                        // -1.00 GMT+8
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .match("^Commission: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$") //
+                        .match("^[A-Z0-9]{2,4} .* [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ \\-(?<fee>[\\.,\\d]+)Platform Fee: (\\-)?[\\.,\\d]+ [\\.,\\d]+ (\\-)[\\.,\\d]+ [\\d]{2}:[\\d]{2}:[\\d]{2}, .*$") //
+                        .match("^\\-[\\.,\\d]+.*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Commission: 2023-01-06
+                        // QQQ US 1 262.78870 261.58000 262.79 -0.99Platform Fee: -0.16 0.00 -1.21 03:33:08,
+                        // -1.00 GMT+8
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .match("^Commission: [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}$") //
+                        .match("^[A-Z0-9]{2,4} .* [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+ \\-[\\.,\\d]+Platform Fee: (\\-)?(?<fee>[\\.,\\d]+) [\\.,\\d]+ (\\-)[\\.,\\d]+ [\\d]{2}:[\\d]{2}:[\\d]{2}, .*$") //
+                        .match("^\\-[\\.,\\d]+.*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
