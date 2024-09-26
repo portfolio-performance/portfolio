@@ -120,6 +120,7 @@ public class PDFImportAssistant
         extractors.add(new VZVermoegenszentrumAGPDFExtractor(client));
         extractors.add(new WealthsimpleInvestmentsIncPDFExtractor(client));
         extractors.add(new WirBankPDFExtractor(client));
+        extractors.add(new WitheBoxGmbHPDFExtractor(client));
         extractors.add(new WeberbankPDFExtractor(client));
         extractors.add(new ZuercherKantonalbankPDFExtractor(client));
     }
