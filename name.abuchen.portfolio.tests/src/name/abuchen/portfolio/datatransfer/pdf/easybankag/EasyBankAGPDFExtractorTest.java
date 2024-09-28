@@ -1,5 +1,24 @@
 package name.abuchen.portfolio.datatransfer.pdf.easybankag;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
@@ -1533,11 +1552,73 @@ public class EasyBankAGPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf04()
+    {
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A1R0RZ5"), hasWkn(null), hasTicker(null), //
+                        hasName("Ekosem-Agrar AG Inh.-Schv. v.2012(2020/2027)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-07-11T11:38:21"), hasShares(20), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote("Auftrags-Nr.: 23456789 | Limit: 20,200000"), //
+                        hasAmount("EUR", 394.69), hasGrossValue("EUR", 404.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.85 + 0.71 + 6.75))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf05()
+    {
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000A2E4A94"), hasWkn(null), hasTicker(null), //
+                        hasName("BDT Media Automation GmbH Nachr.Anl.v.2017(2019/2024)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-07-14T00:00"), hasShares(20), //
+                        hasSource("Verkauf05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 1982.15), hasGrossValue("EUR", 2000.00), //
+                        hasTaxes("EUR", 14.85 + 0.50), hasFees("EUR", 2.50))));
+    }
+
+    @Test
     public void testDividende01()
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
@@ -1580,7 +1661,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
@@ -1623,7 +1704,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
@@ -1715,7 +1796,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
@@ -1807,7 +1888,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
@@ -1850,7 +1931,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
 
@@ -1942,7 +2023,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
 
@@ -1985,7 +2066,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
 
@@ -2028,7 +2109,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
 
@@ -2071,7 +2152,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
 
@@ -2163,7 +2244,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
 
@@ -2206,7 +2287,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
 
@@ -2298,7 +2379,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
 
@@ -2341,7 +2422,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
 
@@ -2384,7 +2465,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
 
@@ -2476,7 +2557,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende16.txt"), errors);
 
@@ -2519,7 +2600,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
 
@@ -2562,7 +2643,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende18.txt"), errors);
 
@@ -2605,7 +2686,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende19.txt"), errors);
 
@@ -2648,7 +2729,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug01.txt"), errors);
 
@@ -2676,7 +2757,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug02.txt"), errors);
 
@@ -2704,7 +2785,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug03.txt"), errors);
 
@@ -2732,7 +2813,7 @@ public class EasyBankAGPDFExtractorTest
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug04.txt"), errors);
 
