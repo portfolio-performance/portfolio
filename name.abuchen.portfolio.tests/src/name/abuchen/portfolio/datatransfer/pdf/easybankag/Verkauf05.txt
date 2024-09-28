@@ -1,0 +1,59 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.3
+-----------------------------------------
+Herrn
+Max Mustermann
+Gasse 1
+1000 Wien
+Wien, den 15.07.2024
+Wir haben für Sie am 15.07.2024 unten angeführtes Geschäft abgerechnet:
+Depot: 20000-111-222
+Verlusttopf Nr.: 012345678901
+Geschäftsart: Tilgung
+Abgang: Nom. 2.000
+davon
+KESt-Neubestand mit Anschaffungskosten: Nom 2.000
+Titel: DE000A2E4A94 BDT Media Automation GmbH
+Nachr.Anl.v.2017(2019/2024)
+Kup.: Jährlich bis 14.07.2024
+Kurs: 100%
+Verwahrart: WR Wertpapierrechnung
+Positionsdaten: Loco: Düsseldorf
+endfällig per 14.7.2024
+Kurswert: 2.000,00 EUR
+KESt aus Neubestand: -14,85 EUR
+Inkassoprovision: -2,50 EUR
+USt: -0,50 EUR
+Zu Gunsten IBAN AT12 3456 7890 1234 0567 Valuta 15.07.2024 1.982,15 EUR
+Bemessungsgrundlage Ust: -2,50 EUR
+Es wurde Umsatzsteuer in der Höhe von 20% berücksichtigt.
+Eingang vorbehalten
+KESt-pflichtiges Wertpapier
+Extag: 14.07.2024
+Kunde ist Steuerschuldner der Umsatzsteuer gem. Artikel 196 der Richtlinie 2006/112/EG.
+Steuerrelevante Hinweise finden Sie auf der Rückseite.
+Seite 1 von 2
+easybank Service Center | www.easybank.at | Wiedner Gürtel 11 | 1100 Wien
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postsparkasse Aktiengesellschaft | Handelsgericht Wien | FN 205340x
+GEODRU02 WGEWTGSDR15ABREP2024071508377P15_a/1094
+Hinweis für KESt aus Neubestand mit Anschaffungskosten:
+Steuerrelevanter Anschaffungswert: 1.946,00 EUR
+Steuerrelevanter Veräußerungswert : 2.000,00 EUR
+Steuerpflichtiger Kursgewinn: 54,00 EUR
+Hinweis für den Verlustausgleichstopf:
+Bisheriger Stand KESt aus Verlust: -329,71 EUR
+KESt bezahlt: 14,85 EUR
+Aktueller Stand KESt aus Verlust: -314,86 EUR
+Gutschrift aus Verlustausgleich: 14,85 EUR
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe.
+Die BAWAG erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle steuerliche
+Nachteile im Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen ihrer
+Kunden. Die Besteuerung der Kapitaleinkünfte hängt von den persönlichen Verhältnissen des Anlegers
+ab und kann künftigen Änderungen unterworfen sein. Vor einer Veranlagungsentscheidung sollten Sie
+sich bei Ihrem Steuerberater über die damit verbundenen steuerlichen Konsequenzen und
+Meldepflichten informieren.
+Mit freundlichen Grüßen
+Ihr easybank Service Center
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 2 von 2
+GEODRU02 WGEWTGSDR15ABREP2024071508377P15_a/1095
