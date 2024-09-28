@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -31,6 +32,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendeTransaction();
         addAdvanceTaxTransaction();
+        addNonImportableTransaction();
     }
 
     @Override
@@ -305,6 +307,60 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);
+    }
+
+    private void addNonImportableTransaction()
+    {
+        final DocumentType type = new DocumentType("Depotbuchung \\- Belastung"); //
+        this.addDocumentTyp(type);
+
+        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^unentgeltlicher Depot.bertrag.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                            return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // Nominale Wertpapierbezeichnung ISIN (WKN)
+                        // Stück 3 XTR.(IE) - MSCI WORLD IE00BJ0KDQ92 (A1XB5U)
+                        // REGISTERED SHARES 1C O.N.
+                        // Wertpapierrechnung Lagerland Irland
+                        // Valuta 30.03.2022 externe Referenz-Nr. IR12345
+                        // @formatter:on
+                        .section("date", "isin", "wkn", "shares", "name", "name1") //
+                        .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                        .match("(?<name1>.*)$") //
+                        .match("Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*") //
+                        .assign((t, v) -> {
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+
+                            if (!v.get("name1").startsWith("Wertpapierrechnung"))
+                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setSecurity(getOrCreateSecurity(v));
+
+                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                            t.setAmount(0L);
+                        })
+
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

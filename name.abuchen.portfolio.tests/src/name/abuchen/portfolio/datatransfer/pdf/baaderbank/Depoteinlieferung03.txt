@@ -1,0 +1,38 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Scalable Capital GmbH 
+Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/1
+Herrn München
+30.03.2022
+Max Mustermann
+Muster Str. 9 Max Mustermann
+12345 Musterstadt Stamm-Nr.: 1234567    Portfolio: 1
+Depot-Nr.: 1234567890
+Vorgangs-Nr.: 123456
+Referenz-Nr.: 123456789
+Depoteinlieferung
+Nominale ISIN: IE00BJ0KDQ92 WKN: A1XB5U
+STK 3 Xtr.(IE) - MSCI World
+Registered Shares 1C o.N.
+Verwahrart: Girosammelverwahrung Handelstag: 28.03.2022
+Lagerstelle: 100 Valuta: 30.03.2022
+Lagerland: Deutschland
+Nominale ISIN: LU0635178014 WKN: ETF127
+STK 2 Lyxor MSCI Emerg.Mkts U.ETF
+Inh.-An. I o.N.
+Verwahrart: Girosammelverwahrung Handelstag: 28.03.2022
+Lagerstelle: 100 Valuta: 30.03.2022
+Lagerland: Deutschland
+Bitte prüfen Sie diese Mitteilung. Etwaige Einwendungen bitten wir unverzüglich zu erheben. 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz • HRB 217778, Amtsgericht München • USt-IdNr. 
+DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Dr. Horst Schiessl • Amtsgericht München 
+HRB 121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 123/456/78901 • USt-IdNr. DE123456789 • LEI: 123456JF7PPEDUR89H01
+T 00800 00 586336* • service@baaderbank.de EINLIEFERUNG-012.345
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
