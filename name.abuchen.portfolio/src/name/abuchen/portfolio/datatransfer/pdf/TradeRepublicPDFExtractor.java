@@ -2341,10 +2341,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         //
                                         // VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
                                         // DE30501108019081234567 11.04.2024 2,21 EUR
+                                        //
+                                        // VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
+                                        // DE12345678912345678912 28.09.2024 -0.27 EUR
                                         // @formatter:on
                                         .section("date") //
                                         .find("(IBAN BUCHUNGSDATUM GUTSCHRIFT NACH STEUERN|VERRECHNUNGSKONTO (VALUTA|WERTSTELLUNG|DATUM DER ZAHLUNG) BETRAG)") //
-                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+( [\\w]{3})?$") //
+                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (\\-)?[\\.,\\d]+( [\\w]{3})?$") //
                                         .assign((ctx, v) -> {
                                             ctx.put("date", v.get("date"));
                                             ctx.putBoolean("multipleTransaction", false);
@@ -2379,7 +2382,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^ABRECHNUNG( \\- (ZINSEN))?$", "^(Gesamt|GESAMT) [\\.,\\d]+( [\\w]{3})?$");
+        Block firstRelevantLine = new Block("^ABRECHNUNG( \\- (ZINSEN))?$", "^(?i)Gesamt (\\-)?[\\.,\\d]+( [\\w]{3})?$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -2405,13 +2408,33 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .documentContext("date", "multipleTransaction")
                                                         .find("ABRECHNUNG( \\- ZINSEN)?")
                                                         .match("^Besteuerungsgrundlage (?<gross>[\\.,\\d]+) [\\w]{3}$") //
-                                                        .match("^Gesamt (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^(?i)Gesamt (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
                                                             Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setMonetaryAmount(gross.subtract(amount));
+                                                        }),
+                                        // @formatter:off
+                                        // Steuerliche Optimierung am 28.09.2024
+                                        // ABRECHNUNG
+                                        // POSITION BETRAG
+                                        // Kapitalertragssteuer -0.26 EUR
+                                        // Solidaritätszuschlag -0.01 EUR
+                                        // GESAMT -0.27 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .documentContext("date", "multipleTransaction")
+                                                        .match("^Kapitalertrags(s)?teuer( Optimierung)? \\-[\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^(?i)Gesamt \\-(?<amount>[\\.,\\d]+)( [\\w]{3})?$") //
+                                                        .assign((t, v) -> {
+                                                            type.getCurrentContext().putBoolean("multipleTransaction", true);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }),
                                         // @formatter:off
                                         // Steuerliche Optimierung am 18.07.2024
@@ -2433,15 +2456,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("currency", "amount") //
                                                         .documentContext("date", "multipleTransaction")
                                                         .match("^Kapitalertrags(s)?teuer( Optimierung)? [\\.,\\d]+ (?<currency>[\\w]{3})$") //
-                                                        .match("^(Gesamt|GESAMT) (?<amount>[\\.,\\d]+)( [\\w]{3})?$") //
+                                                        .match("^(?i)Gesamt (?<amount>[\\.,\\d]+)( [\\w]{3})?$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.TAX_REFUND);
+                                                            type.getCurrentContext().putBoolean("multipleTransaction", true);
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-
-                                                            type.getCurrentContext().putBoolean("multipleTransaction", true);
                                                         }),
                                         // @formatter:off
                                         // ABRECHNUNG
@@ -2452,9 +2474,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("amount", "currency") //
                                                         .documentContext("date", "name", "shares", "nameContinued", "isin", "multipleTransaction")
-                                                        .match("^GESAMT (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^(?i)Gesamt (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.TAX_REFUND);
+                                                            type.getCurrentContext().putBoolean("multipleTransaction", true);
 
                                                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -2462,15 +2485,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-
-                                                            type.getCurrentContext().putBoolean("multipleTransaction", true);
                                                         }))
 
                         .wrap(t -> {
                             TransactionItem item = new TransactionItem(t);
-
-                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                return null;
 
                             if (!type.getCurrentContext().getBoolean("multipleTransaction"))
                                 return null;

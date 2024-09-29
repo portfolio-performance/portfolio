@@ -2249,7 +2249,7 @@ public class TradeRepublicPDFExtractorTest
                         interest(hasDate("2024-08-01"), hasAmount("EUR", 1.30), //
                         hasSource("ReleveDeCompte01.txt"), hasNote(null)))));
 
-        // assert transaction ---> ZEILE 37
+        // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-08-01"), hasAmount("EUR", 500.00), //
                         hasSource("ReleveDeCompte01.txt"), hasNote(null))));
     }
@@ -2819,6 +2819,32 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("Steueroptimierung02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 20.72), hasGrossValue("EUR", 20.72), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSteueroptimierung03()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steueroptimierung03.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2024-09-28T00:00"), //
+                        hasSource("Steueroptimierung03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.27), hasGrossValue("EUR", 0.27), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
