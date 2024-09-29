@@ -36,7 +36,7 @@ public class DeltaPercentageIndicatorLabelProvider extends OwnerDrawLabelProvide
 
             Data data = new Data();
 
-            data.totalAmount = node.getRoot().getActual().getAmount();
+            data.totalAmount = node.getClassificationRoot().getActual().getAmount();
             data.targetAmount = node.getTarget().getAmount();
             data.actualAmount = node.getActual().getAmount();
 

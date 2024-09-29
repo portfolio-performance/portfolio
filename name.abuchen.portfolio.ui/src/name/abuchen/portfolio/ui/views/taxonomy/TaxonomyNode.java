@@ -339,6 +339,11 @@ public abstract class TaxonomyNode implements Adaptable
         return parent == null ? this : parent.getRoot();
     }
 
+    public TaxonomyNode getClassificationRoot()
+    {
+        return getRoot().getChildren().get(0);
+    }
+
     public List<TaxonomyNode> getChildren()
     {
         return children;
