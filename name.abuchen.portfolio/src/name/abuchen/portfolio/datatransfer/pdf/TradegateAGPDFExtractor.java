@@ -1,8 +1,11 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -10,6 +13,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
 public class TradegateAGPDFExtractor extends AbstractPDFExtractor
@@ -66,7 +70,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .section("isin", "wkn", "name", "currency") //
                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
                         .match("^WKN (?<wkn>[A-Z0-9]{6})$") //
-                        .match("^Wertpapier (?<name>.*)$")
+                        .match("^Wertpapier (?<name>.*)$") //
                         .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -139,10 +143,10 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         // Ausschüttung 0,127847 EUR pro Stück
                         // @formatter:on
                         .section("name", "isin", "wkn", "currency") //
-                        .match("^Wertpapier (?<name>.*)$")
+                        .match("^Wertpapier (?<name>.*)$") //
                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^WKN (?<wkn>[A-Z0-9]{6})$") //
-                        .match("^Ausschüttung [\\.,\\d]+ (?<currency>[\\w]{3}) pro St.ck$") //
+                        .match("^Aussch.ttung [\\.,\\d]+ (?<currency>[\\w]{3}) pro St.ck$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -170,11 +174,30 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
+                        // Bruttobetrag 10,96 USD
+                        // Devisenkurs 1,11856 EUR/USD
+                        // @formatter:on
+                        .section("fxGross", "exchangeRate", "baseCurrency", "termCurrency").optional() //
+                        .match("^Bruttobetrag (?<fxGross>[\\.,\\d]+) [\\w]{3}$") //
+                        .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        // @formatter:off
                         // 12345 Investcity Order-/Ref.nr. 9876543
                         // @formatter:on
                         .section("note").optional() //
                         .match("^.*(?<note>Order\\-\\/Ref\\.nr\\. .*)$")
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .conclude(ExtractorUtils.fixGrossValueA())
 
                         .wrap(TransactionItem::new);
 

@@ -1,10 +1,12 @@
 package name.abuchen.portfolio.datatransfer.pdf.tradegateag;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -31,10 +33,16 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.TradegateAGPDFExtractor;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class TradegateAGPDFExtractorTest
@@ -130,5 +138,76 @@ public class TradegateAGPDFExtractorTest
                         hasNote("Order-/Ref.nr. 9876543"), //
                         hasAmount("EUR", 7.16), hasGrossValue("EUR", 9.72), //
                         hasTaxes("EUR", 2.43 + 0.13), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende02()
+    {
+        TradegateAGPDFExtractor extractor = new TradegateAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BZ163L38"), hasWkn("A143JQ"), hasTicker(null), //
+                        hasName("Vang.USD Em.Mkts Gov.Bd U.ETF Registered Shares USD Dis.oN"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-09-25T00:00"), hasShares(59.00), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Order-/Ref.nr. 9876543"), //
+                        hasAmount("EUR", 7.21), hasGrossValue("EUR", 9.79), //
+                        hasForexGrossValue("USD", 10.96), //
+                        hasTaxes("EUR", (2.74 + 0.15) / 1.11856), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende02WithSecurityInEUR()
+    {
+        Security security = new Security("Vang.USD Em.Mkts Gov.Bd U.ETF Registered Shares USD Dis.oN", CurrencyUnit.EUR);
+        security.setIsin("IE00BZ163L38");
+        security.setWkn("A143JQ");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        TradegateAGPDFExtractor extractor = new TradegateAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-09-25T00:00"), hasShares(59.00), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Order-/Ref.nr. 9876543"), //
+                        hasAmount("EUR", 7.21), hasGrossValue("EUR", 9.79), //
+                        hasTaxes("EUR", (2.74 + 0.15) / 1.11856), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 }
