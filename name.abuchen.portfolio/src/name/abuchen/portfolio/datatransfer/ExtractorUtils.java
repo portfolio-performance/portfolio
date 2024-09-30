@@ -170,6 +170,9 @@ public class ExtractorUtils
                     createFormatter("dd.M.yyyy HH:mm:ss", Locale.GERMANY), //
                     createFormatter("d/MM/yyyy HH:mm:ss", Locale.GERMANY), //
                     createFormatter("dd/MM/yyyy HH:mm:ss", Locale.GERMANY), //
+                    createFormatter("LLL d, yyyy hh:mm:ss a", Locale.US), //
+                    createFormatter("LLL dd, yyyy hh:mm:ss a", Locale.US), //
+                    createFormatter("yyyy-LL-dd HH:mm:ss", Locale.US), //
                     createFormatter("yyyy-LL-d HH:mm:ss", Locale.US), //
                     createFormatter("yyyy-LL-dd HH:mm:ss", Locale.US), //
                     createFormatter("yyyyLLd HHmmss", Locale.US), //
