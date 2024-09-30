@@ -344,14 +344,14 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "tickerSymbol", "shares", "gross", "fee1", "fee2", "time", "fee3") //
                                                         .match("^Commission: (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})$") //
-                                                        .match("^(?<tickerSymbol>[A-Z0-9]{2,4}) .* "
-                                                                        + "(?<shares>[\\.,\\d]+) "
-                                                                        + "[\\.,\\d]+ [\\.,\\d]+ "
-                                                                        + "(?<gross>[\\.,\\d]+) "
-                                                                        + "[\\.,\\d]+ "
-                                                                        + "\\-(?<fee1>[\\.,\\d]+) .*Platform Fee: "
-                                                                        + "(\\-)?(?<fee2>[\\.,\\d]+) "
-                                                                        + "[\\.,\\d]+ [\\.,\\d]+ "
+                                                        .match("^(?<tickerSymbol>[A-Z0-9]{2,4}) .* " //
+                                                                        + "(?<shares>[\\.,\\d]+) " //
+                                                                        + "[\\.,\\d]+ [\\.,\\d]+ " //
+                                                                        + "(?<gross>[\\.,\\d]+) " //
+                                                                        + "[\\.,\\d]+ " //
+                                                                        + "\\-(?<fee1>[\\.,\\d]+) .*Platform Fee: " //
+                                                                        + "(\\-)?(?<fee2>[\\.,\\d]+) " //
+                                                                        + "[\\.,\\d]+ [\\.,\\d]+ " //
                                                                         + "(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .*$") //
                                                         .match("^\\-(?<fee3>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
@@ -385,13 +385,13 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "tickerSymbol", "shares", "gross", "fee1", "fee2", "time", "fee3") //
                                                         .match("^Commission: (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})$") //
-                                                        .match("^(?<tickerSymbol>[A-Z0-9]{2,4}) .* "
-                                                                        + "(?<shares>[\\.,\\d]+) "
-                                                                        + "[\\.,\\d]+ [\\.,\\d]+ "
-                                                                        + "(?<gross>[\\.,\\d]+) "
-                                                                        + "\\-(?<fee1>[\\.,\\d]+)Platform Fee: "
-                                                                        + "(\\-)?(?<fee2>[\\.,\\d]+) "
-                                                                        + "[\\.,\\d]+ (\\-)[\\.,\\d]+ "
+                                                        .match("^(?<tickerSymbol>[A-Z0-9]{2,4}) .* " //
+                                                                        + "(?<shares>[\\.,\\d]+) " //
+                                                                        + "[\\.,\\d]+ [\\.,\\d]+ " //
+                                                                        + "(?<gross>[\\.,\\d]+) " //
+                                                                        + "\\-(?<fee1>[\\.,\\d]+)Platform Fee: " //
+                                                                        + "(\\-)?(?<fee2>[\\.,\\d]+) " //
+                                                                        + "[\\.,\\d]+ (\\-)[\\.,\\d]+ " //
                                                                         + "(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .*$") //
                                                         .match("^\\-(?<fee3>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
