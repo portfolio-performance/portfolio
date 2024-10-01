@@ -1840,11 +1840,18 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         //
                                         // 28 juil.
                                         // 2024 Virement Apple Pay Top up 100,00 € 104,30 €
+                                        //
+                                        // 16 oct. 
+                                        // 2023 Parrainage Remboursement de votre cadeau 25,57 € 111,58 €
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "note", "amount", "currency", "amountAfter", "currencyAfter") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s](Transacci.n.*)?$") //
-                                                        .match("^(?<year>[\\d]{4}) (Kartentransaktion|con tarjeta|Virement) (?<note>(?!(Einzahlung|Ingreso|Paiement)).*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
+                                                        .match("^(?<year>[\\d]{4}) " //
+                                                                        + "(Kartentransaktion|con tarjeta|Virement|Parrainage) " //
+                                                                        + "(?<note>(?!(Einzahlung|Ingreso|Paiement)).*) " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) " //
+                                                                        + "(?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .assign((t, v) -> {
                                                             DocumentContext context = type.getCurrentContext();
                                                             Money amountAfter = Money.of(asCurrencyCode(v.get("currencyAfter")), asAmount(v.get("amountAfter")));
