@@ -2301,14 +2301,18 @@ public class TradeRepublicPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(4L));
-        assertThat(results.size(), is(4));
+        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(results.size(), is(5));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-10-12"), hasAmount("EUR", 100.00), //
                         hasSource("ReleveDeCompte03.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-10-16"), hasAmount("EUR", 25.57), //
+                        hasSource("ReleveDeCompte03.txt"), hasNote("Remboursement de votre cadeau"))));
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
