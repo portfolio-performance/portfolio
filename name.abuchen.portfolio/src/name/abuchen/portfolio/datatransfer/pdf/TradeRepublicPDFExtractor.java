@@ -1714,7 +1714,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block depositRemovalBlock_Format01 = new Block("^[\\d]{2} [\\wäéû]{3,4}([\\.]{1})?( [\\d]{4})? .berweisung .*$");
+        Block depositRemovalBlock_Format01 = new Block("^[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?( [\\d]{4})? .berweisung .*$");
         type.addBlock(depositRemovalBlock_Format01);
         depositRemovalBlock_Format01.setMaxSize(1);
         depositRemovalBlock_Format01.set(new Transaction<AccountTransaction>()
@@ -1731,7 +1731,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})?) .berweisung Einzahlung .* auf (?<year>[\\d]{4}) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?) .berweisung Einzahlung .* auf (?<year>[\\d]{4}) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -1742,7 +1742,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})? [\\d]{4}) .berweisung Einzahlung .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) .berweisung Einzahlung .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -1753,7 +1753,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})? [\\d]{4}) .berweisung PayOut .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) .berweisung PayOut .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
@@ -1766,7 +1766,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})? [\\d]{4}) .berweisung Incoming transfer from .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) .berweisung Incoming transfer from .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -1777,7 +1777,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})? [\\d]{4}) .berweisung Outgoing transfer for .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) .berweisung Outgoing transfer for .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
@@ -1788,7 +1788,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block depositRemovalBlock_Format02 = new Block("^[\\d]{2} [\\wäéû]{3,4}([\\.]{1})?[\\s](Transacci.n.*)?$");
+        Block depositRemovalBlock_Format02 = new Block("^[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?[\\s](Transacci.n.*)?$");
         type.addBlock(depositRemovalBlock_Format02);
         depositRemovalBlock_Format02.setMaxSize(4);
         depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
@@ -1806,7 +1806,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "note", "amount", "currency", "amountAfter", "currencyAfter") //
-                                                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})?)[\\s]Transacci.n (?<note>.*), [\\.,\\d]+ \\p{Sc}.*$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]Transacci.n (?<note>.*), [\\.,\\d]+ \\p{Sc}.*$") //
                                                         .match("^(?<year>[\\d]{4}) con tarjeta .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .assign((t, v) -> {
                                                             DocumentContext context = type.getCurrentContext();
@@ -1843,7 +1843,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "note", "amount", "currency", "amountAfter", "currencyAfter") //
-                                                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})?)[\\s](Transacci.n.*)?$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s](Transacci.n.*)?$") //
                                                         .match("^(?<year>[\\d]{4}) (Kartentransaktion|con tarjeta|Virement) (?<note>(?!(Einzahlung|Ingreso|Paiement)).*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .assign((t, v) -> {
                                                             DocumentContext context = type.getCurrentContext();
@@ -1873,7 +1873,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})?)[\\s]$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]$") //
                                                         .match("^(?<year>[\\d]{4}) .berweisung$") //
                                                         .match("^Einzahlung akzeptiert: .*$") //
                                                         .match("^.* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
@@ -1900,21 +1900,24 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         //
                                         // 01 juil.
                                         // 2024 Virement Paiement accepté: DE98200411330722961000 à DE21502109007019521081 500,00 € 897,24 €
+                                        //
+                                        // 02 sept.
+                                        // 2024 Virement Paiement accepté: FR7634047446300402044310454 à DE55402154005012458754 100,00 € 131,09 €
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})?)[\\s]$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]$") //
                                                         .match("^(?<year>[\\d]{4}) " //
-                                                                        + "(.berweisung"
-                                                                        + "|Pr.mie"
-                                                                        + "|Transferencia"
-                                                                        + "|Recompensa"
-                                                                        + "|Virement) "
-                                                                        + "(Einzahlung akzeptiert:"
-                                                                        + "|Ingreso aceptado:"
-                                                                        + "|Paiement accept.:"
-                                                                        + "|Your Saveback"
-                                                                        + "|Your Saveback payment"
+                                                                        + "(.berweisung" //
+                                                                        + "|Pr.mie" //
+                                                                        + "|Transferencia" //
+                                                                        + "|Recompensa" //
+                                                                        + "|Virement) " //
+                                                                        + "(Einzahlung akzeptiert:" //
+                                                                        + "|Ingreso aceptado:" //
+                                                                        + "|Paiement accept.:" //
+                                                                        + "|Your Saveback" //
+                                                                        + "|Your Saveback payment" //
                                                                         + "|Incoming transfer from)" //
                                                                         + ".* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
@@ -1928,18 +1931,18 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})?)[\\s]$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]$") //
                                                         .match("^(?<year>[\\d]{4}) " //
-                                                                        + "(.berweisung"
-                                                                        + "|Pr.mie"
-                                                                        + "|Transferencia"
-                                                                        + "|Recompensa"
-                                                                        + "|Virement) "
-                                                                        + "(Einzahlung akzeptiert:"
-                                                                        + "|Ingreso aceptado:"
-                                                                        + "|Paiement accept.:"
-                                                                        + "|Your Saveback"
-                                                                        + "|Your Saveback payment"
+                                                                        + "(.berweisung" //
+                                                                        + "|Pr.mie" //
+                                                                        + "|Transferencia" //
+                                                                        + "|Recompensa" //
+                                                                        + "|Virement) " //
+                                                                        + "(Einzahlung akzeptiert:" //
+                                                                        + "|Ingreso aceptado:" //
+                                                                        + "|Paiement accept.:" //
+                                                                        + "|Your Saveback" //
+                                                                        + "|Your Saveback payment" //
                                                                         + "|Incoming transfer from)" //
                                                                         + ".* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                                                         .assign((t, v) -> {
@@ -1959,13 +1962,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})?)[\\s]$") //
-                                                        .match("^(?<year>[\\d]{4}) "
-                                                                        + "(.berweisung"
-                                                                        + "|Transferencia) "
-                                                                        + "(PayOut to transit"
-                                                                        + "|Outgoing transfer for.*) "
-                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) "
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]$") //
+                                                        .match("^(?<year>[\\d]{4}) " //
+                                                                        + "(.berweisung" //
+                                                                        + "|Transferencia) " //
+                                                                        + "(PayOut to transit" //
+                                                                        + "|Outgoing transfer for.*) " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) " //
                                                                         + "[\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
@@ -2000,8 +2003,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("day", "month", "year", "note", "amount", "currency", "amountAfter", "currencyAfter") //
-                                                        .match("^(?<day>[\\d]{2})[\\s]$")
-                                                        .match("^(?<month>[\\wäéû]{3,4}([\\.]{1})?) Kartentransaktion (?<note>.*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) Kartentransaktion " //
+                                                                        + "(?<note>.*) " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
                                                             DocumentContext context = type.getCurrentContext();
@@ -2038,8 +2043,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("day", "month", "year", "amount", "currency") //
-                                                        .match("^(?<day>[\\d]{2})[\\s]$")
-                                                        .match("^(?<month>[\\wäéû]{3,4}([\\.]{1})?) " //
+                                                        .match("^(?<day>[\\d]{2})[\\s]$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
                                                                         + "(.berweisung Einzahlung akzeptiert:" //
                                                                         + "|.berweisung Incoming transfer from" //
                                                                         + "|Pr.mie Your Saveback)" //
@@ -2056,10 +2061,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("day", "month", "year", "amount", "currency") //
-                                                        .match("^(?<day>[\\d]{2})[\\s]$")
-                                                        .match("^(?<month>[\\wäéû]{3,4}([\\.]{1})?) " //
-                                                                        + ".berweisung Einzahlung akzeptiert:" //
-                                                                        + ".* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}(?<year>[\\d]{4})$") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
+                                                                        + ".berweisung Einzahlung akzeptiert:.* " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -2076,9 +2081,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("day", "month", "year", "amount", "currency") //
-                                                        .match("^(?<day>[\\d]{2})[\\s]$")
-                                                        .match("^(?<month>[\\wäéû]{3,4}([\\.]{1})?) .berweisung (PayOut to transit"
-                                                                        + "|Outgoing transfer for).* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
+                                                                        + ".berweisung (PayOut to transit|Outgoing transfer for).* " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
@@ -2110,7 +2116,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "year", "amount", "currency").optional() //
-                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})?)[\\s]$")
+                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]$")
                         .match("^(?<year>[\\d]{4}) Geb.hren Trade Republic Card (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
@@ -2127,7 +2133,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 01 Apr. 2024 Zinszahlung Your interest payment 172,23 € 50.172,23 €
         // @formatter:on
-        Block interestBlock_Format01 = new Block("^[\\d]{2} [\\wäéû]{3,4}([\\.]{1})? [\\d]{4} Zinszahlung .*$");
+        Block interestBlock_Format01 = new Block("^[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4} Zinszahlung .*$");
         type.addBlock(interestBlock_Format01);
         interestBlock_Format01.setMaxSize(1);
         interestBlock_Format01.set(new Transaction<AccountTransaction>()
@@ -2139,7 +2145,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount", "currency") //
-                        .match("^(?<date>[\\d]{2} ([\\wäéû]{3,4}([\\.]{1})?) [\\d]{4}) (Zinszahlung|intereses|d.int.r.ts) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                        .match("^(?<date>[\\d]{2} ([\\p{L}]{3,4}([\\.]{1})?) [\\d]{4}) (Zinszahlung|intereses|d.int.r.ts) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -2171,7 +2177,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         // 01 août Paiement
         // 2024 d'intérêts Your interest payment 1,30 € 605,60 €
         // @formatter:on
-        Block interestBlock_Format02 = new Block("^[\\d]{2} [\\wäéû]{3,4}([\\.]{1})?[\\s]((Pago|Paiement).*)?$");
+        Block interestBlock_Format02 = new Block("^[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?[\\s]((Pago|Paiement).*)?$");
         type.addBlock(interestBlock_Format02);
         interestBlock_Format02.setMaxSize(2);
         interestBlock_Format02.set(new Transaction<AccountTransaction>()
@@ -2183,7 +2189,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "year", "amount", "currency").optional() //
-                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})?)[\\s]((Pago|Paiement).*)?$")
+                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]((Pago|Paiement).*)?$")
                         .match("^(?<year>[\\d]{4}) (Zinszahlung|intereses|d.int.r.ts) Your interest payment (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
@@ -2221,7 +2227,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .section("day", "month", "year", "amount", "currency").optional() //
                         .match("^(?<day>[\\d]{2})[\\s]$")
-                        .match("^(?<month>[\\wäéû]{3,4}([\\.]{1})?) (Zinszahlung|intereses|d.int.r.ts) Your interest payment (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (Zinszahlung|intereses|d.int.r.ts) Your interest payment (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                         .match("^(?<year>[\\d]{4})$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
@@ -2257,7 +2263,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "year", "amount", "currency").optional() //
-                        .match("^(?<date>[\\d]{2} [\\wäéû]{3,4}([\\.]{1})?)[\\s]$")
+                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]$")
                         .match("^(?<year>[\\d]{4}) Steuern (Steueroptimierung |Tax Optimisation|Kapitalertragssteueroptimierung ).* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
@@ -2297,7 +2303,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .section("day", "month", "year", "amount", "currency", "amountAfter", "currencyAfter").optional() //
                         .match("^(?<day>[\\d]{2})[\\s]$")
-                        .match("^(?<month>[\\wäéû]{3,4}([\\.]{1})?) Steuern (Steueroptimierung |Tax Optimisation|Kapitalertragssteueroptimierung ).* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
+                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) Steuern (Steueroptimierung |Tax Optimisation|Kapitalertragssteueroptimierung ).* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                         .match("^(?<year>[\\d]{4}).*$") //
                         .assign((t, v) -> {
                             DocumentContext context = type.getCurrentContext();

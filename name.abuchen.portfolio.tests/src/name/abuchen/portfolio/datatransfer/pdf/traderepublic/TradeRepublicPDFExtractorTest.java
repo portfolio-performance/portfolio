@@ -2255,6 +2255,81 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testReleveDeCompte02()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ReleveDeCompte02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired,  //
+                        interest(hasDate("2024-09-01"), hasAmount("EUR", 0.28), //
+                        hasSource("ReleveDeCompte02.txt"), hasNote(null)))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-09-02"), hasAmount("EUR", 100.00), //
+                        hasSource("ReleveDeCompte02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-09-24"), hasAmount("EUR", 50.00), //
+                        hasSource("ReleveDeCompte02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-09-28"), hasAmount("EUR", 10.00), //
+                        hasSource("ReleveDeCompte02.txt"), hasNote("Card Top up with ****7853"))));
+    }
+
+    @Test
+    public void testReleveDeCompte03()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ReleveDeCompte03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-10-12"), hasAmount("EUR", 100.00), //
+                        hasSource("ReleveDeCompte03.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired,  //
+                        interest(hasDate("2023-11-01"), hasAmount("EUR", 0.18), //
+                        hasSource("ReleveDeCompte03.txt"), hasNote(null)))));
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired,  //
+                        interest(hasDate("2023-12-01"), hasAmount("EUR", 0.18), //
+                        hasSource("ReleveDeCompte03.txt"), hasNote(null)))));
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired,  //
+                        interest(hasDate("2023-12-29"), hasAmount("EUR", 0.05), //
+                        hasSource("ReleveDeCompte03.txt"), hasNote(null)))));
+    }
+
+    @Test
     public void testTransaccionesDeCuenta01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
