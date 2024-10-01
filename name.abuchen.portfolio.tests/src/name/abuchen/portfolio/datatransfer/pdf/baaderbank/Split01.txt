@@ -1,0 +1,68 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Scalable Capital GmbH 
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/2
+Herrn München
+21.06.2024
+Max eLLqHwWus
+Goethestr. 48 Max FFdLUqMdN
+62281 mtLQIfvc Stamm-Nr.: 4003233    Portfolio: 1
+Depot-Nr.: 0525990498
+Vorgangs-Nr.: 41091420
+Referenz-Nr.: 775097075
+Buchungsanzeige
+Reverse Split
+Ausbuchung aus Depot 1393380988 per 20.06.2024
+Nominale ISIN: US0465131078 WKN: A1166A
+STK 700 Atara Biotherapeutics Inc.
+Registered Shares DL -,0001
+Einbuchung in Depot 1327015825 per 20.06.2024
+Nominale ISIN: US0465132068 WKN: A40DQJ
+STK 28 Atara Biotherapeutics Inc.
+Registered Shares New DL-,0001
+Verhältnis: 25 : 1 
+Umrechnungskurs: EUR/USD 0,9325748
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • Aufsichtsrat: Patrick Olson 
+(Vorsitzender) • HRB 217778, Amtsgericht München • USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de UMTA-053.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Reverse Split
+Fortsetzung: Seite 2/2
+Ausbuchung
+Stück 700 Atara Biotherapeutics Inc.
+ISIN: US0465131078/EUR
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP Kauf 196409730 29.05.2023 STK 75 125,59 0,00 0,00
+WP Kauf 248242072 13.11.2023 STK 625 124,44 0,00 0,00
+Einbuchung
+Stück 28 Atara Biotherapeutics Inc.
+ISIN: US0465132068/EUR
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten
+WP Kauf 31412494 29.05.2023 STK 3 125,59
+WP Kauf 31412494 13.11.2023 STK 25 124,44
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • Aufsichtsrat: Patrick Olson 
+(Vorsitzender) • HRB 217778, Amtsgericht München • USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de UMTA-053.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.

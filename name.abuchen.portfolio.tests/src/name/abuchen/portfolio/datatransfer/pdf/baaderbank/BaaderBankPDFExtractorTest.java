@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.baaderbank;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -1269,7 +1270,7 @@ public class BaaderBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-11-01T15:25:32"), hasShares(12), //
+                        hasDate("2023-11-01T15:25:32"), hasShares(12.00), //
                         hasSource("Kauf28.txt"), //
                         hasNote("Vorgangs-Nr.: 997010271"), //
                         hasAmount("EUR", 1151.76), hasGrossValue("EUR", 1151.76), //
@@ -1300,7 +1301,7 @@ public class BaaderBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-11-06T10:13:44"), hasShares(5), //
+                        hasDate("2023-11-06T10:13:44"), hasShares(5.00), //
                         hasSource("Kauf29.txt"), //
                         hasNote("Vorgangs-Nr.: 123456789"), //
                         hasAmount("EUR", 813.38), hasGrossValue("EUR", 804.17), //
@@ -1333,7 +1334,7 @@ public class BaaderBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-11-06T10:13:44"), hasShares(5), //
+                        hasDate("2023-11-06T10:13:44"), hasShares(5.00), //
                         hasSource("Kauf29.txt"), //
                         hasNote("Vorgangs-Nr.: 123456789"), //
                         hasAmount("EUR", 813.38), hasGrossValue("EUR", 804.17), //
@@ -1369,7 +1370,7 @@ public class BaaderBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-11-14T11:24:19"), hasShares(10), //
+                        hasDate("2023-11-14T11:24:19"), hasShares(10.00), //
                         hasSource("Kauf30.txt"), //
                         hasNote("Vorgangs-Nr.: 248368163 | Stückzinsen für 123 Tag(e): 51,25 EUR"), //
                         hasAmount("EUR", 1024.05), hasGrossValue("EUR", 1024.05), //
@@ -1400,7 +1401,7 @@ public class BaaderBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-11-17T10:37:30"), hasShares(10), //
+                        hasDate("2023-11-17T10:37:30"), hasShares(10.00), //
                         hasSource("Kauf31.txt"), //
                         hasNote("Vorgangs-Nr.: 249453219 | Stückzinsen für 54 Tag(e): 9,36 EUR"), //
                         hasAmount("EUR", 970.27), hasGrossValue("EUR", 970.27), //
@@ -1433,7 +1434,7 @@ public class BaaderBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-11-17T10:37:30"), hasShares(10), //
+                        hasDate("2023-11-17T10:37:30"), hasShares(10.00), //
                         hasSource("Kauf31.txt"), //
                         hasNote("Vorgangs-Nr.: 249453219 | Stückzinsen für 54 Tag(e): 9,36 EUR"), //
                         hasAmount("EUR", 970.27), hasGrossValue("EUR", 970.27), //
@@ -1469,7 +1470,7 @@ public class BaaderBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-12-06T19:25:22"), hasShares(100), //
+                        hasDate("2023-12-06T19:25:22"), hasShares(100.00), //
                         hasSource("Kauf32.txt"), //
                         hasNote("Vorgangs-Nr.: 275613522"), //
                         hasAmount("EUR", 2621.66), hasGrossValue("EUR", 2613.71), //
@@ -1502,7 +1503,7 @@ public class BaaderBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2023-12-06T19:25:22"), hasShares(100), //
+                        hasDate("2023-12-06T19:25:22"), hasShares(100.00), //
                         hasSource("Kauf32.txt"), //
                         hasNote("Vorgangs-Nr.: 275613522"), //
                         hasAmount("EUR", 2621.66), hasGrossValue("EUR", 2613.71), //
@@ -1538,7 +1539,7 @@ public class BaaderBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2024-01-04T08:28:27"), hasShares(79), //
+                        hasDate("2024-01-04T08:28:27"), hasShares(79.00), //
                         hasSource("Kauf33.txt"), //
                         hasNote("Vorgangs-Nr.: 123456789"), //
                         hasAmount("EUR", 11043.90), hasGrossValue("EUR", 11030.77), //
@@ -1569,10 +1570,41 @@ public class BaaderBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2024-04-18T15:50:39"), hasShares(508), //
+                        hasDate("2024-04-18T15:50:39"), hasShares(508.00), //
                         hasSource("Kauf34.txt"), //
                         hasNote("Vorgangs-Nr.: 138151585"), //
                         hasAmount("EUR", 49922.68), hasGrossValue("EUR", 49922.68), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf35()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf35.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B60SX394"), hasWkn("A0RGCS"), hasTicker(null), //
+                        hasName("InvescoMI MSCI World ETF Registered Shares Acc o.N"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-07-11T16:50:57"), hasShares(275.00), //
+                        hasSource("Kauf35.txt"), //
+                        hasNote("Vorgangs-Nr.: 248513926"), //
+                        hasAmount("EUR", 28323.63), hasGrossValue("EUR", 28323.63), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -4377,6 +4409,39 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void testDividendeStorno05()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000LEG1110"), hasWkn("LEG111"), hasTicker(null), //
+                        hasName("LEG Immobilien SE"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check cancellation (Storno) transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        dividend( //
+                                        hasDate("2024-06-26T00:00"), hasShares(4.003), //
+                                        hasSource("DividendeStorno05.txt"), //
+                                        hasNote("Vorgangs-Nr.: 99999999"), //
+                                        hasAmount("EUR", 9.81), hasGrossValue("EUR", 9.81), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
     public void testSteuerausgleichsrechnung01()
     {
         BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
@@ -4705,7 +4770,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.99))));
         assertThat(transaction.getSource(), is("Periodenauszug05.txt"));
-        assertThat(transaction.getNote(), is("Ordergebühr"));
+        assertThat(transaction.getNote(), is("Ordergebühr | Ref.-Nr.: SCAL4Pm2ZTfDF4c"));
     }
 
     @Test
@@ -4864,6 +4929,31 @@ public class BaaderBankPDFExtractorTest
         assertEquals(expectedErrorMessage, firstError.getMessage());
     }
 
+    @Test
+    public void testPeriodenauszug11()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug11.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-07-05"), hasAmount("EUR", 28240.00), //
+                        hasSource("Periodenauszug11.txt"), hasNote("Gutschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2024-07-15"), hasAmount("EUR", 0.99), //
+                        hasSource("Periodenauszug11.txt"), hasNote("Ordergebühr | Ref.-Nr.: SCALANDnkDU5Lx8"))));
+    }
 
     @Test
     public void testTageskontoauszug01()
@@ -5177,6 +5267,72 @@ public class BaaderBankPDFExtractorTest
                         outboundDelivery( //
                                         hasDate("2022-03-30T00:00"), hasShares(3.00), //
                                         hasSource("Depoteinlieferung03.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testSplit01()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Split01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0465131078"), hasWkn("A1166A"), hasTicker(null), //
+                        hasName("Atara Biotherapeutics Inc. Registered Shares DL -,0001"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        outboundDelivery( //
+                                        hasDate("2024-06-20T00:00"), hasShares(700.00), //
+                                        hasSource("Split01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testSplit02()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Split02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2360697374"), hasWkn("A3CT9J"), hasTicker(null), //
+                        hasName("FREYR Battery Actions Nominatives DL 1"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        outboundDelivery( //
+                                        hasDate("2024-01-02T00:00"), hasShares(63.00), //
+                                        hasSource("Split02.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
