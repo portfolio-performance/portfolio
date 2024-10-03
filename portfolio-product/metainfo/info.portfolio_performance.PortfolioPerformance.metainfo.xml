@@ -37,7 +37,21 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
-      <release version="0.71.1" date="2024-09-23">
+    <release version="0.71.2" date="2024-10-03">
+      <description>
+        <ul>
+          <li>New: PDF importer for Estateguru, Alpac Capital, and WitheBox</li>
+          <li>Improvements to the PDF importers for Trade Republic, Baader Bank, Easybank, 1822direkt, AKF Bank, Tiger Broker, DZ Bank, and KDC Bank NV</li>
+          <li>Fix: Resolves an issue where an error in the price query prevented further price retrieval.</li>
+          <li>Fix: The "Delta % Indicator" in the rebalancing view now only applies the absolute change to all classified instruments (5/25 rule).</li>
+          <li xml:lang="de">Neu: PDF-Importer für Estateguru, Alpac Capital und WitheBox</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Trade Republic, Baader Bank, Easybank, 1822direkt, AKF Bank, Tiger Broker, DZ Bank und KDC Bank NV</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem ein Fehler bei der Kursabfrage die weitere Abfrage der Kurse verhindert.</li>
+          <li xml:lang="de">Fix: Der "Delta %-Indikator" in der Rebalancing-Ansicht bezieht die absolute Veränderung jetzt nur auf alle klassifizierten Instrumente (5/25 Regel).</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.71.1" date="2024-09-23">
       <description>
         <ul>
           <li>Fix: Resolves an issue when the table is sorted by the column "distance from all-time high".</li>
