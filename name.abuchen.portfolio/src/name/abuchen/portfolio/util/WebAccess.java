@@ -4,12 +4,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.hc.client5.http.ClientProtocolException;
@@ -112,9 +109,9 @@ public class WebAccess
     {
         private static final long serialVersionUID = 1L;
         private final int httpErrorCode;
-        private final Map<String, String> headers;
+        private final List<Pair<String, String>> headers;
 
-        public WebAccessException(String message, int httpErrorCode, Map<String, String> headers)
+        public WebAccessException(String message, int httpErrorCode, List<Pair<String, String>> headers)
         {
             super(message);
             this.httpErrorCode = httpErrorCode;
@@ -126,9 +123,9 @@ public class WebAccess
             return httpErrorCode;
         }
 
-        public String getHeader(String key)
+        public List<String> getHeader(String key)
         {
-            return headers.get(key);
+            return headers.stream().filter(p -> p.getKey().equalsIgnoreCase(key)).map(Pair::getValue).toList();
         }
     }
 
@@ -149,10 +146,7 @@ public class WebAccess
             if (response.getCode() >= HttpStatus.SC_REDIRECTION)
             {
                 EntityUtils.consume(entity);
-
-                var headers = Stream.of(response.getHeaders())
-                                .collect(Collectors.toMap(Header::getName, Header::getValue));
-
+                var headers = Stream.of(response.getHeaders()).map(h -> new Pair<>(h.getName(), h.getValue())).toList();
                 throw new WebAccessException(buildMessage(uri, response.getCode()), response.getCode(), headers);
             }
 
@@ -276,7 +270,7 @@ public class WebAccess
         catch (HttpResponseException e)
         {
             throw new WebAccessException(buildMessage(builder.toString(), e.getStatusCode()), e.getStatusCode(),
-                            new HashMap<>());
+                            new ArrayList<>());
         }
         catch (URISyntaxException e)
         {

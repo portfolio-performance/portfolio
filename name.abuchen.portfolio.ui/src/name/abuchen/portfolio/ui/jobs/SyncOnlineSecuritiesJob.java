@@ -66,20 +66,28 @@ public final class SyncOnlineSecuritiesJob extends AbstractClientJob
                 // check if the onlineId has become permanently unavailable and,
                 // if necessary, remove the online id
 
-                if (e.getHttpErrorCode() == HttpStatus.SC_NOT_FOUND
-                                && "Security not found".equals(e.getHeader("X-Error"))) //$NON-NLS-1$ //$NON-NLS-2$
+                if (e.getHttpErrorCode() == HttpStatus.SC_NOT_FOUND)
                 {
-                    security.setOnlineId(null);
+                    var xError = e.getHeader("X-Error"); //$NON-NLS-1$
 
-                    if (PortfolioReportQuoteFeed.ID.equals(security.getFeed()))
-                        security.setFeed(QuoteFeed.MANUAL);
+                    if (!xError.isEmpty() && xError.get(0).equals("Security not found")) //$NON-NLS-1$
+                    {
+                        security.setOnlineId(null);
 
-                    if (PortfolioReportQuoteFeed.ID.equals(security.getLatestFeed()))
-                        security.setFeed(null);
+                        if (PortfolioReportQuoteFeed.ID.equals(security.getFeed()))
+                            security.setFeed(QuoteFeed.MANUAL);
 
-                    isDirty = true;
+                        if (PortfolioReportQuoteFeed.ID.equals(security.getLatestFeed()))
+                            security.setFeed(null);
 
-                    PortfolioPlugin.log("Unlinking " + security.getName() + ": " + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+                        isDirty = true;
+
+                        PortfolioPlugin.log("Unlinking " + security.getName() + ": " + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+                    }
+                    else
+                    {
+                        PortfolioPlugin.log(security.getName() + ": " + e.getMessage()); //$NON-NLS-1$
+                    }
                 }
                 else
                 {
