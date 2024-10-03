@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.util.SecurityNameLabelProvider;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class SelectSecurityPage extends AbstractWizardPage
@@ -67,6 +68,7 @@ public class SelectSecurityPage extends AbstractWizardPage
 
         combo = new ComboViewer(container);
         combo.setContentProvider(ArrayContentProvider.getInstance());
+        combo.setLabelProvider(new SecurityNameLabelProvider(client));
         combo.setInput(securities);
         if (!securities.isEmpty())
             combo.setSelection(new StructuredSelection(securities.get(0)));
