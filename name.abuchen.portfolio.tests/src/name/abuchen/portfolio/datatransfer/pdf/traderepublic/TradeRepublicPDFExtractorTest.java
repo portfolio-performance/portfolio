@@ -7609,7 +7609,7 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 99.39), hasGrossValue("EUR", 99.39), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
-        // check interest transaction
+        // check dividend interest transaction
         assertThat(results, hasItem(interest( //
                         hasDate("2024-07-01T00:00"), //
                         hasSource("Zinsabrechnung04.txt"), //
@@ -7617,11 +7617,11 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 2.77), hasGrossValue("EUR", 3.76), //
                         hasTaxes("EUR", 0.94 + 0.05), hasFees("EUR", 0.00))));
 
-        // check taxes transaction
+        // check interest taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2024-07-01T00:00"), //
                         hasSource("Zinsabrechnung04.txt"), //
-                        hasNote(null), //
+                        hasNote("Abrechnung Zinsen (160,50 EUR)"), //
                         hasAmount("EUR", 40.13 + 2.20), hasGrossValue("EUR", 160.50 - 118.17), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -7650,6 +7650,72 @@ public class TradeRepublicPDFExtractorTest
                         hasNote("Zinsen 01.05.2024 - 31.05.2024 (4,00%)"), //
                         hasAmount("EUR", 25.28), hasGrossValue("EUR", 34.33), //
                         hasTaxes("EUR", 8.58 + 0.47), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testZinsabrechnung06()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung06.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-10-01T00:00"), //
+                        hasSource("Zinsabrechnung06.txt"), //
+                        hasNote("Zinsen 01.09.2024 - 17.09.2024 (3,75%)"), //
+                        hasAmount("EUR", 59.40), hasGrossValue("EUR", 59.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-10-01T00:00"), //
+                        hasSource("Zinsabrechnung06.txt"), //
+                        hasNote("Zinsen 18.09.2024 - 30.09.2024 (3,50%)"), //
+                        hasAmount("EUR", 42.38), hasGrossValue("EUR", 42.38), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check dividend interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-10-01T00:00"), //
+                        hasSource("Zinsabrechnung06.txt"), //
+                        hasNote("Dividende 01.09.2024 - 17.09.2024 (3,75%)"), //
+                        hasAmount("EUR", 8.05), hasGrossValue("EUR", 8.05), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check dividend interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-10-01T00:00"), //
+                        hasSource("Zinsabrechnung06.txt"), //
+                        hasNote("Dividende 18.09.2024 - 30.09.2024 (3,50%)"), //
+                        hasAmount("EUR", 8.03), hasGrossValue("EUR", 8.03), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check interest taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2024-10-01T00:00"), //
+                        hasSource("Zinsabrechnung06.txt"), //
+                        hasNote("Abrechnung Zinsen (101,79 EUR)"), //
+                        hasAmount("EUR", 25.45 + 1.39), hasGrossValue("EUR", 25.45 + 1.39), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check dividend taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2024-10-01T00:00"), //
+                        hasSource("Zinsabrechnung06.txt"), //
+                        hasNote("Abrechnung Dividende (16,08 EUR)"), //
+                        hasAmount("EUR", 4.02 + 0.22), hasGrossValue("EUR", 4.02 + 0.22), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
