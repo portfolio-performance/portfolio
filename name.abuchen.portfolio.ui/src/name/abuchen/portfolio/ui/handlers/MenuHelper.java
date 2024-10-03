@@ -56,6 +56,11 @@ import name.abuchen.portfolio.ui.editor.PortfolioPart;
         return getActiveClientInput(part).map(ClientInput::getClient);
     }
 
+    /* package */static Optional<Client> getActiveClient(MPart part, boolean showWarning)
+    {
+        return getActiveClientInput(part, showWarning).map(ClientInput::getClient);
+    }
+
     /* package */static Optional<ClientInput> getActiveClientInput(MPart part)
     {
         return getActiveClientInput(part, true);
