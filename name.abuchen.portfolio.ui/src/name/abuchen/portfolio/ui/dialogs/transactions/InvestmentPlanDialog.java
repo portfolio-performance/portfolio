@@ -40,6 +40,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanModel.Properties;
 import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.util.SecurityNameLabelProvider;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 
 public class InvestmentPlanDialog extends AbstractTransactionDialog
@@ -101,6 +102,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
             securities = new ComboInput(editArea, Messages.ColumnSecurity);
             securities.value.setInput(including(client.getActiveSecurities(), model().getSecurity()));
+            securities.value.setLabelProvider(new SecurityNameLabelProvider(client));
             securities.bindValue(Properties.security.name(), Messages.MsgMissingSecurity);
             securities.bindCurrency(Properties.securityCurrencyCode.name());
         }

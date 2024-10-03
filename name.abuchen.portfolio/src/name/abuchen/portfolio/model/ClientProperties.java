@@ -5,7 +5,11 @@ package name.abuchen.portfolio.model;
  */
 public class ClientProperties
 {
-    private static final String KEY_RISK_FREE_RATE_OF_RETURN = "risk-free-rate-of-return"; //$NON-NLS-1$
+    public interface Keys
+    {
+        String RISK_FREE_RATE_OF_RETURN = "risk-free-rate-of-return"; //$NON-NLS-1$
+        String SECURITY_NAME_CONFIG = "security-name-config"; //$NON-NLS-1$
+    }
 
     private final Client client;
 
@@ -22,7 +26,7 @@ public class ClientProperties
     {
         try
         {
-            var v = client.getProperty(KEY_RISK_FREE_RATE_OF_RETURN);
+            var v = client.getProperty(Keys.RISK_FREE_RATE_OF_RETURN);
             return v == null ? 0 : Double.parseDouble(v);
         }
         catch (NumberFormatException e)
@@ -37,6 +41,27 @@ public class ClientProperties
      */
     public void setRiskFreeRateOfReturn(double riskFreeRateOfReturn)
     {
-        client.setProperty(KEY_RISK_FREE_RATE_OF_RETURN, Double.toString(riskFreeRateOfReturn));
+        client.setProperty(Keys.RISK_FREE_RATE_OF_RETURN, Double.toString(riskFreeRateOfReturn));
+    }
+
+    public SecurityNameConfig getSecurityNameConfig()
+    {
+        var v = client.getProperty(Keys.SECURITY_NAME_CONFIG);
+        if (v == null)
+            return SecurityNameConfig.NONE;
+
+        try
+        {
+            return SecurityNameConfig.valueOf(v);
+        }
+        catch (IllegalArgumentException e)
+        {
+            return SecurityNameConfig.NONE;
+        }
+    }
+
+    public void setSecurityNameConfig(SecurityNameConfig config)
+    {
+        client.setProperty(Keys.SECURITY_NAME_CONFIG, config.name());
     }
 }

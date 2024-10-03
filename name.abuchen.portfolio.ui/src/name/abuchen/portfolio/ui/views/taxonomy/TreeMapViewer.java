@@ -25,6 +25,8 @@ import de.engehausen.treemap.ITreeModel;
 import de.engehausen.treemap.IWeightedTreeModel;
 import de.engehausen.treemap.impl.SquarifiedLayout;
 import de.engehausen.treemap.swt.TreeMap;
+import name.abuchen.portfolio.model.ClientProperties;
+import name.abuchen.portfolio.model.SecurityNameConfig;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -150,11 +152,13 @@ import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
     {
         private TaxonomyModel model;
         private TaxonomyNodeRenderer colorProvider;
+        private SecurityNameConfig nameConfig;
 
         public ClassificationRectangleRenderer(TaxonomyModel model, TaxonomyNodeRenderer colorProvider)
         {
             this.model = model;
             this.colorProvider = colorProvider;
+            this.nameConfig = new ClientProperties(model.getClient()).getSecurityNameConfig();
         }
 
         @Override
@@ -175,7 +179,8 @@ import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
                             rectangle.getHeight());
             this.colorProvider.drawRectangle(model.getRoot().getNode(), item, event.gc, r);
 
-            String label = item.getName();
+            String label = item.getBackingSecurity() != null ? item.getBackingSecurity().getName(nameConfig)
+                            : item.getName();
 
             double total = this.model.getChartRenderingRootNode().getActual().getAmount();
 

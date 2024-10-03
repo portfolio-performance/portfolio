@@ -151,6 +151,23 @@ public final class Security implements Attributable, InvestmentVehicle
         return name;
     }
 
+    public String getName(SecurityNameConfig config)
+    {
+        switch (config)
+        {
+            case NONE:
+                return name;
+            case ISIN:
+                return getIsin() != null ? getIsin() + " (" + name + ")" : name; //$NON-NLS-1$ //$NON-NLS-2$
+            case TICKER_SYMBOL:
+                return getTickerSymbol() != null ? getTickerSymbol() + " (" + name + ")" : name; //$NON-NLS-1$ //$NON-NLS-2$
+            case WKN:
+                return getWkn() != null ? getWkn() + " (" + name + ")" : name; //$NON-NLS-1$ //$NON-NLS-2$
+            default:
+                throw new IllegalArgumentException(config.name());
+        }
+    }
+
     @Override
     public void setName(String name)
     {
