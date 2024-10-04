@@ -1673,7 +1673,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         final DocumentType type = new DocumentType("(KONTO.BERSICHT" //
                         + "|RESUMEN DE ESTADO DE CUENTA|" //
                         + "SYNTH.SE DU RELEV. DE COMPTE)", (context, lines) -> { //
-            Pattern pAccountAmountTransaction = Pattern.compile("^(?!(Depotkonto|Cuenta de valores|Compte titres)).* [\\.,\\d]+ \\p{Sc} (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}).*$");
+            Pattern pAccountAmountTransaction = Pattern.compile("^(?!(Depotkonto|Cuenta de valores|Compte titres)).*[\\.,\\d]+ \\p{Sc} (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}).*$");
             Pattern pAccountInitialSaldoTransaction = Pattern.compile("^(Depotkonto|Cuenta de valores|Compte titres) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc}$");
 
             AccountAmountTransactionHelper accountAmountTransactionHelper = new AccountAmountTransactionHelper();
@@ -2095,6 +2095,56 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
+
+                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
+        Block depositRemovalBlock_Format04 = new Block("^[\\d]{2}[\\s]$");
+        type.addBlock(depositRemovalBlock_Format04);
+        depositRemovalBlock_Format04.setMaxSize(4);
+        depositRemovalBlock_Format04.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // 20 
+                                        // Sept. Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf 
+                                        // 2024 DE00000000000000000000
+                                        // 889,77 € 964,18 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("day", "month", "year", "amount", "currency", "amountAfter", "currencyAfter") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) .berweisung Einzahlung akzeptiert: .*") //
+                                                        .match("^(?<year>[\\d]{4}) .*$") //
+                                                        .match("(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
+                                                        .assign((t, v) -> {
+                                                            DocumentContext context = type.getCurrentContext();
+                                                            Money amountAfter = Money.of(asCurrencyCode(v.get("currencyAfter")), asAmount(v.get("amountAfter")));
+
+                                                            AccountAmountTransactionHelper accountAmountTransactionHelper = context.getType(AccountAmountTransactionHelper.class).orElseGet(AccountAmountTransactionHelper::new);
+                                                            Optional<AccountAmountTransactionItem> item = accountAmountTransactionHelper.findItem(v.getStartLineNumber(), amountAfter);
+
+                                                            if (item.isPresent())
+                                                            {
+                                                                Money amountBefore = Money.of(item.get().currency, item.get().amount);
+
+                                                                if (amountBefore.isGreaterThan(amountAfter))
+                                                                    t.setType(AccountTransaction.Type.REMOVAL);
+                                                            }
 
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
