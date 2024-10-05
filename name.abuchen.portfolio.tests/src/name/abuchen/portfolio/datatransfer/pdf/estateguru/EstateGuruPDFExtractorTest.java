@@ -92,4 +92,53 @@ public class EstateGuruPDFExtractorTest
         assertThat(results, hasItem(fee(hasDate("2024-04-05"), hasAmount("EUR", 0.61), //
                         hasSource("Kontoauszug02.txt"), hasNote("Vermögensverwaltungsgebühr"))));
     }
+
+    @Test
+    public void testKontoauszug03()
+    {
+        EstateGuruPDFExtractor extractor = new EstateGuruPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(8L));
+        assertThat(results.size(), is(8));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-09-28"), hasAmount("EUR", 0.42), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Interest"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-09-27"), hasAmount("EUR", 1.25), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Interest"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-09-11"), hasAmount("EUR", 5.41), //
+                        hasSource("Kontoauszug03.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-09-06"), hasAmount("EUR", 1.12), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Interest"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2024-09-05"), hasAmount("EUR", 0.24), //
+                        hasSource("Kontoauszug03.txt"), hasNote("AUM"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-08-30"), hasAmount("EUR", 0.12), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Interest"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-08-28"), hasAmount("EUR", 0.46), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Interest"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-09-22"), hasAmount("EUR", 50.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote(null))));
+    }
 }
