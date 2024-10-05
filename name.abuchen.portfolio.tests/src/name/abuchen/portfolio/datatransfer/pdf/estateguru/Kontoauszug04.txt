@@ -1,0 +1,76 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Transactions Report
+ 
+LBqJ kqffZZGiHbs (Investor) 
+ 
+Opening balance € 3.14
+Interest € 3.14
+Investment € -3.14
+Principal € 3.14
+Withdrawal € -3.14
+Deposit € 3.14
+Fee € -3.14
+Penalty € 3.14
+Indemnity € 3.14
+Secondary Market € 3.14
+Secondary Market Profit € 3.14
+Closing balance € 3.14
+ 
+ 
+Payment Date Confirmation Date Cash Flow Type Cash Flow Status Project Name Amount Balance
+#58813469
+28.12.2023, 03:00 29.12.2023, 05:00 Interest Approved Entwicklungskredit - 1.Stufe € 0.46 € 20.91
+(Finnland)
+#15885907
+Überbrückung
+20.12.2023, 16:54 20.12.2023, 16:54 Investment Approved skredit - (€ -50.00) € 17.95
+1.Stufe
+(Estland)
+#7857
+Überbrückung
+15.12.2023, 03:00 18.12.2023, 05:00 Principal Approved skredit - € 5.67 € 66.65
+23.Stufe
+(Estland)
+#7857
+Überbrückung
+06.12.2023, 03:00 08.12.2023, 05:00 Interest Approved skredit - € 0.13 € 7.81
+23.Stufe
+(Estland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estonia, info@estateguru.co
+Payment Date Confirmation Date Cash Flow Type Cash Flow Status Project Name Amount Balance
+#7857
+Überbrückung
+06.12.2023, 03:00 08.12.2023, 05:00 Principal Approved skredit - € 5.82 € 7.68
+23.Stufe
+(Estland)
+04.12.2023, 15:16 04.12.2023, 15:16 Withdrawal Approved (€ -273.30) € 1.38
+04.12.2023, 15:16 04.12.2023, 00:00 Withdraw fee Approved (€ -1.00) € 274.68
+#53231155
+02.12.2023, 12:57 02.12.2023, 12:57 Sale fee Approved Entwicklungskredit - 3.Stufe (€ -0.41) € 275.68
+(Estland)
+#53231155
+02.12.2023, 12:57 02.12.2023, 12:57 Secondary Market Approved Entwicklungskredit - 3.Stufe € 13.54 € 276.09
+(Estland)
+#5106
+01.11.2023, 00:00 29.11.2023, 05:00 Indemnity Approved Entwicklungskredit - 3.Stufe € 0.01 € 242.49
+(Finnland)
+03.10.2023, 09:10 03.10.2023, 09:10 Deposit Approved € 30.00 € 79.94
+#3598
+20.09.2023, 19:23 20.09.2023, 19:23 Secondary Market Profit Approved Entwicklungskredit - 22.Stufe € 0.27 € 74.60
+(Litauen)
+#3598
+20.09.2023, 19:23 20.09.2023, 19:23 Sale fee Approved Entwicklungskredit - 22.Stufe (€ -0.95) € 74.33
+(Litauen)
+#3598
+20.09.2023, 19:23 20.09.2023, 19:23 Secondary Market Approved Entwicklungskredit - 22.Stufe € 31.28 € 75.28
+(Litauen)
+#5855
+10.02.2023, 03:00 06.03.2023, 05:00 Penalty Approved Entwicklungskredit - 1.Stufe € 0.36 € 21.01
+(Estland)
+03.01.2023, 09:07 03.01.2023, 09:07 Deposit Approved € 5.00 € 11.44
+#6164
+15.12.2022, 03:00 03.01.2023, 05:00 Interest Approved Entwicklungskredit - 2.Stufe € 1.25 € 6.44
+(Lettland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estonia, info@estateguru.co 10
