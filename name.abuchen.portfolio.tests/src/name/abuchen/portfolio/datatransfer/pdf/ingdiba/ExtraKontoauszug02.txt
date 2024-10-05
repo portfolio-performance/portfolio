@@ -1,0 +1,211 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.1
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Datum 30.12.2022
+Herrn Auszugsnummer 1
+vwtIWt bAsiK Alter Saldo 47,41 Euro
+Am hZkKKYuMxOHp 32 Neuer Saldo 68,82 Euro
+75629 lTNE
+IBAN Ww35 4779 9824 5539 4346 27
+BIC INGDDEFFXXX
+Seite 1 von 5
+Extra-Konto Nummer 9189899251
+Kontoauszug 2022
+Buchung Buchung / Verwendungszweck Betrag (EUR)
+Valuta
+03.01.2022 Zins/Dividende WP 1,19
+29.12.2021 Zins/Dividende ISIN IE00B3RBWM25 VANG.FTSE
+04.01.2022 Gutschrift/Dauerauftrag soYAn fXoVd rQHnqUa NpOYg 50,00
+04.01.2022 bekannt
+17.01.2022 Wertpapierkauf -25,00
+19.01.2022 WP-ABRECHNUNG 0238454580001 Kauf ISIN IE00B23LNQ02
+INVESCOM3 F RALLW3000 A
+17.01.2022 Wertpapierkauf -25,00
+19.01.2022 WP-ABRECHNUNG 0238789560001 Kauf ISIN IE00B3RBWM25
+VANG.FTSE A.-WO.U.ETF DLD
+02.02.2022 Gutschrift/Dauerauftrag zrGKj pqUOT BHNYJcN BPDzv 50,00
+02.02.2022 bekannt
+15.02.2022 Wertpapierkauf -25,00
+17.02.2022 WP-ABRECHNUNG 0242864602001 Kauf ISIN IE00B23LNQ02
+INVESCOM3 F RALLW3000 A
+15.02.2022 Wertpapierkauf -25,00
+17.02.2022 WP-ABRECHNUNG 0242940215001 Kauf ISIN IE00B3RBWM25
+VANG.FTSE A.-WO.U.ETF DLD
+02.03.2022 Gutschrift/Dauerauftrag vnViH oDejU jQHmNWS TxXEx 50,00
+02.03.2022 bekannt
+15.03.2022 Wertpapierkauf -25,00
+17.03.2022 WP-ABRECHNUNG 0247436717001 Kauf ISIN IE00B23LNQ02
+INVESCOM3 F RALLW3000 A
+15.03.2022 Wertpapierkauf -25,00
+17.03.2022 WP-ABRECHNUNG 0247516209001 Kauf ISIN IE00B3RBWM25
+VANG.FTSE A.-WO.U.ETF DLD
+25.03.2022 Zins/Dividende WP 1,40
+24.03.2022 Zins/Dividende ISIN IE00B23LNQ02 INVESCOM3
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzende des Aufsichtsrates: Susanne Klöß-Braekler · Vorstand: Nick Jue (Vorsitzender),
+Michael Clijdesdale, Eddy Henning, Sigrid Kozmiensky, Daniel Llano Manibardo, Dr. Ralph Müller, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main · HRB 7727
+Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+34EXMU5539434627_T
+Extra-Konto Nummer 2611886981
+Kontoauszug 2022
+Datum 30.12.2022
+Seite 2 von 5
+Buchung Buchung / Verwendungszweck Betrag (EUR)
+Valuta
+01.04.2022 Zins/Dividende WP 1,05
+30.03.2022 Zins/Dividende ISIN IE00B3RBWM25 VANG.FTSE
+04.04.2022 Gutschrift/Dauerauftrag sgxkF VgRvj LSrsRpX zGUSF 50,00
+04.04.2022 bekannt
+19.04.2022 Wertpapierkauf -25,00
+21.04.2022 WP-ABRECHNUNG 0251204700001 Kauf ISIN IE00B23LNQ02
+INVESCOM3 F RALLW3000 A
+19.04.2022 Wertpapierkauf -25,00
+21.04.2022 WP-ABRECHNUNG 0251328757001 Kauf ISIN IE00B3RBWM25
+VANG.FTSE A.-WO.U.ETF DLD
+03.05.2022 Gutschrift/Dauerauftrag drFJW FUqPJ JTiYezL XYQWb 50,00
+03.05.2022 bekannt
+16.05.2022 Wertpapierkauf -25,00
+18.05.2022 WP-ABRECHNUNG 0254510908001 Kauf ISIN IE00B23LNQ02
+INVESCOM3 F RALLW3000 A
+16.05.2022 Wertpapierkauf -25,00
+18.05.2022 WP-ABRECHNUNG 0254555568001 Kauf ISIN IE00B3RBWM25
+VANG.FTSE A.-WO.U.ETF DLD
+02.06.2022 Gutschrift/Dauerauftrag saByP ymzaz upMDuwC TYPZr 50,00
+02.06.2022 bekannt
+15.06.2022 Wertpapierkauf -25,00
+17.06.2022 WP-ABRECHNUNG 0257730172001 Kauf ISIN IE00B23LNQ02
+INVESCOM3 F RALLW3000 A
+15.06.2022 Wertpapierkauf -25,00
+17.06.2022 WP-ABRECHNUNG 0257774713001 Kauf ISIN IE00B3RBWM25
+VANG.FTSE A.-WO.U.ETF DLD
+24.06.2022 Zins/Dividende WP 4,34
+23.06.2022 Zins/Dividende ISIN IE00B23LNQ02 INVESCOM3
+01.07.2022 Zins/Dividende WP 3,34
+29.06.2022 Zins/Dividende ISIN IE00B3RBWM25 VANG.FTSE
+04.07.2022 Gutschrift/Dauerauftrag iARTx zNRbT WKZFnNh qLjec 50,00
+04.07.2022 bekannt
+15.07.2022 Wertpapierkauf -25,00
+19.07.2022 WP-ABRECHNUNG 0260843112001 Kauf ISIN IE00B23LNQ02
+INVESCOM3 F RALLW3000 A
+15.07.2022 Wertpapierkauf -25,00
+19.07.2022 WP-ABRECHNUNG 0260965909001 Kauf ISIN IE00B3RBWM25
+VANG.FTSE A.-WO.U.ETF DLD
+34EXMU5539434627_T
+Extra-Konto Nummer 9037076680
+Kontoauszug 2022
+Datum 30.12.2022
+Seite 3 von 5
+Buchung Buchung / Verwendungszweck Betrag (EUR)
+Valuta
+02.08.2022 Gutschrift/Dauerauftrag Xvjmk qbfuq HAegAYM gSrwz 50,00
+02.08.2022 bekannt
+15.08.2022 Wertpapierkauf -25,00
+17.08.2022 WP-ABRECHNUNG 0263911801001 Kauf ISIN IE00B3RBWM25
+VANG.FTSE A.-WO.U.ETF DLD
+15.08.2022 Wertpapierkauf -25,00
+17.08.2022 WP-ABRECHNUNG 0264134288001 Kauf ISIN IE00B23LNQ02
+INVESCOM3 F RALLW3000 A
+02.09.2022 Gutschrift/Dauerauftrag SjSsx DdtZG AweiJLt DaoTr 50,00
+02.09.2022 bekannt
+15.09.2022 Wertpapierkauf -25,00
+19.09.2022 WP-ABRECHNUNG 0267320792001 Kauf ISIN IE00B23LNQ02
+INVESCOM3 F RALLW3000 A
+15.09.2022 Wertpapierkauf -25,00
+19.09.2022 WP-ABRECHNUNG 0267448920001 Kauf ISIN IE00B3RBWM25
+VANG.FTSE A.-WO.U.ETF DLD
+23.09.2022 Zins/Dividende WP 3,17
+22.09.2022 Zins/Dividende ISIN IE00B23LNQ02 INVESCOM3
+30.09.2022 Zins/Dividende WP 2,31
+28.09.2022 Zins/Dividende ISIN IE00B3RBWM25 VANG.FTSE
+04.10.2022 Gutschrift/Dauerauftrag ktxgX kIrZn UGxoJzu dLEwD 50,00
+04.10.2022 bekannt
+17.10.2022 Wertpapierkauf -25,00
+19.10.2022 WP-ABRECHNUNG 0270699997001 Kauf ISIN IE00B23LNQ02
+INVESCOM3 F RALLW3000 A
+17.10.2022 Wertpapierkauf -25,00
+19.10.2022 WP-ABRECHNUNG 0270742960001 Kauf ISIN IE00B3RBWM25
+VANG.FTSE A.-WO.U.ETF DLD
+02.11.2022 Gutschrift/Dauerauftrag XBzVd KtJyh ZuCSPto lmUPq 50,00
+02.11.2022 bekannt
+15.11.2022 Wertpapierkauf -25,00
+17.11.2022 WP-ABRECHNUNG 0273959201001 Kauf ISIN IE00B23LNQ02
+INVESCOM3 F RALLW3000 A
+15.11.2022 Wertpapierkauf -25,00
+17.11.2022 WP-ABRECHNUNG 0274004022001 Kauf ISIN IE00B3RBWM25
+VANG.FTSE A.-WO.U.ETF DLD
+02.12.2022 Gutschrift/Dauerauftrag GyipU UEJqb EcpZhws yKXkv 50,00
+02.12.2022 bekannt
+34EXMU5539434627_T
+Extra-Konto Nummer 2881127747
+Kontoauszug 2022
+Datum 30.12.2022
+Seite 4 von 5
+Buchung Buchung / Verwendungszweck Betrag (EUR)
+Valuta
+15.12.2022 Wertpapierkauf -25,00
+19.12.2022 WP-ABRECHNUNG 0277232946001 Kauf ISIN IE00B23LNQ02
+INVESCOM3 F RALLW3000 A
+15.12.2022 Wertpapierkauf -25,00
+19.12.2022 WP-ABRECHNUNG 0277279883001 Kauf ISIN IE00B3RBWM25
+VANG.FTSE A.-WO.U.ETF DLD
+23.12.2022 Zins/Dividende WP 2,77
+22.12.2022 Zins/Dividende ISIN IE00B23LNQ02 INVESCOM3
+30.12.2022 Zins/Dividende WP 1,83
+28.12.2022 Zins/Dividende ISIN IE00B3RBWM25 VANG.FTSE
+30.12.2022 Kapitalertragsteuer -0,01
+30.12.2022
+30.12.2022 Zinsertrag 0,02
+30.12.2022
+Neuer Saldo 68,82
+Abschluss für Konto 5592079912
+Zeitraum Zins p.a. Ertrag
+01.01.2022 bis 05.12.2022 keine Zinsen erwirtschaftet 0,00
+06.12.2022 bis 31.12.2022 0,300%  Zins 0,02
+Abschlussbetrag 0,02
+Kunden-Information
+Vorliegender Freistellungsauftrag 0,00
+Es gibt wieder Zinsen auf Ihr erspartes Geld und wir freuen uns, eine der ersten Banken zu sein, die das an
+alle Kundinnen und Kunden weitergibt. Seit dem 06.12.2022 gibts auf Ihrem Extra-Konto 0,3 % Zinsen p.a.
+anstatt der bisherigen 0,001% Zinsen p.a. Und zwar ab dem ersten Cent - ohne Wenn und Aber. Da macht
+Sparen noch mehr Spaß.
+Sie möchten Ihr Geld längerfristig anlegen und sich damit einen garantierten top Zins sichern? Dann
+schauen Sie sich doch mal unseren Sparbrief an! Lassen Sie Ihr Geld bequem für sich arbeiten und erhalten
+Sie dafür bis zu 2,25 % satte Zinsen pro Jahr. Mehr dazu finden Sie unter ing.de/sparbrief .
+Gut zu wissen: Anleger*innen unserer Sparprodukte erhalten ihre Jahresendbelege bis zum 24.02.2023,
+Depotinhaber*innen bis zum 24.03.2023. Das liegt daran, dass die Erstellung aufwendiger ist und darum
+länger dauert. Sollte noch eine Frage offen sein, stellen Sie diese einfach unserem virtuellen Assistenten
+unter www.ing.de/hilfe .
+34EXMU5539434627_T
+Extra-Konto Nummer 1859611772
+Kontoauszug 2022
+Datum 30.12.2022
+Seite 5 von 5
+Übrigens: Der Gesetzgeber erhöht zum 01.01.2023 den Freibetrag, also den Sparer-Pauschbetrag von
+derzeit 801 Euro für Alleinstehende bzw. 1.602 Euro für Verheiratete auf 1.000 bzw. 2.000 Euro. Was Sie
+tun müssen. Nichts. Wir erhöhen den bei uns hinterlegten Freibetrag automatisch für Sie.
+Wir bedanken uns für Ihr Vertrauen und wünschen Ihnen ein gesundes und erfolgreiches Jahr 2023.
+Ihre ING
+34EXMU5539434627_T
+Bitte beachten Sie die nachstehenden Hinweise:
+Kontoauszug ohne Rechnungsabschluss (Kontoübersicht)
+Wir bitten Sie, den Kontoauszug gemäß Ziffer 11 Absatz 4 unserer Allgemeinen Geschäftsbedingungen auf Vollständig-
+keit und Richtigkeit zu prüfen und uns Einwendungen in Textform unverzüglich mitzuteilen.
+Rechnungsabschluss inkl. Saldenmitteilung
+Wir bitten Sie, den Saldo Ihres Kontos/die Salden Ihrer Konten zu prüfen und uns Einwendungen in Textform unverzüg-
+lich, spätestens innerhalb von 6 Wochen nach Zugang, mitzuteilen. Werden innerhalb der Frist keine Einwendungen
+vorgebracht, so gilt der Saldo/gelten die Salden wie oben aufgeführt entsprechend unseren Allgemeinen Geschäfts-
+bedingungen als von Ihnen anerkannt. Sie können zwar auch nach Fristablauf eine Berichtigung des Rechnungs-
+abschlusses verlangen, müssen dann aber beweisen, dass zu Unrecht Ihr Konto belastet oder eine Ihnen zustehende
+Gutschrift nicht erteilt wurde.
+Einlagensicherung
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen
+können dem "Informationsbogen für den Einleger" (siehe auch www.ing.de/einlagensicherung) entnommen werden.
+Neben der gesetzlichen Einlagensicherung nach dem Einlagensicherungsgesetz wirkt die ING außerdem am Einlagen-
+sicherungsfonds deutscher Banken (Einlagensicherungsfonds) mit. Dieser sichert nach Maßgabe seines Statuts Einlagen
+bis zu den Sicherungsgrenzen, wie in Ziffer 20 ("Schutz der Einlagen") unserer Allgemeinen Geschäftsbedingungen
+dargelegt. Bitte beachten Sie, dass sich diese Ziffer für die Zeit nach dem 31.12.2022 geändert hat. Sie finden die aktuelle
+Fassung der Ziffer 20 unserer Allgemeinen Geschäftsbedingungen und weitere Informationen zum Schutz Ihrer Einlagen
+unter: www.ing.de/einlagensicherung.
+Auszahlung bei der Kontolöschung des Extra-Kontos
+Das Guthaben wird grundsätzlich nur auf das hinterlegte Referenzkonto ausbezahlt.
+ING-DiBa AG

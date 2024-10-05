@@ -554,7 +554,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        DocumentType type = new DocumentType("Vorabpauschale");
+        final DocumentType type = new DocumentType("Vorabpauschale");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -737,13 +737,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        // @formatter:off
-        // 01.01.2016 bis 14.06.2016 0,50%  Zins 0,40
-        // 15.06.2016 bis 31.12.2016 0,35%  Zins 5,22
-        // 16.12.2023 bis 31.12.2023 3,750%  bis 250.000 Euro für das 1. Extra-Konto 0,01
-        // 31.12.2020 Zinsgutschrift 0,02
-        // @formatter:on
-        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (bis|Zinsgutschrift)( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})?.* [\\.,\\d]+$");
+        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (bis|Zinsen|Zinsgutschrift)( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})?.* [\\.,\\d]+$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -754,6 +748,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .oneOf( //
+                                        // @formatter:off
+                                        // 01.01.2016 bis 14.06.2016 0,50%  Zins 0,40
+                                        // 15.06.2016 bis 31.12.2016 0,35%  Zins 5,22
+                                        // 16.12.2023 bis 31.12.2023 3,750%  bis 250.000 Euro für das 1. Extra-Konto 0,01
+                                        // @formatter:on
                                         section -> section //
                                                         .attributes("note1", "date", "note2", "amount") //
                                                         .documentContext("currency") //
@@ -766,6 +765,25 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setNote(v.get("note1") + " (" + v.get("note2") + ")");
                                                         }),
+                                        // @formatter:off
+                                        // 01.01.2022 bis 05.12.2022 keine Zinsen erwirtschaftet 0,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount") //
+                                                        .documentContext("currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                                                        + "keine Zinsen erwirtschaftet " //
+                                                                        + "(?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                        }),
+                                        // @formatter:off
+                                        // 31.12.2020 Zinsgutschrift 0,02
+                                        // @formatter:on
                                         section -> section //
                                                         .attributes("note1", "date", "amount") //
                                                         .documentContext("currency") //
@@ -779,7 +797,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote(v.get("note1"));
                                                         }))
 
-                        .wrap(TransactionItem::new));
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        }));
 
         // @formatter:off
         // 30.12.2016 Kapitalertragsteuer -1,38
