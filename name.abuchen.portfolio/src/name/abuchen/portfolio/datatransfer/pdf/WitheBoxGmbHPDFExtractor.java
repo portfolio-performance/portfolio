@@ -37,7 +37,7 @@ public class WitheBoxGmbHPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         // @formatter:off
-        // 1234567891 0,2941% € 0,01
+        // 1234567890 € 15.624,02 € 10,22 € 12,17
         // @formatter:on
         Block feesBlock01 = new Block("^[\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc} [\\.,\\d]+$");
         type.addBlock(feesBlock01);
@@ -50,40 +50,13 @@ public class WitheBoxGmbHPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("note1", "note2", "note3", "currency", "amount") //
+                        .section("currency", "amount") //
                         .documentContext("date") //
-                        .match("^(?<note1>[\\d]+) (?<note3>\\p{Sc}) (?<note2>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amount>[\\.,\\d]+) \\p{Sc} [\\.,\\d]+$") //
+                        .match("^[\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ (?<currency>\\p{Sc}) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setNote("Konto: " + v.get("note1") + " (" + v.get("note2") + v.get("note3") + ")");
-                        })
-
-                        .wrap(TransactionItem::new));
-
-        // @formatter:off
-        // 1234567891 0,2941% € 0,01
-        // @formatter:on
-        Block feesBlock02 = new Block("^[\\d]+ [\\.,\\d]+% \\p{Sc} [\\.,\\d]+$");
-        type.addBlock(feesBlock02);
-        feesBlock02.setMaxSize(1);
-        feesBlock02.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
-                            return accountTransaction;
-                        })
-
-                        .section("note1", "note2", "currency", "amount") //
-                        .documentContext("date") //
-                        .match("^(?<note1>[\\d]+) (?<note2>[\\.,\\d]+%) (?<currency>\\p{Sc}) (?<amount>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setNote("Depot: " + v.get("note1") + " (" + v.get("note2") + ")");
                         })
 
                         .wrap(TransactionItem::new));

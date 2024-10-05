@@ -41,17 +41,13 @@ public class WitheBoxGmbHPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(2L));
-        assertThat(results.size(), is(2));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2023-10-31"), hasAmount("EUR", 0.06), //
-                        hasSource("Gebuehrenabrechnung01.txt"), hasNote("Konto: 1234567890 (239,20€)"))));
-
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2023-10-31"), hasAmount("EUR", 0.01), //
-                        hasSource("Gebuehrenabrechnung01.txt"), hasNote("Depot: 1234567891 (0,2941%)"))));
+        assertThat(results, hasItem(fee(hasDate("2023-10-31"), hasAmount("EUR", 0.07), //
+                        hasSource("Gebuehrenabrechnung01.txt"), hasNote(null))));
     }
 
     @Test
@@ -67,24 +63,38 @@ public class WitheBoxGmbHPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(4L));
-        assertThat(results.size(), is(4));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-08-31"), hasAmount("EUR", 0.27), //
-                        hasSource("Gebuehrenabrechnung02.txt"), hasNote("Konto: 1234567890 (1.091,73€)"))));
+        assertThat(results, hasItem(fee(hasDate("2024-08-31"), hasAmount("EUR", 0.32), //
+                        hasSource("Gebuehrenabrechnung02.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-08-31"), hasAmount("EUR", 0.05), //
-                        hasSource("Gebuehrenabrechnung02.txt"), hasNote("Depot: 1234567891 (0,2941%)"))));
+        assertThat(results, hasItem(fee(hasDate("2024-08-31"), hasAmount("EUR", 0.11), //
+                        hasSource("Gebuehrenabrechnung02.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testGebuehrenabrechnung03()
+    {
+        WitheBoxGmbHPDFExtractor extractor = new WitheBoxGmbHPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Gebuehrenabrechnung03.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-08-31"), hasAmount("EUR", 0.09), //
-                        hasSource("Gebuehrenabrechnung02.txt"), hasNote("Konto: 1234567892 (356,78€)"))));
-
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-08-31"), hasAmount("EUR", 0.02), //
-                        hasSource("Gebuehrenabrechnung02.txt"), hasNote("Depot: 1234567893 (0,2941%)"))));
+        assertThat(results, hasItem(fee(hasDate("2024-09-30"), hasAmount("EUR", 12.17), //
+                        hasSource("Gebuehrenabrechnung03.txt"), hasNote(null))));
     }
 }
