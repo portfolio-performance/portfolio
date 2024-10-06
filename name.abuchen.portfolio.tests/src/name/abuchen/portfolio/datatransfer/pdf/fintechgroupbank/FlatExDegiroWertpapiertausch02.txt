@@ -1,0 +1,45 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+0302402000003021301530
+Herrn
+Max Mustermann
+Straße 7
+99999 Stadt
+    Frankfurt am Main,  07.01.2023
+Wertpapiertausch / Reorg. w/Sitzverl.a.Land
+Kundennummer: 199999
+Kontonummer : 1001999999
+Depotnummer : 1001999999
+Inhaber     : Max Mustermann
+WKN     ISIN          Wertpapierbezeichnung           Anzahl
+A1JGT0  MT0000580101  MGI RG                          185,000000
+Sehr geehrter Herr Mustermann,
+aufgrund der Umstellung der Börsennotiz haben wir einen Umtausch mit dem
+Verhältnis 1 zu 1 für den oben genannten Bestand vorgenommen.
+Durch den Umtausch haben wir mit Valuta 04.01.2023 in Ihr Depot eingebucht:
+WKN     ISIN          Wertpapierbezeichnung                        Anzahl
+A3D3A1  SE0018538068  MGI RG-A                                  185,000000
+Steuerbetrag                                                          0,00 EUR
+Steuerpflichtiger Ertrag                                              0,00 EUR
+Kapitalertragsteuer                                                   0,00 EUR
+Kirchensteuer                                                         0,00 EUR
+Solidaritätszuschlag                                                  0,00 EUR
+Verrechnung über Ihr Konto: 1001593285 Gutschrift                     0,00 EUR
+Transaktions-Nr.                                                3133845720
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Irrtum vorbehalten.
+______________________________________________________________________________
+                                                                     Seite 1/1
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour (stellv. Vorsitzender),
+Dr. Benon Janos, Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang
+2000003021301530 0113302400000101

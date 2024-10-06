@@ -53,6 +53,8 @@ public class ExtractorUtils
                     createFormatter("dd MMM yy", Locale.GERMANY), //
                     createFormatter("d MMM yyyy", Locale.GERMANY), //
                     createFormatter("dd MMM yyyy", Locale.GERMANY), //
+                    createFormatter("d. LLL yyyy", Locale.GERMANY), //
+                    createFormatter("dd. LLL yyyy", Locale.GERMANY), //
                     createFormatter("d-M-yyyy", Locale.GERMANY), //
                     createFormatter("dd-M-yyyy", Locale.GERMANY), //
                     createFormatter("d-MM-yyyy", Locale.GERMANY), //
@@ -112,8 +114,8 @@ public class ExtractorUtils
 
     // Date formatters with case-insensitive support for Canada
     private static final DateTimeFormatter[] DATE_FORMATTER_CANADA = { //
-                    createFormatter("LLL dd, yyyy", Locale.CANADA), //
-                    createFormatter("LLL d, yyyy", Locale.CANADA) };
+                    createFormatter("LLL d, yyyy", Locale.CANADA), //
+                    createFormatter("LLL dd, yyyy", Locale.CANADA) };
 
     // Date formatters with case-insensitive support for Canadian French
     private static final DateTimeFormatter[] DATE_FORMATTER_CANADA_FRENCH = { //
