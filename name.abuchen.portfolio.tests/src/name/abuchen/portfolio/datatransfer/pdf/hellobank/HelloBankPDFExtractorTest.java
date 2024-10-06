@@ -438,7 +438,7 @@ public class HelloBankPDFExtractorTest
     {
         HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
