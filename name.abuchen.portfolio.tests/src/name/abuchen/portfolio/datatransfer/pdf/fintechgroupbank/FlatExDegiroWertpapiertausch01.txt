@@ -1,0 +1,45 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+flatex Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatex Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+0302402000001531976960
+Herrn
+Max Mustermann
+Strasse
+Strasse 7
+99999 Stadt
+    Frankfurt am Main,  13.05.2020
+Wertpapiertausch / Reverse Split
+Kundennummer: 9999999
+Kontonummer : 1009999999
+Depotnummer : 1009999999
+Inhaber     : Max Mustermann
+WKN     ISIN          Wertpapierbezeichnung           Anzahl
+A12GS7  CA05156X1087  AURORA CANNABIS RG              450,000000
+Sehr geehrter Herr Mustermann,
+aufgrund der Umstellung der Börsennotiz haben wir einen Umtausch mit dem
+Verhältnis 12 zu 1 für den oben genannten Bestand vorgenommen.
+Durch den Umtausch haben wir mit Valuta 13.05.2020 in Ihr Depot eingebucht:
+WKN     ISIN          Wertpapierbezeichnung                        Anzahl
+A2P4EC  CA05156X8843  AURORA CANNABIS RG                         37,000000
+Steuerbetrag                                                          0,00 EUR
+Steuerpflichtiger Ertrag                                              0,00 EUR
+Kapitalertragsteuer                                                   0,00 EUR
+Kirchensteuer                                                         0,00 EUR
+Solidaritätszuschlag                                                  0,00 EUR
+Verrechnung über Ihr Konto: 1003039999 Gutschrift                     0,00 EUR
+Transaktions-Nr.                                                1909999999
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Irrtum vorbehalten.
+______________________________________________________________________________
+                                                                     Seite 1/1
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann
+2000001531976960 0113302400000101
