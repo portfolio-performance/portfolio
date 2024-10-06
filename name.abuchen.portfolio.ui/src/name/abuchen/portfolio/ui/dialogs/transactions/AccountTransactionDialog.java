@@ -53,6 +53,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionModel.Pr
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.SecurityNameLabelProvider;
 
 public class AccountTransactionDialog extends AbstractTransactionDialog // NOSONAR
 {
@@ -368,6 +369,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         ComboInput securities = new ComboInput(editArea, Messages.ColumnSecurity);
         securities.value.setInput(activeSecurities);
+        securities.value.setLabelProvider(new SecurityNameLabelProvider(client));
         securities.bindValue(Properties.security.name(), Messages.MsgMissingSecurity);
         securities.bindCurrency(Properties.securityCurrencyCode.name());
         return securities;
