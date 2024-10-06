@@ -26,6 +26,7 @@ public class DataSeriesSet
 {
     private DataSeries.UseCase useCase;
     private final List<DataSeries> availableSeries = new ArrayList<>();
+    private final List<DataSeries> availableDerivedSeries = new ArrayList<>();
 
     public DataSeriesSet(Client client, IPreferenceStore preferences, DataSeries.UseCase useCase)
     {
@@ -36,6 +37,7 @@ public class DataSeriesSet
         {
             case STATEMENT_OF_ASSETS:
                 buildStatementOfAssetsDataSeries();
+                buildStatementOfAssetsDerivedDataSeries(client, preferences, wheel);
                 break;
             case PERFORMANCE:
                 buildPerformanceDataSeries(client, preferences, wheel);
@@ -60,12 +62,108 @@ public class DataSeriesSet
         return availableSeries;
     }
 
+    public List<DataSeries> getAvailableDerivedSeries()
+    {
+        return availableDerivedSeries;
+    }
+
     /**
      * Returns DataSeries matching the given UUID.
      */
     public DataSeries lookup(String uuid)
     {
         return availableSeries.stream().filter(d -> d.getUUID().equals(uuid)).findAny().orElse(null);
+    }
+
+    private void buildStatementOfAssetsDerivedDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
+    {
+        for (var entry : DataSeries.ClientDataSeriesType.values())
+        {
+            for (Security security : client.getSecurities())
+            {
+                // securities w/o currency code (e.g. a stock index) cannot be
+                // added as equity data series (only as benchmark)
+                if (security.getCurrencyCode() == null)
+                    continue;
+
+                var instance = new GroupedDataSeries(security, entry, DataSeries.Type.SECURITY);
+
+                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, security.getName(),
+                                wheel.next());
+                dataSeries.setLineChart(entry.isLineSerie());
+                dataSeries.setShowArea(entry.isAreaSerie());
+                availableDerivedSeries.add(dataSeries);
+            }
+
+            for (Portfolio portfolio : client.getPortfolios())
+            {
+                var instance = new GroupedDataSeries(portfolio, entry, DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT);
+                instance.setIsPortfolioPlusReferenceAccount(true);
+
+                var name = portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(); //$NON-NLS-1$
+
+                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, name, wheel.next());
+                dataSeries.setLineChart(entry.isLineSerie());
+                dataSeries.setShowArea(entry.isAreaSerie());
+                availableDerivedSeries.add(dataSeries);
+            }
+            
+            for (Portfolio portfolio : client.getPortfolios())
+            {
+                var instance = new GroupedDataSeries(portfolio, entry, DataSeries.Type.PORTFOLIO);
+
+                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, portfolio.getName(),
+                                wheel.next());
+                dataSeries.setLineChart(entry.isLineSerie());
+                dataSeries.setShowArea(entry.isAreaSerie());
+                availableDerivedSeries.add(dataSeries);
+            }
+
+            for (Account account : client.getAccounts())
+            {
+                var instance = new GroupedDataSeries(account, entry, DataSeries.Type.ACCOUNT);
+
+                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, account.getName(), wheel.next());
+                dataSeries.setLineChart(entry.isLineSerie());
+                dataSeries.setShowArea(entry.isAreaSerie());
+                availableDerivedSeries.add(dataSeries);
+            }
+
+            for (Taxonomy taxonomy : client.getTaxonomies())
+            {
+                taxonomy.foreach(new Taxonomy.Visitor()
+                {
+                    @Override
+                    public void visit(Classification classification)
+                    {
+                        if (classification.getParent() == null)
+                            return;
+
+                        var instance = new GroupedDataSeries(classification, entry,
+                                        DataSeries.Type.CLASSIFICATION);
+
+                        var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, taxonomy, instance,
+                                        classification.getName(),
+                                        wheel.next());
+                        dataSeries.setLineChart(entry.isLineSerie());
+                        dataSeries.setShowArea(entry.isAreaSerie());
+                        availableDerivedSeries.add(dataSeries);
+                    }
+                });
+            }
+
+            ClientFilterMenu menu = new ClientFilterMenu(client, preferences);
+
+            for (ClientFilterMenu.Item item : menu.getCustomItems())
+            {
+                var instance = new GroupedDataSeries(item, entry, DataSeries.Type.CLIENT_FILTER);
+
+                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, item.getLabel(), wheel.next());
+                dataSeries.setLineChart(entry.isLineSerie());
+                dataSeries.setShowArea(entry.isAreaSerie());
+                availableDerivedSeries.add(dataSeries);
+            }
+        }
     }
 
     private void buildStatementOfAssetsDataSeries()
