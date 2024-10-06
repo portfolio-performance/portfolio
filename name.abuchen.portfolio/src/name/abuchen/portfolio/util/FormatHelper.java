@@ -14,6 +14,7 @@ public class FormatHelper
 
     private static boolean alwaysDisplayCurrencyCode = false;
     private static boolean displayPerAnnum = false;
+    private static boolean preferSecuritySymbol = false;
 
     private FormatHelper()
     {
@@ -64,5 +65,15 @@ public class FormatHelper
     public static void setDisplayPerAnnum(boolean displayPerAnnum)
     {
         FormatHelper.displayPerAnnum = displayPerAnnum;
+    }
+
+    public static boolean isPreferSecuritySymbol()
+    {
+        return preferSecuritySymbol;
+    }
+
+    public static void setPreferSecuritySymbol(boolean preferSecuritySymbol)
+    {
+        FormatHelper.preferSecuritySymbol = preferSecuritySymbol;
     }
 }

@@ -19,6 +19,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.util.FormatHelper;
 import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -880,7 +881,18 @@ public final class Security implements Attributable, InvestmentVehicle
     @Override
     public String toString()
     {
-        return getName();
+        // Classical PP behavior - just use name.
+        if (!FormatHelper.isPreferSecuritySymbol())
+            return getName();
+
+        // Otherwise, if corresponding preference is set by user, fit in
+        // security symbol if available.
+        if (getTickerSymbol() == null)
+            return getName();
+        else if (getTickerSymbol().equals(getName()))
+            return getTickerSymbol();
+        else
+            return getTickerSymbol() + " (" + getName() + ")";
     }
 
     public String toInfoString()

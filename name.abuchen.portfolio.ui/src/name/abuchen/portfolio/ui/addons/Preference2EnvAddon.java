@@ -124,6 +124,13 @@ public class Preference2EnvAddon
     }
 
     @Inject
+    public void setPreferSecuritySymbol(
+                    @Preference(value = UIConstants.Preferences.FORMAT_PREFER_SECURITY_SYMBOL) boolean preferSecuritySymbol)
+    {
+        FormatHelper.setPreferSecuritySymbol(preferSecuritySymbol);
+    }
+
+    @Inject
     public void setDisplayBaseCurrencyCode(
                     @Preference(value = UIConstants.Preferences.ALWAYS_DISPLAY_CURRENCY_CODE) boolean alwaysDisplayCurrencyCode)
     {

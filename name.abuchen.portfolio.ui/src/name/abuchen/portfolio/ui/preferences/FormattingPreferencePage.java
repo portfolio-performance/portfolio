@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.preferences;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 
 import name.abuchen.portfolio.money.Values;
@@ -26,5 +27,11 @@ public class FormattingPreferencePage extends FieldEditorPreferencePage
                         Messages.PrefLabelQuoteDigits, getFieldEditorParent(), 1);
         quotePrecisionEditor.setValidRange(0, Values.Quote.precision());
         addField(quotePrecisionEditor);
+
+        var preferSecuritySymEditor = new BooleanFieldEditor(Preferences.FORMAT_PREFER_SECURITY_SYMBOL,
+                        Messages.PrefLabelPreferSecuritySymbol, getFieldEditorParent());
+        var control = preferSecuritySymEditor.getDescriptionControl(getFieldEditorParent());
+        control.setToolTipText(Messages.PrefLabelPreferSecuritySymbolTooltip);
+        addField(preferSecuritySymEditor);
     }
 }
