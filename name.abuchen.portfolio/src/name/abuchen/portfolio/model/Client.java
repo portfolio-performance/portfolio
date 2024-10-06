@@ -433,6 +433,11 @@ public class Client
         return properties.get(key);
     }
 
+    public boolean hasProperty(String key)
+    {
+        return properties.containsKey(key);
+    }
+
     /**
      * Returns the current value of the integer-valued state with the given
      * name. Returns the value <code>0</code> if there is no value with the
@@ -451,7 +456,7 @@ public class Client
         }
     }
 
-    /* package */Map<String, String> getProperties()
+    /* package */ Map<String, String> getProperties()
     {
         return properties;
     }
