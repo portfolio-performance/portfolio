@@ -34,12 +34,11 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.ui.views.panes.AccountBalancePane;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesDataQualityPane;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
-import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartAndAccountBalancePane;
 import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.Pair;
@@ -230,8 +229,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     protected void addPanePages(List<InformationPanePage> pages)
     {
         super.addPanePages(pages);
-        pages.add(make(SecurityPriceChartPane.class));
-        pages.add(make(AccountBalancePane.class));
+        pages.add(make(SecurityPriceChartAndAccountBalancePane.class));
         pages.add(make(HistoricalPricesPane.class));
         pages.add(make(TransactionsPane.class));
         pages.add(make(TradesPane.class));
