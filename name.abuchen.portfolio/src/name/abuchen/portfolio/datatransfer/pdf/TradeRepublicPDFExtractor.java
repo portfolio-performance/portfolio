@@ -1155,6 +1155,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+ St.cke [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
+                                        // POSITION ANZAHL ERTRAG BETRAG
+                                        // NVIDIA 0.32 USD
+                                        // 32.000000 Stücke 0.01 USD
+                                        // US67066G1040
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .find("POSITION ANZAHL (Ertrag|ERTRAG|ERTR.GNIS) BETRAG")
+                                                        .match("^(?<name>.*) [\\.,\\d]+ [\\w]{3}")
+                                                        .match("[\\.,\\d]+ St.cke [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
                                         // POSITION QUANTITY YIELD AMOUNT
                                         // Mondelez
                                         // US6092071058 2.000000 Pcs. 0.425 USD
@@ -1219,6 +1232,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^.* (?<shares>[\\.,\\d]+) (Pcs|unit)\\. [\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
+                                        // @formatter:off
+                                        // 32.000000 Stücke 0.01 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^(?<shares>[\\.,\\d]+) St.cke [\\.,\\d]+ [\\w]{3}$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // 1 Reinvestierung Vodafone Group PLC 699 Stk.
@@ -2120,8 +2140,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .optionalOneOf( //
                                         // @formatter:off
-                                        // 20 
-                                        // Sept. Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf 
+                                        // 20
+                                        // Sept. Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf
                                         // 2024 DE00000000000000000000
                                         // 889,77 € 964,18 €
                                         // @formatter:on
@@ -3564,6 +3584,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+ (Pcs|unit)\\. [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
+                                        // POSITION ANZAHL ERTRAG BETRAG
+                                        // NVIDIA 0.32 USD
+                                        // 32.000000 Stücke 0.01 USD
+                                        // US67066G1040
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .find("POSITION ANZAHL (Ertrag|ERTRAG|ERTR.GNIS) BETRAG")
+                                                        .match("^(?<name>.*) [\\.,\\d]+ [\\w]{3}")
+                                                        .match("[\\.,\\d]+ St.cke [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
                                         // 1 Reinvestierung Vodafone Group PLC 699 Stk.
                                         // Registered Shares DL 0,2095238
                                         // GB00BH4HKS39
@@ -3614,6 +3647,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^.* (?<shares>[\\.,\\d]+) (Pcs|unit)\\. [\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
+                                        // @formatter:off
+                                        // 32.000000 Stücke 0.01 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^(?<shares>[\\.,\\d]+) St.cke [\\.,\\d]+ [\\w]{3}$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
                                         // @formatter:off
                                         // 1 Reinvestierung Vodafone Group PLC 699 Stk.
