@@ -4,6 +4,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -70,7 +72,7 @@ public class LifeCycleManager
             // the custom.css file *must* exist, otherwise no style sheets are
             // loaded at all. Create the file if it does not exist
 
-            URL url = FileLocator.resolve(new URL("platform:/meta/name.abuchen.portfolio.ui/custom.css")); //$NON-NLS-1$
+            URL url = FileLocator.resolve(new URI("platform:/meta/name.abuchen.portfolio.ui/custom.css").toURL()); //$NON-NLS-1$ //NOSONAR
             File customCSSFile = new File(url.getFile());
 
             if (!customCSSFile.exists())
@@ -79,7 +81,7 @@ public class LifeCycleManager
                 customCSSFile.createNewFile(); // NOSONAR
             }
         }
-        catch (IOException e)
+        catch (URISyntaxException | IOException e)
         {
             logger.error(e);
         }

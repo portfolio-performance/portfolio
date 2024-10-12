@@ -43,7 +43,7 @@ public abstract class Values<E>
         {
             return format(amount, skipCurrencyCode, false);
         }
-        
+
         public String formatAlwaysVisible(Money amount, String skipCurrencyCode)
         {
             return format(amount, skipCurrencyCode, true);
@@ -318,7 +318,7 @@ public abstract class Values<E>
     public static final Values<LocalDate> Date = new Values<LocalDate>("yyyy-MM-dd", 0) //$NON-NLS-1$
     {
         DateTimeFormatter formatter = DateTimeFormatter
-                        .ofLocalizedDate(new Locale("pt").getLanguage().equals(Locale.getDefault() //$NON-NLS-1$
+                        .ofLocalizedDate(Locale.forLanguageTag("pt").getLanguage().equals(Locale.getDefault() //$NON-NLS-1$
                                         .getLanguage()) ? FormatStyle.SHORT : FormatStyle.MEDIUM);
 
         @Override
@@ -331,7 +331,7 @@ public abstract class Values<E>
     public static final Values<LocalDateTime> DateTime = new Values<LocalDateTime>("yyyy-MM-dd HH:mm", 0) //$NON-NLS-1$
     {
         DateTimeFormatter formatter = DateTimeFormatter
-                        .ofLocalizedDateTime(new Locale("pt").getLanguage().equals(Locale.getDefault() //$NON-NLS-1$
+                        .ofLocalizedDateTime(Locale.forLanguageTag("pt").getLanguage().equals(Locale.getDefault() //$NON-NLS-1$
                                         .getLanguage()) ? FormatStyle.SHORT : FormatStyle.MEDIUM, FormatStyle.SHORT);
 
         @Override
