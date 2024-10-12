@@ -60,7 +60,7 @@ public class AttributeTypeTest
     @Test
     public void testLongShareConverter_deCH() throws Exception
     {
-        Locale.setDefault(new Locale("de", "CH"));
+        Locale.setDefault(Locale.forLanguageTag("de-CH"));
         performLongConverterTest(ShareConverter.class, Values.Share,
                         Arrays.asList("  12’345.67890123  ", "12’345.6789012345", "12’345.678901236", "12345.67890123",
                                         "1’2’345.678901236"),
@@ -87,7 +87,7 @@ public class AttributeTypeTest
     @Test
     public void testLimitPriceConverter_deCH()
     {
-        Locale.setDefault(new Locale("de", "CH"));
+        Locale.setDefault(Locale.forLanguageTag("de-CH"));
         performLimitPriceTests(
                         Arrays.asList("  <  123.45   ", "<= 123.45", ">= 1’123.45", " > 1’234", " > 1’2’34.5678"),
                         Arrays.asList(new LimitPrice(RelationalOperator.SMALLER, 12345000000L),

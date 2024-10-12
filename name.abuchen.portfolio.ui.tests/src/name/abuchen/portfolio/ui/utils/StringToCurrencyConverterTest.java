@@ -105,7 +105,7 @@ public class StringToCurrencyConverterTest
     @Test
     public void testValidBENLAmount()
     {
-        Locale.setDefault(new Locale("nl", "BE"));
+        Locale.setDefault(Locale.forLanguageTag("nl-BE"));
         StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount);
         assertThat(converter.convert("12,34"), is(1234l));
         assertThat(converter.convert(",34"), is(34l));
@@ -117,7 +117,7 @@ public class StringToCurrencyConverterTest
     @Test
     public void testValidBEFRAmount()
     {
-        Locale.setDefault(new Locale("fr", "BE"));
+        Locale.setDefault(Locale.forLanguageTag("fr-BE"));
         StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount);
         assertThat(converter.convert("12,34"), is(1234l));
         assertThat(converter.convert("12.34"), is(1234l));
@@ -127,7 +127,7 @@ public class StringToCurrencyConverterTest
     @Test
     public void testValidBEFRAmountWithNBSP()
     {
-        Locale.setDefault(new Locale("fr", "BE"));
+        Locale.setDefault(Locale.forLanguageTag("fr-BE"));
         StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount);
 
         // Belgian locale has changed between Java 11 and 17
@@ -140,7 +140,7 @@ public class StringToCurrencyConverterTest
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidBEFREAmount()
     {
-        Locale.setDefault(new Locale("fr", "BE"));
+        Locale.setDefault(Locale.forLanguageTag("fr-BE"));
         StringToCurrencyConverter converter = new StringToCurrencyConverter(Values.Amount, false);
         converter.convert("1.234,56");
     }

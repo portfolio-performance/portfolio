@@ -113,7 +113,7 @@ public class MessagesTest
 
     private void test(String bundleName, String... skip)
     {
-        ResourceBundle resources = ResourceBundle.getBundle(bundleName, new Locale(language));
+        ResourceBundle resources = ResourceBundle.getBundle(bundleName, Locale.forLanguageTag(language));
         TestUtilities.testBundleStrings(resources, skip);
     }
 }
