@@ -547,6 +547,7 @@ public class Messages extends NLS
     public static String LabelBeforeTaxAndFees;
     public static String LabelBenchmarks;
     public static String LabelBiggerSize;
+    public static String LabelBlueGrayOrange;
     public static String LabelCapitalGains;
     public static String LabelCategoryOtherMovements;
     public static String LabelChartDetailChartDevelopment;
@@ -674,6 +675,7 @@ public class Messages extends NLS
     public static String LabelFontSize;
     public static String LabelFormatJSON;
     public static String LabelFullClassification;
+    public static String LabelGreenGrayRed;
     public static String LabelGreenWhiteRed;
     public static String LabelGreenYellowRed;
     public static String LabelGross;
@@ -901,6 +903,7 @@ public class Messages extends NLS
     public static String LabelXDays;
     public static String LabelYear;
     public static String LabelYearlyHeatmap;
+    public static String LabelYellowWhiteBlack;
     public static String LabelYes;
     public static String LabelYTD;
     public static String MarkSecurityPageDescription;
