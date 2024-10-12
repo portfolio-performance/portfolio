@@ -174,7 +174,7 @@ public class ExportWizard extends Wizard
             else if (exportItem instanceof Portfolio portfolio)
                 name = portfolio.getName();
             else if (exportItem instanceof Security security)
-                name = security.getIsin();
+                name = security.getExternalIdentifier();
             else if (exportItem instanceof String string)
                 name = string;
 
