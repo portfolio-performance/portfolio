@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.preferences;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -213,9 +215,9 @@ public final class ThemePreferencePage extends PreferencePage
         super.performDefaults();
     }
 
-    private Path getPathToCustomCSS() throws IOException
+    private Path getPathToCustomCSS() throws IOException, URISyntaxException
     {
-        URL url = FileLocator.resolve(new URL("platform:/meta/name.abuchen.portfolio.ui/custom.css")); //$NON-NLS-1$
+        URL url = FileLocator.resolve(new URI("platform:/meta/name.abuchen.portfolio.ui/custom.css").toURL()); //$NON-NLS-1$ //NOSONAR
         return new File(url.getFile()).toPath();
     }
 
@@ -233,7 +235,7 @@ public final class ThemePreferencePage extends PreferencePage
 
             return Integer.parseInt(m.group(1));
         }
-        catch (IOException | NumberFormatException e)
+        catch (IOException | URISyntaxException | NumberFormatException e)
         {
             PortfolioPlugin.log(e);
             return -1;
@@ -273,7 +275,7 @@ public final class ThemePreferencePage extends PreferencePage
 
             Files.writeString(getPathToCustomCSS(), css, StandardOpenOption.TRUNCATE_EXISTING);
         }
-        catch (IOException e)
+        catch (IOException | URISyntaxException e)
         {
             PortfolioPlugin.log(e);
         }

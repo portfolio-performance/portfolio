@@ -6,7 +6,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.DateTimeException;
@@ -22,6 +23,8 @@ import java.util.Optional;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
@@ -326,16 +329,16 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         {
             return new BufferedReader(new InputStreamReader(openStream(url)));
         }
-        catch (IOException e)
+        catch (IOException | URISyntaxException e)
         {
             errors.add(e);
         }
         return null;
     }
 
-    /* enable testing */
-    protected InputStream openStream(String wknUrl) throws IOException
+    @VisibleForTesting
+    protected InputStream openStream(String wknUrl) throws IOException, URISyntaxException
     {
-        return new URL(wknUrl).openStream();
+        return new URI(wknUrl).toURL().openStream();
     }
 }
