@@ -87,8 +87,7 @@ public class DataSeriesSet
                 for (Security security : client.getSecurities())
                 {
                     // securities w/o currency code (e.g. a stock index) cannot
-                    // be
-                    // added as equity data series (only as benchmark)
+                    // be added as equity data series (only as benchmark)
                     if (security.getCurrencyCode() == null)
                         continue;
 
