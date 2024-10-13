@@ -99,6 +99,17 @@ public class DataSeriesSet
                     dataSeries.setShowArea(entry.isAreaSerie());
                     availableDerivedSeries.add(dataSeries);
                 }
+
+                for (Portfolio portfolio : client.getPortfolios())
+                {
+                    var instance = new GroupedDataSeries(portfolio, entry, DataSeries.Type.PORTFOLIO);
+
+                    var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, portfolio.getName(),
+                                    wheel.next());
+                    dataSeries.setLineChart(entry.isLineSerie());
+                    dataSeries.setShowArea(entry.isAreaSerie());
+                    availableDerivedSeries.add(dataSeries);
+                }
             }
 
             for (Portfolio portfolio : client.getPortfolios())
@@ -114,17 +125,6 @@ public class DataSeriesSet
                 availableDerivedSeries.add(dataSeries);
             }
             
-            for (Portfolio portfolio : client.getPortfolios())
-            {
-                var instance = new GroupedDataSeries(portfolio, entry, DataSeries.Type.PORTFOLIO);
-
-                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, portfolio.getName(),
-                                wheel.next());
-                dataSeries.setLineChart(entry.isLineSerie());
-                dataSeries.setShowArea(entry.isAreaSerie());
-                availableDerivedSeries.add(dataSeries);
-            }
-
             for (Account account : client.getAccounts())
             {
                 var instance = new GroupedDataSeries(account, entry, DataSeries.Type.ACCOUNT);
