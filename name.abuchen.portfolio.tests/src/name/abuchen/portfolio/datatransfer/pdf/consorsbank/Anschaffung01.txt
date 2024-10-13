@@ -1,0 +1,23 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.3
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 234234214
+Belegnummer 3432431
+Hans Mustermann
+Musterstr. 22 Datum: 22.04.2022
+77111 Musterstadt
+Wir haben für Sie am 22.04.2022 folgende Anschaffungsdaten eingebucht:
+Bezeichnung WKN ISIN
+ATOSS SOFTWARE AG 510440 DE0005104400
+Nom/Stk Tax-Box-ID
+333,00000 202204221234567
+Übertragungsart
+unentgeltlich
+Nom./Stk. Anschaffungsdatum Anschaffungsdaten
+333,00000 22.03.2007 Anschaffungswert EUR 1.261,51
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d�Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé`
