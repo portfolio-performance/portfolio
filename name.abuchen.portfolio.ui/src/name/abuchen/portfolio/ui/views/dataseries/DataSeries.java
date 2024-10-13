@@ -193,11 +193,7 @@ public final class DataSeries implements Adaptable
     public String getLabel()
     {
         if (instance instanceof GroupedDataSeries groupedDataSeries)
-            return groupedDataSeries.getClientDataSeriesLabel() + " (" //$NON-NLS-1$
-                            + (groupedDataSeries.getParentObject() instanceof Classification classification
-                                            ? classification.getName()
-                                            : label)
-                            + ")"; //$NON-NLS-1$
+            return groupedDataSeries.getClientDataSeriesLabel() + " (" + label + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 
         return isBenchmark() ? label + " " + Messages.ChartSeriesBenchmarkSuffix : label; //$NON-NLS-1$
     }
@@ -214,6 +210,15 @@ public final class DataSeries implements Adaptable
         buf.append(label);
 
         if (instance instanceof Classification classification)
+        {
+            Classification parent = classification.getParent();
+
+            if (parent.getParent() != null)
+                buf.append(" (").append(parent.getPathName(false)).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+
+        if (instance instanceof GroupedDataSeries
+                        && ((GroupedDataSeries) instance).getParentObject() instanceof Classification classification)
         {
             Classification parent = classification.getParent();
 
