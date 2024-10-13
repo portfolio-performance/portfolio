@@ -385,6 +385,18 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }),
                                         // @formatter:off
+                                        // Wert Betrag zu Ihren Gunsten
+                                        // 15.11.2016 EUR 41,44
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .find("Wert Betrag zu Ihren (Gunsten|Lasten)") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
                                         // Wert Devisenkurs Betrag zu Ihren Gunsten
                                         // 07.09.2021 EUR/USD 1,19025 EUR 5,30
                                         // @formatter:on
@@ -1875,10 +1887,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
-                        // einbehaltener Kirchensteuer EUR 1,00
+                        // einbehaltene Kirchensteuer EUR 1,27
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^einbehaltener Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .match("^einbehaltene Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative")
                                             && !type.getCurrentContext().getBoolean("noTax"))
