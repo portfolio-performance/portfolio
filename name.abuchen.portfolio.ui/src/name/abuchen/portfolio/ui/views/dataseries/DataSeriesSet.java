@@ -79,20 +79,27 @@ public class DataSeriesSet
     {
         for (var entry : DataSeries.ClientDataSeriesType.values())
         {
-            for (Security security : client.getSecurities())
+            if (!entry.equals(DataSeries.ClientDataSeriesType.INTEREST)
+                            && !entry.equals(DataSeries.ClientDataSeriesType.INTEREST_ACCUMULATED)
+                            && !entry.equals(DataSeries.ClientDataSeriesType.INTEREST_CHARGE)
+                            && !entry.equals(DataSeries.ClientDataSeriesType.INTEREST_CHARGE_ACCUMULATED))
             {
-                // securities w/o currency code (e.g. a stock index) cannot be
-                // added as equity data series (only as benchmark)
-                if (security.getCurrencyCode() == null)
-                    continue;
+                for (Security security : client.getSecurities())
+                {
+                    // securities w/o currency code (e.g. a stock index) cannot
+                    // be
+                    // added as equity data series (only as benchmark)
+                    if (security.getCurrencyCode() == null)
+                        continue;
 
-                var instance = new GroupedDataSeries(security, entry, DataSeries.Type.SECURITY);
+                    var instance = new GroupedDataSeries(security, entry, DataSeries.Type.SECURITY);
 
-                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, security.getName(),
+                    var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, security.getName(),
                                 wheel.next());
-                dataSeries.setLineChart(entry.isLineSerie());
-                dataSeries.setShowArea(entry.isAreaSerie());
-                availableDerivedSeries.add(dataSeries);
+                    dataSeries.setLineChart(entry.isLineSerie());
+                    dataSeries.setShowArea(entry.isAreaSerie());
+                    availableDerivedSeries.add(dataSeries);
+                }
             }
 
             for (Portfolio portfolio : client.getPortfolios())
