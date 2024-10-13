@@ -55,6 +55,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         addAdvanceTaxTransaction();
         addTaxAdjustmentTransaction();
         addAccountStatementTransaction();
+        addNonImportableTransaction();
     }
 
     @Override
@@ -1014,6 +1015,96 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    private void addNonImportableTransaction()
+    {
+        final DocumentType type = new DocumentType("(UEBERTRAG (EINGANG|AUSGANG)|Anschaffungsdaten)");
+        this.addDocumentTyp(type);
+
+        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^(UEBERTRAG (EINGANG|AUSGANG)|Wir haben für Sie am) .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                            return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // Is type --> "AUSGANG" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^UEBERTRAG (?<type>(EINGANG|AUSGANG)) .*$") //
+                        .assign((t, v) -> {
+                            if ("AUSGANG".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // UEBERTRAG EINGANG 22.04.2022
+                                        // Bezeichnung WKN
+                                        // ATOSS SOFTWARE AG INHABER-AKTIEN O.N. 510440
+                                        // Einheit Nennwert Verwahrart
+                                        // ST 333,00000 Girosammelverwahrung
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "name", "wkn", "shares") //
+                                                        .match("^UEBERTRAG (EINGANG|AUSGANG) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})")
+                                                        .find("Bezeichnung WKN") //
+                                                        .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6})$")
+                                                        .match("^ST (?<shares>[\\.,\\d]+) .*$") //
+                                                        .assign((t, v) -> {
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                                                            t.setAmount(0L);
+                                                        }),
+                                            // @formatter:off
+                                            // Bezeichnung WKN ISIN
+                                            // ATOSS SOFTWARE AG 510440 DE0005104400
+                                            // Nom/Stk Tax-Box-ID
+                                            // 333,00000 202204221234567
+                                            // Übertragungsart
+                                            // unentgeltlich
+                                            // Nom./Stk. Anschaffungsdatum Anschaffungsdaten
+                                            // 333,00000 22.03.2007 Anschaffungswert EUR 1.261,51
+                                            // @formatter:on
+                                            section -> section //
+                                                            .attributes("name", "wkn", "isin", "shares", "date", "currency", "amount") //
+                                                            .find("Bezeichnung WKN ISIN") //
+                                                            .match("^(?<name>.*) (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                            .find("Nom\\.\\/Stk\\. Anschaffungsdatum Anschaffungsdaten")
+                                                            .match("^(?<shares>[\\.,\\d]+) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Anschaffungswert (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                            .assign((t, v) -> {
+                                                                v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+
+                                                                t.setDateTime(asDate(v.get("date")));
+                                                                t.setShares(asShares(v.get("shares")));
+                                                                t.setSecurity(getOrCreateSecurity(v));
+
+                                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                                t.setAmount(asAmount(v.get("amount")));
+                                                            }))
+
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
