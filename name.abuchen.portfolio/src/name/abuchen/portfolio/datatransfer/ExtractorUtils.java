@@ -122,6 +122,20 @@ public class ExtractorUtils
                     createFormatter("d LLL yyyy", Locale.CANADA_FRENCH), //
                     createFormatter("dd LLL yyyy", Locale.CANADA_FRENCH) };
 
+    // Date formatters with case-insensitive support for Spanish (Spain)
+    private static final DateTimeFormatter[] DATE_FORMATTER_SPAIN = {
+                    createFormatter("d MMM yyyy", new Locale("es", "ES")),
+                    createFormatter("dd MMM yyyy", new Locale("es", "ES")),
+                    createFormatter("d MMMM yyyy", new Locale("es", "ES")),
+                    createFormatter("dd MMMM yyyy", new Locale("es", "ES")) };
+
+    // Date formatters with case-insensitive support for Spanish (Mexico)
+    private static final DateTimeFormatter[] DATE_FORMATTER_MEXICO = {
+                    createFormatter("d MMM yyyy", new Locale("es", "MX")),
+                    createFormatter("dd MMM yyyy", new Locale("es", "MX")),
+                    createFormatter("d MMMM yyyy", new Locale("es", "MX")),
+                    createFormatter("dd MMMM yyyy", new Locale("es", "MX")) };
+
     // Date formatters with case-insensitive support for the United Kingdom
     private static final DateTimeFormatter[] DATE_FORMATTER_UK = { //
                     createFormatter("d LLLL yyyy", Locale.UK), //
@@ -146,7 +160,9 @@ public class ExtractorUtils
                     Locale.US, DATE_FORMATTER_US, //
                     Locale.CANADA, DATE_FORMATTER_CANADA, //
                     Locale.CANADA_FRENCH, DATE_FORMATTER_CANADA_FRENCH, //
-                    Locale.UK, DATE_FORMATTER_UK);
+                    Locale.UK, DATE_FORMATTER_UK, //
+                    new Locale("es", "ES"), DATE_FORMATTER_SPAIN, //
+                    new Locale("es", "MX"), DATE_FORMATTER_MEXICO);
 
     // DateTime formatters with case-insensitive support for various locales
     private static final DateTimeFormatter[] DATE_TIME_FORMATTER = { //
@@ -388,7 +404,8 @@ public class ExtractorUtils
         value = value.replaceAll("(?i)\\bMrz\\b", "Mär");
 
         Locale[] locales = hints.length > 0 ? hints
-                        :  new Locale[] { Locale.GERMANY, Locale.FRENCH, Locale.US, Locale.CANADA, Locale.CANADA_FRENCH, Locale.UK };
+                        : new Locale[] { Locale.GERMANY, Locale.FRENCH, Locale.US, Locale.CANADA, Locale.CANADA_FRENCH,
+                                        Locale.UK, new Locale("es", "ES"), new Locale("es", "MX") };
 
         for (Locale l : locales)
         {
