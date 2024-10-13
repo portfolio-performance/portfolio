@@ -150,7 +150,7 @@ public class DataSeriesSet
                                         DataSeries.Type.CLASSIFICATION);
 
                         var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, taxonomy, instance,
-                                        classification.getName(),
+                                        classification.getPathName(false),
                                         wheel.next());
                         dataSeries.setLineChart(entry.isLineSerie());
                         dataSeries.setShowArea(entry.isAreaSerie());
