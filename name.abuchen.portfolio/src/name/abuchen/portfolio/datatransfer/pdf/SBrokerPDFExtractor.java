@@ -299,10 +299,14 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         // Storno - Ertragsthesaurierung
                         // Wert Konto-Nr. Betrag zu Ihren Gunsten
                         // 15.01.2018 00/0000/000 EUR 0,05
+                        //
+                        // Ertragsthesaurierung
+                        // Wert Betrag zu Ihren Gunsten
+                        // 15.01.2018 EUR 4,69
                         // @formatter:on
                         .section("type", "sign").optional() //
                         .match("^(Storno \\- )?(?<type>Ertragsthesaurierung)$") //
-                        .match("^Wert Konto\\-Nr\\.( Devisenkurs)? Betrag zu Ihren (?<sign>(Gunsten|Lasten))$") //
+                        .match("^Wert( Konto\\-Nr\\.)?( Devisenkurs)? Betrag zu Ihren (?<sign>(Gunsten|Lasten))$") //
                         .assign((t, v) -> {
                             if ("Ertragsthesaurierung".equals(v.get("type")) && "Gunsten".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.TAX_REFUND);

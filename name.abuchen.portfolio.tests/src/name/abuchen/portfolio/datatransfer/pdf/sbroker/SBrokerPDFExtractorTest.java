@@ -2129,6 +2129,37 @@ public class SBrokerPDFExtractorTest
     }
 
     @Test
+    public void testDividende17()
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000ETFL235"), hasWkn(null), hasTicker(null), //
+                        hasName("Deka DAXplus Maximum Div.U.ETF Inhaber-Anteile"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividende transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2018-01-15T00:00"), hasShares(165.00), //
+                        hasSource("Dividende17.txt"), //
+                        hasNote("Abrechnungs-Nr. 13753098 | Ertragsthesaurierung für 2017 (0,94 EUR)"), //
+                        hasAmount("EUR", 4.69), hasGrossValue("EUR", 4.69), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testVorabpauschale01()
     {
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
