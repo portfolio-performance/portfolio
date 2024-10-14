@@ -92,23 +92,13 @@ public class DataSeriesSet
                         continue;
 
                     var instance = new GroupedDataSeries(security, entry, DataSeries.Type.SECURITY);
-
-                    var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, security.getName(),
-                                wheel.next());
-                    dataSeries.setLineChart(entry.isLineSerie());
-                    dataSeries.setShowArea(entry.isAreaSerie());
-                    availableDerivedSeries.add(dataSeries);
+                    addDerivedDataSeries(entry, null, instance, security.getName(), wheel);
                 }
 
                 for (Portfolio portfolio : client.getPortfolios())
                 {
                     var instance = new GroupedDataSeries(portfolio, entry, DataSeries.Type.PORTFOLIO);
-
-                    var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, portfolio.getName(),
-                                    wheel.next());
-                    dataSeries.setLineChart(entry.isLineSerie());
-                    dataSeries.setShowArea(entry.isAreaSerie());
-                    availableDerivedSeries.add(dataSeries);
+                    addDerivedDataSeries(entry, null, instance, portfolio.getName(), wheel);
                 }
             }
 
@@ -116,23 +106,14 @@ public class DataSeriesSet
             {
                 var instance = new GroupedDataSeries(portfolio, entry, DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT);
                 instance.setIsPortfolioPlusReferenceAccount(true);
-
                 var name = portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(); //$NON-NLS-1$
-
-                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, name, wheel.next());
-                dataSeries.setLineChart(entry.isLineSerie());
-                dataSeries.setShowArea(entry.isAreaSerie());
-                availableDerivedSeries.add(dataSeries);
+                addDerivedDataSeries(entry, null, instance, name, wheel);
             }
             
             for (Account account : client.getAccounts())
             {
                 var instance = new GroupedDataSeries(account, entry, DataSeries.Type.ACCOUNT);
-
-                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, account.getName(), wheel.next());
-                dataSeries.setLineChart(entry.isLineSerie());
-                dataSeries.setShowArea(entry.isAreaSerie());
-                availableDerivedSeries.add(dataSeries);
+                addDerivedDataSeries(entry, null, instance, account.getName(), wheel);
             }
 
             for (Taxonomy taxonomy : client.getTaxonomies())
@@ -145,31 +126,28 @@ public class DataSeriesSet
                         if (classification.getParent() == null)
                             return;
 
-                        var instance = new GroupedDataSeries(classification, entry,
-                                        DataSeries.Type.CLASSIFICATION);
-
-                        var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, taxonomy, instance,
-                                        classification.getName(),
-                                        wheel.next());
-                        dataSeries.setLineChart(entry.isLineSerie());
-                        dataSeries.setShowArea(entry.isAreaSerie());
-                        availableDerivedSeries.add(dataSeries);
+                        var instance = new GroupedDataSeries(classification, entry, DataSeries.Type.CLASSIFICATION);
+                        addDerivedDataSeries(entry, taxonomy, instance, classification.getName(), wheel);
                     }
                 });
             }
 
             ClientFilterMenu menu = new ClientFilterMenu(client, preferences);
-
             for (ClientFilterMenu.Item item : menu.getCustomItems())
             {
                 var instance = new GroupedDataSeries(item, entry, DataSeries.Type.CLIENT_FILTER);
-
-                var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, instance, item.getLabel(), wheel.next());
-                dataSeries.setLineChart(entry.isLineSerie());
-                dataSeries.setShowArea(entry.isAreaSerie());
-                availableDerivedSeries.add(dataSeries);
+                addDerivedDataSeries(entry, null, instance, item.getLabel(), wheel);
             }
         }
+    }
+
+    private void addDerivedDataSeries(DataSeries.ClientDataSeriesType entry, Taxonomy taxonomy,
+                    GroupedDataSeries instance, String label, ColorWheel wheel)
+    {
+        var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, taxonomy, instance, label, wheel.next());
+        dataSeries.setLineChart(entry.isLineSerie());
+        dataSeries.setShowArea(entry.isAreaSerie());
+        availableDerivedSeries.add(dataSeries);
     }
 
     private void buildStatementOfAssetsDataSeries()
