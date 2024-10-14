@@ -34,7 +34,7 @@ public class DonutChartBuilder
         ICircularSeries<?> circularSeries = (ICircularSeries<?>) chart.getSeriesSet().createSeries(SeriesType.DOUGHNUT,
                         model.getTaxonomy().getName());
 
-        circularSeries.setSliceColor(Colors.WHITE);
+        circularSeries.setSliceColor(chart.getPlotArea().getBackground());
 
         Node rootNode = circularSeries.getRootNode();
         rootNode.setData(model.getChartRenderingRootNode());
