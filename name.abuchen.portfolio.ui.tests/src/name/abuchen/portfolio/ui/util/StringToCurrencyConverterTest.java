@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.utils;
+package name.abuchen.portfolio.ui.util;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -10,7 +10,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
 
 @SuppressWarnings("nls")
 public class StringToCurrencyConverterTest
