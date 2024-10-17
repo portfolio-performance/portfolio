@@ -33,6 +33,11 @@ import name.abuchen.portfolio.util.Interval;
 
     public List<T> create(Class<T> type)
     {
+        return create(type, false);
+    }
+
+    public List<T> create(Class<T> type, boolean includeClosedPositions)
+    {
         Map<Security, T> transactions = initRecords(type);
 
         for (Account account : client.getAccounts())
@@ -43,7 +48,7 @@ import name.abuchen.portfolio.util.Interval;
         for (Portfolio portfolio : client.getPortfolios())
         {
             extractSecurityRelatedPortfolioTransactions(type, portfolio, transactions);
-            addPseudoValuationTansactions(portfolio, transactions);
+            addPseudoValuationTansactions(portfolio, transactions, includeClosedPositions);
         }
 
         transactions.values()
@@ -162,14 +167,21 @@ import name.abuchen.portfolio.util.Interval;
 
     private void addPseudoValuationTansactions(Portfolio portfolio, Map<Security, T> records)
     {
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, converter, interval.getStart());
+        addPseudoValuationTansactions(portfolio, records, false);
+    }
+
+    private void addPseudoValuationTansactions(Portfolio portfolio, Map<Security, T> records,
+                    boolean includeClosedPositions)
+    {
+        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, converter, interval.getStart(),
+                        includeClosedPositions);
         for (SecurityPosition position : snapshot.getPositions())
         {
             records.get(position.getSecurity()).addLineItem(
                             CalculationLineItem.atStart(portfolio, position, interval.getStart().atStartOfDay()));
         }
 
-        snapshot = PortfolioSnapshot.create(portfolio, converter, interval.getEnd());
+        snapshot = PortfolioSnapshot.create(portfolio, converter, interval.getEnd(), includeClosedPositions);
         for (SecurityPosition position : snapshot.getPositions())
         {
             records.get(position.getSecurity()).addLineItem(

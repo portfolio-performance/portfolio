@@ -31,13 +31,19 @@ public class ClientSnapshot
 
     public static ClientSnapshot create(Client client, CurrencyConverter converter, LocalDate date)
     {
+        return ClientSnapshot.create(client, converter, date, false);
+    }
+
+    public static ClientSnapshot create(Client client, CurrencyConverter converter, LocalDate date,
+                    boolean includeTransactions)
+    {
         ClientSnapshot snapshot = new ClientSnapshot(converter, date);
 
         for (Account account : client.getAccounts())
             snapshot.accounts.add(AccountSnapshot.create(account, converter, date));
 
         for (Portfolio portfolio : client.getPortfolios())
-            snapshot.portfolios.add(PortfolioSnapshot.create(portfolio, converter, date));
+            snapshot.portfolios.add(PortfolioSnapshot.create(portfolio, converter, date, includeTransactions));
 
         return snapshot;
     }
@@ -75,6 +81,11 @@ public class ClientSnapshot
 
     public PortfolioSnapshot getJointPortfolio()
     {
+        return getJointPortfolio(false);
+    }
+
+    public PortfolioSnapshot getJointPortfolio(boolean includeClosedPositions)
+    {
         if (this.jointPortfolio == null)
         {
             if (portfolios.isEmpty())
@@ -82,7 +93,7 @@ public class ClientSnapshot
                 Portfolio portfolio = new Portfolio();
                 portfolio.setName(Messages.LabelJointPortfolio);
                 portfolio.setReferenceAccount(new Account(Messages.LabelJointPortfolio));
-                this.jointPortfolio = PortfolioSnapshot.create(portfolio, converter, date);
+                this.jointPortfolio = PortfolioSnapshot.create(portfolio, converter, date, includeClosedPositions);
             }
             else if (portfolios.size() == 1)
             {
@@ -90,7 +101,7 @@ public class ClientSnapshot
             }
             else
             {
-                this.jointPortfolio = PortfolioSnapshot.merge(portfolios, converter);
+                this.jointPortfolio = PortfolioSnapshot.merge(portfolios, converter, includeClosedPositions);
             }
         }
 
