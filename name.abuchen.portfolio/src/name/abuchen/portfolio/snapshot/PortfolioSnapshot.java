@@ -28,6 +28,12 @@ public class PortfolioSnapshot
 
     public static PortfolioSnapshot create(Portfolio portfolio, CurrencyConverter converter, LocalDate date)
     {
+        return PortfolioSnapshot.create(portfolio, converter, date, false);
+    }
+
+    public static PortfolioSnapshot create(Portfolio portfolio, CurrencyConverter converter, LocalDate date,
+                    boolean includeClosedPositions)
+    {
         List<SecurityPosition> positions = portfolio.getTransactions() //
                         .stream() //
                         .filter(t -> !t.getDateTime().toLocalDate().isAfter(date)) //
@@ -57,13 +63,20 @@ public class PortfolioSnapshot
                             }
                             return new SecurityPosition(e.getKey(), converter, price, e.getValue()); //
                         }) //
-                        .filter(p -> p.getShares() != 0) //
+                        .filter(p -> includeClosedPositions || p.getShares() != 0) //
                         .collect(Collectors.toList());
+
 
         return new PortfolioSnapshot(portfolio, converter, date, positions);
     }
 
     public static PortfolioSnapshot merge(List<PortfolioSnapshot> snapshots, CurrencyConverter converter)
+    {
+        return PortfolioSnapshot.merge(snapshots, converter, false);
+    }
+
+    public static PortfolioSnapshot merge(List<PortfolioSnapshot> snapshots, CurrencyConverter converter,
+                    boolean includeClosedPositions)
     {
         if (snapshots.isEmpty())
             throw new IllegalArgumentException("Error: PortfolioSnapshots to be merged must not be empty"); //$NON-NLS-1$
@@ -89,7 +102,8 @@ public class PortfolioSnapshot
 
         snapshots.forEach(s -> portfolio.addAllTransaction(s.getPortfolio().getTransactions()));
 
-        return create(portfolio, snapshots.get(0).getCurrencyConverter(), snapshots.get(0).getTime());
+        return create(portfolio, snapshots.get(0).getCurrencyConverter(), snapshots.get(0).getTime(),
+                        includeClosedPositions);
     }
 
     // //////////////////////////////////////////////////////////////

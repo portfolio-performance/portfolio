@@ -74,11 +74,13 @@ public class DivvyDiaryUploader
     public void upload(Client client, CurrencyConverter converter, long portfolioId, boolean includeTransactions)
                     throws IOException
     {
-        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
-        PortfolioSnapshot portfolio = snapshot.getJointPortfolio();
+        boolean includeClosedPositions = true;
+        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, LocalDate.now(), includeClosedPositions);
+        PortfolioSnapshot portfolio = snapshot.getJointPortfolio(includeClosedPositions);
 
         SecurityPerformanceSnapshot performance = SecurityPerformanceSnapshot.create(client, converter,
-                        Interval.of(LocalDate.MIN, LocalDate.now()), SecurityPerformanceIndicator.Costs.class);
+                        Interval.of(LocalDate.MIN, LocalDate.now()), includeClosedPositions,
+                        SecurityPerformanceIndicator.Costs.class);
 
         JSONArray securities = new JSONArray();
         JSONArray activities = new JSONArray();
