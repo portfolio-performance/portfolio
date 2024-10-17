@@ -127,8 +127,14 @@ public final class Colors
     public static final Color BLACK = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
     public static final Color RED = Display.getDefault().getSystemColor(SWT.COLOR_RED);
     public static final Color GREEN = Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
+    public static final Color YELLOW = Display.getDefault().getSystemColor(SWT.COLOR_YELLOW);
+    public static final Color BLUE = Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
 
     private static final ColorRegistry REGISTRY = new ColorRegistry();
+
+    // use a darker green to improve readability for the green-white-red schema
+    public static final Color HEATMAP_DARK_GREEN = getColor(104, 229, 23); // 68E517
+    public static final Color HEATMAP_ORANGE = getColor(255, 165, 0); // FFA500
 
     public static final Color ICON_ORANGE = getColor(241, 143, 1); // F18F01
     public static final Color ICON_BLUE = getColor(14, 110, 142); // 0E6E8E
