@@ -5,6 +5,15 @@
     padding: 0px;
 }
 
+.MPartStack {
+	swt-unselected-hot-tab-color-background: #383A3D;
+    padding: 0px;
+}
+
+.MPartStack.active {
+	swt-selected-tab-highlight: none;
+}
+
 CTabFolder {
     padding: 0px;
 }
