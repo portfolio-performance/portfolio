@@ -97,6 +97,19 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^([\\s]{1,})?[\\,'\\d]+ ([A-Za-z]{3}\\.)?[A-Za-z]{3} (?<name>.*) Depotstelle.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                                                         .match("^Menge[\\s]{1,}[\\.'\\d]+ Kurs (?<currency>[\\w]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[\\w]{3}[\\s]{1,}[\\.'\\d]+$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Wir haben am 09.10.2024 an der BX Swiss für Sie gekauft
+                                        // 15 Registered Shs Microsoft Corp Depotstelle  3500
+                                        // Valor: 951692 / US5949181045
+                                        // Menge  15 Kurs CHF 355.865 CHF  5'337.98
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .find("Wir haben am .* f.r Sie gekauft") //)
+                                                        .match("^([\\s]{1,})?[\\,'\\d]+ (?<name>.*) Depotstelle.*$") //
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .match("^Menge[\\s]{1,}[\\.'\\d]+ Kurs (?<currency>[\\w]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[\\w]{3}[\\s]{1,}[\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off

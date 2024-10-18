@@ -232,6 +232,37 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf07()
+    {
+        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5949181045"), hasWkn("951692"), hasTicker(null), //
+                        hasName("Registered Shs Microsoft Corp"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-10-09T00:00"), hasShares(15.00), //
+                        hasSource("Kauf07.txt"), //
+                        hasNote("Transaktion 69155585-0002"), //
+                        hasAmount("CHF", 5399.37), hasGrossValue("CHF", 5337.98), //
+                        hasTaxes("CHF", 8.01), hasFees("CHF", 53.38))));
+    }
+
+    @Test
     public void testDividende01()
     {
         HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
