@@ -38,6 +38,9 @@ public class DataSeriesSerializer
         Map<String, DataSeries> uuid2series = set.getAvailableSeries().stream()
                         .collect(Collectors.toMap(DataSeries::getUUID, s -> s));
 
+        uuid2series.putAll(set.getAvailableDerivedSeries().stream()
+                        .collect(Collectors.toMap(DataSeries::getUUID, s -> s)));
+
         String[] items = config.split(","); //$NON-NLS-1$
         for (String item : items)
         {

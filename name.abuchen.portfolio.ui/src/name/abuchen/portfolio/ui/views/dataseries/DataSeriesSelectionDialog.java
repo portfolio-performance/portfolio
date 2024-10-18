@@ -111,6 +111,7 @@ public class DataSeriesSelectionDialog extends Dialog
         }
     }
 
+    private boolean isTreeExpanded = true;
     private boolean isMultiSelection = true;
 
     private Node[] elements;
@@ -133,6 +134,11 @@ public class DataSeriesSelectionDialog extends Dialog
         this.isMultiSelection = isMultiSelection;
     }
 
+    public void setExpandTree(boolean isTreeExpanded)
+    {
+        this.isTreeExpanded = isTreeExpanded;
+    }
+
     public void setElements(List<DataSeries> elements)
     {
         Map<String, Node> type2node = new HashMap<>();
@@ -149,6 +155,48 @@ public class DataSeriesSelectionDialog extends Dialog
             {
                 Node group = group2node.computeIfAbsent(series.getGroup(), g -> {
                     Node n = new Node(g.toString());
+                    n.parent = parent;
+                    parent.children.add(n);
+                    return n;
+                });
+                child.parent = group;
+                group.children.add(child);
+            }
+            else
+            {
+                child.parent = parent;
+                parent.children.add(child);
+            }
+        }
+
+        this.elements = type2node.values().toArray(new Node[0]);
+    }
+
+    public void setElementsDerivedData(List<DataSeries> elements)
+    {
+        Map<String, Node> type2node = new HashMap<>();
+        Map<Object, Node> group2node = new HashMap<>();
+
+        for (DataSeries series : elements)
+        {
+            Node child = new Node(series.getSearchLabel());
+            child.dataSeries = series;
+
+            String topLevelNodeLabel = ((GroupedDataSeries) series.getInstance()).getClientDataSeriesLabel();
+            Node gdparent = type2node.computeIfAbsent(topLevelNodeLabel, Node::new);
+
+            String secondLevelNodeLabel = map(((GroupedDataSeries) series.getInstance()).getParentObjectType());
+            Node parent = group2node.computeIfAbsent(topLevelNodeLabel + "|" + secondLevelNodeLabel, g -> { //$NON-NLS-1$
+                Node n = new Node(secondLevelNodeLabel);
+                n.parent = gdparent;
+                gdparent.children.add(n);
+                return n;
+            });
+
+            if (series.getGroup() != null) // for taxonomy
+            {
+                Node group = group2node.computeIfAbsent(topLevelNodeLabel + "|" + series.getGroup(), g -> { //$NON-NLS-1$
+                    Node n = new Node(series.getGroup().toString());
                     n.parent = parent;
                     parent.children.add(n);
                     return n;
@@ -266,6 +314,13 @@ public class DataSeriesSelectionDialog extends Dialog
                                 || node.dataSeries.getType() == DataSeries.Type.SECURITY_BENCHMARK)
                     return LogoManager.instance().getDefaultColumnImage(node.dataSeries.getInstance(),
                                     client.getSettings());
+
+                if (node.dataSeries.getType() == DataSeries.Type.TYPE_PARENT
+                                && ((GroupedDataSeries) node.dataSeries.getInstance())
+                                                .getParentObjectType() == DataSeries.Type.SECURITY)
+                    return LogoManager.instance().getDefaultColumnImage(
+                                    ((GroupedDataSeries) node.dataSeries.getInstance()).getParentObject(),
+                                    client.getSettings());
                 else
                     return node.dataSeries.getImage();
             }
@@ -283,7 +338,8 @@ public class DataSeriesSelectionDialog extends Dialog
 
         hookListener();
 
-        treeViewer.expandAll();
+        if (isTreeExpanded)
+            treeViewer.expandAll();
 
         return composite;
     }
