@@ -13,12 +13,14 @@
 .MPartStack {
 	swt-selected-tab-fill: #F5F5F5 #F9FAFA 100% 100%;
 	swt-unselected-tabs-color: #F9FAFA #F9FAFA 100% 100%;
+	swt-unselected-hot-tab-color-background: #E4E6E9;
     padding: 0px;
 }
 
 .MPartStack.active {
 	swt-selected-tab-fill: #E4E6E9 #F9FAFA 100% 100%;
 	swt-unselected-tabs-color: white white 100% 100%;
+	swt-selected-tab-highlight: none;
 }
 
 CTabFolder {
@@ -28,6 +30,7 @@ CTabFolder {
     swt-outer-keyline-color: '#org-eclipse-ui-workbench-ACTIVE_TAB_OUTER_KEYLINE_COLOR';
     swt-unselected-tabs-color: '#org-eclipse-ui-workbench-ACTIVE_UNSELECTED_TABS_COLOR_START' '#org-eclipse-ui-workbench-ACTIVE_UNSELECTED_TABS_COLOR_END' 100% 100%;
     swt-selected-tab-fill: white;
+	swt-selected-tab-highlight: none;
     swt-shadow-visible: false;
 }
 
