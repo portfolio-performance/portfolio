@@ -17,8 +17,15 @@ public class SecurityPerformanceSnapshot
     public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Interval interval,
                     Class<? extends SecurityPerformanceIndicator>... indicators)
     {
+        return SecurityPerformanceSnapshot.create(client, converter, interval, false, indicators);
+    }
+
+    @SafeVarargs
+    public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Interval interval,
+                    boolean includeClosedPositions, Class<? extends SecurityPerformanceIndicator>... indicators)
+    {
         var records = new SecurityPerformanceSnapshotBuilder<SecurityPerformanceRecord>(client, converter, interval)
-                        .create(SecurityPerformanceRecord.class);
+                        .create(SecurityPerformanceRecord.class, includeClosedPositions);
 
         return doCreateSnapshot(records, indicators);
     }
