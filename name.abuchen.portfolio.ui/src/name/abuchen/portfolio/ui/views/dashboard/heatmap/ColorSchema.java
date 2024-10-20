@@ -45,11 +45,25 @@ enum ColorSchema
                 // (positive) and the background (neutral) or red (negative)
                 double p = Math.min(MAX_PERFORMANCE, Math.abs(performance)) / MAX_PERFORMANCE;
 
-                RGB color = performance > 0f
-                                ? Colors.interpolate(Colors.theme().defaultBackground().getRGB(),
-                                                Colors.HEATMAP_DARK_GREEN.getRGB(), (float) p)
-                                : Colors.interpolate(Colors.theme().defaultBackground().getRGB(), Colors.RED.getRGB(),
-                                                (float) p);
+                RGB color;
+                if (performance > 0f)
+                {
+                    color = Colors.interpolate(Colors.theme().defaultBackground().getRGB(),
+                                    Colors.HEATMAP_DARK_GREEN.getRGB(), (float) p);
+
+                    // Add a transition to yellow
+                    if (p > 0.6)
+                    {
+                        // 0.6 to 1.0 to 0 to 1.0
+                        float yellowFactor = (float) ((p - 0.6) / 0.4);
+                        color = Colors.interpolate(color, Colors.YELLOW.getRGB(), yellowFactor);
+                    }
+                }
+                else
+                {
+                    color = Colors.interpolate(Colors.theme().defaultBackground().getRGB(), Colors.RED.getRGB(),
+                                    (float) p);
+                }
 
                 return resourceManager.createColor(color);
             };
@@ -68,7 +82,7 @@ enum ColorSchema
             };
 
             case BLUE_GRAY_ORANGE -> performance -> {
-                // Performance interpolates between blue(stable) and gray
+                // Performance interpolates between blue (stable) and gray
                 // (neutral) or orange (volatile)
                 double p = normalizePerformance(performance);
 
@@ -82,11 +96,26 @@ enum ColorSchema
                 // Performance interpolates between yellow (moderate) and white
                 // (neutral) or black (extreme)
                 double p = normalizePerformance(performance);
+                RGB color;
 
-                RGB color = performance > 0.05
-                                ? Colors.interpolate(Colors.YELLOW.getRGB(), Colors.BLACK.getRGB(),
-                                                (float) ((p - 0.05) / 0.95))
-                                : Colors.interpolate(Colors.WHITE.getRGB(), Colors.YELLOW.getRGB(), (float) p);
+                if (performance > 0.05)
+                {
+                    // Transition between yellow and black
+                    if (p > 0.6)
+                    {
+                        // 0.6 to 1.0 to 0 to 1.0
+                        float blackFactor = (float) ((p - 0.6) / 0.4);
+                        color = Colors.interpolate(Colors.YELLOW.getRGB(), Colors.BLACK.getRGB(), blackFactor);
+                    }
+                    else
+                    {
+                        color = Colors.interpolate(Colors.YELLOW.getRGB(), Colors.WHITE.getRGB(), (float) p);
+                    }
+                }
+                else
+                {
+                    color = Colors.interpolate(Colors.WHITE.getRGB(), Colors.YELLOW.getRGB(), (float) p);
+                }
 
                 return resourceManager.createColor(color);
             };
