@@ -1,10 +1,12 @@
 package name.abuchen.portfolio.datatransfer.pdf.kbcgroupnv;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -224,5 +226,68 @@ public class KBCGroupNVPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-09-04"), hasAmount("EUR", 32339.70), //
                         hasSource("Rekeninguittreksel01.txt"), hasNote("Overschrijving naar klant"))));
+    }
+
+    @Test
+    public void testRekeninguittreksel02()
+    {
+        KBCGroupNVPDFExtractor extractor = new KBCGroupNVPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rekeninguittreksel02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2022-08-18"), hasAmount("EUR", 50000.00), //
+                        hasSource("Rekeninguittreksel02.txt"), hasNote("Provisionering rekening klant"))));
+    }
+
+    @Test
+    public void testRekeninguittreksel03()
+    {
+        KBCGroupNVPDFExtractor extractor = new KBCGroupNVPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rekeninguittreksel03.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR", "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BKM4GZ66"), hasWkn(null), hasTicker(null), //
+                        hasName("ISHARES PLC CORE MSC E.M.IM UC"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-06-12T11:55:21"), hasShares(2300.00), //
+                        hasSource("Rekeninguittreksel03.txt"), //
+                        hasNote("Borderel 017462864"), //
+                        hasAmount("USD", 69606.12), hasGrossValue("USD", 69743.43), //
+                        hasForexGrossValue("EUR", 64918.22), //
+                        hasTaxes("USD", (78.06 / 0.932651)), hasFees("USD", (50.00 / 0.932651)))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-06-12"), hasAmount("EUR", 45000.00), //
+                        hasSource("Rekeninguittreksel03.txt"), hasNote("Provisionering rekening klant"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-06-12"), hasAmount("EUR", 132673.91), //
+                        hasSource("Rekeninguittreksel03.txt"), hasNote("Provisionering rekening klant"))));
     }
 }

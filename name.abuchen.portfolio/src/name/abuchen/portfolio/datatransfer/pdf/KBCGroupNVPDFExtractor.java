@@ -1,9 +1,12 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -11,6 +14,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
@@ -197,12 +201,31 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
+                        // 1 USD = 0,932651 EUR
+                        // Netto credit 69.606,12 USD
+                        // @formatter:on
+                        .section("termCurrency", "exchangeRate", "baseCurrency", "gross").optional() //
+                        .match("^[\\.,\\d]+ (?<baseCurrency>[\\w]{3}) = (?<exchangeRate>[\\.,\\d]+) (?<termCurrency>[\\w]{3})$") //
+                        .match("^Netto (debit|credit) (\\-)?(?<gross>[\\.,\\d]+) [\\w]{3}$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                            
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        // @formatter:off
                         // Borderel 275825809 Limit order
                         // @formatter:on
                         .section("note").optional() //
                         .match("^(?<note>Borderel [\\d]+).*$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
+                        .conclude(ExtractorUtils.fixGrossValueBuySell())
+                        
                         .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -282,10 +305,39 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         // @formatter:off
+        // 18/08/2022 Provisionering rekening klant Valuta 17/08/2022 50.000,00 EUR
+        // @formatter:on
+        Block depositBlock = new Block("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} Provisionering rekening klant.*$");
+        type.addBlock(depositBlock);
+        depositBlock.setMaxSize(1);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "note", "amount", "currency") //
+                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) " //
+                                        + "(?<note>Provisionering rekening klant) " //
+                                        + "Valuta [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} " //
+                                        + "(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
         // 04/09/2024 Overschrijving naar klant Valuta 04/09/2024 -32.339,70 EUR
         // @formatter:on
         Block removalBlock = new Block("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} Overschrijving naar klant.*$");
         type.addBlock(removalBlock);
+        removalBlock.setMaxSize(1);
         removalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
