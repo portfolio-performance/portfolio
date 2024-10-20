@@ -240,8 +240,21 @@ public final class Colors
         return getColor(ColorConversion.brighter(base.getRGB()));
     }
 
+    /**
+     * Interpolates between two RGB colors.
+     *
+     * @param first
+     *            The first color.
+     * @param second
+     *            The second color.
+     * @param factor
+     *            A value between 0 and 1 indicating the blend ratio. Values
+     *            outside this range are clamped to ensure valid RGB results.
+     * @return The interpolated RGB color.
+     */
     public static RGB interpolate(RGB first, RGB second, float factor)
     {
+        factor = Math.max(0, Math.min(factor, 1)); // Clamp factor between 0 and 1
         int red = Math.round(first.red + factor * (second.red - first.red));
         int green = Math.round(first.green + factor * (second.green - first.green));
         int blue = Math.round(first.blue + factor * (second.blue - first.blue));

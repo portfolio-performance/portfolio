@@ -42,13 +42,14 @@ enum ColorSchema
 
             case GREEN_WHITE_RED -> performance -> {
                 // Performance is normalized and interpolated between green
-                // (positive) and white (neutral) or red (negative)
+                // (positive) and the background (neutral) or red (negative)
                 double p = Math.min(MAX_PERFORMANCE, Math.abs(performance)) / MAX_PERFORMANCE;
 
                 RGB color = performance > 0f
-                                ? Colors.interpolate(Colors.WHITE.getRGB(), Colors.HEATMAP_DARK_GREEN.getRGB(),
-                                                (float) p)
-                                : Colors.interpolate(Colors.WHITE.getRGB(), Colors.RED.getRGB(), (float) p);
+                                ? Colors.interpolate(Colors.theme().defaultBackground().getRGB(),
+                                                Colors.HEATMAP_DARK_GREEN.getRGB(), (float) p)
+                                : Colors.interpolate(Colors.theme().defaultBackground().getRGB(), Colors.RED.getRGB(),
+                                                (float) p);
 
                 return resourceManager.createColor(color);
             };
