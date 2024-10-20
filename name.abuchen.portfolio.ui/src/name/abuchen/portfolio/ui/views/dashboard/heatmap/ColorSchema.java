@@ -13,9 +13,9 @@ enum ColorSchema
 {
     GREEN_YELLOW_RED(Messages.LabelGreenYellowRed), //
     GREEN_WHITE_RED(Messages.LabelGreenWhiteRed), //
-    GREEN_RED_GREY(Messages.LabelGreenRedGrey), //
-    BLUE_ORANGE_GREY(Messages.LabelBlueOrangeGrey), //
-    BLACK_YELLOW_WHITE(Messages.LabelBlackYellowWhite);
+    GREEN_GRAY_RED(Messages.LabelGreenGrayRed), //
+    BLUE_GRAY_ORANGE(Messages.LabelBlueGrayOrange), //
+    YELLOW_WHITE_BLACK(Messages.LabelYellowWhiteBlack);
 
     private static final double MAX_PERFORMANCE = 0.07f;
 
@@ -32,53 +32,54 @@ enum ColorSchema
         {
             case GREEN_YELLOW_RED -> performance -> {
                 // Normalize performance between -0.07 and +0.07 and map it to a
-                // hue between 0 (red) and 120 (green)
+                // hue-like scale between 0 (red) and 60 (yellow) or 120
+                // (green).
                 double p = normalizePerformance(performance);
-
-                // 0 = red, 60 = yellow, 120 = green
                 float hue = (float) p * 120f;
 
                 return resourceManager.createColor(new RGB(hue, 0.9f, 1f));
             };
 
             case GREEN_WHITE_RED -> performance -> {
-                // Performance is normalized and interpolated between white
-                // (neutral) and green (positive) or red (negative)
+                // Performance is normalized and interpolated between green
+                // (positive) and white (neutral) or red (negative)
                 double p = Math.min(MAX_PERFORMANCE, Math.abs(performance)) / MAX_PERFORMANCE;
 
                 RGB color = performance > 0f
-                                ? Colors.interpolate(Colors.WHITE.getRGB(), Colors.HEATMAP_DARK_GREEN.getRGB(), (float) p)
+                                ? Colors.interpolate(Colors.WHITE.getRGB(), Colors.HEATMAP_DARK_GREEN.getRGB(),
+                                                (float) p)
                                 : Colors.interpolate(Colors.WHITE.getRGB(), Colors.RED.getRGB(), (float) p);
 
                 return resourceManager.createColor(color);
             };
 
-            case GREEN_RED_GREY -> performance -> {
-                // Performance interpolates between grey (neutral), green
-                // (positive), or red (negative)
+            case GREEN_GRAY_RED -> performance -> {
+                // Performance interpolates between green (positive) and gray
+                // (neutral) or red (negative)
                 double p = normalizePerformance(performance);
 
-                RGB color = performance > 0 ? Colors.interpolate(Colors.GRAY.getRGB(), Colors.HEATMAP_DARK_GREEN.getRGB(), (float) p)
+                RGB color = performance > 0
+                                ? Colors.interpolate(Colors.GRAY.getRGB(), Colors.HEATMAP_DARK_GREEN.getRGB(),
+                                                (float) p)
                                 : Colors.interpolate(Colors.GRAY.getRGB(), Colors.RED.getRGB(), (float) p);
 
                 return resourceManager.createColor(color);
             };
 
-            case BLUE_ORANGE_GREY -> performance -> {
-                // Performance interpolates between grey (neutral), blue
-                // (stable), or orange (volatile)
+            case BLUE_GRAY_ORANGE -> performance -> {
+                // Performance interpolates between blue(stable) and gray
+                // (neutral) or orange (volatile)
                 double p = normalizePerformance(performance);
 
-                RGB color = performance > 0
-                                ? Colors.interpolate(Colors.GRAY.getRGB(), Colors.BLUE.getRGB(), (float) p)
+                RGB color = performance > 0 ? Colors.interpolate(Colors.GRAY.getRGB(), Colors.BLUE.getRGB(), (float) p)
                                 : Colors.interpolate(Colors.GRAY.getRGB(), Colors.HEATMAP_ORANGE.getRGB(), (float) p);
 
                 return resourceManager.createColor(color);
             };
 
-            case BLACK_YELLOW_WHITE -> performance -> {
-                // Performance interpolates between white (neutral), yellow
-                // (moderate), or black (extreme)
+            case YELLOW_WHITE_BLACK -> performance -> {
+                // Performance interpolates between yellow (moderate) and white
+                // (neutral) or black (extreme)
                 double p = normalizePerformance(performance);
 
                 RGB color = performance > 0.05
