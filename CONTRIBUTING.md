@@ -44,7 +44,7 @@
 
 ### Install Eclipse
 
-* Java 17, for example from [Azul](https://www.azul.com/downloads/)
+* Java 21, for example from [Azul](https://www.azul.com/downloads/)
 
 * [Eclipse IDE](https://www.eclipse.org/downloads/packages/) - PP is build using the Eclipse RCP (Rich Client Platform) framework. Therefore it generally does not make sense to use other IDEs. Download the **Eclipse IDE for RCP and RAP Developers** package.
 
@@ -105,7 +105,7 @@ Configure the following preferences (`Menu` --> `Window` --> `Preferences`)
 		- `name.abuchen.portfolio.datatransfer.ExtractorTestUtilities`
 		- `name.abuchen.portfolio.junit.TestUtilities`
 * `Java` --> `Installed JREs`
-	- Add the Java 17 JDK
+	- Add the Java 21 JDK
 
 
 ## Project setup
@@ -145,7 +145,7 @@ First, add the *Launch Configuration* view to your workspace:
 
 It is not required to use [Maven](https://maven.apache.org) as you can develop using the Eclipse IDE with the setup above. The Maven build is used for the [Github Actions](https://github.com/portfolio-performance/portfolio/actions) build.
 
-The Maven build works fine when `JAVA_HOME` points to an (Open-)JDK 17 installation.
+The Maven build works fine when `JAVA_HOME` points to an (Open-)JDK 21 installation.
 
 Linux/macOS
 ```
