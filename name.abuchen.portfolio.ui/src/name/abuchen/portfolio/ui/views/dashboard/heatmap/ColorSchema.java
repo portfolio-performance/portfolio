@@ -125,12 +125,12 @@ enum ColorSchema
                     }
                     else
                     {
-                        color = Colors.interpolate(Colors.YELLOW.getRGB(), Colors.WHITE.getRGB(), (float) p);
+                        color = Colors.interpolate(Colors.YELLOW.getRGB(), Colors.theme().defaultBackground().getRGB(), (float) p);
                     }
                 }
                 else
                 {
-                    color = Colors.interpolate(Colors.WHITE.getRGB(), Colors.YELLOW.getRGB(), (float) p);
+                    color = Colors.interpolate(Colors.theme().defaultBackground().getRGB(), Colors.YELLOW.getRGB(), (float) p);
                 }
 
                 return resourceManager.createColor(color);
