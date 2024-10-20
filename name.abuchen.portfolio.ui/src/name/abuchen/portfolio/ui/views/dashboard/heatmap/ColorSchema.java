@@ -46,23 +46,25 @@ enum ColorSchema
                 double p = Math.min(MAX_PERFORMANCE, Math.abs(performance)) / MAX_PERFORMANCE;
 
                 RGB color;
+
                 if (performance > 0f)
                 {
                     color = Colors.interpolate(Colors.theme().defaultBackground().getRGB(),
                                     Colors.HEATMAP_DARK_GREEN.getRGB(), (float) p);
 
-                    // Add a transition to yellow
-                    if (p > 0.6)
+                    // Adjusted transition to yellow earlier
+                    if (p > 0.4)
                     {
-                        // 0.6 to 1.0 to 0 to 1.0
-                        float yellowFactor = (float) ((p - 0.6) / 0.4);
+                        // 0.4 to 1.0 to 0 to 1.0
+                        float yellowFactor = (float) ((p - 0.4) / 0.6);
                         color = Colors.interpolate(color, Colors.YELLOW.getRGB(), yellowFactor);
                     }
                 }
                 else
                 {
+                    // Using -p for correct mapping of negatives
                     color = Colors.interpolate(Colors.theme().defaultBackground().getRGB(), Colors.RED.getRGB(),
-                                    (float) p);
+                                    (float) -p);
                 }
 
                 return resourceManager.createColor(color);
@@ -72,11 +74,17 @@ enum ColorSchema
                 // Performance interpolates between green (positive) and gray
                 // (neutral) or red (negative)
                 double p = normalizePerformance(performance);
+                RGB color;
 
-                RGB color = performance > 0
-                                ? Colors.interpolate(Colors.GRAY.getRGB(), Colors.HEATMAP_DARK_GREEN.getRGB(),
-                                                (float) p)
-                                : Colors.interpolate(Colors.GRAY.getRGB(), Colors.RED.getRGB(), (float) p);
+                if (performance > 0)
+                {
+                    color = Colors.interpolate(Colors.GRAY.getRGB(), Colors.HEATMAP_DARK_GREEN.getRGB(), (float) p);
+                }
+                else
+                {
+                    // Using -p for correct mapping of negatives
+                    color = Colors.interpolate(Colors.GRAY.getRGB(), Colors.RED.getRGB(), (float) -p);
+                }
 
                 return resourceManager.createColor(color);
             };
@@ -85,9 +93,17 @@ enum ColorSchema
                 // Performance interpolates between blue (stable) and gray
                 // (neutral) or orange (volatile)
                 double p = normalizePerformance(performance);
+                RGB color;
 
-                RGB color = performance > 0 ? Colors.interpolate(Colors.GRAY.getRGB(), Colors.BLUE.getRGB(), (float) p)
-                                : Colors.interpolate(Colors.GRAY.getRGB(), Colors.HEATMAP_ORANGE.getRGB(), (float) p);
+                if (performance > 0)
+                {
+                    color = Colors.interpolate(Colors.GRAY.getRGB(), Colors.BLUE.getRGB(), (float) p);
+                }
+                else
+                {
+                    // Using -p for correct mapping of negatives
+                    color = Colors.interpolate(Colors.GRAY.getRGB(), Colors.HEATMAP_ORANGE.getRGB(), (float) -p);
+                }
 
                 return resourceManager.createColor(color);
             };
