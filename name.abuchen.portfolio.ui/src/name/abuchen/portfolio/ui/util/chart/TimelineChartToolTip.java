@@ -23,6 +23,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -230,11 +231,17 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         Object focus = getFocusedObject();
         extraInfoProvider.forEach(provider -> provider.accept(container, focus));
 
-        Label hint = new Label(data, SWT.NONE);
+        Label hint = new Label(data, SWT.WRAP);
         hint.setText(Messages.TooltipHintPressAlt);
         hint.setFont(this.resourceManager
                         .create(FontDescriptor.createFrom(data.getFont()).increaseHeight(-3).withStyle(SWT.ITALIC)));
-        GridDataFactory.fillDefaults().span(2, 1).applyTo(hint);
+        // first set a small width and then update later
+        GridData hintData = GridDataFactory.fillDefaults().span(2, 1).hint(10, SWT.DEFAULT).span(2, 1).create();
+        hint.setLayoutData(hintData);
+
+        hint.getParent().pack();
+        hintData.widthHint = hint.getBounds().width;
+        hint.getParent().pack();
     }
 
     private List<Pair<ISeries, Double>> computeValues(ISeries[] allSeries)
