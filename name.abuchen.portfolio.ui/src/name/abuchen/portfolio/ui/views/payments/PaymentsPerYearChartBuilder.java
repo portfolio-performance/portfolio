@@ -15,7 +15,6 @@ import org.eclipse.swtchart.LineStyle;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.TabularDataSource;
 import name.abuchen.portfolio.ui.util.TabularDataSource.Column;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
@@ -140,8 +139,6 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
 
         double[] series = new double[LocalDate.now().getYear() - startYear + 1];
 
-        boolean hasNegativeNumber = false;
-
         for (int index = 0; index < model.getNoOfMonths(); index += 12)
         {
             int year = (index / 12);
@@ -153,23 +150,9 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
                 total += model.getSum().getValue(index + ii);
 
             series[year] = total / Values.Amount.divider();
-
-            if (total < 0L)
-                hasNegativeNumber = true;
         }
 
-        if (hasNegativeNumber)
-        {
-            IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(SeriesType.BAR,
-                            Messages.LabelPaymentsPerYear);
-            barSeries.setYSeries(series);
-            barSeries.setBarColor(Colors.DARK_BLUE);
-        }
-        else
-        {
-            // reverse the order because stacked series are sorted in reverse
-            // order in the legend by SWTChart
-            for (int i = series.length - 1; i >= 0; i--)
+        for (int i = 0; i <= series.length - 1; i++)
             {
                 int year = model.getStartYear() + i;
                 IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(SeriesType.BAR,
@@ -182,18 +165,8 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
 
                 barSeries.setBarColor(PaymentsColors.getColor(year));
                 barSeries.setBarPadding(25);
-                barSeries.enableStack(true);
+                barSeries.setBarOverlay(true);
             }
-
-            // Un-suspend chart to force SWTChart to update the stackSeries.
-            // Otherwise the internal metadata is not correct and SWTChart does
-            // not recognized them fully as stacked series
-            if (chart.isUpdateSuspended())
-            {
-                chart.suspendUpdate(false);
-                chart.suspendUpdate(true);
-            }
-        }
     }
 
     private void updateCategorySeries(Chart chart, PaymentsViewModel model)
