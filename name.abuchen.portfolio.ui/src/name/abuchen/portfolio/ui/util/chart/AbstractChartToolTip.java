@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swtchart.Chart;
-import org.eclipse.swtchart.IPlotArea;
 
 import name.abuchen.portfolio.ui.UIConstants;
 
@@ -34,11 +33,11 @@ public abstract class AbstractChartToolTip implements Listener
     {
         this.chart = chart;
 
-        IPlotArea plotArea = getPlotArea();
-        plotArea.getControl().addListener(SWT.MouseDown, this);
-        plotArea.getControl().addListener(SWT.MouseMove, this);
-        plotArea.getControl().addListener(SWT.MouseUp, this);
-        plotArea.getControl().addListener(SWT.Dispose, this);
+        Composite plotArea = getPlotArea();
+        plotArea.addListener(SWT.MouseDown, this);
+        plotArea.addListener(SWT.MouseMove, this);
+        plotArea.addListener(SWT.MouseUp, this);
+        plotArea.addListener(SWT.Dispose, this);
     }
 
     public void setActive(boolean isActive)
@@ -173,22 +172,22 @@ public abstract class AbstractChartToolTip implements Listener
 
     private Rectangle calculateBounds(Event event, Point size)
     {
-        Rectangle plotArea = ((Composite) getPlotArea()).getClientArea();
+        Rectangle plotArea = getPlotArea().getClientArea();
 
         int x = event.x + (size.x / 2) > plotArea.width ? plotArea.width - size.x : event.x - (size.x / 2);
         x = Math.max(x, 0);
 
-        Point pt = ((Composite) getPlotArea()).toDisplay(x, event.y);
+        Point pt = getPlotArea().toDisplay(x, event.y);
         // show above
         int y = pt.y - size.y - PADDING;
 
         return new Rectangle(pt.x, y, size.x, size.y);
     }
 
-    protected final IPlotArea getPlotArea()
+    protected final Composite getPlotArea()
     {
         if (chart != null)
-            return chart.getPlotArea();
+            return (Composite) chart.getPlotArea();
         else
             throw new IllegalArgumentException("no plot area found"); //$NON-NLS-1$
     }
