@@ -173,12 +173,12 @@ public abstract class AbstractChartToolTip implements Listener
 
     private Rectangle calculateBounds(Event event, Point size)
     {
-        Rectangle plotArea = ((Composite) getPlotArea().getControl()).getClientArea();
+        Rectangle plotArea = ((Composite) getPlotArea()).getClientArea();
 
         int x = event.x + (size.x / 2) > plotArea.width ? plotArea.width - size.x : event.x - (size.x / 2);
         x = Math.max(x, 0);
 
-        Point pt = getPlotArea().getControl().toDisplay(x, event.y);
+        Point pt = ((Composite) getPlotArea()).toDisplay(x, event.y);
         // show above
         int y = pt.y - size.y - PADDING;
 
