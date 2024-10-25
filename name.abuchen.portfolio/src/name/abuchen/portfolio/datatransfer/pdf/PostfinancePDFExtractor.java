@@ -353,7 +353,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Zahlungsverkehr \\- Gutschrift .*$");
+        Block firstRelevantLine = new Block("^Zahlungsverkehr \\- (Gutschrift|Belastung).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -363,6 +363,14 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             AccountTransaction accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
+                        })
+
+                        // Is type --> "Belastung" change from DEPOSIT to REMOVAL
+                        .section("type").optional() //
+                        .match("^Zahlungsverkehr \\- (?<type>(Gutschrift|Belastung)) .*$") //
+                        .assign((t, v) -> {
+                            if ("Belastung".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
                         })
 
                         // @formatter:off
