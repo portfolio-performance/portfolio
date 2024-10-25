@@ -74,7 +74,7 @@ public class TaxonomyChartWidget extends CircularChartWidget<TaxonomyModel>
         {
             ICircularSeries<?> circularSeries = (ICircularSeries<?>) getChart().getSeriesSet()
                             .createSeries(SeriesType.DOUGHNUT, Messages.LabelErrorNoTaxonomySelected);
-            circularSeries.setSliceColor(Colors.WHITE);
+            circularSeries.setSliceColor(getChart().getPlotArea().getBackground());
             circularSeries.setSeries(new String[] { Messages.LabelErrorNoTaxonomySelected }, new double[] { 100 });
             circularSeries.setColor(Messages.LabelErrorNoTaxonomySelected, Colors.LIGHT_GRAY);
         }

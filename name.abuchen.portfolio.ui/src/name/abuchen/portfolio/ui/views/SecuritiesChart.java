@@ -1228,7 +1228,7 @@ public class SecuritiesChart
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
                         .sorted(Transaction.BY_DATE).toList();
 
-        addInvestmentMarkers(purchase, PortfolioTransaction.Type.BUY.toString(), colorEventPurchase,
+        addInvestmentMarkers(purchase, Messages.SecurityMenuBuy, colorEventPurchase,
                         PlotSymbolType.TRIANGLE);
 
         List<PortfolioTransaction> sales = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
@@ -1238,7 +1238,7 @@ public class SecuritiesChart
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
                         .sorted(Transaction.BY_DATE).toList();
 
-        addInvestmentMarkers(sales, PortfolioTransaction.Type.SELL.toString(), colorEventSale,
+        addInvestmentMarkers(sales, Messages.SecurityMenuSell, colorEventSale,
                         PlotSymbolType.INVERTED_TRIANGLE);
     }
 
