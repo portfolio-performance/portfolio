@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 import jakarta.inject.Inject;
@@ -386,53 +387,54 @@ public class PerformanceView extends AbstractHistoricView
 
     private void addTreeActionsContextMenu(IMenuManager manager, Object obj)
     {
-        manager.add(new Action(Messages.LabelExpand)
-        {
-            @Override
-            public void run()
-            {
-                calculation.setExpandedState(obj, true);
-            }
+        if (obj == null)
+            return;
 
-            @Override
-            public boolean isEnabled()
-            {
-                return calculation.isExpandable(obj) && !calculation.getExpandedState(obj);
-            }
-        });
+        addAction(manager, Messages.LabelExpand, () -> {
+            calculation.setExpandedState(obj, true);
+        }, () -> calculation.isExpandable(obj) && !calculation.getExpandedState(obj));
 
-        manager.add(new Action(Messages.LabelCollapse)
-        {
-            @Override
-            public void run()
-            {
-                calculation.setExpandedState(obj, false);
-            }
-
-            @Override
-            public boolean isEnabled()
-            {
-                return calculation.getExpandedState(obj);
-            }
-        });
+        addAction(manager, Messages.LabelCollapse, () -> {
+            calculation.setExpandedState(obj, false);
+        }, () -> calculation.getExpandedState(obj));
 
         manager.add(new Separator());
+        addAction(manager, Messages.LabelExpandAll, calculation::expandAll);
+        addAction(manager, Messages.LabelCollapseAll, calculation::collapseAll);
+    }
 
-        manager.add(new Action(Messages.LabelExpandAll)
+    private void addAction(IMenuManager manager, String text, Runnable runAction)
+    {
+        manager.add(new Action(text)
         {
             @Override
             public void run()
             {
-                calculation.expandAll();
+                runAction.run();
+            }
+
+            @Override
+            public boolean isEnabled()
+            {
+                return true;
             }
         });
+    }
 
-        manager.add(new Action(Messages.LabelCollapseAll)
+    private void addAction(IMenuManager manager, String text, Runnable runAction, BooleanSupplier isEnabled)
+    {
+        manager.add(new Action(text)
         {
             @Override
             public void run()
             {
-                calculation.collapseAll();
+                runAction.run();
+            }
+
+            @Override
+            public boolean isEnabled()
+            {
+                return isEnabled.getAsBoolean();
             }
         });
     }

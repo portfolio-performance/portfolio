@@ -911,6 +911,9 @@ import name.abuchen.portfolio.util.TextUtil;
 
     private void addAvailableAssignments(MenuManager manager, TaxonomyNode targetNode)
     {
+        if (targetNode == null)
+            return;
+
         for (final TaxonomyNode assignment : getModel().getUnassignedNode().getChildren())
         {
             String label = assignment.getName();
