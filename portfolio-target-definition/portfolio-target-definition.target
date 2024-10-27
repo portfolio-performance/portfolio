@@ -109,22 +109,6 @@
 			</dependency>
 		</dependencies>
 	</location>
-	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="SWT Chart 0.10" missingManifest="generate" type="Maven">
-		<dependencies>
-			<dependency>
-				<groupId>org.swtchart</groupId>
-				<artifactId>org.swtchart</artifactId>
-				<version>0.10.0</version>
-				<type>jar</type>
-			</dependency>
-		</dependencies>
-		<repositories>
-			<repository>
-				<id>portfolio-non-maven-dependencies</id>
-				<url>https://portfolio-performance.github.io/portfolio-maven-repo/</url>
-			</repository>
-		</repositories>
-	</location>
 	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="SWT Treemap" missingManifest="generate" type="Maven">
 		<dependencies>
 			<dependency>
