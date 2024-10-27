@@ -5,7 +5,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Locale;
 
 import org.hamcrest.core.IsNull;
@@ -131,11 +130,10 @@ public class SimpleMovingAverageTest
             date = date.plusDays(1);
         }
         LocalDate startDate = LocalDate.parse("2016-06-01");
-        Date isStartDate = java.sql.Date.valueOf(startDate);
         ChartLineSeriesAxes sma = new SimpleMovingAverage(10, security, new ChartInterval(startDate, LocalDate.now()))
                         .getSMA();
         assertThat(sma, is(IsNull.notNullValue()));
-        assertThat(sma.getDates()[0], is(isStartDate));
+        assertThat(sma.getDates()[0], is(startDate));
     }
 
 }
