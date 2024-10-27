@@ -21,6 +21,7 @@ import org.eclipse.swtchart.ICircularSeries;
 import org.eclipse.swtchart.ICustomPaintListener;
 import org.eclipse.swtchart.ISeries;
 import org.eclipse.swtchart.ISeries.SeriesType;
+import org.eclipse.swtchart.internal.PlotArea;
 import org.eclipse.swtchart.model.Node;
 
 import name.abuchen.portfolio.money.Values;
@@ -270,9 +271,17 @@ public class CircularChart extends Chart
         this(parent, chartType, node -> Values.Percent2.format(node.getValue() / node.getParent().getValue()));
     }
 
+    @SuppressWarnings("restriction")
     public CircularChart(Composite parent, SeriesType chartType, ILabelProvider labelProvider)
     {
-        super(parent, SWT.NONE);
+        super(parent, SWT.NONE, null);
+
+        // we must use the secondary constructor that is not creating the
+        // PlotArea because the default constructor adds a mouse move listener
+        // that is redrawing the chart on every mouse move. That leads to janky
+        // UI when the tooltip is shown.
+        new PlotArea(this, SWT.NONE);
+
         this.chartType = chartType;
         this.labelProvider = labelProvider;
 

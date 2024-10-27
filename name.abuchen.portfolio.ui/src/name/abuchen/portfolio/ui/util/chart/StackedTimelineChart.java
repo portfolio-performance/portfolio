@@ -16,6 +16,7 @@ import org.eclipse.swtchart.ICustomPaintListener;
 import org.eclipse.swtchart.ILineSeries;
 import org.eclipse.swtchart.ILineSeries.PlotSymbolType;
 import org.eclipse.swtchart.ISeries.SeriesType;
+import org.eclipse.swtchart.internal.PlotArea;
 import org.eclipse.swtchart.LineStyle;
 import org.eclipse.swtchart.Range;
 
@@ -32,9 +33,16 @@ public class StackedTimelineChart extends Chart // NOSONAR
 
     private ChartContextMenu contextMenu;
 
+    @SuppressWarnings("restriction")
     public StackedTimelineChart(Composite parent, List<LocalDate> dates)
     {
-        super(parent, SWT.NONE);
+        super(parent, SWT.NONE, null);
+
+        // we must use the secondary constructor that is not creating the
+        // PlotArea because the default constructor adds a mouse move listener
+        // that is redrawing the chart on every mouse move. That leads to janky
+        // UI when the tooltip is shown.
+        new PlotArea(this, SWT.NONE);
 
         setData(UIConstants.CSS.CLASS_NAME, "chart"); //$NON-NLS-1$
 
