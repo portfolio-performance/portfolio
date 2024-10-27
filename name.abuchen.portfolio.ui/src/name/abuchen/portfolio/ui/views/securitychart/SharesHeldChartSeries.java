@@ -21,6 +21,7 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.util.chart.TimelineSeriesModel;
 import name.abuchen.portfolio.ui.views.SecuritiesChart;
 import name.abuchen.portfolio.ui.views.SecuritiesChart.ChartInterval;
 
@@ -103,7 +104,10 @@ public class SharesHeldChartSeries
             var label = index == 0 ? Messages.ColumnSharesOwned
                             : MessageFormat.format(Messages.ColumnSharesOwnedHoldingPeriod, index + 1);
 
-            var series = (ILineSeries) timelineChart.getSeriesSet().createSeries(SeriesType.LINE, label);
+            @SuppressWarnings("unchecked")
+            var series = (ILineSeries<Integer>) timelineChart.getSeriesSet().createSeries(SeriesType.LINE, label);
+
+            series.setDataModel(new TimelineSeriesModel(d.dates.toArray(new LocalDate[0]), Doubles.toArray(d.values)));
 
             series.setSymbolType(PlotSymbolType.NONE);
             series.setYAxisId(axis.getId());
@@ -113,8 +117,6 @@ public class SharesHeldChartSeries
             series.setLineStyle(LineStyle.SOLID);
             series.enableArea(false);
             series.setAntialias(chart.getAntialias());
-            series.setXDateSeries(TimelineChart.toJavaUtilDate(d.dates.toArray(new LocalDate[0])));
-            series.setYSeries(Doubles.toArray(d.values));
             series.setLineColor(chart.getSharesHeldColor());
             series.setVisibleInLegend(index == 0);
         }

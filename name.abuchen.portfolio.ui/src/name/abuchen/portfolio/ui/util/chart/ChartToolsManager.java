@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.ui.util.chart;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -82,7 +80,7 @@ public class ChartToolsManager
         public static Spot from(Event e, TimelineChart chart)
         {
             double xCoordinate = chart.getAxisSet().getXAxis(0).getDataCoordinate(e.x);
-            LocalDate date = Instant.ofEpochMilli((long) xCoordinate).atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate date = LocalDate.ofEpochDay((long) xCoordinate);
             double valueYLeftAxis = chart.getAxisSet().getYAxis(2).getDataCoordinate(e.y);
             double valueYRightAxis = chart.getAxisSet().getYAxis(0).getDataCoordinate(e.y);
 

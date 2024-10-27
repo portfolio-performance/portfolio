@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -187,7 +186,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
             chart.suspendUpdate(true);
             chart.getTitle().setText(getTitle());
-            for (ISeries s : chart.getSeriesSet().getSeries())
+            for (ISeries<?> s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             setChartSeries();
@@ -275,7 +274,6 @@ public class PerformanceChartView extends AbstractHistoricView
                 {
                     TimelineChartCSVExporter exporter = new TimelineChartCSVExporter(chart);
                     exporter.addDiscontinousSeries(Messages.PerformanceChartLabelCPI);
-                    exporter.setDateFormat(new SimpleDateFormat("yyyy-MM-dd")); //$NON-NLS-1$
                     exporter.setValueFormat(new DecimalFormat("0.##########")); //$NON-NLS-1$
                     exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
                 }
