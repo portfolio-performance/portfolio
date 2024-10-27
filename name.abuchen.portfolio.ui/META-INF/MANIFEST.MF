@@ -114,8 +114,7 @@ Import-Package: com.google.common.base,
  org.osgi.framework,
  org.osgi.service.component.annotations,
  org.osgi.service.event,
- org.osgi.service.prefs,
- org.swtchart
+ org.osgi.service.prefs
 Require-Bundle: name.abuchen.portfolio;bundle-version="0.71.3",
  org.eclipse.nebula.cwt,
  org.eclipse.ui.forms,
