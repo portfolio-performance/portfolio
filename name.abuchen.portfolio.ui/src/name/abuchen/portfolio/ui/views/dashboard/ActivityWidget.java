@@ -25,7 +25,6 @@ import org.eclipse.swtchart.IAxis;
 import org.eclipse.swtchart.IAxis.Position;
 import org.eclipse.swtchart.IBarSeries;
 import org.eclipse.swtchart.ICustomPaintListener;
-import org.eclipse.swtchart.ISeries;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.LineStyle;
 
@@ -308,7 +307,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
 
             chart.getTitle().setText(title.getText());
 
-            for (ISeries s : chart.getSeriesSet().getSeries())
+            for (var s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             ChartType chartType = get(ChartTypeConfig.class).getValue();
@@ -400,7 +399,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
     private void createSeries(ChartType chartType, Interval interval, List<TransactionPair<?>> transactions,
                     PortfolioTransaction.Type type, Color color)
     {
-        IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(SeriesType.BAR, type.toString());
+        var barSeries = (IBarSeries<?>) chart.getSeriesSet().createSeries(SeriesType.BAR, type.toString());
         barSeries.setDescription(type.toString());
         List<Year> years = interval.getYears();
         List<YearMonth> yearMonths = interval.getYearMonths();

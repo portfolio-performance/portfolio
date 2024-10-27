@@ -182,7 +182,7 @@ public class PaymentsPerQuarterChartBuilder implements PaymentsChartBuilder
         {
             int year = model.getStartYear() + (index / 12);
 
-            IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(SeriesType.BAR, String.valueOf(year));
+            var barSeries = (IBarSeries<?>) chart.getSeriesSet().createSeries(SeriesType.BAR, String.valueOf(year));
 
             double[] series = new double[Math.min(12, model.getNoOfMonths() - index)];
             for (int ii = 0; ii < series.length; ii++)

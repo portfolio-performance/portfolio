@@ -26,11 +26,11 @@ public class ScatterChartToolTip extends AbstractChartToolTip
     protected Object getFocusObjectAt(Event event)
     {
         // find closest scatter series
-        ISeries[] series = getChart().getSeriesSet().getSeries();
+        var series = getChart().getSeriesSet().getSeries();
 
-        ISeries closest = null;
+        ISeries<?> closest = null;
         double minDist = Double.MAX_VALUE;
-        for (ISeries serie : series)
+        for (var serie : series)
         {
             Point point = serie.getPixelCoordinates(0);
 
@@ -56,7 +56,7 @@ public class ScatterChartToolTip extends AbstractChartToolTip
 
         IAxis xAxis = getChart().getAxisSet().getXAxis(0);
         IAxis yAxis = getChart().getAxisSet().getYAxis(0);
-        ILineSeries closest = (ILineSeries) getFocusedObject();
+        var closest = (ILineSeries<?>) getFocusedObject();
 
         // header
 

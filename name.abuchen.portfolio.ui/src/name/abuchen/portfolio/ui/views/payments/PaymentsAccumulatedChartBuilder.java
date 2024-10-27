@@ -57,8 +57,7 @@ public class PaymentsAccumulatedChartBuilder implements PaymentsChartBuilder
         {
             int year = model.getStartYear() + (index / 12);
 
-            ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            String.valueOf(year));
+            var lineSeries = (ILineSeries<?>) chart.getSeriesSet().createSeries(SeriesType.LINE, String.valueOf(year));
             lineSeries.setDescription(lineSeries.getId());
 
             double[] series = new double[Math.min(12, model.getNoOfMonths() - index)];

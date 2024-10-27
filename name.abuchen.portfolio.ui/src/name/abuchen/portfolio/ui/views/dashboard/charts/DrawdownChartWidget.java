@@ -12,8 +12,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swtchart.ILineSeries;
-import org.eclipse.swtchart.ISeries;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
@@ -110,7 +108,7 @@ public class DrawdownChartWidget extends WidgetDelegate<Object>
 
             chart.getTitle().setText(title.getText());
 
-            for (ISeries s : chart.getSeriesSet().getSeries())
+            for (var s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
@@ -139,7 +137,7 @@ public class DrawdownChartWidget extends WidgetDelegate<Object>
         String lineID = get(DataSeriesConfig.class).getDataSeries().getUUID() + Messages.LabelDrawdown;
         String label = Messages.LabelDrawdown + " (" + get(DataSeriesConfig.class).getDataSeries().getLabel() + ")"; //$NON-NLS-1$//$NON-NLS-2$
 
-        ILineSeries lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorDrawdown, label);
+        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorDrawdown, label);
         lineSeries.enableArea(true);
     }
 }

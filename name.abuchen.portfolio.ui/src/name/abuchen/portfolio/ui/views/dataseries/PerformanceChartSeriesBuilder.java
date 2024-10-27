@@ -1,8 +1,5 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
-import org.eclipse.swtchart.IBarSeries;
-import org.eclipse.swtchart.ILineSeries;
-
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
@@ -33,7 +30,7 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
             if (aggregationPeriod != null)
                 index = Aggregation.aggregate(index, aggregationPeriod);
 
-            ILineSeries lineSeries = getChart().addDateSeries(series.getUUID(), index.getDates(),
+            var lineSeries = getChart().addDateSeries(series.getUUID(), index.getDates(),
                             index.getAccumulatedPercentage(), series.getLabel());
             configure(series, lineSeries);
         }
@@ -48,14 +45,14 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
         switch ((ClientDataSeries) series.getInstance())
         {
             case TOTALS:
-                ILineSeries lineSeries = getChart().addDateSeries(series.getUUID(), index.getDates(),
+                var lineSeries = getChart().addDateSeries(series.getUUID(), index.getDates(),
                                 index.getAccumulatedPercentage(), series.getLabel());
                 configure(series, lineSeries);
                 break;
             case DELTA_PERCENTAGE:
                 String aggreagtionPeriodLabel = aggregationPeriod != null ? aggregationPeriod.toString()
                                 : Messages.LabelAggregationDaily;
-                IBarSeries barSeries = getChart().addDateBarSeries(series.getUUID(), index.getDates(),
+                var barSeries = getChart().addDateBarSeries(series.getUUID(), index.getDates(),
                                 index.getDeltaPercentage(), aggreagtionPeriodLabel);
                 // update label, e.g. 'daily' to 'weekly'
                 series.setLabel(aggreagtionPeriodLabel);

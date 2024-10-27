@@ -15,9 +15,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swtchart.IBarSeries;
-import org.eclipse.swtchart.ILineSeries;
-import org.eclipse.swtchart.ISeries;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
@@ -187,7 +184,7 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
 
             chart.getTitle().setText(title.getText());
 
-            for (ISeries s : chart.getSeriesSet().getSeries())
+            for (var s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             chart.getAxisSet().getYAxis(0).getTick().setFormat(new ThousandsNumberFormat());
@@ -333,7 +330,7 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
         String lineID = get(DataSeriesConfig.class).getDataSeries().getUUID() + label;
         label = label + " (" + get(DataSeriesConfig.class).getDataSeries().getLabel() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 
-        ILineSeries lineSeries = chart.addDateSeries(lineID, dates, values, color, label);
+        var lineSeries = chart.addDateSeries(lineID, dates, values, color, label);
         lineSeries.enableArea(showarea);
     }
 
@@ -342,7 +339,7 @@ public class ClientDataSeriesChartWidget extends WidgetDelegate<PerformanceIndex
         String lineID = get(DataSeriesConfig.class).getDataSeries().getUUID() + label;
         label = label + " (" + get(DataSeriesConfig.class).getDataSeries().getLabel() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 
-        IBarSeries barSeries = chart.addDateBarSeries(lineID, dates, values, label);
+        var barSeries = chart.addDateBarSeries(lineID, dates, values, label);
         barSeries.setBarColor(color);
     }
 }

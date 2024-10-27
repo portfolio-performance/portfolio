@@ -155,8 +155,7 @@ public class PaymentsPerYearChartBuilder implements PaymentsChartBuilder
         for (int i = 0; i <= series.length - 1; i++)
             {
                 int year = model.getStartYear() + i;
-                IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(SeriesType.BAR,
-                                String.valueOf(year));
+                var barSeries = (IBarSeries<?>) chart.getSeriesSet().createSeries(SeriesType.BAR, String.valueOf(year));
 
                 double[] seriesX = new double[LocalDate.now().getYear() - startYear + 1];
                 seriesX[i] = series[i];

@@ -26,8 +26,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swtchart.ILegend;
-import org.eclipse.swtchart.ILineSeries;
-import org.eclipse.swtchart.ISeries;
 
 import com.google.common.base.Objects;
 
@@ -66,8 +64,8 @@ public class PortfolioBalanceChart
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.ABSOLUTE_INVESTED_CAPITAL,
                     ChartDetails.ABSOLUTE_DELTA);
 
-    private Color colorAbsoluteInvestedCapital = Colors.getColor(235, 201, 52); // #EBC934;
-    private Color colorAbsoluteDelta = Colors.getColor(90, 114, 226); // #5A72E2;
+    private Color colorAbsoluteInvestedCapital = Colors.getColor(235, 201, 52); // #EBC934
+    private Color colorAbsoluteDelta = Colors.getColor(90, 114, 226); // #5A72E2
     private static final Color colorTaxesAccumulated = Display.getDefault().getSystemColor(SWT.COLOR_RED);
     private static final Color colorFeesAccumulated = Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
     private Color colorDeltaAreaPositive = Colors.getColor(90, 114, 226); // #5A72E2
@@ -145,7 +143,7 @@ public class PortfolioBalanceChart
         {
             chart.suspendUpdate(true);
 
-            for (ISeries s : chart.getSeriesSet().getSeries())
+            for (var s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
         }
 
@@ -202,7 +200,7 @@ public class PortfolioBalanceChart
         {
             chart.suspendUpdate(true);
 
-            for (ISeries s : chart.getSeriesSet().getSeries())
+            for (var s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             int days = (int) ChronoUnit.DAYS.between(index.getDates()[0],
@@ -214,7 +212,7 @@ public class PortfolioBalanceChart
 
             // reverse the order
 
-            ILineSeries lineSeries = chart.addDateSeries(portfolio.getUUID(), index.getDates(),
+            var lineSeries = chart.addDateSeries(portfolio.getUUID(), index.getDates(),
                             toDouble(index.getTotals(), Values.Amount.divider()), Colors.CASH, portfolio.getName());
             lineSeries.setAntialias(swtAntialias);
 
@@ -298,8 +296,7 @@ public class PortfolioBalanceChart
         double[] values = toDouble(index.calculateAbsoluteInvestedCapital(), Values.Amount.divider());
         String lineID = Messages.LabelAbsoluteInvestedCapital;
 
-        ILineSeries lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorAbsoluteInvestedCapital,
-                        lineID);
+        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorAbsoluteInvestedCapital, lineID);
         lineSeries.enableArea(true);
         lineSeries.setAntialias(swtAntialias);
     }
@@ -326,14 +323,14 @@ public class PortfolioBalanceChart
         String lineIDNeg = Messages.LabelAbsoluteDelta + "Negative"; //$NON-NLS-1$
         String lineIDPos = Messages.LabelAbsoluteDelta + "Positive"; //$NON-NLS-1$
 
-        ILineSeries lineSeries2ndNegative = chart.addDateSeries(lineIDNeg, index.getDates(), valuesRelativeNegative,
+        var lineSeries2ndNegative = chart.addDateSeries(lineIDNeg, index.getDates(), valuesRelativeNegative,
                         colorDeltaAreaNegative, lineIDNeg);
         lineSeries2ndNegative.setAntialias(swtAntialias);
         lineSeries2ndNegative.enableArea(true);
         lineSeries2ndNegative.setVisibleInLegend(false);
         lineSeries2ndNegative.setLineWidth(1);
 
-        ILineSeries lineSeries2ndPositive = chart.addDateSeries(lineIDPos, index.getDates(), valuesRelativePositive,
+        var lineSeries2ndPositive = chart.addDateSeries(lineIDPos, index.getDates(), valuesRelativePositive,
                         colorDeltaAreaPositive, lineIDPos);
         lineSeries2ndPositive.setAntialias(swtAntialias);
         lineSeries2ndPositive.enableArea(true);
@@ -342,7 +339,7 @@ public class PortfolioBalanceChart
 
         String lineID = Messages.LabelAbsoluteDelta;
 
-        ILineSeries lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorAbsoluteDelta, lineID);
+        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorAbsoluteDelta, lineID);
         lineSeries.setAntialias(swtAntialias);
     }
 
@@ -351,7 +348,7 @@ public class PortfolioBalanceChart
         double[] values = accumulateAndToDouble(index.getTaxes(), Values.Amount.divider());
         String lineID = Messages.LabelAccumulatedTaxes;
 
-        ILineSeries lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorTaxesAccumulated, lineID);
+        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorTaxesAccumulated, lineID);
         lineSeries.setAntialias(swtAntialias);
     }
 
@@ -360,7 +357,7 @@ public class PortfolioBalanceChart
         double[] values = accumulateAndToDouble(index.getFees(), Values.Amount.divider());
         String lineID = Messages.LabelFeesAccumulated;
 
-        ILineSeries lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorFeesAccumulated, lineID);
+        var lineSeries = chart.addDateSeries(lineID, index.getDates(), values, colorFeesAccumulated, lineID);
         lineSeries.setAntialias(swtAntialias);
     }
 

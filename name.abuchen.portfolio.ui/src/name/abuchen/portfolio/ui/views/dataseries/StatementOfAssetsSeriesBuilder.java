@@ -4,9 +4,6 @@ import static name.abuchen.portfolio.util.ArraysUtil.accumulateAndToDouble;
 import static name.abuchen.portfolio.util.ArraysUtil.add;
 import static name.abuchen.portfolio.util.ArraysUtil.toDouble;
 
-import org.eclipse.swtchart.IBarSeries;
-import org.eclipse.swtchart.ILineSeries;
-
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
@@ -33,7 +30,7 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
         }
         else
         {
-            ILineSeries lineSeries = getChart().addDateSeries(series.getUUID(), index.getDates(),
+            var lineSeries = getChart().addDateSeries(series.getUUID(), index.getDates(),
                             toDouble(index.getTotals(), Values.Amount.divider()), series.getLabel());
             configure(series, lineSeries);
         }
@@ -109,13 +106,13 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
 
         if (series.isLineChart())
         {
-            ILineSeries lineSeries = getChart().addDateSeries(series.getUUID(), clientIndex.getDates(), values,
+            var lineSeries = getChart().addDateSeries(series.getUUID(), clientIndex.getDates(), values,
                             series.getLabel());
             configure(series, lineSeries);
         }
         else
         {
-            IBarSeries barSeries = getChart().addDateBarSeries(series.getUUID(), clientIndex.getDates(), values,
+            var barSeries = getChart().addDateBarSeries(series.getUUID(), clientIndex.getDates(), values,
                             series.getLabel());
             configure(series, barSeries);
         }
