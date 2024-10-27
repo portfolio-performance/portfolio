@@ -99,9 +99,9 @@ public class StackedTimelineChart extends Chart // NOSONAR
         xAxis.enableCategory(true);
     }
 
-    public ILineSeries addSeries(String id, String label, double[] values, Color color)
+    public ILineSeries<?> addSeries(String id, String label, double[] values, Color color)
     {
-        ILineSeries series = (ILineSeries) getSeriesSet().createSeries(SeriesType.LINE, id);
+        var series = (ILineSeries<?>) getSeriesSet().createSeries(SeriesType.LINE, id);
         series.setDescription(label);
         series.setYSeries(values);
 

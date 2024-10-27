@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swtchart.Chart;
 import org.eclipse.swtchart.IAxis;
 import org.eclipse.swtchart.IAxis.Position;
-import org.eclipse.swtchart.ISeries;
 import org.eclipse.swtchart.Range;
 
 import name.abuchen.portfolio.ui.Messages;
@@ -120,7 +119,7 @@ public class PaymentsChartTab implements PaymentsTab
         try
         {
             chart.suspendUpdate(true);
-            for (ISeries s : chart.getSeriesSet().getSeries())
+            for (var s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             chartBuilder.createSeries(chart, model);

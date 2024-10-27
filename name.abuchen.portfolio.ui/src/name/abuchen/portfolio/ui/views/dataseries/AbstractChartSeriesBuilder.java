@@ -33,7 +33,7 @@ public abstract class AbstractChartSeriesBuilder
         return chart;
     }
 
-    protected void configure(DataSeries series, ILineSeries lineSeries)
+    protected void configure(DataSeries series, ILineSeries<?> lineSeries)
     {
         Color color = resources.createColor(series.getColor());
 
@@ -44,7 +44,7 @@ public abstract class AbstractChartSeriesBuilder
         lineSeries.setLineWidth(series.getLineWidth());
     }
 
-    protected void configure(DataSeries series, IBarSeries barSeries)
+    protected void configure(DataSeries series, IBarSeries<?> barSeries)
     {
         barSeries.setBarPadding(50);
         barSeries.setBarColor(resources.createColor(series.getColor()));
