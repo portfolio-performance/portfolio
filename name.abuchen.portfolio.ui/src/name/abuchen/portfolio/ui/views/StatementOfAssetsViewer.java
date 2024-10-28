@@ -530,6 +530,8 @@ public class StatementOfAssetsViewer
         column.setSorter(ColumnViewerSorter.create(Element.class, "valuation").wrap(ElementComparator::new)); //$NON-NLS-1$
         support.addColumn(column);
 
+        addPurchaseCostColumns();
+
         ReportingPeriodLabelProvider labelProvider;
 
         // cost value - FIFO
@@ -573,7 +575,6 @@ public class StatementOfAssetsViewer
         // reporting periods
         List<ReportingPeriod> options = owner.getPart().getReportingPeriods().stream().collect(toMutableList());
 
-        addPurchaseCostColumns();
         addPerformanceColumns(options);
         addDividendColumns(options);
         addTaxonomyColumns();
