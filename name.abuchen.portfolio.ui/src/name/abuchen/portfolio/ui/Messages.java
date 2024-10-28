@@ -789,6 +789,7 @@ public class Messages extends NLS
     public static String LabelPortfolioTimeMachine;
     public static String LabelPreTax;
     public static String LabelPreviousTradingDay;
+    public static String LabelPurchasePrice;
     public static String LabelPurchaseTransactionsOnly;
     public static String LabelQuandlCode;
     public static String LabelQuandlColumnNameQuote;

@@ -616,10 +616,10 @@ public class StatementOfAssetsViewer
 
         // cost value per share - FIFO
         Column column = new Column("7", Messages.ColumnPurchasePrice, SWT.RIGHT, 60); //$NON-NLS-1$
-        column.setGroupLabel(Messages.ColumnPurchasePrice);
+        column.setLabelOnly(Messages.LabelFeesAndTaxesNotIncluded);
+        column.setGroupLabel(Messages.LabelPurchasePrice);
         column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
         column.setDescription(Messages.ColumnPurchasePrice_Description);
-        column.setLabelOnly(Messages.LabelFeesAndTaxesNotIncluded);
         labelProvider = new ReportingPeriodLabelProvider(
                         new ElementValueProvider(LazySecurityPerformanceRecord::getFifoCostPerSharesHeld, null), false);
         column.setLabelProvider(labelProvider);
@@ -629,7 +629,7 @@ public class StatementOfAssetsViewer
 
         // cost value per share - moving average
         column = new Column("ppmvavg", Messages.ColumnPurchasePriceMovingAverage, SWT.RIGHT, 60); //$NON-NLS-1$
-        column.setGroupLabel(Messages.ColumnPurchasePrice);
+        column.setGroupLabel(Messages.LabelPurchasePrice);
         column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description);
         labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
@@ -642,7 +642,7 @@ public class StatementOfAssetsViewer
         // cost value per share including fees and taxes - FIFO
         column = new Column("grossPurchasePriceFIFO", Messages.ColumnGrossPurchasePriceFIFO, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setLabelOnly(Messages.LabelFeesAndTaxesIncluded);
-        column.setGroupLabel(Messages.ColumnPurchasePrice);
+        column.setGroupLabel(Messages.LabelPurchasePrice);
         column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
         column.setDescription(Messages.ColumnGrossPurchasePriceFIFO_Description);
         labelProvider = new ReportingPeriodLabelProvider(
@@ -655,7 +655,7 @@ public class StatementOfAssetsViewer
 
         // cost value per share including fees and taxes - moving average
         column = new Column("grossPurchasePriceMA", Messages.ColumnGrossPurchasePriceMovingAverage, SWT.RIGHT, 60); //$NON-NLS-1$
-        column.setGroupLabel(Messages.ColumnPurchasePrice);
+        column.setGroupLabel(Messages.LabelPurchasePrice);
         column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnGrossPurchasePriceMovingAverage_Description);
         labelProvider = new ReportingPeriodLabelProvider(
