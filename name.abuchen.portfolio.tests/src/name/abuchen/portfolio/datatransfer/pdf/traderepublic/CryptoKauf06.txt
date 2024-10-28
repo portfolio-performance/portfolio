@@ -1,0 +1,26 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Vorname Nachname SEITE 1 von 1
+Straße 123 DATUM 02.09.2024
+PLZ Ort AUSFÜHRUNG 4e58-c971
+SAVEBACK 9eed-7c4d
+CRYPTO- BitGo Deutschland 
+WALLET GmbH
+DEPOT 123234345
+ABRECHNUNG CRYPTO SAVEBACK
+ÜBERSICHT
+Saveback Ausführung am 02.09.2024 im außerbörslichen Handel Bankhaus Scheich.
+Der Kontrahent der Transaktion ist Bankhaus Scheich Wertpapierspezialist AG.
+POSITION ANZAHL DURCHSCHNITTSKURS BETRAG
+Bitcoin (BTC) 0,000254 Stk. 53.988,63 EUR 13,71 EUR
+GESAMT 13,71 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE123234345456 02.09.2024 -13,71 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Die Cryptowerte werden in einer zentralen Wallet bei dem Cryptoverwahrer BitGo Deutschland GmbH verwahrt.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
