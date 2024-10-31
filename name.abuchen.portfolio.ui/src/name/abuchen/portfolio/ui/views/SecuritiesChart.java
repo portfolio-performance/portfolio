@@ -576,6 +576,18 @@ public class SecuritiesChart
         });
     }
 
+    private void setupTooltipDisplayCalculatedQuote(String seriesLabel)
+    {
+        TimelineChartToolTip toolTip = chart.getToolTip();
+
+        int precision = FormatHelper.getCalculatedQuoteDisplayPrecision();
+        DecimalFormat calculatedFormat = new DecimalFormat(Values.CalculatedQuote.pattern());
+        calculatedFormat.setMinimumFractionDigits(precision);
+        calculatedFormat.setMaximumFractionDigits(precision);
+
+        toolTip.overrideValueFormat(seriesLabel, calculatedFormat);
+    }
+
     private void addInvestmentTooltip(Composite composite, PortfolioTransaction t)
     {
         Label label = new Label(composite, SWT.NONE);
@@ -584,7 +596,7 @@ public class SecuritiesChart
 
         label = new Label(composite, SWT.NONE);
         label.setText(MessageFormat.format(Messages.LabelToolTipInvestmentDetails, Values.Share.format(t.getShares()),
-                        Values.Quote.format(
+                        Values.CalculatedQuote.format(
                                         t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode())))));
     }
 
@@ -1771,6 +1783,8 @@ public class SecuritiesChart
 
         configureSeriesPainter(series, dates.toArray(new LocalDate[0]), Doubles.toArray(values), colorFifoPurchasePrice,
                         2, LineStyle.SOLID, false, seriesCounter == 0);
+
+        setupTooltipDisplayCalculatedQuote(label);
     }
 
     private void addMovingAveragePurchasePrice(ChartInterval chartInterval)
@@ -1865,6 +1879,8 @@ public class SecuritiesChart
 
         configureSeriesPainter(series, dates.toArray(new LocalDate[0]), Doubles.toArray(values),
                         colorMovingAveragePurchasePrice, 2, LineStyle.SOLID, false, seriesCounter == 0);
+
+        setupTooltipDisplayCalculatedQuote(label);
     }
 
     private Optional<Double> getLatestPurchasePrice()
