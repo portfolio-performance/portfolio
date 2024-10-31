@@ -248,6 +248,39 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierStornoKauf01()
+    {
+        OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StornoKauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0010408704"), hasWkn("A12HWR"), hasTicker(null), //
+                        hasName("VanEck Sust.World EQ.UC.ETF Aandelen oop naam o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        purchase( //
+                                        hasDate("2023-09-15T18:18:08"), hasShares(0.563027), //
+                                        hasSource("StornoKauf01.txt"), //
+                                        hasNote("Ord.-Ref.: 908703"), //
+                                        hasAmount("EUR", 15.88), hasGrossValue("EUR", 15.88), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
     public void testDividende01()
     {
         OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
@@ -409,6 +442,39 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 4.15), hasGrossValue("EUR", 5.62), //
                         hasTaxes("EUR", 1.40 + 0.07), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierStornoDividende01()
+    {
+        OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StornoDividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0010408704"), hasWkn("A12HWR"), hasTicker(null), //
+                        hasName("VanEck Sust.World EQ.UC.ETF Aandelen oop naam o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        dividend( //
+                                        hasDate("2023-09-13T00:00"), hasShares(95.967357), //
+                                        hasSource("StornoDividende01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 15.88), hasGrossValue("EUR", 16.31), //
+                                        hasTaxes("EUR", 0.41 + 0.02), hasFees("EUR", 0.00)))));
     }
 
     @Test

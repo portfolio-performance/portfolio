@@ -62,6 +62,14 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                             if ("Verkauf".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
+
+                        // @formatter:off
+                        // Stornierung Kauf - VanEck Sust.World EQ.UC.ETF Aandelen oop naam o.N.
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^(?<type>Stornierung) (Kauf|Verkauf)( \\-|:) .*$") //
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
+
                         // @formatter:off
                         // Kauf - iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile
                         // DE000A0H0785 (A0H078) 0,033037 10,0350 EUR 1,47 EUR
@@ -70,7 +78,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // LU1861134382 (A2JSDA) 9,727757 93,4642 EUR 982,07 EUR
                         // @formatter:on
                         .section("name", "isin", "wkn", "currency") //
-                        .match("^(Kauf|Verkauf)( \\-|:) (?<name>.*)$") //
+                        .match("^(Stornierung )?(Kauf|Verkauf)( \\-|:) (?<name>.*)$") //
                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -134,14 +142,21 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^Orderreferenz (?<note>.*)$") //
                         .assign((t, v) -> t.setNote("Ord.-Ref.: " + v.get("note")))
 
-                        .wrap(BuySellEntryItem::new);
+                        .wrap((t, ctx) -> {
+                            BuySellEntryItem item = new BuySellEntryItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
 
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("ERTRAGSAUSSCH.TTUNG");
+        DocumentType type = new DocumentType("(ERTRAGSAUSSCH.TTUNG|Stornierung Dividendengutschrift)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -159,6 +174,13 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
+                        // Stornierung Dividendengutschrift – VanEck Sust.World EQ.UC.ETF Aandelen oop naam o.N.
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^(?<type>Stornierung) (Aussch.ttung|Dividendengutschrift) \\– .*$") //
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
+
+                        // @formatter:off
                         // Ausschüttung – iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile
                         // DE000A0H0785 (A0H078) 71,851808 8,895903 EUR
                         //
@@ -166,7 +188,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // IE00B0M62Q58 (A0HGV0) 5,200029 0,169600 USD
                         // @formatter:on
                         .section("name", "isin", "wkn", "currency") //
-                        .match("^(Aussch.ttung|Dividendengutschrift) \\– (?<name>.*)$") //
+                        .match("^(Stornierung )?(Aussch.ttung|Dividendengutschrift) \\– (?<name>.*)$") //
                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -211,7 +233,14 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
 
-                        .wrap(TransactionItem::new);
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
