@@ -531,10 +531,13 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // DE123 European Bank for Financial Services 0,03 EUR
                                         // Die Auszahlung erfolgt über die oben genannte Bankverbindung.
+                                        //
+                                        // DE56341234123412341234 Deutsche Kreditbank Berlin 25,24 EUR
+                                        // Die Auszahlung erfolgt über die oben genannte Bankverbindung.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^.* European Bank for Financial Services (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^.* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                                                         .match("^Die Auszahlung erfolgt über die oben genannte Bankverbindung\\.$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
