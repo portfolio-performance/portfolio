@@ -1,0 +1,170 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.4
+-----------------------------------------
+FNZ Bank SE, 80218 München
+Umsatzabrechnung-Nr. 12
+Depot-Nr. 12341234000
+Seite 1 von 4
+Herr
+xxx zzz
+Hauptstr. 0
+12340 Hain
+30.04.2024
+Umsatzabrechnung für Ihr ebase Depot
+für den Zeitraum vom 29.03.2024 bis 29.04.2024
+
+Ansparplan 37,50 EUR mit Kursdatum 02.04.2024 in Depotposition 12341234000.04
+M&G(L)IF1-M&G(L) Posit. Impact Act. Nom. A EUR Dis. oN
+Ref. Nr. 1234123412/12341234, Buchungsdatum 02.04.2024
+ISIN Anteile Abrechnungskurs Betrag
+LU1854107148 2,569778 14,592700 EUR 37,50 EUR
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE12341234123412341234 FNZ Bank 37,50 EUR
+
+Ansparplan 37,50 EUR mit Kursdatum 02.04.2024 in Depotposition 12341234000.03
+Magna Umbre.Fd-M.New Frontiers Reg. Shares D Dis. EUR o.N
+Ref. Nr. 1234123412/12341234, Buchungsdatum 03.04.2024
+ISIN Anteile Abrechnungskurs Betrag
+IE00BNCB5M86 1,961092 19,122000 EUR 37,50 EUR
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE12341234123412341234 FNZ Bank 37,50 EUR
+
+Ansparplan 37,50 EUR mit Kursdatum 15.04.2024 in Depotposition 12341234000.04
+M&G(L)IF1-M&G(L) Posit. Impact Act. Nom. A EUR Dis. oN
+Ref. Nr. 1234123412/12341234, Buchungsdatum 15.04.2024
+ISIN Anteile Abrechnungskurs Betrag
+LU1854107148 2,587831 14,490900 EUR 37,50 EUR
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE12341234123412341234 FNZ Bank 37,50 EUR
+Für Fragen steht Ihnen Ihr Berater oder die FNZ Bank unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+FNZ Bank SE Amtsgericht München Vorstand: Fax: +49 89 45460-892
+80218 München HRB 289 271 Peter Karst, Jürgen Keller, Web: www.fnz.de
+USt-ID Nr. DE 813330104 Pamela Schmidt-Fischbach
+Gläubiger-ID: Aufsichtsratsvorsitzender:
+DE68ZZZ00000025032 Frank Strauß
+Umsatzabrechnung-Nr. 12
+Depot-Nr. 12341234000
+Seite 2 von 4
+
+Ansparplan 37,50 EUR mit Kursdatum 15.04.2024 in Depotposition 12341234000.03
+Magna Umbre.Fd-M.New Frontiers Reg. Shares D Dis. EUR o.N
+Ref. Nr. 1234123412/12341234, Buchungsdatum 16.04.2024
+ISIN Anteile Abrechnungskurs Betrag
+IE00BNCB5M86 1,990235 18,842000 EUR 37,50 EUR
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE12341234123412341234 FNZ Bank 37,50 EUR
+
+Fondsertrag (Ausschüttung) mit Bestandsdatum 21.04.2024 in Depotposition 12341234000.04
+M&G(L)IF1-M&G(L) Posit. Impact Act. Nom. A EUR Dis. oN
+Ref. Nr. 1234123412/12341234, Buchungsdatum 29.04.2024
+ISIN Anteilsbestand Betrag je Anteil Betrag
+LU1854107148 128,804746 0,216200000 EUR 27,85 EUR
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer abzgl. Steuern
+4,48 EUR 0,24 EUR 0,40 EUR 5,12 EUR
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE12341234123412341234 Deutsche Kreditbank Berlin 22,73 EUR
+Die Auszahlung erfolgt über die oben genannte Bankverbindung.
+Bestand der Depotpositionen mit Umsatz nach Verbuchung
+Pos. Fonds Anteile Bewertungskurs zum Datum Bestand
+03 IE00BNCB5M86 110,891964 18,884000 EUR 26.04.2024 2.094,08 EUR
+Magna Umbre.Fd-M.New Frontiers Reg. Shares D Dis. EUR o.N
+Verwahrart: Wertpapierrechnung, Lagerland: Irland
+04 LU1854107148 128,804746 14,105600 EUR 29.04.2024 1.816,87 EUR
+M&G(L)IF1-M&G(L) Posit. Impact Act. Nom. A EUR Dis. oN
+Verwahrart: Wertpapierrechnung, Lagerland: Luxemburg
+Depotgesamtwert 3.910,95 EUR
+Für die im Depot verbuchten und hier ausgewiesenen Fondsanteile besteht - soweit nicht abweichend gekennzeichnet - ein Eigentums-
+bzw. eigentumsähnlicher Schutz im Sinne der europäischen Finanzmarktrichtlinie 2014/65 (EU).
+4Wir haben keinen Freistellungsauftrag für Sie vorgemerkt.
+4Wir haben für Sie den Einbehalt der Kirchensteuer vorgemerkt. Die FNZ Bank wird bei einem steuerpflichtigen Umsatz, unter
+Berücksichtigung Ihrer persönlichen Steuerfreistellung, ggf. anfallende Kirchensteuer direkt an das Finanzamt abführen.
+Für Fragen steht Ihnen Ihr Berater oder die FNZ Bank unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+FNZ Bank SE Amtsgericht München Vorstand: Fax: +49 89 45460-892
+80218 München HRB 289 271 Peter Karst, Jürgen Keller, Web: www.fnz.de
+USt-ID Nr. DE 813330104 Pamela Schmidt-Fischbach
+Gläubiger-ID: Aufsichtsratsvorsitzender:
+DE68ZZZ00000025032 Frank Strauß
+Umsatzabrechnung-Nr. 12
+Depot-Nr. 12341234000
+Seite 3 von 4
+Einzahlungen
+Sofern Sie nicht vom Einzugsverfahren Gebrauch machen, leisten Sie Ihre Zahlungen bitte auf folgendes Treuhandkonto der
+FNZ Bank SE: Commerzbank AG, München, IBAN: DE32 7004 0041 0212 2331 00,
+BIC: COBADEFFXXX.
+Bitte geben Sie bei Überweisungen immer zusätzlich im Verwendungszweck an:
+• Bei Nachkauf eines Fonds, den Sie bereits in Ihrem Investment Depot halten, die 13-stellige Depotpositionsnummer.
+• Bei Kauf eines neuen Fonds, den Sie noch nicht in Ihrem Investment Depot halten, die 11-stellige Depotnummer + ISIN.
+Für Einzahlungen auf verschiedenen Fonds verwenden Sie bitte jeweils separate Überweisungsformulare.
+Prüfung und Einwendungen
+Wir bitten Sie, die vorliegende Abrechnung und die darin aufgeführten Umsätze auf ihre Richtigkeit und Vollständigkeit zu über-
+prüfen. Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Abrechnung erheben Sie bitte unverzüglich nach
+dessen Zugang gegenüber der FNZ Bank SE unter Nennung der Depotnummer und des Datums der Abrechnung. Das Unterlassen der
+rechtzeitigen Einwendung(en) gilt als Genehmigung der Abrechnung(en), gemäß Punkt "Prüfungen und Einwendungen bei Mitteilung-
+en der FNZ Bank" der Allgemeinen Geschäftsbedingungen der FNZ Bank SE für Privatanleger.
+Bitte denken Sie daran, uns frühzeitig über Änderungen Ihrer persönlichen Daten zu informieren.
+Ausführung und Erfüllung von Aufträgen/ Ausschluss von Beratung/ Keine Risikoklassifizierung durch die FNZ Bank
+Die FNZ Bank SE führt Aufträge über den Kauf und/oder Verkauf von Investmentfondsanteilen als Kommissionärin, ggf. unter Ein-
+schaltung eines Zwischenkommissionärs, mit der Kapitalverwaltungs-/Verwaltungsgesellschaft, als am besten geeignete Stelle im Sinne
+des § 33a WpHG aus.
+Die FNZ Bank SE wird gemäß Punkt ”Ausführung und Erfüllung von Aufträgen” der Bedingungen für das Investment Depot für Privat-
+anleger, die Aufträge ggf. unter Einbeziehung eines Zwischenkommissionärs ausschließlich über die jeweilige Kapitalverwaltungs-/
+Verwaltungsgesellschaft als am besten geeignete Stelle zur Beschaffung von Fondsanteilen abwickeln. Ihnen ist bekannt, dass
+durch die FNZ Bank SE keine vorherige Beratung und/oder Angemessenheitsprüfung gemäß Punkt ”Ausschluss von Beratung
+("execution only”)” sowie keine Risikoklassifizierung gemäß Punkt ”keine Risikoklassifizierung durch die FNZ Bank” der Bedingungen
+für das Investment Depot für Privatanleger bei der FNZ Bank, erfolgt.
+Sofern es sich um einen Auftrag zum Kauf von Finanzinstrumenten im beratungsfreien Geschäft (z.B. komplexe Fonds) und außerhalb
+des reinen Ausführungsgeschäft handelt, wird ein Abgleich auf Ihre Kenntnisse und Erfahrungen vollzogen.
+Zurverfügungstellung von Verkaufsunterlagen
+Der Vermittler, die Kapitalverwaltungs-/Verwaltungsgesellschaft oder die FNZ Bank SE habendem Kunden für sämtlich Geschäfte die
+jeweils gültigen Verkaufsunterlagen (Wesentliche Anlegerinformationen/Key Investor Document [KID] und aktueller Verkaufsprospekt
+sowie der aktuelle Halbjahres-/Jahresbericht bei den unter das Kapitalanlagegesetzbuch [KAGB] fallenden Fonds) kostenlos recht-
+zeitig zur Verfügung gestellt. Zusätzlich können diese Verkaufsunterlagen auf der Homepage der FNZ Bank (www.fnz.de) einge-
+sehen und heruntergeladen werden. Bitte beachten Sie die Risikohinweise im jeweils aktuellen Verkaufsprospekt Ihres jeweiligen
+Fonds.
+Pflicht des Kunden zur Einholung von Beratung gemäß Punkt "Mitwirkungspflichten und Obliegenheit des Kunden"
+Ihnen obliegt die vertragliche Verpflichtung, das Erstgeschäft sowie jedes Folgegeschäft nur nach Rücksprache mit Ihrem
+Vermittler zu tätigen, nachdem Ihr Vermittler Ihnen eine anleger- und anlagegerechte Aufklärung und ggf. Beratung (auch
+hinsichtlich der Provisionsentgelte) erteilt hat.
+Hinweis auf Erhalt, Weiterleitung und Auskehr von Provisionen/Zuwendungen
+Sie wurden von der FNZ Bank SE ausdrücklich auf den Erhalt, die Weiterleitung und die Auskehr von Provisionen/Zuwendungen
+gemäß Punkt "Hinweis auf den Erhalt und Weiterleitung und die Auskehr von Provisionen/Zuwendungen" in den
+Bedingungen für das Investment Depot für Privatanleger bei der FNZ Bank SE in dem jeweils aktuell gültigen Preis-
+und Leistungsverzeichnis hingewiesen.
+Für Fragen steht Ihnen Ihr Berater oder die FNZ Bank unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+FNZ Bank SE Amtsgericht München Vorstand: Fax: +49 89 45460-892
+80218 München HRB 289 271 Peter Karst, Jürgen Keller, Web: www.fnz.de
+USt-ID Nr. DE 813330104 Pamela Schmidt-Fischbach
+Gläubiger-ID: Aufsichtsratsvorsitzender:
+DE68ZZZ00000025032 Frank Strauß
+Umsatzabrechnung-Nr. 12
+Depot-Nr. 12341234000
+Seite 4 von 4
+Hinweis Ihrer Verwaltungsgesellschaft zum Widerrufsrecht bei dem Kauf/Verkauf von Investmentanteilen/Organismen für gemein-
+same Anlagen in Wertpapieren (OGAW)/Alternative Investmentfonds (AIF)
+Wenn der Kauf von Anteilen aufgrund mündlicher Verhandlungen außerhalb der ständigen Geschäftsräume desjenigen, der die
+Anteile verkauft oder den Verkauf der Anteile vermittelt hat, zustande kommt, so ist der Käufer nach § 305 KAGB berechtigt, ohne
+Angabe von Gründen, seine Kauferklärung zu widerrufen (Widerrufsrecht). Dies gilt auch dann, wenn derjenige, der die Anteile
+verkauft oder den Verkauf vermittelt, keine ständigen Geschäftsräume hat. Der Widerruf hat innerhalb einer Frist von zwei Wochen
+gegenüber der Verwaltungsgesellschaft oder ihrem Repräsentanten im Sinne von § 319 KAGB in Textform zu erfolgen.
+Zur Wahrung der Frist genügt die rechtzeitige Absendung der Widerrufserklärung. Die vorstehenden Ausführungen gelten ent-
+sprechend beim Verkauf von Anteilen durch den Anleger. Die detaillierten Hinweise zum Widerrufsrecht bei dem Kauf/Verkauf von
+Investmentanteilen/OGAW/AIF finden sie unter Punkt 13 der Bedingungen für das Investmentdepot für Privatanleger bei der FNZ Bank
+SE. Genaue Angaben zur Verwaltungsgesellschaft oder zu ihrem Repräsentanten entnehmen Sie den Verkaufsunterlagen. Die
+FNZ Bank SE ist lediglich depotführende Stelle.
+Für Fragen steht Ihnen Ihr Berater oder die FNZ Bank unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+FNZ Bank SE Amtsgericht München Vorstand: Fax: +49 89 45460-892
+80218 München HRB 289 271 Peter Karst, Jürgen Keller, Web: www.fnz.de
+USt-ID Nr. DE 813330104 Pamela Schmidt-Fischbach
+Gläubiger-ID: Aufsichtsratsvorsitzender:
+DE68ZZZ00000025032 Frank Strauß
+
+```
