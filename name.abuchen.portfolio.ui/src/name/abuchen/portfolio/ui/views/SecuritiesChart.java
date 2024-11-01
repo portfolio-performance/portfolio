@@ -245,6 +245,7 @@ public class SecuritiesChart
         SCALING_LOG(Messages.LabelChartDetailChartScalingLog), //
         CLOSING(Messages.LabelChartDetailChartDevelopmentClosing), //
         PURCHASEPRICE(Messages.LabelChartDetailChartDevelopmentClosingFIFO), //
+        PURCHASEPRICE_MA(Messages.LabelChartDetailChartDevelopmentClosingMovingAverage), //
         INVESTMENT(Messages.LabelChartDetailMarkerInvestments), //
         SHARES_HELD(Messages.ColumnSharesOwned), //
         DIVIDENDS(Messages.LabelChartDetailMarkerDividends), //
@@ -727,6 +728,7 @@ public class SecuritiesChart
         subMenuChartScaling.add(addMenuAction(ChartDetails.SCALING_LOG));
         subMenuChartDevelopment.add(addMenuAction(ChartDetails.CLOSING));
         subMenuChartDevelopment.add(addMenuAction(ChartDetails.PURCHASEPRICE));
+        subMenuChartDevelopment.add(addMenuAction(ChartDetails.PURCHASEPRICE_MA));
         subMenuChartMarker.add(addMenuAction(ChartDetails.INVESTMENT));
         subMenuChartMarker.add(addMenuAction(ChartDetails.SHARES_HELD));
         subMenuChartMarker.add(addMenuAction(ChartDetails.DIVIDENDS));
@@ -792,15 +794,23 @@ public class SecuritiesChart
                     case SCALING_LOG:
                         chartConfig.remove(ChartDetails.SCALING_LINEAR);
                         chartConfig.remove(ChartDetails.PURCHASEPRICE);
+                        chartConfig.remove(ChartDetails.PURCHASEPRICE_MA);
                         chartConfig.remove(ChartDetails.CLOSING);
                         break;
                     case CLOSING:
                         chartConfig.remove(ChartDetails.PURCHASEPRICE);
+                        chartConfig.remove(ChartDetails.PURCHASEPRICE_MA);
                         chartConfig.remove(ChartDetails.SCALING_LOG);
                         break;
                     case PURCHASEPRICE:
                         chartConfig.remove(ChartDetails.CLOSING);
                         chartConfig.remove(ChartDetails.SCALING_LOG);
+                        chartConfig.remove(ChartDetails.PURCHASEPRICE_MA);
+                        break;
+                    case PURCHASEPRICE_MA:
+                        chartConfig.remove(ChartDetails.CLOSING);
+                        chartConfig.remove(ChartDetails.SCALING_LOG);
+                        chartConfig.remove(ChartDetails.PURCHASEPRICE);
                         break;
                     case SHOW_MAIN_HORIZONTAL_LINES:
                         chartConfig.remove(ChartDetails.SHOW_PERCENTAGE_HORIZONTAL_LINES);
@@ -905,15 +915,26 @@ public class SecuritiesChart
             swtAntialias = range.size > 1000 ? SWT.OFF : SWT.ON;
 
             boolean showAreaRelativeToFirstQuote = chartConfig.contains(ChartDetails.CLOSING)
-                            || chartConfig.contains(ChartDetails.PURCHASEPRICE);
-            if (!chartConfig.contains(ChartDetails.PURCHASEPRICE))
+                            || chartConfig.contains(ChartDetails.PURCHASEPRICE)
+                            || chartConfig.contains(ChartDetails.PURCHASEPRICE_MA);
+            if (!chartConfig.contains(ChartDetails.PURCHASEPRICE)
+                            && !chartConfig.contains(ChartDetails.PURCHASEPRICE_MA))
             {
                 SecurityPrice p2 = prices.get(range.start);
                 firstQuote = (p2.getValue() / Values.Quote.divider());
             }
-            else
+            else if (chartConfig.contains(ChartDetails.PURCHASEPRICE))
             {
                 Optional<Double> purchasePrice = getLatestPurchasePrice();
+
+                if (purchasePrice.isPresent())
+                    firstQuote = purchasePrice.get();
+                else
+                    showAreaRelativeToFirstQuote = false;
+            }
+            else if (chartConfig.contains(ChartDetails.PURCHASEPRICE_MA))
+            {
+                Optional<Double> purchasePrice = getLatestMovingAveragePurchasePrice();
 
                 if (purchasePrice.isPresent())
                     firstQuote = purchasePrice.get();
@@ -1891,6 +1912,17 @@ public class SecuritiesChart
             return Optional.empty();
 
         return getPurchasePrice(new ClientSecurityFilter(security).filter(client),
+                        converter.with(security.getCurrencyCode()), LocalDate.now());
+    }
+
+    private Optional<Double> getLatestMovingAveragePurchasePrice()
+    {
+        // securities w/o currency (e.g. index) cannot be bought and hence have
+        // no purchase price
+        if (security.getCurrencyCode() == null)
+            return Optional.empty();
+
+        return getMovingAveragePurchasePrice(new ClientSecurityFilter(security).filter(client),
                         converter.with(security.getCurrencyCode()), LocalDate.now());
     }
 
