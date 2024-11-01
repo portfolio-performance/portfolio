@@ -75,7 +75,8 @@ public class CSVExporter
     public void exportAccountTransactions(File directory, List<Account> accounts) throws IOException
     {
         for (Account account : accounts)
-            exportAccountTransactions(new File(directory, account.getName() + ".csv"), account); //$NON-NLS-1$
+            exportAccountTransactions(new File(directory, TextUtil.sanitizeFilename(account.getName() + ".csv")), //$NON-NLS-1$
+                            account);
     }
 
     public void exportPortfolioTransactions(File file, Portfolio portfolio) throws IOException
@@ -157,7 +158,8 @@ public class CSVExporter
     public void exportPortfolioTransactions(File directory, List<Portfolio> portfolios) throws IOException
     {
         for (Portfolio portfolio : portfolios)
-            exportPortfolioTransactions(new File(directory, portfolio.getName() + ".csv"), portfolio); //$NON-NLS-1$
+            exportPortfolioTransactions(new File(directory, TextUtil.sanitizeFilename(portfolio.getName() + ".csv")), //$NON-NLS-1$
+                            portfolio);
     }
 
     public void exportSecurityMasterData(File file, List<Security> securities) throws IOException
