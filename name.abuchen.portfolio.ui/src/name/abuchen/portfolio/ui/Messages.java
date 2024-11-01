@@ -553,6 +553,7 @@ public class Messages extends NLS
     public static String LabelChartDetailChartDevelopment;
     public static String LabelChartDetailChartDevelopmentClosing;
     public static String LabelChartDetailChartDevelopmentClosingFIFO;
+    public static String LabelChartDetailChartDevelopmentClosingMovingAverage;
     public static String LabelChartDetailChartScaling;
     public static String LabelChartDetailChartScalingLinear;
     public static String LabelChartDetailChartScalingLog;
