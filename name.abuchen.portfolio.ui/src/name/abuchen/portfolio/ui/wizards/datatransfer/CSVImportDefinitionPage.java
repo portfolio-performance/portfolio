@@ -743,7 +743,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         protected ColumnConfigDialog(Client client, Shell parentShell, CSVImporter importer, Column column)
         {
             super(parentShell);
-            setShellStyle(getShellStyle() | SWT.SHEET);
+            setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.SHEET);
 
             this.client = client;
             this.importer = importer;
@@ -786,6 +786,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             final Composite details = new Composite(composite, SWT.NONE);
             final StackLayout layout = new StackLayout();
             details.setLayout(layout);
+            GridDataFactory.fillDefaults().grab(true, true).applyTo(details);
 
             final Composite emptyArea = new Composite(details, SWT.NONE);
 
@@ -818,11 +819,11 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             tableViewer.setContentProvider(new KeyMappingContentProvider());
             tableViewer.getTable().setLinesVisible(true);
             tableViewer.getTable().setHeaderVisible(true);
-            GridDataFactory.fillDefaults().grab(false, true).minSize(SWT.DEFAULT, 100).applyTo(tableViewer.getTable());
+            GridDataFactory.fillDefaults().grab(true, true).minSize(SWT.DEFAULT, 100).applyTo(tableViewer.getTable());
 
             TableViewerColumn col = new TableViewerColumn(tableViewer, SWT.NONE);
             col.getColumn().setText(Messages.CSVImportLabelExpectedValue);
-            col.getColumn().setWidth(100);
+            col.getColumn().setWidth(200);
             col.setLabelProvider(new ColumnLabelProvider()
             {
                 @Override
@@ -834,7 +835,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
 
             col = new TableViewerColumn(tableViewer, SWT.NONE);
             col.getColumn().setText(Messages.CSVImportLabelProvidedValue);
-            col.getColumn().setWidth(100);
+            col.getColumn().setWidth(200);
             col.setLabelProvider(new ColumnLabelProvider()
             {
                 @Override
