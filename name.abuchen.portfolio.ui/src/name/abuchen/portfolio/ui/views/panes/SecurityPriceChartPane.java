@@ -78,7 +78,14 @@ public class SecurityPriceChartPane implements InformationPanePage
         stylingEngine.style(chart);
 
         details = new SecurityDetailsViewer(sash, SWT.NONE, client, true);
-        details.getControl().setLayoutData(new SashLayoutData(SWTHelper.getPackedWidth(details.getControl())));
+
+        final String sashIdentifier = getClass().getSimpleName() + "-newsash"; //$NON-NLS-1$
+        int size = preferences.getInt(sashIdentifier);
+        if (size == 0)
+            size = SWTHelper.getPackedWidth(details.getControl());
+        details.getControl().setLayoutData(new SashLayoutData(size));
+        sash.addDisposeListener(e -> preferences.setValue(sashIdentifier,
+                        ((SashLayoutData) details.getControl().getLayoutData()).getSize()));
 
         return sash;
     }
