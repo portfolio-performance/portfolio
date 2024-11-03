@@ -139,8 +139,8 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         // interval
 
         List<Integer> available = new ArrayList<>();
-        for (int ii = 1; ii <= 12; ii++)
-            available.add(ii);
+        for (var entry : InvestmentPlanModel.Intervals.values())
+            available.add(entry.getInterval());
 
         ComboInput interval = new ComboInput(editArea, Messages.ColumnInterval);
         interval.value.setInput(available);
@@ -150,7 +150,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
             public String getText(Object element)
             {
                 int interval = (Integer) element;
-                return MessageFormat.format(Messages.InvestmentPlanIntervalLabel, interval);
+                return InvestmentPlanModel.Intervals.get(interval).toString();
             }
         });
         interval.bindValue(Properties.interval.name(),

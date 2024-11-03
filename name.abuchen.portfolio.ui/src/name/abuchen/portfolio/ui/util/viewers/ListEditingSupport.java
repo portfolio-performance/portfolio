@@ -17,8 +17,9 @@ public class ListEditingSupport extends PropertyEditingSupport
 {
     private ComboBoxCellEditor editor;
     private List<Object> comboBoxItems;
+    private List<String> comboItemsNames;
 
-    public ListEditingSupport(Class<?> subjectType, String attributeName, List<?> options)
+    public ListEditingSupport(Class<?> subjectType, String attributeName, List<?> options, List<String> comboItemsNames)
     {
         super(subjectType, attributeName);
 
@@ -27,6 +28,12 @@ public class ListEditingSupport extends PropertyEditingSupport
                 throw new IllegalArgumentException("option must not be null"); //$NON-NLS-1$
 
         this.comboBoxItems = new ArrayList<>(options);
+        this.comboItemsNames = comboItemsNames;
+    }
+
+    public ListEditingSupport(Class<?> subjectType, String attributeName, List<?> options)
+    {
+        this(subjectType, attributeName, options, null);
     }
 
     public boolean canBeNull(Object element) // NOSONAR
@@ -60,8 +67,21 @@ public class ListEditingSupport extends PropertyEditingSupport
         String[] names = new String[comboBoxItems.size()];
         int index = 0;
 
-        for (Object item : comboBoxItems)
-            names[index++] = item == null ? "" : item.toString(); //$NON-NLS-1$
+        if (comboItemsNames == null)
+        {
+            for (Object item : comboBoxItems)
+                names[index++] = item == null ? "" : item.toString(); //$NON-NLS-1$
+        }
+        else if (comboItemsNames.size() == comboBoxItems.size())
+        {
+            for (Object item : comboBoxItems)
+            {
+                names[index] = item == null ? "" : comboItemsNames.get(index); //$NON-NLS-1$
+                index++;
+            }
+        }
+        else
+            throw new IllegalArgumentException("arrays size do not match"); //$NON-NLS-1$
 
         editor.setItems(names);
     }

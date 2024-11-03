@@ -37,6 +37,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanModel;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
@@ -271,14 +272,20 @@ public class InvestmentPlanListView extends AbstractFinanceView implements Modif
             @Override
             public String getText(Object e)
             {
-                return MessageFormat.format(Messages.InvestmentPlanIntervalLabel, ((InvestmentPlan) e).getInterval());
+                int interval = ((InvestmentPlan) e).getInterval();
+                return InvestmentPlanModel.Intervals.get(interval).toString();
             }
         });
         ColumnViewerSorter.create(InvestmentPlan.class, "interval").attachTo(column); //$NON-NLS-1$
         List<Integer> available = new ArrayList<>();
-        for (int ii = 1; ii <= 12; ii++)
-            available.add(ii);
-        new ListEditingSupport(InvestmentPlan.class, "interval", available).addListener(this).attachTo(column); //$NON-NLS-1$
+        List<String> theIntervalNames = new ArrayList<>();
+        for (var entry : InvestmentPlanModel.Intervals.values())
+        {
+            available.add(entry.getInterval());
+            theIntervalNames.add(entry.toString());
+        }
+        new ListEditingSupport(InvestmentPlan.class, "interval", available, theIntervalNames).addListener(this) //$NON-NLS-1$
+                        .attachTo(column);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
