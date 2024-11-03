@@ -49,6 +49,8 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
     private List<Transaction> transactions = new ArrayList<>();
 
+    private LocalDate weeklyNominalDate;
+    
     public InvestmentPlan()
     {
         // needed for xstream de-serialization
@@ -307,43 +309,55 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     private LocalDate next(LocalDate transactionDate)
     {
         LocalDate previousDate = transactionDate;
-
-        // the transaction date might be edited (or moved to the next months b/c
-        // of public holidays) -> determine the "normalized" date by comparing
-        // the three months around the current transactionDate
-
-        if (transactionDate.getDayOfMonth() != start.getDayOfMonth())
+        LocalDate next;
+        if (interval <= 12) // monthly invervals
         {
-            int daysBetween = Integer.MAX_VALUE;
+            // the transaction date might be edited (or moved to the next months b/c
+            // of public holidays) -> determine the "normalized" date by comparing
+            // the three months around the current transactionDate
 
-            LocalDate testDate = transactionDate.minusMonths(1);
-            testDate = testDate.withDayOfMonth(Math.min(testDate.lengthOfMonth(), start.getDayOfMonth()));
-
-            for (int ii = 0; ii < 3; ii++)
+            if (transactionDate.getDayOfMonth() != start.getDayOfMonth())
             {
-                int d = Dates.daysBetween(transactionDate, testDate);
-                if (d < daysBetween)
-                {
-                    daysBetween = d;
-                    previousDate = testDate;
-                }
+                int daysBetween = Integer.MAX_VALUE;
 
-                testDate = testDate.plusMonths(1);
+                LocalDate testDate = transactionDate.minusMonths(1);
                 testDate = testDate.withDayOfMonth(Math.min(testDate.lengthOfMonth(), start.getDayOfMonth()));
+
+                for (int ii = 0; ii < 3; ii++)
+                {
+                    int d = Dates.daysBetween(transactionDate, testDate);
+                    if (d < daysBetween)
+                    {
+                        daysBetween = d;
+                        previousDate = testDate;
+                    }
+
+                    testDate = testDate.plusMonths(1);
+                    testDate = testDate.withDayOfMonth(Math.min(testDate.lengthOfMonth(), start.getDayOfMonth()));
+                }
             }
+
+            next = previousDate.plusMonths(interval);
+            // correct day of month (say the transactions are to be generated on the
+            // 31st, but the month has only 30 days)
+            next = next.withDayOfMonth(Math.min(next.lengthOfMonth(), start.getDayOfMonth()));
         }
+        else // weekly or bi weekly intervals
+        {
+            if (weeklyNominalDate != null)
+                previousDate = weeklyNominalDate;
 
-        LocalDate next = previousDate.plusMonths(interval);
-
-        // correct day of month (say the transactions are to be generated on the
-        // 31st, but the month has only 30 days)
-        next = next.withDayOfMonth(Math.min(next.lengthOfMonth(), start.getDayOfMonth()));
+            next = previousDate.plusWeeks(interval / 100);
+        }
 
         if (next.isBefore(start.toLocalDate()))
         {
             // start date was recently changed, use this value instead
             next = start.toLocalDate();
         }
+
+        if (interval > 12) // weekly intervals are 100 or 200
+            weeklyNominalDate = next;
 
         // do not generate a investment plan transaction on a public holiday
         TradeCalendar tradeCalendar = security != null ? TradeCalendarManager.getInstance(security)
@@ -356,15 +370,19 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
     public LocalDate getDateOfNextTransactionToBeGenerated()
     {
+        weeklyNominalDate = null;
         Optional<LocalDate> lastDate = getLastDate();
 
         if (lastDate.isPresent())
         {
-            return next(lastDate.get());
+            LocalDate nextDate = next(lastDate.get());
+            weeklyNominalDate = nextDate;
+            return nextDate;
         }
         else
         {
             LocalDate startDate = start.toLocalDate();
+            weeklyNominalDate = startDate;
 
             // do not generate a investment plan transaction on a public holiday
             TradeCalendar tradeCalendar = security != null ? TradeCalendarManager.getInstance(security)
@@ -392,6 +410,8 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
             transactionDate = next(transactionDate);
         }
+
+        weeklyNominalDate = null;
 
         return newlyCreated;
     }
