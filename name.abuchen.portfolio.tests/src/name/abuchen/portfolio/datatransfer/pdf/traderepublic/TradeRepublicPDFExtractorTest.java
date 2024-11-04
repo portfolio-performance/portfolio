@@ -7438,6 +7438,37 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testSparplan11()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000130809"), hasWkn(null), hasTicker(null), //
+                        hasName("Société Générale"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-11-04T00:00"), hasShares(0.920979), //
+                        hasSource("Sparplan11.txt"), //
+                        hasNote("Ausführung: 1234-abcd | Sparplan: abcd-1234"), //
+                        hasAmount("EUR", 25.08), hasGrossValue("EUR", 25.00), //
+                        hasTaxes("EUR", 0.08), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testPlanDeInvestion01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
