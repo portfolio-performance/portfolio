@@ -3984,6 +3984,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^.* Finanztransaktionssteuer (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Finanztransaktionssteuer -0,08 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Finanztransaktionssteuer (\\-)?(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
