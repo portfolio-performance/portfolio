@@ -40,6 +40,30 @@ public class AudiBankPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         // @formatter:off
+        // 1 11.03.2022 Gutschrift 11.03.2022 500,00
+        // @formatter:on
+        Block depositBlock = new Block("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "amount") //
+                        .documentContext("currency") //
+                        .match("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+)$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
         // 1 21.08.2023 Telebanking Belastung 22.08.2023 -1,00
         // 3 23.08.2023 Belastung 23.08.2023 -1,00
         // @formatter:on

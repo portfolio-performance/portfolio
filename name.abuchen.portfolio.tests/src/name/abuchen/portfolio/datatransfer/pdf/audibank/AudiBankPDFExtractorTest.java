@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf.audibank;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
@@ -111,6 +112,48 @@ public class AudiBankPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(taxes(hasDate("2023-08-25"), hasAmount("EUR", 0.25), //
                         hasSource("Kontoauszug02.txt"), hasNote("Abgeltungsteuer"))));
+
+    }
+
+    @Test
+    public void testKontoauszug03()
+    {
+        AudiBankPDFExtractor extractor = new AudiBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2022-03-11"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2022-03-18"), hasAmount("EUR", 500.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2022-03-25"), hasAmount("EUR", 1.13), //
+                        hasSource("Kontoauszug03.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxes(hasDate("2022-03-25"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Solidaritätszuschlag"))));
+
+        // check cancellation transaction
+        assertThat(results, hasItem(taxes(hasDate("2022-03-25"), hasAmount("EUR", 0.02), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Kirchensteuer"))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxes(hasDate("2022-03-25"), hasAmount("EUR", 0.27), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Abgeltungsteuer"))));
 
     }
 }
