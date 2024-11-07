@@ -20,6 +20,14 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
+/**
+ * @formatter:off
+ * @implNote 1822direkt
+ *
+ * @implSpec The account statement transactions are reported in EUR.
+ * @formatter:on
+ */
+
 @SuppressWarnings("nls")
 public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 {
@@ -32,6 +40,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendeTransaction();
         addAdvanceTaxTransaction();
+        addAccountStatementTransaction();
         addNonImportableTransaction();
     }
 
@@ -307,6 +316,41 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);
+    }
+
+    private void addAccountStatementTransaction()
+    {
+        final DocumentType type = new DocumentType("Monatlicher Kontoauszug");
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 17.10.2024 Gutschrift Überw. Max Mustermann +1.000,00
+        // @formatter:on
+        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift .berw\\. .* \\+[\\.,\\d]+.*$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "note", "amount") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>Gutschrift .berw\\.) .* \\+(?<amount>[\\.,\\d]+).*$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode("EUR"));
+
+                            // Formatting some notes
+                            if ("Gutschrift Überw.".equals(v.get("note")))
+                                v.put("note", "Gutschrift (Überweisung)");
+
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private void addNonImportableTransaction()
