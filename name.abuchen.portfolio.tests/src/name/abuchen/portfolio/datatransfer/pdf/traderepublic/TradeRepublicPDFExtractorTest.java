@@ -8083,6 +8083,39 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testZinsabrechnung07()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-07-01T00:00"), //
+                        hasSource("Zinsabrechnung07.txt"), //
+                        hasNote("Zinsen 01.06.2024 - 11.06.2024 (4,00%)"), //
+                        hasAmount("EUR", 21.02), hasGrossValue("EUR", 21.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-07-01T00:00"), //
+                        hasSource("Zinsabrechnung07.txt"), //
+                        hasNote("Zinsen 12.06.2024 - 30.06.2024 (3,75%)"), //
+                        hasAmount("EUR", 52.06), hasGrossValue("EUR", 52.06), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testRescontoInteressiMaturati01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());

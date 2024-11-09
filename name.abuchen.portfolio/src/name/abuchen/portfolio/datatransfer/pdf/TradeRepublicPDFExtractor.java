@@ -2528,9 +2528,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         //
                                         // VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
                                         // DE12345678912345678912 28.09.2024 -0.27 EUR
+                                        //
+                                        // IBAN BUCHUNGSDATUM GESAMT
+                                        // DE12321546856552266333 01.07.2024 74,08 EUR
+                                        //
                                         // @formatter:on
                                         .section("date") //
-                                        .find("(IBAN BUCHUNGSDATUM GUTSCHRIFT NACH STEUERN|VERRECHNUNGSKONTO (VALUTA|WERTSTELLUNG|DATUM DER ZAHLUNG) BETRAG)") //
+                                        .find("(IBAN BUCHUNGSDATUM (GUTSCHRIFT NACH STEUERN|GESAMT)|VERRECHNUNGSKONTO (VALUTA|WERTSTELLUNG|DATUM DER ZAHLUNG) BETRAG)") //
                                         .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (\\-)?[\\.,\\d]+( [\\w]{3})?$") //
                                         .assign((ctx, v) -> {
                                             ctx.put("date", v.get("date"));
@@ -2883,11 +2887,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|INTEREST INVOICE)", //
                         documentContext -> documentContext //
                                         // @formatter:off
+                                        //
                                         // IBAN BUCHUNGSDATUM GUTSCHRIFT NACH STEUERN
                                         // DE10123456789123456789 01.02.2023 0,88 EUR
+                                        //
+                                        // IBAN BUCHUNGSDATUM GESAMT
+                                        // DE12321546856552266333 01.07.2024 74,08 EUR
+                                        //
                                         // @formatter:on
                                         .section("date") //
-                                        .find("IBAN (BUCHUNGSDATUM|DATA EMISSIONE|BOOKING DATE) (GUTSCHRIFT NACH STEUERN|TOTALE|TOTAL)") //
+                                        .find("IBAN (BUCHUNGSDATUM|DATA EMISSIONE|BOOKING DATE) (GUTSCHRIFT NACH STEUERN|GESAMT|TOTALE|TOTAL)") //
                                         .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+ [\\w]{3}$") //
                                         .assign((ctx, v) -> {
                                             ctx.put("date", v.get("date"));
