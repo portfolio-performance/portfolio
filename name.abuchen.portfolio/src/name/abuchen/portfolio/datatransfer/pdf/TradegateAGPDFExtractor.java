@@ -223,10 +223,10 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
-                        // Abgeführter Kirchensteuer -X,XX EUR
+                        // Abgeführte Kirchensteuer -0,63 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Abgef.hrter Kirchensteuer \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Abgef.hrte Kirchensteuer \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 }
