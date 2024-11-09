@@ -386,6 +386,9 @@ public class PerformanceView extends AbstractHistoricView
 
     private void addTreeActionsContextMenu(IMenuManager manager, Object obj)
     {
+        if (obj == null)
+            return;
+
         manager.add(new Action(Messages.LabelExpand)
         {
             @Override
