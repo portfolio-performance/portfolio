@@ -18,6 +18,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -1566,8 +1567,8 @@ public class EasyBankAGPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(0L));
-        assertThat(results.size(), is(2));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(3));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -1583,6 +1584,14 @@ public class EasyBankAGPDFExtractorTest
                         hasNote("Auftrags-Nr.: 23456789 | Limit: 20,200000"), //
                         hasAmount("EUR", 394.69), hasGrossValue("EUR", 404.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 1.85 + 0.71 + 6.75))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2024-07-15T00:00"), hasShares(20.00), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 42.55), hasGrossValue("EUR", 42.55), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1597,8 +1606,8 @@ public class EasyBankAGPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(0L));
-        assertThat(results.size(), is(2));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(3));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -1609,11 +1618,19 @@ public class EasyBankAGPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2024-07-14T00:00"), hasShares(20), //
+                        hasDate("2024-07-14T00:00"), hasShares(20.00), //
                         hasSource("Verkauf05.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1982.15), hasGrossValue("EUR", 2000.00), //
                         hasTaxes("EUR", 14.85 + 0.50), hasFees("EUR", 2.50))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2024-07-15T00:00"), hasShares(20.00), //
+                        hasSource("Verkauf05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 14.85), hasGrossValue("EUR", 14.85), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2739,8 +2756,8 @@ public class EasyBankAGPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(2));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(3));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -2757,6 +2774,15 @@ public class EasyBankAGPDFExtractorTest
                         hasAmount("EUR", 5.09), hasGrossValue("EUR", 8.59), //
                         hasForexGrossValue("USD", 9.18), //
                         hasTaxes("EUR", 2.55), hasFees("EUR", 0.95))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2024-11-13T00:00"), hasShares(31.807), //
+                        hasSource("Dividende20.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2.36), hasGrossValue("EUR", 2.36), //
+                        hasForexGrossValue("USD", 2.52), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2777,8 +2803,8 @@ public class EasyBankAGPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(1));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
@@ -2795,6 +2821,14 @@ public class EasyBankAGPDFExtractorTest
                             Status s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2024-11-13T00:00"), hasShares(31.807), //
+                        hasSource("Dividende20.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2.36), hasGrossValue("EUR", 2.36), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
