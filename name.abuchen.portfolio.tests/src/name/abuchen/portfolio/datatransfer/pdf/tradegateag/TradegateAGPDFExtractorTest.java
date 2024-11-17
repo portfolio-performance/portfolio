@@ -110,6 +110,37 @@ public class TradegateAGPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf02()
+    {
+        TradegateAGPDFExtractor extractor = new TradegateAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BVZ6SP04"), hasWkn("A14PHG"), hasTicker(null), //
+                        hasName("PFI ETFs-EO Sh.Mat.UC.ETF Registered Shares EUR Acc.o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-11-13T20:33:19"), hasShares(10.00), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote("Order-/Ref.nr. 8321468 | Limit 102,8600 EUR"), //
+                        hasAmount("EUR", 1028.40), hasGrossValue("EUR", 1028.67), //
+                        hasTaxes("EUR", 0.24 + 0.01 + 0.02), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDividende01()
     {
         TradegateAGPDFExtractor extractor = new TradegateAGPDFExtractor(new Client());
