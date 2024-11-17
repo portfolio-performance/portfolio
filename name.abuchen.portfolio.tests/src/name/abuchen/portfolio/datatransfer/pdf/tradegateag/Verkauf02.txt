@@ -1,0 +1,57 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Tradegate AG · Kurfürstendamm 129d · 10711 Berlin
+Datum 13.11.2024
+Ebvjy Kundennummer 75912729
+Owzdi spFlQWlv IBAN Ws76 1002 3027 9049 0746 67
+a Trading-Depot 75912729.020
+nUZHWHvfTYBtZBc 21 X Order-/Ref.nr. 8321468
+59310 iwDerg E-Mail support@tradegate.direct
+Seite 1 von 2
+Wertpapierabrechnung
+Ihre Wertpapierorder vom 13.11.2024 wurde ausgeführt:
+Orderart Verkauf Börsenplatz Tradegate Exchange
+Wertpapierart ETP Stück 10
+ISIN IE00BVZ6SP04 Gültigkeit 29.11.2024
+WKN A14PHG
+Wertpapier PFI ETFs-EO Sh.Mat.UC.ETF Registered Shares EUR Acc.o.N.
+Verwahrart Wertpapierrechnung
+Lagerland Irland
+Ordertyp Limit
+Limit 102,8600 EUR
+Stück ausgeführt 10
+Ausführungskurs 102,8668 EUR
+Handelstag/-zeit 13.11.2024 20:33:19
+Wertpapierabrechnung
+Kurswert 1.028,67 EUR
+Orderprovision 0,00 EUR
+Fremde Gebühren und Spesen 0,00 EUR
+Abgeführte Kapitalertragsteuer -0,24 EUR
+Abgeführter Solidaritätszuschlag -0,01 EUR
+Abgeführte Kirchensteuer -0,02 EUR
+Ausmachender Betrag 1.028,40 EUR
+Der Abrechnungsbetrag i. H. v. 1.028,40 EUR wird Ihrem o. g. Verrechnungskonto mit Valuta 15.11.2024 gutgeschrieben.
+DieWertpapiere habenwir entsprechend IhrerWertpapierabrechnung gebucht. Bitte prüfen Sie dieseWertpapierabrechnung
+unverzüglich und richten etwaige Einwendungenunverzüglich an tradegate.direct, Kurfürstendamm129d, 10711Berlin oder
+an beschwerdemanagement@tradegate.direct. Andernfalls gilt diese Wertpapierabrechnung als genehmigt.
+Beratungsfreies Geschäft
+Diese Mitteilung wurde maschinell erstellt und wird von der Bank nicht unterschrieben.
+tradegate.direct ein Service der Tradegate AG
+Tradegate AG · Kurfürstendamm 129d · 10711 Berlin
+Telefon: +49 (0)30 515 657 700 · E-Mail: info@tradegate.direct · Internet: www.tradegate.direct
+Handelsregister: Amtsgericht Berlin-Charlottenburg, HRB 71506 B · USt-ID: DE 155 528 522 · BIC: TRDADEBBDIR · BLZ: 103 106 66
+Aufsichtsratsvorsitzender: Frank-Uwe Fricke · Vorstand: Holger Timm (Vorsitzender), Kerstin Timm, Jörg Hartmann, Thorsten Commichau, Klaus-Gerd Kleversaat, Karsten Haesen
+Seite 2 von 2
+Steuerliche Informationen - Wertpapierabrechnung
+Veräußerungsgewinn/-verlust vor Teilfreistellung EUR 0,97
+Steuerpflichtiger Betrag nach Teilfreistellung (im Privatvermögen) EUR 0,97
+Bemessungsgrundlage für Kapitalertragsteuer EUR 0,97
+Kapitalertragsteuer EUR -0,24
+Solidaritätszuschlag EUR -0,01
+Kirchensteuer EUR -0,02
+tradegate.direct ein Service der Tradegate AG
+Tradegate AG · Kurfürstendamm 129d · 10711 Berlin
+Telefon: +49 (0)30 515 657 700 · E-Mail: info@tradegate.direct · Internet: www.tradegate.direct
+Handelsregister: Amtsgericht Berlin-Charlottenburg, HRB 71506 B · USt-ID: DE 155 528 522 · BIC: TRDADEBBDIR · BLZ: 103 106 66
+Aufsichtsratsvorsitzender: Frank-Uwe Fricke · Vorstand: Holger Timm (Vorsitzender), Kerstin Timm, Jörg Hartmann, Thorsten Commichau, Klaus-Gerd Kleversaat, Karsten Haesen
