@@ -37,6 +37,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendeTransaction();
+        addFeeTransaction();
         addDeliveryInOutBoundTransaction();
         addNonImportableTransaction();
         addAccountStatementTransactions();
@@ -52,13 +53,12 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
     private void addBuySellTransaction()
     {
         DocumentType type = new DocumentType("((Gesch.ftsart:|Wertpapier Abrechnung) (Kauf|Verkauf|R.cknahme Fonds).*" //
-                        + "|B.rse \\- Zeichnung)");
+                        + "|B.rse \\- (Zeichnung|Kauf))");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^((Gesch.ftsart:|Wertpapier Abrechnung) (Kauf|Verkauf|R.cknahme Fonds).*" //
-                        + "|B.rse \\- Zeichnung)$");
+        Block firstRelevantLine = new Block("^.*(Auftrags\\-Nr|Auftragsnummer|Referenz).*$", "^(Der Betrag wird Ihnen|Den Gegenwert buchen|Dieser Beleg (tr.gt|wurde|wird)).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -71,6 +71,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         })
 
                         // Is type --> "Verkauf" change from BUY to SELL
+                        // Is type --> "Rücknahme Fonds" change from BUY to SELL
                         .section("type").optional()
                         .match("^(Gesch.ftsart:|Wertpapier Abrechnung) (?<type>(Kauf|Verkauf|R.cknahme Fonds)) .*$")
                         .assign((t, v) -> {
@@ -118,10 +119,10 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         // Kurs CHF 155.66
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("name", "isin", "currency") //
+                                                        .attributes("name", "wkn", "isin", "currency") //
                                                         .find("Wir haben für Sie .*") //
                                                         .match("^[\\.'\\d]+ (?<name>.*)$") //
-                                                        .match("^.* ISIN\\-Nr\\.: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("^Valoren\\-Nr\\.: (?<wkn>[A-Z0-9]{5,9}), ISIN\\-Nr\\.: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^Kurs (?<currency>[\\w]{3}) [\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -202,29 +203,41 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         // Kurswert: -1.464,32 CAD
                         // Devisenkurs: 1,406 (20.01.2022) -1.093,40 EUR
                         // @formatter:on
-                        .section("fxCurrency", "fxGross", "exchangeRate", "currency").optional() //
-                        .match("^Kurswert: (\\-)?(?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3}).*$") //
-                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\) (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                        .section("termCurrency", "fxGross", "exchangeRate", "baseCurrency").optional() //
+                        .match("^Kurswert: (\\-)?(?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$") //
+                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{2}\\.[\\d]{2}\\.[\\d]{4}\\) (\\-)?[\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$") //
                         .assign((t, v) -> {
-                            v.put("baseCurrency", asCurrencyCode(v.get("currency")));
-                            v.put("termCurrency", asCurrencyCode(v.get("fxCurrency")));
-
                             ExtrExchangeRate rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
-                            Money gross = rate.convert(asCurrencyCode(v.get("currency")), fxGross);
+                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
 
-                        // @formatter:off
-                        // Geschäftsart: Rücknahme Fonds Auftrags-Nr.: 47199493 - 27.03.2023
-                        // @formatter:on
-                        .section("note").optional() //
-                        .match("^.*(?<note>Auftrags\\-Nr\\.: [\\d]+).*$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
-
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Geschäftsart: Rücknahme Fonds Auftrags-Nr.: 47199493 - 27.03.2023
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>Auftrags\\-Nr\\.: [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        // Auftragsnummer 464088/93.00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>Auftragsnummer .*)$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        // Unsere Referenz: 17815533192 Gebenstorf, 14. November 2024
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*Referenz: (?<note>[\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note")))))
                         // @formatter:off
                         // Limit bestens
                         // @formatter:on
@@ -240,12 +253,12 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Ertrag|Dividendengutschrift|Ertragsgutschrift nach .*)");
+        DocumentType type = new DocumentType("(Ertrag|Dividendengutschrift|Kapitaltransaktion|Ertragsgutschrift nach .*)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^((Gesch.ftsart: Ertrag|Dividendengutschrift)|Ertragsgutschrift nach .*)$");
+        Block firstRelevantLine = new Block("^.*(Private Banking|Abrechnungsnr|Gesch.ftsart|Anlageverm.gen).*$", "^(Den Betrag buchen|Der Betrag wird|Dieser Beleg (tr.gt|wurde|wird)).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -313,7 +326,20 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
-                                                        }))
+                                                        }),
+                                        // @formatter:off
+                                        // Depotposition
+                                        // 254 UBS ETF (CH) - SPI (R) Mid
+                                        // Valoren-Nr.: 13059512, ISIN CH0130595124 (SPMCHA)
+                                        // Dividende CHF 2.38 pro Titel
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .find("Depotposition.*") //
+                                                        .match("^[\\.'\\d]+ (?<name>.*)$") //
+                                                        .match("^Valoren\\-Nr\\.: (?<wkn>[A-Z0-9]{5,9}), ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^(Dividende|Ertrag) (?<currency>[\\w]{3}) [\\.'\\d]+.*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -329,6 +355,15 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^St.ck (?<shares>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Depotposition
+                                        // 254 UBS ETF (CH) - SPI (R) Mid
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .find("Depotposition.*") //
+                                                        .match("^(?<shares>[\\.'\\d]+) .*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         .oneOf( //
@@ -345,6 +380,13 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Gutschrift Valuta 11. September 2024 CHF 392.94
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Gutschrift Valuta (?<date>[\\d]{2}\\. .* [\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         .oneOf( //
@@ -371,6 +413,16 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:on
                                                             t.setType(AccountTransaction.Type.TAXES);
 
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // Gutschrift Valuta 11. September 2024 CHF 392.94
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Gutschrift Valuta .* (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }))
@@ -411,12 +463,27 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
 
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //  Abrechnungsnr. 76560429680
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>Abrechnungsnr. .*)$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        // Unsere Referenz: 17518731738 Gebenstorf, 11. September 2024
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*Referenz: (?<note>[\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note")))))
                         // @formatter:off
                         // Ex-Tag 01.12.2021 Art der Dividende Quartalsdividende
                         // @formatter:on
                         .section("note").optional() //
                         .match("^.* Art der Dividende (?<note>.*)$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         .wrap((t, ctx) -> {
                             // @formatter:off
@@ -432,6 +499,69 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addFeeTransaction()
+    {
+        DocumentType type = new DocumentType("Geb.hrenbelastung Depot");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^Anlageverm.gen.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Belastung Valuta 30.09.2024 CHF 100.04
+                        // @formatter:on
+                        .section("date", "amount", "currency") //
+                        .match("^Belastung Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+).*$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //  Abrechnungsnr. 76560429680
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>Abrechnungsnr. .*)$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        // Unsere Referenz: 17495598455 Gebenstorf, 17. September 2024
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*Referenz: (?<note>[\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note")))))
+
+                        // @formatter:off
+                        // Für den Zeitraum vom 01.07.2024 bis 30.09.2024 haben wir Ihnen folgende Gebühr belastet:
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^F.r den Zeitraum vom (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                            return item;
+                        });
     }
 
     private void addDeliveryInOutBoundTransaction()
@@ -514,6 +644,9 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
                         .wrap((t, ctx) -> {
                             TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
@@ -1016,7 +1149,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         // Kirchensteuer 8 % auf 3,69 EUR 0,30- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\d.]+,\\d+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% .* (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
@@ -1077,6 +1210,26 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax", "currency").optional() //
                         .match("^Kursgewinn\\-KESt: \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Verrechnungssteuer 35 % CHF -211.58
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Verrechnungssteuer [\\.,\\d]+([\\s]+)?% .*(?<currency>[\\w]{3}) \\-(?<tax>[\\.'\\d]+).*$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Umsatzabgabe CHF -3.75
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Umsatzabgabe (?<currency>[\\w]{3}) \\-(?<tax>[\\.'\\d]+).*$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("noTax"))
                                 processTaxEntries(t, v, type);
@@ -1178,10 +1331,17 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
+                        // Börsengebühr CHF -2.35
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^B.rsengeb.hr (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+).*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
                         // Courtage CHF -3.17
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Courtage (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+)$") //
+                        .match("^Courtage (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
@@ -1243,11 +1403,11 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     /**
      * Helper method to set the date of an AccountTransaction based on the provided ParsedData.
-     * 
+     *
      * This method checks if the transaction's "nr" field is "01" and if the month is less than 3 (January or February).
      * If both conditions are met, it assumes the transaction should be recorded in the next year.
      * Otherwise, it uses the year provided in the ParsedData.
-     * 
+     *
      * @param t The AccountTransaction object to set the date for.
      * @param v The ParsedData object containing the date information.
      */
