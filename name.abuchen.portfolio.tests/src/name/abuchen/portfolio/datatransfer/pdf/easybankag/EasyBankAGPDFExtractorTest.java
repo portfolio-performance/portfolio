@@ -1,9 +1,12 @@
 package name.abuchen.portfolio.datatransfer.pdf.easybankag;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -2722,6 +2725,76 @@ public class EasyBankAGPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.19))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.95))));
+    }
+
+    @Test
+    public void testDividende20()
+    {
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende20.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B9CQXS71"), hasWkn(null), hasTicker(null), //
+                        hasName("SPDR S&P Glob.Div.Aristocr.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-11-13T00:00"), hasShares(31.807), //
+                        hasSource("Dividende20.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 5.09), hasGrossValue("EUR", 8.59), //
+                        hasForexGrossValue("USD", 9.18), //
+                        hasTaxes("EUR", 2.55), hasFees("EUR", 0.95))));
+    }
+
+    @Test
+    public void testDividende20WithSecurityInEUR()
+    {
+        Security security = new Security("SPDR S&P Glob.Div.Aristocr.ETF Registered Shares o.N.", CurrencyUnit.EUR);
+        security.setIsin("IE00B9CQXS71");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende20.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-11-13T00:00"), hasShares(31.807), //
+                        hasSource("Dividende20.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 5.09), hasGrossValue("EUR", 8.59), //
+                        hasTaxes("EUR", 2.55), hasFees("EUR", 0.95), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 
     @Test

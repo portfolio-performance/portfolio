@@ -345,10 +345,14 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         // Dividende: 1 USD
                                         // Ertrag: 16,00 USD
                                         // Devisenkurs: 0,99975 (31.10.2022) 11,60 EUR
+                                        //
+                                        // Ertrag: 0,2885 USD
+                                        // Ertrag: 9,18 USD
+                                        // Devisenkurs: 1,0684 (12.11.2024) 6,23 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency") //
-                                                        .match("^Dividende: [\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$") //
+                                                        .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$") //
                                                         .match("^Ertrag: (?<fxGross>[\\.,\\d]+) [\\w]{3}.*$") //
                                                         .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$") //
                                                         .assign((t, v) -> {
@@ -496,7 +500,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^Umsatzsteuer: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
-        
+
                         // @formatter:off
                         // Quellensteuer: -327,58 EUR
                         // @formatter:on
