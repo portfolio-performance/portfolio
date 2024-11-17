@@ -40,12 +40,12 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("ETF\\-(Kauf|Verkauf)");
+        DocumentType type = new DocumentType("ETF.(Kauf|Verkauf|purchase|sale)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^ETF\\-(Kauf|Verkauf)$", "^Erstellt am:.*$");
+        Block firstRelevantLine = new Block("^ETF.(Kauf|Verkauf|purchase|sale)$", "^(Created on|Erstellt am):.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -57,11 +57,13 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                             return portfolioTransaction;
                         })
 
-                        // Is type --> "Verkauf" change from BUY to SELL
+                        // Is type --> "Verkauf|sale" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^ETF\\-(?<type>(Kauf|Verkauf))$") //
+                        .match("^ETF.(?<type>(Kauf|Verkauf|purchase|sale))$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                            if ("sale".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -71,23 +73,23 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         // Preis pro Anteil CHF 100.040
                         // @formatter:on
                         .section("name", "isin", "currency") //
-                        .match("^ETF-Name (?<name>.*)$") //
+                        .match("^(ETF-Name|ETF name) (?<name>.*)$") //
                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^Preis pro Anteil (?<currency>[\\w]{3}) [\\.'\\d]+$") //
+                        .match("^(Preis pro Anteil|Price per share) (?<currency>[\\w]{3}) [\\.'\\d]+$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
                         // Anzahl Anteile 2
                         // @formatter:on
                         .section("shares") //
-                        .match("^Anzahl Anteile (?<shares>[\\',\\d]+)$") //
+                        .match("^(Anzahl Anteile|Number of shares) (?<shares>[\\',\\d]+)$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
                         // Valuta 01.12.2023
                         // @formatter:on
                         .section("date") //
-                        .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .match("^(Valuta|Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         // @formatter:off
@@ -95,7 +97,7 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         // Gutgeschriebener Betrag CHF 700.02
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^(Verrechneter|Gutgeschriebener) Betrag (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^(Amount (charged|credited)|(Verrechneter|Gutgeschriebener) Betrag) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -107,9 +109,9 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         // Kaufpreis CHF CHF 798.94
                         // @formatter:on
                         .section("fxGross", "baseCurrency", "termCurrency", "exchangeRate", "gross").optional() //
-                        .match("^Kaufpreis total [\\w]{3} (?<fxGross>[\\.'\\d]+)$") //
-                        .match("^Wechselkurs (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.'\\d]+)$") //
-                        .match("^Kaufpreis [\\w]{3} [\\w]{3} (?<gross>[\\.'\\d]+)$") //
+                        .match("^(Kaufpreis total|Verkaufspreis total|Total purchase price|Total sales price) [\\w]{3} (?<fxGross>[\\.'\\d]+)$") //
+                        .match("^(Wechselkurs|Exchange rate) (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.'\\d]+)$") //
+                        .match("^(Kaufpreis|Verkaufspreis|Purchase price|Selling price) [\\w]{3} [\\w]{3} (?<gross>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             ExtrExchangeRate rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -128,12 +130,12 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendsTransaction()
     {
-        DocumentType type = new DocumentType("Ertragsaussch.ttung");
+        DocumentType type = new DocumentType("(Ertragsaussch.ttung|Income distribution)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Ertragsaussch.ttung$");
+        Block firstRelevantLine = new Block("^(Ertragsaussch.ttung|Income distribution)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -151,33 +153,52 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         // Bruttoertrag pro Anteil CHF 0.1200
                         // @formatter:on
                         .section("name", "isin", "currency") //
-                        .match("^ETF-Name (?<name>.*)$") //
+                        .match("^(ETF-Name|ETF name) (?<name>.*)$") //
                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^(Bruttoertrag|Ertrag) pro Anteil (?<currency>[\\w]{3}) [\\.'\\d]+$") //
+                        .match("^((Bruttoertrag|Ertrag) pro Anteil|(Gross income|Income) per (unit|share)) (?<currency>[\\w]{3}) [\\.'\\d]+$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
                         // Anzahl Anteile 58
                         // @formatter:on
                         .section("shares") //
-                        .match("^Anzahl Anteile (?<shares>[\\.'\\d]+)$") //
+                        .match("^(Anzahl Anteile|Number of shares) (?<shares>[\\.'\\d]+)$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
                         // Valuta 13.09.2023
                         // @formatter:on
                         .section("date") //
-                        .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .match("^(Valuta|Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // @formatter:off
                         // Ertrag total CHF CHF 4.52
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Ertrag total [\\w]{3} (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^(Ertrag total|Total income|Total gross income) [\\w]{3} (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        t.setAmount(asAmount(v.get("amount")));
+                        t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        // @formatter:off
+                        // Ertrag total USD 912.50
+                        // Wechselkurs CHF/USD 0.87555
+                        // Ertrag total CHF CHF 798.94
+                        // @formatter:on
+                        .section("fxGross", "baseCurrency", "termCurrency", "exchangeRate", "gross").optional() //
+                        .match("^(Ertrag total|Total income|Total gross income) [\\w]{3} (?<fxGross>[\\.'\\d]+)$") //
+                        .match("^(Wechselkurs|Exchange rate) (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.'\\d]+)$") //
+                        .match("^(Ertrag total|Total income|Total gross income) [\\w]{3} [\\w]{3} (?<gross>[\\.'\\d]+)$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                            Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
 
                         .wrap(TransactionItem::new);
@@ -188,16 +209,17 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        DocumentType type = new DocumentType("Deinem Konto wurde (gut(ge)?schrieben|belastet):");
+        DocumentType type = new DocumentType(
+                        "(Deinem Konto wurde (gut(ge)?schrieben|belastet)|Your account has been (credited|debited)):");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Einzahlung" //
-                        + "|Willkommensbonus von findependent" //
-                        + "|Depotgeb.hren an" //
-                        + "|Verwaltungsgeb.hren an" //
-                        + "|Geb.hrenerstattung von).*$"); //
+        Block firstRelevantLine = new Block("^((Einzahlung|Incoming payment)|(Auszahlung|Outgoing payment)" //
+                        + "|(Willkommensbonus von findependent|Findependent welcome bonus)" //
+                        + "|(Depotgeb.hren an|Custody fees to)" //
+                        + "|(Verwaltungsgeb.hren an|Management fees to)" //
+                        + "|(Geb.hrenerstattung von|Reimbursement of fees from)).*$"); //
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -214,20 +236,33 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         // Is type --> "Gebührenerstattung" change from DEPOSIT to FEES_REFUND
                         // @formatter:on
                         .section("type").optional() //
-                        .match("^(?<type>(Depotgeb.hren|Verwaltungsgeb.hren|Geb.hrenerstattung)) (an|von).*$") //
+                        // .match("^(?<type>(Depotgeb.hren|Verwaltungsgeb.hren|Geb.hrenerstattung))
+                        // (an|von).*$") //
+                        // // |Auszahlung|Outgoing payment).*$)") //
+                        .match("^(?<type>(Depotgeb.hren|Verwaltungsgeb.hren|Geb.hrenerstattung|Custody fees|Management fees|Reimbursement of fees)) (an|von|to|from).*$") //
                         .assign((t, v) -> {
-                            if ("Depotgebühren".equals(v.get("type")) || "Verwaltungsgebühren".equals(v.get("type")))
+                            if ("Depotgebühren".equals(v.get("type")) || "Verwaltungsgebühren".equals(v.get("type"))
+                                            || "Custody fees".equals(v.get("type"))
+                                            || "Management fees".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.FEES);
 
-                            if ("Gebührenerstattung".equals(v.get("type")))
+                            if ("Gebührenerstattung".equals(v.get("type"))
+                                            || "Reimbursement of fees".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.FEES_REFUND);
+                        })
+
+                        .section("type2").optional() //
+                        .match("^(?<type2>(Auszahlung|Outgoing payment)).*$") //
+                        .assign((t, v) -> {
+                            if ("Auszahlung".equals(v.get("type2")) || "Outgoing payment".equals(v.get("type2")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
                         })
 
                         // @formatter:off
                         // Valuta 06.11.2023
                         // @formatter:on
                         .section("date") //
-                        .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .match("^(Valuta|Value date) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .oneOf( //
@@ -236,7 +271,7 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Betrag (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                                                        .match("^(Betrag|Amount) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -247,7 +282,7 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^(Depotgeb.hren|Verwaltungsgeb.hren) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                                                        .match("^(Depotgeb.hren|Verwaltungsgeb.hren|Custody fees|Management fees) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -258,7 +293,7 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         // Zahlungsgrund findependent Gutschrift Q3
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^Zahlungsgrund (?<note>.*)$") //
+                        .match("^(Zahlungsgrund|Payment reason) (?<note>.*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note")))) //
 
                         // @formatter:off
@@ -269,8 +304,8 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         // Periode 01.10.2023 - 31.12.2023
                         // @formatter:on
                         .section("note1", "note2").optional() //
-                        .match("^(?<note1>(Depotgeb.hren|Verwaltungsgeb.hren)) [\\w]{3} [\\.'\\d]+$") //
-                        .match("^Periode (?<note2>.*)$") //
+                        .match("^(?<note1>(Depotgeb.hren|Verwaltungsgeb.hren|Custody fees|Management fees)) [\\w]{3} [\\.'\\d]+$") //
+                        .match("^(Periode|Period) (?<note2>.*)$") //
                         .assign((t, v) -> {
                             t.setNote(concatenate(t.getNote(), trim(v.get("note1")), " "));
                             t.setNote(concatenate(t.getNote(), trim(v.get("note2")), " "));
@@ -287,7 +322,7 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         // Verrechnungssteuer (35%) CHF -2.44
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Verrechnungssteuer \\([\\d]+%\\) (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.'\\d]+)") //
+                        .match("^(Verrechnungssteuer|Withholding tax) \\([\\d]+%\\) (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.'\\d]+)") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -295,7 +330,7 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         // Stempelabgaben CHF -1.05
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Stempelabgaben (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.'\\d]+)") //
+                        .match("^(Stempelabgaben|Stamp duties) (?<currency>[\\w]{3}) (\\-)?(?<tax>[\\.'\\d]+)") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -308,7 +343,7 @@ public class FindependentAGPDFExtractor extends AbstractPDFExtractor
                         // Börsenabgaben CHF -0.05
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^B.rsenabgaben (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
+                        .match("^(B.rsenabgaben|Stock exchange fees) (?<currency>[\\w]{3}) (\\-)?(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
