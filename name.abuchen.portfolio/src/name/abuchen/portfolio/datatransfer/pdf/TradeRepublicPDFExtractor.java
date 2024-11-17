@@ -1761,10 +1761,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block depositRemovalBlock_Format01 = new Block("^[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?( [\\d]{4})? "
+        Block depositRemovalBlock_Format01 = new Block("^[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?( [\\d]{4})? " //
                         + "(.berweisung" //
                         + "|Transfer" //
-                        + "|Referral Refund) .*$");
+                        + "|Referral Refund" //
+                        + "|Kartentransaktion) .*$");
         type.addBlock(depositRemovalBlock_Format01);
         depositRemovalBlock_Format01.setMaxSize(1);
         depositRemovalBlock_Format01.set(new Transaction<AccountTransaction>()
@@ -1775,7 +1776,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .oneOf( //
+                        .optionalOneOf( //
                                         // @formatter:off
                                         // 02 Apr. Überweisung Einzahlung akzeptiert: DE7243872432 auf 2024 DE7243872432 1.200,00 € 51.352,41 €
                                         // @formatter:on
@@ -1789,10 +1790,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         }),
                                         // @formatter:off
                                         // 16 Apr. 2024 Überweisung Einzahlung akzeptiert: DE5987654321 auf DE12334567658 3.500,00 € 16.347,54 €
+                                        // 23 Juli 2024 Überweisung Incoming transfer from KLEslAT zxcWeqg 1.100,00 € 56.457,39 €
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) .berweisung Einzahlung .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) .berweisung (Einzahlung|Incoming) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -1810,61 +1812,41 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }),
                                         // @formatter:off
-                                        // 01 Apr. 2024 Überweisung PayOut to transit 172,23 € 50.000,00 €
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) .berweisung PayOut .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
-                                                        .assign((t, v) -> {
-                                                            t.setType(AccountTransaction.Type.REMOVAL);
-
-                                                            t.setDateTime(asDate(v.get("date")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                        }),
-                                        // @formatter:off
                                         // 26 Sep 2024 Transfer PayOut to transit €15.99 €0.00
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) Transfer PayOut .* (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+) \\p{Sc}[\\.,\\d]+$") //
-                                                        .assign((t, v) -> {
-                                                            t.setType(AccountTransaction.Type.REMOVAL);
-
-                                                            t.setDateTime(asDate(v.get("date")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                        }),
-                                        // @formatter:off
-                                        // 23 Juli 2024 Überweisung Incoming transfer from KLEslAT zxcWeqg 1.100,00 € 56.457,39 €
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) .berweisung Incoming transfer from .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
-                                                        .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                        }),
-                                        // @formatter:off
-                                        // 22 Juli 2024 Überweisung Outgoing transfer for EMYRMzk QpSHhzd 200,00 € 55.357,39 €
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) .berweisung Outgoing transfer for .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
-                                                        .assign((t, v) -> {
-                                                            t.setType(AccountTransaction.Type.REMOVAL);
-
-                                                            t.setDateTime(asDate(v.get("date")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                        }),
-                                        // @formatter:off
                                         // 24 Sep 2024 Referral Refund for your gift €10.01 €113.01
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) Referral Refund .* (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+) \\p{Sc}[\\.,\\d]+$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) (Transfer PayOut|Referral Refund) .* (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+) \\p{Sc}[\\.,\\d]+$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.REMOVAL);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // 23 Apr. 2024 Kartentransaktion ALDI SAGT DANKE 37,82 € 46.424,80 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "currency") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) Kartentransaktion (?<note>.*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.REMOVAL);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // 01 Apr. 2024 Überweisung PayOut to transit 172,23 € 50.000,00 €
+                                        // 26 Sep 2024 Transfer PayOut to transit €15.99 €0.00
+                                        // 22 Juli 2024 Überweisung Outgoing transfer for EMYRMzk QpSHhzd 200,00 € 55.357,39 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount", "currency") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) .berweisung (PayOut|Outgoing).* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
@@ -1901,7 +1883,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block depositRemovalBlock_Format02 = new Block("^[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?[\\s](Transacci.n.*)?$");
+        Block depositRemovalBlock_Format02 = new Block("^[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?[\\s].*$");
         type.addBlock(depositRemovalBlock_Format02);
         depositRemovalBlock_Format02.setMaxSize(4);
         depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
@@ -1959,7 +1941,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "note", "amount", "currency", "amountAfter", "currencyAfter") //
-                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s](Transacci.n.*)?$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s].*$") //
                                                         .match("^(?<year>[\\d]{4}) " //
                                                                         + "(Kartentransaktion|con tarjeta|Virement|Parrainage) " //
                                                                         + "(?<note>(?!(Einzahlung|Ingreso|Paiement)).*) " //
@@ -2026,6 +2008,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         //
                                         // 08 abr
                                         // 2024 Recomendación Reembolso por tu regalo 9,96 € 6.337,75 €
+                                        //
+                                        // 30 März
+                                        // 2020 Überweisung Accepted PayIn:DE74500400480142038900 to DE30110101008889827581 4.000,00 € 4.000,00 €
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "amount", "currency") //
@@ -2034,15 +2019,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                                         + "(.berweisung" //
                                                                         + "|Pr.mie" //
                                                                         + "|Transferencia" //
-                                                                        + "|Recompensa"
+                                                                        + "|Recompensa" //
                                                                         + "|Recomendaci.n" //
                                                                         + "|Virement) " //
                                                                         + "(Einzahlung akzeptiert:" //
+                                                                        + "|Accepted PayIn:" //
                                                                         + "|Ingreso aceptado:" //
                                                                         + "|Paiement accept.:" //
                                                                         + "|Your Saveback" //
                                                                         + "|Your Saveback payment" //
-                                                                        + "|Incoming transfer from"
+                                                                        + "|Incoming transfer from" //
                                                                         + "|Reembolso)" //
                                                                         + ".* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
@@ -2111,7 +2097,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         Block depositRemovalBlock_Format03 = new Block("^[\\d]{2}[\\s]$");
         type.addBlock(depositRemovalBlock_Format03);
-        depositRemovalBlock_Format03.setMaxSize(3);
+        depositRemovalBlock_Format03.setMaxSize(4);
         depositRemovalBlock_Format03.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
@@ -2196,48 +2182,6 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }),
                                         // @formatter:off
-                                        // 14
-                                        // Juni Überweisung PayOut to transit 6.500,00 € 50.860,76 €
-                                        // 2024
-                                        //
-                                        // 19
-                                        // Aug. Überweisung Outgoing transfer for Vorname Nachname 900,00 € 17.385,07 €
-                                        // 2024
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("day", "month", "year", "amount", "currency") //
-                                                        .match("^(?<day>[\\d]{2})[\\s]$") //
-                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
-                                                                        + ".berweisung (PayOut to transit|Outgoing transfer for).* " //
-                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
-                                                        .match("^(?<year>[\\d]{4})$") //
-                                                        .assign((t, v) -> {
-                                                            t.setType(AccountTransaction.Type.REMOVAL);
-
-                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                        }))
-
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
-
-        Block depositRemovalBlock_Format04 = new Block("^[\\d]{2}[\\s]$");
-        type.addBlock(depositRemovalBlock_Format04);
-        depositRemovalBlock_Format04.setMaxSize(4);
-        depositRemovalBlock_Format04.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-                            return accountTransaction;
-                        })
-
-                        .optionalOneOf( //
-                                        // @formatter:off
                                         // 20
                                         // Sept. Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf
                                         // 2024 DE00000000000000000000
@@ -2267,6 +2211,29 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // 14
+                                        // Juni Überweisung PayOut to transit 6.500,00 € 50.860,76 €
+                                        // 2024
+                                        //
+                                        // 19
+                                        // Aug. Überweisung Outgoing transfer for Vorname Nachname 900,00 € 17.385,07 €
+                                        // 2024
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("day", "month", "year", "amount", "currency") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
+                                                                        + ".berweisung (PayOut to transit|Outgoing transfer for).* " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<year>[\\d]{4})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.REMOVAL);
+
+                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }))
 
                         .wrap(t -> {
@@ -2282,10 +2249,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         // 03 abr
         // 2024 Comisión Trade Republic Card 5,00 € 6.402,79 €
         // @formatter:on
-        Block feesBlock = new Block("^[\\d]{2} [\\w]{3,4}([\\.]{1})?[\\s]$");
-        type.addBlock(feesBlock);
-        feesBlock.setMaxSize(2);
-        feesBlock.set(new Transaction<AccountTransaction>()
+        Block feesBlock_Format01 = new Block("^[\\d]{2} [\\w]{3,4}([\\.]{1})?[\\s]$");
+        type.addBlock(feesBlock_Format01);
+        feesBlock_Format01.setMaxSize(2);
+        feesBlock_Format01.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction accountTransaction = new AccountTransaction();
@@ -2293,20 +2260,57 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "year", "amount", "currency").optional() //
-                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]$")
-                        .match("^(?<year>[\\d]{4}) .* Trade Republic Card (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                        .optionalOneOf( //
+                                        section -> section //
+                                                        .attributes("date", "year", "note", "amount", "currency") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]$") //
+                                                        .match("^(?<year>[\\d]{4}) .* (?<note>Trade Republic Card) " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setNote(v.get("note"));
+                                                        }))
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
                             return null;
                         }));
+
+        // @formatter:off
+        // 16 Apr. 2024 Gebühren Trade Republic Card 5,00 € 46.462,62 €
+        // @formatter:on
+        Block feesBlock_Format02 = new Block("^[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?( [\\d]{4})? .* Trade Republic Card [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc}$");
+        type.addBlock(feesBlock_Format02);
+        feesBlock_Format02.setMaxSize(1);
+        feesBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        .optionalOneOf( //
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "currency") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) .* (?<note>Trade Republic Card) " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setNote(v.get("note"));
+                                                        }))
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
 
         // @formatter:off
         // 01 Apr. 2024 Zinszahlung Your interest payment 172,23 € 50.172,23 €
@@ -2322,14 +2326,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "amount", "currency") //
-                        .match("^(?<date>[\\d]{2} ([\\p{L}]{3,4}([\\.]{1})?) [\\d]{4}) (Zinszahlung|intereses|d.int.r.ts) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
-                        })
+                        .optionalOneOf( //
+                                        section -> section //
+                                                        .attributes("date", "amount", "currency") //
+                                                        .match("^(?<date>[\\d]{2} ([\\p{L}]{3,4}([\\.]{1})?) [\\d]{4}) (Zinszahlung|intereses|d.int.r.ts) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                                                        }))
 
                         .wrap((t, ctx) -> {
                             TransactionItem item = new TransactionItem(t);
@@ -2366,15 +2372,17 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "year", "amount", "currency").optional() //
-                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]((Pago|Paiement).*)?$")
-                        .match("^(?<year>[\\d]{4}) (Zinszahlung|intereses|d.int.r.ts) Your interest payment (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
-                        })
+                        .optionalOneOf( //
+                                        section -> section //
+                                                        .attributes("date", "year", "amount", "currency") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]((Pago|Paiement).*)?$")
+                                                        .match("^(?<year>[\\d]{4}) (Zinszahlung|intereses|d.int.r.ts) Your interest payment (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                                                        }))
 
                         .wrap((t, ctx) -> {
                             TransactionItem item = new TransactionItem(t);
@@ -2403,16 +2411,19 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("day", "month", "year", "amount", "currency").optional() //
-                        .match("^(?<day>[\\d]{2})[\\s]$")
-                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (Zinszahlung|intereses|d.int.r.ts) Your interest payment (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
-                        .match("^(?<year>[\\d]{4})$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
-                        })
+                        .optionalOneOf( //
+                                        section -> section //
+                                                        .attributes("day", "month", "year", "amount", "currency") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]$")
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (Zinszahlung|intereses|d.int.r.ts) Your interest payment (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<year>[\\d]{4})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month")
+                                                                            + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                                                        }))
 
                         .wrap((t, ctx) -> {
                             TransactionItem item = new TransactionItem(t);
@@ -2440,14 +2451,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "year", "amount", "currency").optional() //
-                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]$")
-                        .match("^(?<year>[\\d]{4}) Steuern (Steueroptimierung |Tax Optimisation|Kapitalertragssteueroptimierung ).* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                        .optionalOneOf( //
+                                        section -> section //
+                                                        .attributes("date", "year", "amount", "currency") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]$")
+                                                        .match("^(?<year>[\\d]{4}) Steuern (Steueroptimierung |Tax Optimisation|Kapitalertragssteueroptimierung ).* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
@@ -2479,29 +2492,34 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("day", "month", "year", "amount", "currency", "amountAfter", "currencyAfter").optional() //
-                        .match("^(?<day>[\\d]{2})[\\s]$")
-                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) Steuern (Steueroptimierung |Tax Optimisation|Kapitalertragssteueroptimierung ).* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
-                        .match("^(?<year>[\\d]{4}).*$") //
-                        .assign((t, v) -> {
-                            DocumentContext context = type.getCurrentContext();
-                            Money amountAfter = Money.of(asCurrencyCode(v.get("currencyAfter")), asAmount(v.get("amountAfter")));
+                        .optionalOneOf( //
+                                        section -> section //
+                                                        .attributes("day", "month", "year", "amount", "currency", "amountAfter", "currencyAfter") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]$")
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) Steuern (Steueroptimierung |Tax Optimisation|Kapitalertragssteueroptimierung ).* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
+                                                        .match("^(?<year>[\\d]{4}).*$") //
+                                                        .assign((t, v) -> {
+                                                            DocumentContext context = type.getCurrentContext();
+                                                            Money amountAfter = Money.of(
+                                                                            asCurrencyCode(v.get("currencyAfter")),
+                                                                            asAmount(v.get("amountAfter")));
 
-                            AccountAmountTransactionHelper accountAmountTransactionHelper = context.getType(AccountAmountTransactionHelper.class).orElseGet(AccountAmountTransactionHelper::new);
-                            Optional<AccountAmountTransactionItem> item = accountAmountTransactionHelper.findItem(v.getStartLineNumber(), amountAfter);
+                                                            AccountAmountTransactionHelper accountAmountTransactionHelper = context.getType(AccountAmountTransactionHelper.class)
+                                                                            .orElseGet(AccountAmountTransactionHelper::new);
+                                                            Optional<AccountAmountTransactionItem> item = accountAmountTransactionHelper.findItem(v.getStartLineNumber(), amountAfter);
 
-                            if (item.isPresent())
-                            {
-                                Money amountBefore = Money.of(item.get().currency, item.get().amount);
+                                                            if (item.isPresent())
+                                                            {
+                                                                Money amountBefore = Money.of(item.get().currency, item.get().amount);
 
-                                if (amountBefore.isGreaterThan(amountAfter))
-                                    t.setType(AccountTransaction.Type.TAXES);
-                            }
+                                                                if (amountBefore.isGreaterThan(amountAfter))
+                                                                    t.setType(AccountTransaction.Type.TAXES);
+                                                            }
 
-                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
