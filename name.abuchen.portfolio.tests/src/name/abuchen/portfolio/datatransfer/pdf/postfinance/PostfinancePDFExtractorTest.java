@@ -288,9 +288,9 @@ public class PostfinancePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
                         is(Money.of("CHF", Values.Amount.factorize(280.49))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(0.42))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
 
         Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
@@ -333,9 +333,9 @@ public class PostfinancePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
                         is(Money.of("CHF", Values.Amount.factorize(280.49))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(0.42))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
 
         CheckCurrenciesAction c = new CheckCurrenciesAction();
         Account account = new Account();
