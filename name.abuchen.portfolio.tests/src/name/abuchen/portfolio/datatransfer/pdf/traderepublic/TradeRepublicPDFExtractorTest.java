@@ -8250,6 +8250,31 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testRapportDInterets01()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "RapportDInterets01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-02-01T00:00"), //
+                        hasSource("RapportDInterets01.txt"), //
+                        hasNote("Intérêts 23/01/2024 - 31/01/2024 (4,00%)"), //
+                        hasAmount("EUR", 0.09), hasGrossValue("EUR", 0.09), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testRescontoInteressiMaturati01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());

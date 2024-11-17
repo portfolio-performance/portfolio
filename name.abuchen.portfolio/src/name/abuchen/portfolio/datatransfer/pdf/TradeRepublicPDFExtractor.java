@@ -2902,25 +2902,38 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("(ABRECHNUNG ZINSEN" //
                         + "|RESOCONTO INTERESSI MATURATI" //
-                        + "|INTEREST INVOICE)", //
+                        + "|INTEREST INVOICE"
+                        + "|RAPPORT D.INT.R.TS)", //
                         documentContext -> documentContext //
-                                        // @formatter:off
-                                        //
-                                        // IBAN BUCHUNGSDATUM GUTSCHRIFT NACH STEUERN
-                                        // DE10123456789123456789 01.02.2023 0,88 EUR
-                                        //
-                                        // IBAN BUCHUNGSDATUM GESAMT
-                                        // DE12321546856552266333 01.07.2024 74,08 EUR
-                                        //
-                                        // @formatter:on
-                                        .section("date") //
-                                        .find("IBAN (BUCHUNGSDATUM|DATA EMISSIONE|BOOKING DATE) (GUTSCHRIFT NACH STEUERN|GESAMT|TOTALE|TOTAL)") //
-                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+ [\\w]{3}$") //
-                                        .assign((ctx, v) -> {
-                                            ctx.put("date", v.get("date"));
-                                            ctx.putBoolean("multipleTransactionInterests", false);
-                                            ctx.putBoolean("multipleTransactionDividende", false);
-                                        })
+
+                                        .oneOf(
+                                                        // @formatter:off
+                                                        // IBAN BUCHUNGSDATUM GUTSCHRIFT NACH STEUERN
+                                                        // DE10123456789123456789 01.02.2023 0,88 EUR
+                                                        //
+                                                        // IBAN BUCHUNGSDATUM GESAMT
+                                                        // DE12321546856552266333 01.07.2024 74,08 EUR
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("date") //
+                                                                        .find("IBAN (BUCHUNGSDATUM|DATA EMISSIONE|BOOKING DATE|DATE) (GUTSCHRIFT NACH STEUERN|GESAMT|TOTALE|TOTAL|D.EFFET TOTAL)") //
+                                                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+ [\\w]{3}$") //
+                                                                        .assign((ctx, v) -> {
+                                                                            ctx.put("date", v.get("date"));
+                                                                            ctx.putBoolean("multipleTransactionInterests", false);
+                                                                        }),
+                                                        // @formatter:off
+                                                        // IBAN DATE D'EFFET TOTAL
+                                                        // DE21111111111111111111 01/02/2024 0,09 EUR
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("date") //
+                                                                        .find("IBAN DATE D.EFFET TOTAL") //
+                                                                        .match("^.* (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\.,\\d]+ [\\w]{3}$") //
+                                                                        .assign((ctx, v) -> {
+                                                                            ctx.put("date", v.get("date"));
+                                                                            ctx.putBoolean("multipleTransactionInterests", false);
+                                                                        }))
 
                                         // @formatter:off
                                         // Cash Zinsen 4,00% 01.06.2024 - 11.06.2024 61,11 EUR
@@ -2980,7 +2993,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Geldmarkt|Cash|Liquidit.) (Zinsen|Interessi|Interest|Dividende) .*$");
+        Block firstRelevantLine = new Block("^(Geldmarkt|Cash|Liquidit.|Esp.ces) (Zinsen|Interessi|Interest|Dividende|Int.r.ts) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -2998,11 +3011,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Geldmarkt Dividende 3,50% 18.09.2024 - 30.09.2024 8,03 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("note1", "note2", "note3", "gross", "fxCurrency") //
+                                                        .attributes("note1", "note2", "note3", "gross", "currency") //
                                                         .documentContext("date", "amountDividende", "currencyDividende", "multipleTransactionDividende") //
-                                                        .match("^Geldmarkt (?<note1>Dividende) (?<note2>[\\.,\\d]+%) (?<note3>.*[\\d]{4}) (?<gross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
+                                                        .match("^Geldmarkt (?<note1>Dividende) (?<note2>[\\.,\\d]+%) (?<note3>.*[\\d]{4}) (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
-                                                            Money gross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("gross")));
+                                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
 
                                                             t.setDateTime(asDate(v.get("date")));
 
@@ -3023,12 +3036,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Geldmarkt Dividende 3,75% 26.06.2024 - 30.06.2024 3,76 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("note1", "note2", "note3", "gross", "fxCurrency") //
+                                                        .attributes("note1", "note2", "note3", "gross", "currency") //
                                                         .documentContext("date", "amountDividende", "currencyDividende") //
-                                                        .match("^Geldmarkt (?<note1>Dividende) (?<note2>[\\.,\\d]+%) (?<note3>.*[\\d]{4}) (?<gross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
+                                                        .match("^Geldmarkt (?<note1>Dividende) (?<note2>[\\.,\\d]+%) (?<note3>.*[\\d]{4}) (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             Money amount = Money.of(asCurrencyCode(v.get("currencyDividende")), asAmount(v.get("amountDividende")));
-                                                            Money gross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("gross")));
+                                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setMonetaryAmount(amount);
@@ -3039,11 +3052,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Cash Zinsen 4,00% 01.06.2024 - 11.06.2024 61,11 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("note1", "note2", "note3", "gross", "fxCurrency") //
+                                                        .attributes("note1", "note2", "note3", "gross", "currency") //
                                                         .documentContext("date", "amountInterest", "currencyInterest", "multipleTransactionInterests") //
-                                                        .match("^(Cash|Liquidit.) (?<note1>(Zinsen|Interessi|Interest)) (?<note2>[\\.,\\d]+%) (?<note3>.*[\\d]{4}) (?<gross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
+                                                        .match("^(Cash|Liquidit.|Esp.ces) (?<note1>(Zinsen|Interessi|Interest|Int.r.ts)) (?<note2>[\\.,\\d]+%) (?<note3>.*[\\d]{4}) (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
-                                                            Money gross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("gross")));
+                                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
 
                                                             t.setDateTime(asDate(v.get("date")));
 
@@ -3066,11 +3079,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Cash Interest 2,00% 1,47 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("note1", "note2", "gross", "fxCurrency") //
+                                                        .attributes("note1", "note2", "gross", "currency") //
                                                         .documentContext("date", "amountInterest", "currencyInterest", "multipleTransactionInterests") //
-                                                        .match("^(Cash|Liquidit.) (?<note1>(Zinsen|Interessi|Interest)) (?<note2>[\\.,\\d]+%) (?<gross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
+                                                        .match("^(Cash|Liquidit.|Esp.ces) (?<note1>(Zinsen|Interessi|Interest|Int.r.ts)) (?<note2>[\\.,\\d]+%) (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
-                                                            Money gross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("gross")));
+                                                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
 
                                                             t.setDateTime(asDate(v.get("date")));
 
@@ -3090,16 +3103,16 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Cash Interest 4,00% 01.06.2024 - 11.06.2024 7,10 EUR
                                         // Cash Interest 3,75% 12.06.2024 - 30.06.2024 11,56 EUR
+                                        // Espèces Intérêts 4,00% 23/01/2024 - 31/01/2024 0,09 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("note1", "note2", "note3", "gross", "fxCurrency") //
+                                                        .attributes("note1", "note2", "note3", "amount", "currency") //
                                                         .documentContext("date") //
-                                                        .match("^(Cash|Liquidit.) (?<note1>(Zinsen|Interessi|Interest)) (?<note2>[\\.,\\d]+%) (?<note3>.*[\\d]{4}) (?<gross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
+                                                        .match("^(Cash|Liquidit.|Esp.ces) (?<note1>(Zinsen|Interessi|Interest|Int.r.ts)) (?<note2>[\\.,\\d]+%) (?<note3>.*[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
-                                                            Money gross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("gross")));
-
                                                             t.setDateTime(asDate(v.get("date")));
-                                                            t.setMonetaryAmount(gross);
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note1")) + " " + trim(v.get("note3")) + " (" + v.get("note2") + ")");
                                                         }),
                                         // @formatter:off
@@ -3108,14 +3121,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Cash Interest 2,00% 1,47 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("note1", "note2", "gross", "fxCurrency") //
+                                                        .attributes("note1", "note2", "amount", "currency") //
                                                         .documentContext("date") //
-                                                        .match("^(Cash|Liquidit.) (?<note1>(Zinsen|Interessi|Interest)) (?<note2>[\\.,\\d]+%) (?<gross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
+                                                        .match("^(Cash|Liquidit.|Esp.ces) (?<note1>(Zinsen|Interessi|Interest|Int.r.ts)) (?<note2>[\\.,\\d]+%) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
-                                                            Money gross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("gross")));
-
                                                             t.setDateTime(asDate(v.get("date")));
-                                                            t.setMonetaryAmount(gross);
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note1") + " (" + v.get("note2") + ")");
                                                         }))
 
