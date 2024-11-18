@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.Messages;
@@ -137,10 +138,18 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Orderreferenz 100000
+                        // hZiVsq-ayrsK-DSa. 98 Ausführung 15.11.2024Orderreferenz 4359234
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^Orderreferenz (?<note>.*)$") //
+                        .match("^.*Orderreferenz (?<note>.*)$") //
                         .assign((t, v) -> t.setNote("Ord.-Ref.: " + v.get("note")))
+
+                        // @formatter:off
+                        // 23986 dUmJRYi Handelsreferenz 4237898
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*Handelsreferenz (?<note>.*)$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Handels.-Ref.: ")))
 
                         .wrap((t, ctx) -> {
                             BuySellEntryItem item = new BuySellEntryItem(t);
@@ -152,6 +161,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         });
 
         addFeesSectionsTransaction(pdfTransaction, type);
+        addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addDividendeTransaction()
@@ -319,9 +329,6 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
 
                             return item;
                         });
-
-        addTaxesSectionsTransaction(pdfTransaction, type);
-        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addAccountStatementTransaction()
@@ -431,23 +438,26 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Kapitalertragsteuer 1,40 EUR
+                        // Kapitalertragsteuer: 251,13 EUR
                         // @formatter:on
                         .section("tax", "currency").optional()
-                        .match("Kapitalertrags(s)?teuer (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .match("^Kapitalertrags(s)?teuer(:)? (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Solidaritätszuschlag 0,07 EUR
+                        // Solidaritätszuschlag: 13,81 EUR
                         // @formatter:on
                         .section("tax", "currency").optional()
-                        .match("^Solidarit.tszuschlag (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .match("^Solidarit.tszuschlag(:)? (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Kirchensteuer 0,00 EUR
+                        // Kirchensteuer: 0,00 EUR
                         // @formatter:on
                         .section("tax", "currency").optional()
-                        .match("^Kirchensteuer (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .match("^Kirchensteuer(:)? (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
