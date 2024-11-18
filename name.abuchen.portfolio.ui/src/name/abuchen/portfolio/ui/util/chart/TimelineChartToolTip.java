@@ -228,8 +228,6 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
         Label hint = new Label(data, SWT.WRAP);
         hint.setText(Messages.TooltipHintPressAlt);
-        hint.setFont(this.resourceManager
-                        .create(FontDescriptor.createFrom(data.getFont()).increaseHeight(-3).withStyle(SWT.ITALIC)));
         // first set a small width and then update later
         GridData hintData = GridDataFactory.fillDefaults().span(2, 1).hint(10, SWT.DEFAULT).span(2, 1).create();
         hint.setLayoutData(hintData);
@@ -237,6 +235,8 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         hint.getParent().pack();
         hintData.widthHint = hint.getBounds().width;
         hint.getParent().pack();
+        hint.setFont(this.resourceManager
+                        .create(FontDescriptor.createFrom(data.getFont()).increaseHeight(-3).withStyle(SWT.ITALIC)));
     }
 
     private List<Pair<ISeries<?>, Double>> computeValues(ISeries<?>[] allSeries)
