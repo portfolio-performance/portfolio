@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.util.chart;
 
 import java.text.DecimalFormat;
 import java.text.Format;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -227,7 +228,10 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         extraInfoProvider.forEach(provider -> provider.accept(container, focus));
 
         Label hint = new Label(data, SWT.WRAP);
-        hint.setText(Messages.TooltipHintPressAlt);
+        String os = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
+        String pressAltOrOption = os.startsWith("mac") ? "Option" : "Alt"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        hint.setText(MessageFormat.format(Messages.TooltipHintPressAlt, pressAltOrOption));
+
         // first set a small width and then update later
         GridData hintData = GridDataFactory.fillDefaults().span(2, 1).hint(10, SWT.DEFAULT).span(2, 1).create();
         hint.setLayoutData(hintData);
