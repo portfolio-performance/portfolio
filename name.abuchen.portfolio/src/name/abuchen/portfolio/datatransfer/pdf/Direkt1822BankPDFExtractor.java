@@ -40,6 +40,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendeTransaction();
         addAdvanceTaxTransaction();
+        addTaxesLostAdjustmentTransaction();
         addAccountStatementTransaction();
         addNonImportableTransaction();
     }
@@ -316,6 +317,112 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);
+    }
+
+    private void addTaxesLostAdjustmentTransaction()
+    {
+        DocumentType type = new DocumentType("Wertpapier Abrechnung (Verkauf|(Ausgabe|R.cknahme) Investmentfonds)");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^Wertpapier Abrechnung (Verkauf|(Ausgabe|R.cknahme) Investmentfonds).*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
+                        // INHABER-ANTEILE I O.N.
+                        // Börse Außerbörslich (gemäß Weisung)
+                        // Ausführungskurs 40,968 EUR Auftragserteilung Online-Banking
+                        // @formatter:on
+                        .section("name", "isin", "wkn", "name1", "currency") //
+                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                        .match("(?<name1>.*)$") //
+                        .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}) .*$") //
+                        .assign((t, v) -> {
+                            if (!v.get("name1").startsWith("Börse"))
+                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        // @formatter:off
+                        // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^St.ck (?<shares>[\\.,\\d]+) .* [A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\)$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Schlusstag/-Zeit 01.12.2017 10:30:52 Auftraggeber Mustermann, Max
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Schlusstag\\/\\-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Schlusstag 09.07.2021 Auftraggeber Mustermann, Max
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+
+                        // @formatter:off
+                        // Steuerliche Ausgleichrechnung
+                        // Ausmachender Betrag 3,49 EUR
+                        // @formatter:on
+                        .section("currency", "amount").optional() //
+                        .find("Steuerliche Ausgleichrechnung")
+                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)([\\-|\\+])? (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Devisenkurs (EUR/USD) 1,1987 vom 02.03.2021
+                                        // Steuerliche Ausgleichrechnung
+                                        // Ausmachender Betrag 3,49 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross") //
+                                                        .match("^Devisenkurs \\((?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+) .*$") //
+                                                        .find("Steuerliche Ausgleichrechnung") //
+                                                        .match("^Ausmachender Betrag (?<gross>[\\.,\\d]+)([\\-|\\+])? [\\w]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
+
+                        // @formatter:off
+                        // Auftragsnummer 123456/10.00
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>Auftragsnummer [\\d]+\\/[\\.\\d]+)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
     }
 
     private void addAccountStatementTransaction()
