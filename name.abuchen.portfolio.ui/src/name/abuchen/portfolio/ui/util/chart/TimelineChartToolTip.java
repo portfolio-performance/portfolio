@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.FontDescriptor;
@@ -228,10 +229,8 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         extraInfoProvider.forEach(provider -> provider.accept(container, focus));
 
         Label hint = new Label(data, SWT.WRAP);
-        String os = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
-        String pressAltOrOption = os.startsWith("mac") ? "Option" : "Alt"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        hint.setText(MessageFormat.format(Messages.TooltipHintPressAlt, pressAltOrOption));
-
+        hint.setText(MessageFormat.format(Messages.TooltipHintPressAlt,
+                        Platform.OS_MACOSX.equals(Platform.getOS()) ? "Option" : "Alt")); //$NON-NLS-1$ //$NON-NLS-2$
         // first set a small width and then update later
         GridData hintData = GridDataFactory.fillDefaults().span(2, 1).hint(10, SWT.DEFAULT).span(2, 1).create();
         hint.setLayoutData(hintData);
