@@ -58,7 +58,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Wertpapier Abrechnung (Kauf|Verkauf|(Ausgabe|R.cknahme) Investmentfonds).*$");
+        Block firstRelevantLine = new Block("^Postfach.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -321,12 +321,16 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxesLostAdjustmentTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapier Abrechnung (Verkauf|(Ausgabe|R.cknahme) Investmentfonds)");
+        DocumentType type = new DocumentType("(Wertpapier Abrechnung (Verkauf|(Ausgabe|R.cknahme) Investmentfonds)" //
+                        + "|Gutschrift von .*" //
+                        + "|Aussch.ttung Investmentfonds" //
+                        + "|Aussch.ttung aus Genussschein" //
+                        + "|Dividendengutschrift)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Wertpapier Abrechnung (Verkauf|(Ausgabe|R.cknahme) Investmentfonds).*$");
+        Block firstRelevantLine = new Block("^Postfach.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -338,22 +342,35 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
-                        // INHABER-ANTEILE I O.N.
-                        // Börse Außerbörslich (gemäß Weisung)
-                        // Ausführungskurs 40,968 EUR Auftragserteilung Online-Banking
-                        // @formatter:on
-                        .section("name", "isin", "wkn", "name1", "currency") //
-                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                        .match("(?<name1>.*)$") //
-                        .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}) .*$") //
-                        .assign((t, v) -> {
-                            if (!v.get("name1").startsWith("Börse"))
-                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
+                                        // INHABER-ANTEILE I O.N.
+                                        // Börse Außerbörslich (gemäß Weisung)
+                                        // Ausführungskurs 40,968 EUR Auftragserteilung Online-Banking
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "name1", "currency") //
+                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("(?<name1>.*)$") //
+                                                        .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}) .*$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Börse"))
+                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
 
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // Stück 920 ISHSIV-FA.AN.HI.YI.CO.BD U.ETF IE00BYM31M36 (A2AFCX)
+                                        // REGISTERED SHARES USD O.N.
+                                        // Zahlbarkeitstag 29.12.2017 Ertrag pro St. 0,123000000 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "nameContinued", "currency") //
+                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("(?<nameContinued>.*)") //
+                                                        .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Aussch.ttung|Dividende|Ertrag) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
                         // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
@@ -376,6 +393,13 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Den Betrag buchen wir mit Wertstellung 03.01.2018 zu Gunsten des Kontos xxxxxxxxxx (IBAN DExx xxxx xxxx xxxx
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         // @formatter:off
