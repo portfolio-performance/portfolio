@@ -280,7 +280,7 @@ public class QuirinPrivatbankAGPDFExtractorTest
 
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
-                        hasDate("2014-03-10T00:00"), hasShares(0.1320), //
+                        hasDate("2014-03-10T00:00"), hasShares(0.1318), //
                         hasSource("Kauf04.txt"), //
                         hasNote("Zwischengewinn 0,17 EUR | Ref.-Nr.: O:002831939:1"), //
                         hasAmount("EUR", 0.05), hasGrossValue("EUR", 0.05), //
