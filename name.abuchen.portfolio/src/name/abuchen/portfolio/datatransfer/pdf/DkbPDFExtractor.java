@@ -109,7 +109,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        // Handshake for tax refund transaction
+        // Map for tax lost adjustment transaction
         Map<String, String> context = type.getCurrentContext();
 
         pdfTransaction //
@@ -164,16 +164,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$") //
                                                         .match("^(?<nameContinued>.*)$") //
                                                         .match("^(Ausf.hrungskurs|Abrech\\.\\-Preis) [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
-                                                        .assign((t, v) -> {
-                                                            t.setSecurity(getOrCreateSecurity(v));
-
-                                                            // @formatter:off
-                                                            // Handshake for tax refund transaction
-                                                            // @formatter:on
-                                                            context.put("name", t.getPortfolioTransaction().getSecurity().getName());
-                                                            context.put("isin", t.getPortfolioTransaction().getSecurity().getIsin());
-                                                            context.put("wkn", t.getPortfolioTransaction().getSecurity().getWkn());
-                                                        }),
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Nominale Wertpapierbezeichnung ISIN (WKN)
                                         // EUR 2.000,00 8,75 % METALCORP GROUP B.V. DE000A1HLTD2 (A1HLTD)
@@ -184,16 +175,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
                                                         .match("^(?<currency>[\\w]{3}) [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$") //
                                                         .match("^(?<nameContinued>.*)$") //
-                                                        .assign((t, v) -> {
-                                                            t.setSecurity(getOrCreateSecurity(v));
-
-                                                            // @formatter:off
-                                                            // Handshake for tax refund transaction
-                                                            // @formatter:on
-                                                            context.put("name", t.getPortfolioTransaction().getSecurity().getName());
-                                                            context.put("isin", t.getPortfolioTransaction().getSecurity().getIsin());
-                                                            context.put("wkn", t.getPortfolioTransaction().getSecurity().getWkn());
-                                                        }))
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
                         // EUR 2.000,00 8,75 % METALCORP GROUP B.V. DE000A1HLTD2 (A1HLTD)
@@ -213,12 +195,6 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             {
                                 t.setShares(asShares(v.get("shares")));
                             }
-
-                            // @formatter:off
-                            // Use number for that is also used to (later) convert it back to a number
-                            // @formatter:on
-                            context.put("shares", getNumberFormat() //
-                                            .format(t.getPortfolioTransaction().getShares() / Values.Share.divider()));
                         })
 
                         // @formatter:off
@@ -299,12 +275,21 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
 
+                            // @formatter:off
+                            // Handshake for tax lost adjustment transaction
+                            // Also use number for that is also used to (later) convert it back to a number
+                            // @formatter:on
+                            context.put("name", item.getSecurity().getName());
+                            context.put("isin", item.getSecurity().getIsin());
+                            context.put("wkn", item.getSecurity().getWkn());
+                            context.put("shares", Long.toString(item.getShares()));
+
                             return item;
                         });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-        addTaxReturnBlock(context, type);
+        addTaxLostAdjustmentTransaction(context, type);
     }
 
     private void addDividendeTransaction()
@@ -1447,7 +1432,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
     }
 
-    private void addTaxReturnBlock(Map<String, String> context, DocumentType type)
+    private void addTaxLostAdjustmentTransaction(Map<String, String> context, DocumentType type)
     {
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
@@ -1472,7 +1457,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("^Den Gegenwert buchen wir mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
-                            t.setShares(asShares(context.get("shares")));
+                            t.setShares(Long.parseLong(context.get("shares")));
                             t.setSecurity(getOrCreateSecurity(context));
 
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
