@@ -630,6 +630,70 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug02()
+    {
+        OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-09-02"), hasAmount("EUR", 100.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-09-04"), hasAmount("EUR", 25.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-09-18"), hasAmount("EUR", 25.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-09-30"), hasAmount("EUR", 200.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testKontoauszug03()
+    {
+        OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-10-01"), hasAmount("EUR", 200.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-10-04"), hasAmount("EUR", 25.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-10-17"), hasAmount("EUR", 25.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote(null))));
+    }
+
+    @Test
     public void testFusion01()
     {
         OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());

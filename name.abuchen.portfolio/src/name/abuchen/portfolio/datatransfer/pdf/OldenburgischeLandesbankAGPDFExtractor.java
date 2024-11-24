@@ -340,14 +340,22 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         .section("currency") //
                                         .match("^Alter Saldo.* (?<currency>[\\w]{3}).*$") //
-                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
+
+                                        // @formatter:off
+                                        // Rechnungsabschluss per 30.09.2024
+                                        // @formatter:on
+                                        .section("year").optional() //
+                                        .match("^Rechnungsabschluss per [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4}).*$") //
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year"))));
 
         this.addDocumentTyp(type);
 
-        // @formatter:off
-        // 03.08.23 03.08. CORE-LA-EV   EINGANG VORBEHALTEN                      10,00+
-        // @formatter:on
-        Block depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\. .* EINGANG VORBEHALTEN.* [\\.,\\d]+[\\+|\\-].*$");
+        Block depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.([\\d]{2})? [\\d]{2}\\.[\\d]{2}\\. "
+                        + "(.* EINGANG VORBEHALTEN"
+                        + "|DA\\-GUTSCHR"
+                        + "|GUTSCHRIFT)"
+                        + "[\\s]{1,}[\\.,\\d]+[\\+|\\-].*$");
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
@@ -357,18 +365,53 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("year", "date", "amount", "type") //
-                        .documentContext("currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{2}) (?<date>[\\d]{2}\\.[\\d]{2}\\.) .* EINGANG VORBEHALTEN.* (?<amount>[\\.,\\d]+)(?<type>[\\+|\\-]).*$") //
-                        .assign((t, v) -> {
-                            // Is type is "-" change from DEPOSIT to REMOVAL
-                            if ("-".equals(trim(v.get("type"))))
-                                t.setType(AccountTransaction.Type.REMOVAL);
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 03.08.23 03.08. CORE-LA-EV   EINGANG VORBEHALTEN                      10,00+
+                                        // 02.09.24 02.09. DA-GUTSCHR                                           100,00+
+                                        // 30.09.24 30.09. GUTSCHRIFT                                           200,00+
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("year", "date", "amount", "type") //
+                                                        .documentContext("currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{2}) (?<date>[\\d]{2}\\.[\\d]{2}\\.) "
+                                                                        + "(.* EINGANG VORBEHALTEN"
+                                                                        + "|DA\\-GUTSCHR"
+                                                                        + "|GUTSCHRIFT)"
+                                                                        + "[\\s]{1,}(?<amount>[\\.,\\d]+)(?<type>[\\+|\\-]).*$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Is type is "-" change from DEPOSIT to REMOVAL
+                                                            // @formatter:on
+                                                            if ("-".equals(trim(v.get("type"))))
+                                                                t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // 01.10. 01.10. DA-GUTSCHR                                             200,00+
+                                        // 04.10. 04.10. CORE-LA-EV   EINGANG VORBEHALTEN                        25,00+
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount", "type") //
+                                                        .documentContext("currency", "year") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<date>[\\d]{2}\\.[\\d]{2}\\.) "
+                                                                        + "(.* EINGANG VORBEHALTEN" + "|DA\\-GUTSCHR"
+                                                                        + "|GUTSCHRIFT)"
+                                                                        + "[\\s]{1,}(?<amount>[\\.,\\d]+)(?<type>[\\+|\\-]).*$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Is type is "-" change from DEPOSIT to REMOVAL
+                                                            // @formatter:on
+                                                            if ("-".equals(trim(v.get("type"))))
+                                                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
                         .wrap(TransactionItem::new));
     }
