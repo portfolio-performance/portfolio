@@ -60,6 +60,8 @@ public class ExtractorUtils
                     createFormatter("dd-M-yyyy", Locale.GERMANY), //
                     createFormatter("d-MM-yyyy", Locale.GERMANY), //
                     createFormatter("dd-MM-yyyy", Locale.GERMANY), //
+                    createFormatter("d-MMM-yyyy", Locale.GERMANY), //
+                    createFormatter("dd-MMM-yyyy", Locale.GERMANY), //
                     createFormatter("d MMMM yy", Locale.GERMANY), //
                     createFormatter("dd MMMM yy", Locale.GERMANY), //
                     createFormatter("d. MMMM yy", Locale.GERMANY), //
@@ -92,6 +94,8 @@ public class ExtractorUtils
                     createFormatter("dd LLL yyyy", Locale.US), //
                     createFormatter("d LLLL yyyy", Locale.US), //
                     createFormatter("dd LLLL yyyy", Locale.US), //
+                    createFormatter("d-LLL-yyyy", Locale.US), //
+                    createFormatter("dd-LLL-yyyy", Locale.US), //
                     createFormatter("yyyyLLd", Locale.US), //
                     createFormatter("yyyyLLdd", Locale.US), //
                     createFormatter("yyyyLLLd", Locale.US), //
