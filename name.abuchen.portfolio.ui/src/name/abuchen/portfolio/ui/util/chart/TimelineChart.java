@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.util.chart;
 
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -31,6 +30,7 @@ import org.eclipse.swtchart.internal.PlotArea;
 
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.format.PercentNumberFormat;
 
 public class TimelineChart extends Chart // NOSONAR
 {
@@ -120,7 +120,7 @@ public class TimelineChart extends Chart // NOSONAR
         IAxis y3Axis = getAxisSet().getYAxis(axisId3rd);
         y3Axis.getTitle().setVisible(false);
         y3Axis.getTick().setVisible(false);
-        y3Axis.getTick().setFormat(new DecimalFormat("+#.##%;-#.##%")); //$NON-NLS-1$
+        y3Axis.getTick().setFormat(new PercentNumberFormat("+#.##%;-#.##%")); //$NON-NLS-1$
         y3Axis.getGrid().setStyle(LineStyle.NONE);
         y3Axis.setPosition(Position.Primary);
 

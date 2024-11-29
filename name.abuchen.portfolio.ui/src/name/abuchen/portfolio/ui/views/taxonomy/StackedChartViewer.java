@@ -8,6 +8,7 @@ import org.eclipse.swtchart.Range;
 
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.chart.StackedTimelineChart;
+import name.abuchen.portfolio.ui.util.format.PercentNumberFormat;
 
 public class StackedChartViewer extends AbstractStackedChartViewer
 {
@@ -20,7 +21,7 @@ public class StackedChartViewer extends AbstractStackedChartViewer
     @Override
     protected void configureChart(StackedTimelineChart chart)
     {
-        chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("#0.0%")); //$NON-NLS-1$
+        chart.getAxisSet().getYAxis(0).getTick().setFormat(new PercentNumberFormat("#0.0%")); //$NON-NLS-1$
         chart.getToolTip().setDefaultValueFormat(new DecimalFormat("#0.0%")); //$NON-NLS-1$
     }
 

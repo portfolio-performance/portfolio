@@ -34,6 +34,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
+import name.abuchen.portfolio.ui.util.format.PercentNumberFormat;
 import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 import name.abuchen.portfolio.ui.views.ChartViewConfig;
 import name.abuchen.portfolio.ui.views.PerformanceChartView;
@@ -295,7 +296,7 @@ public class ChartWidget extends WidgetDelegate<Object>
             if (useCase == DataSeries.UseCase.STATEMENT_OF_ASSETS)
                 chart.getAxisSet().getYAxis(0).getTick().setFormat(new ThousandsNumberFormat());
             else
-                chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
+                chart.getAxisSet().getYAxis(0).getTick().setFormat(new PercentNumberFormat("0.#%")); //$NON-NLS-1$
 
             chart.getAxisSet().getYAxis(0).getTick().setVisible(get(ChartShowYAxisConfig.class).getIsShowYAxis());
 

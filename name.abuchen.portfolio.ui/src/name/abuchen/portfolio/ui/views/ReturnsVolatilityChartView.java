@@ -39,6 +39,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.ScatterChart;
 import name.abuchen.portfolio.ui.util.chart.ScatterChartCSVExporter;
+import name.abuchen.portfolio.ui.util.format.PercentNumberFormat;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
@@ -192,11 +193,11 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
         xAxis.getTitle().setText(this.riskMetric.toString());
-        xAxis.getTick().setFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
+        xAxis.getTick().setFormat(new PercentNumberFormat("0.##%")); //$NON-NLS-1$
 
         IAxis yAxis = chart.getAxisSet().getYAxis(0);
         yAxis.getTitle().setText(useIRR ? Messages.LabelPerformanceIRR : Messages.LabelPerformanceTTWROR);
-        yAxis.getTick().setFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
+        yAxis.getTick().setFormat(new PercentNumberFormat("0.##%")); //$NON-NLS-1$
 
         configurator = new DataSeriesConfigurator(this, DataSeries.UseCase.RETURN_VOLATILITY);
         configurator.addListener(this::updateChart);
