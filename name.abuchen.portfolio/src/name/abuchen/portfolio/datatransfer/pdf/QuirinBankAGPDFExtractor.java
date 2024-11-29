@@ -18,7 +18,6 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
@@ -132,7 +131,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
-        // Handshake for taxes on interim profits on purchase transaction
+        // Map for tax lost adjustment transaction
         Map<String, String> context = type.getCurrentContext();
 
         pdfTransaction //
@@ -167,16 +166,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Nominal\\/St.ck (?<name>.*)$") //
                                                         .match("^ST [\\.,\\d]+ ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^Kurs[\\s]{1,}[\\.,\\d]+ (?<currency>[\\w]{3}) .*$") //
-                                                        .assign((t, v) -> {
-                                                            t.setSecurity(getOrCreateSecurity(v));
-
-                                                            // @formatter:off
-                                                            // Handshake for taxes on interim profits on purchase transaction
-                                                            // @formatter:on
-                                                            context.put("name", t.getPortfolioTransaction().getSecurity().getName());
-                                                            context.put("isin", t.getPortfolioTransaction().getSecurity().getIsin());
-                                                            context.put("wkn", t.getPortfolioTransaction().getSecurity().getWkn());
-                                                        }),
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Nominal/Stück Carmignac Patrimoine FCP Act.au Port.A EUR acc o.N.
                                         // ST 0,1318 ISIN FR0010135103 WKN A0DPW0
@@ -187,16 +177,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Nominal\\/St.ck (?<name>.*)$") //
                                                         .match("^ST [\\.,\\d]+ ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) WKN (?<wkn>[A-Z0-9]{6})$") //
                                                         .match("^Kurs[\\s]{1,}[\\.,\\d]+ (?<currency>[\\w]{3}) .*$") //
-                                                        .assign((t, v) -> {
-                                                            t.setSecurity(getOrCreateSecurity(v));
-
-                                                            // @formatter:off
-                                                            // Handshake for taxes on interim profits on purchase transaction
-                                                            // @formatter:on
-                                                            context.put("name", t.getPortfolioTransaction().getSecurity().getName());
-                                                            context.put("isin", t.getPortfolioTransaction().getSecurity().getIsin());
-                                                            context.put("wkn", t.getPortfolioTransaction().getSecurity().getWkn());
-                                                        }))
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
                         // ST 22 ISIN DE0007873200
@@ -204,15 +185,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("shares") //
                         .match("^ST (?<shares>[\\.,\\d]+) ISIN [A-Z]{2}[A-Z0-9]{9}[0-9].*$") //
-                        .assign((t, v) -> {
-                            t.setShares(asShares(v.get("shares")));
-
-                            // @formatter:off
-                            // Use number for that is also used to (later) convert it back to a number
-                            // @formatter:on
-                            context.put("shares", getNumberFormat() //
-                                            .format(t.getPortfolioTransaction().getShares() / Values.Share.divider()));
-                        })
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .oneOf( //
                         // @formatter:off
@@ -280,11 +253,24 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         .match("^Referenz (?<note>.*)$") //
                         .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
 
-                        .wrap(BuySellEntryItem::new);
+                        .wrap(t -> {
+                            BuySellEntryItem item = new BuySellEntryItem(t);
+
+                            // @formatter:off
+                            // Handshake for tax lost adjustment transaction
+                            // Also use number for that is also used to (later) convert it back to a number
+                            // @formatter:on
+                            context.put("name", item.getSecurity().getName());
+                            context.put("isin", item.getSecurity().getIsin());
+                            context.put("wkn", item.getSecurity().getWkn());
+                            context.put("shares", Long.toString(item.getShares()));
+
+                            return item;
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
-        addTaxesLostAdjustmentTransaction(context, type);
+        addTaxLostAdjustmentTransaction(context, type);
     }
 
     private void addDividendeTransaction_Format01()
@@ -1008,11 +994,11 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
     }
 
-    private void addTaxesLostAdjustmentTransaction(Map<String, String> context, DocumentType type)
+    private void addTaxLostAdjustmentTransaction(Map<String, String> context, DocumentType type)
     {
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Kauf$");
+        Block firstRelevantLine = new Block("^(Kauf|Verkauf)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1030,10 +1016,10 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("amount", "currency", "date").optional() //
                         .match("^Verrechnungstopf Sonstige .* Steuerbetrag[\\s]{1,}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
-                        .match("^Bemessungsgrundlage KESt .* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                        .match("^Bemessungsgrundlage KESt .* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
-                            t.setShares(asShares(context.get("shares")));
+                            t.setShares(Long.parseLong(context.get("shares")));
                             t.setSecurity(getOrCreateSecurity(context));
 
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));

@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -40,7 +41,6 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendeTransaction();
         addAdvanceTaxTransaction();
-        addTaxesLostAdjustmentTransaction();
         addAccountStatementTransaction();
         addNonImportableTransaction();
     }
@@ -61,6 +61,9 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         Block firstRelevantLine = new Block("^Postfach.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
+
+        // Map for tax lost adjustment transaction
+        Map<String, String> context = type.getCurrentContext();
 
         pdfTransaction //
 
@@ -161,10 +164,24 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
-                        .wrap(BuySellEntryItem::new);
+                        .wrap(t -> {
+                            BuySellEntryItem item = new BuySellEntryItem(t);
+
+                            // @formatter:off
+                            // Handshake for tax lost adjustment transaction
+                            // Also use number for that is also used to (later) convert it back to a number
+                            // @formatter:on
+                            context.put("name", item.getSecurity().getName());
+                            context.put("isin", item.getSecurity().getIsin());
+                            context.put("wkn", item.getSecurity().getWkn());
+                            context.put("shares", Long.toString(item.getShares()));
+
+                            return item;
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
+        addTaxLostAdjustmentTransaction(context, type);
     }
 
     private void addDividendeTransaction()
@@ -319,15 +336,8 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new);
     }
 
-    private void addTaxesLostAdjustmentTransaction()
+    private void addTaxLostAdjustmentTransaction(Map<String, String> context, DocumentType type)
     {
-        DocumentType type = new DocumentType("(Wertpapier Abrechnung (Verkauf|(Ausgabe|R.cknahme) Investmentfonds)" //
-                        + "|Gutschrift von .*" //
-                        + "|Aussch.ttung Investmentfonds" //
-                        + "|Aussch.ttung aus Genussschein" //
-                        + "|Dividendengutschrift)");
-        this.addDocumentTyp(type);
-
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
         Block firstRelevantLine = new Block("^Postfach.*$");
@@ -342,98 +352,23 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .oneOf( //
-                                        // @formatter:off
-                                        // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
-                                        // INHABER-ANTEILE I O.N.
-                                        // Börse Außerbörslich (gemäß Weisung)
-                                        // Ausführungskurs 40,968 EUR Auftragserteilung Online-Banking
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("name", "isin", "wkn", "name1", "currency") //
-                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                                                        .match("(?<name1>.*)$") //
-                                                        .match("^Ausf.hrungskurs [\\.,\\d]+ (?<currency>[\\w]{3}) .*$") //
-                                                        .assign((t, v) -> {
-                                                            if (!v.get("name1").startsWith("Börse"))
-                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
-
-                                                            t.setSecurity(getOrCreateSecurity(v));
-                                                        }),
-                                        // @formatter:off
-                                        // Stück 920 ISHSIV-FA.AN.HI.YI.CO.BD U.ETF IE00BYM31M36 (A2AFCX)
-                                        // REGISTERED SHARES USD O.N.
-                                        // Zahlbarkeitstag 29.12.2017 Ertrag pro St. 0,123000000 USD
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("name", "isin", "wkn", "nameContinued", "currency") //
-                                                        .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
-                                                        .match("(?<nameContinued>.*)") //
-                                                        .match("^Zahlbarkeitstag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Aussch.ttung|Dividende|Ertrag) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
-
-                        // @formatter:off
-                        // Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^St.ck (?<shares>[\\.,\\d]+) .* [A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\)$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        .oneOf( //
-                                        // @formatter:off
-                                        // Schlusstag/-Zeit 01.12.2017 10:30:52 Auftraggeber Mustermann, Max
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date", "time") //
-                                                        .match("^Schlusstag\\/\\-Zeit (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) .*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time")))),
-                                        // @formatter:off
-                                        // Schlusstag 09.07.2021 Auftraggeber Mustermann, Max
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date") //
-                                                        .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
-                                        // @formatter:off
-                                        // Den Betrag buchen wir mit Wertstellung 03.01.2018 zu Gunsten des Kontos xxxxxxxxxx (IBAN DExx xxxx xxxx xxxx
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date") //
-                                                        .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
-
                         // @formatter:off
                         // Steuerliche Ausgleichrechnung
                         // Ausmachender Betrag 3,49 EUR
+                        // Den Gegenwert buchen wir mit Valuta 18.11.2024 zu Gunsten des Kontos 0123456789
                         // @formatter:on
-                        .section("currency", "amount").optional() //
-                        .find("Steuerliche Ausgleichrechnung")
+                        .section("currency", "amount", "date").optional() //
+                        .find("Steuerliche Ausgleichrechnung") //
                         .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)([\\-|\\+])? (?<currency>[\\w]{3})$") //
+                        .match("^Den Gegenwert buchen wir mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(Long.parseLong(context.get("shares")));
+                            t.setSecurity(getOrCreateSecurity(context));
+
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
                         })
-
-                        .optionalOneOf( //
-                                        // @formatter:off
-                                        // Devisenkurs (EUR/USD) 1,1987 vom 02.03.2021
-                                        // Steuerliche Ausgleichrechnung
-                                        // Ausmachender Betrag 3,49 EUR
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross") //
-                                                        .match("^Devisenkurs \\((?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+) .*$") //
-                                                        .find("Steuerliche Ausgleichrechnung") //
-                                                        .match("^Ausmachender Betrag (?<gross>[\\.,\\d]+)([\\-|\\+])? [\\w]{3}$") //
-                                                        .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
-                                                            type.getCurrentContext().putType(rate);
-
-                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
-
-                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                                                        }))
 
                         // @formatter:off
                         // Auftragsnummer 123456/10.00
