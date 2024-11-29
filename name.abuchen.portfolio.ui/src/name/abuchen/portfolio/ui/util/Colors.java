@@ -134,7 +134,6 @@ public final class Colors
 
     // use a darker green to improve readability for the green-white-red schema
     public static final Color HEATMAP_DARK_GREEN = getColor(104, 229, 23); // 68E517
-    public static final Color HEATMAP_ORANGE = getColor(255, 165, 0); // FFA500
 
     public static final Color ICON_ORANGE = getColor(241, 143, 1); // F18F01
     public static final Color ICON_BLUE = getColor(14, 110, 142); // 0E6E8E

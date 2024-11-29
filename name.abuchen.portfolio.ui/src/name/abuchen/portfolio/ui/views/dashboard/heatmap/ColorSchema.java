@@ -7,6 +7,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.ColorGradient;
+import name.abuchen.portfolio.ui.util.ColorGradient.ColorPoint;
 import name.abuchen.portfolio.ui.util.Colors;
 
 enum ColorSchema
@@ -34,96 +36,44 @@ enum ColorSchema
                 // Normalize performance between -0.07 and +0.07 and map it to a
                 // hue-like scale between 0 (red) and 60 (yellow) or 120
                 // (green).
-                double p = normalizePerformance(performance);
-                float hue = (float) p * 120f;
+                var p = normalizePerformance(performance);
+                var hue = p * 120f;
 
                 return resourceManager.createColor(new RGB(hue, 0.9f, 1f));
             };
 
             case GREEN_WHITE_RED -> performance -> {
-                // Performance is normalized and interpolated between green
-                // (positive) and the background (neutral) or red (negative)
-                double p = Math.min(MAX_PERFORMANCE, Math.abs(performance)) / MAX_PERFORMANCE;
+                var p = normalizePerformance(performance);
 
-                RGB color;
-
-                if (performance > 0f)
-                {
-                    color = Colors.interpolate(Colors.theme().defaultBackground().getRGB(),
-                                    Colors.HEATMAP_DARK_GREEN.getRGB(), (float) p);
-
-                    // Adjusted transition to yellow earlier
-                    if (p > 0.4)
-                    {
-                        // 0.4 to 1.0 to 0 to 1.0
-                        float yellowFactor = (float) ((p - 0.4) / 0.6);
-                        color = Colors.interpolate(color, Colors.YELLOW.getRGB(), yellowFactor);
-                    }
-                }
-                else
-                {
-                    // Using -p for correct mapping of negatives
-                    color = Colors.interpolate(Colors.theme().defaultBackground().getRGB(), Colors.RED.getRGB(),
-                                    (float) -p);
-                }
-
-                return resourceManager.createColor(color);
+                return new ColorGradient(//
+                                Colors.RED, //
+                                Colors.theme().defaultBackground(), //
+                                Colors.HEATMAP_DARK_GREEN //
+                ).getColorAt(p);
             };
 
             case GREEN_GRAY_RED -> performance -> {
-                // Performance interpolates between green (positive) and gray
-                // (neutral) or red (negative)
-                double p = Math.min(MAX_PERFORMANCE, Math.abs(performance)) / MAX_PERFORMANCE;
-                RGB color;
-
-                if (performance > 0)
-                    color = Colors.interpolate(Colors.GRAY.getRGB(), Colors.HEATMAP_DARK_GREEN.getRGB(), (float) p);
-                else
-                    color = Colors.interpolate(Colors.GRAY.getRGB(), Colors.RED.getRGB(), (float) p);
-
-                return resourceManager.createColor(color);
+                var p = normalizePerformance(performance);
+                return ColorGradient.RED_TO_GREEN.getColorAt(p);
             };
 
             case BLUE_GRAY_ORANGE -> performance -> {
-                // Performance interpolates between blue (stable) and gray
-                // (neutral) or orange (volatile)
-                double p = Math.min(MAX_PERFORMANCE, Math.abs(performance)) / MAX_PERFORMANCE;
-                RGB color;
-
-                if (performance > 0)
-                    color = Colors.interpolate(Colors.GRAY.getRGB(), Colors.BLUE.getRGB(), (float) p);
-                else
-                    color = Colors.interpolate(Colors.GRAY.getRGB(), Colors.HEATMAP_ORANGE.getRGB(), (float) p);
-
-                return resourceManager.createColor(color);
+                var p = normalizePerformance(performance);
+                return ColorGradient.ORANGE_TO_BLUE.getColorAt(p);
             };
 
             case YELLOW_WHITE_BLACK -> performance -> {
-                // Performance interpolates between yellow (moderate) and white
-                // (neutral) or black (extreme)
-                double p = normalizePerformance(performance);
-                RGB color;
+                var p = normalizePerformance(performance);
 
-                if (performance > 0.05)
-                {
-                    // Transition between yellow and black
-                    if (p > 0.6)
-                    {
-                        // 0.6 to 1.0 to (0 to 1.0 buchen's normalization)
-                        float blackFactor = (float) ((p - 0.6) / 0.4);
-                        color = Colors.interpolate(Colors.YELLOW.getRGB(), Colors.BLACK.getRGB(), blackFactor);
-                    }
-                    else
-                    {
-                        color = Colors.interpolate(Colors.YELLOW.getRGB(), Colors.theme().defaultBackground().getRGB(), (float) p);
-                    }
-                }
-                else
-                {
-                    color = Colors.interpolate(Colors.theme().defaultBackground().getRGB(), Colors.YELLOW.getRGB(), (float) p);
-                }
+                // cutover from yellow to black at +0.05 performance
+                var cutover = (0.07f + 0.05f) / 0.14f;
 
-                return resourceManager.createColor(color);
+                return new ColorGradient(//
+                                new ColorPoint(Colors.theme().defaultBackground(), 0), //
+                                new ColorPoint(Colors.YELLOW, cutover), //
+                                new ColorPoint(Colors.getColor(91, 91, 0), cutover), //
+                                new ColorPoint(Colors.BLACK, 1) //
+                ).getColorAt(p);
             };
 
             default -> throw new IllegalArgumentException("Unsupported color schema: " + this); //$NON-NLS-1$
@@ -139,11 +89,11 @@ enum ColorSchema
      *            the input performance value
      * @return a normalized performance value between 0 and 1
      */
-    private double normalizePerformance(double performance)
+    private float normalizePerformance(double performance)
     {
         performance = Math.max(-MAX_PERFORMANCE, performance);
         performance = Math.min(MAX_PERFORMANCE, performance);
-        return (performance + MAX_PERFORMANCE) / (2 * MAX_PERFORMANCE);
+        return (float) ((performance + MAX_PERFORMANCE) / (2 * MAX_PERFORMANCE));
     }
 
     @Override
