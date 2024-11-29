@@ -19,7 +19,7 @@ enum ColorSchema
     BLUE_GRAY_ORANGE(Messages.LabelBlueGrayOrange), //
     YELLOW_WHITE_BLACK(Messages.LabelYellowWhiteBlack);
 
-    private static final double MAX_PERFORMANCE = 0.07f;
+    private static final float MAX_PERFORMANCE = 0.07f;
 
     private String label;
 
@@ -66,7 +66,7 @@ enum ColorSchema
                 var p = normalizePerformance(performance);
 
                 // cutover from yellow to black at +0.05 performance
-                var cutover = (0.07f + 0.05f) / 0.14f;
+                var cutover = (MAX_PERFORMANCE + 0.05f) / 2f * MAX_PERFORMANCE;
 
                 return new ColorGradient(//
                                 new ColorPoint(Colors.theme().defaultBackground(), 0), //
