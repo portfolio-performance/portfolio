@@ -1797,7 +1797,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                                         + "(?<amount>[\\.,\\d]+)(?<type>[\\+|\\-])$") //
                                                         .assign((t, v) -> {
                                                             // Is type --> "-" change from TAX_REFUND to TAXES
-                                                            if ("+".equals(v.get("type")))
+                                                            if ("-".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.TAXES);
 
                                                             t.setDateTime(asDate(v.get("date") + v.get("year")));
