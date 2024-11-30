@@ -365,8 +365,9 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
             if (transactionDate.getDayOfWeek() != start.getDayOfWeek())
             {
-                previousDate = transactionDate.minusDays(
-                                transactionDate.getDayOfWeek().getValue() + 7L - start.getDayOfWeek().getValue());
+                int offset = transactionDate.getDayOfWeek().getValue() - start.getDayOfWeek().getValue();
+                offset = offset > 0 ? offset : offset + 7;
+                previousDate = transactionDate.minusDays(offset);
             }
 
             next = previousDate.plusWeeks((long) interval - WEEKS_THRESHOLD);
