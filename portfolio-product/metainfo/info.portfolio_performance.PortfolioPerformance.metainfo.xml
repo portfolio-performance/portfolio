@@ -37,6 +37,40 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.72.0" date="2024-11-30">
+      <description>
+        <ul>
+          <li>New: Update to Eclipse 2024-09 and Java 21</li>
+          <li>New: Weekly and bi-weekly investment plans.</li>
+          <li>New: New color schemes for heatmaps, which are better suited for people with red-green color blindness, among others.</li>
+          <li>New: Configurable prefix for instrument name in selection lists.</li>
+          <li>New: PDF importer for Audi Bank and Saxo Bank</li>
+          <li>Improvement: DivvyDiary upload now includes all positions, including those already sold.</li>
+          <li>Improvement: Account balance history is displayed in the statement of assets when an account is selected.</li>
+          <li>Improvement: Percentages of 0% are now marked in black (instead of green) in tables.</li>
+          <li>Improvement: In the annual bar chart under "Payments," bars are now always correctly colored.</li>
+          <li>Improvement: Tooltip size in charts no longer depends on the help text (and should fit better).</li>
+          <li>Improvements to PDF importers for Tradegate AG, Trade Republic, 1822direct, Oldenburgische Landesbank, FNZ Bank, Hypothekarbank Lenzburg, PostFinance AG, KBC Group NV, sBroker, Consorsbank, MLP, Hello Bank, 3BankenEDV, EstateGuru, WhiteBox, ING Diba, Barclay, Easybank</li>
+          <li>Fix: Column configuration window for CSV import is now larger and more user-friendly.</li>
+          <li>Fix: Filenames are sanitized for the operating system during bulk export of CSV files.</li>
+          <li>Fix: Resolves an issue in the performance calculation view when opening the context menu without a selection.</li>
+          <li xml:lang="de">Neu: Update auf Eclipse 2024-09 und Java 21</li>
+          <li xml:lang="de">Neu: Wöchentliche und zweiwöchentliche Sparpläne.</li>
+          <li xml:lang="de">Neu: Neue Farbschemata für Heatmaps, die unter anderem besser für Personen mit Rot-Grün-Blindheit geeignet sind.</li>
+          <li xml:lang="de">Neu: Konfigurierbare Prefix für Wertpapiername in Auswahllisten.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Audi Bank und Saxo Bank</li>
+          <li xml:lang="de">Verbesserung: Der Upload auf DivvyDiary enthält jetzt alle Positionen, auch die bereits verkauften.</li>
+          <li xml:lang="de">Verbesserung: In der Vermögensaufstellung wird der Kontosaldenverlauf angezeigt, wenn ein Konto ausgewählt ist.</li>
+          <li xml:lang="de">Verbesserung: Prozentzahlen von 0% werden in Tabellen jetzt schwarz (statt grün) markiert.</li>
+          <li xml:lang="de">Verbesserung: Im jährlichen Balkendiagramm unter "Zahlungen" werden die Balken jetzt immer korrekt eingefärbt.</li>
+          <li xml:lang="de">Verbesserung: Tooltip-Größe in Charts hängt nicht mehr vom Hilfetext ab (sollte besser passen).</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Tradegate AG, Trade Republic, 1822direct, Oldenburgische Landesbank, FNZ Bank, Hypothekarbank Lenzburg, PostFinance AG, KBC Group NV, sBroker, Consorsbank, MLP, Hello Bank, 3BankenEDV, EstateGuru, WhiteBox, ING Diba, Barclay, Easybank</li>
+          <li xml:lang="de">Fix: Fenster zur Spaltenkonfiguration beim CSV Import jetzt größer und benutzerfreundlicher.</li>
+          <li xml:lang="de">Fix: Dateinamen werden beim Massenexport von CSV-Dateien für das Betriebssystem bereinigt.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem in der Performance-Berechnungsansicht, wenn das Kontextmenü ohne Auswahl geöffnet wird.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.71.2" date="2024-10-03">
       <description>
         <ul>
