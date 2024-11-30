@@ -6528,7 +6528,7 @@ public class FinTechGroupBankPDFExtractorTest
                                         hasNote("Zinsabschluss 01.10.2023 - 31.12.2023")))));
 
         // assert transaction
-        assertThat(results, hasItem(taxRefund(hasDate("2024-01-15"), hasAmount("EUR", 22.98), //
+        assertThat(results, hasItem(taxes(hasDate("2024-01-15"), hasAmount("EUR", 22.98), //
                         hasSource("FlatExDegiroKontoauszug06.txt"), hasNote("Steuerkorrektur aufgrund FSA-Thematik"))));
     }
 
