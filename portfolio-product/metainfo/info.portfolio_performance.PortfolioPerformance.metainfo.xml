@@ -37,6 +37,14 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.72.2" date="2024-11-30">
+      <description>
+        <ul>
+          <li>Fix: Fixes a problem running Portfolio Performance on Intel macOS.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem mit Java unter macOS auf Intel Prozessoren.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.72.1" date="2024-11-30">
       <description>
         <ul>
