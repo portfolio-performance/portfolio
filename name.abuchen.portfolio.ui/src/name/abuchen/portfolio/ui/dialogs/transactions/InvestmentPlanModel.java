@@ -47,8 +47,8 @@ public class InvestmentPlanModel extends AbstractModel
 
     public enum Intervals
     {
-        WEEKLY(100), //
-        BIWEEKLY(200), //
+        WEEKLY(InvestmentPlan.WEEKS_THRESHOLD + 1), //
+        BIWEEKLY(InvestmentPlan.WEEKS_THRESHOLD + 2), //
         MONTHLY(1), //
         MONTHLY2(2), //
         MONTHLY3(3), //
@@ -62,23 +62,23 @@ public class InvestmentPlanModel extends AbstractModel
         MONTHLY11(11), //
         MONTHLY12(12); //
 
-        private final Integer interval;
+        private final int interval;
 
-        private Intervals(Integer interval)
+        private Intervals(int interval)
         {
             this.interval = interval;
         }
 
-        public Integer getInterval()
+        public int getInterval()
         {
             return interval;
         }
 
-        public static Intervals get(Integer interval)
+        public static Intervals get(int interval)
         {
             for (Intervals e : Intervals.values())
             {
-                if (e.interval.equals(interval))
+                if (e.interval == interval)
                     return e;
             }
             throw new IllegalArgumentException("unknown interval"); //$NON-NLS-1$
@@ -87,10 +87,11 @@ public class InvestmentPlanModel extends AbstractModel
         @Override
         public String toString()
         {
-            if (interval <= 12) // monthly
+            if (interval < InvestmentPlan.WEEKS_THRESHOLD) // monthly
                 return MessageFormat.format(Messages.InvestmentPlanIntervalLabel, interval);
             else // weekly or biweekly
-                return MessageFormat.format(Messages.InvestmentPlanIntervalWeeklyLabel, interval / 100);
+                return MessageFormat.format(Messages.InvestmentPlanIntervalWeeklyLabel,
+                                interval - InvestmentPlan.WEEKS_THRESHOLD);
         }
     }
 
