@@ -37,6 +37,14 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.72.1" date="2024-11-30">
+      <description>
+        <ul>
+          <li>Fix: Fixes an infinite loop for weekly investment plans if the execution date is moved due to holidays.</li>
+          <li xml:lang="de">Fix: Behebt eine Endlosschleife wenn das Ausführungsdatum eines wöchentlichen Sparplans auf einen handelsfreien Tag fällt.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.72.0" date="2024-11-30">
       <description>
         <ul>
