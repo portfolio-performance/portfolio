@@ -1,0 +1,65 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Deutsche Bank AG
+Kundenservice DVAG
+04024 Leipzig
+Frau Telefon (069) 910-10000*
+NACHNAME, VORNAME und Telefax (069) 910-10001
+Herrn NACHNAME, VORNAME *24h-Kundenservice
+STRAßE, Hsnr.
+PLZ ORT Ihr Ansprechpartner bei der
+Deutsche Vermögensberatung Gruppe:
+VORNAME NACHNAME
+8. Juli 2024
+Ihr db AnsparPlan - Abrechnung für den Zeitraum vom 01.01.2024 bis 28.06.2024
+Vertrags-Nr. 000 0000000 00 - NACHNAME, VORNAME und NACHNAME, VORNAME
+Ihre Wertpapiertransaktionen, Geschäftsart Kauf außerbörslich/ Festpreisgeschäft:
+Schlusstag Stück Wertpapierkurs Betrag
+Belegnummer Valuta
+DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652, Ausgabeaufschlag 5,00%
+03.01.2024 0,1610 279,3800 EUR 44,98 EUR
+0123456789 05.01.2024
+DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652, Ausgabeaufschlag 5,00%
+02.02.2024 0,1558 288,8200 EUR 45,00 EUR
+0123456789 06.02.2024
+DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652, Ausgabeaufschlag 5,00%
+04.03.2024 0,1513 297,3200 EUR 44,98 EUR
+0123456789 06.03.2024
+DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652, Ausgabeaufschlag 5,00%
+03.04.2024 0,1470 306,0200 EUR 44,98 EUR
+0123456789 05.04.2024
+DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652, Ausgabeaufschlag 5,00%
+03.05.2024 0,1487 302,6300 EUR 45,00 EUR
+0123456789 07.05.2024
+DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652, Ausgabeaufschlag 5,00%
+04.06.2024 0,1465 307,1600 EUR 45,00 EUR
+0123456789 06.06.2024
+Die Buchung erfolgt über das Depot Nummer 012 3456789 00 und das Konto Nr.
+DE00 1111 2222 3333 4444 55.
+Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts
+Vorstand: Christian Sewing (Vorsitzender), James von Moltke, Fabrizio Campelli, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, Claudio de Sanctis,
+Rebecca Short, Stefan Simon, Olivier Vigneron
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main; Amtsgericht Frankfurt am Main, HRB Nr. 30 000; Umsatzsteuer-Id.-Nr. DE114103379;
+www.db.com/de, www.deutsche-bank.de 1
+ISS0000005 TAP0 20240708 23467434
+Auf Grund von gesetzlichen Vorgaben sind wir verpflichtet, Ihnen die Möglichkeit zu verschaffen, jederzeit das
+aktuelle Basisinformationsblatt zu dem Produkt, das ihrem Sparplan zugrunde liegt, einzusehen. Die jeweils
+aktuelle Fassung des Basisinformationsblatts können Sie über folgende Internetseite unter Eingabe der WKN
+abrufen: https://www.dvag-produktinformationen.de
+Bitte beachten Sie, dass sich das Basisinformationsblatt mit der Zeit ändern kann. Wenn Sie die aktuelle
+Fassung des Dokuments speichern wollen, sollten Sie das Dokument ausdrucken oder abspeichern. Wenn
+Sie das Basisinformationsblatt lieber in Papierform wünschen, können Sie sich jederzeit gerne an Ihren Berater
+wenden.
+Wichtige Hinweise:
+Es kann in der Abrechnung zu geringfügigen Rundungsdifferenzen kommen.
+Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen in den Geschäftsräumen der Bank oder schriftlich an Deutsche
+Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt. Die abgerechneten Leistungen sind als Bank- oder
+Finanzdienstleistungen von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert ausgewiesen ist. Umsatzsteuer ID Nr.: Deutsche Bank AG, 60262
+Frankfurt DE114103379
+Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts
+Vorstand: Christian Sewing (Vorsitzender), James von Moltke, Fabrizio Campelli, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, Claudio de Sanctis,
+Rebecca Short, Stefan Simon, Olivier Vigneron
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main; Amtsgericht Frankfurt am Main, HRB Nr. 30 000; Umsatzsteuer-Id.-Nr. DE114103379;
+www.db.com/de, www.deutsche-bank.de 2
+ISS0000005 TAP0 20240708 23467434
