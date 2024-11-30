@@ -7,7 +7,7 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import jakarta.inject.Inject;
@@ -136,21 +136,13 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         // interval
 
-        List<Integer> available = new ArrayList<>();
-        for (var entry : InvestmentPlanModel.Intervals.values())
-            available.add(entry.getInterval());
+        List<Integer> available = Arrays.stream(InvestmentPlanModel.Intervals.values())
+                        .map(InvestmentPlanModel.Intervals::getInterval).toList();
 
         ComboInput interval = new ComboInput(editArea, Messages.ColumnInterval);
         interval.value.setInput(available);
-        interval.value.setLabelProvider(new LabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                int interval = (Integer) element;
-                return InvestmentPlanModel.Intervals.get(interval).toString();
-            }
-        });
+        interval.value.setLabelProvider(LabelProvider.createTextProvider(
+                        element -> InvestmentPlanModel.Intervals.get((Integer) element).toString()));
         interval.bindValue(Properties.interval.name(),
                         MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnInterval));
 
