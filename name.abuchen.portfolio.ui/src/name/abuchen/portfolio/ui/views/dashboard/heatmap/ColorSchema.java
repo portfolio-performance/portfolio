@@ -66,7 +66,7 @@ enum ColorSchema
                 var p = normalizePerformance(performance);
 
                 // cutover from yellow to black at +0.05 performance
-                var cutover = (MAX_PERFORMANCE + 0.05f) / 2f * MAX_PERFORMANCE;
+                var cutover = (MAX_PERFORMANCE + 0.05f) / (2f * MAX_PERFORMANCE);
 
                 return new ColorGradient(//
                                 new ColorPoint(Colors.theme().defaultBackground(), 0), //
