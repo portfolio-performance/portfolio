@@ -359,4 +359,25 @@ public class InvestmentPlanTest
         assertThat(newlyGenerated.get(2).getTransaction().getDateTime(), is(LocalDateTime.parse("2016-04-08T00:00")));
     }
 
+    @Test
+    public void testWeeklyFrom18March2024() throws IOException
+    {
+        investmentPlan.setType(InvestmentPlan.Type.PURCHASE_OR_DELIVERY);
+
+        investmentPlan.setAccount(account);
+        investmentPlan.setPortfolio(portfolio);
+        investmentPlan.setSecurity(security);
+        investmentPlan.setStart(LocalDateTime.parse("2024-03-18T00:00:00"));
+
+        investmentPlan.setInterval(101); // 101 is weekly, 201 bi-weekly
+
+        investmentPlan.generateTransactions(new TestCurrencyConverter());
+
+        var tx = investmentPlan.getTransactions().stream().toList();
+        assertThat(tx.get(0).getDateTime(), is(LocalDateTime.parse("2024-03-18T00:00")));
+        assertThat(tx.get(1).getDateTime(), is(LocalDateTime.parse("2024-03-25T00:00")));
+        assertThat(tx.get(2).getDateTime(), is(LocalDateTime.parse("2024-04-02T00:00")));
+        assertThat(tx.get(3).getDateTime(), is(LocalDateTime.parse("2024-04-08T00:00")));
+    }
+
 }
