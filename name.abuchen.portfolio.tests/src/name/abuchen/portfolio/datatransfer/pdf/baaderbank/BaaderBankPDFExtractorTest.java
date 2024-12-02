@@ -3631,7 +3631,7 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-02-16T00:00"), hasShares(2), //
+                        hasDate("2023-02-16T00:00"), hasShares(2.00), //
                         hasSource("Dividende15.txt"), //
                         hasNote("Transaction No.: 13241804"), //
                         hasAmount("EUR", 0.26), hasGrossValue("EUR", 0.43), //
@@ -3664,7 +3664,7 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-02-16T00:00"), hasShares(2), //
+                        hasDate("2023-02-16T00:00"), hasShares(2.00), //
                         hasSource("Dividende15.txt"), //
                         hasNote("Transaction No.: 13241804"), //
                         hasAmount("EUR", 0.26), hasGrossValue("EUR", 0.43), //
@@ -3702,7 +3702,7 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-05-18T00:00"), hasShares(2), //
+                        hasDate("2023-05-18T00:00"), hasShares(2.00), //
                         hasSource("Dividende16.txt"), //
                         hasNote("Transaction No.: 15390292"), //
                         hasAmount("EUR", 0.32), hasGrossValue("EUR", 0.44), //
@@ -3735,7 +3735,7 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-05-18T00:00"), hasShares(2), //
+                        hasDate("2023-05-18T00:00"), hasShares(2.00), //
                         hasSource("Dividende16.txt"), //
                         hasNote("Transaction No.: 15390292"), //
                         hasAmount("EUR", 0.32), hasGrossValue("EUR", 0.44), //
@@ -3773,7 +3773,7 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-11-16T00:00"), hasShares(60), //
+                        hasDate("2023-11-16T00:00"), hasShares(60.00), //
                         hasSource("Dividende17.txt"), //
                         hasNote("Vorgangs-Nr.: 20120279"), //
                         hasAmount("USD", 12.24), hasGrossValue("USD", 14.40), //
@@ -3805,7 +3805,7 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-11-16T00:00"), hasShares(60), //
+                        hasDate("2023-11-16T00:00"), hasShares(60.00), //
                         hasSource("Dividende17.txt"), //
                         hasNote("Vorgangs-Nr.: 20120279"), //
                         hasAmount("USD", 12.24), hasGrossValue("USD", 14.40), //
@@ -3844,7 +3844,7 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-14T00:00"), hasShares(5), //
+                        hasDate("2023-12-14T00:00"), hasShares(5.00), //
                         hasSource("Dividende18.txt"), //
                         hasNote("Vorgangs-Nr.: 123"), //
                         hasAmount("USD", 2.79), hasGrossValue("USD", 3.75), //
@@ -3876,7 +3876,7 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-14T00:00"), hasShares(5), //
+                        hasDate("2023-12-14T00:00"), hasShares(5.00), //
                         hasSource("Dividende18.txt"), //
                         hasNote("Vorgangs-Nr.: 123"), //
                         hasAmount("USD", 2.79), hasGrossValue("USD", 3.75), //
@@ -3915,7 +3915,7 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-11-29T00:00"), hasShares(140), //
+                        hasDate("2023-11-29T00:00"), hasShares(140.00), //
                         hasSource("Dividende19.txt"), //
                         hasNote("Vorgangs-Nr.: 20483837"), //
                         hasAmount("USD", 6.26), hasGrossValue("USD", 6.26), //
@@ -3947,7 +3947,7 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-11-29T00:00"), hasShares(140), //
+                        hasDate("2023-11-29T00:00"), hasShares(140.00), //
                         hasSource("Dividende19.txt"), //
                         hasNote("Vorgangs-Nr.: 20483837"), //
                         hasAmount("USD", 6.26), hasGrossValue("USD", 6.26), //
@@ -3986,7 +3986,7 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-22T00:00"), hasShares(4), //
+                        hasDate("2023-12-22T00:00"), hasShares(4.00), //
                         hasSource("Dividende20.txt"), //
                         hasNote("Vorgangs-Nr.: XXX"), //
                         hasAmount("USD", 14.89), hasGrossValue("USD", 20.00), //
@@ -4018,7 +4018,7 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-22T00:00"), hasShares(4), //
+                        hasDate("2023-12-22T00:00"), hasShares(4.00), //
                         hasSource("Dividende20.txt"), //
                         hasNote("Vorgangs-Nr.: XXX"), //
                         hasAmount("USD", 14.89), hasGrossValue("USD", 20.00), //
@@ -4057,7 +4057,7 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-15T00:00"), hasShares(14), //
+                        hasDate("2023-12-15T00:00"), hasShares(14.00), //
                         hasSource("Dividende21.txt"), //
                         hasNote("Vorgangs-Nr.: XXX"), //
                         hasAmount("USD", 2.66), hasGrossValue("USD", 3.58), //
@@ -4089,7 +4089,7 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-15T00:00"), hasShares(14), //
+                        hasDate("2023-12-15T00:00"), hasShares(14.00), //
                         hasSource("Dividende21.txt"), //
                         hasNote("Vorgangs-Nr.: XXX"), //
                         hasAmount("USD", 2.66), hasGrossValue("USD", 3.58), //
@@ -4128,7 +4128,7 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-26T00:00"), hasShares(10), //
+                        hasDate("2024-01-26T00:00"), hasShares(10.00), //
                         hasSource("Dividende22.txt"), //
                         hasNote("Vorgangs-Nr.: 25694016"), //
                         hasAmount("USD", 33.50), hasGrossValue("USD", 33.50), //
@@ -4160,7 +4160,7 @@ public class BaaderBankPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-01-26T00:00"), hasShares(10), //
+                        hasDate("2024-01-26T00:00"), hasShares(10.00), //
                         hasSource("Dividende22.txt"), //
                         hasNote("Vorgangs-Nr.: 25694016"), //
                         hasAmount("USD", 33.50), hasGrossValue("USD", 33.50), //
@@ -4170,6 +4170,77 @@ public class BaaderBankPDFExtractorTest
                             CheckCurrenciesAction c = new CheckCurrenciesAction();
                             Account account = new Account();
                             account.setCurrencyCode(CurrencyUnit.USD);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende23()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US92936U1097"), hasWkn("A1J5SB"), hasTicker(null), //
+                        hasName("W.P. Carey Inc."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-10-16T00:00"), hasShares(28.00), //
+                        hasSource("Dividende23.txt"), //
+                        hasNote("Vorgangs-Nr.: 22556339"), //
+                        hasAmount("EUR", 4.88), hasGrossValue("EUR", 4.88), //
+                        hasForexGrossValue("USD", 5.16), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende23WithSecurityInEUR()
+    {
+        Security security = new Security("W.P. Carey Inc.", CurrencyUnit.EUR);
+        security.setIsin("US92936U1097");
+        security.setWkn("A1J5SB");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-10-16T00:00"), hasShares(28.00), //
+                        hasSource("Dividende23.txt"), //
+                        hasNote("Vorgangs-Nr.: 22556339"), //
+                        hasAmount("EUR", 4.88), hasGrossValue("EUR", 4.88), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
                             Status s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
