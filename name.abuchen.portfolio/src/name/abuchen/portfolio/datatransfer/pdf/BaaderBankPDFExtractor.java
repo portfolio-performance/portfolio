@@ -406,7 +406,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("(Fondsaussch.ttung" //
                         + "|Ertragsthesaurierung" //
-                        + "|Dividendenabrechnung" //
+                        + "|Dividendenabrechnung"
+                        + "|Aussch.ttung" //
                         + "|Aussch.ttung aus" //
                         + "|Wahldividende" //
                         + "|Fund Distribution" //
