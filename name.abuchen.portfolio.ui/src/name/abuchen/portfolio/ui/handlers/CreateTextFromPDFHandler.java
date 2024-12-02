@@ -30,6 +30,7 @@ public class CreateTextFromPDFHandler
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell) throws IOException
     {
+        // Create a file dialog for selecting the PDF file
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.SINGLE);
         fileDialog.setText(Messages.PDFImportDebugTextExtraction);
         fileDialog.setFilterNames(new String[] { Messages.PDFImportFilterName });
@@ -40,28 +41,40 @@ public class CreateTextFromPDFHandler
         if (fileName == null || fileName.isEmpty())
             return;
 
+        File file = new File(fileDialog.getFilterPath(), fileName);
+        if (!file.exists() || !file.isFile())
+            return;
+
         try
         {
-            File file = new File(fileDialog.getFilterPath(), fileName);
             PDFInputFile inputFile = new PDFInputFile(file);
-            inputFile.convertPDFtoText();
+            inputFile.convertPDFtoText(); // Convert PDF to text
 
             StringBuilder textBuilder = new StringBuilder();
-            textBuilder.append("```") //$NON-NLS-1$
-                            .append("\n"); //$NON-NLS-1$
-            textBuilder.append("PDFBox Version: ") //$NON-NLS-1$
-                            .append(inputFile.getPDFBoxVersion().toString()) //
-                            .append("\n"); //$NON-NLS-1$
-            textBuilder.append("Portfolio Performance Version: ") //$NON-NLS-1$
-                            .append(PortfolioPlugin.getDefault().getBundle().getVersion().toString()) //
-                            .append("\n"); //$NON-NLS-1$
-            textBuilder.append("-----------------------------------------\n"); //$NON-NLS-1$
-            textBuilder.append(inputFile.getText().replace("\r", "")) //$NON-NLS-1$ //$NON-NLS-2$
-                            .append("\n"); //$NON-NLS-1$
-            textBuilder.append("```"); //$NON-NLS-1$
+            String newLine = System.lineSeparator();
 
+            textBuilder.append("```").append(newLine); //$NON-NLS-1$
+            textBuilder.append("PDFBox Version: ").append( //$NON-NLS-1$
+                            inputFile.getPDFBoxVersion() != null ? inputFile.getPDFBoxVersion().toString() : "unknown") //$NON-NLS-1$
+                            .append(newLine);
+            String portfolioVersion = PortfolioPlugin.getDefault() != null
+                            && PortfolioPlugin.getDefault().getBundle() != null
+                                            ? PortfolioPlugin.getDefault().getBundle().getVersion().toString()
+                                            : "unknown"; //$NON-NLS-1$
+            textBuilder.append("Portfolio Performance Version: ").append(portfolioVersion).append(newLine); //$NON-NLS-1$
+            textBuilder.append("System: ").append(System.getProperty("osgi.os", "unknown")).append(" | ") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                            .append(System.getProperty("osgi.arch", "unknown")).append(" | ") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                            .append(System.getProperty("java.vm.version", "unknown")).append(" | ") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                            .append(System.getProperty("java.vm.vendor", "unknown")).append(newLine); //$NON-NLS-1$ //$NON-NLS-2$
+            textBuilder.append("-----------------------------------------").append(newLine); //$NON-NLS-1$
+            String fileText = inputFile.getText() != null
+                            ? inputFile.getText().replace("\r\n", newLine).replace("\r", newLine) //$NON-NLS-1$ //$NON-NLS-2$
+                            : ""; //$NON-NLS-1$
+            textBuilder.append(fileText).append(newLine);
+            textBuilder.append("```").append(newLine); //$NON-NLS-1$
             String text = textBuilder.toString();
 
+            // Open a custom dialog to display the extracted text
             DisplayTextDialog dialog = new DisplayPDFTextDialog(shell, file, text);
             dialog.setDialogTitle(Messages.PDFImportDebugTextExtraction);
             dialog.setAdditionalText(Messages.PDFImportDebugInformation);
@@ -69,6 +82,7 @@ public class CreateTextFromPDFHandler
         }
         catch (IOException e)
         {
+            // Log the error and display an error message
             PortfolioPlugin.log(e);
             MessageDialog.openError(shell, Messages.LabelError, e.getMessage());
         }
