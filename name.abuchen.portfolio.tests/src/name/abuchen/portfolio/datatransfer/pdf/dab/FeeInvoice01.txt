@@ -1,0 +1,41 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.72.2
+-----------------------------------------
+Ginmon Vermögensverwaltung GmbH, Mainzer Landstraße 33a, 60329 Frankfurt am Main
+Herr
+Vorname Nachname
+Straße 1
+12345 Ort
+Deutschland
+Rechnungsdatum / Invoice date: 31.10.2024
+Rechnungsnummer /Invoice no: 00000002024101
+Kundennummer /Customer ID: GM0000000
+Gebührenabrechnung Oktober
+Invoice October
+Zeitraum vom 01.10.2024 – 31.10.2024
+Period of 01.10.2024 – 31.10.2024
+Position Berechungsbasis Gebühr Betrag
+Calculation Fee Amount
+Grundgebühr 57.60 € 0.7500% p.a. 0.04 €
+Base fee (Ø AuM in 31 Tagen / days)
+Discount 0.00 €
+Depotführung inklusive 0.00 €
+Handling charge included
+Transaktionskosten inklusive 0.00 €
+Transaction fees included
+MwSt. inkl. von 19% 0.01 €
+VAT included of 19%
+Rechnungsbetrag 0.04 €
+Total amount
+Der ausstehende Betrag wird in den kommenden Tagen automatisch aus Ihrem Ginmon Konto
+entnommen. Sie müssen hierfür nichts weiter unternehmen.
+The amount will automatically be deducted from your Ginmon account within the upcoming days. There
+is no further action required on your side.
+Ginmon GmbH Geschäftssitz Bankverbindung
+Ginmon Vermögensverwaltung Geschäftsführer: Lars Reiner IBAN: DE66 7012 0400 2569 4200 09
+Mainzer Landstraße 33a Amtsgericht: Frankfurt am Main BIC: DABBDEMMXXX
+60329 Frankfurt am Main HRB 102248 / HRB 107290 DAB BNP Paribas
+service@ginmon.de USt-IdNr. DE298791666
+
+```

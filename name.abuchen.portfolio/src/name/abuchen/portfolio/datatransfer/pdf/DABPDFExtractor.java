@@ -29,6 +29,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("DAB Bank");
         addBankIdentifier("DAB bank AG");
         addBankIdentifier("BNP Paribas S.A. Niederlassung Deutschland");
+        addBankIdentifier("Ginmon GmbH");
 
         addBuySellTransaction();
         addDividendTransaction();
@@ -36,6 +37,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
         addTaxAdjustmentTransaction();
         addAdvanceTaxTransaction();
         addAccountStatementTransaction();
+        addNonImportableTransaction();
     }
 
     @Override
@@ -157,6 +159,21 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                                                 v.put("name", v.get("name") + " " + v.get("name1"));
 
                                                             t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // SPDR MSCI Wrld Small Cap U.ETF Registered Shares o.N. IE00BCBJG560
+                                        // Nominal Kurs
+                                        // STK 0,0425 EUR 97,1400
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^(Nominal Kurs)$") //
+                                                        .match("^(STK )(?<shares>[\\.,\\d]+) (?<currency>[\\w]{3}) ([\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setDate(asDate(v.get("date"), v.get("time")));
                                                         }))
 
                         // @formatter:off
@@ -1026,7 +1043,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("(Verm.gensbericht|Verm.gensstatus)", //
+        final DocumentType type = new DocumentType("(Verm.gensbericht|Verm.gensstatus|Kontoauszug)", //
                         documentContext -> documentContext //
                                         .oneOf( //
                                                         // @formatter:off
@@ -1044,6 +1061,21 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                                                         .match("^Referenzw.hrung (?<currency>.*)$") //
                                                                         .assign((ctx, v) -> {
                                                                             if ("Euro".equals(trim(v.get("currency")))) ctx.put("currency", "EUR");
+                                                                        }),
+                                                        // @formatter:off
+                                                        // 28.08.2024
+                                                        // Buchung Valuta Buchungsinformation Soll Haben
+                                                        // 00.00. Alter Kontostand: EUR 0,00+
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("year", "currency") //
+                                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{4})$") //
+                                                                        .match("^Buchung Valuta Buchungsinformation Soll Haben$") //
+                                                                        .match("^[\\d]{2}\\.[\\d]{2}\\. Alter Kontostand: (?<currency>[\\w]{3}) [\\.,\\d]+\\+$") //
+                                                                        .assign((ctx, v) -> {
+                                                                            ctx.put("year", v.get("year"));
+                                                                            ctx.put("currency", asCurrencyCode(
+                                                                                            v.get("currency")));
                                                                         })));
 
         this.addDocumentTyp(type);
@@ -1221,6 +1253,138 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+
+     // @formatter:off
+        // 28.08. 28.08. vermögenswirksame Leistung 26,59+
+        // Company where VL is payed from 000/UVXY VL
+        // Nachname, Vo.
+        // @formatter:on
+        Block depositBlock_Format03 = new Block(
+                        "^([\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (vermögenswirksame Leistung) ([\\.,\\d]+)\\+$");
+        type.addBlock(depositBlock_Format03);
+        depositBlock_Format03.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("note", "date", "amount") //
+                        .documentContext("year", "currency") //
+                        .match("^([\\d]{2}\\.[\\d]{2}\\.) (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<note>vermögenswirksame Leistung) (?<amount>[\\.,\\d]+)\\+$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 11.11. 11.11. SEPA-Überweisung 50,00-
+        // AGKRGWWWRHABNBNBOZSPCR Ginmon End to End-
+        // ID:DAB/B3/480606009/2024-11-11
+        // IBAN: DE00000000000000000000
+        // BIC: BICXXXXX001
+        // Empfänger:  Vorname Nachname
+        // @formatter:on
+        Block removalBlock_Format02 = new Block(
+                        "^([\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (SEPA\\-Überweisung) ([\\.,\\d]+)\\-$");
+        type.addBlock(removalBlock_Format02);
+        removalBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
+                            return accountTransaction;
+                        })
+
+                        .section("note", "date", "amount") //
+                        .documentContext("year", "currency") //
+                        .match("^([\\d]{2}\\.[\\d]{2}\\.) (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<note>SEPA\\-Überweisung) (?<amount>[\\.,\\d]+)\\-$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 09.10. 09.10. Verwalterpreis 0,02-
+        // Ginmon Gebuehrenrechnung September 2024 End to End-
+        // ID:SEPA-EINZUG
+        // IBAN: DE62701204003335687004
+        // BIC: DABBDEMMXXX
+        // Empfänger:  Ginmon Vermoegensverwaltung GmbH
+        // @formatter:on
+        Block feeBlock_Format01 = new Block(
+                        "^([\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Verwalterpreis) ([\\.,\\d]+)\\-$");
+        type.addBlock(feeBlock_Format01);
+        feeBlock_Format01.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        .section("amount", "date", "note") //
+                        .documentContext("currency", "year") //
+                        .match("^([\\d]{2}\\.[\\d]{2}\\.) (?<date>[\\d]{2}\\.[\\d]{2}\\.) (Verwalterpreis) (?<amount>[\\.,\\d]+)\\-$") //
+                        .match("^(?<note>.*) End to End\\-") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 07.11. 11.11. Wertpapierverkauf 0,49+
+        // VKF    A2061191320241107   IE00B52MJY50*         0,003
+        //
+        // 27.09. 01.10. Wertpapierkauf 6,26-
+        // KAUF   A6239874820240927   IE00BL25JM42*         0,150
+        // @formatter:on
+        Block BuySellBlock = new Block(
+                        "^([\\d]{2}\\.[\\d]{2}\\.) ([\\d]{2}\\.[\\d]{2}\\.) (Wertpapierverkauf|Wertpapierkauf) ([\\.,\\d]+)[\\+\\-]$");
+        type.addBlock(BuySellBlock);
+        BuySellBlock.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+
+                        .section("amount", "date", "isin", "shares", "type") //
+                        .documentContext("currency", "year") //
+                        .match("^([\\d]{2}\\.[\\d]{2}\\.) (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<type>Wertpapierverkauf|Wertpapierkauf) (?<amount>[\\.,\\d]+)[\\+\\-]$") //
+                        .match("^.* (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\* +(?<shares>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if ("Wertpapierverkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setDate(asDate(v.get("date") + v.get("year")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            v.getTransactionContext().put(FAILURE,
+                                            Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                        })
+
+                        .wrap((t, ctx) -> {
+                            BuySellEntryItem item = new BuySellEntryItem(t);
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+                            return item;
+                        }));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
@@ -1424,5 +1588,65 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "fee").optional() //
                         .match("^.*[\\s]{1,}Transaktionsentgelt (?<currency>[\\w]{3}) (?<fee>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
+    }
+
+    private void addNonImportableTransaction()
+    {
+        final DocumentType type = new DocumentType("(Gebührenabrechnung)", //
+                        documentContext -> documentContext //
+                        // @formatter:off
+                        // Rechnungsdatum / Invoice date: 31.10.2024
+                        // Rechnungsnummer /Invoice no: 00000002024101
+                        // @formatter:on
+                                        .section("date") //
+                                        .match("^Rechnungsdatum / Invoice date: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                        .assign((ctx, v) -> {
+                                            ctx.put("date", v.get("date"));
+                                        }));
+
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^(Gebührenabrechnung) (.*)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Gebührenabrechnung Oktober
+                        // Invoice October
+                        // Zeitraum vom 01.10.2024 – 31.10.2024
+                        // Period of 01.10.2024 – 31.10.2024
+                        // Position Berechungsbasis Gebühr Betrag
+                        // Calculation Fee Amount
+                        // Grundgebühr 57.60 € 0.7500% p.a. 0.04 €
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .documentContext("date") //
+                        .match("^Rechnungsbetrag (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount"), "en", "US"));
+                            v.getTransactionContext().put(FAILURE,
+                                            Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                        })
+
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
     }
 }
