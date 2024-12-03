@@ -26,6 +26,7 @@ import name.abuchen.portfolio.ui.dialogs.DisplayTextDialog;
 
 public class CreateTextFromPDFHandler
 {
+    @SuppressWarnings("nls")
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell) throws IOException
@@ -47,18 +48,23 @@ public class CreateTextFromPDFHandler
             inputFile.convertPDFtoText();
 
             StringBuilder textBuilder = new StringBuilder();
-            textBuilder.append("```") //$NON-NLS-1$
-                            .append("\n"); //$NON-NLS-1$
-            textBuilder.append("PDFBox Version: ") //$NON-NLS-1$
+            textBuilder.append("```").append("\n");
+            textBuilder.append("PDFBox Version: ")
                             .append(inputFile.getPDFBoxVersion().toString()) //
-                            .append("\n"); //$NON-NLS-1$
-            textBuilder.append("Portfolio Performance Version: ") //$NON-NLS-1$
+                            .append("\n");
+            textBuilder.append("Portfolio Performance Version: ")
                             .append(PortfolioPlugin.getDefault().getBundle().getVersion().toString()) //
-                            .append("\n"); //$NON-NLS-1$
-            textBuilder.append("-----------------------------------------\n"); //$NON-NLS-1$
-            textBuilder.append(inputFile.getText().replace("\r", "")) //$NON-NLS-1$ //$NON-NLS-2$
-                            .append("\n"); //$NON-NLS-1$
-            textBuilder.append("```"); //$NON-NLS-1$
+                            .append("\n");
+
+            textBuilder.append("System: ") //
+                            .append(System.getProperty("osgi.os", "unknown")).append(" | ")
+                            .append(System.getProperty("osgi.arch", "unknown")).append(" | ")
+                            .append(System.getProperty("java.vm.version", "unknown")).append(" | ")
+                            .append(System.getProperty("java.vm.vendor", "unknown")).append("\n");
+
+            textBuilder.append("-----------------------------------------\n");
+            textBuilder.append(inputFile.getText().replace("\r", "")).append("\n");
+            textBuilder.append("```");
 
             String text = textBuilder.toString();
 
