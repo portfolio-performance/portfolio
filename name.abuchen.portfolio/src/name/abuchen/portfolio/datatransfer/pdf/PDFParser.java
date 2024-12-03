@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.DocumentContext;
+import name.abuchen.portfolio.datatransfer.DuplicateSecurityException;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Context;
@@ -365,6 +366,10 @@ import name.abuchen.portfolio.model.TypedMap;
 
                             // if parsing was successful, then return
                             return;
+                        }
+                        catch (DuplicateSecurityException e)
+                        {
+                            throw e;
                         }
                         catch (IllegalArgumentException ignore)
                         {
