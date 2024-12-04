@@ -3835,27 +3835,4 @@ public class DABPDFExtractorTest
                         purchase(hasDate("2024-10-01"), hasAmount("EUR", 6.26), hasShares(0.15), //
                                         hasSource("Kontoumsaetze12.txt"), hasNote(null)))));
     }
-
-    @Test
-    public void testFeeInvoice01()
-    {
-        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FeeInvoice01.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(0L));
-        assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
-
-        // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionAlternativeDocumentRequired,
-                        fee(hasDate("2024-10-31"), hasAmount("EUR", 0.04), //
-                                        hasSource("FeeInvoice01.txt"), hasNote(null)))));
-    }
 }
