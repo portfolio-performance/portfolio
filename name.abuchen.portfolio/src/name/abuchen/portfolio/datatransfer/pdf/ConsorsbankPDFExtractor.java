@@ -75,11 +75,11 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(?i).*(Kauf" //
-                        + "|Bezug" //
-                        + "|Verkauf" //
-                        + "|VERK\\. TEIL\\-\\/BEZUGSR\\." //
-                        + "|VERKAUF KAPITALMA.*) ([\\s]+)?AM .*$");
+        Block firstRelevantLine = new Block("^(?i).*(Kauf"
+                        + "|Bezug"
+                        + "|Verkauf"
+                        + "|VERK\\. TEIL\\-\\/BEZUGSR\\."
+                        + "|VERKAUF KAPITALMA.*) .*AM .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -95,7 +95,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .section("type").optional() //
                         .match("^(?i).*(?<type>Verkauf" //
                                         + "|VERK\\. TEIL\\-\\/BEZUGSR\\." //
-                                        + "|VERKAUF KAPITALMA.*)[\\s]{1,}AM .*$")
+                                        + "|VERKAUF KAPITALMA.*) .*AM .*$")
                         .assign((t, v) -> {
                             if ("VERKAUF".equalsIgnoreCase(v.get("type")) //
                                             || "Verkauf".equalsIgnoreCase(v.get("type")) //
@@ -231,7 +231,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         + "|Bezug" //
                                         + "|Verkauf" //
                                         + "|VERK\\. TEIL\\-\\/BEZUGSR\\." //
-                                        + "|VERKAUF KAPITALMA.*)[\\s]{1,}AM (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                        + "|VERKAUF KAPITALMA.*).*AM (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().get("time") != null)
                                 t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
