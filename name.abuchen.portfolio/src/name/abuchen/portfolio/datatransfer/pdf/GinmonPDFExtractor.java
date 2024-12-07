@@ -1,11 +1,15 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import name.abuchen.portfolio.Messages;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class GinmonPDFExtractor extends AbstractPDFExtractor
@@ -14,7 +18,7 @@ public class GinmonPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("Ginmon GmbH");
+        addBankIdentifier("Ginmon Vermögensverwaltung GmbH");
 
         addNonImportableTransaction();
     }
@@ -22,28 +26,17 @@ public class GinmonPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Ginmon GmbH";
+        return "Ginmon Vermögensverwaltung GmbH";
     }
 
     private void addNonImportableTransaction()
     {
-        final DocumentType type = new DocumentType("(Gebührenabrechnung)", //
-                        documentContext -> documentContext //
-                        // @formatter:off
-                        // Rechnungsdatum / Invoice date: 31.10.2024
-                        // Rechnungsnummer /Invoice no: 00000002024101
-                        // @formatter:on
-                                        .section("date") //
-                                        .match("^Rechnungsdatum / Invoice date: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                                        .assign((ctx, v) -> {
-                                            ctx.put("date", v.get("date"));
-                                        }));
-
+        final DocumentType type = new DocumentType("Geb.hrenabrechnung", "Kontoauszug");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Gebührenabrechnung) (.*)$");
+        Block firstRelevantLine = new Block("^Rechnungsdatum.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -56,24 +49,35 @@ public class GinmonPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
-                        // Gebührenabrechnung Oktober
-                        // Invoice October
-                        // Zeitraum vom 01.10.2024 – 31.10.2024
-                        // Period of 01.10.2024 – 31.10.2024
-                        // Position Berechungsbasis Gebühr Betrag
-                        // Calculation Fee Amount
-                        // Grundgebühr 57.60 € 0.7500% p.a. 0.04 €
+                        // Rechnungsbetrag 0.04 €
                         // @formatter:on
                         .section("amount", "currency") //
-                        .documentContext("date") //
                         .match("^Rechnungsbetrag (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount"), "en", "US"));
-                            v.getTransactionContext().put(FAILURE,
-                                            Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                            t.setAmount(asAmount(v.get("amount")));
                         })
+
+                        // @formatter:off
+                        // Rechnungsdatum / Invoice date: 31.10.2024
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Rechnungsdatum / Invoice date: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Rechnungsnummer /Invoice no: 00000002024101
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^Rechnungsnummer.*: (?<note>.*)$") //
+                        .assign((t, v) -> t.setNote("R.-Nr.: " + trim(v.get("note"))))
+
+                        // @formatter:off
+                        // Zeitraum vom 01.10.2024 – 31.10.2024
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^Zeitraum vom (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\– [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         .wrap((t, ctx) -> {
                             TransactionItem item = new TransactionItem(t);
@@ -83,5 +87,11 @@ public class GinmonPDFExtractor extends AbstractPDFExtractor
 
                             return item;
                         });
+    }
+
+    @Override
+    protected long asAmount(String value)
+    {
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "en", "US");
     }
 }

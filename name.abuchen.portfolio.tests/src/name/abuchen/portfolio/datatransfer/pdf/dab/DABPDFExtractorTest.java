@@ -3753,8 +3753,13 @@ public class DABPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-10-09"), hasAmount("EUR", 0.02), //
-                        hasSource("Kontoumsaetze09.txt"), hasNote("Ginmon Gebuehrenrechnung September 2024"))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        fee( //
+                                        hasDate("2024-10-09"), //
+                                        hasSource("Kontoumsaetze09.txt"), //
+                                        hasNote("Ginmon Gebuehrenrechnung September 2024"), //
+                                        hasAmount("EUR", 0.02)))));
     }
 
     @Test
@@ -3802,9 +3807,13 @@ public class DABPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionAlternativeDocumentRequired,
-                        sale(hasDate("2024-11-11"), hasAmount("EUR", 0.49), hasShares(0.003), //
-                                        hasSource("Kontoumsaetze11.txt"), hasNote(null)))));
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        sale( //
+                                        hasDate("2024-11-11"), hasShares(0.003), //
+                                        hasSource("Kontoumsaetze11.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.49), hasGrossValue("EUR", 0.49), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -3831,8 +3840,12 @@ public class DABPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionAlternativeDocumentRequired,
-                        purchase(hasDate("2024-10-01"), hasAmount("EUR", 6.26), hasShares(0.15), //
-                                        hasSource("Kontoumsaetze12.txt"), hasNote(null)))));
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        purchase(//
+                                        hasDate("2024-10-01"), hasShares(0.15), //
+                                        hasSource("Kontoumsaetze12.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 6.26), hasGrossValue("EUR", 6.26), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 }

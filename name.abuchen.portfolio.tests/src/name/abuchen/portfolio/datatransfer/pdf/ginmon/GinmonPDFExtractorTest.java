@@ -5,7 +5,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -19,7 +18,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.GinmonPDFExtractor;
@@ -47,9 +45,7 @@ public class GinmonPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionAlternativeDocumentRequired,
-                        fee(hasDate("2024-10-31"), hasAmount("EUR", 0.04), //
-                                        hasSource("FeeInvoice01.txt"), hasNote(null)))));
+        assertThat(results, hasItem(fee(hasDate("2024-10-31"), hasAmount("EUR", 0.04), //
+                        hasSource("FeeInvoice01.txt"), hasNote("R.-Nr.: 00000002024101 | 01.10.2024 – 31.10.2024"))));
     }
 }
