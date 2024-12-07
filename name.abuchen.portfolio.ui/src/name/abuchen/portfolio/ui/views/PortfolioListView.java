@@ -36,6 +36,7 @@ import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.handlers.ImportCSVHandler;
 import name.abuchen.portfolio.ui.handlers.ImportPDFHandler;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
@@ -300,6 +301,11 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
         if (!portfolio.isRetired())
         {
             manager.add(new Separator());
+
+            manager.add(new SimpleAction(Messages.AccountMenuImportCSV, a -> ImportCSVHandler.runImport(getPart(),
+                            Display.getDefault().getActiveShell(), getContext(), null, null,
+                            getClient(), portfolio.getReferenceAccount(), portfolio)));
+
             manager.add(new SimpleAction(Messages.AccountMenuImportPDF,
                             a -> ImportPDFHandler.runImport(getPart(), Display.getDefault().getActiveShell(),
                                             getClient(), portfolio.getReferenceAccount(), portfolio)));
