@@ -103,6 +103,7 @@ public class Messages extends NLS
     public static String ColumnAutoGenerate;
     public static String ColumnBalance;
     public static String ColumnBalance_Description;
+    public static String ColumnBalanceOfReferenceAccount;
     public static String ColumnBaseCurrency;
     public static String ColumnCapitalGains;
     public static String ColumnCapitalGains_Description;

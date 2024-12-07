@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import jakarta.annotation.PostConstruct;
@@ -254,6 +256,21 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
 
             return p1.getValue().compareTo(p2.getValue());
         }));
+        portfolioColumns.addColumn(column);
+
+        column = new Column("ref_cash_bal", Messages.ColumnBalanceOfReferenceAccount, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Portfolio p = (Portfolio) element;
+                var refAcc = p.getReferenceAccount();
+                return Values.Amount.format((refAcc.getCurrentAmount(LocalDateTime.now().with(LocalTime.MAX))));
+            }
+        });
+        ColumnViewerSorter.create(o -> ((Portfolio) o).getReferenceAccount()
+                        .getCurrentAmount(LocalDateTime.now().with(LocalTime.MAX))).attachTo(column);
         portfolioColumns.addColumn(column);
 
         column = new NoteColumn();
