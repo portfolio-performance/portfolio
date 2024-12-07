@@ -31,7 +31,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("DB Privat- und Firmenkundenbank AG");
 
         addBuySellTransaction();
-        addBuySellPartialExecutionsTransaction();
+        addBuyTransactionFundsSavingsPlan();
         addDividendeTransaction();
         addAccountStatementTransaction();
     }
@@ -49,7 +49,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Abrechnung: (Kauf|Verkauf) von Wertpapieren$");
+        Block firstRelevantLine = new Block("^[\\d]{1,2}\\. .* [\\d]{4}$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -63,31 +63,64 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^Abrechnung: (?<type>(Kauf|Verkauf)) von Wertpapieren$") //
+                        .match("^Abrechnung: (?<type>(Kauf|Verkauf)) von Wertpapieren.*$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
-                        // @formatter:off
-                        // 123 1234567 00 BASF SE
-                        // WKN BASF11 Nominal ST 19
-                        // ISIN DE000BASF111 Kurs EUR 35,00
-                        // @formatter:on
-                        .section("name", "wkn", "isin", "currency") //
-                        .match("^[\\d]{3} [\\d]+ [\\d]{2} (?<name>.*)$") //
-                        .match("^WKN (?<wkn>[A-Z0-9]{6}) Nominal ST [\\.,\\d]+$") //
-                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs (?<currency>[\\w]{3}) .*$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 123 1234567 00 BASF SE
+                                        // WKN BASF11 Nominal ST 19
+                                        // ISIN DE000BASF111 Kurs EUR 35,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .match("^[\\d]{3} [\\d]+ [\\d]{2} (?<name>.*)$") //
+                                                        .match("^WKN (?<wkn>[A-Z0-9]{6}) Nominal ST [\\.,\\d]+$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs (?<currency>[\\w]{3}) .*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // 444 1234567 02 IVU TRAFFIC TECHNOLOGIES AG INH.AKT. O.N. 1/2
+                                        // WKN 744850 Nominal 120
+                                        // ISIN DE0007448508 Mischkurs (EUR) 14,80
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .match("^[\\d]{3} [\\d]+ [\\d]{2} (?<name>.*) [\\d]\\/[\\d]{1,2}$")//
+                                                        .match("^WKN (?<wkn>[A-Z0-9]{6}) Nominal [\\.,\\d]+$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .* \\((?<currency>[\\w]{3})\\) .*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
                         // WKN BASF11 Nominal ST 19
+                        // WKN 744850 Nominal 120
                         // @formatter:on
                         .section("shares") //
-                        .match("^.* Nominal ST (?<shares>[\\.,\\d]+)$") //
+                        .match("^.* Nominal( ST)? (?<shares>[\\.,\\d]+)$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
+                        // @formatter:off
+                        // 09:05 MEZ 1447743358 618 14,80 9.146,40 9.120,93
+                        // @formatter:on
+                        .section("time").optional() //
+                        .match("^(?<time>[\\d]{2}:[\\d]{2}) MEZ [\\d]+ [\\d]{3} [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+$") //
+                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+
                         .oneOf(
+                                        // @formatter:off
+                                        // Schlusstag 07.07.2022 Ordernummer 123545
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().get("time") != null)
+                                                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                                                            else
+                                                                t.setDate(asDate(v.get("date")));
+                                                        }),
                                         // @formatter:off
                                         // Belegnummer 1694278628 / 24281 Schlusstag 20.08.2019
                                         // @formatter:on
@@ -117,15 +150,29 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Belegnummer .* Schlusstag\\/\\-zeit .* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2})$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
 
-                        // @formatter:off
-                        // Buchung auf Kontonummer 1234567 40 mit Wertstellung 08.04.2015 EUR 675,50
-                        // @formatter:on
-                        .section("amount", "currency") //
-                        .match("^Buchung auf Kontonummer [\\s\\d]+ mit Wertstellung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Gesamtbetrag
+                                        // EUR 9.613,77
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .find("Gesamtbetrag") //
+                                                        .match("^(?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // Buchung auf Kontonummer 1234567 40 mit Wertstellung 08.04.2015 EUR 675,50
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Buchung auf Kontonummer [\\s\\d]+ mit Wertstellung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
 
                         // @formatter:off
                         // Belegnummer 1234567890 / 123456 Schlusstag/-zeit MEZ 02.04.2015 / 09:04
@@ -147,15 +194,16 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addBuySellPartialExecutionsTransaction()
+    private void addBuyTransactionFundsSavingsPlan()
     {
-        DocumentType type = new DocumentType("Abrechnung: (Kauf|Verkauf) von Wertpapieren \\/ Zusammenfassung von Teilausf.hrungen");
+        DocumentType type = new DocumentType("Ihr db AnsparPlan");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^[\\d]{1,2}\\. .* [\\d]{4}$");
+        Block firstRelevantLine = new Block("^.*, WKN [A-Z0-9]{6}, .* [\\.,\\d]+%$");
         type.addBlock(firstRelevantLine);
+        firstRelevantLine.setMaxSize(2);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
@@ -166,58 +214,34 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                             return portfolioTransaction;
                         })
 
-                        // Is type --> "Verkauf" change from BUY to SELL
-                        .section("type").optional() //
-                        .match("^Abrechnung: (?<type>(Kauf|Verkauf)) von Wertpapieren \\/ Zusammenfassung von Teilausf.hrungen$") //
-                        .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type")))
-                                t.setType(PortfolioTransaction.Type.SELL);
-                        })
-
                         // @formatter:off
-                        // 444 1234567 02 IVU TRAFFIC TECHNOLOGIES AG INH.AKT. O.N. 1/2
-                        // WKN 744850 Nominal 120
-                        // ISIN DE0007448508 Mischkurs (EUR) 14,80
+                        // DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652, Ausgabeaufschlag 5,00%
+                        // 03.01.2024 0,1610 279,3800 EUR 44,98 EUR
                         // @formatter:on
-                        .section("name", "wkn", "isin", "currency") //
-                        .match("^[\\d]{3} [\\d]+ [\\d]{2} (?<name>.*) [\\d]\\/[\\d]{1,2}$")//
-                        .match("^WKN (?<wkn>[A-Z0-9]{6}) Nominal [\\.,\\d]+$") //
-                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .* \\((?<currency>[\\w]{3})\\) .*$") //
+                        .section("name", "wkn", "currency") //
+                        .match("^(?<name>.*), WKN (?<wkn>[A-Z0-9]{6}), .* [\\.,\\d]+%$")//
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
-                        // WKN 744850 Nominal 120
+                        // 03.01.2024 0,1610 279,3800 EUR 44,98 EUR
                         // @formatter:on
                         .section("shares") //
-                        .match("^.* Nominal (?<shares>[\\.,\\d]+)$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
-                        // 09:05 MEZ 1447743358 618 14,80 9.146,40 9.120,93
+                        // 03.01.2024 0,1610 279,3800 EUR 44,98 EUR
                         // @formatter:on
-                        .section("time").optional() //
-                        .match("^(?<time>[\\d]{2}:[\\d]{2}) MEZ [\\d]+ [\\d]{3} [\\.,\\d]+ [\\.,\\d]+ [\\.,\\d]+$") //
-                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+                        .section("date")
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+ [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         // @formatter:off
-                        // Schlusstag 07.07.2022 Ordernummer 123545
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Schlusstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                        .assign((t, v) -> {
-                            if (type.getCurrentContext().get("time") != null)
-                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
-                            else
-                                t.setDate(asDate(v.get("date")));
-                        })
-
-                        // @formatter:off
-                        // Gesamtbetrag
-                        // EUR 9.613,77
+                        // 03.01.2024 0,1610 279,3800 EUR 44,98 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .find("Gesamtbetrag") //
-                        .match("^(?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ [\\.,\\d]+ [\\w]{3} (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -696,6 +720,35 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                 // fee = fee - discount
                                 fee = fee.subtract(discount);
 
+                                checkAndSetFee(fee, t, type.getCurrentContext());
+                            }
+                        })
+
+                        // @formatter:off
+                        // DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD , WKN 847652, Ausgabeaufschlag 5,00%
+                        // 03.01.2024 0,1610 279,3800 EUR 44,98 EUR
+                        // @formatter:on
+                        .section("percentageFee", "amount", "currency").optional() //
+                        .match("^.*, WKN [A-Z0-9]{6}, .* (?<percentageFee>[\\.,\\d]+)%$")//
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                        .assign((t, v) -> {
+                            BigDecimal percentageFee = asBigDecimal(v.get("percentageFee")); // 5.00
+                            BigDecimal amount = asBigDecimal(v.get("amount")); // 279.38
+
+                            if (percentageFee.compareTo(BigDecimal.ZERO) != 0)
+                            {
+                                // @formatter:off
+                                // feeAmount = (amount / (1 + percentageFee / 100)) * (percentageFee / 100)
+                                // @formatter:on
+                                BigDecimal fxFee = amount //
+                                                .divide(percentageFee.divide(BigDecimal.valueOf(100)) //
+                                                                .add(BigDecimal.ONE), Values.MC) //
+                                                .multiply(percentageFee, Values.MC);
+
+                                // fee = fee - discount
+                                Money fee = Money.of(asCurrencyCode(v.get("currency")), fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
+
+                                // Assign the fee to the current context
                                 checkAndSetFee(fee, t, type.getCurrentContext());
                             }
                         });

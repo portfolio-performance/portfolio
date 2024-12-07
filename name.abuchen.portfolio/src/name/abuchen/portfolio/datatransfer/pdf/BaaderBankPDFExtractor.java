@@ -413,7 +413,11 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         + "|Dividend Statement" //
                         + "|Dividende" //
                         + "|Reklassifizierung" //
-                        + "|Zinsabrechnung)", "(Kontoauszug|Account Statement)");
+                        + "|Zinsabrechnung)", //
+                        "(Kontoauszug" //
+                        + "|Account Statement" //
+                        + "|Transaction Statement"
+                        + "|Steuerausgleichsrechnung)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -627,7 +631,9 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         final DocumentType type = new DocumentType("(Vorabpauschale|Advance Lump Sum)", //
                         "(Wertpapierabrechnung" //
                         + "|Steuerausgleichsrechnung" //
-                        + "|Transaction Statement)");
+                        + "|Transaction Statement" //
+                        + "|Kontoauszug" //
+                        + "|Account Statement)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();

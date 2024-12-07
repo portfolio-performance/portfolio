@@ -1,33 +1,31 @@
 PDFBox Version: 1.8.17
-Portfolio Performance Version: 0.68.4
+Portfolio Performance Version: 0.71.2
 -----------------------------------------
 TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
-mxeItB eqxWsjg SEITE 1 von 1
-ZHtjPaIRai 10 DATUM 11.06.2024
-40793 XXIeItint ORDER 55e1-4f5a
-AUSFÜHRUNG b02a-06c8
-DEPOT 04003476912
+Egal Wer SEITE 1 von 1
+Strasse 10 DATUM 23.10.2024
+12334 Egalwo ORDER 9eb1-48df
+AUSFÜHRUNG bdc4-0272
+DEPOT 12345697
 WERTPAPIERABRECHNUNG
 ÜBERSICHT
-Market-Order Verkauf am 11.06.2024, um 16:00 Uhr (Europe/Berlin) an der HSBC.
-Der Kontrahent der Transaktion ist HSBC Trinkaus & Burkhardt AG.
+Market-Order Kauf am 23.10.2024, um 21:56 Uhr (Europe/Berlin) an der Lang und Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
 POSITION ANZAHL PREIS BETRAG
-Long @49.99 $ Monster Beverage Open End Turbo 1.000 Stk. 0,15 EUR 150,00 EUR
-ISIN: DE000HG6HZ94
-GESAMT 150,00 EUR
+Super Micro Computer 10 Stk. 42,06 EUR 420,60 EUR
+ISIN: US86800U3023
+GESAMT 420,60 EUR
 ABRECHNUNG
 POSITION BETRAG
 Fremdkostenzuschlag -1,00 EUR
-Kapitalertragsteuer 0,00 EUR
-Solidaritätszuschlag 0,00 EUR
-GESAMT 149,00 EUR
+GESAMT -421,60 EUR
 BUCHUNG
 VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
-DE30501108019083834537 2024-06-13 149,00 EUR
-Long @49.99 $ Monster Beverage Open End Turbo in Girosammelverwahrung in Deutschland
+DE231234567812349876 2024-10-25 -421,60 EUR
+Super Micro Computer in Girosammelverwahrung in Deutschland
 Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
 Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
 Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
 Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
 10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
-ABRE / 4fda-aca7
+ABRE / 489c-0e31

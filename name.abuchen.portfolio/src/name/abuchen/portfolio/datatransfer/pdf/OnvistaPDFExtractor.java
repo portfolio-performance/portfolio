@@ -29,7 +29,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("onvista bank");
         addBankIdentifier("OnVista Bank");
         addBankIdentifier("onvist a bank");
-        addBankIdentifier("Frankfurt am Main");
+        addBankIdentifier("service@onvista-bank.de");
+        addBankIdentifier("Frankfurt am Main,");
 
         addBuySellTransaction();
         addReinvestTransaction();

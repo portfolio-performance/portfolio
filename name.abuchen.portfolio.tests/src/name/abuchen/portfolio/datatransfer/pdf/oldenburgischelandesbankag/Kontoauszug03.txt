@@ -1,0 +1,199 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+  
+  
+  
+  
+  
+  
+  
+  
+  
+                                              Es betreut Sie: 
+                                              Oldenburgische Landesbank AG 
+                                              Postfach 26 07 
+                                              26016 Oldenburg 
+1735/1735/00000/07 
+  
+  
+Frau 
+name name                                 BIC:  OLBODEH2XXX 
+Musterstraße 01                        IBAN: DE12 1234 1234 1234 1234 00 
+01234 Musterstadt 
+  
+  
+  
+  
+Auszug   Euro-Konto 123 41234 00                  31.10.24          NR. 10/1 
+---------------------------------------------------------------------------- 
+Alter Saldo                                       EUR                  0,00+ 
+---------------------------------------------------------------------------- 
+Buchung  Wert 
+Rechnungsabschluss per 30.09.2024 
+Saldo                                             EUR                  0,00+ 
+01.10. 01.10. DA-GUTSCHR                                             200,00+ 
+              name name 
+              BIC-Ext    IBAN-ext 
+              OLB ETF MSCI World 1.Monat 
+04.10. 07.10. WERTPAPIERE                                             25,00- 
+              Oldenburgische Landesbank AG 
+              OLBODEH2XXX    DE14280200500514148387 
+              WP-Abrechnung 3818643, Kauf, 01.10. 
+              2024, 111,960000, EUR, 0,222847, A0 
+              H078, DE000A0H0785, 123412340, iS. 
+              EO G.B.C.1.5-10.5y.U.ETF DE Inhaber 
+              TRA12345678 
+04.10. 04.10. CORE-LA-EV   EINGANG VORBEHALTEN                        25,00+ 
+              name, name 
+              BIC-Ext    IBAN-ext 
+              Sparplan DE000A0H0785, DE12123412341234123400 
+              O3948067 
+07.10. 07.10. WERTPAPIERE                                            100,00- 
+              Oldenburgische Landesbank AG 
+              OLBODEH2XXX    DE14280200500514148387 
+              WP-Abrechnung 3858163, Kauf, 01.10. 
+              2024, 106,860000, USD, 1,033489, A0 
+              RPWH, IE00B4L5Y983, 123412340, iSh 
+              sIII-Core MSCI World U.ETF Register 
+              TRA12345678 
+  
+  
+                                                       --------------------- 
+Fortsetzung Seite    2                Übertrag    EUR                100,00+ 
+  
+  
+  
+                                                                      06-735 
+Bitte beachten Sie unsere ergänzenden Hinweise zum Kontoauszug.         VA 7 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Auszug   Euro-Konto 123 41234 00                  31.10.24          NR. 10/2 
+  
+                                      Übertrag    EUR                100,00+ 
+Buchung  Wert                                          --------------------- 
+16.10. 15.10. WP-ZINS/DIV                                             31,73+ 
+              Oldenburgische Landesbank AG 
+              OLBODEH2XXX    DE14280200500514148387 
+              Dividende: 16.10.2024, CA10111, A0F 
+              5UH, DE000A0F5UH1, 123412340 
+17.10. 18.10. WERTPAPIERE                                             25,00- 
+              Oldenburgische Landesbank AG 
+              OLBODEH2XXX    DE14280200500514148387 
+              WP-Abrechnung 4001881, Kauf, 15.10. 
+              2024, 110,820000, EUR, 0,225140, A0 
+              H078, DE000A0H0785, 123412340, iS. 
+              EO G.B.C.1.5-10.5y.U.ETF DE Inhaber 
+              TRA12345678 
+17.10. 18.10. WERTPAPIERE                                            100,00- 
+              Oldenburgische Landesbank AG 
+              OLBODEH2XXX    DE14280200500514148387 
+              WP-Abrechnung 4059399, Kauf, 15.10. 
+              2024, 108,840000, USD, 0,998550, A0 
+              RPWH, IE00B4L5Y983, 123412340, iSh 
+              sIII-Core MSCI World U.ETF Register 
+              TRA12345678 
+17.10. 17.10. CORE-LA-EV   EINGANG VORBEHALTEN                        25,00+ 
+              name, name 
+              BIC-Ext    IBAN-Ext 
+              Sparplan DE000A0H0785, DE12123412341234123400 
+              O4121710 
+18.10. 22.10. WERTPAPIERE                                             31,73- 
+              Oldenburgische Landesbank AG 
+              OLBODEH2XXX    DE14280200500514148387 
+              WP-Abrechnung 4090967, Kauf, 17.10. 
+              2024, 30,050000, EUR, 1,053910, A0F 
+              5UH, DE000A0F5UH1, 123412340, iSh. 
+              ST.Gl.Sel.Div.100 U.ETF DE Inhaber- 
+              TRA12345678 
+---------------------------------------------------------------------------- 
+Neuer Saldo                                       EUR                  0,00+ 
+---------------------------------------------------------------------------- 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+name name 
+  
+                                                                      06-735 
+Bitte beachten Sie unsere ergänzenden Hinweise zum Kontoauszug.         VA 7 
+Genehmigung des Rechnungsabschlusses: Einwendungen wegen Unrichtigkeit oder Unvollständigkeit des Rechnungsab-
+schlusses müssen Sie spätestens vor Ablauf von sechs Wochen nach dessen Zugang erheben. Sofern Sie Ihre Einwendungen in 
+Textform geltend machen, genügt die Absendung innerhalb der Sechs-Wochen-Frist. Das Unterlassen rechtzeitiger Einwendungen 
+gilt als Genehmigung des Rechnungsabschlusses. 
+ 
+Wir bitten Sie, etwaige Einwendungen an 
+ 
+Oldenburgische Landesbank AG 
+Compliance 
+Postfach 26 05 
+26016 Oldenburg 
+ 
+zu senden. 
+ 
+Schecks, Wechsel und sonstige Einzugspapiere werden unter dem Vorbehalt des Eingangs gutgeschrieben. Lastschriften und 
+Schecks sind eingelöst, wenn die Belastungsbuchung nicht spätestens am zweiten Bankarbeitstag nach Ihrer Vornahme rückgän-
+gig gemacht wird. 
+ 
+Der angegebene Kontostand berücksichtigt nicht die Wertstellung der Buchungen. Dies bedeutet, dass der genannte Betrag nicht 
+dem tatsächlich zur Verfügung stehenden Guthaben entsprechen muss. Somit können bei Verfügungen möglicherweise Zinsen für 
+die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen. 
+ 
+Bei Ausweis von Entgelten/Gebühren/Zinsen gilt dieser Auszug in Verbindung mit den Auszugsbeilagen, dem Kontoeröffnungsan-
+trag und den vertraglichen Grundlagen als Rechnung im Sinne des § 14 UStG. Soweit nichts anderes bestimmt ist, stimmt der 
+Zeitpunkt der Lieferung oder Leistung mit dem Buchungsdatum überein. Unsere USt-ld Nr.: DE117471233; vorbehaltlich § 9 UStG 
+handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Sparkonten: Der letzte Sparkontoauszug gilt als Sparurkunde im Sinne unserer Bedingungen für Sparkonten mit SparCard und 
+der Bedingungen für den Sparverkehr - Bedingungen für Sparkonten (Loseblatt-System). Bei Sparkonten mit SparCard können 
+Kontoauszüge jederzeit an den Kontoauszugsdruckern der Bank abgerufen werden. Werden Sparkontoauszüge länger als 12 Mo-
+nate nicht am Kontoauszugsdrucker abgerufen, erstellt die Bank automatisch einen Auszug, der dem Kontoinhaber zugesandt wird. 
+Bei allen anderen Sparkonten werden die Kontoauszüge gemäß Vereinbarung zugesandt. Im Sparkontoauszug sind die Ein- und 
+Auszahlungen, sonstige Gutschriften und Belastungen sowie der jeweilige Kontostand vermerkt. Eine Kontoauflösung ist nur gegen 
+Vorlage des letzten Sparkontoauszuges möglich. 
+Bitte bewahren Sie diese Sparurkunde sorgfältig auf! 
+ 
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können 
+dem „Informationsbogen für den Einleger“ entnommen werden. 
+ 
+Zinsanpassungen bei „geduldeten Überziehungen“ gemäß § 505 Absatz 1 BGB: Erhöht sich der letzte veröffentlichte Monats-
+durchschnittssatz für EURIBOR-Dreimonatsgeld* gegenüber dem im Vormonat der letzten Zinsanpassung bzw. Zinsvereinbarung 
+ermittelten Monatsdurchschnittssatz um mehr als 0,25 Prozentpunkte, so sind wir berechtigt, den Vertragszinssatz nach billigem 
+Ermessen (§ 315 BGB) maximal um die Veränderung des Monatsdurchschnittssatzes anzuheben. Wir werden den Vertragszins 
+nach billigem Ermessen mindestens um die Veränderung des Monatsdurchschnittssatzes senken, wenn sich der Monatsdurch-
+schnittssatz für EURIBOR-Dreimonatsgeld um mehr als 0,25 Prozentpunkte ermäßigt hat; bei Zinserhöhungen und Zinssenkungen 
+werden wir unser Ermessen in gleicher Weise ausüben. Faktoren, wie Veränderungen des Kreditausfallrisikos des Kreditnehmers, 
+des Ratings der Bank sowie der innerbetrieblichen Kostenkalkulation bleiben bei der Ausübung des Ermessens außer Betracht. 
+ 
+Falls der Refinanzierungszinssatz EURIBOR in der Zukunft aufgehoben wird, tritt für die Zwecke dieser Definition an dessen Stelle 
+der Refinanzierungszinssatz, der den EURIBOR funktional ersetzt (der „Nachfolgerefinanzierungszinssatz“). Sofern durch eine 
+Aufsichtsbehörde, eine Zentralbank oder eine andere vergleichbare öffentliche Stelle offiziell ein Nachfolger für den EURIBOR 
+bestimmt wird gilt der so bestimmte Nachfolgerefinanzierungszinssatz. Gibt es keinen so bestimmten Nachfolger für den EURIBOR, 
+so ist derjenige Referenzzinssatz der Nachfolgerefinanzierungszinssatz, der im Markt als Nachfolger EURIBOR allgemein aner-
+kannt wird. Unter mehreren Nachfolgereferenzzinssätzen ist derjenige maßgebend, der dem EURIBOR wirtschaftlich am nächsten 
+kommt. 
+ 
+Gem. Art. 28 Abs. 2 der Benchmark-Verordnung (EU) 2016/1011 hat die Bank als Verwender von Referenzwerten in der Vertrags-
+beziehung mit Kreditnehmern einen Notfallplan aufgestellt und pflegt diesen kontinuierlich. Die Bank orientiert sich in Notfällen auch 
+in der Vertragsbeziehung mit den Kreditnehmern an dem Notfallplan. In dem Notfallplan sind Maßnahmen dargelegt, welche die 
+Bank ergreift, wenn ein Referenzwert sich wesentlich ändert oder nicht mehr bereitgestellt wird. In diesen Fällen wird vom Bank-
+steuerungskomitee über die Verwendung alternativer Referenzwerte entschieden. 
+ 
+* Bei der Dreimonats-European-lnter-Bank-Offered-Rate (EURIBOR) handelt es sich um einen Satz, zu dem sich Banken, die im Gebiet der europäischen Wirt-
+schafts- und Währungsunion ansässig sind, untereinander Dreimonatsgelder leihen. Die Durchschnittssätze für EURIBOR-Dreimonatsgeld werden monatlich in 
+der amtlichen Zinsstatistik der Deutschen Bundesbank veröffentlicht. Diese spiegeln jedoch wegen der vielschichtigen Refinanzierungsmethodik der Bank die 
+Änderungen der Refinanzierungsbedingungen nicht exakt wider. 

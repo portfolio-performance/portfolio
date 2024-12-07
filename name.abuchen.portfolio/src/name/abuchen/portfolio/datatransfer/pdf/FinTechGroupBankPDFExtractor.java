@@ -48,6 +48,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addDeliveryInOutboundTransaction();
         addAdvanceTaxTransaction();
         addDepotServiceFeesTransaction();
+        addNonImportableTransaction();
     }
 
     @Override
@@ -58,7 +59,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapierabrechnung (Kauf|Verkauf)( Fonds\\/Zertifikate)?");
+        final DocumentType type = new DocumentType("Wertpapierabrechnung (Kauf|Verkauf)( Fonds\\/Zertifikate)?");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -247,16 +248,20 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         //                                     ***Einbeh. SichSt EUR                -1,00
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("currency", "taxRefund") //
+                                                        .attributes("currency", "taxRefund", "type") //
                                                         .match("^.* [\\*]+Einbeh\\. (Steuer|KESt|SichSt)([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}\\-(?<taxRefund>[\\.,\\d]+)$") //
+                                                        .match("^.*Endbetrag[\\s]{1,}(?<currency>[\\w]{3})(?<type>([\\s]\\-)?)(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
+                                                            boolean isNegative = "-".equals(trim(v.get("type")));
+                                                            boolean isLiquidation = t.getPortfolioTransaction().getType().isLiquidation();
+
                                                             if (t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
                                                             {
                                                                 type.getCurrentContext().putBoolean("negativeTax", true);
 
                                                                 Money taxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
 
-                                                                if (t.getPortfolioTransaction().getType().isLiquidation())
+                                                                if (isLiquidation && !isNegative)
                                                                     t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
                                                                 else
                                                                     t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().add(taxRefund));
@@ -271,10 +276,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         //                                     ***Einbeh. SichSt EUR                -1,00
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("exchangeRate", "currency", "taxRefund") //
+                                                        .attributes("exchangeRate", "currency", "taxRefund", "type") //
                                                         .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .match("^.* [\\*]+Einbeh\\. (Steuer|KESt|SichSt)[\\s]{1,}(?<currency>[\\w]{3})[\\s]{1,}\\-(?<taxRefund>[\\.,\\d]+)$") //
+                                                        .match("^.*Endbetrag[\\s]{1,}(?<currency>[\\w]{3})(?<type>([\\s]\\-)?)(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
+                                                            boolean isNegative = "-".equals(trim(v.get("type")));
+                                                            boolean isLiquidation = t.getPortfolioTransaction().getType().isLiquidation();
+
                                                             if (t.getPortfolioTransaction().getType().isLiquidation() && !t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
                                                             {
                                                                 type.getCurrentContext().putBoolean("negativeTax", true);
@@ -287,7 +296,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                                 Money taxRefund = Money.of(t.getPortfolioTransaction().getCurrencyCode(),
                                                                                 BigDecimal.valueOf(fxTaxRefund.getAmount()).multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
 
-                                                                if (t.getPortfolioTransaction().getType().isLiquidation())
+                                                                if (isLiquidation && !isNegative)
                                                                     t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
                                                                 else
                                                                     t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().add(taxRefund));
@@ -300,16 +309,20 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // Gewinn/Verlust:        1.112,18 EUR   **Einbeh. KESt  :            -305,85 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("taxRefund", "currency") //
+                                                        .attributes("taxRefund", "currency", "type") //
                                                         .match("^.* [\\*]+Einbeh\\. (Steuer|KESt)([:\\s]+)? \\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^(.* )?Endbetrag([:\\s]+)?(?<type>([\\s]\\-)?)[\\.,\\d]+ [\\w]{3}$") //
                                                         .assign((t, v) -> {
+                                                            boolean isNegative = "-".equals(trim(v.get("type")));
+                                                            boolean isLiquidation = t.getPortfolioTransaction().getType().isLiquidation();
+
                                                             if (t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
                                                             {
                                                                 type.getCurrentContext().putBoolean("negativeTax", true);
 
                                                                 Money taxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
 
-                                                                if (t.getPortfolioTransaction().getType().isLiquidation())
+                                                                if (isLiquidation && !isNegative)
                                                                     t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
                                                                 else
                                                                     t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().add(taxRefund));
@@ -324,10 +337,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // Gewinn/Verlust:        1.112,18 EUR   **Einbeh. KESt  :            -305,85 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("taxRefund", "currency", "exchangeRate") //
+                                                        .attributes("taxRefund", "currency", "exchangeRate", "type") //
                                                         .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .match("^.* [\\*]+Einbeh\\. (Steuer|KESt)([:\\s]+)? \\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^(.* )?Endbetrag([:\\s]+)?(?<type>([\\s]\\-)?)[\\.,\\d]+ [\\w]{3}$") //
                                                         .assign((t, v) -> {
+                                                            boolean isNegative = "-".equals(trim(v.get("type")));
+                                                            boolean isLiquidation = t.getPortfolioTransaction().getType().isLiquidation();
+
                                                             if (!t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
                                                             {
                                                                 type.getCurrentContext().putBoolean("negativeTax", true);
@@ -340,7 +357,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                                 Money taxRefund = Money.of(t.getPortfolioTransaction().getCurrencyCode(), BigDecimal.valueOf(fxTaxRefund.getAmount())
                                                                                 .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
 
-                                                                if (t.getPortfolioTransaction().getType().isLiquidation())
+                                                                if (isLiquidation && !isNegative)
                                                                     t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
                                                                 else
                                                                     t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().add(taxRefund));
@@ -406,7 +423,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private void addSummaryStatementBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Sammelabrechnung \\(Wertpapierkauf\\/-verkauf\\)");
+        final DocumentType type = new DocumentType("Sammelabrechnung \\(Wertpapierkauf\\/-verkauf\\)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -640,7 +657,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private void addSellTransaction()
     {
-        DocumentType type = new DocumentType("Spitzenregulierung in [A-Z]{2}[A-Z0-9]{9}[0-9]", //
+        final DocumentType type = new DocumentType("Spitzenregulierung in [A-Z]{2}[A-Z0-9]{9}[0-9]", //
                         "Kontoauszug");
         this.addDocumentTyp(type);
 
@@ -716,12 +733,18 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift|Ertragsmitteilung|Zinsgutschrift)");
+        final DocumentType type = new DocumentType("(Dividendengutschrift" //
+                        + "|Ertragsmitteilung" //
+                        + "|Zinsgutschrift" //
+                        + "|Best.tigung Dividendenaussch.ttung mit Neuanlage)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(Dividendengutschrift|Ertragsmitteilung|Zinsgutschrift).*$");
+        Block firstRelevantLine = new Block("^(Dividendengutschrift" //
+                        + "|Ertragsmitteilung" //
+                        + "|Zinsgutschrift" //
+                        + "|Best.tigung Dividendenaussch.ttung mit Neuanlage).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -764,7 +787,25 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "wkn", "currency") //
                                                         .match("^Nr\\.[\\d]+[\\s]{1,}(?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$") //
                                                         .match("^.* Zinsbetrag([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Bestätigung Dividendenausschüttung mit Neuanlage
+                                        // Siemens Share
+                                        // Ex-Datum: 9. Feb 2024 CUSIP: D69671218
+                                        // Zahlungsdatum: 13. Feb 2024 ISIN: DE0007236101
+                                        // Bruttoausschüttung pro Stück 4.7 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .find("Best.tigung Dividendenaussch.ttung mit Neuanlage") //")
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^.* CUSIP: (?<wkn>[A-Z0-9]{9})$") //
+                                                        .match("^.* ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("Bruttoaussch.ttung pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
 
                         .oneOf( //
                                         // @formatter:off
@@ -783,14 +824,30 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             BigDecimal shares = asBigDecimal(v.get("shares"));
                                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
-                                                        }))
+                                                        }),
+                                        // @formatter:off
+                                        // Gesamt Stückzahl - Aktien 641.745 Stück
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Gesamt St.ckzahl .* (?<shares>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
-                        // @formatter:off
-                        // Valuta          :      17.06.2022      grundlage       :            0,00 EUR
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Valuta([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                     // Valuta          :      17.06.2022      grundlage       :            0,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Valuta([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Zahlungsdatum: 13. Feb 2024
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Zahlungsdatum: (?<date>[\\d]{2}\\. .* [\\d]{4})$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         .oneOf( //
                                         // @formatter:off
@@ -862,6 +919,16 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Nettoausschüttung 2 484.43 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Nettoaussch.ttung (?<amount>[\\.,\\d\\s]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
                                                         }))
 
                         .optionalOneOf( //
@@ -930,14 +997,19 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
                                                         .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2")))))
 
-                        .wrap(t -> {
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
                             // The final amount is negative. The taxes incurred
                             // are processed in a separate transaction.
                             // Finally, we remove the flag.
                             type.getCurrentContext().remove("negative");
 
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
+                                return item;
                             return null;
                         });
 
@@ -947,7 +1019,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeWithNegativeAmountTransaction()
     {
-        DocumentType type = new DocumentType("Ertragsmitteilung \\- (aussch.ttender\\/teil)?thesaurierender( transparenter)? Fonds");
+        final DocumentType type = new DocumentType("Ertragsmitteilung \\- (aussch.ttender\\/teil)?thesaurierender( transparenter)? Fonds");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -1128,7 +1200,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private void addStockDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Stockdividende");
+        final DocumentType type = new DocumentType("Stockdividende");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -1315,7 +1387,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuyStockDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Stockdividende");
+        final DocumentType type = new DocumentType("Stockdividende");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -1565,7 +1637,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             TransactionItem item = new TransactionItem(t);
 
-                            if (t.getAmount() == 0)
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
                             return item;
@@ -1633,7 +1705,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> {
                             TransactionItem item = new TransactionItem(t);
 
-                            if (t.getAmount() == 0)
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
 
                             return item;
@@ -1682,10 +1754,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             return item;
                         }));
 
-        // @formatter:off
-        // 31.12.     31.12.  Steuertopfoptimierung 2016                            4,94+
-        // @formatter:on
-        Block taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}Steuertopfoptimierung .*$");
+        Block taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(Steuertopfoptimierung|Steuerkorrektur) .*$");
         type.addBlock(taxesBlock);
         taxesBlock.set(new Transaction<AccountTransaction>()
 
@@ -1695,22 +1764,47 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "note", "amount", "type") //
-                        .documentContext("year", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
-                                        + "(?<note>Steuertopfoptimierung[\\s]{1,}([\\d]{4}))[\\s]{1,}" //
-                                        + "(?<amount>[\\.,\\d]+)(?<type>[\\+|\\-])$") //
-                        .assign((t, v) -> {
-                            // Is type --> "-" change from TAX_REFUND to TAXES
-                            if ("-".equals(v.get("type")))
-                                t.setType(AccountTransaction.Type.TAXES);
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 31.12.     31.12.  Steuertopfoptimierung 2016                            4,94+
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "type") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                                                        + "(?<note>Steuertopfoptimierung[\\s]{1,}([\\d]{4}))[\\s]{1,}" //
+                                                                        + "(?<amount>[\\.,\\d]+)(?<type>[\\+|\\-])$") //
+                                                        .assign((t, v) -> {
+                                                            // Is type --> "-" change from TAX_REFUND to TAXES
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.TAXES);
 
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setNote(v.get("note"));
-                        })
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
+                                                        }),
+                                        // @formatter:off
+                                        // 15.01.     15.01.  Steuerkorrektur aufgrund FSA-Thematik                22,98-
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "type") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                                                        + "(?<note>Steuerkorrektur.*)[\\s]{1,}" //
+                                                                        + "(?<amount>[\\.,\\d]+)(?<type>[\\+|\\-])$") //
+                                                        .assign((t, v) -> {
+                                                            // Is type --> "-" change from TAX_REFUND to TAXES
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.TAXES);
+
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
+                                                        }))
 
                         .wrap(TransactionItem::new));
     }
@@ -1881,7 +1975,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDeliveryInOutboundTransaction()
     {
-        DocumentType type = new DocumentType("(Gutschrifts-\\/Belastungsanzeige|Bestandsausbuchung)");
+        final DocumentType type = new DocumentType("(Gutschrifts-\\/Belastungsanzeige|Bestandsausbuchung)");
         this.addDocumentTyp(type);
 
         Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
@@ -2118,7 +2212,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         // We import these fees via the depot account statement.
         // @formatter:off
 
-        DocumentType type = new DocumentType("Depotservicegeb.hr [A-Z]{2}[A-Z0-9]{9}[0-9]");
+        final DocumentType type = new DocumentType("Depotservicegeb.hr [A-Z]{2}[A-Z0-9]{9}[0-9]");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -3138,6 +3232,89 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         });
     }
 
+    private void addNonImportableTransaction()
+    {
+        final DocumentType type = new DocumentType("(Kapitalherabsetzung" //
+                        + "|Kapitalerh.hung" //
+                        + "|Fusion" //
+                        + "|Wertpapiertausch)");
+        this.addDocumentTyp(type);
+
+        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^(Kapitalherabsetzung" //
+                        + "|Kapitalerh.hung" //
+                        + "|Fusion" //
+                        + "|Wertpapiertausch).*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                            return portfolioTransaction;
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // WKN     ISIN          Wertpapierbezeichnung                        Anzahl
+                                        // A3DHHH  CH1175448666  STRAUMANN HLDG RG                          10,000000
+                                        // 1,000000 mit Valuta 18.04.2024 in Ihr Depot eingebucht:
+                                        // Verrechnung über Ihr Konto: 9999999999 Gutschrift                     4,13 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "wkn", "isin", "name", "shares", "amount", "currency") //
+                                                        .match("^.* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                                                        .match("^(?<wkn>[A-Z0-9]{6})[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}(?<shares>[\\.,\\d]+)$") //
+                                                        .match("^Verrechnung .ber Ihr Konto: .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                                        // A2JSDA  LU1861134382  AM IS M W SP UEDCC              101,910692
+                                        // Valuta 23.01.2024 in Ihr Depot eingebucht:
+                                        // Verrechnung über Ihr Konto: 4049530560 Belastung                     82,85 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "wkn", "isin", "name", "shares", "amount", "currency") //
+                                                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                                                        .match("^(?<wkn>[A-Z0-9]{6})[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}(?<shares>[\\.,\\d]+)$") //
+                                                        .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .match("^Verrechnung .ber Ihr Konto: .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
+
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
+    }
+
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         // @formatter:off
@@ -3268,7 +3445,28 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
                                 processTaxEntries(t, v, type);
-                        });
+                        })
+
+                        // @formatter:off
+                        // Einbehaltene Kapitalertragsteuer -504.06 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Einbehaltene Kapitalertrags(s)?teuer[\s]{1,}\\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Einbehaltener Solidaritätszuschlag -27.71 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Einbehaltener Solidarit.tszuschlag[\\s]{1,}\\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Einbehaltener Kirchensteuer -X.XX EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Einbehaltene Kirchensteuer[\\s]{1,}\\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -3405,5 +3603,24 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         }
 
         return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+    }
+
+    @Override
+    protected long asShares(String value)
+    {
+        String language = "de";
+        String country = "DE";
+
+        int lastDot = value.lastIndexOf(".");
+        int lastComma = value.lastIndexOf(",");
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en";
+            country = "US";
+        }
+
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
     }
 }

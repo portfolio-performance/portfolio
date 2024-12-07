@@ -1,0 +1,34 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Me DATUM 01 März 2020 - 07 Nov. 2024
+, 60385 IBAN DE92
+Frankfurt am Main
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Depotkonto 0,00 € 1.321.022,68 € 1.320.999,43 € 23,25 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+30 März 
+2020 Überweisung Accepted PayIn:DE74500400480142038900 to DE30110101008889827581 4.000,00 € 4.000,00 €
+31 März Handel Ausführung Handel Direktkauf Kauf DE000TT08LQ1 HSBC T+B X-TUP DAX 2020 2124467520200331 181,90 € 3.818,10 €
+31 März Handel Ausführung Handel Direktkauf Kauf DE000TT1RHZ9 HSBC T+B TURBOP DJIA 2020 1785274420200331 194,20 € 3.623,90 €
+31 März Handel Ausführung Handel Direktverkauf Verkauf DE000TT08LQ1 HSBC T+B X-TUP 2020 DAX 9510529720200331 198,54 € 3.822,44 €
+31 März Handel Ausführung Handel Direktverkauf Verkauf DE000TT1RHZ9 HSBC T+B TURBOP 2020 DJIA 3185813520200331 213,16 € 4.035,60 €
+01 Apr. Handel Ausführung Handel Direktkauf Kauf DE000TT1QLA6 HSBC T+B TURBOP DAX 2020 2358417820200401 402,20 € 3.633,40 €
+01 Apr. Handel Ausführung Handel Direktkauf Kauf DE000TT1QLA6 HSBC T+B TURBOP DAX 2020 2061560820200401 346,60 € 3.286,80 €
+01 Apr. Handel Ausführung Handel Direktkauf Kauf DE000TT1QLA6 HSBC T+B TURBOP DAX 2020 7898253320200401 274,50 € 3.012,30 €
+01 Apr. Handel Ausführung Handel Direktverkauf Verkauf DE000TT1QLA6 HSBC T+B TURBOP 2020 DAX 6002040420200401 1.085,62 € 4.097,92 €
+01 Apr. Handel Ausführung Handel Direktkauf Kauf DE000TT1QG73 HSBC T+B TURBOP DAX 2020 9906151020200401 550,00 € 3.547,92 €
+Erstellt am 21 Nov. 2024
+Trade Republic Bank GmbH
+HAFTUNGSAUSSCHLUSS
+Sehr geehrte Kundin, sehr geehrter Kunde
+Bitte überprüfe unbedingt deine Buchungen, Berechnungen und den Schlusssaldo auf dem Kontoauszug, der gleichzeitig deinen Rechnungsabschluss 
+darstellt. Der Rechnungsabschluss gilt als anerkannt, wenn du innerhalb von sechs Wochen nach Zugang keine Einwendungen erhebst. Einwendungen 
+gegen Kontoauszüge sind schriftlich an uns zu richten. Guthaben sind einlagefähig im Sinne des Einlagensicherungsgesetzes (EinSiG). Weitere 
+Informationen entnehme bitte dem Merkblatt für den Einleger, das zusammen mit unseren Allgemeinen Geschäftsbedingungen eingesehen werden kann.
+Trade Republic Bank GmbH Kontakt Sitz der Gesellschaft: Berlin
+Brunnenstraße 19-21 www.traderepublic.com AG Charlottenburg HRB 244347 B
+10119 Berlin service@traderepublic.com Umsatzsteuer-ID DE307510626
+Trade Republic Bank GmbH

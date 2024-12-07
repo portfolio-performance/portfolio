@@ -97,6 +97,19 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^([\\s]{1,})?[\\,'\\d]+ ([A-Za-z]{3}\\.)?[A-Za-z]{3} (?<name>.*) Depotstelle.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                                                         .match("^Menge[\\s]{1,}[\\.'\\d]+ Kurs (?<currency>[\\w]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[\\w]{3}[\\s]{1,}[\\.'\\d]+$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Wir haben am 09.10.2024 an der BX Swiss für Sie gekauft
+                                        // 15 Registered Shs Microsoft Corp Depotstelle  3500
+                                        // Valor: 951692 / US5949181045
+                                        // Menge  15 Kurs CHF 355.865 CHF  5'337.98
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .find("Wir haben am .* f.r Sie gekauft") //)
+                                                        .match("^([\\s]{1,})?[\\,'\\d]+ (?<name>.*) Depotstelle.*$") //
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
+                                                        .match("^Menge[\\s]{1,}[\\.'\\d]+ Kurs (?<currency>[\\w]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[\\w]{3}[\\s]{1,}[\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
@@ -138,12 +151,12 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Ertragsaussch.ttung");
+        DocumentType type = new DocumentType("(Ertragsaussch.ttung|Dividendenzahlung)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Ertragsaussch.ttung .*$");
+        Block firstRelevantLine = new Block("^(Ertragsaussch.ttung|Dividendenzahlung) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -155,25 +168,51 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // Aufgrund Ihres Bestandes schreiben wir Ihnen gut
-                        // 168 Ptg.Shs Van FTSE All Wr Depotstelle: 3500
-                        // USD Zahlbar Datum: 26.06.2024
-                        // Valor: 18575459 / IE00B3RBWM25 Ex Datum: 13.06.2024
-                        // Brutto zu USD 0.788854 USD  132.53
-                        // @formatter:on
-                        .section("name", "wkn", "isin", "currency") //
-                        .find("Aufgrund Ihres Bestandes.*") //
-                        .match("^([\\s]{1,})?[\\,'\\d]+ ([A-Za-z]{3}\\.)?[A-Za-z]{3} (?<name>.*) Depotstelle.*$") //
-                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
-                        .match("^Brutto zu (?<currency>[\\w]{3}) [\\.'\\d]+.*$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Aufgrund Ihres Bestandes schreiben wir Ihnen gut
+                                        // 168 Ptg.Shs Van FTSE All Wr Depotstelle: 3500
+                                        // USD Zahlbar Datum: 26.06.2024
+                                        // Valor: 18575459 / IE00B3RBWM25 Ex Datum: 13.06.2024
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "wkn", "isin") //
+                                                        .find("Aufgrund Ihres Bestandes.*") //
+                                                        .match("^([\\s]{1,})?[\\,'\\d]+ ([A-Za-z]{3}\\.)?[A-Za-z]{3} (?<name>.*) Depotstelle.*$") //
+                                                        .match("^(?<currency>[\\w]{3}) Zahlbar Datum.*$") //
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Aufgrund Ihres Bestandes schreiben wir Ihnen gut
+                                        //  25 Namen-Akt Allreal Holding AG Nom. CHF Depotstelle: 3500
+                                        // 1.00 Zahlbar Datum: 25.04.2024
+                                        // Valor: 883756 / CH0008837566 Ex Datum: 23.04.2024
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "wkn", "isin") //
+                                                        .find("Aufgrund Ihres Bestandes.*") //
+                                                        .match("^([\\s]{1,})?[\\,'\\d]+ (?<name>.*) (?<currency>[\\w]{3}) Depotstelle.*$") //
+                                                        .match("^[\\.'\\d]+ Zahlbar Datum.*$") //
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Aufgrund Ihres Bestandes schreiben wir Ihnen gut
+                                        //  10 Namen-Akt Swisscom AG Nom. CHF 1.00 Depotstelle: 3500
+                                        // Valor: 874251 / CH0008742519 Zahlbar Datum: 04.04.2024
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "wkn", "isin") //
+                                                        .find("Aufgrund Ihres Bestandes.*") //
+                                                        .match("^([\\s]{1,})?[\\,'\\d]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.'\\d]+ Depotstelle.*$") //
+                                                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
                         // 168 Ptg.Shs Van FTSE All Wr Depotstelle: 3500
+                        //  10 Namen-Akt Swisscom AG Nom. CHF 1.00 Depotstelle: 3500
                         // @formatter:on
                         .section("shares") //
-                        .match("^([\\s]{1,})?(?<shares>[\\,'\\d]+) ([A-Za-z]{3}\\.)?[A-Za-z]{3} .* Depotstelle.*$") //
+                        .match("^([\\s]{1,})?(?<shares>[\\,'\\d]+) .* Depotstelle.*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
 
@@ -199,7 +238,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                         // USD  132.53
                         // Devisenkurs 0.88255 CHF  116.96
                         // @formatter:on
-                        .section("termCurrency", "exchangeRate", "fxGross", "baseCurrency", "gross") //
+                        .section("termCurrency", "exchangeRate", "fxGross", "baseCurrency", "gross").optional() //
                         .match("^Brutto zu (?<termCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}[\\s]{1,}(?<fxGross>[\\.,\\d]+)$") //
                         .match("^Devisenkurs (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})[\\s]{1,}(?<gross>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
@@ -224,9 +263,10 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Quartalsdividende Transaktion  65062408
+                        // Transaktion  62847906
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^.* (?<note>Transaktion.*)$") //
+                        .match("^.*(?<note>Transaktion.*)$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(replaceMultipleBlanks(v.get("note"))), " | ")))
 
                         .conclude(ExtractorUtils.fixGrossValueA())
@@ -243,10 +283,17 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
         transaction //
 
                         // @formatter:off
+                        // Verrechnungssteuer 35 % CHF -77.00
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^Verrechnungssteuer .* (?<currency>[\\w]{3})[\\s]{1,}(\\-)?(?<tax>[\\.'\\d]+)$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
                         // Eidg. Umsatzabgabe CHF  5.92
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Eidg\\. Umsatzabgabe (?<currency>[\\w]{3})[\\s]{1,}(?<tax>[\\.'\\d]+)$") //
+                        .match("^Eidg\\. Umsatzabgabe (?<currency>[\\w]{3})[\\s]{1,}(\\-)?(?<tax>[\\.'\\d]+)$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 

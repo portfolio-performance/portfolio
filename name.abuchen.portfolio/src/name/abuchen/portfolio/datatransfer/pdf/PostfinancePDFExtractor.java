@@ -353,7 +353,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Zahlungsverkehr \\- Gutschrift .*$");
+        Block firstRelevantLine = new Block("^Zahlungsverkehr \\- (Gutschrift|Belastung).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -363,6 +363,14 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             AccountTransaction accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
+                        })
+
+                        // Is type --> "Belastung" change from DEPOSIT to REMOVAL
+                        .section("type").optional() //
+                        .match("^Zahlungsverkehr \\- (?<type>(Gutschrift|Belastung)) .*$") //
+                        .assign((t, v) -> {
+                            if ("Belastung".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
                         })
 
                         // @formatter:off
@@ -1044,6 +1052,13 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "tax").optional() //
                         .match("^Verrechnungssteuer [\\.'\\d\\s]+(%| %) \\(.*\\) (?<currency>[\\w]{3}) (?<tax>[\\.'\\d\\s]+).*$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Umsatzabgabe JPY 51.00
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^Umsatzabgabe (?<currency>[\\w]{3}) (?<tax>[\\.'\\d\\s]+).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -1070,13 +1085,6 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^B.rsengeb.hren und sonstige Spesen (?<currency>[\\w]{3}) (?<fee>[\\.'\\d\\s]+).*$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
-
-                        // @formatter:off
-                        // Umsatzabgabe JPY 51.00
-                        // @formatter:on
-                        .section("currency", "fee").optional() //
-                        .match("^Umsatzabgabe (?<currency>[\\w]{3}) (?<fee>[\\.'\\d\\s]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

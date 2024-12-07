@@ -18,6 +18,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
@@ -1481,9 +1482,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaktion-Nr.: 1321692761"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(399.99))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(400.00))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(399.99))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
@@ -4440,6 +4441,84 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDegiroVerkauf04()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroVerkauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BHZPJ569"), hasWkn("A2PCB4"), hasTicker(null), //
+                        hasName("ISHARES MSCI WORLD ESG EN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-10-04T00:00"), hasShares(0.370302), //
+                        hasSource("FlatExDegiroVerkauf04.txt"), //
+                        hasNote("Transaktion-Nr.: 12345678942"), //
+                        hasAmount("EUR", 3.10), hasGrossValue("EUR", 3.10), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2024-10-04T00:00"), hasShares(0.370302), //
+                        hasSource("FlatExDegiroVerkauf04.txt"), //
+                        hasNote("Transaktion-Nr.: 12345678942"), //
+                        hasAmount("EUR", 1.14), hasGrossValue("EUR", 1.14), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check fee transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-10-04T00:00"), hasShares(0.370302), //
+                        hasSource("FlatExDegiroVerkauf04.txt"), //
+                        hasNote("Transaktion-Nr.: 12345678942"), //
+                        hasAmount("EUR", 5.90), hasGrossValue("EUR", 5.90), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testFlatExDegiroVerkauf05()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroVerkauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US88579Y1010"), hasWkn("851745"), hasTicker(null), //
+                        hasName("3M RG"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-05-10T00:00"), hasShares(0.500000), //
+                        hasSource("FlatExDegiroVerkauf05.txt"), //
+                        hasNote("Spitzenregulierung in US88579Y1010 | Transaktions-Nr. 3727350393"), //
+                        hasAmount("EUR", 30.58), hasGrossValue("EUR", 30.58), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testFlatExDegiroDividende01WithNegativeAmount()
     {
         /***
@@ -5056,7 +5135,7 @@ public class FinTechGroupBankPDFExtractorTest
                         hasName("MICROSOFT    DL-,00000625"), //
                         hasCurrencyCode("USD"))));
 
-        // check taxes transaction
+        // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-03-22T00:00"), hasShares(96.00), //
                         hasSource("FlatExDegiroDividende08.txt"), hasNote("Transaktion-Nr.: 2222222222"), //
@@ -5086,7 +5165,7 @@ public class FinTechGroupBankPDFExtractorTest
                         hasName("MICROSOFT    DL-,00000625"), //
                         hasCurrencyCode("CHF"))));
 
-        // check taxes transaction
+        // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2022-06-25T00:00"), hasShares(117.82), //
                         hasSource("FlatExDegiroDividende09.txt"), hasNote("Transaktion-Nr.: 2222222222"), //
@@ -5116,7 +5195,7 @@ public class FinTechGroupBankPDFExtractorTest
                         hasName("TORON.DOM.BK 19/24 MTN"), //
                         hasCurrencyCode("USD"))));
 
-        // check taxes transaction
+        // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-09-11T00:00"), hasShares(100.00), //
                         hasSource("FlatExDegiroDividende10.txt"), //
@@ -5149,7 +5228,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check taxes transaction
+        // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2023-09-11T00:00"), hasShares(100.00), //
                         hasSource("FlatExDegiroDividende10.txt"), //
@@ -5163,6 +5242,204 @@ public class FinTechGroupBankPDFExtractorTest
                             Status s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
+    }
+
+    @Test
+    public void testFlatExDegiroDividende11()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividende11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE0007236101"), hasWkn("D69671218"), hasTicker(null), //
+                        hasName("Siemens Share"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        dividend( //
+                                        hasDate("2024-02-13T00:00"), hasShares(641.745), //
+                                        hasSource("FlatExDegiroDividende11.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 2484.43), hasGrossValue("EUR", 3016.20), //
+                                        hasTaxes("EUR", 504.06 + 27.71), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testFlatExDegiroFusion01()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroFusion01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1861134382"), hasWkn("A2JSDA"), hasTicker(null), //
+                        hasName("AM IS M W SP UEDCC"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        inboundDelivery( //
+                                        hasDate("2024-01-23T00:00"), hasShares(101.910692), //
+                                        hasSource("FlatExDegiroFusion01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 82.85), hasGrossValue("EUR", 82.85), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testFlatExDegiroKapitalerhoehung01()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKapitalerhoehung01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US88160R1014"), hasWkn("A1CX3T"), hasTicker(null), //
+                        hasName("TESLA RG"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        inboundDelivery( //
+                                        hasDate("2022-08-29T00:00"), hasShares(6.00), //
+                                        hasSource("FlatExDegiroKapitalerhoehung01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testFlatExDegiroKapitalherabsetzung01()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKapitalherabsetzung01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH1175448666"), hasWkn("A3DHHH"), hasTicker(null), //
+                        hasName("STRAUMANN HLDG RG"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        inboundDelivery( //
+                                        hasDate("2024-04-18T00:00"), hasShares(10.00), //
+                                        hasSource("FlatExDegiroKapitalherabsetzung01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 4.13), hasGrossValue("EUR", 4.13), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testFlatExDegiroWertpapiertausch01()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroWertpapiertausch01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA05156X8843"), hasWkn("A2P4EC"), hasTicker(null), //
+                        hasName("AURORA CANNABIS RG"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        inboundDelivery( //
+                                        hasDate("2020-05-13T00:00"), hasShares(37.00), //
+                                        hasSource("FlatExDegiroWertpapiertausch01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testFlatExDegiroWertpapiertausch02()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroWertpapiertausch02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("SE0018538068"), hasWkn("A3D3A1"), hasTicker(null), //
+                        hasName("MGI RG-A"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorSplitTransactionsNotSupported, //
+                        inboundDelivery( //
+                                        hasDate("2023-01-04T00:00"), hasShares(185.00), //
+                                        hasSource("FlatExDegiroWertpapiertausch02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -6224,6 +6501,35 @@ public class FinTechGroupBankPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2023-12-01"), hasAmount("EUR", 5.90), //
                         hasSource("FlatExDegiroKontoauszug05.txt"), hasNote("Gebühr Kapitaltransaktion Ausland JP3756600007"))));
+    }
+
+    @Test
+    public void testFlatExDegiroKontoauszug06()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroKontoauszug06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert cancellation transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        interest( //
+                                        hasDate("2024-01-02"), hasAmount("EUR", 0.00), //
+                                        hasSource("FlatExDegiroKontoauszug06.txt"),
+                                        hasNote("Zinsabschluss 01.10.2023 - 31.12.2023")))));
+
+        // assert transaction
+        assertThat(results, hasItem(taxes(hasDate("2024-01-15"), hasAmount("EUR", 22.98), //
+                        hasSource("FlatExDegiroKontoauszug06.txt"), hasNote("Steuerkorrektur aufgrund FSA-Thematik"))));
     }
 
     @Test

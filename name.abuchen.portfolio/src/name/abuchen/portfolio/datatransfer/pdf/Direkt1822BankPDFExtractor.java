@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
@@ -20,6 +21,14 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
+/**
+ * @formatter:off
+ * @implNote 1822direkt
+ *
+ * @implSpec The account statement transactions are reported in EUR.
+ * @formatter:on
+ */
+
 @SuppressWarnings("nls")
 public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 {
@@ -32,6 +41,7 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendeTransaction();
         addAdvanceTaxTransaction();
+        addAccountStatementTransaction();
         addNonImportableTransaction();
     }
 
@@ -48,9 +58,12 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Wertpapier Abrechnung (Kauf|Verkauf|(Ausgabe|R.cknahme) Investmentfonds).*$");
+        Block firstRelevantLine = new Block("^Postfach.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
+
+        // Map for tax lost adjustment transaction
+        Map<String, String> context = type.getCurrentContext();
 
         pdfTransaction //
 
@@ -151,10 +164,24 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
 
-                        .wrap(BuySellEntryItem::new);
+                        .wrap(t -> {
+                            BuySellEntryItem item = new BuySellEntryItem(t);
+
+                            // @formatter:off
+                            // Handshake for tax lost adjustment transaction
+                            // Also use number for that is also used to (later) convert it back to a number
+                            // @formatter:on
+                            context.put("name", item.getSecurity().getName());
+                            context.put("isin", item.getSecurity().getIsin());
+                            context.put("wkn", item.getSecurity().getWkn());
+                            context.put("shares", Long.toString(item.getShares()));
+
+                            return item;
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
+        addTaxLostAdjustmentTransaction(context, type);
     }
 
     private void addDividendeTransaction()
@@ -307,6 +334,89 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(TransactionItem::new);
+    }
+
+    private void addTaxLostAdjustmentTransaction(Map<String, String> context, DocumentType type)
+    {
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^Postfach.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Steuerliche Ausgleichrechnung
+                        // Ausmachender Betrag 3,49 EUR
+                        // Den Gegenwert buchen wir mit Valuta 18.11.2024 zu Gunsten des Kontos 0123456789
+                        // @formatter:on
+                        .section("currency", "amount", "date").optional() //
+                        .find("Steuerliche Ausgleichrechnung") //
+                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)([\\-|\\+])? (?<currency>[\\w]{3})$") //
+                        .match("^Den Gegenwert buchen wir mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setShares(Long.parseLong(context.get("shares")));
+                            t.setSecurity(getOrCreateSecurity(context));
+
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Auftragsnummer 123456/10.00
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>Auftragsnummer [\\d]+\\/[\\.\\d]+)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
+    }
+
+    private void addAccountStatementTransaction()
+    {
+        final DocumentType type = new DocumentType("Monatlicher Kontoauszug");
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 17.10.2024 Gutschrift Überw. Max Mustermann +1.000,00
+        // @formatter:on
+        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Gutschrift .berw\\. .* \\+[\\.,\\d]+.*$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "note", "amount") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>Gutschrift .berw\\.) .* \\+(?<amount>[\\.,\\d]+).*$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode("EUR"));
+
+                            // Formatting some notes
+                            if ("Gutschrift Überw.".equals(v.get("note")))
+                                v.put("note", "Gutschrift (Überweisung)");
+
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private void addNonImportableTransaction()

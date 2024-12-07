@@ -29,6 +29,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendTransaction();
+        addTaxesLostAdjustmentTransaction();
         addDepotStatementTransaction();
     }
 
@@ -345,10 +346,14 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         // Dividende: 1 USD
                                         // Ertrag: 16,00 USD
                                         // Devisenkurs: 0,99975 (31.10.2022) 11,60 EUR
+                                        //
+                                        // Ertrag: 0,2885 USD
+                                        // Ertrag: 9,18 USD
+                                        // Devisenkurs: 1,0684 (12.11.2024) 6,23 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency") //
-                                                        .match("^Dividende: [\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$") //
+                                                        .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$") //
                                                         .match("^Ertrag: (?<fxGross>[\\.,\\d]+) [\\w]{3}.*$") //
                                                         .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ (?<baseCurrency>[\\w]{3}).*$") //
                                                         .assign((t, v) -> {
@@ -379,6 +384,207 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addTaxesLostAdjustmentTransaction()
+    {
+        final DocumentType type = new DocumentType("Gesch.ftsart: (Ertrag|Verkauf|Tilgung)");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^Wir haben f.r Sie am [\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4} unten angef.hrtes Gesch.ft abgerechnet:$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return accountTransaction;
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Titel: AT0000APOST4  O E S T E R R E I C H ISCHE POST AG
+                                        // AKTIEN O.N.
+                                        // Dividende: 1,9 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "name", "name1", "currency") //
+                                                        .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Dividende") || !v.get("name1").startsWith("Ertrag"))
+                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // Titel: DE000A14J587  t h y s s e n k r u p p AG
+                                        // Medium Term Notes v.15(25)
+                                        // Kup. 25.2.2023/GZJ Endfälligkeit 25.2.2025
+                                        // Zinsertrag für 365 Tage: 50,-- EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "name", "name1", "currency") //
+                                                        .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^Zinsertrag f.r [\\d]+ Tage: [\\-\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Kup."))
+                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // Titel: DE000A0F5UK5  i S h . S T . E u . 6 00 Bas.Res.U.ETF DE
+                                        // Inhaber-Anlageaktien
+                                        // Kurs: 66,88 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "name", "name1", "currency") //
+                                                        .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^Kurs: [\\-\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Kurs"))
+                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // Titel: DE000A1R0RZ5 Ekosem-Agrar AG
+                                        // Inh.-Schv. v.2012(2020/2027)
+                                        // Kurswert: 404,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "name", "name1", "currency") //
+                                                        .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^Kurswert: [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Kup."))
+                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Bestand: Stk 1.200
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Bestand: Stk (?<shares>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // 100 Stk
+                                        // 2.000 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "notation") //
+                                                        .match("^(?<shares>[\\.,\\d]+) (?<notation>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                        // @formatter:off
+                                                        // Percentage quotation, workaround for bonds
+                                                        // @formatter:on
+                                                            if (v.get("notation") != null && !"Stk".equalsIgnoreCase(v.get("notation")))
+                                                            {
+                                                                BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                            }
+                                                            else
+                                                            {
+                                                                t.setShares(asShares(v.get("shares")));
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Zugang: 6,94 Stk
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^(Zugang|Abgang): (?<shares>[\\.,\\d]+) Stk.*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Zugang: Stk 100
+                                        // @formatter:on
+                                        section -> section.attributes("shares") //
+                                                        .match("^(Zugang|Abgang): Stk (?<shares>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // Abgang: Nom. 2.000
+                                        // Kurs: 20,2 %
+                                        // Abgang: Nom. 2.000
+                                        // Kurs: Kurs: 100%
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Abgang: Nom. (?<shares>[\\.,\\d]+)$") //
+                                                        .find("Kurs: [\\.,\\d]+([\\s])?%$") //
+                                                        .assign((t, v) -> {
+                                                        // @formatter:off
+                                                        // Percentage quotation, workaround for bonds
+                                                        // @formatter:on
+                                                        BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                        t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                        }))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Valuta 5.5.2022
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Zu Gunsten IBAN AT11 1111 1111 1111 1111 Valuta 07.06.2022 478,50 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Zu Gunsten .* Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+
+                        // @formatter:off
+                        // Gutschrift aus Verlustausgleich: 2,36 EUR
+                        // @formatter:on
+                        .section("amount", "currency").optional() //
+                        .match("^Gutschrift aus Verlustausgleich: (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Ertrag: 0,2885 USD
+                                        // Ertrag: 9,18 USD
+                                        // Devisenkurs: 1,0684 (12.11.2024) 6,23 EUR
+                                        // Gutschrift aus Verlustausgleich: 2,36 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("termCurrency", "exchangeRate", "gross", "baseCurrency") //
+                                                        .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$") //
+                                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ [\\w]{3}.*$") //
+                                                        .match("^Gutschrift aus Verlustausgleich: (?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
     }
 
     private void addDepotStatementTransaction()
@@ -496,7 +702,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional() //
                         .match("^Umsatzsteuer: \\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
-        
+
                         // @formatter:off
                         // Quellensteuer: -327,58 EUR
                         // @formatter:on

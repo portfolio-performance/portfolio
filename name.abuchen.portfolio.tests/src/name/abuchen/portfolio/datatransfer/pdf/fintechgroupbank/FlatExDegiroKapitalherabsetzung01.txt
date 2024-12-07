@@ -1,0 +1,58 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+0302402000003930948410
+Herrn
+Max Max
+Straße 9
+99999 Stadt
+    Frankfurt am Main,  22.04.2024
+Kapitalherabsetzung
+Kundennummer: 9999999
+Kontonummer : 9999999999
+Depotnummer : 9999999999
+Inhaber     : Max Max
+WKN     ISIN          Wertpapierbezeichnung           Anzahl
+A3DHHH  CH1175448666  STRAUMANN HLDG RG               10,000000
+Sehr geehrter Herr Max,
+im Rahmen einer Kapitalherabsetzung haben wir Ihnen im Verhältnis 1,000000 zu
+1,000000 mit Valuta 18.04.2024 in Ihr Depot eingebucht:
+WKN     ISIN          Wertpapierbezeichnung                        Anzahl
+A3DHHH  CH1175448666  STRAUMANN HLDG RG                          10,000000
+Steuerpfl. Ertrag                                                     0,00 EUR
+Einbeh. Steuer**                                                      0,00 EUR
+**Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+Kapitalertragsteuer                                                   0,00 EUR
+Solidaritätszuschlag                                                  0,00 EUR
+Kirchensteuer                                                         0,00 EUR
+Verrechnung über Ihr Konto: 9999999999 Gutschrift                     4,13 EUR
+Die Gutschrift erfolgt unter Vorbehalt des Eingangs. Einwendungen müssen
+unverzüglich nach Zugang erhoben werden. Die Unterlassung rechtzeitiger
+Einwendungen gilt als Genehmigung.
+**Einbehaltene Kapitalertragsteuer zuzüglich Solidaritätszuschlag und ggf.
+Kirchensteuer (negative Werte bedeuten Steuererstattung). Evtl. Details dazu
+finden Sie im Steuerreport unter der Transaktion-Nr.: 3704028586
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Dr. Benon Janos,
+Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang, Jens Möbitz
+2000003930948410 0113302400000101
+Dieser Beleg ist keine Steuerbescheinigung. Kapitalerträge sind
+einkommensteuerpflichtig. Diese Mitteilung ist maschinell erstellt und wird
+nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Dr. Benon Janos,
+Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang, Jens Möbitz
+2000003930948410

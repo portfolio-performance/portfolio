@@ -32,11 +32,11 @@ public class ExtractorUtilsConvertToNumberLongTest
     public static Collection<Object[]> data()
     {
         return Arrays.asList(new Object[][] { //
-                        { "1 234,56", new Locale("fr", "FR"), 123456 }, //
-                        { "1,234.56", new Locale("en", "US"), 123456 }, //
-                        { "1'234.56", new Locale("de", "CH"), 123456 }, //
-                        { "1.234,56", new Locale("de", "DE"), 123456 }, //
-                        { "1 234.56", new Locale("xh", "ZA"), 123456 }, //
+                        { "1 234,56", Locale.forLanguageTag("fr-FR"), 123456 }, //
+                        { "1,234.56", Locale.forLanguageTag("en-US"), 123456 }, //
+                        { "1'234.56", Locale.forLanguageTag("de-CH"), 123456 }, //
+                        { "1.234,56", Locale.forLanguageTag("de-DE"), 123456 }, //
+                        { "1 234.56", Locale.forLanguageTag("xh-ZA"), 123456 }, //
         });
     }
 
@@ -51,8 +51,6 @@ public class ExtractorUtilsConvertToNumberLongTest
     @Test(expected = IllegalArgumentException.class)
     public void testConvertToNumberLongWithInvalidInput()
     {
-        String input = "abc";
-        Locale locale = new Locale("de", "DE");
-        ExtractorUtils.convertToNumberLong(input, Values.Amount, locale.getLanguage(), locale.getCountry());
+        ExtractorUtils.convertToNumberLong("abc", Values.Amount, locale.getLanguage(), locale.getCountry());
     }
 }

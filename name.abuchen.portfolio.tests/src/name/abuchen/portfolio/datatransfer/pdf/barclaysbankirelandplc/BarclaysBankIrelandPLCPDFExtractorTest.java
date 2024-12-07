@@ -3,8 +3,11 @@ package name.abuchen.portfolio.datatransfer.pdf.barclaysbankirelandplc;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -131,5 +134,47 @@ public class BarclaysBankIrelandPLCPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-01-08"), hasAmount("EUR", 0.50), //
                         hasSource("KreditKontoauszug02.txt"), hasNote("Gutschrift Manuelle Lastschrift"))));
+    }
+
+    @Test
+    public void testKreditKontoauszug03()
+    {
+        BarclaysBankIrelandPLCPDFExtractor extractor = new BarclaysBankIrelandPLCPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug03.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 3.54), //
+                        hasSource("KreditKontoauszug03.txt"), //
+                        hasNote(null), //
+                        hasTaxes("EUR", 1.20 + 0.06), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 14.47), //
+                        hasSource("KreditKontoauszug03.txt"), //
+                        hasNote(null), //
+                        hasTaxes("EUR", 4.91 + 0.27), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 16.41), //
+                        hasSource("KreditKontoauszug03.txt"), //
+                        hasNote(null), //
+                        hasTaxes("EUR", 5.57 + 0.30), hasFees("EUR", 0.00))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 103.38), //
+                        hasSource("KreditKontoauszug03.txt"), //
+                        hasNote(null), //
+                        hasTaxes("EUR", 35.10 + 1.93), hasFees("EUR", 0.00))));
     }
 }

@@ -564,7 +564,7 @@ public class MLPBankingAGPDFExtractorTest
     {
         MLPBankingAGPDFExtractor extractor = new MLPBankingAGPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug01.txt"), errors);
 

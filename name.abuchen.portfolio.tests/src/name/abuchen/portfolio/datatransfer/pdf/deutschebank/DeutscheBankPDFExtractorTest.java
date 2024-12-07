@@ -926,6 +926,77 @@ public class DeutscheBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierSparplan01()
+    {
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(6L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(7));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn("847652"), hasTicker(null), //
+                        hasName("DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-01-03T00:00"), hasShares(0.1610), //
+                        hasSource("Sparplan01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 44.98), hasGrossValue("EUR", 31.68), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 13.30))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-02-02T00:00"), hasShares(0.1558), //
+                        hasSource("Sparplan01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 45.00), hasGrossValue("EUR", 31.25), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 13.75))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-03-04T00:00"), hasShares(0.1513), //
+                        hasSource("Sparplan01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 44.98), hasGrossValue("EUR", 30.82), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 14.16))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-04-03T00:00"), hasShares(0.1470), //
+                        hasSource("Sparplan01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 44.98), hasGrossValue("EUR", 30.41), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 14.57))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-05-03T00:00"), hasShares(0.1487), //
+                        hasSource("Sparplan01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 45.00), hasGrossValue("EUR", 30.59), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 14.41))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-06-04T00:00"), hasShares(0.1465), //
+                        hasSource("Sparplan01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 45.00), hasGrossValue("EUR", 30.37), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 14.63))));
+    }
+
+    @Test
     public void testGiroKontoauszug01()
     {
         DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
@@ -2421,4 +2492,30 @@ public class DeutscheBankPDFExtractorTest
 
     }
 
+    @Test
+    public void testGiroKontoauszug07()
+    {
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug07.txt"), errors);
+
+        // Check if the results list is not empty
+        assertTrue(results.isEmpty());
+
+        // Check if at least one error is present
+        assertTrue(!errors.isEmpty());
+
+        // Extract the first error from the list
+        Exception firstError = errors.get(0);
+
+        // Check if the first error is an UnsupportedOperationException
+        assertTrue(firstError instanceof UnsupportedOperationException);
+
+        // Check the error message of the first error
+        String expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
+                        "Deutsche Bank Privat- und Geschäftskunden AG", "GiroKontoauszug07.txt");
+        assertEquals(expectedErrorMessage, firstError.getMessage());
+    }
 }

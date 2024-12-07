@@ -80,7 +80,7 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-05-17T00:00"), hasShares(0.033037), //
                         hasSource("Kauf01.txt"), //
-                        hasNote("Ord.-Ref.: 100000"), //
+                        hasNote("Ord.-Ref.: 100000 | Handels.-Ref.: 200000"), //
                         hasAmount("EUR", 1.48), hasGrossValue("EUR", 1.47), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.01))));
     }
@@ -111,7 +111,7 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-10-17T18:11:56"), hasShares(3.320171), //
                         hasSource("Kauf02.txt"), //
-                        hasNote("Ord.-Ref.: 0980298"), //
+                        hasNote("Ord.-Ref.: 0980298 | Handels.-Ref.: 029816"), //
                         hasAmount("EUR", 643.40), hasGrossValue("EUR", 638.53), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 4.87))));
     }
@@ -142,7 +142,7 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2023-11-02T05:21:03"), hasShares(9.727757), //
                         hasSource("Kauf03.txt"), //
-                        hasNote("Ord.-Ref.: 8774105"), //
+                        hasNote("Ord.-Ref.: 8774105 | Handels.-Ref.: 1143326"), //
                         hasAmount("EUR", 911.48), hasGrossValue("EUR", 904.07), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 7.41))));
     }
@@ -173,7 +173,7 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
         assertThat(results, hasItem(sale( //
                         hasDate("2023-12-19T18:25:53"), hasShares(5.214577), //
                         hasSource("Verkauf01.txt"), //
-                        hasNote("Ord.-Ref.: 1431554"), //
+                        hasNote("Ord.-Ref.: 1431554 | Handels.-Ref.: 1367606"), //
                         hasAmount("EUR", 317.03), hasGrossValue("EUR", 317.67), //
                         hasForexGrossValue("USD", 346.67), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.64))));
@@ -206,7 +206,7 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
         assertThat(results, hasItem(sale( //
                         hasDate("2023-12-19T18:25:53"), hasShares(5.214577), //
                         hasSource("Verkauf01.txt"), //
-                        hasNote("Ord.-Ref.: 1431554"), //
+                        hasNote("Ord.-Ref.: 1431554 | Handels.-Ref.: 1367606"), //
                         hasAmount("EUR", 317.03), hasGrossValue("EUR", 317.67), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.64), //
                         check(tx -> {
@@ -242,9 +242,73 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
         assertThat(results, hasItem(sale( //
                         hasDate("2024-02-29T00:00"), hasShares(0.082053), //
                         hasSource("Verkauf02.txt"), //
-                        hasNote("Ord.-Ref.: 2194170"), //
+                        hasNote("Ord.-Ref.: 2194170 | Handels.-Ref.: 2105670"), //
                         hasAmount("EUR", 8.81), hasGrossValue("EUR", 8.81), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf03()
+    {
+        OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE000Y77LGG9"), hasWkn("ETF143"), hasTicker(null), //
+                        hasName("Am.ETF-MSCI W.SRI CL.N.Z.AM.P. Bear.Shs EUR Acc. oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-11-15T00:00"), hasShares(90.00), //
+                        hasSource("Verkauf03.txt"), //
+                        hasNote("Ord.-Ref.: 4359234 | Handels.-Ref.: 4237898"), //
+                        hasAmount("EUR", 8984.72), hasGrossValue("EUR", 9268.20), //
+                        hasTaxes("EUR", 264.94), hasFees("EUR", 18.54))));
+    }
+
+    @Test
+    public void testWertpapierStornoKauf01()
+    {
+        OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StornoKauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0010408704"), hasWkn("A12HWR"), hasTicker(null), //
+                        hasName("VanEck Sust.World EQ.UC.ETF Aandelen oop naam o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        purchase( //
+                                        hasDate("2023-09-15T18:18:08"), hasShares(0.563027), //
+                                        hasSource("StornoKauf01.txt"), //
+                                        hasNote("Ord.-Ref.: 908703 | Handels.-Ref.: 847266"), //
+                                        hasAmount("EUR", 15.88), hasGrossValue("EUR", 15.88), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -412,6 +476,39 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierStornoDividende01()
+    {
+        OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StornoDividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0010408704"), hasWkn("A12HWR"), hasTicker(null), //
+                        hasName("VanEck Sust.World EQ.UC.ETF Aandelen oop naam o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorOrderCancellationUnsupported, //
+                        dividend( //
+                                        hasDate("2023-09-13T00:00"), hasShares(95.967357), //
+                                        hasSource("StornoDividende01.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 15.88), hasGrossValue("EUR", 16.31), //
+                                        hasTaxes("EUR", 0.41 + 0.02), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
     public void testVorabpauschale01()
     {
         OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
@@ -530,6 +627,70 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-08-17"), hasAmount("EUR", 10.00), //
                         hasSource("Kontoauszug01.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testKontoauszug02()
+    {
+        OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-09-02"), hasAmount("EUR", 100.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-09-04"), hasAmount("EUR", 25.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-09-18"), hasAmount("EUR", 25.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-09-30"), hasAmount("EUR", 200.00), //
+                        hasSource("Kontoauszug02.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testKontoauszug03()
+    {
+        OldenburgischeLandesbankAGPDFExtractor extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-10-01"), hasAmount("EUR", 200.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-10-04"), hasAmount("EUR", 25.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-10-17"), hasAmount("EUR", 25.00), //
+                        hasSource("Kontoauszug03.txt"), hasNote(null))));
     }
 
     @Test

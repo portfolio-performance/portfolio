@@ -299,10 +299,14 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         // Storno - Ertragsthesaurierung
                         // Wert Konto-Nr. Betrag zu Ihren Gunsten
                         // 15.01.2018 00/0000/000 EUR 0,05
+                        //
+                        // Ertragsthesaurierung
+                        // Wert Betrag zu Ihren Gunsten
+                        // 15.01.2018 EUR 4,69
                         // @formatter:on
                         .section("type", "sign").optional() //
                         .match("^(Storno \\- )?(?<type>Ertragsthesaurierung)$") //
-                        .match("^Wert Konto\\-Nr\\.( Devisenkurs)? Betrag zu Ihren (?<sign>(Gunsten|Lasten))$") //
+                        .match("^Wert( Konto\\-Nr\\.)?( Devisenkurs)? Betrag zu Ihren (?<sign>(Gunsten|Lasten))$") //
                         .assign((t, v) -> {
                             if ("Ertragsthesaurierung".equals(v.get("type")) && "Gunsten".equals(v.get("sign")))
                                 t.setType(AccountTransaction.Type.TAX_REFUND);
@@ -380,6 +384,18 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("currency", "amount") //
                                                         .find("Wert Konto\\-Nr\\.( Devisenkurs)? Betrag zu Ihren (Gunsten|Lasten)") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // Wert Betrag zu Ihren Gunsten
+                                        // 15.11.2016 EUR 41,44
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .find("Wert Betrag zu Ihren (Gunsten|Lasten)") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -1875,10 +1891,10 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
-                        // einbehaltener Kirchensteuer EUR 1,00
+                        // einbehaltene Kirchensteuer EUR 1,27
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^einbehaltener Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
+                        .match("^einbehaltene Kirchensteuer (?<currency>[\\w]{3}) (?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative")
                                             && !type.getCurrentContext().getBoolean("noTax"))

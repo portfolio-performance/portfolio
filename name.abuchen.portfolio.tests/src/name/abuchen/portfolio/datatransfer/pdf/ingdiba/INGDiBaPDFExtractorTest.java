@@ -3986,6 +3986,87 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
+    public void testExtraKontoauszug02()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ExtraKontoauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(15L));
+        assertThat(results.size(), is(15));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2022-01-04"), hasAmount("EUR", 50.00), //
+                        hasSource("ExtraKontoauszug02.txt"), hasNote("Gutschrift/Dauerauftrag"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2022-02-02"), hasAmount("EUR", 50.00), //
+                        hasSource("ExtraKontoauszug02.txt"), hasNote("Gutschrift/Dauerauftrag"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2022-03-02"), hasAmount("EUR", 50.00), //
+                        hasSource("ExtraKontoauszug02.txt"), hasNote("Gutschrift/Dauerauftrag"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2022-04-04"), hasAmount("EUR", 50.00), //
+                        hasSource("ExtraKontoauszug02.txt"), hasNote("Gutschrift/Dauerauftrag"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2022-05-03"), hasAmount("EUR", 50.00), //
+                        hasSource("ExtraKontoauszug02.txt"), hasNote("Gutschrift/Dauerauftrag"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2022-06-02"), hasAmount("EUR", 50.00), //
+                        hasSource("ExtraKontoauszug02.txt"), hasNote("Gutschrift/Dauerauftrag"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2022-07-04"), hasAmount("EUR", 50.00), //
+                        hasSource("ExtraKontoauszug02.txt"), hasNote("Gutschrift/Dauerauftrag"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2022-08-02"), hasAmount("EUR", 50.00), //
+                        hasSource("ExtraKontoauszug02.txt"), hasNote("Gutschrift/Dauerauftrag"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2022-09-02"), hasAmount("EUR", 50.00), //
+                        hasSource("ExtraKontoauszug02.txt"), hasNote("Gutschrift/Dauerauftrag"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2022-10-04"), hasAmount("EUR", 50.00), //
+                        hasSource("ExtraKontoauszug02.txt"), hasNote("Gutschrift/Dauerauftrag"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2022-11-02"), hasAmount("EUR", 50.00), //
+                        hasSource("ExtraKontoauszug02.txt"), hasNote("Gutschrift/Dauerauftrag"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2022-12-02"), hasAmount("EUR", 50.00), //
+                        hasSource("ExtraKontoauszug02.txt"), hasNote("Gutschrift/Dauerauftrag"))));
+
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        interest( //
+                                        hasDate("2022-12-05T00:00"), //
+                                        hasSource("ExtraKontoauszug02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+        // assert transactions
+        assertThat(results, hasItem(interest(hasDate("2022-12-31"), hasAmount("EUR", 0.02), //
+                        hasSource("ExtraKontoauszug02.txt"), hasNote("06.12.2022 bis 31.12.2022 (0,300%)"))));
+
+        // assert transactions
+        assertThat(results, hasItem(taxes(hasDate("2022-12-30"), hasAmount("EUR", 0.01), //
+                        hasSource("ExtraKontoauszug02.txt"), hasNote("Kapitalertragsteuer"))));
+    }
+
+    @Test
     public void testVLKontoauszug01()
     {
         INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
