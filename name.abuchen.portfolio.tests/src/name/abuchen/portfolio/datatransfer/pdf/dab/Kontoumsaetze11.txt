@@ -1,0 +1,30 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.72.2
+-----------------------------------------
+Kontoauszug DAB Verrechnungskonto Kontonummer: 0000000000 KOPIE
+BLZ: 701 204 00
+IBAN: DE00000000000000000000
+BIC (SWIFT-Code): DABBDEMMXXX 
+Vorname Nachname
+Letzter Auszug Nr. 007 vom 29.10.2024
+Umsatzzeitraum
+Ginmon Vermögensverwaltung GmbH 30.10.2024 - 07.11.2024
+dstr. 33a Seite 1/1Mainzer Lan
+60329 Frankfurt Auszug Nr. 008
+07.11.2024
+Buchung Valuta Buchungsinformation Soll Haben
+29.10. Alter Kontostand: EUR 1,24+
+07.11. 11.11. Wertpapierverkauf 0,49+
+VKF    A2061191320241107   IE00B52MJY50*         0,003
+07.11. Neuer Kontostand: EUR 50,36+
+Hinweis
+Der Kontostand /Saldo kann auch noch nicht wertgestellte Beträge enthalten, über die bis zur Wertstellung noch nicht ohne Abzug von Sollzinsen
+verfügt werden kann.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetztes entschädigungsfähig. Nähere Informationen können dem
+„Informationsbogen für den Einleger“ entnommen werden.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Postadresse: DAB BNP Paribas > Postfach 2547 >
+90011 Nürnberg > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens,
+75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+
+```
