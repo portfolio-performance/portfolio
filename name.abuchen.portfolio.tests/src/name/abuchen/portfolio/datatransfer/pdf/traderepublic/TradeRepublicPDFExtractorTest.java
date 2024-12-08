@@ -2281,8 +2281,10 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-04-01"), hasAmount("EUR", 114.96), //
-                        hasSource("Kontoauszug21.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest(hasDate("2024-04-01"), hasAmount("EUR", 114.96), //
+                        hasSource("Kontoauszug21.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2024-04-16"), hasAmount("EUR", 5.00),
@@ -2293,12 +2295,16 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("Kontoauszug21.txt"), hasNote("ALDI SAGT DANKE"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-05-01"), hasAmount("EUR", 111.50), //
-                        hasSource("Kontoauszug21.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest(hasDate("2024-05-01"), hasAmount("EUR", 111.50), //
+                        hasSource("Kontoauszug21.txt"), hasNote(null)))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-06-01"), hasAmount("EUR", 115.41), //
-                        hasSource("Kontoauszug21.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest(hasDate("2024-06-01"), hasAmount("EUR", 115.41), //
+                        hasSource("Kontoauszug21.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-06-14"), hasAmount("EUR", 250.00),
@@ -2317,8 +2323,10 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("Kontoauszug21.txt"), hasNote("REWE Riethmueller oHG"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-07-01"), hasAmount("EUR", 107.80), //
-                        hasSource("Kontoauszug21.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest(hasDate("2024-07-01"), hasAmount("EUR", 107.80), //
+                        hasSource("Kontoauszug21.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-07-05"), hasAmount("EUR", 89.43),
@@ -2341,8 +2349,10 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("Kontoauszug21.txt"), hasNote("Neckarbruecke"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-08-01"), hasAmount("EUR", 168.75),
-                        hasSource("Kontoauszug21.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest(hasDate("2024-08-01"), hasAmount("EUR", 168.75), //
+                        hasSource("Kontoauszug21.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-08-09"), hasAmount("EUR", 5.63),
@@ -2357,8 +2367,10 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("Kontoauszug21.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-09-01"), hasAmount("EUR", 193.06),
-                        hasSource("Kontoauszug21.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest(hasDate("2024-09-01"), hasAmount("EUR", 193.06), //
+                        hasSource("Kontoauszug21.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-09-02"), hasAmount("EUR", 7.50),
@@ -2396,6 +2408,39 @@ public class TradeRepublicPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2020-03-30"), hasAmount("EUR", 4000.00),
                         hasSource("Kontoauszug22.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testKontoauszug23()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug23.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2024-12-01"), hasAmount("EUR", 150.28),
+                        hasSource("Kontoauszug23.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-12-02"), hasAmount("EUR", 39.94),
+                        hasSource("Kontoauszug23.txt"), hasNote("xoSEqCGkmh eqt STATION"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-12-02"), hasAmount("EUR", 500.00),
+                        hasSource("Kontoauszug23.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-12-02"), hasAmount("EUR", 7.24),
+                        hasSource("Kontoauszug23.txt"), hasNote(null))));
     }
 
     @Test
@@ -2693,8 +2738,10 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("TransaccionesDeCuenta01.txt"), hasNote("WETACA"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-06-01"), hasAmount("EUR", 32.61), //
-                        hasSource("TransaccionesDeCuenta01.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest(hasDate("2024-06-01"), hasAmount("EUR", 32.61), //
+                        hasSource("TransaccionesDeCuenta01.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-06-01"), hasAmount("EUR", 20.00), //
@@ -2921,8 +2968,10 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("TransaccionesDeCuenta01.txt"), hasNote("Tesla Spain, S.L."))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-07-01"), hasAmount("EUR", 34.97), //
-                        hasSource("TransaccionesDeCuenta01.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest(hasDate("2024-07-01"), hasAmount("EUR", 34.97), //
+                        hasSource("TransaccionesDeCuenta01.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-07-01"), hasAmount("EUR", 16.72), //
@@ -3002,8 +3051,10 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("TransaccionesDeCuenta02.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-02-01"), hasAmount("EUR", 10.07), //
-                        hasSource("TransaccionesDeCuenta02.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest(hasDate("2024-02-01"), hasAmount("EUR", 10.07), //
+                        hasSource("TransaccionesDeCuenta02.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-02-08"), hasAmount("EUR", 300.00), //
@@ -3014,8 +3065,10 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("TransaccionesDeCuenta02.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-03-01"), hasAmount("EUR", 14.48), //
-                        hasSource("TransaccionesDeCuenta02.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest(hasDate("2024-03-01"), hasAmount("EUR", 14.48), //
+                        hasSource("TransaccionesDeCuenta02.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-03-05"), hasAmount("EUR", 5809.91), //
@@ -3030,8 +3083,10 @@ public class TradeRepublicPDFExtractorTest
                         hasSource("TransaccionesDeCuenta02.txt"), hasNote(null))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-04-01"), hasAmount("EUR", 7.79), //
-                        hasSource("TransaccionesDeCuenta02.txt"), hasNote(null))));
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest(hasDate("2024-04-01"), hasAmount("EUR", 7.79), //
+                        hasSource("TransaccionesDeCuenta02.txt"), hasNote(null)))));
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2024-04-03"), hasAmount("EUR", 5.00), //
