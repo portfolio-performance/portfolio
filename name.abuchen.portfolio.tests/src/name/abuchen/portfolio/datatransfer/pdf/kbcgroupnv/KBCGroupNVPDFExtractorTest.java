@@ -290,4 +290,26 @@ public class KBCGroupNVPDFExtractorTest
         assertThat(results, hasItem(deposit(hasDate("2023-06-12"), hasAmount("EUR", 132673.91), //
                         hasSource("Rekeninguittreksel03.txt"), hasNote("Provisionering rekening klant"))));
     }
+
+    @Test
+    public void testRekeninguittreksel04()
+    {
+        KBCGroupNVPDFExtractor extractor = new KBCGroupNVPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rekeninguittreksel04.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-09-05"), hasAmount("EUR", 5.00), //
+                        hasSource("Rekeninguittreksel04.txt"), hasNote("Provisionering rekening klant"))));
+    }
 }
