@@ -17,10 +17,7 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
     {
         IPreferenceStore store = PortfolioPlugin.getDefault().getPreferenceStore();
         store.setDefault(UIConstants.Preferences.AUTO_UPDATE, true);
-        store.setDefault(UIConstants.Preferences.UPDATE_SITE,
-                        Platform.ARCH_X86.equals(Platform.getOSArch())
-                                        ? "https://updates.portfolio-performance.info/portfolio-x86" //$NON-NLS-1$
-                                        : "https://updates.portfolio-performance.info/portfolio"); //$NON-NLS-1$
+        store.setDefault(UIConstants.Preferences.UPDATE_SITE, "https://updates.portfolio-performance.info/portfolio"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.FORMAT_SHARES_DIGITS, 1);
         store.setDefault(UIConstants.Preferences.FORMAT_CALCULATED_QUOTE_DIGITS, 2);
         store.setDefault(UIConstants.Preferences.USE_INDIRECT_QUOTATION, true);
