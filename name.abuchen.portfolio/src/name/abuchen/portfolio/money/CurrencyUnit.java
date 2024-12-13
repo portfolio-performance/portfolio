@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.NavigableMap;
@@ -71,6 +72,15 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
     public static CurrencyUnit getInstance(String currencyCode)
     {
         return CACHE.get(currencyCode);
+    }
+
+    public static CurrencyUnit getDefaultInstance()
+    {
+        String defaultCurrencyISO4217 = java.util.Currency.getInstance(Locale.getDefault()).getCurrencyCode();
+        CurrencyUnit defaultCurrencyUnit = CurrencyUnit.getInstance(defaultCurrencyISO4217);
+        if (defaultCurrencyUnit != null)
+            return defaultCurrencyUnit;
+        return CurrencyUnit.getInstance(EUR);
     }
 
     public static CurrencyUnit getInstanceBySymbol(String currencySymbol)
