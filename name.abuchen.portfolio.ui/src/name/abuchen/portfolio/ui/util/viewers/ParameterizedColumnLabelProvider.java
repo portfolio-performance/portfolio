@@ -12,6 +12,11 @@ public class ParameterizedColumnLabelProvider extends ColumnLabelProvider
 {
     private TableColumn tableColumn;
 
+    public TableColumn getTableColumn()
+    {
+        return this.tableColumn;
+    }
+
     public void setTableColumn(TableColumn tableColumn)
     {
         if (this.tableColumn != null)
