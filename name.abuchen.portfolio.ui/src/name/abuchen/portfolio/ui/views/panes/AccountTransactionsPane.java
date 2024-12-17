@@ -523,6 +523,14 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
                     if (account != null && transaction != null)
                         createEditAction(account, transaction).run();
                 }
+                if (e.keyCode == 'd' && e.stateMask == SWT.MOD1)
+                {
+                    AccountTransaction transaction = (AccountTransaction) ((IStructuredSelection) transactions
+                                    .getSelection()).getFirstElement();
+
+                    if (account != null && transaction != null)
+                        createCopyAction(account, transaction).run();
+                }
             }
         });
     }
@@ -541,7 +549,9 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             action.setAccelerator(SWT.MOD1 | 'E');
             manager.add(action);
 
-            manager.add(createCopyAction(account, transaction));
+            Action duplicateAction = createCopyAction(account, transaction);
+            duplicateAction.setAccelerator(SWT.MOD1 | 'D');
+            manager.add(duplicateAction);
 
             manager.add(new Separator());
         }

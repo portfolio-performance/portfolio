@@ -82,6 +82,15 @@ public class TransactionContextMenu
             tx.withAccountTransaction().ifPresent(t -> createEditAccountTransactionAction(t).run());
             tx.withPortfolioTransaction().ifPresent(t -> createEditPortfolioTransactionAction(t).run());
         }
+        if (e.keyCode == 'd' && e.stateMask == SWT.MOD1)
+        {
+            if (selection.isEmpty())
+                return;
+
+            TransactionPair<?> tx = (TransactionPair<?>) selection.getFirstElement();
+            tx.withAccountTransaction().ifPresent(t -> createCopyAccountTransactionAction(t).run());
+            tx.withPortfolioTransaction().ifPresent(t -> createCopyPortfolioTransactionAction(t).run());
+        }
     }
 
     private void fillContextMenuPortfolioTxList(IMenuManager manager, IStructuredSelection selection)
@@ -131,7 +140,9 @@ public class TransactionContextMenu
         action.setAccelerator(SWT.MOD1 | 'E');
         manager.add(action);
 
-        manager.add(createCopyAccountTransactionAction(tx));
+        Action duplicateAction = createCopyAccountTransactionAction(tx);
+        duplicateAction.setAccelerator(SWT.MOD1 | 'D');
+        manager.add(duplicateAction);
 
         if (fullContextMenu)
         {
@@ -150,7 +161,9 @@ public class TransactionContextMenu
         editAction.setAccelerator(SWT.MOD1 | 'E');
         manager.add(editAction);
 
-        manager.add(createCopyPortfolioTransactionAction(tx));
+        Action duplicateAction = createCopyPortfolioTransactionAction(tx);
+        duplicateAction.setAccelerator(SWT.MOD1 | 'D');
+        manager.add(duplicateAction);
 
         manager.add(new Separator());
 
