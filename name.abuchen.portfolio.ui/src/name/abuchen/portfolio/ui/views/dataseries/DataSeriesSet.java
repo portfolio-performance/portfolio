@@ -26,6 +26,7 @@ public class DataSeriesSet
 {
     private DataSeries.UseCase useCase;
     private final List<DataSeries> availableSeries = new ArrayList<>();
+    private final List<DataSeries> availableDerivedSeries = new ArrayList<>();
 
     public DataSeriesSet(Client client, IPreferenceStore preferences, DataSeries.UseCase useCase)
     {
@@ -36,6 +37,7 @@ public class DataSeriesSet
         {
             case STATEMENT_OF_ASSETS:
                 buildStatementOfAssetsDataSeries();
+                buildStatementOfAssetsDerivedDataSeries(client, preferences, wheel);
                 break;
             case PERFORMANCE:
                 buildPerformanceDataSeries(client, preferences, wheel);
@@ -60,12 +62,92 @@ public class DataSeriesSet
         return availableSeries;
     }
 
+    public List<DataSeries> getAvailableDerivedSeries()
+    {
+        return availableDerivedSeries;
+    }
+
     /**
      * Returns DataSeries matching the given UUID.
      */
     public DataSeries lookup(String uuid)
     {
         return availableSeries.stream().filter(d -> d.getUUID().equals(uuid)).findAny().orElse(null);
+    }
+
+    private void buildStatementOfAssetsDerivedDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
+    {
+        for (var entry : DataSeries.ClientDataSeriesType.values())
+        {
+            if (!entry.equals(DataSeries.ClientDataSeriesType.INTEREST)
+                            && !entry.equals(DataSeries.ClientDataSeriesType.INTEREST_ACCUMULATED)
+                            && !entry.equals(DataSeries.ClientDataSeriesType.INTEREST_CHARGE)
+                            && !entry.equals(DataSeries.ClientDataSeriesType.INTEREST_CHARGE_ACCUMULATED))
+            {
+                for (Security security : client.getSecurities())
+                {
+                    // securities w/o currency code (e.g. a stock index) cannot
+                    // be added as equity data series (only as benchmark)
+                    if (security.getCurrencyCode() == null)
+                        continue;
+
+                    var instance = new GroupedDataSeries(security, entry, DataSeries.Type.SECURITY);
+                    addDerivedDataSeries(entry, null, instance, security.getName(), wheel);
+                }
+
+                for (Portfolio portfolio : client.getPortfolios())
+                {
+                    var instance = new GroupedDataSeries(portfolio, entry, DataSeries.Type.PORTFOLIO);
+                    addDerivedDataSeries(entry, null, instance, portfolio.getName(), wheel);
+                }
+            }
+
+            for (Portfolio portfolio : client.getPortfolios())
+            {
+                var instance = new GroupedDataSeries(portfolio, entry, DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT);
+                instance.setIsPortfolioPlusReferenceAccount(true);
+                var name = portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(); //$NON-NLS-1$
+                addDerivedDataSeries(entry, null, instance, name, wheel);
+            }
+            
+            for (Account account : client.getAccounts())
+            {
+                var instance = new GroupedDataSeries(account, entry, DataSeries.Type.ACCOUNT);
+                addDerivedDataSeries(entry, null, instance, account.getName(), wheel);
+            }
+
+            for (Taxonomy taxonomy : client.getTaxonomies())
+            {
+                taxonomy.foreach(new Taxonomy.Visitor()
+                {
+                    @Override
+                    public void visit(Classification classification)
+                    {
+                        if (classification.getParent() == null)
+                            return;
+
+                        var instance = new GroupedDataSeries(classification, entry, DataSeries.Type.CLASSIFICATION);
+                        addDerivedDataSeries(entry, taxonomy, instance, classification.getName(), wheel);
+                    }
+                });
+            }
+
+            ClientFilterMenu menu = new ClientFilterMenu(client, preferences);
+            for (ClientFilterMenu.Item item : menu.getCustomItems())
+            {
+                var instance = new GroupedDataSeries(item, entry, DataSeries.Type.CLIENT_FILTER);
+                addDerivedDataSeries(entry, null, instance, item.getLabel(), wheel);
+            }
+        }
+    }
+
+    private void addDerivedDataSeries(DataSeries.ClientDataSeriesType entry, Taxonomy taxonomy,
+                    GroupedDataSeries instance, String label, ColorWheel wheel)
+    {
+        var dataSeries = new DataSeries(DataSeries.Type.TYPE_PARENT, taxonomy, instance, label, wheel.next());
+        dataSeries.setLineChart(entry.isLineSerie());
+        dataSeries.setShowArea(entry.isAreaSerie());
+        availableDerivedSeries.add(dataSeries);
     }
 
     private void buildStatementOfAssetsDataSeries()
