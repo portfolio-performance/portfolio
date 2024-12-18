@@ -168,8 +168,7 @@ public final class ClientFilterMenu implements IMenuListener
         });
 
         manager.add(new Separator());
-        manager.add(new SimpleAction(Messages.LabelClientFilterNew, a -> createCustomFilter()));
-        manager.add(new SimpleAction(Messages.LabelClientFilterManage, a -> editCustomFilter()));
+        createAndManageFilter(manager);
 
         manager.add(new SimpleAction(Messages.LabelClientClearCustomItems, a -> {
             if (!MessageDialog.openConfirm(Display.getDefault().getActiveShell(), Messages.LabelClientClearCustomItems,
@@ -186,6 +185,13 @@ public final class ClientFilterMenu implements IMenuListener
             filterConfig.clear();
             client.touch();
         }));
+    }
+
+    public void createAndManageFilter(IMenuManager manager)
+    {
+        manager.add(new LabelOnly(Messages.MenuCreateAndManageClientFilter));
+        manager.add(new SimpleAction(Messages.LabelClientFilterNew, a -> createCustomFilter()));
+        manager.add(new SimpleAction(Messages.LabelClientFilterManage, a -> editCustomFilter()));
     }
 
     private void editCustomFilter()

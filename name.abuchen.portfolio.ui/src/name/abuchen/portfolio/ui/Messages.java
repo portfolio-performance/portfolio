@@ -956,6 +956,7 @@ public class Messages extends NLS
     public static String MenuConvertToOutboundDelivery;
     public static String MenuConvertToSell;
     public static String MenuCreateAccountOrTransaction;
+    public static String MenuCreateAndManageClientFilter;
     public static String MenuCreateColumnConfig;
     public static String MenuCreatePortfolioOrTransaction;
     public static String MenuDashboardColumnWidth;

@@ -42,6 +42,7 @@ import name.abuchen.portfolio.ui.dialogs.balance.TroubleshootBalanceDiscrepancyD
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.handlers.ImportCSVHandler;
 import name.abuchen.portfolio.ui.handlers.ImportPDFHandler;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
@@ -79,6 +80,8 @@ public class AccountListView extends AbstractFinanceView implements Modification
 
     private ShowHideColumnHelper accountColumns;
 
+    private ClientFilterMenu clientFilterMenu;
+
     private boolean isFiltered = false;
 
     @Override
@@ -91,6 +94,7 @@ public class AccountListView extends AbstractFinanceView implements Modification
     public void setup()
     {
         isFiltered = getPreferenceStore().getBoolean(FILTER_INACTIVE_ACCOUNTS);
+        clientFilterMenu = new ClientFilterMenu(getClient(), getPreferenceStore());
     }
 
     private void resetInput()
@@ -122,6 +126,10 @@ public class AccountListView extends AbstractFinanceView implements Modification
 
         manager.add(new DropDown(Messages.MenuCreateAccountOrTransaction, Images.PLUS, SWT.NONE, menuListener -> {
             menuListener.add(new SimpleAction(Messages.AccountMenuAdd, newAccountAction));
+
+            menuListener.add(new Separator());
+
+            clientFilterMenu.createAndManageFilter(menuListener);
 
             menuListener.add(new Separator());
 
@@ -332,6 +340,10 @@ public class AccountListView extends AbstractFinanceView implements Modification
 
         action.setEnabled(account.getTransactions().isEmpty());
         manager.add(action);
+
+        manager.add(new Separator());
+
+        clientFilterMenu.createAndManageFilter(manager);
     }
 
     // //////////////////////////////////////////////////////////////

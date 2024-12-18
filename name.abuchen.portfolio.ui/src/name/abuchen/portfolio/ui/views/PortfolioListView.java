@@ -40,6 +40,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.handlers.ImportCSVHandler;
 import name.abuchen.portfolio.ui.handlers.ImportPDFHandler;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
@@ -72,6 +73,8 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
 
     private ShowHideColumnHelper portfolioColumns;
 
+    private ClientFilterMenu clientFilterMenu;
+
     private boolean isFiltered = false;
 
     @Override
@@ -84,6 +87,7 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
     public void setup()
     {
         isFiltered = getPreferenceStore().getBoolean(FILTER_INACTIVE_PORTFOLIOS);
+        clientFilterMenu = new ClientFilterMenu(getClient(), getPreferenceStore());
     }
 
     private void setInput()
@@ -152,6 +156,11 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
 
         toolBar.add(new DropDown(Messages.MenuCreatePortfolioOrTransaction, Images.PLUS, SWT.NONE, manager -> {
             manager.add(new SimpleAction(Messages.PortfolioMenuAdd, newPortfolioAction));
+
+            manager.add(new Separator());
+
+            clientFilterMenu.createAndManageFilter(manager);
+
             manager.add(new Separator());
 
             Portfolio portfolio = (Portfolio) portfolios.getStructuredSelection().getFirstElement();
@@ -361,6 +370,10 @@ public class PortfolioListView extends AbstractFinanceView implements Modificati
         action.setEnabled(portfolio.getTransactions().isEmpty());
 
         manager.add(action);
+
+        manager.add(new Separator());
+
+        clientFilterMenu.createAndManageFilter(manager);
     }
 
     // //////////////////////////////////////////////////////////////
