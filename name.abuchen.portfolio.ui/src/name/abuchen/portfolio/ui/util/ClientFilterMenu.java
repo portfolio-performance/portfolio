@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,6 +31,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConfigurationSet;
 import name.abuchen.portfolio.model.ConfigurationSet.Configuration;
 import name.abuchen.portfolio.model.ConfigurationSet.WellKnownConfigurationSets;
+import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
@@ -39,7 +41,7 @@ import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 
 public final class ClientFilterMenu implements IMenuListener
 {
-    public static class Item
+    public static class Item implements Named
     {
         /** unique and stable identifier for a filter */
         private final String id;
@@ -52,6 +54,8 @@ public final class ClientFilterMenu implements IMenuListener
 
         // transient to avoid Gson serialization
         private transient ClientFilter filter; // NOSONAR
+
+        private String note;
 
         public Item(String id, String label, String uuids, ClientFilter filter)
         {
@@ -89,6 +93,30 @@ public final class ClientFilterMenu implements IMenuListener
         public ClientFilter getFilter()
         {
             return filter;
+        }
+
+        @Override
+        public String getNote()
+        {
+            return note;
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            this.note = note;
+        }
+
+        @Override
+        public String getName()
+        {
+            return getLabel();
+        }
+
+        @Override
+        public void setName(String name)
+        {
+            this.label = name;
         }
 
         @Override
@@ -188,12 +216,13 @@ public final class ClientFilterMenu implements IMenuListener
         }));
     }
 
-    private void editCustomFilter()
+    public void editCustomFilter()
     {
         if (customItems.isEmpty())
         {
             MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.LabelInfo,
-                            Messages.LabelClientFilterNoCustomFilterExisting);
+                            MessageFormat.format(Messages.LabelClientFilterNoCustomFilterExisting,
+                                            Messages.LabelClientFilterNew));
             return;
         }
 
@@ -225,7 +254,7 @@ public final class ClientFilterMenu implements IMenuListener
         }
     }
 
-    private void createCustomFilter()
+    public void createCustomFilter()
     {
         LabelProvider labelProvider = new LabelProvider()
         {
@@ -338,6 +367,16 @@ public final class ClientFilterMenu implements IMenuListener
     public List<Item> getCustomItems()
     {
         return Collections.unmodifiableList(customItems);
+    }
+
+    public LinkedList<Item> getModifiableCustomItems()
+    {
+        return customItems;
+    }
+
+    public ConfigurationSet getfilterConfig()
+    {
+        return filterConfig;
     }
 
     public void select(Item item)
