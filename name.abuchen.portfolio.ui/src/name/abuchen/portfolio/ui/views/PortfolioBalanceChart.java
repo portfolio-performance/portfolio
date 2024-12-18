@@ -33,6 +33,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -41,6 +42,7 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyClient;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -57,8 +59,12 @@ public class PortfolioBalanceChart
 
     private Client client;
     private Portfolio portfolio;
+    private ClientFilterMenu.Item groupedAccount;
     private Composite container;
     private TimelineChart chart;
+    private Interval chartInterval;
+    private String portfolioName;
+    private String portfolioUUID;
     private ExchangeRateProviderFactory exchangeRateProviderFactory;
 
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.ABSOLUTE_INVESTED_CAPITAL,
@@ -125,8 +131,34 @@ public class PortfolioBalanceChart
         var isNewPortfolio = !Objects.equal(this.portfolio, portfolio);
 
         this.portfolio = portfolio;
+        this.groupedAccount = null;
         this.exchangeRateProviderFactory = exchangeRateProviderFactory;
+        this.chartInterval = getInterval(portfolio);
+        this.portfolioName = portfolio.getName();
+        this.portfolioUUID = portfolio.getUUID();
         chart.getTitle().setText(portfolio.getName());
+
+        // unless we are updating an existing portfolio (for example adding or
+        // removing a data series), we clear the chart as to not show wrong data
+        // series data
+        if (isNewPortfolio)
+            clearChart();
+
+        computeAndUpdateChart();
+    }
+
+    public void updateChart(ClientFilterMenu.Item groupedAccount,
+                    ExchangeRateProviderFactory exchangeRateProviderFactory)
+    {
+        var isNewPortfolio = !Objects.equal(this.groupedAccount, groupedAccount);
+
+        this.portfolio = null;
+        this.groupedAccount = groupedAccount;
+        this.exchangeRateProviderFactory = exchangeRateProviderFactory;
+        this.chartInterval = getInterval(groupedAccount);
+        this.portfolioName = groupedAccount.getLabel();
+        this.portfolioUUID = groupedAccount.getUUIDs();
+        chart.getTitle().setText(groupedAccount.getLabel());
 
         // unless we are updating an existing portfolio (for example adding or
         // removing a data series), we clear the chart as to not show wrong data
@@ -169,10 +201,26 @@ public class PortfolioBalanceChart
 
     private void computeChart()
     {
+        if (chartInterval == null)
+            return;
+
+        CurrencyConverter converter = new CurrencyConverterImpl(exchangeRateProviderFactory, client.getBaseCurrency());
+
+        var warnings = new ArrayList<Exception>();
+
+        var index = portfolio != null
+                        ? PerformanceIndex.forPortfolio(client, converter, portfolio, chartInterval, warnings)
+                        : PerformanceIndex.forClient(groupedAccount.getFilter().filter(client), converter,
+                                        chartInterval, warnings);
+        Display.getDefault().asyncExec(() -> updateChart(index));
+    }
+
+    public Interval getInterval(Portfolio portfolio)
+    {
         List<PortfolioTransaction> tx = portfolio.getTransactions();
 
         if (tx.isEmpty())
-            return;
+            return null;
 
         Collections.sort(tx, Transaction.BY_DATE);
 
@@ -185,13 +233,32 @@ public class PortfolioBalanceChart
         if (now.isBefore(start))
             start = now;
 
-        CurrencyConverter converter = new CurrencyConverterImpl(exchangeRateProviderFactory, client.getBaseCurrency());
+        return Interval.of(start, end);
+    }
 
-        var warnings = new ArrayList<Exception>();
+    public Interval getInterval(ClientFilterMenu.Item groupedAccount)
+    {
+        var filteredClient = groupedAccount.getFilter().filter(client);
+        var tx = filteredClient.getAllTransactions();
 
-        var index = PerformanceIndex.forPortfolio(client, converter, portfolio, Interval.of(start, end), warnings);
+        Collections.sort(tx, TransactionPair.BY_DATE);
 
-        Display.getDefault().asyncExec(() -> updateChart(index));
+        LocalDate now = LocalDate.now();
+        LocalDate start = now;
+        LocalDate end = now;
+
+        if (!tx.isEmpty())
+        {
+            start = tx.getFirst().getTransaction().getDateTime().toLocalDate();
+            end = tx.getLast().getTransaction().getDateTime().toLocalDate();
+        }
+
+        if (now.isAfter(end))
+            end = now;
+        if (now.isBefore(start))
+            start = now;
+
+        return Interval.of(start, end);
     }
 
     private void updateChart(PerformanceIndex index)
@@ -212,8 +279,8 @@ public class PortfolioBalanceChart
 
             // reverse the order
 
-            var lineSeries = chart.addDateSeries(portfolio.getUUID(), index.getDates(),
-                            toDouble(index.getTotals(), Values.Amount.divider()), Colors.CASH, portfolio.getName());
+            var lineSeries = chart.addDateSeries(portfolioUUID, index.getDates(),
+                            toDouble(index.getTotals(), Values.Amount.divider()), Colors.CASH, portfolioName);
             lineSeries.setAntialias(swtAntialias);
 
             if (chartConfig.contains(ChartDetails.ABSOLUTE_INVESTED_CAPITAL))
