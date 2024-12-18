@@ -21,6 +21,7 @@ import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -38,7 +39,8 @@ public class StatementOfAssetsPane implements InformationPanePage
     @Inject
     private ExchangeRateProviderFactory factory;
 
-    private Portfolio portfolio;
+    private Object portfolioOrGroupedAccount;
+
     private StatementOfAssetsViewer viewer;
 
     @Override
@@ -63,7 +65,8 @@ public class StatementOfAssetsPane implements InformationPanePage
     public void addButtons(ToolBarManager toolBar)
     {
         toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
-                        a -> new TableViewerCSVExporter(viewer.getTableViewer()).export(getLabel(), portfolio)));
+                        a -> new TableViewerCSVExporter(viewer.getTableViewer()).export(getLabel(),
+                                        portfolioOrGroupedAccount)));
 
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> viewer.getColumnHelper().menuAboutToShow(manager)));
@@ -72,29 +75,51 @@ public class StatementOfAssetsPane implements InformationPanePage
     @Override
     public void setInput(Object input)
     {
-        portfolio = Adaptor.adapt(Portfolio.class, input);
-
-        if (portfolio != null)
+        if (input instanceof Portfolio)
         {
-            CurrencyConverter converter = new CurrencyConverterImpl(factory,
-                            portfolio.getReferenceAccount().getCurrencyCode());
+            portfolioOrGroupedAccount = Adaptor.adapt(Portfolio.class, input);
 
-            ClientFilter clientFilter = new PortfolioClientFilter(portfolio);
+            if (portfolioOrGroupedAccount != null)
+            {
+                CurrencyConverter converter = new CurrencyConverterImpl(factory,
+                                ((Portfolio) portfolioOrGroupedAccount).getReferenceAccount().getCurrencyCode());
+                ClientFilter clientFilter = new PortfolioClientFilter((Portfolio) portfolioOrGroupedAccount);
+                viewer.setInput(clientFilter, LocalDate.now(), converter);
+            }
+            else
+            {
+                CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+                viewer.setInput(new EmptyFilter(), LocalDate.now(), converter);
+            }
 
-            viewer.setInput(clientFilter, LocalDate.now(), converter);
+        }
+        else if (input instanceof ClientFilterMenu.Item)
+        {
+            portfolioOrGroupedAccount = Adaptor.adapt(ClientFilterMenu.Item.class, input);
+
+            if (portfolioOrGroupedAccount != null)
+            {
+                CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+                ClientFilter clientFilter = ((ClientFilterMenu.Item) portfolioOrGroupedAccount).getFilter();
+                viewer.setInput(clientFilter, LocalDate.now(), converter);
+            }
+            else
+            {
+                CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+                viewer.setInput(new EmptyFilter(), LocalDate.now(), converter);
+            }
         }
         else
         {
-            CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
-            viewer.setInput(new EmptyFilter(), LocalDate.now(), converter);
+            // throw error ?
         }
     }
 
     @Override
     public void onRecalculationNeeded()
     {
-        if (portfolio != null)
-            setInput(portfolio);
+        if (portfolioOrGroupedAccount != null)
+            setInput(portfolioOrGroupedAccount);
     }
 
 }

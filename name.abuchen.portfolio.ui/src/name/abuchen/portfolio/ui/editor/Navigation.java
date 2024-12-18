@@ -36,6 +36,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.AccountListView;
 import name.abuchen.portfolio.ui.views.AllTransactionsView;
 import name.abuchen.portfolio.ui.views.BrowserTestView;
+import name.abuchen.portfolio.ui.views.GroupedAccountListView;
 import name.abuchen.portfolio.ui.views.InvestmentPlanListView;
 import name.abuchen.portfolio.ui.views.PerformanceChartView;
 import name.abuchen.portfolio.ui.views.PerformanceView;
@@ -195,6 +196,7 @@ public final class Navigation
     {
         createGeneralDataSection(client);
         createMasterDataSection();
+        createTransactionSection();
         createPerformanceSection();
         createTaxonomyDataSection(client);
         createMiscSection();
@@ -447,11 +449,18 @@ public final class Navigation
 
         masterData.add(new Item(Messages.LabelAccounts, Images.ACCOUNT, AccountListView.class));
         masterData.add(new Item(Messages.LabelPortfolios, Images.PORTFOLIO, PortfolioListView.class));
-        masterData.add(new Item(Messages.LabelInvestmentPlans, Images.INVESTMENTPLAN, InvestmentPlanListView.class));
-
-        masterData.add(new Item(Messages.LabelAllTransactions, AllTransactionsView.class));
+        masterData.add(new Item(Messages.LabelGroupedAccounts, Images.GROUPEDACCOUNTS, GroupedAccountListView.class)); // $NON-NLS-1$
     }
 
+    private void createTransactionSection()
+    {
+        Item masterData = new Item(Messages.LabelTransactions);
+
+        roots.add(masterData);
+
+        masterData.add(new Item(Messages.LabelInvestmentPlans, Images.INVESTMENTPLAN, InvestmentPlanListView.class));
+        masterData.add(new Item(Messages.LabelAllTransactions, AllTransactionsView.class));
+    }
     private void createPerformanceSection()
     {
         Item section = new Item(Messages.ClientEditorLabelReports);

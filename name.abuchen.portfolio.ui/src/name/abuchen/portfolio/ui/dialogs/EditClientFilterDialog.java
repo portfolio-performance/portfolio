@@ -61,7 +61,7 @@ import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 
 public class EditClientFilterDialog extends Dialog
 {
-    private static class ContentProvider implements ITreeContentProvider
+    public static class ContentProvider implements ITreeContentProvider
     {
         private final Map<String, Object> uuid2object = new HashMap<>();
         private List<ClientFilterMenu.Item> items = new ArrayList<>();
@@ -179,7 +179,7 @@ public class EditClientFilterDialog extends Dialog
             public Image getImage(Object element)
             {
                 if (element instanceof ClientFilterMenu.Item)
-                    return Images.FILTER_OFF.image();
+                    return Images.GROUPEDACCOUNTS.image();
                 else
                     return LogoManager.instance().getDefaultColumnImage(element, client.getSettings());
             }
