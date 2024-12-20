@@ -100,6 +100,8 @@ public class BasicDataSeriesConfigurator
 
         if (dataSeriesSet.getUseCase() != DataSeries.UseCase.STATEMENT_OF_ASSETS)
             manager.add(new SimpleAction(Messages.ChartSeriesPickerAddBenchmark, a -> doAddSeries(true)));
+        else
+            manager.add(new SimpleAction(Messages.ChartSeriesPickerAddDerivedData, a -> doAddDerivedSeries()));
 
         addCopyFromOtherChartsMenu(manager);
     }
@@ -120,6 +122,33 @@ public class BasicDataSeriesConfigurator
 
         DataSeriesSelectionDialog dialog = new DataSeriesSelectionDialog(Display.getDefault().getActiveShell(), client);
         dialog.setElements(list);
+
+        if (dialog.open() != DataSeriesSelectionDialog.OK)
+            return;
+
+        List<DataSeries> result = dialog.getResult();
+        if (result.isEmpty())
+            return;
+
+        result.forEach(series -> {
+            series.setVisible(true);
+            selectedSeries.add(series);
+        });
+
+        fireUpdate();
+    }
+
+    private void doAddDerivedSeries()
+    {
+        List<DataSeries> list = new ArrayList<>(dataSeriesSet.getAvailableDerivedSeries());
+
+        // remove already selected items
+        for (DataSeries s : selectedSeries)
+            list.remove(s);
+
+        DataSeriesSelectionDialog dialog = new DataSeriesSelectionDialog(Display.getDefault().getActiveShell(), client);
+        dialog.setElementsDerivedData(list);
+        dialog.setExpandTree(false);
 
         if (dialog.open() != DataSeriesSelectionDialog.OK)
             return;
