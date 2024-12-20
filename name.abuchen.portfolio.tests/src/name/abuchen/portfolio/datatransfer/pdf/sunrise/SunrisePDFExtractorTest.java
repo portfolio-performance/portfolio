@@ -165,6 +165,38 @@ public class SunrisePDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf05()
+    {
+        SunrisePDFExtractor extractor = new SunrisePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AT0000A1Z882"), hasWkn(null), hasTicker(null), //
+                        hasName("Standortfonds Deutschland"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-11-05T00:00"), hasShares(0.663), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote("Auftrags-Nummer: 202411011234567890000001386891"), //
+                        hasAmount("EUR", 98.77), hasGrossValue("EUR", 98.77), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDividende22()
     {
         SunrisePDFExtractor extractor = new SunrisePDFExtractor(new Client());
