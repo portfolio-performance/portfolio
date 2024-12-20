@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -18,8 +19,6 @@ import org.apache.commons.csv.CSVRecord;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Test;
-
-import com.google.common.base.Charsets;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -124,7 +123,7 @@ public class MovingAverageConvergenceDivergenceTest
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
         List<CSVRecord> records = CSVParser
-                        .parse(this.getClass().getResourceAsStream("Indicator.GOOG.csv"), Charsets.UTF_8,
+                        .parse(this.getClass().getResourceAsStream("Indicator.GOOG.csv"), StandardCharsets.UTF_8,
                                         CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).build())
                         .getRecords();
 
