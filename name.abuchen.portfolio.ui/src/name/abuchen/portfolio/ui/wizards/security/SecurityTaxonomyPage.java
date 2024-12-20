@@ -219,6 +219,9 @@ public class SecurityTaxonomyPage extends AbstractPage
         final List<IObservableValue<Integer>> weightObservables = new ArrayList<>();
         final List<IObservableValue<?>> classificationObservables = new ArrayList<>();
 
+        designation.getLinks().sort(
+                        (firstLink, secondLink) -> Integer.compare(secondLink.getWeight(), firstLink.getWeight()));
+
         if (designation.getLinks().size() == 1
                         && designation.getLinks().get(0).getWeight() == Classification.ONE_HUNDRED_PERCENT)
         {
