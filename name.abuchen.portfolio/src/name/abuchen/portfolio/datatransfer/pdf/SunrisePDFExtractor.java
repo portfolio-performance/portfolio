@@ -35,7 +35,7 @@ public class SunrisePDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("info@meetsunrise.com");
         addBankIdentifier("info@sunrise.app");
-        addBankIdentifier("Sunrise Securities GmbH")
+        addBankIdentifier("Sunrise Securities GmbH");
 
         addBuySellTransaction();
         addDividendeTransaction();
