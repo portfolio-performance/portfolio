@@ -131,20 +131,6 @@
 					<filters>
 						<filter>	
 							<type>eclipse-plugin</type>
-							<id>org.apache.pdfbox</id>
-							<restrictTo>
-								<version>1.8.17</version>
-							</restrictTo>
-						</filter>
-						<filter>	
-							<type>eclipse-plugin</type>
-							<id>org.apache.pdfbox.fontbox</id>
-							<restrictTo>
-								<version>1.8.17</version>
-							</restrictTo>
-						</filter>
-						<filter>	
-							<type>eclipse-plugin</type>
 							<id>org.eclipse.ui.ide</id>
 							<removeAll />
 						</filter>
