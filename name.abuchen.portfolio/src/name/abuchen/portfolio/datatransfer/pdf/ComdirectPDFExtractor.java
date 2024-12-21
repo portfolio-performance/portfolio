@@ -1297,16 +1297,25 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .section("note").optional() //
                         .match("^.*R([\\s]+)?e([\\s]+)?f([\\s]+)?e([\\s]+)?r([\\s]+)?e([\\s]+)?n([\\s]+)?z([\\s]+)?\\-([\\s]+)?N([\\s]+)?u([\\s]+)?m([\\s]+)?m([\\s]+)?e([\\s]+)?r([\\s]+)?:[\\s]{1,}(?<note>.*)$")
                         .match("^Steuerliche Behandlung: Vorabpauschale .*$") //
-                        .assign((t, v) -> t.setNote("Vorabpauschale | Ref.-Nr.: " + stripBlanks(v.get("note")).substring(0, 16)))
+                        .assign((t, v) -> {
+                            String note = stripBlanks(v.get("note"));
+                            note = (note != null && note.length() > 16) ? note.substring(0, 16) : (note != null ? note : "");
+
+                            t.setNote("Vorabpauschale | Ref.-Nr.: " + note);
+                        })
 
                         // @formatter:off
                         // 643  R  e  f e  r e  n  z  - N   u mmer:    2 G   I G   7  N   0  V  BSQ00112
+                        // 38342 qSrhP                       R   e  f e  r e  n  z  - Nummer:     1   Z  I L  B  M   LW99T00 0
                         // @formatter:on
                         .section("note").optional() //
                         .match("^.*R([\\s]+)?e([\\s]+)?f([\\s]+)?e([\\s]+)?r([\\s]+)?e([\\s]+)?n([\\s]+)?z([\\s]+)?\\-([\\s]+)?N([\\s]+)?u([\\s]+)?m([\\s]+)?m([\\s]+)?e([\\s]+)?r([\\s]+)?:[\\s]{1,}(?<note>.*)$")
                         .assign((t, v) -> {
+                            String note = stripBlanks(v.get("note"));
+                            note = (note != null && note.length() > 16) ? note.substring(0, 16) : (note != null ? note : "");
+
                             if (t.getType().isCredit())
-                                t.setNote(concatenate(t.getNote(), "Ref.-Nr.: " + stripBlanks(v.get("note")).substring(0, 16), " | "));
+                                t.setNote(concatenate(t.getNote(), "Ref.-Nr.: " + note, " | "));
                         })
 
                         .wrap((t, ctx) -> {
