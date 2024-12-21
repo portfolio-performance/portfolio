@@ -27,7 +27,7 @@ public class ClientFilterColumnOptions implements Column.Options<ClientFilterMen
     @Override
     public ClientFilterMenu.Item valueOf(String s)
     {
-        return clientFilterMenu.getAllItems().filter(item -> item.getId().equals(s)).findAny().orElseThrow();
+        return clientFilterMenu.getAllItems().filter(item -> item.getId().equals(s)).findAny().orElse(null);
     }
 
     @Override
