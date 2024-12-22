@@ -617,7 +617,7 @@ public class StatementOfAssetsViewer
 
         // cost value per share - FIFO
         Column column = new Column("7", Messages.ColumnPurchasePrice, SWT.RIGHT, 60); //$NON-NLS-1$
-        column.setHeading(Messages.LabelFeesAndTaxesNotIncluded);
+        column.setHeading(Messages.LabelTaxesAndFeesNotIncluded);
         column.setGroupLabel(Messages.LabelPurchasePrice);
         column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
         column.setDescription(Messages.ColumnPurchasePrice_Description);
@@ -642,7 +642,7 @@ public class StatementOfAssetsViewer
 
         // cost value per share including fees and taxes - FIFO
         column = new Column("grossPurchasePriceFIFO", Messages.ColumnGrossPurchasePriceFIFO, SWT.RIGHT, 60); //$NON-NLS-1$
-        column.setHeading(Messages.LabelFeesAndTaxesIncluded);
+        column.setHeading(Messages.LabelTaxesAndFeesIncluded);
         column.setGroupLabel(Messages.LabelPurchasePrice);
         column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
         column.setDescription(Messages.ColumnGrossPurchasePriceFIFO_Description);
