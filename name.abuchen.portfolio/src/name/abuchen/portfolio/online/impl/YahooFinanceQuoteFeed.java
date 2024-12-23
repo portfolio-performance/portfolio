@@ -62,6 +62,18 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                         .addParameter("corsDomain", "finance.yahoo.com").get();
     }
 
+    private static long scaleGB(long price, String quote_currency, String security_currency)
+    {
+        if (quote_currency != null)
+        {
+            if (quote_currency.equals("GBP") && security_currency.equals("GBX")) //$NON-NLS-1$ //$NON-NLS-2$
+                return price * 100;
+            if (quote_currency.equals("GBX") && security_currency.equals("GBP")) //$NON-NLS-1$ //$NON-NLS-2$
+                return price / 100;
+        }
+        return price;
+    }
+
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
@@ -80,7 +92,10 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
             Optional<String> value = extract(json, 0, "\"regularMarketPrice\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
             if (value.isPresent())
-                price.setValue(asPrice(value.get()));
+            {
+                Optional<String> quote_currency = extract(json, 0, "\"currency\":\"", "\","); //$NON-NLS-1$ //$NON-NLS-2$
+                price.setValue(scaleGB(asPrice(value.get()), quote_currency.orElse(null), security.getCurrencyCode()));
+            }
 
             price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
             price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
@@ -158,7 +173,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         try
         {
             String responseBody = requestData(security, startDate);
-            return extractQuotes(responseBody);
+            return extractQuotes(responseBody, security.getCurrencyCode());
         }
         catch (IOException e)
         {
@@ -196,6 +211,11 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
     /* package */ QuoteFeedData extractQuotes(String responseBody)
     {
+        return extractQuotes(responseBody, ""); //$NON-NLS-1$
+    }
+
+    private QuoteFeedData extractQuotes(String responseBody, String security_currency)
+    {
         List<LatestSecurityPrice> answer = new ArrayList<>();
 
         try
@@ -216,6 +236,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (result0 == null)
                 throw new IOException("result[0]"); //$NON-NLS-1$
 
+            String quote_currency = null;
             ZoneId exchangeZoneId = ZoneOffset.UTC;
             if (result0.containsKey("meta")) //$NON-NLS-1$
             {
@@ -233,6 +254,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                         // Ignore
                     }
                 }
+
+                quote_currency = (String) meta.get("currency"); //$NON-NLS-1$
             }
 
             JSONArray timestamp = (JSONArray) result0.get("timestamp"); //$NON-NLS-1$
@@ -258,7 +281,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                     // yahoo api seesm to return floating numbers --> limit to 4
                     // digits which seems to round it to the right value
                     double v = Math.round(q * 10000) / 10000d;
-                    price.setValue(Values.Quote.factorize(v));
+                    price.setValue(scaleGB(Values.Quote.factorize(v), quote_currency, security_currency));
                     answer.add(price);
                 }
             }
