@@ -234,7 +234,7 @@ public class TradeCalendarManager
         // https://www.asx.com.au/markets/market-resources/trading-hours-calendar/cash-market-trading-hours/trading-calendar
         tc = new TradeCalendar("asx", Messages.LabelTradeCalendarASX, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
-        tc.add(fixed(AUSTRALIA_DAY, Month.JANUARY, 26));
+        tc.add(fixed(AUSTRALIA_DAY, Month.JANUARY, 26).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
         tc.add(fixed(ANZAC_DAY, Month.APRIL, 25));
