@@ -1448,6 +1448,16 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("noTax"))
                                 processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                        })
+
+                        // @formatter:off
+                        // Withholding tax EUR 0.52 -
+                        // @formatter:on
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^Withholding tax (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
                         });
     }
 

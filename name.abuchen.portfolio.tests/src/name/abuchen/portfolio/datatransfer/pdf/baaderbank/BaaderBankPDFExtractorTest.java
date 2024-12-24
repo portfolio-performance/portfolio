@@ -4247,6 +4247,37 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void testDividende24()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0011683594"), hasWkn("A2JAHJ"), hasTicker(null), //
+                        hasName("VanEck Mstr.DM Dividend.UC.ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-12-13T00:00"), hasShares(12.371), //
+                        hasSource("Dividende24.txt"), //
+                        hasNote("Transaction No.: 01473347"), //
+                        hasAmount("EUR", 2.94), hasGrossValue("EUR", 3.46), //
+                        hasTaxes("EUR", 0.52), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDividendeStorno01()
     {
         BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
