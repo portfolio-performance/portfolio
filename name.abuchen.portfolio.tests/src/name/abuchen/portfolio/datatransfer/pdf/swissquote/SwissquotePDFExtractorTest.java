@@ -451,6 +451,37 @@ public class SwissquotePDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf09()
+    {
+        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US0231351067"), hasWkn(null), hasTicker(null), //
+                        hasName("AMAZON COM ORD"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-11-15T00:00"), hasShares(0.4683), //
+                        hasSource("Kauf09.txt"), //
+                        hasNote("Referenz: 699111111"), //
+                        hasAmount("USD", 95.00), hasGrossValue("USD", 94.86), //
+                        hasTaxes("USD", 0.14), hasFees("USD", 0.00))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         Client client = new Client();
