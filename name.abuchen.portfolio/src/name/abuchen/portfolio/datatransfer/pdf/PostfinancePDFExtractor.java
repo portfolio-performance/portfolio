@@ -42,6 +42,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("PostFinance");
 
         addBuySellTransaction();
+        addBuySellCryptoTransaction();
         addSettlementTransaction();
         addDividendeTransaction();
         addPaymentTransaction();
@@ -148,6 +149,87 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
+
+                        .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addBuySellCryptoTransaction()
+    {
+        final DocumentType type = new DocumentType("Krypto");
+        this.addDocumentTyp(type);
+
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^Krypto .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // Bitcoin BTC 0.006124 USD 97 376.126639
+                        // @formatter:on
+                        .section("name", "tickerSymbol", "currency") //
+                        .match("^(?<name>.*) (?<tickerSymbol>[A-Z]+) [\\.'\\d]+ (?<currency>[\\w]{3}) [\\.'\\d]+ [\\.'\\d]+.*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateCryptoCurrency(v)))
+
+                        // @formatter:off
+                        // Bitcoin BTC 0.006124 USD 97 376.126639
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^.* [A-Z]+ (?<shares>[\\.'\\d]+) [\\w]{3} [\\.'\\d]+ [\\.'\\d]+.*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Ihr Auftrag wurde wie folgt am  01.12.2024 ausgeführt:
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Ihr Auftrag wurde wie folgt am[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) ausgef.hrt:.*$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Der Totalbetrag von  CHF 538.73 wurde Ihrem Konto  bD93 4072 6753 0009 6042 0 mit Valuta  01.12.2024 belastet.
+                        // @formatter:on
+                        .section("currency", "amount") //
+                        .match("^Der Totalbetrag von[\\s]{1,}(?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+) wurde Ihrem Konto .*$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+
+                        // @formatter:off
+                        // Kurswert in Handelswährung USD 596.33
+                        // Total in Kontowährung zum Kurs von USD/CHF 0.8949 538.73
+                        // @formatter:on
+                        .section("fxGross", "termCurrency", "baseCurrency", "exchangeRate") //
+                        .match("^Kurswert in Handelsw.hrung [\\w]{3} (?<fxGross>[\\.'\\d]+).*$") //
+                        .match("^Total in Kontow.hrung zum Kurs von (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.'\\d]+) [\\.'\\d]+.*$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
+                            Money gross = rate.convert(rate.getTermCurrency(), fxGross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        // @formatter:off
+                        // Kryptoportfolio 33-705809-6 Auftrag 37463178
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^Kryptoportfolio [\\d\\-]+ (?<note>Auftrag [\\d]+).*$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(BuySellEntryItem::new);
 
@@ -1085,6 +1167,13 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "fee").optional() //
                         .match("^B.rsengeb.hren und sonstige Spesen (?<currency>[\\w]{3}) (?<fee>[\\.'\\d\\s]+).*$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Handelsgebühr USD 5.67
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Handelsgeb.hr (?<currency>[\\w]{3}) (?<fee>[\\.'\\d\\s]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
