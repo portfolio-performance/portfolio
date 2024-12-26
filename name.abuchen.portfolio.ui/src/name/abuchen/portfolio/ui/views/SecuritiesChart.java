@@ -410,6 +410,9 @@ public class SecuritiesChart
 
     private MessagePainter messagePainter = new MessagePainter();
 
+    private String investmentMarkerLabelBuy = PortfolioTransaction.Type.BUY.toString();
+    private String investmentMarkerLabelSell = PortfolioTransaction.Type.SELL.toString();
+
     public SecuritiesChart(Composite parent, Client client, CurrencyConverter converter)
     {
         this.client = client;
@@ -527,12 +530,12 @@ public class SecuritiesChart
         toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Positive"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Negative"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Zero"); //$NON-NLS-1$
-        toolTip.addSeriesExclude(Messages.SecurityMenuBuy);
-        toolTip.addSeriesExclude(Messages.SecurityMenuBuy + "1"); //$NON-NLS-1$
-        toolTip.addSeriesExclude(Messages.SecurityMenuBuy + "2"); //$NON-NLS-1$
-        toolTip.addSeriesExclude(Messages.SecurityMenuSell);
-        toolTip.addSeriesExclude(Messages.SecurityMenuSell + "1"); //$NON-NLS-1$
-        toolTip.addSeriesExclude(Messages.SecurityMenuSell + "2"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(investmentMarkerLabelBuy);
+        toolTip.addSeriesExclude(investmentMarkerLabelBuy + "1"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(investmentMarkerLabelBuy + "2"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(investmentMarkerLabelSell);
+        toolTip.addSeriesExclude(investmentMarkerLabelSell + "1"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(investmentMarkerLabelSell + "2"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailMarkerDividends);
         toolTip.addSeriesExclude(Messages.LabelChartDetailMarkerDividends + "1"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailMarkerDividends + "2"); //$NON-NLS-1$
@@ -1259,7 +1262,7 @@ public class SecuritiesChart
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
                         .sorted(Transaction.BY_DATE).toList();
 
-        addInvestmentMarkers(purchase, Messages.SecurityMenuBuy, colorEventPurchase,
+        addInvestmentMarkers(purchase, investmentMarkerLabelBuy, colorEventPurchase,
                         PlotSymbolType.TRIANGLE);
 
         List<PortfolioTransaction> sales = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
@@ -1269,7 +1272,7 @@ public class SecuritiesChart
                         .filter(t -> chartInterval.contains(t.getDateTime())) //
                         .sorted(Transaction.BY_DATE).toList();
 
-        addInvestmentMarkers(sales, Messages.SecurityMenuSell, colorEventSale,
+        addInvestmentMarkers(sales, investmentMarkerLabelSell, colorEventSale,
                         PlotSymbolType.INVERTED_TRIANGLE);
     }
 
