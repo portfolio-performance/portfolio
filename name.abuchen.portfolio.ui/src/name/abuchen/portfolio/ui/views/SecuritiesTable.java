@@ -101,7 +101,7 @@ import name.abuchen.portfolio.ui.views.columns.DistanceFromMovingAverageColumn;
 import name.abuchen.portfolio.ui.views.columns.DividendPaymentColumns;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-import name.abuchen.portfolio.ui.views.columns.RangeWidgetColumn;
+import name.abuchen.portfolio.ui.views.columns.QuoteRangeColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
@@ -212,7 +212,7 @@ public final class SecuritiesTable implements ModificationListener
         support.addColumn(new DistanceFromMovingAverageColumn(LocalDate::now));
         support.addColumn(new DistanceFromAllTimeHighColumn(LocalDate::now,
                         view.getPart().getReportingPeriods().stream().collect(toMutableList())));
-        support.addColumn(new RangeWidgetColumn(LocalDate::now,
+        support.addColumn(new QuoteRangeColumn(LocalDate::now,
                         view.getPart().getReportingPeriods().stream().collect(toMutableList())));
 
         for (Taxonomy taxonomy : getClient().getTaxonomies())

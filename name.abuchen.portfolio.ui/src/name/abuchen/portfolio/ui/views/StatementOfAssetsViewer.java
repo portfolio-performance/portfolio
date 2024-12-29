@@ -114,6 +114,7 @@ import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.QuoteRangeColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
@@ -586,6 +587,11 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new DistanceFromAllTimeHighColumn(() -> model.getDate(), options);
+        column.getSorter().wrap(ElementComparator::new);
+        support.addColumn(column);
+
+        column = new QuoteRangeColumn(LocalDate::now,
+                        owner.getPart().getReportingPeriods().stream().collect(toMutableList()));
         column.getSorter().wrap(ElementComparator::new);
         support.addColumn(column);
 

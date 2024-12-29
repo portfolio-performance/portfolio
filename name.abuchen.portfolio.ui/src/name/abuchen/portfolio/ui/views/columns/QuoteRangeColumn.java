@@ -21,7 +21,7 @@ import name.abuchen.portfolio.ui.util.viewers.ParameterizedOwnerDrawLabelProvide
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.util.Interval;
 
-public class RangeWidgetColumn extends Column
+public class QuoteRangeColumn extends Column
 {
     private static final class QuoteReportingPeriodLabelProvider extends ParameterizedOwnerDrawLabelProvider
     {
@@ -64,20 +64,17 @@ public class RangeWidgetColumn extends Column
                 return;
 
             double pos = value;
-            int width = getTableColumn().getWidth() - 2; // Leave some space in
-                                                         // case 2 such columns
-                                                         // go side by side
+
+            // Leave some space in case 2 such columns go side by side
+            int width = getTableColumn().getWidth() - 2;
             int yOff = (event.height - BAR_HEIGHT) / 2;
 
-            event.gc.setBackground(Colors.LIGHT_GRAY);
-            event.gc.setForeground(Colors.BLACK);
-            event.gc.fillRectangle(event.x, event.y + yOff, width, BAR_HEIGHT);
+            event.gc.setForeground(Colors.theme().defaultForeground());
             event.gc.setLineWidth(TICK_WIDTH);
 
             int tickX = (int) (width * pos);
             // When line is drawn, its coordinates are midpoint of its width,
-            // but
-            // we don't want to see half a line width or something.
+            // but we don't want to see half a line width or something.
             if (tickX < TICK_WIDTH / 2)
                 tickX = TICK_WIDTH / 2;
             else if (tickX > (width - 1 - (TICK_WIDTH + 1) / 2))
@@ -87,7 +84,7 @@ public class RangeWidgetColumn extends Column
         }
     }
 
-    public RangeWidgetColumn(Supplier<LocalDate> dateProvider, List<ReportingPeriod> options)
+    public QuoteRangeColumn(Supplier<LocalDate> dateProvider, List<ReportingPeriod> options)
     {
         super("range-widget", Messages.ColumnQuoteRangeWidget, SWT.RIGHT, 80); //$NON-NLS-1$
 
