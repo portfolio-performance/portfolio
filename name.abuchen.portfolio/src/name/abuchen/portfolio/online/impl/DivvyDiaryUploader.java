@@ -18,17 +18,12 @@ import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
-import name.abuchen.portfolio.snapshot.SecurityPosition;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.WebAccess;
 
@@ -74,38 +69,40 @@ public class DivvyDiaryUploader
     public void upload(Client client, CurrencyConverter converter, long portfolioId, boolean includeTransactions)
                     throws IOException
     {
-        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
-        PortfolioSnapshot portfolio = snapshot.getJointPortfolio();
-
-        SecurityPerformanceSnapshot performance = SecurityPerformanceSnapshot.create(client, converter,
-                        Interval.of(LocalDate.MIN, LocalDate.now()), SecurityPerformanceIndicator.Costs.class);
+        var performance = LazySecurityPerformanceSnapshot.create(client, converter,
+                        Interval.of(LocalDate.MIN, LocalDate.now()));
 
         JSONArray securities = new JSONArray();
         JSONArray activities = new JSONArray();
 
-        for (SecurityPosition position : portfolio.getPositions()) // NOSONAR
+        for (var performanceRecord : performance.getRecords())
         {
-            if (!(position.getInvestmentVehicle() instanceof Security))
-                continue;
+            var security = performanceRecord.getSecurity();
 
-            Security security = position.getSecurity();
+            // only include instruments with an ISIN
             if (Strings.isNullOrEmpty(security.getIsin()))
                 continue;
 
             JSONObject item = new JSONObject();
             item.put("isin", security.getIsin());
-            item.put("quantity", position.getShares() / Values.Share.divider());
 
-            // traditional "snapshot" of current holding as "buyin"
-            performance.getRecord(security).ifPresent(r -> {
-                Quote fifo = r.getFifoCostPerSharesHeld();
+            // fill in current holdings
+            item.put("quantity", performanceRecord.getSharesHeld().get() / Values.Share.divider());
+
+            // Add the "buyin" (the FIFO cost). Used if no transactions are
+            // transmitted. Add for backward compatibility in case transactions
+            // are transmitted.
+            Quote fifo = performanceRecord.getFifoCostPerSharesHeld().get();
+            if (fifo.isNotZero())
+            {
                 JSONObject buyin = new JSONObject();
                 buyin.put("price", fifo.getAmount() / Values.Quote.divider());
                 buyin.put("currency", fifo.getCurrencyCode());
                 item.put("buyin", buyin);
-            });
+            }
 
-            securities.add(item);
+            // add transactions
+            var transactions = new ArrayList<JSONObject>();
             if (includeTransactions)
             {
                 for (TransactionPair<?> pair : security.getTransactions(client)) // NOSONAR
@@ -136,8 +133,16 @@ public class DivvyDiaryUploader
                     activity.put("broker", "portfolioperformance");
                     activity.put("brokerReference", tx.getUUID());
 
-                    activities.add(activity);
+                    transactions.add(activity);
                 }
+            }
+
+            // include instrument if either it has a current position or has
+            // past transactions
+            if (item.containsKey("buyin") || !transactions.isEmpty())
+            {
+                securities.add(item);
+                activities.addAll(transactions);
             }
         }
 

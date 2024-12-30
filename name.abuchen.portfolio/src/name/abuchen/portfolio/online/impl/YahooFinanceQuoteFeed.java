@@ -6,7 +6,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.DateTimeException;
@@ -22,6 +23,8 @@ import java.util.Optional;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
@@ -77,7 +80,11 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
             Optional<String> value = extract(json, 0, "\"regularMarketPrice\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
             if (value.isPresent())
-                price.setValue(asPrice(value.get()));
+            {
+                Optional<String> quoteCurrency = extract(json, 0, "\"currency\":\"", "\","); //$NON-NLS-1$ //$NON-NLS-2$
+                price.setValue(convertBritishPounds(asPrice(value.get()), quoteCurrency.orElse(null),
+                                security.getCurrencyCode()));
+            }
 
             price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
             price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
@@ -155,7 +162,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         try
         {
             String responseBody = requestData(security, startDate);
-            return extractQuotes(responseBody);
+            return extractQuotes(responseBody, security.getCurrencyCode());
         }
         catch (IOException e)
         {
@@ -193,6 +200,11 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
     /* package */ QuoteFeedData extractQuotes(String responseBody)
     {
+        return extractQuotes(responseBody, ""); //$NON-NLS-1$
+    }
+
+    private QuoteFeedData extractQuotes(String responseBody, String securityCurrency)
+    {
         List<LatestSecurityPrice> answer = new ArrayList<>();
 
         try
@@ -213,6 +225,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (result0 == null)
                 throw new IOException("result[0]"); //$NON-NLS-1$
 
+            String quoteCurrency = null;
             ZoneId exchangeZoneId = ZoneOffset.UTC;
             if (result0.containsKey("meta")) //$NON-NLS-1$
             {
@@ -221,7 +234,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 String exchangeTimezoneName = (String) meta.get("exchangeTimezoneName"); //$NON-NLS-1$
                 if (exchangeTimezoneName != null)
                 {
-                    try
+                    try // NOSONAR
                     {
                         exchangeZoneId = ZoneId.of(exchangeTimezoneName);
                     }
@@ -230,6 +243,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                         // Ignore
                     }
                 }
+
+                quoteCurrency = (String) meta.get("currency"); //$NON-NLS-1$
             }
 
             JSONArray timestamp = (JSONArray) result0.get("timestamp"); //$NON-NLS-1$
@@ -255,7 +270,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                     // yahoo api seesm to return floating numbers --> limit to 4
                     // digits which seems to round it to the right value
                     double v = Math.round(q * 10000) / 10000d;
-                    price.setValue(Values.Quote.factorize(v));
+                    price.setValue(convertBritishPounds(Values.Quote.factorize(v), quoteCurrency, securityCurrency));
                     answer.add(price);
                 }
             }
@@ -286,6 +301,22 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             throw new IOException("close"); //$NON-NLS-1$
 
         return close;
+    }
+
+    /**
+     * Convert GBP to GBX and vice versa if the quote and security currency
+     * match.
+     */
+    private long convertBritishPounds(long price, String quoteCurrency, String securityCurrency)
+    {
+        if (quoteCurrency != null)
+        {
+            if ("GBP".equals(quoteCurrency) && "GBX".equals(securityCurrency)) //$NON-NLS-1$ //$NON-NLS-2$
+                return price * 100;
+            if ("GBX".equals(quoteCurrency) && "GBP".equals(securityCurrency)) //$NON-NLS-1$ //$NON-NLS-2$
+                return price / 100;
+        }
+        return price;
     }
 
     @Override
@@ -326,16 +357,16 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         {
             return new BufferedReader(new InputStreamReader(openStream(url)));
         }
-        catch (IOException e)
+        catch (IOException | URISyntaxException e)
         {
             errors.add(e);
         }
         return null;
     }
 
-    /* enable testing */
-    protected InputStream openStream(String wknUrl) throws IOException
+    @VisibleForTesting
+    protected InputStream openStream(String wknUrl) throws IOException, URISyntaxException
     {
-        return new URL(wknUrl).openStream();
+        return new URI(wknUrl).toURL().openStream();
     }
 }
