@@ -1,0 +1,75 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.72.2
+-----------------------------------------
+14460 Potsdam Kontaktdaten
+Adresse Lufthansa Miles & More Credit Card Service
+Postfach 2620
+ 94016 Passau
+Telefon: 069 - 667 888 666
+Fax: 069 - 667 888 930
+E-Mail: service@lufthansacard.de
+Herrn
+Xxx Yyyy
+Wohnstraße 1
+12345 Irgendwo
+Abrechnungsnummer: 21234567
+Ihre Abrechnung vom 28.11.2024 bis 27.12.2024 Abrechnungsdatum: 27. Dezember 2024
+Miles & More Credit Card: 5310 11XX XXXX 1234
+Seite 1 von 2 Servicekarten-Nr.: 212345678901238
+Karteninhaber: Xxx Yyyy
+Datum Datum Angabe des Unternehmens / Währung Betrag Kurs Betrag in 
+Beleg Buchung Verwendungszweck EUR
+28.11.24 Saldo letzte Abrechnung 392,31 -
+28.11.24 29.11.24 Lastschrift 392,31 +
+28.11.24 29.11.24 PAYPAL *abc, 35314369001 500,00 -
+ Prämienmeilen +250
+20.12.24 23.12.24 PAYPAL *abc, 35314369001 134,47 -
+ Prämienmeilen +67
+22.12.24 27.12.24 PAYPAL *abc, 35314369001 500,00 -
+ Prämienmeilen +250
+Neuer Saldo 1.134,47 -
+Bitte prüfen Sie diese Abrechnung auf ihre Richtigkeit. Eventuelle Reklamationen müssen umgehend nach Zugang dieser Abrechnung bei
+der DKB AG eingereicht werden. Nutzen Sie dazu einfach den Reklamationsservice in Ihrem Online-Kartenkonto auf der Seite
+"Kartenumsätze". 
+Den fälligen Betrag ziehen wir zum Zahlungstermin per Hinweis:
+Lastschrift von Ihrem Konto Nr. XXXX XX12 34, BLZ 120 300 00 Alle Zinsen und Entgelte finden Sie jederzeit 
+ein. im Preis- und Leistungsverzeichnis der DKB AG auf
+miles-and-more-kreditkarte.com/download.
+Der monatliche Verfügungsrahmen Ihrer Lufthansa Senator
+Credit Card beträgt 10.000 EUR.
+Information zu Ihrem Miles & More Programm
+Die mit dem Meilenzeichen gekennzeichneten Umsätze sind meilenfähig. 
+Die aus dieser Abrechnung resultierende Gutschrift von 567 Prämienmeilen wird auf Ihrem nächsten Miles & More Kontoauszug
+ausgewiesen.
+Für Umsätze mit dem Überweisungsservice erhalten Sie 1 Meile pro 1 Euro Umsatz.
+Für Ihre Umsätze in einem Lufthansa WorldShop erhalten Sie insgesamt je 2 € Umsatz dauerhaft 5 Prämienmeilen (3 Meilen davon sind
+in der zuvor genannten Meilensumme enthalten und 2 Meilen sind in Ihrem Miles & More Konto ersichtlich).
+Kartenausgebende Bank: Korrespondenzadresse: Vorstand: Vorsitzender des Handelsregister: Umsatzsteuer-
+Deutsche Kreditbank AG Postfach 2620 Dr. Sven Deglow (Vorsitzender), Aufsichtsrates: Amtsgericht Identifikationsnummer:
+Taubenstr. 7-9 94016 Passau Tilo Hacke, Jan Walther, Stephan Winkelmeier Berlin-Charlottenburg DE 137 17 87 46
+10117 Berlin Arnulf Keese, Kristina Trink HRB: 34165 B
+14460 Potsdam Kontaktdaten
+Adresse Lufthansa Miles & More Credit Card Service
+Postfach 2620
+ 94016 Passau
+Telefon: 069 - 667 888 666
+Fax: 069 - 667 888 930
+E-Mail: service@lufthansacard.de
+Herrn
+Xxx Yyyy
+Wohnstraße 1
+12345 Irgendwo
+Abrechnungsnummer: 21234567
+Ihre Abrechnung vom 28.11.2024 bis 27.12.2024 Abrechnungsdatum: 27. Dezember 2024
+Miles & More Credit Card: 5310 11XX XXXX 1234
+Seite 2 von 2 Servicekarten-Nr.: 212345678901238
+Karteninhaber: Xxx Yyyy
+Haben Sie Prämienmeilen mit MilesPay eingelöst, wird der Eurobetrag, der dem gewählten Meilenwert entspricht, Ihrem Kreditkartenkonto
+innerhalb von 2 bis 3 Werktagen wieder gutgeschrieben. Diese Rückbuchung erscheint als „MilesPay Gutschrift“ auf Ihrer
+Kreditkartenabrechnung.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen entnehmen Sie
+dem Informationsbogen für Einleger, den Sie auf miles-and-more-kreditkarte.com/download finden.
+Kartenausgebende Bank: Korrespondenzadresse: Vorstand: Vorsitzender des Handelsregister: Umsatzsteuer-
+Deutsche Kreditbank AG Postfach 2620 Dr. Sven Deglow (Vorsitzender), Aufsichtsrates: Amtsgericht Identifikationsnummer:
+Taubenstr. 7-9 94016 Passau Tilo Hacke, Jan Walther, Stephan Winkelmeier Berlin-Charlottenburg DE 137 17 87 46
+10117 Berlin Arnulf Keese, Kristina Trink HRB: 34165 B
