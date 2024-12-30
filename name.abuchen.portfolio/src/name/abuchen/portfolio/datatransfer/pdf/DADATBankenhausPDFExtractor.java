@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -147,7 +148,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                         // Auftrags-Nr.: 45247499-17.2.2021
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(?<note>Auftrags\\-Nr\\.: .*)$") //
+                        .match("^(?<note>Auftrags\\-Nr\\.: [\\d]+)\\-[\\d]{1,2}\\.[\\d]{1,2}.\\d{4}$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(BuySellEntryItem::new);
@@ -158,12 +159,12 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Abrechnung Ereignis");
+        DocumentType type = new DocumentType("Gesch.ftsart: Ertrag");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Gesch.ftsart: Ertrag$");
+        Block firstRelevantLine = new Block("^Abrechnung Ereignis$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -216,7 +217,7 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
-                        // Devisenkurs: 1,077 (30.4.2024) 32,99 EUR 
+                        // Devisenkurs: 1,077 (30.4.2024) 32,99 EUR
                         // Ertrag: 45,50 EUR
                         // @formatter:on
                         .section("termCurrency", "exchangeRate", "baseCurrency", "gross").optional() //
@@ -232,6 +233,15 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
+
+                        // @formatter:off
+                        // 92276651-25.11.2024
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^(?<note>[\\d]+)\\-[\\d]{1,2}\\.[\\d]{1,2}.\\d{4}$") //
+                        .assign((t, v) -> t.setNote("R.-Nr.: " + trim(v.get("note"))))
+
+                        .conclude(ExtractorUtils.fixGrossValueA())
 
                         .wrap(TransactionItem::new);
 
@@ -903,37 +913,38 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // QUELLENSTEUER: -1,86 USD
                         // Quellensteuer: -4,13 USD
+                        // Quellensteuer: -150,-- NOK
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^(?i).*QUELLENSTEUER:[\\s]{1,}\\-(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .match("^(?i).*QUELLENSTEUER:[\\s]{1,}\\-(?<withHoldingTax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // QUELLENSTEUER -15,60 USD Auslands-KESt -13,00 USD
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^(?i).*QUELLENSTEUER[\\s]{1,}\\-(?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .match("^(?i).*QUELLENSTEUER[\\s]{1,}\\-(?<withHoldingTax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Auslands-KESt: -1,54 USD
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^(?i).*Auslands\\-KESt:[\\s]{1,}\\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .match("^(?i).*Auslands\\-KESt:[\\s]{1,}\\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // QUELLENSTEUER -3,77 USD Auslands-KESt -3,13 USD
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^(?i).*Auslands\\-KESt[\\s]{1,}\\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .match("^(?i).*Auslands\\-KESt[\\s]{1,}\\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // KEST -140,27 USD Handelsspesen -5,07 USD
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^(?i)KEST[\\s]{1,}\\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .match("^(?i)KEST[\\s]{1,}\\-(?<tax>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -952,35 +963,35 @@ public class DADATBankenhausPDFExtractor extends AbstractPDFExtractor
                         // DADAT Handelsspesen -1,67 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^DADAT Handelsspesen ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .match("^DADAT Handelsspesen ([\\s]+)?\\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // KEST -140,27 USD Handelsspesen -5,07 USD
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^.*  Handelsspesen ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .match("^.*  Handelsspesen ([\\s]+)?\\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Handelsspesen -3,66 EUR DADAT Handelsspesen -6,36 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Handelsspesen ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .match("^Handelsspesen ([\\s]+)?\\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Clearing Gebühr -1,00 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Clearing Geb.hr ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .match("^Clearing Geb.hr ([\\s]+)?\\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // DADAT Handelsspesen -7,12 EUR Clearing Gebühr -1,00 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^.*  Clearing Geb.hr ([\\s]+)?\\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .match("^.*  Clearing Geb.hr ([\\s]+)?\\-(?<fee>[\\-\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }

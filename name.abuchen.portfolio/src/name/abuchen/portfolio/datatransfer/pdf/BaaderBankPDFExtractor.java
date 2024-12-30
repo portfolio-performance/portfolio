@@ -406,7 +406,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("(Fondsaussch.ttung" //
                         + "|Ertragsthesaurierung" //
-                        + "|Dividendenabrechnung" //
+                        + "|Dividendenabrechnung"
+                        + "|Aussch.ttung" //
                         + "|Aussch.ttung aus" //
                         + "|Wahldividende" //
                         + "|Fund Distribution" //
@@ -630,7 +631,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("(Vorabpauschale|Advance Lump Sum)", //
                         "(Wertpapierabrechnung" //
-                        + "|Steuerausgleichsrechnung" //
+                        + "|Steuerausgleichsrechnung"
+                        + "|Fusion \\/ Zusammenlegung" //
                         + "|Transaction Statement" //
                         + "|Kontoauszug" //
                         + "|Account Statement)");
@@ -843,7 +845,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         final DocumentType type = new DocumentType("(Perioden\\-Kontoauszug" //
                         + "|Tageskontoauszug" //
                         + "|Periodic Account Statement)", //
-                        "Rechnungsabschluss:", //
+                        "(Rechnungsabschluss|Statement of Interest and Charges):", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Perioden-Kontoauszug: EUR-Konto KOPIE
@@ -1064,20 +1066,21 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
     private void addInterestTransaction()
     {
-        final DocumentType type = new DocumentType("Zinsberechnung: Betrag in [\\w]{3}", //
+        final DocumentType type = new DocumentType("(Zinsberechnung: Betrag in|Statement of Interest and Charges:) [\\w]{3}", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Zinsberechnung: Betrag in EUR
+                                        // Calculation of Interest: Amount in EUR
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^Zinsberechnung: Betrag in (?<currency>[\\w]{3})$") //
+                                        .match("^(Zinsberechnung|Calculation of Interest): (Betrag|Amount) in (?<currency>[\\w]{3})$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$", "^Die Buchung erfolgt über Konto.*$");
+        Block firstRelevantLine = new Block("^.*(Vorgangs\\-Nr|Transaction No)\\.: .*$", "^(Die Buchung erfolgt über Konto|The above amounts are posted to account).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -1092,35 +1095,56 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Zinsberechnung: Betrag in EUR
                         // Gesamtsumme: 1,46
+                        //
+                        // Calculation of Interest: Amount in EUR
+                        // Total Amount: 112.45
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Zinsberechnung: Betrag in (?<currency>[\\w]{3})$") //
-                        .match("^Gesamtsumme: (?<amount>[\\.,\\d]+)$") //
+                        .match("^(Zinsberechnung|Calculation of Interest): (Betrag|Amount) in (?<currency>[\\w]{3})$") //
+                        .match("^(Gesamtsumme|Total Amount): (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        // @formatter:off
-                        // Abschlussbuchung vom 31.10.2023
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Abschlussbuchung vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Abschlussbuchung vom 31.10.2023
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Abschlussbuchung vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Closing Balance as of 2023-06-30
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Closing Balance as of (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Vorgangs-Nr.: 12345678
                         // @formatter:on
-                        .section("note").optional() //
+                        .section("note") //
                         .match("^.*(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$") //
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
-                        // @formatter:off
-                        // für den Zeitraum 30.09.2023 bis 31.10.2023 ergeben sich für das Konto DE12 3456 7891 2345 6789 12
-                        // @formatter:on
-                        .section("note").optional() //
-                        .match("^f.r den Zeitraum (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // für den Zeitraum 30.09.2023 bis 31.10.2023 ergeben sich für das Konto DE12 3456 7891 2345 6789 12
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^f.r den Zeitraum (?<note>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))),
+                                        // @formatter:off
+                                        // For the period from 2023-03-31 to 2023-06-30 following closing entries have been posted for account LN85
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^For the period from (?<note>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2} .* [\\d]{4}\\-[\\d]{2}\\-[\\d]{2}).*$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))))
 
                         .wrap(TransactionItem::new);
 
@@ -1421,6 +1445,16 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
                         .match("^US withholding tax (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("noTax"))
+                                processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                        })
+
+                        // @formatter:off
+                        // Withholding tax EUR 0.52 -
+                        // @formatter:on
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^Withholding tax (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.,\\d]+) \\-$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("noTax"))
                                 processWithHoldingTaxEntries(t, v, "withHoldingTax", type);

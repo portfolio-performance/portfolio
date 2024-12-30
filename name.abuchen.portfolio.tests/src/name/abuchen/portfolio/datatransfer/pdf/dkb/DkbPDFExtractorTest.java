@@ -5164,4 +5164,38 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getSource(), is("KreditKontoauszug06.txt"));
         assertThat(transaction.getNote(), is("ZAHLUNG6"));
     }
+
+    @Test
+    public void testKreditKontoauszug07()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug07.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-11-29"), hasAmount("EUR", 392.31), //
+                        hasSource("KreditKontoauszug07.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-11-29"), hasAmount("EUR", 500.00), //
+                        hasSource("KreditKontoauszug07.txt"), hasNote("PAYPAL *abc, 35314369001"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-12-23"), hasAmount("EUR", 134.47), //
+                        hasSource("KreditKontoauszug07.txt"), hasNote("PAYPAL *abc, 35314369001"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-12-27"), hasAmount("EUR", 500.00), //
+                        hasSource("KreditKontoauszug07.txt"), hasNote("PAYPAL *abc, 35314369001"))));
+    }
 }

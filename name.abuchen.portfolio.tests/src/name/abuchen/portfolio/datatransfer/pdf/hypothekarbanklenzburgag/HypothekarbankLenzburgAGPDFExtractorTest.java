@@ -17,6 +17,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -260,6 +261,37 @@ public class HypothekarbankLenzburgAGPDFExtractorTest
                         hasNote("Transaktion 69155585-0002"), //
                         hasAmount("CHF", 5399.37), hasGrossValue("CHF", 5337.98), //
                         hasTaxes("CHF", 8.01), hasFees("CHF", 53.38))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf01()
+    {
+        HypothekarbankLenzburgAGPDFExtractor extractor = new HypothekarbankLenzburgAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0012335540"), hasWkn("1233554"), hasTicker(null), //
+                        hasName("Namen-Akt Vontobel Holding AG Nom. CHF"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-12-27T00:00"), hasShares(10.00), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote("Transaktion 1234567-0131"), //
+                        hasAmount("CHF", 634.21), hasGrossValue("CHF", 637.88), //
+                        hasTaxes("CHF", 0.48), hasFees("CHF", 3.19))));
     }
 
     @Test

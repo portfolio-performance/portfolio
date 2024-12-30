@@ -93,7 +93,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2021-02-17T20:49:54")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3)));
         assertThat(entry.getSource(), is("Kauf01.txt"));
-        assertThat(entry.getNote(), is("Auftrags-Nr.: 45247499-17.2.2021"));
+        assertThat(entry.getNote(), is("Auftrags-Nr.: 45247499"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1800.00))));
@@ -2145,7 +2145,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("R.-Nr.: 45970540"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.51))));
@@ -2188,7 +2188,7 @@ public class DADATBankenhausPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-03-23T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
-        assertNull(transaction.getNote());
+        assertThat(transaction.getNote(), is("R.-Nr.: 45970540"));
 
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.51))));
@@ -2230,9 +2230,9 @@ public class DADATBankenhausPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-27T00:00"), hasShares(100), //
+                        hasDate("2023-12-27T00:00"), hasShares(100.00), //
                         hasSource("Dividende02.txt"), //
-                        hasNote(null), //
+                        hasNote("R.-Nr.: 84052423"), //
                         hasAmount("EUR", 17.99), hasGrossValue("EUR", 24.82), //
                         hasForexGrossValue("USD", 27.51), //
                         hasTaxes("EUR", (4.13 + 3.44) / 1.1082), hasFees("EUR", 0.00))));
@@ -2262,9 +2262,9 @@ public class DADATBankenhausPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-27T00:00"), hasShares(100), //
+                        hasDate("2023-12-27T00:00"), hasShares(100.00), //
                         hasSource("Dividende02.txt"), //
-                        hasNote(null), //
+                        hasNote("R.-Nr.: 84052423"), //
                         hasAmount("EUR", 17.99), hasGrossValue("EUR", 24.82), //
                         hasTaxes("EUR", (4.13 + 3.44) / 1.1082), hasFees("EUR", 0.00), //
                         check(tx -> {
@@ -2300,7 +2300,7 @@ public class DADATBankenhausPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-04-30T00:00"), hasShares(50), //
+                        hasDate("2024-04-30T00:00"), hasShares(50.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 32.99), hasGrossValue("EUR", 45.50), //
@@ -2332,11 +2332,81 @@ public class DADATBankenhausPDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2024-04-30T00:00"), hasShares(50), //
+                        hasDate("2024-04-30T00:00"), hasShares(50.00), //
                         hasSource("Dividende03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 32.99), hasGrossValue("EUR", 45.50), //
                         hasTaxes("EUR", 12.51), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende04()
+    {
+        DADATBankenhausPDFExtractor extractor = new DADATBankenhausPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NO0003054108"), hasWkn(null), hasTicker(null), //
+                        hasName("M o w i  A S A Navne-Aksjer NK 7,50"), //
+                        hasCurrencyCode("NOK"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-11-25T00:00"), hasShares(400.00), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("R.-Nr.: 92276651"), //
+                        hasAmount("EUR", 32.34), hasGrossValue("EUR", 51.74), //
+                        hasForexGrossValue("NOK", 600.05), //
+                        hasTaxes("EUR", (150.00 + 75.04) / 11.5975), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende04WithSecurityInEUR()
+    {
+        Security security = new Security("M o w i  A S A Navne-Aksjer NK 7,50", CurrencyUnit.EUR);
+        security.setIsin("NO0003054108");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        DADATBankenhausPDFExtractor extractor = new DADATBankenhausPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-11-25T00:00"), hasShares(400.00), //
+                        hasSource("Dividende04.txt"), //
+                        hasNote("R.-Nr.: 92276651"), //
+                        hasAmount("EUR", 32.34), hasGrossValue("EUR", 51.74), //
+                        hasTaxes("EUR", (150.00 + 75.04) / 11.5975), hasFees("EUR", 0.00), //
                         check(tx -> {
                             CheckCurrenciesAction c = new CheckCurrenciesAction();
                             Account account = new Account();
