@@ -37,6 +37,41 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.73.0" date="2024-12-30">
+      <description>
+        <ul>
+          <li>New: Updated to Eclipse 2024-12</li>
+          <li>New: Additional derived data series in the assets chart (e.g., invested capital for any classifications, not just the total portfolio).</li>
+          <li>New: New column: Indicator for the price range.</li>
+          <li>New: Purchase value/price now displayed both with and without taxes/fees in the assets overview.</li>
+          <li>New: Reference account balance in the list of securities accounts.</li>
+          <li>New: Sorting options for classifications when editing a security.</li>
+          <li>New: Ctrl-D to duplicate a transaction in tables.</li>
+          <li>New: PDF importer for Ginmon VL Sparen.</li>
+          <li>Improvement: Windows version now supports ARM-based devices.</li>
+          <li>Improvement: Default currency is suggested based on the locale (for new files).</li>
+          <li>Fix: Australian trading calendar now correctly shifts "Australia Day" to the next weekday when it falls on a weekend.</li>
+          <li>Fix: Corrected chart legend labels in some languages.</li>
+          <li>Fix: Resolved issue with GBX/GBP rates from Yahoo Finance.</li>
+          <li>Fix: No more white screen flashes in Dark Theme (macOS tables).</li>
+          <li>Improvements to the PDF importers for DKB, Targo Bank, Hypothekarbank, PostFinance, Swissquote, Baader Bank, Commerzbank, Scalable Capital, ING, Sunrise, Consorsbank, and DADAT.</li>          <li xml:lang="de">Neu: Aktualisierung auf Eclipse 2024-12</li>
+          <li xml:lang="de">Neu: Weitere abgeleitete Datenreihen in der Vermögensaufstellung (z.B. investiertes Kapital für beliebige Klassifikationen, nicht nur Gesamtportfolio).</li>
+          <li xml:lang="de">Neu: Neue Spalte: Indikator für die Kursspanne.</li>
+          <li xml:lang="de">Neu: Einstandswert/-preis jetzt mit und ohne Steuern/Gebühren in der Vermögensaufstellung.</li>
+          <li xml:lang="de">Neu: Kontostand des Referenzkontos in der Depotliste.</li>
+          <li xml:lang="de">Neu: Sortieroptionen für Klassifikationen beim Bearbeiten eines Wertpapiers.</li>
+          <li xml:lang="de">Neu: Ctrl-D zum Duplizieren einer Buchung in Tabellen.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Ginmon VL Sparen.</li>
+          <li xml:lang="de">Verbesserung: Windows-Version für ARM-basierte Rechner.</li>
+          <li xml:lang="de">Verbesserung: Standardwährung wird basierend auf der Locale vorgeschlagen (bei neuen Dateien).</li>          
+          <li xml:lang="de">Fix: Australischer Handelskalender verschiebt „Australien-Tag“ korrekt auf Folgetag (bei Wochenenden).</li>
+          <li xml:lang="de">Fix: Korrekte Beschriftung der Diagrammlegenden in einigen Sprachen.</li>
+          <li xml:lang="de">Fix: Problem mit GBX/GBP-Kursen von Yahoo Finance behoben.</li>
+          <li xml:lang="de">Fix: Tabellen flackern nicht mehr im Dark Theme unter macOS.</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für DKB, Targo Bank, Hypothekarbank, PostFinance, Swissquote, Baader Bank, Commerzbank, Scalable Capital, ING, Sunrise, Consorsbank, DADAT</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.72.2" date="2024-11-30">
       <description>
         <ul>
