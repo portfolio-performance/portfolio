@@ -3,11 +3,8 @@
 
 @import url("platform:/plugin/name.abuchen.portfolio.ui/css/shared/dark.css");
 
-@import url("platform:/plugin/name.abuchen.portfolio.ui/css/shared/win.css");
+@import url("platform:/plugin/name.abuchen.portfolio.ui/css/shared/win/win.css");
+
+@import url("platform:/plugin/name.abuchen.portfolio.ui/css/shared/win/dark.css");
 
 @import url("platform:/meta/name.abuchen.portfolio.ui/custom.css");
-
-Table,
-Tree {
-	swt-lines-visible: false;
-}

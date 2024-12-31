@@ -3,17 +3,8 @@
 
 @import url("platform:/plugin/name.abuchen.portfolio.ui/css/shared/dark.css");
 
-@import url("platform:/plugin/name.abuchen.portfolio.ui/css/shared/mac.css");
+@import url("platform:/plugin/name.abuchen.portfolio.ui/css/shared/mac/mac.css");
+
+@import url("platform:/plugin/name.abuchen.portfolio.ui/css/shared/mac/dark.css");
 
 @import url("platform:/meta/name.abuchen.portfolio.ui/custom.css");
-
-/*
-Hide lines in macOS dark mode because SWT table and trees flash white
-when dragging columns and/or expanding/collapsing nodes.
-
-See https://github.com/eclipse-platform/eclipse.platform.swt/issues/273
-*/
-Table,
-Tree {
-	swt-lines-visible: false;
-}
