@@ -149,6 +149,7 @@ public class TradeCalendarManager
         tc.add(fixed(HURRICANE_SANDY, Month.OCTOBER, 29).onlyIn(2012));
         tc.add(fixed(HURRICANE_SANDY, Month.OCTOBER, 30).onlyIn(2012));
         tc.add(fixed(STATE_FUNERAL, Month.DECEMBER, 5).onlyIn(2018)); // funeral of former president Bush Sr.
+        tc.add(fixed(STATE_FUNERAL, Month.JANUARY, 9).onlyIn(2025)); // funeral of former president Carter
         CACHE.put(tc.getCode(), tc);
 
         // see https://www.bolsadesantiago.com/mercado_horarios_feriados
