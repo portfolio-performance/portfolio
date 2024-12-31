@@ -123,6 +123,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
     private void addBuySellTransaction_Format02()
     {
         DocumentType type = new DocumentType("Abrechnungskonditionen");
+        type.setStripSingleCarriageReturns(true);
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -388,6 +389,7 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("(Dividendenabrechnung" //
                         + "|Ertrag aus Investments)");
+        type.setStripSingleCarriageReturns(true);
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();

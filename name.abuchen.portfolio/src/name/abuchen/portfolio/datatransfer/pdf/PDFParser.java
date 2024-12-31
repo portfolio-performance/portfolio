@@ -45,6 +45,8 @@ import name.abuchen.portfolio.model.TypedMap;
         private Consumer<Transaction<DocumentContext>> contextBuilder;
         private Block[] contextRanges;
 
+        private boolean stripSingleCarriageReturns = false;
+
         public DocumentType(String mustInclude)
         {
             this.mustInclude.add(Pattern.compile(mustInclude));
@@ -90,6 +92,11 @@ import name.abuchen.portfolio.model.TypedMap;
             this.contextProvider = contextProvider;
         }
 
+        public void setStripSingleCarriageReturns(boolean stripSingleCarriageReturns)
+        {
+            this.stripSingleCarriageReturns = stripSingleCarriageReturns;
+        }
+
         public boolean matches(String text)
         {
             // Check if the text matches the mustInclude patterns
@@ -131,6 +138,11 @@ import name.abuchen.portfolio.model.TypedMap;
 
         public void parse(String filename, List<Item> items, String text)
         {
+            if (stripSingleCarriageReturns)
+            {
+                text = text.replace("\r", ""); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+
             String[] lines = text.split("\\r?\\n"); //$NON-NLS-1$
 
             // reset context and parse it from this file
