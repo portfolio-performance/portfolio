@@ -2174,7 +2174,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("day", "month", "year", "amount", "currency") //
                                                         .match("^(?<day>[\\d]{2})[\\s]$") //
                                                         .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
-                                                                        + ".berweisung Einzahlung akzeptiert:.* " //
+                                                                        + "(SEPA Echtzeitüberweisung|.berweisung) Einzahlung akzeptiert:.* " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
@@ -2190,7 +2190,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("day", "month", "year", "amount", "currency", "amountAfter", "currencyAfter") //
                                                         .match("^(?<day>[\\d]{2})[\\s]$") //
-                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) .berweisung Einzahlung akzeptiert: .*") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (SEPA Echtzeitüberweisung|.berweisung) Einzahlung akzeptiert: .*") //
                                                         .match("^(?<year>[\\d]{4}) .*$") //
                                                         .match("(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .assign((t, v) -> {
@@ -2225,9 +2225,26 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("day", "month", "year", "amount", "currency") //
                                                         .match("^(?<day>[\\d]{2})[\\s]$") //
                                                         .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
-                                                                        + ".berweisung (PayOut to transit|Outgoing transfer for).* " //
+                                                                        + "(SEPA Echtzeitüberweisung|.berweisung) (PayOut to transit|Outgoing transfer for).* " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .match("^(?<year>[\\d]{4})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.REMOVAL);
+
+                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // 30 
+                                        // Dez. SEPA Echtzeitüberweisung Outgoing transfer for Vorname Nachname 3.000,00 € 7.342,91 €2024
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("day", "month", "year", "amount", "currency") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
+                                                                        + "(SEPA Echtzeitüberweisung|.berweisung) (PayOut to transit|Outgoing transfer for).* " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}(?<year>[\\d]{4})$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 

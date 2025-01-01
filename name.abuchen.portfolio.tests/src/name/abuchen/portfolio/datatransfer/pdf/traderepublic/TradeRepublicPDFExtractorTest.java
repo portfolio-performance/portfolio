@@ -2444,6 +2444,35 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug24()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug24.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-12-29"), hasAmount("EUR", 18.94),
+                        hasSource("Kontoauszug24.txt"), hasNote("Rossmann 000"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-12-30"), hasAmount("EUR", 3000.00),
+                        hasSource("Kontoauszug24.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-12-31"), hasAmount("EUR", 18.85),
+                        hasSource("Kontoauszug24.txt"), hasNote("Lidl sagt Danke"))));
+    }
+
+    @Test
     public void testReleveDeCompte01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
