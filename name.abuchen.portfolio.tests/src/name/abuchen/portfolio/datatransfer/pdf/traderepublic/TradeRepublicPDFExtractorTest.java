@@ -7658,6 +7658,37 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testPianoDinvestimento01()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PianoDinvestimento01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BWT3KN65"), hasWkn(null), hasTicker(null), //
+                        hasName("Factor MSCI USA Quality ESG EUR Hedged (Acc)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-16T00:00"), hasShares(6.236285), //
+                        hasSource("PianoDinvestimento01.txt"), //
+                        hasNote("Esecuzione: b61b-9U71 | Piano D'Investimenton: d9I1-588y"), //
+                        hasAmount("EUR", 270.00), hasGrossValue("EUR", 270.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testPlanDeInvestion01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());

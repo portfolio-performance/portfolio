@@ -60,6 +60,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("(WERTPAPIERABRECHNUNG" //
                         + "|WERTPAPIERABRECHNUNG SPARPLAN" //
+                        + "|PIANO D.INVESTIMENTO" //
                         + "|WERTPAPIERABRECHNUNG ROUND UP" //
                         + "|WERTPAPIERABRECHNUNG SAVEBACK" //
                         + "|SECURITIES SETTLEMENT SAVINGS PLAN" //
@@ -325,6 +326,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Ex.cution de l.investissement programm. .* (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Esecuzione del piano d'accumulo il 16.12.2024 su Lang und Schwarz Exchange.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Esecuzione del piano d.accumulo il (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Sparplanausführung am 18.11.2019 an der Lang & Schwarz Exchange.
@@ -595,7 +603,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("note") //
                                                         .match("^.*ORDINE (?<note>.*\\-.*)$") //
-                                                        .assign((t, v) -> t.setNote("Ordine: " + trim(v.get("note")))))
+                                                        .assign((t, v) -> t.setNote("Ordine: " + trim(v.get("note")))),
+                                        // @formatter:off
+                                        // 34648 rSisfHJVRxqI dzvqiw ESECUZIONE b61b-9U71
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*ESECUZIONE (?<note>.*\\-.*)$") //
+                                                        .assign((t, v) -> t.setNote("Esecuzione: " + trim(v.get("note")))))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -626,6 +641,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("note") //
                                                         .match("^PLAN DE INVERSIÓN (?<note>.*\\-.*)$") //
                                                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Plan de Invesión: "))),
+                                        // @formatter:off
+                                        // PIANO D'INVESTIMENTO d9I1-588y
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^PIANO D.INVESTIMENTO (?<note>.*\\-.*)$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Piano D'Investimenton: "))),
                                         // @formatter:off
                                         // ROUND UP 42c2-50a7
                                         // @formatter:on
@@ -3514,6 +3536,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Ex.cution de l.investissement programm. .* (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) .*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Esecuzione del piano d'accumulo il 16.12.2024 su Lang und Schwarz Exchange.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Esecuzione del piano d.accumulo il (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Sparplanausführung am 18.11.2019 an der Lang & Schwarz Exchange.
