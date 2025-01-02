@@ -19,6 +19,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -2828,6 +2829,37 @@ public class EasyBankAGPDFExtractorTest
                         hasSource("Dividende20.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 2.36), hasGrossValue("EUR", 2.36), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSteuerkorrektur01()
+    {
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerkorrektur01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B0M62Q58"), hasWkn(null), hasTicker(null), //
+                        hasName("iShs-MSCI World UCITS ETF Registered Shares USD (Dist)oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2024-12-31T00:00"), hasShares(57.802), //
+                        hasSource("Steuerkorrektur01.txt"), //
+                        hasNote("Steuerkorrektur | 47346359-18.12.2024/Nr.1"), //
+                        hasAmount("EUR", 1.76), hasGrossValue("EUR", 1.76), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
