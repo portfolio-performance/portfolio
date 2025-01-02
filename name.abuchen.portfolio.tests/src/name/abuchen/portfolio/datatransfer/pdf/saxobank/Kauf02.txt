@@ -1,0 +1,28 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: macosx | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Trade details, CHF
+Berichtszeitraum
+05-Dez-2024 bis 05-Dez-2024
+ETF
+Instrument iShares Core MSCI World UCITS ETF Handelszeit 05-Dez-2024 11:21:27
+ISIN IE00B4L5Y983 Valuta 09-Dez-2024
+Symbol SWDA:xswx Order-ID 5236807355
+Börsenbeschreibung TRADEWEB EUROPE LIMITED (TREU) Trade-ID 6093088529
+Handelsplatz Exchange Gehandelter Wert -5.480,43 USD
+Ordertyp Marktorder Preis 111,8455 USD
+K/V Kauf Menge 49,00
+Eröffnung/Schluss To-Open Spread-Kosten 0,00 CHF
+Saxo is counterparty No Gesamte Trading-Kosten -19,41 CHF
+Buchungsbetrag- Amount Umrechnungskosten Gebuchter Betrag
+Trade-Datum Value Date Umrechnungskurs
+ID USD CHF CHF
+Schweizerische
+Stempelgebühr 39683058642 05-Dez-2024 09-Dez-2024 -8,22 0,887182 -0,02 -7,29
+Ausland
+Aktienbetrag 39679982249 05-Dez-2024 09-Dez-2024 -5.480,43 0,887182 -12,12 -4.862,14
+Nettobetrag - - - - - -12,14 -4.869,43
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH-19958475 Berichtszeitraum
+Währung: CHF 05-Dez-2024 - 05-Dez-2024
+Seite 2 von 2 Konten: Sparkonto 80000/138521 Generiert um: 01-Jan-2025
