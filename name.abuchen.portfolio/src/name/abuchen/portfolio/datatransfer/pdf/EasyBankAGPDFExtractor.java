@@ -388,7 +388,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxesLostAdjustmentTransaction()
     {
-        final DocumentType type = new DocumentType("Gesch.ftsart: (Ertrag|Verkauf|Tilgung)");
+        final DocumentType type = new DocumentType("Gesch.ftsart: (Steuerkorrektur|Ertrag|Verkauf|Tilgung)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -542,21 +542,38 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Zu Gunsten IBAN AT11 1111 1111 1111 1111 Valuta 07.06.2022 478,50 EUR
+                                        // Zu Lasten IBAN oF94 4801 5892 6067 2199 Valuta 31.12.2024 -1,76 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Zu Gunsten .* Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
+                                                        .match("^Zu (Gunsten|Lasten) .* Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
-                        // @formatter:off
-                        // Gutschrift aus Verlustausgleich: 2,36 EUR
-                        // @formatter:on
-                        .section("amount", "currency").optional() //
-                        .match("^Gutschrift aus Verlustausgleich: (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Steuerkorrektur KESt aus Neubestand: -1,76 EUR
+                                        // Zu Lasten IBAN oF94 4801 5892 6067 2199 Valuta 31.12.2024 -1,76 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .find("Steuerkorrektur KESt aus Neubestand: \\-[\\.,\\d]+ [\\w]{3}.*$") //
+                                                        .match("^Zu Lasten .* \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.TAXES);
+
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // Gutschrift aus Verlustausgleich: 2,36 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Gutschrift aus Verlustausgleich: (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
 
                         .optionalOneOf( //
                                         // @formatter:off
@@ -579,6 +596,20 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
+
+                        // @formatter:off
+                        // Geschäftsart: Steuerkorrektur - Abrechnung Verkauf 47346359-18.12.2024/Nr.1
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>Steuerkorrektur).*$") //
+                        .assign((t, v) -> t.setNote(v.get("note")))
+
+                        // @formatter:off
+                        // Geschäftsart: Steuerkorrektur - Abrechnung Verkauf 47346359-18.12.2024/Nr.1
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*Abrechnung Verkauf(?<note>.*).*$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
