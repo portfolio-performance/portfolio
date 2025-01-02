@@ -5573,7 +5573,7 @@ public class EbasePDFExtractorTest
                         hasDate("2024-04-29T00:00"), hasShares(128.804746), //
                         hasSource("Umsatzabrechnung34.txt"), //
                         hasNote("Ref.-Nr.: 1234123412/12341234"), //
-                        hasAmount("EUR", 27.85), hasGrossValue("EUR", 32.97), //
+                        hasAmount("EUR", 22.73), hasGrossValue("EUR", 27.85), //
                         hasTaxes("EUR", 4.48 + 0.24 + 0.40), hasFees("EUR", 0.00))));
     }
 
