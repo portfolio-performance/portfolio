@@ -1,0 +1,27 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+rxJrK ThosSK
+BwnmeQxDygxpHJ kiWlnE 33 
+52347 YRyvGwLrLFzVO Datum 27.12.2024
+Deutschland Seite 1 / 1
+Wertpapierabrechnung 
+für Sparplanausführung 
+Typ LIMIT Order SCALx2qhYduKQJf 
+Ausführung 27.12.2024 11:46:01 Geschäft 4086GZHYi7421537 
+Ausführungsplatz EIX Lagerland Deutschland
+Depot 7684756394 Verwahrart Girosammelverwahrung
+Wertpapierabrechnung 
+Typ Wertpapier Anzahl Kurs Betrag
+Kauf American Water Works 0,016515 Stk. 121,10 EUR 2,00 EUR
+US0304201033
+Total 2,00 EUR
+Der Betrag wird mit dem Verrechnungskonto DEghin3u4DSCVJ09 (Valuta: 31.12.2024) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 1 / 1
