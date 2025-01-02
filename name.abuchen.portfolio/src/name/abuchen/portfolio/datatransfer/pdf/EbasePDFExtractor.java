@@ -529,16 +529,19 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         // @formatter:off
+                                        // Abwicklung über IBAN Institut Zahlungsbetrag
                                         // DE123 European Bank for Financial Services 0,03 EUR
-                                        // Die Auszahlung erfolgt über die oben genannte Bankverbindung.
                                         //
+                                        // Abwicklung über IBAN Institut Zahlungsbetrag
                                         // DE56341234123412341234 Deutsche Kreditbank Berlin 25,24 EUR
-                                        // Die Auszahlung erfolgt über die oben genannte Bankverbindung.
+                                        //
+                                        // Abwicklung über IBAN Institut Zahlungsbetrag
+                                        // DE12341234123412341234 Deutsche Kreditbank Berlin 22,73 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
+                                                        .find("Abwicklung über IBAN Institut Zahlungsbetrag") //
                                                         .match("^.* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
-                                                        .match("^Die Auszahlung erfolgt über die oben genannte Bankverbindung\\.$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
