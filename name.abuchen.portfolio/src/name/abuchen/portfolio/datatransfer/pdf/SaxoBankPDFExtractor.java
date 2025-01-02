@@ -37,7 +37,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final DocumentType type = new DocumentType("Bericht zu Trade\\-Details", //
+        final DocumentType type = new DocumentType("Trade details,", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Währung: CHF 05-Dez-2024 - 05-Dez-2024
@@ -50,7 +50,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Berichtszeitraum:.*$");
+        Block firstRelevantLine = new Block("^Instrument .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -67,7 +67,6 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // Instrument iShares Core MSCI World UCITS ETF Handelszeit 05-Dez-2024 11:21:27
                                         // ISIN IE00B4L5Y983 Valuta 09-Dez-2024
                                         // Symbol SWDA:xswx Order-ID 5236807355
-                                        // Handelsplatz Exchange Trade-ID 6093088529
                                         // Ordertyp Marktorder Gehandelter Wert -5.480,43 USD
                                         // @formatter:on
                                         section -> section //
@@ -76,6 +75,19 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
                                                         .match("^Symbol (?<tickerSymbol>[\\w]{3,4}):.*$") //
                                                         .match("^Ordertyp .* \\-[\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Instrument iShares Core MSCI World UCITS ETF Handelszeit 05-Dez-2024 11:21:27
+                                        // ISIN IE00B4L5Y983 Valuta 09-Dez-2024
+                                        // Symbol SWDA:xswx Order-ID 5236807355
+                                        // Ordertyp Marktorder Preis 111,8455 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "tickerSymbol", "currency") //
+                                                        .match("^Instrument (?<name>.*) Handelszeit.*$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
+                                                        .match("^Symbol (?<tickerSymbol>[\\w]{3,4}):.*$") //
+                                                        .match("^Ordertyp .* [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -85,6 +97,13 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^Er.ffnung\\/Schluss To-Open Menge (?<shares>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // K/V Kauf Menge 49,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^K\\/V Kauf Menge (?<shares>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
 
                         .oneOf( //
@@ -253,9 +272,10 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Gesamte Trading-Kosten -19,41 CHF
+                        // Saxo is counterparty No Gesamte Trading-Kosten -19,41 CHF
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Gesamte Trading\\-Kosten \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^.*Gesamte Trading\\-Kosten \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
