@@ -49,8 +49,7 @@ public class CreateTextFromPDFHandler
 
             StringBuilder textBuilder = new StringBuilder();
             textBuilder.append("```").append("\n");
-            textBuilder.append("PDFBox Version: ")
-                            .append(inputFile.getPDFBoxVersion().toString()) //
+            textBuilder.append("PDFBox Version: ").append(inputFile.getPDFBoxVersion()) //
                             .append("\n");
             textBuilder.append("Portfolio Performance Version: ")
                             .append(PortfolioPlugin.getDefault().getBundle().getVersion().toString()) //

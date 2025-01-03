@@ -7,17 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import org.apache.pdfbox.exceptions.CryptographyException;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.Version;
-
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.pdfbox1.PDFBox1;
+import name.abuchen.portfolio.pdfbox3.PDFBox3;
 
 public class PDFInputFile extends Extractor.InputFile
 {
     private String text;
+    private String version;
 
     public PDFInputFile(File file)
     {
@@ -62,32 +59,21 @@ public class PDFInputFile extends Extractor.InputFile
         return text;
     }
 
-    public Version getPDFBoxVersion()
+    public String getPDFBoxVersion()
     {
-        return FrameworkUtil.getBundle(PDDocument.class).getVersion();
+        return version;
     }
 
     public void convertPDFtoText() throws IOException
     {
-        try (PDDocument document = PDDocument.load(getFile()))
-        {
-            boolean isProtected = document.isEncrypted();
-            if (isProtected)
-            {
-                document.decrypt(""); //$NON-NLS-1$
-                document.setAllSecurityToBeRemoved(true);
-            }
+        text = new PDFBox3().convertToText(getFile());
+        version = new PDFBox3().getPDFBoxVersion();
+    }
 
-            PDFTextStripper textStripper = new PDFTextStripper();
-            textStripper.setSortByPosition(true);
-            text = textStripper.getText(document);
-
-            text = withoutHorizontalWhitespace(text);
-        }
-        catch (CryptographyException e)
-        {
-            throw new IOException(e);
-        }
+    public void convertLegacyPDFtoText() throws IOException
+    {
+        text = new PDFBox1().convertToText(getFile());
+        version = new PDFBox1().getPDFBoxVersion();
     }
 
     private String withoutHorizontalWhitespace(String s)
