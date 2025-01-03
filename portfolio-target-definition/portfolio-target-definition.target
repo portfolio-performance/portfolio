@@ -83,6 +83,28 @@
 			</dependency>
 		</dependencies>
 	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Apache PDFBox 3.x" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.pdfbox</groupId>
+				<artifactId>fontbox</artifactId>
+				<version>3.0.3</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.pdfbox</groupId>
+				<artifactId>pdfbox-io</artifactId>
+				<version>3.0.3</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.pdfbox</groupId>
+				<artifactId>pdfbox</artifactId>
+				<version>3.0.3</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
 	<location includeDependencyDepth="none" includeDependencyScopes="compile" label="XStream" missingManifest="generate" type="Maven">
 		<dependencies>
 			<dependency>
@@ -105,6 +127,12 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-csv</artifactId>
 				<version>1.12.0</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>commons-logging</groupId>
+				<artifactId>commons-logging</artifactId>
+				<version>1.3.4</version>
 				<type>jar</type>
 			</dependency>
 		</dependencies>
