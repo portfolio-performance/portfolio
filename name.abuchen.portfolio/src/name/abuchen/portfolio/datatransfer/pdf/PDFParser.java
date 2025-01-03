@@ -131,7 +131,10 @@ import name.abuchen.portfolio.model.TypedMap;
 
         public void parse(String filename, List<Item> items, String text)
         {
-            String[] lines = text.split("\\r?\\n"); //$NON-NLS-1$
+            // strip all carriage returns (as the CreateTextFromPDFHandle does
+            // as well) and split into lines
+
+            String[] lines = text.replace("\r", "").split("\\n"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
             // reset context and parse it from this file
             context.clear();
