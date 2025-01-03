@@ -209,6 +209,7 @@ public final class SecuritiesTable implements ModificationListener
         addColumnDateOfLatestPrice();
         addColumnDateOfLatestHistoricalPrice();
         addQuoteDeltaColumn();
+        addQuoteDeltaColumnAnnualized();
         support.addColumn(new DistanceFromMovingAverageColumn(LocalDate::now));
         support.addColumn(new DistanceFromAllTimeHighColumn(LocalDate::now,
                         view.getPart().getReportingPeriods().stream().collect(toMutableList())));
@@ -588,11 +589,64 @@ public final class SecuritiesTable implements ModificationListener
             if (previous.getDate().isAfter(interval.getStart()))
                 return null;
 
-            return Double.valueOf((latest.getValue() - previous.getValue()) / (double) previous.getValue());
+            return Double.valueOf((latest.getValue() / (double) previous.getValue()) - 1);
         };
 
         Column column = new Column("delta-w-period", Messages.ColumnQuoteChange, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnQuoteChange_Option, options));
+        column.setDescription(Messages.ColumnQuoteChange_Description);
+        column.setLabelProvider(new QuoteReportingPeriodLabelProvider(valueProvider));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            ReportingPeriod option = (ReportingPeriod) ColumnViewerSorter.SortingContext.getColumnOption();
+
+            Double v1 = valueProvider.apply(o1, option);
+            Double v2 = valueProvider.apply(o2, option);
+
+            if (v1 == null && v2 == null)
+                return 0;
+            else if (v1 == null)
+                return -1;
+            else if (v2 == null)
+                return 1;
+
+            return Double.compare(v1.doubleValue(), v2.doubleValue());
+        }));
+        support.addColumn(column);
+    }
+
+    private void addQuoteDeltaColumnAnnualized() // NOSONAR
+    {
+        // create a modifiable copy as all menus share the same list of
+        // reporting periods
+        List<ReportingPeriod> options = view.getPart().getReportingPeriods().stream().collect(toMutableList());
+
+        BiFunction<Object, ReportingPeriod, Double> valueProvider = (element, option) -> {
+
+            Interval interval = option.toInterval(LocalDate.now());
+
+            Security security = (Security) element;
+
+            SecurityPrice latest = security.getSecurityPrice(interval.getEnd());
+            SecurityPrice previous = security.getSecurityPrice(interval.getStart());
+
+            if (latest == null || previous == null)
+                return null;
+
+            if (previous.getValue() == 0)
+                return null;
+
+            if (previous.getDate().isAfter(interval.getStart()))
+                return null;
+
+            var totalDays = (double) java.time.temporal.ChronoUnit.DAYS.between(previous.getDate(), latest.getDate());
+            
+            var totalGain = latest.getValue() / (double) previous.getValue();
+            return Double.valueOf(Math.pow(totalGain, 365 / totalDays)) - 1;
+        };
+
+        Column column = new Column("delta-w-period-annualized", Messages.ColumnQuoteChange + " (annualisiert)", SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnQuoteChange_Option + " (p.a.)", options));
         column.setDescription(Messages.ColumnQuoteChange_Description);
         column.setLabelProvider(new QuoteReportingPeriodLabelProvider(valueProvider));
         column.setVisible(false);
