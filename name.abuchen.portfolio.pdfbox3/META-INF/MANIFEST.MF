@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %Bundle-Name
+Bundle-SymbolicName: name.abuchen.portfolio.pdfbox3
+Bundle-Version: 0.73.1.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Export-Package: name.abuchen.portfolio.pdfbox3
+Import-Package: org.osgi.framework
+Require-Bundle: org.apache.pdfbox;bundle-version="[3.0.3,4.0.0)"
+Bundle-ClassPath: .
+Bundle-Vendor: %Bundle-Vendor
+Automatic-Module-Name: name.abuchen.portfolio.pdfbox3
+Bundle-ActivationPolicy: lazy
