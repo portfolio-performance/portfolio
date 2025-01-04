@@ -76,11 +76,12 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
 
     public static CurrencyUnit getDefaultInstance()
     {
-        String defaultCurrencyISO4217 = java.util.Currency.getInstance(Locale.getDefault()).getCurrencyCode();
-        CurrencyUnit defaultCurrencyUnit = CurrencyUnit.getInstance(defaultCurrencyISO4217);
-        if (defaultCurrencyUnit != null)
-            return defaultCurrencyUnit;
-        return CurrencyUnit.getInstance(EUR);
+        var defaultCurrencyISO4217 = java.util.Currency.getInstance(Locale.getDefault());
+        if (defaultCurrencyISO4217 == null || defaultCurrencyISO4217.getCurrencyCode() == null)
+            return CurrencyUnit.getInstance(EUR);
+
+        var defaultCurrencyUnit = CurrencyUnit.getInstance(defaultCurrencyISO4217.getCurrencyCode());
+        return defaultCurrencyUnit != null ? defaultCurrencyUnit : CurrencyUnit.getInstance(EUR);
     }
 
     public static CurrencyUnit getInstanceBySymbol(String currencySymbol)
