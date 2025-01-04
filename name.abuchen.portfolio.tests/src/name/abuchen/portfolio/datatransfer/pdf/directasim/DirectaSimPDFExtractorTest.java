@@ -27,9 +27,11 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.datatransfer.Extractor.InputFile;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
@@ -52,7 +54,27 @@ public class DirectaSimPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy01.txt"), errors);
+        System.out.println("running test as = " + Locale.getDefault().toString());
+
+        var testCases = PDFInputFile.loadTestCase(getClass(), "Buy01.txt");
+
+        var text = ((PDFInputFile) testCases.get(0)).getText();
+        var lines = text.split("\\n");
+
+        for (var line : lines)
+        {
+            System.out.println("line = " + line);
+            System.out.print("       ");
+
+            for (int ii = 0; ii < line.length(); ii++)
+            {
+                System.out.print(line.codePointAt(ii));
+            }
+
+            System.out.println();
+        }
+
+        List<Item> results = extractor.extract(testCases, errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
