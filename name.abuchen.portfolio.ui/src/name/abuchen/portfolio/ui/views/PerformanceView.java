@@ -109,7 +109,9 @@ public class PerformanceView extends AbstractHistoricView
     @Override
     protected String getDefaultTitle()
     {
-        return Messages.LabelPerformanceCalculation;
+        return (clientFilter == null || !clientFilter.hasActiveFilter()) ? Messages.LabelPerformanceCalculation
+                        : Messages.LabelPerformanceCalculation + " : " //$NON-NLS-1$
+                                        + clientFilter.getClientFilterMenu().getSelectedItem().getLabel();
     }
 
     @Override
@@ -176,6 +178,7 @@ public class PerformanceView extends AbstractHistoricView
     public void notifyModelUpdated()
     {
         reportingPeriodUpdated();
+        updateTitle(getDefaultTitle());
     }
 
     @Override
@@ -202,6 +205,7 @@ public class PerformanceView extends AbstractHistoricView
         folder.setSelection(0);
 
         reportingPeriodUpdated();
+        updateTitle(getDefaultTitle());
 
         return folder;
     }

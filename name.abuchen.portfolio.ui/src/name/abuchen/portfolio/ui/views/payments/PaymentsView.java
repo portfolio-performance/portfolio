@@ -124,7 +124,8 @@ public class PaymentsView extends AbstractFinanceView
     @Override
     protected String getDefaultTitle()
     {
-        return model.getMode().getLabel();
+        return (clientFilterMenu == null || !clientFilterMenu.hasActiveFilter()) ? model.getMode().getLabel()
+                        : model.getMode().getLabel() + " : " + clientFilterMenu.getSelectedItem().getLabel(); //$NON-NLS-1$
     }
 
     @Override
@@ -136,7 +137,7 @@ public class PaymentsView extends AbstractFinanceView
                             new SimpleAction(TextUtil.tooltip(mode.getLabel()), a -> {
                                 model.setMode(mode);
                                 updateIcons(toolBarManager);
-                                updateTitle(model.getMode().getLabel());
+                                updateTitle(getDefaultTitle());
                             }));
             item.setMode(ActionContributionItem.MODE_FORCE_TEXT);
             toolBarManager.add(item);
@@ -166,6 +167,8 @@ public class PaymentsView extends AbstractFinanceView
                         clientFilterMenu::menuAboutToShow);
         clientFilterMenu.addListener(f -> dropDown
                         .setImage(clientFilterMenu.hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF));
+        clientFilterMenu.addListener(filter -> updateTitle(getDefaultTitle()));
+
         toolBar.add(dropDown);
 
         toolBar.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE, manager -> {
