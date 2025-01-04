@@ -645,9 +645,11 @@ public final class SecuritiesTable implements ModificationListener
             return Double.valueOf(Math.pow(totalGain, 365 / totalDays)) - 1;
         };
 
-        Column column = new Column("delta-w-period-annualized", Messages.ColumnQuoteChange + " (annualisiert)", SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnQuoteChange_Option + " (p.a.)", options));
-        column.setDescription(Messages.ColumnQuoteChange_Description);
+        Column column = new Column("delta-w-period-annualized", //$NON-NLS-1$
+                        Messages.ColumnQuoteChangeAnnualized, SWT.RIGHT, 80);
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnQuoteChangeAnnualized_Option,
+                        options));
+        column.setDescription(Messages.ColumnQuoteChangeAnnualized_Description);
         column.setLabelProvider(new QuoteReportingPeriodLabelProvider(valueProvider));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
