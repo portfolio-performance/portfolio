@@ -328,6 +328,12 @@ public class PerformanceView extends AbstractHistoricView
             return position.explain(ClientPerformanceSnapshot.Position.TRAIL_VALUE).map(MoneyTrailDataSource::new)
                             .orElseGet(() -> null);
         });
+        column.setSorter(ColumnViewerSorter.create(o -> {
+            if (o instanceof ClientPerformanceSnapshot.Position pos)
+                return pos.getValue();
+
+            return null;
+        }));
         support.addColumn(column);
 
         column = new Column("forex", Messages.ColumnThereofForeignCurrencyGains, SWT.RIGHT, 80); //$NON-NLS-1$
