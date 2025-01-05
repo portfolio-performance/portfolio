@@ -74,22 +74,29 @@ public class DonutChartBuilder
 
         // classified nodes
         TaxonomyNode node = model.getClassificationRootNode();
-        addChildren(answer, node, node.getChildren());
+        addChildren(answer, node, node.getChildren(), model.isSecuritiesInPieChartExcluded());
 
         // add unclassified if included
         if (!model.isUnassignedCategoryInChartsExcluded())
         {
             TaxonomyNode unassigned = model.getUnassignedNode();
-            List<TaxonomyNode> children = new ArrayList<>(unassigned.getChildren());
-            Collections.sort(children, (r, l) -> l.getActual().compareTo(r.getActual()));
-            addChildren(answer, unassigned, children);
+            if (model.isSecuritiesInPieChartExcluded())
+            {
+                answer.add(new Pair<>(unassigned, unassigned));
+            }
+            else
+            {
+                List<TaxonomyNode> children = new ArrayList<>(unassigned.getChildren());
+                Collections.sort(children, (r, l) -> l.getActual().compareTo(r.getActual()));
+                addChildren(answer, unassigned, children, model.isSecuritiesInPieChartExcluded());
+            }
         }
 
         return answer;
     }
 
     private void addChildren(List<Pair<TaxonomyNode, TaxonomyNode>> answer, TaxonomyNode parent,
-                    List<TaxonomyNode> children)
+                    List<TaxonomyNode> children, boolean firstLevelOnly)
     {
         for (TaxonomyNode child : children)
         {
@@ -99,6 +106,10 @@ public class DonutChartBuilder
             if (child.isAssignment())
             {
                 answer.add(new Pair<>(parent, child));
+            }
+            else if (child.isClassification() && firstLevelOnly)
+            {
+                answer.add(new Pair<>(child, child));
             }
             else if (child.isClassification())
             {
