@@ -1,9 +1,9 @@
-package name.abuchen.portfolio.ui.views.dashboard;
+package name.abuchen.portfolio.ui.views.dashboard.lists;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -14,26 +14,35 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
+import name.abuchen.portfolio.ui.views.dashboard.AttributesConfig;
+import name.abuchen.portfolio.ui.views.dashboard.ChartHeightConfig;
+import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
+import name.abuchen.portfolio.ui.views.dashboard.EnumBasedConfig;
+import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
+import name.abuchen.portfolio.ui.views.settings.AttributeFieldType;
+import name.abuchen.portfolio.ui.views.settings.SettingsView;
 
-public class EventListWidget extends AbstractSecurityListWidget<EventListWidget.EventItem>
+public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.FollowUpItem>
 {
-    public static class EventItem extends AbstractSecurityListWidget.Item
+    public static class FollowUpItem extends AbstractSecurityListWidget.Item
     {
-        private SecurityEvent event;
+        private AttributeType type;
+        LocalDate date;
 
-        public EventItem(Security security, SecurityEvent event)
+        public FollowUpItem(Security security, AttributeType type, LocalDate date)
         {
             super(security);
-            this.event = event;
+            this.type = type;
+            this.date = date;
         }
     }
 
@@ -72,77 +81,49 @@ public class EventListWidget extends AbstractSecurityListWidget<EventListWidget.
         }
     }
 
-    public enum SortDirection
-    {
-        ASCENDING(Messages.FollowUpWidget_Option_SortingByDateAscending, (r, l) -> r.event.getDate().compareTo(l.event.getDate())), //
-        DESCENDING(Messages.FollowUpWidget_Option_SortingByDateDescending, (r, l) -> l.event.getDate().compareTo(r.event.getDate()));
-
-        private Comparator<EventItem> comparator;
-        private String label;
-
-        private SortDirection(String label, Comparator<EventItem> comparator)
-        {
-            this.label = label;
-            this.comparator = comparator;
-        }
-
-        Comparator<EventItem> getComparator()
-        {
-            return comparator;
-        }
-
-        @Override
-        public String toString()
-        {
-            return label;
-        }
-    }
-
-    static class SortingConfig extends EnumBasedConfig<SortDirection>
-    {
-        public SortingConfig(WidgetDelegate<?> delegate)
-        {
-            super(delegate, Messages.FollowUpWidget_Option_Sorting, SortDirection.class,
-                            Dashboard.Config.SORT_DIRECTION, Policy.EXACTLY_ONE);
-        }
-    }
-
-    public EventListWidget(Widget widget, DashboardData data)
+    public FollowUpWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
 
+        addConfig(new AttributesConfig(this, t -> t.getTarget() == Security.class && t.getType() == LocalDate.class));
         addConfig(new DateDateConfig(this));
         addConfig(new SortingConfig(this));
         addConfig(new ChartHeightConfig(this));
     }
 
     @Override
-    public Supplier<List<EventItem>> getUpdateTask()
+    public Supplier<List<FollowUpItem>> getUpdateTask()
     {
         return () -> {
 
             DateCheck dateType = get(DateDateConfig.class).getValue();
+            List<AttributeType> types = get(AttributesConfig.class).getTypes();
 
-            List<EventItem> items = new ArrayList<>();
+            List<FollowUpItem> items = new ArrayList<>();
             for (Security security : getClient().getSecurities())
             {
-                for (var event : security.getEvents())
+                for (AttributeType t : types)
                 {
-                    if (dateType.include(event.getDate()))
+                    Object attribute = security.getAttributes().get(t);
+                    if (!(attribute instanceof LocalDate))
+                        continue;
+
+                    if (dateType.include((LocalDate) attribute))
                     {
-                        items.add(new EventItem(security, event));
+                        items.add(new FollowUpItem(security, t, (LocalDate) attribute));
                     }
                 }
             }
 
-            Collections.sort(items, get(SortingConfig.class).getValue().getComparator());
+            var comparator = get(SortingConfig.class).getValue().getComparator();
+            Collections.sort(items, (r, l) -> comparator.compare(r.date, l.date));
 
             return items;
         };
     }
 
     @Override
-    protected Composite createItemControl(Composite parent, EventItem item)
+    protected Composite createItemControl(Composite parent, FollowUpItem item)
     {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new FormLayout());
@@ -152,7 +133,7 @@ public class EventListWidget extends AbstractSecurityListWidget<EventListWidget.
 
         Label name = createLabel(composite, item.getSecurity().getName());
 
-        Label date = createLabel(composite, Values.Date.format(item.event.getDate()) + ": " + item.event.getDetails()); //$NON-NLS-1$
+        Label date = createLabel(composite, item.type.getName() + ": " + Values.Date.format(item.date)); //$NON-NLS-1$
 
         composite.addMouseListener(mouseUpAdapter);
         name.addMouseListener(mouseUpAdapter);
@@ -166,8 +147,12 @@ public class EventListWidget extends AbstractSecurityListWidget<EventListWidget.
     @Override
     protected void createEmptyControl(Composite parent)
     {
+        if (get(AttributesConfig.class).hasTypes())
+            return;
+
         title = new StyledLabel(parent, SWT.WRAP);
-        title.setText(Messages.MsgHintNoEvents);
+        title.setText(MessageFormat.format(Messages.MsgHintNoAttributesConfigured, AttributeFieldType.DATE.toString()));
+        title.setOpenLinkHandler(d -> view.getPart().activateView(SettingsView.class, 1));
     }
 
 }

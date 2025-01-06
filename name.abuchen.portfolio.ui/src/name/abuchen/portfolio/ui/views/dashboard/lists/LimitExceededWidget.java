@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.dashboard;
+package name.abuchen.portfolio.ui.views.dashboard.lists;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -28,6 +28,9 @@ import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.dashboard.AttributesConfig;
+import name.abuchen.portfolio.ui.views.dashboard.ChartHeightConfig;
+import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.settings.AttributeFieldType;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
 
