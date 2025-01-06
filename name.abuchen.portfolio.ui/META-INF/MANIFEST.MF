@@ -120,7 +120,8 @@ Require-Bundle: name.abuchen.portfolio;bundle-version="0.73.1",
  org.eclipse.e4.ui.css.core,
  org.eclipse.ui.themes,
  org.eclipse.jface,
- org.apache.httpcomponents.core5.httpcore5
+ org.apache.httpcomponents.core5.httpcore5,
+ io.github.java-diff-utils
 Automatic-Module-Name: name.abuchen.portfolio.ui
 Service-Component: OSGI-INF/name.abuchen.portfolio.ui.util.theme.ColorAndFontProviderImpl.xml,
  OSGI-INF/name.abuchen.portfolio.ui.theme.CustomThemeEngineManager.xml

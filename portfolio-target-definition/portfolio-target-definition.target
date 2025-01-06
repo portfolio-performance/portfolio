@@ -325,5 +325,15 @@
 			</dependency>
 		</dependencies>
 	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="io.github.java-diff-utils" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+			    <groupId>io.github.java-diff-utils</groupId>
+			    <artifactId>java-diff-utils</artifactId>
+			    <version>4.15</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
 </locations>
 </target>
