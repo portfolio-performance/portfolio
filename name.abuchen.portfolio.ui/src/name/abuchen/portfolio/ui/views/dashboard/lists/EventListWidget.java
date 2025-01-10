@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
@@ -13,19 +12,19 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 import name.abuchen.portfolio.ui.views.dashboard.ChartHeightConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
-import name.abuchen.portfolio.ui.views.dashboard.EnumBasedConfig;
-import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
+import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class EventListWidget extends AbstractSecurityListWidget<EventListWidget.EventItem>
 {
@@ -40,46 +39,11 @@ public class EventListWidget extends AbstractSecurityListWidget<EventListWidget.
         }
     }
 
-    public enum DateCheck
-    {
-        PAST(Messages.OptionDateIsInThePast, date -> !LocalDate.now().isBefore(date)), //
-        FUTURE(Messages.OptionDateIsInTheFuture, date -> !date.isBefore(LocalDate.now()));
-
-        private String label;
-        private Predicate<LocalDate> predicate;
-
-        private DateCheck(String label, Predicate<LocalDate> predicate)
-        {
-            this.label = label;
-            this.predicate = predicate;
-        }
-
-        public boolean include(LocalDate date)
-        {
-            return predicate.test(date);
-        }
-
-        @Override
-        public String toString()
-        {
-            return label;
-        }
-    }
-
-    static class DateDateConfig extends EnumBasedConfig<DateCheck>
-    {
-        public DateDateConfig(WidgetDelegate<?> delegate)
-        {
-            super(delegate, Messages.ColumnDate, DateCheck.class, Dashboard.Config.REPORTING_PERIOD,
-                            Policy.EXACTLY_ONE);
-        }
-    }
-
     public EventListWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
 
-        addConfig(new DateDateConfig(this));
+        addConfig(new ReportingPeriodConfig(this));
         addConfig(new SortingConfig(this));
         addConfig(new ChartHeightConfig(this));
     }
@@ -89,14 +53,14 @@ public class EventListWidget extends AbstractSecurityListWidget<EventListWidget.
     {
         return () -> {
 
-            DateCheck dateType = get(DateDateConfig.class).getValue();
+            var interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
 
             List<EventItem> items = new ArrayList<>();
             for (Security security : getClient().getSecurities())
             {
                 for (var event : security.getEvents())
                 {
-                    if (dateType.include(event.getDate()))
+                    if (interval.contains(event.getDate()))
                     {
                         items.add(new EventItem(security, event));
                     }
@@ -116,18 +80,45 @@ public class EventListWidget extends AbstractSecurityListWidget<EventListWidget.
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new FormLayout());
 
+        String type = item.event.getType().toString();
+        String details = null;
+
+        switch (item.event.getType())
+        {
+            case NOTE:
+                details = item.event.getDetails();
+                break;
+            case STOCK_SPLIT:
+                type += " " + item.event.getDetails(); //$NON-NLS-1$
+                break;
+            case DIVIDEND_PAYMENT:
+                details = Values.Money.format(item.event instanceof SecurityEvent.DividendEvent dividendPayment
+                                ? dividendPayment.getAmount()
+                                : null);
+                break;
+            default:
+        }
+
         Label logo = createLabel(composite,
                         LogoManager.instance().getDefaultColumnImage(item.getSecurity(), getClient().getSettings()));
 
+        Label lblType = createLabel(composite, Values.Date.format(item.event.getDate()) + ": " + type); //$NON-NLS-1$
+        lblType.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
         Label name = createLabel(composite, item.getSecurity().getName());
-
-        Label date = createLabel(composite, Values.Date.format(item.event.getDate()) + ": " + item.event.getDetails()); //$NON-NLS-1$
 
         composite.addMouseListener(mouseUpAdapter);
         name.addMouseListener(mouseUpAdapter);
-        date.addMouseListener(mouseUpAdapter);
+        lblType.addMouseListener(mouseUpAdapter);
 
-        FormDataFactory.startingWith(logo).thenRight(name).right(new FormAttachment(100)).thenBelow(date);
+        FormDataFactory.startingWith(lblType).thenBelow(logo).thenRight(name);
+
+        if (details != null)
+        {
+            Label lblDetails = new Label(composite, SWT.WRAP);
+            lblDetails.setText(TextUtil.tooltip(details));
+            lblDetails.addMouseListener(mouseUpAdapter);
+            FormDataFactory.startingWith(name).thenBelow(lblDetails).width(200).right(new FormAttachment(100));
+        }
 
         return composite;
     }
