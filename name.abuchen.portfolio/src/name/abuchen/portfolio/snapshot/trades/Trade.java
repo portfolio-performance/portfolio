@@ -262,4 +262,10 @@ public class Trade implements Adaptable
         else
             return null;
     }
+
+    public String toString()
+    {
+        return String.format("<Trade sh=%s %s %s -> %s %s>", //$NON-NLS-1$
+            shares, start, entryValue, end, exitValue);
+    }
 }
