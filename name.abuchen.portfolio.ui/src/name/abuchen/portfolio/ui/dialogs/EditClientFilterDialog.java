@@ -61,7 +61,7 @@ import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 
 public class EditClientFilterDialog extends Dialog
 {
-    private static class ContentProvider implements ITreeContentProvider
+    public static class ContentProvider implements ITreeContentProvider
     {
         private final Map<String, Object> uuid2object = new HashMap<>();
         private List<ClientFilterMenu.Item> items = new ArrayList<>();
