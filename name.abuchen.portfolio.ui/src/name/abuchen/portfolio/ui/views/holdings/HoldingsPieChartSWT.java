@@ -79,20 +79,13 @@ public class HoldingsPieChartSWT implements IPieChart
                 Label assetLabel = new Label(data, SWT.NONE);
                 GridDataFactory.fillDefaults().span(2, 1).applyTo(assetLabel);
                 assetLabel.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
-                if (financeView != null) // from view : Statement of Assets
-                {
-                    assetLabel.setText(currentNode.getId());
-                }
-                else // from pane = single portfolio information pane or grouped
-                     // account. snapshot must be created with a name
-                {
-                    assetLabel.setText(snapshot.getSnapshotName());
-                }
+
+                // account. snapshot must be created with a name
+                assetLabel.setText(snapshot.getSnapshotName());
 
                 Label info = new Label(data, SWT.NONE);
                 GridDataFactory.fillDefaults().span(2, 1).applyTo(info);
                 info.setText(Values.Money.format(snapshot.getMonetaryAssets()));
-
             }
             else
             {

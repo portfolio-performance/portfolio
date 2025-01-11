@@ -61,7 +61,8 @@ public class HoldingsPieChartView extends AbstractFinanceView
 
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
         setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
-        snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now());
+        snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now(),
+                        clientFilter.getClientFilterMenu().getSelectedItem().getLabel());
     }
 
     @Override
@@ -77,7 +78,8 @@ public class HoldingsPieChartView extends AbstractFinanceView
     {
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
         setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
-        snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now());
+        snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now(),
+                        clientFilter.getClientFilterMenu().getSelectedItem().getLabel());
 
         chart.refresh(snapshot);
         
