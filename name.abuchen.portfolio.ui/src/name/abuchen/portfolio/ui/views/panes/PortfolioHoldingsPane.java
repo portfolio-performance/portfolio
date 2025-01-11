@@ -62,14 +62,16 @@ public class PortfolioHoldingsPane implements InformationPanePage
         {
             portfolioOrGroupedAccount = Adaptor.adapt(Portfolio.class, input);
             ClientFilter clientFilter = new PortfolioClientFilter((Portfolio) portfolioOrGroupedAccount);
-            ClientSnapshot snapshot = ClientSnapshot.create(clientFilter.filter(client), converter, LocalDate.now());
+            ClientSnapshot snapshot = ClientSnapshot.create(clientFilter.filter(client), converter, LocalDate.now(),
+                            ((Portfolio) portfolioOrGroupedAccount).getName());
             chart.refresh(snapshot);
         }
         else if (input instanceof ClientFilterMenu.Item)
         {
             portfolioOrGroupedAccount = Adaptor.adapt(ClientFilterMenu.Item.class, input);
             ClientFilter clientFilter = ((ClientFilterMenu.Item) portfolioOrGroupedAccount).getFilter();
-            ClientSnapshot snapshot = ClientSnapshot.create(clientFilter.filter(client), converter, LocalDate.now());
+            ClientSnapshot snapshot = ClientSnapshot.create(clientFilter.filter(client), converter, LocalDate.now(),
+                            ((ClientFilterMenu.Item) portfolioOrGroupedAccount).getName());
             chart.refresh(snapshot);
         }
         else

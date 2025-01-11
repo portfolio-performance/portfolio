@@ -28,8 +28,14 @@ public class ClientSnapshot
 
     private PortfolioSnapshot jointPortfolio;
     private Money assets;
+    private String snapshotName;
 
     public static ClientSnapshot create(Client client, CurrencyConverter converter, LocalDate date)
+    {
+        return create(client, converter, date, null);
+    }
+
+    public static ClientSnapshot create(Client client, CurrencyConverter converter, LocalDate date, String snapshotName)
     {
         ClientSnapshot snapshot = new ClientSnapshot(converter, date);
 
@@ -39,6 +45,7 @@ public class ClientSnapshot
         for (Portfolio portfolio : client.getPortfolios())
             snapshot.portfolios.add(PortfolioSnapshot.create(portfolio, converter, date));
 
+        snapshot.snapshotName = snapshotName;
         return snapshot;
     }
 
@@ -61,6 +68,11 @@ public class ClientSnapshot
     public LocalDate getTime()
     {
         return date;
+    }
+
+    public String getSnapshotName()
+    {
+        return snapshotName;
     }
 
     public List<AccountSnapshot> getAccounts()

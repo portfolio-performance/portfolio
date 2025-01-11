@@ -83,9 +83,10 @@ public class HoldingsPieChartSWT implements IPieChart
                 {
                     assetLabel.setText(currentNode.getId());
                 }
-                else // from pane = single portfolio information pane
+                else // from pane = single portfolio information pane or grouped
+                     // account. snapshot must be created with a name
                 {
-                    assetLabel.setText(snapshot.getPortfolios().get(0).getPortfolio().getName());
+                    assetLabel.setText(snapshot.getSnapshotName());
                 }
 
                 Label info = new Label(data, SWT.NONE);
