@@ -198,22 +198,6 @@ public final class ClientFilterMenu implements IMenuListener
         manager.add(new Separator());
         manager.add(new SimpleAction(Messages.LabelClientFilterNew, a -> createCustomFilter()));
         manager.add(new SimpleAction(Messages.LabelClientFilterManage, a -> editCustomFilter()));
-
-        manager.add(new SimpleAction(Messages.LabelClientClearCustomItems, a -> {
-            if (!MessageDialog.openConfirm(Display.getDefault().getActiveShell(), Messages.LabelClientClearCustomItems,
-                            Messages.LabelClientClearCustomItems + "?")) //$NON-NLS-1$
-                return;
-
-            if (customItems.contains(selectedItem))
-            {
-                selectedItem = defaultItems.get(0);
-                listeners.forEach(l -> l.accept(selectedItem.filter));
-            }
-
-            customItems.clear();
-            filterConfig.clear();
-            client.touch();
-        }));
     }
 
     public void editCustomFilter()
