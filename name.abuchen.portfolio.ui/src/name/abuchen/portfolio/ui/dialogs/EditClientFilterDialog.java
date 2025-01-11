@@ -179,7 +179,7 @@ public class EditClientFilterDialog extends Dialog
             public Image getImage(Object element)
             {
                 if (element instanceof ClientFilterMenu.Item)
-                    return Images.FILTER_OFF.image();
+                    return Images.GROUPEDACCOUNTS.image();
                 else
                     return LogoManager.instance().getDefaultColumnImage(element, client.getSettings());
             }
