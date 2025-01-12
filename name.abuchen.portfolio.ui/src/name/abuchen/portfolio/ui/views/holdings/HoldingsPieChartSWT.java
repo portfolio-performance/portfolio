@@ -118,6 +118,8 @@ public class HoldingsPieChartSWT implements IPieChart
         {
             updateChart();
         }
+        else
+            chart.setVisible(false);
 
         return chart;
     }
@@ -127,6 +129,7 @@ public class HoldingsPieChartSWT implements IPieChart
     {
         this.snapshot = snapshot;
         updateChart();
+        chart.setVisible(true);
     }
 
     private void updateChart()
