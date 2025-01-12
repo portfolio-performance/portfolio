@@ -144,6 +144,7 @@ public class GroupedAccountListView extends AbstractFinanceView implements Modif
         items.forEach(cf -> filterConfig.add(new Configuration(cf.getId(), cf.getLabel(), cf.getUUIDs())));
         getClient().touch();
     }
+
     private void expandNodes()
     {
         List<ClientFilterMenu.Item> expanded = new ArrayList<>();
@@ -210,6 +211,8 @@ public class GroupedAccountListView extends AbstractFinanceView implements Modif
                             manager.add(new SimpleAction(Messages.LabelClientFilterNew, a -> {
                                 clientFilterMenu.createCustomFilter();
                                 groupedAccounts.refresh();
+                                // select the newly created account
+                                groupedAccounts.setSelection(new StructuredSelection(items.getFirst()));
                             }));
                             manager.add(new SimpleAction(Messages.LabelClientFilterManage, a -> {
                                 clientFilterMenu.editCustomFilter();
@@ -421,6 +424,9 @@ public class GroupedAccountListView extends AbstractFinanceView implements Modif
         if (treeItem instanceof Portfolio || treeItem instanceof Account || treeItem instanceof ClientFilterMenu.Item)
             manager.add(new SimpleAction(Messages.MenuReportingPeriodDelete, a -> {
                 deleteElementInFilter();
+                if (treeItem instanceof ClientFilterMenu.Item && groupedAccounts.getTree().getItemCount() > 0
+                                && !items.isEmpty())
+                    groupedAccounts.setSelection(new StructuredSelection(items.getFirst()));
                 // update bottom panes
                 onRecalculationNeeded();
             }));
