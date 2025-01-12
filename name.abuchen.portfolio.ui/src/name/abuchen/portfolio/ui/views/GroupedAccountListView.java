@@ -418,12 +418,14 @@ public class GroupedAccountListView extends AbstractFinanceView implements Modif
             manager.add(new SimpleAction(Messages.MenuReportingPeriodInsert,
                             a -> {
                                 insertElementInFilter(selectedFilterElement);
+                                storeChangedFilter();
                                 // update bottom panes
                                 onRecalculationNeeded();
                             }));
         if (treeItem instanceof Portfolio || treeItem instanceof Account || treeItem instanceof ClientFilterMenu.Item)
             manager.add(new SimpleAction(Messages.MenuReportingPeriodDelete, a -> {
                 deleteElementInFilter();
+                storeChangedFilter();
                 if (treeItem instanceof ClientFilterMenu.Item && groupedAccounts.getTree().getItemCount() > 0
                                 && !items.isEmpty())
                     groupedAccounts.setSelection(new StructuredSelection(items.getFirst()));
