@@ -112,6 +112,9 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
         if (!isSelected)
             fillBackground(event, element, tableItem);
 
+        if (element == null)
+            return;
+
         Long value = getValue(element);
         if (value == null)
             return;
