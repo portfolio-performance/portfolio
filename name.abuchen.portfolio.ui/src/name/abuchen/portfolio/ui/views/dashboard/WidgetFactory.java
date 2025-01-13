@@ -37,6 +37,9 @@ import name.abuchen.portfolio.ui.views.dashboard.heatmap.CostHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.InvestmentHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.PerformanceHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.YearlyPerformanceHeatmapWidget;
+import name.abuchen.portfolio.ui.views.dashboard.lists.EventListWidget;
+import name.abuchen.portfolio.ui.views.dashboard.lists.FollowUpWidget;
+import name.abuchen.portfolio.ui.views.dashboard.lists.LimitExceededWidget;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel;
 
@@ -342,6 +345,8 @@ public enum WidgetFactory
     LIMIT_EXCEEDED(Messages.SecurityListFilterLimitPriceExceeded, Messages.LabelCommon, LimitExceededWidget::new),
 
     FOLLOW_UP(Messages.SecurityListFilterDateReached, Messages.LabelCommon, FollowUpWidget::new),
+
+    EVENT_LIST(Messages.EventListWidgetTitle, Messages.LabelCommon, EventListWidget::new),
 
     LATEST_SECURITY_PRICE(Messages.LabelSecurityLatestPrice, Messages.LabelCommon, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //

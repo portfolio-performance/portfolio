@@ -1,10 +1,9 @@
-package name.abuchen.portfolio.ui.views.dashboard;
+package name.abuchen.portfolio.ui.views.dashboard.lists;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -24,6 +23,11 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
+import name.abuchen.portfolio.ui.views.dashboard.AttributesConfig;
+import name.abuchen.portfolio.ui.views.dashboard.ChartHeightConfig;
+import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
+import name.abuchen.portfolio.ui.views.dashboard.EnumBasedConfig;
+import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
 import name.abuchen.portfolio.ui.views.settings.AttributeFieldType;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
 
@@ -32,7 +36,7 @@ public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.Fo
     public static class FollowUpItem extends AbstractSecurityListWidget.Item
     {
         private AttributeType type;
-        private LocalDate date;
+        LocalDate date;
 
         public FollowUpItem(Security security, AttributeType type, LocalDate date)
         {
@@ -77,41 +81,6 @@ public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.Fo
         }
     }
 
-    public enum SortDirection
-    {
-        ASCENDING(Messages.FollowUpWidget_Option_SortingByDateAscending, (r, l) -> r.date.compareTo(l.date)), //
-        DESCENDING(Messages.FollowUpWidget_Option_SortingByDateDescending, (r, l) -> l.date.compareTo(r.date));
-
-        private Comparator<FollowUpItem> comparator;
-        private String label;
-
-        private SortDirection(String label, Comparator<FollowUpItem> comparator)
-        {
-            this.label = label;
-            this.comparator = comparator;
-        }
-
-        Comparator<FollowUpItem> getComparator()
-        {
-            return comparator;
-        }
-
-        @Override
-        public String toString()
-        {
-            return label;
-        }
-    }
-
-    static class SortingConfig extends EnumBasedConfig<SortDirection>
-    {
-        public SortingConfig(WidgetDelegate<?> delegate)
-        {
-            super(delegate, Messages.FollowUpWidget_Option_Sorting, SortDirection.class,
-                            Dashboard.Config.SORT_DIRECTION, Policy.EXACTLY_ONE);
-        }
-    }
-
     public FollowUpWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
@@ -146,7 +115,8 @@ public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.Fo
                 }
             }
 
-            Collections.sort(items, get(SortingConfig.class).getValue().getComparator());
+            var comparator = get(SortingConfig.class).getValue().getComparator();
+            Collections.sort(items, (r, l) -> comparator.compare(r.date, l.date));
 
             return items;
         };
