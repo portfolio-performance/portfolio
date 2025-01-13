@@ -1,0 +1,47 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+ Allgemeine Fragen zu Ihrer
+VISA Card beantwortet Ihnen: 
+Tel.: 01803 / 120 300*, Fax: 0331 / 290 33 44 
+DEUTSCHE KREDITBANK AG, 10105 BERLIN E-Mail: info@dkb.de
+Bei Kartenverlust wählen Sie bitte: 
+Herrn Tel.:01803 / 123 555* 
+Max Muster *(9 Cent/Min. aus dt. Festnetz) 
+Musterstr. 2 
+12345 Musterhausen 
+ 
+ 
+ 
+Abrechnung: Juli 2007
+Ihre Abrechnung vom 22.06.2007 bis 20.07.2007 Abrechnungsdatum: 20. Juli 2007
+VISA Card-Nummer: 4907 6270 3646 2458
+Seite 1 von 1 Karteninhaber: Max Muster 
+Beleg- Eingang Angabe des Unternehmens / Währung Betrag Kurs Betrag in
+datum Verwendungszweck EUR
+22.06.07 Saldo letzte Abrechnung 5.527,00+
+20.07.07 21.07.07 Habenzins auf 23 Tage 12,54+
+20.07.07 21.07.07 Habenzins auf 5 Tage 2,92+
+Neuer Saldo 5.542,46+
+Sehr geehrter Herr Max Muster,
+bitte prüfen Sie diese Abrechnung/Saldenmitteilung auf ihre Richtigkeit. Etwaige Einwendungen müssen dem Institut innerhalb von 
+4 Wochen nach Zugang dieser Abrechnung/Saldenmitteilung schriftlich mitgeteilt werden. Nach Ablauf dieser Frist gilt der Saldo als
+von Ihnen anerkannt.
+Zinssatz für die Guthabenverzinsung von derzeit 3,80% p.a. ab dem ersten Euro.
+Das Guthaben wird mit der weiteren Verwendung der Hinweis:
+Kreditkarte verrechnet. Über Zinsen und Gebühren informieren auch der Preisaushang
+und das Preisverzeichnis in den Geschäftsstellen Ihres
+Das monatliche Kartenlimit Ihrer VISA Card beträgt 100 EUR. Kreditinstitutes.
+Umsatzsteuernummer: DE137178746
+ 
+Kontoverbindung bei Einzahlungen:
+Empfänger: Deutsche Kreditbank AG
+Konto: 1999333 
+Bankleitzahl: 12030000
+Kreditinstitut: Deutsche Kreditbank AG
+Verwendungszweck: Ihre 16-stellige VISA Card-Nummer
+ 
+
+```
