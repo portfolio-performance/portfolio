@@ -1217,6 +1217,38 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 05.01.2025 Stornorechnung
+        // Stornorechnung zur Abrechnung 30.12.2024 Erstattung:
+        // Habenzinsen 0,02 EUR 20250103-BY111-00111111111
+        Block interestStorno = new Block("^[\\s]+ (\\-)?[\\.,\\d]+$");
+        type.addBlock(interestStorno);
+        interestStorno.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        .section("amount", "date", "note").optional() //
+                        .documentContext("currency") //
+                        .match("^[\\s]+ (?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))Stornorechnung.*$") //
+                        .match("^(?<note>Stornorechnung.*) Erstattung.*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
     }
 
     private void addCreditcardStatementTransaction()

@@ -4700,6 +4700,40 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testTagesgeldKontoauszug04()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TagesgeldKontoauszug04.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-01-02"), hasAmount("EUR", 133.51), //
+                        hasSource("TagesgeldKontoauszug04.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-01-03"), hasAmount("EUR", 406.97), //
+                        hasSource("TagesgeldKontoauszug04.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-01-04"), hasAmount("EUR", 406.99), //
+                        hasSource("TagesgeldKontoauszug04.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2025-01-05"), hasAmount("EUR", 0.02), //
+                        hasSource("TagesgeldKontoauszug04.txt"), hasNote("Stornorechnung zur Abrechnung 30.12.2024"))));
+    }
+
+    @Test
     public void testKreditKontoauszug01()
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
