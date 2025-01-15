@@ -400,8 +400,11 @@ public class StatementOfAssetsViewer
             @Override
             public String getText(Object e)
             {
+                Element el = (Element) e;
                 if (((Element) e).isGroupByTaxonomy())
                     return Messages.ColumnSum;
+                if (el.isCategory())
+                    return super.getText(el) + " (" + el.getChildren().count() + ")";
                 return super.getText(e);
             }
 
