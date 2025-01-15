@@ -704,6 +704,7 @@ public class Messages extends NLS
     public static String LabelHeatmapOrnament;
     public static String LabelHeatmapTaxes;
     public static String LabelHide;
+    public static String LabelHideMarkings;
     public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelImportNotesFromSource;
     public static String LabelIncludeSecuritiesInPieChart;
