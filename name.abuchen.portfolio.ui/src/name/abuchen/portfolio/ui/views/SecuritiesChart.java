@@ -399,6 +399,13 @@ public class SecuritiesChart
      * to be shown.
      */
     private IntervalOption intervalOption = IntervalOption.Y2;
+    /**
+     * Flag to quickly disable/enable showing additional markings on chart.
+     * The idea is that they are useful, but may make a chart very crowded.
+     * So, it's nice idea to let users with one click see either fully
+     * annotated chart, or pristine price chart.
+     */
+    private boolean showMarkings = true;
 
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.INVESTMENT, ChartDetails.EVENTS,
                     ChartDetails.SCALING_LINEAR, ChartDetails.SHOW_MAIN_HORIZONTAL_LINES);
@@ -695,6 +702,16 @@ public class SecuritiesChart
     public void addButtons(ToolBarManager toolBar)
     {
         chart.getChartToolsManager().addButtons(toolBar);
+
+        SimpleAction actionHideMarkings = new SimpleAction(null, IAction.AS_CHECK_BOX, Messages.LabelHideMarkings, a -> {
+            this.showMarkings = !this.showMarkings;
+            a.setChecked(this.showMarkings);
+            updateChart();
+        });
+        actionHideMarkings.setImageDescriptor(Images.NEW_TRANSACTION.descriptor());
+        actionHideMarkings.setChecked(this.showMarkings);
+        toolBar.add(actionHideMarkings);
+
         toolBar.add(new Separator());
 
         List<Action> viewActions = new ArrayList<>();
@@ -1136,12 +1153,15 @@ public class SecuritiesChart
             addEMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverageEMA,
                             Messages.LabelChartDetailMovingAverage_200days, 200, colorEMA7);
 
-        if (chartConfig.contains(ChartDetails.SHOW_LIMITS))
+        if (this.showMarkings && chartConfig.contains(ChartDetails.SHOW_LIMITS))
             addLimitLines(range);
     }
 
     private void addChartMarkerForeground(ChartInterval chartInterval)
     {
+        if (!this.showMarkings)
+            return;
+
         if (chartConfig.contains(ChartDetails.FIFOPURCHASE))
             addFIFOPurchasePrice(chartInterval);
 
