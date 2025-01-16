@@ -102,7 +102,7 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
         Label logo = createLabel(composite,
                         LogoManager.instance().getDefaultColumnImage(item.getSecurity(), getClient().getSettings()));
 
-        Label name = createLabel(composite, item.getSecurity().getName());
+        Label name = createLabel(composite, item.getSecurity().getName(getClient().getSecurityNameConfig()));
 
         ColoredLabel price = new ColoredLabel(composite, SWT.RIGHT);
 
