@@ -164,6 +164,11 @@ public class Client
         return Collections.unmodifiableList(securities);
     }
 
+    public SecurityNameConfig getSecurityNameConfig()
+    {
+        return new ClientProperties(this).getSecurityNameConfig();
+    }
+
     /**
      * Returns a sorted list of active securities, i.e. securities that are not
      * marked as retired.
@@ -173,7 +178,7 @@ public class Client
         return securities.stream() //
                         .filter(s -> s.getCurrencyCode() != null) //
                         .filter(s -> !s.isRetired()) //
-                        .sorted(new Security.ByName(new ClientProperties(this).getSecurityNameConfig())) //
+                        .sorted(new Security.ByName(getSecurityNameConfig())) //
                         .collect(Collectors.toList());
     }
 
