@@ -17,6 +17,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -334,4 +335,36 @@ public class MerkurPrivatBankPDFExtractorTest
                         hasSource("Kontoauszug02.txt"), hasNote("Neuanlage"))));
 
     }
+
+    @Test
+    public void testVorabpauschale01()
+    {
+        MerkurPrivatBankPDFExtractor extractor = new MerkurPrivatBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BZ02LR44"), hasWkn("A2AQST"), hasTicker(null), //
+                        hasName("XTR.(IE)-MSCI WORLD ESG REGISTERED SHARES 1C O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-01-03T00:00"), hasShares(8300.2084), //
+                        hasSource("Vorabpauschale01.txt"), //
+                        hasNote("Abrechnungsnr. 82937342032"), //
+                        hasAmount("EUR", 437.75), hasGrossValue("EUR", 437.75), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
 }
