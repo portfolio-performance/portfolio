@@ -518,6 +518,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         column = new TableViewerColumn(viewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnSecurity);
+        var nameConfig = client.getSecurityNameConfig();
         column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
         {
             @Override
@@ -526,7 +527,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 Security security = entry.getItem().getSecurity();
                 if (security == null)
                     return null;
-                return entry.getSecurityOverride() != null ? entry.getSecurityOverride().getName() : security.getName();
+                return entry.getSecurityOverride() != null ? entry.getSecurityOverride().getName(nameConfig) : security.getName(nameConfig);
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(250, true));
