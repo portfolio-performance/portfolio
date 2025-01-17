@@ -108,6 +108,9 @@ public enum Images
     RED_ARROW("red_arrow.png"), //$NON-NLS-1$
     GREEN_ARROW("green_arrow.png"), //$NON-NLS-1$
 
+    VISIBLE("visible.png"), //$NON-NLS-1$
+    HIDDEN("hidden.png"), //$NON-NLS-1$
+
     // 3rd party logos
 
     POEDITOR_LOGO("poeditor-logo.png"), //$NON-NLS-1$

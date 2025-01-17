@@ -704,13 +704,12 @@ public class SecuritiesChart
     {
         chart.getChartToolsManager().addButtons(toolBar);
 
-        SimpleAction actionHideMarkings = new SimpleAction(null, IAction.AS_CHECK_BOX, Messages.LabelHideMarkings, a -> {
+        SimpleAction actionHideMarkings = new SimpleAction(Messages.LabelHideMarkings, a -> {
             this.showMarkings = !this.showMarkings;
-            a.setChecked(this.showMarkings);
+            a.setImageDescriptor(this.showMarkings ? Images.HIDDEN.descriptor() : Images.VISIBLE.descriptor());
             updateChart();
         });
-        actionHideMarkings.setImageDescriptor(Images.NEW_TRANSACTION.descriptor());
-        actionHideMarkings.setChecked(this.showMarkings);
+        actionHideMarkings.setImageDescriptor(Images.HIDDEN.descriptor());
         toolBar.add(actionHideMarkings);
 
         toolBar.add(new Separator());
