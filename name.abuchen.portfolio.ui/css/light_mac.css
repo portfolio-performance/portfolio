@@ -3,10 +3,8 @@
 
 @import url("platform:/plugin/name.abuchen.portfolio.ui/css/shared/light.css");
 
-@import url("platform:/plugin/name.abuchen.portfolio.ui/css/shared/mac.css");
+@import url("platform:/plugin/name.abuchen.portfolio.ui/css/shared/mac/mac.css");
+
+@import url("platform:/plugin/name.abuchen.portfolio.ui/css/shared/mac/light.css");
 
 @import url("platform:/meta/name.abuchen.portfolio.ui/custom.css");
-
-CTabFolder {
-	swt-selected-tab-fill: '#org-eclipse-ui-workbench-ACTIVE_TAB_BG_END';
-}

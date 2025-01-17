@@ -72,11 +72,14 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
             clientFilterMenu.addListener(listener);
             clientFilterMenu.addListener(filter -> updateIcon());
+            clientFilterMenu.addListener(filter -> updateTitle(getUpdatedTitle()));
 
             loadPreselectedFilter(preferenceStore);
 
             if (clientFilterMenu.hasActiveFilter() || !model.getNodeFilters().isEmpty())
                 setImage(Images.FILTER_ON);
+
+            updateTitle(getUpdatedTitle());
 
             // As the taxonomy model is initially calculated in the #init
             // method, we must recalculate the values if an active filter
@@ -112,6 +115,12 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         {
             boolean hasActiveFilter = clientFilterMenu.hasActiveFilter() || !model.getNodeFilters().isEmpty();
             setImage(hasActiveFilter ? Images.FILTER_ON : Images.FILTER_OFF);
+        }
+
+        private String getUpdatedTitle()
+        {
+            return !clientFilterMenu.hasActiveFilter() ? getDefaultTitle()
+                            : getDefaultTitle() + " : " + clientFilterMenu.getSelectedItem().getLabel(); //$NON-NLS-1$
         }
 
         @Override
@@ -310,7 +319,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     {
         if (enableExperimentalFeatures)
         {
-            toolBar.add(new DropDown("Sync", Images.CLOUD, SWT.NONE, manager -> {
+            toolBar.add(new DropDown("Sync", Images.CLOUD, SWT.NONE, manager -> { //$NON-NLS-1$
 
                 String source = taxonomy.getSource();
 

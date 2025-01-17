@@ -109,7 +109,9 @@ public class PerformanceView extends AbstractHistoricView
     @Override
     protected String getDefaultTitle()
     {
-        return Messages.LabelPerformanceCalculation;
+        return (clientFilter == null || !clientFilter.hasActiveFilter()) ? Messages.LabelPerformanceCalculation
+                        : Messages.LabelPerformanceCalculation + " : " //$NON-NLS-1$
+                                        + clientFilter.getClientFilterMenu().getSelectedItem().getLabel();
     }
 
     @Override
@@ -176,6 +178,7 @@ public class PerformanceView extends AbstractHistoricView
     public void notifyModelUpdated()
     {
         reportingPeriodUpdated();
+        updateTitle(getDefaultTitle());
     }
 
     @Override
@@ -202,6 +205,7 @@ public class PerformanceView extends AbstractHistoricView
         folder.setSelection(0);
 
         reportingPeriodUpdated();
+        updateTitle(getDefaultTitle());
 
         return folder;
     }
@@ -324,6 +328,12 @@ public class PerformanceView extends AbstractHistoricView
             return position.explain(ClientPerformanceSnapshot.Position.TRAIL_VALUE).map(MoneyTrailDataSource::new)
                             .orElseGet(() -> null);
         });
+        column.setSorter(ColumnViewerSorter.create(o -> {
+            if (o instanceof ClientPerformanceSnapshot.Position pos)
+                return pos.getValue();
+
+            return null;
+        }));
         support.addColumn(column);
 
         column = new Column("forex", Messages.ColumnThereofForeignCurrencyGains, SWT.RIGHT, 80); //$NON-NLS-1$

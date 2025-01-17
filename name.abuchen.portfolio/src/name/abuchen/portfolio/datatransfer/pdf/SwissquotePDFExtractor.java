@@ -125,13 +125,22 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                                                             .longValue());
                                                         }))
 
-                        // @formatter:off
-                        // Gemäss Ihrem Kaufauftrag vom 05.08.2019 haben wir folgende Transaktionen vorgenommen:
-                        // Gemäss Ihrem Verkaufsauftrag vom 05.02.2018 haben wir folgende Transaktionen vorgenommen:
-                        // @formatter:on
-                        .section("date") //
-                        .match("^Gem.ss Ihrem (Kauf|Verkaufs)auftrag vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Gemäss Ihrem Kaufauftrag vom 05.08.2019 haben wir folgende Transaktionen vorgenommen:
+                                        // Gemäss Ihrem Verkaufsauftrag vom 05.02.2018 haben wir folgende Transaktionen vorgenommen:
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Gem.ss Ihrem (Kauf|Verkaufs)auftrag vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Am 15.11.2024 haben wir folgende Transaktionen vorgenommen:
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) haben wir folgende Transaktionen vorgenommen:$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
 
                         // @formatter:off
                         // Zu Ihren Lasten USD 2'900.60

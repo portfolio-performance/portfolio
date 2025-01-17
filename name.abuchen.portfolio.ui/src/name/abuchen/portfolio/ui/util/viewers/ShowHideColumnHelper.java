@@ -616,6 +616,8 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                     manager.add(m);
                     return m;
                 });
+                if (column.hasHeading())
+                    managerToAdd.add(new LabelOnly(column.getHeading()));
             }
 
             if (column.hasOptions())

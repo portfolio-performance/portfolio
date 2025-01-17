@@ -384,15 +384,16 @@ public final class Security implements Attributable, InvestmentVehicle
      */
     public List<SecurityPrice> getPricesIncludingLatest()
     {
-        if (latest == null)
-            return getPrices();
+        List<SecurityPrice> copy = new ArrayList<>(prices);
 
-        int index = Collections.binarySearch(prices, new SecurityPrice(latest.getDate(), latest.getValue()));
+        if (latest == null)
+            return copy;
+
+        int index = Collections.binarySearch(copy, new SecurityPrice(latest.getDate(), latest.getValue()));
 
         if (index >= 0) // historic quote exists -> use it
-            return getPrices();
+            return copy;
 
-        List<SecurityPrice> copy = new ArrayList<>(prices);
         copy.add(~index, latest);
         return copy;
     }
@@ -939,4 +940,5 @@ public final class Security implements Attributable, InvestmentVehicle
     {
         return s != null && s.length() > 0;
     }
+
 }

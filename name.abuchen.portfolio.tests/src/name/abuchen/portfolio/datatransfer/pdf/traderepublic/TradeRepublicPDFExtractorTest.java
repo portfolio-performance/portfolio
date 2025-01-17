@@ -2444,6 +2444,35 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug24()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug24.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-12-29"), hasAmount("EUR", 18.94),
+                        hasSource("Kontoauszug24.txt"), hasNote("Rossmann 000"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-12-30"), hasAmount("EUR", 3000.00),
+                        hasSource("Kontoauszug24.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-12-31"), hasAmount("EUR", 18.85),
+                        hasSource("Kontoauszug24.txt"), hasNote("Lidl sagt Danke"))));
+    }
+
+    @Test
     public void testReleveDeCompte01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
@@ -7655,6 +7684,37 @@ public class TradeRepublicPDFExtractorTest
                         hasNote("Ausführung: 1234-abcd | Sparplan: abcd-1234"), //
                         hasAmount("EUR", 25.08), hasGrossValue("EUR", 25.00), //
                         hasTaxes("EUR", 0.08), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testPianoDinvestimento01()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PianoDinvestimento01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BWT3KN65"), hasWkn(null), hasTicker(null), //
+                        hasName("Factor MSCI USA Quality ESG EUR Hedged (Acc)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-16T00:00"), hasShares(6.236285), //
+                        hasSource("PianoDinvestimento01.txt"), //
+                        hasNote("Esecuzione: b61b-9U71 | Piano D'Investimenton: d9I1-588y"), //
+                        hasAmount("EUR", 270.00), hasGrossValue("EUR", 270.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test

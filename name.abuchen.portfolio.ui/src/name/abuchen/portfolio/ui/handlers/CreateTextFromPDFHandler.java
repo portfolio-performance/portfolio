@@ -2,7 +2,9 @@ package name.abuchen.portfolio.ui.handlers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import jakarta.inject.Named;
 
@@ -17,6 +19,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+
+import com.github.difflib.DiffUtils;
+import com.github.difflib.UnifiedDiffUtils;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -45,12 +50,31 @@ public class CreateTextFromPDFHandler
         {
             File file = new File(fileDialog.getFilterPath(), fileName);
             PDFInputFile inputFile = new PDFInputFile(file);
+
+            // create text from PDF
             inputFile.convertPDFtoText();
+            var extractedText = inputFile.getText();
+            var pdfBoxVersion = inputFile.getPDFBoxVersion();
+
+            // check if the extracted text changed with the PDFBox version
+            inputFile.convertLegacyPDFtoText();
+            var legacyText = inputFile.getText();
+            var legacyPdfBoxVersion = inputFile.getPDFBoxVersion();
+            var isDifferent = !extractedText.equals(legacyText);
+
+            if (isDifferent)
+            {
+                var patch = DiffUtils.diff(legacyText, extractedText, null);
+                var unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff(legacyPdfBoxVersion, pdfBoxVersion,
+                                Arrays.asList(legacyText.split("\n")), patch, 0);
+                PortfolioPlugin.info(
+                                inputFile.getName() + "\n\n" + unifiedDiff.stream().collect(Collectors.joining("\n")));
+            }
 
             StringBuilder textBuilder = new StringBuilder();
             textBuilder.append("```").append("\n");
-            textBuilder.append("PDFBox Version: ")
-                            .append(inputFile.getPDFBoxVersion().toString()) //
+            textBuilder.append("PDFBox Version: ").append(pdfBoxVersion)
+                            .append(isDifferent ? " != " + legacyPdfBoxVersion : "") //
                             .append("\n");
             textBuilder.append("Portfolio Performance Version: ")
                             .append(PortfolioPlugin.getDefault().getBundle().getVersion().toString()) //
@@ -63,7 +87,7 @@ public class CreateTextFromPDFHandler
                             .append(System.getProperty("java.vm.vendor", "unknown")).append("\n");
 
             textBuilder.append("-----------------------------------------\n");
-            textBuilder.append(inputFile.getText().replace("\r", "")).append("\n");
+            textBuilder.append(extractedText).append("\n");
             textBuilder.append("```");
 
             String text = textBuilder.toString();

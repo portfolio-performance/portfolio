@@ -49,12 +49,12 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Wir haben am .* f.r Sie gekauft");
+        DocumentType type = new DocumentType("Wir haben am .* f.r Sie (gekauft|verkauft)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Transaktion .*$");
+        Block firstRelevantLine = new Block("^Ihr Betreuerteam:.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -66,6 +66,16 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                             return portfolioTransaction;
                         })
 
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^B.rse \\/ " //
+                                        + "(?<type>(Kauf" //
+                                        + "|Verkauf)).*$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")) || "Sale".equals(v.get("type"))) //
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
+
                         .oneOf( //
                                         // @formatter:off
                                         // Wir haben am 14.03.2024 an der BX Swiss für Sie gekauft
@@ -75,7 +85,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .find("Wir haben am .* f.r Sie gekauft") //)
+                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //)
                                                         .match("^([\\s]{1,})?[\\,'\\d]+ .* [A-Z]{3} (?<name>.*) Depotstelle.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                                                         .match("^Menge[\\s]{1,}[\\.'\\d]+ Kurs (?<currency>[\\w]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[\\w]{3}[\\s]{1,}[\\.'\\d]+$") //
@@ -90,10 +100,16 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                         //  7 Shs SPDR S&P US Di Depotstelle  3500
                                         // Valor: 13976063 / IE00B6YX5D40
                                         // Menge  7 Kurs CHF 65.555 CHF  458.89
+                                        //
+                                        // Wir haben am 27.12.2024 an der BX Swiss für Sie verkauft
+                                        // 10 Namen-Akt Vontobel Holding AG Nom. CHF Depotstelle  3500
+                                        // 1.00
+                                        // Valor: 1233554 / CH0012335540
+                                        // Menge  10 Kurs CHF 63.788 CHF  637.88
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .find("Wir haben am .* f.r Sie gekauft") //)
+                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //)
                                                         .match("^([\\s]{1,})?[\\,'\\d]+ ([A-Za-z]{3}\\.)?[A-Za-z]{3} (?<name>.*) Depotstelle.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                                                         .match("^Menge[\\s]{1,}[\\.'\\d]+ Kurs (?<currency>[\\w]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[\\w]{3}[\\s]{1,}[\\.'\\d]+$") //
@@ -106,7 +122,7 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .find("Wir haben am .* f.r Sie gekauft") //)
+                                                        .find("Wir haben am .* f.r Sie (gekauft|verkauft)") //)
                                                         .match("^([\\s]{1,})?[\\,'\\d]+ (?<name>.*) Depotstelle.*$") //
                                                         .match("^Valor: (?<wkn>[A-Z0-9]{5,9}) \\/ (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$")
                                                         .match("^Menge[\\s]{1,}[\\.'\\d]+ Kurs (?<currency>[\\w]{3})[\\s]{1,}[\\.'\\d]+[\\s]{1,}[\\w]{3}[\\s]{1,}[\\.'\\d]+$") //
@@ -128,9 +144,10 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Belastung 314.391.304 Valuta 18.03.2024 CHF  3'974.14
+                        // Gutschrift 351.413.308 Valuta 31.12.2024 CHF  634.21
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Belastung .* (?<currency>[\\w]{3})[\\s]{1,}(?<amount>[\\.'\\d]+)$") //
+                        .match("^(Belastung|Gutschrift) .* (?<currency>[\\w]{3})[\\s]{1,}(?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -303,9 +320,10 @@ public class HypothekarbankLenzburgAGPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Eigene Kommission (NEON) CHF  19.74
+                        // Eigene Kommission (NEON) CHF -3.19
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Eigene Kommission.* (?<currency>[\\w]{3})[\\s]{1,}(?<fee>[\\.'\\d]+)$") //
+                        .match("^Eigene Kommission.* (?<currency>[\\w]{3})[\\s]{1,}(\\-)?(?<fee>[\\.'\\d]+)$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

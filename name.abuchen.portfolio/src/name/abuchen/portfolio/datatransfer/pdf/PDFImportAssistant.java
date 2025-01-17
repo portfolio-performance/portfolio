@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
@@ -105,6 +106,7 @@ public class PDFImportAssistant
         extractors.add(new SaxoBankPDFExtractor(client));
         extractors.add(new SberbankEuropeAGPDFExtractor(client));
         extractors.add(new SBrokerPDFExtractor(client));
+        extractors.add(new ScalableCapitalPDFExtractor(client));
         extractors.add(new ScorePriorityIncPDFExtractor(client));
         extractors.add(new SelfWealthPDFExtractor(client));
         extractors.add(new SimpelPDFExtractor(client));
@@ -160,6 +162,27 @@ public class PDFImportAssistant
                         extracted = true;
                         itemsByExtractor.computeIfAbsent(extractor, e -> new ArrayList<Item>()).addAll(items);
                         break;
+                    }
+                }
+
+                if (!extracted)
+                {
+                    inputFile.convertLegacyPDFtoText();
+                    for (Extractor extractor : extractors)
+                    {
+                        List<Item> items = extractor.extract(securityCache, inputFile, warnings);
+
+                        if (!items.isEmpty())
+                        {
+                            extracted = true;
+                            itemsByExtractor.computeIfAbsent(extractor, e -> new ArrayList<Item>()).addAll(items);
+                            break;
+                        }
+                    }
+
+                    if (extracted)
+                    {
+                        PortfolioLog.info("PDF successfully imported with PDFBox 1.8.x " + inputFile.getName()); //$NON-NLS-1$
                     }
                 }
 

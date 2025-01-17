@@ -190,6 +190,24 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
                         / (double) costs.sharesHeld() * Values.Share.factor() * Values.Quote.factorToMoney()));
     });
 
+    /**
+     * cost per shares held including fee
+     */
+    private final LazyValue<Quote> grossFifoCostPerSharesHeld = new LazyValue<>(() -> {
+        var costs = costCalculation.get();
+        return Quote.of(costs.fifoCost().getCurrencyCode(), Math.round(costs.fifoCost().getAmount()
+                        / (double) costs.sharesHeld() * Values.Share.factor() * Values.Quote.factorToMoney()));
+    });
+
+    /**
+     * cost per shares held including fee
+     */
+    private final LazyValue<Quote> grossMovingAverageCostPerSharesHeld = new LazyValue<>(() -> {
+        var costs = costCalculation.get();
+        return Quote.of(costs.movingAverageCost().getCurrencyCode(), Math.round(costs.movingAverageCost().getAmount()
+                        / (double) costs.sharesHeld() * Values.Share.factor() * Values.Quote.factorToMoney()));
+    });
+
     private final LazyValue<DividendCalculationResult> dividendCalculation = new LazyValue<>(() -> {
         // ensure cost calculation is done (and has calculated
         // moving averages)
@@ -314,6 +332,16 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     public LazyValue<Quote> getMovingAverageCostPerSharesHeld()
     {
         return movingAverageCostPerSharesHeld;
+    }
+
+    public LazyValue<Quote> getGrossFifoCostPerSharesHeld()
+    {
+        return grossFifoCostPerSharesHeld;
+    }
+
+    public LazyValue<Quote> getGrossMovingAverageCostPerSharesHeld()
+    {
+        return grossMovingAverageCostPerSharesHeld;
     }
 
     public LazyValue<Money> getSumOfDividends()

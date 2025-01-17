@@ -1217,22 +1217,70 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 05.01.2025 Stornorechnung
+        // Stornorechnung zur Abrechnung 30.12.2024 Erstattung:
+        // Habenzinsen 0,02 EUR 20250103-BY111-00111111111
+        Block interestStorno = new Block("^[\\s]+ (\\-)?[\\.,\\d]+$");
+        type.addBlock(interestStorno);
+        interestStorno.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        .section("amount", "date", "note").optional() //
+                        .documentContext("currency") //
+                        .match("^[\\s]+ (?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))Stornorechnung.*$") //
+                        .match("^(?<note>Stornorechnung.*) Erstattung.*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
     }
 
     private void addCreditcardStatementTransaction()
     {
         final DocumentType type = new DocumentType("Ihre Abrechnung vom ", //
                         documentContext -> documentContext //
-                                        // @formatter:off
-                                        // DKB-VISA-Card beträgt 100 EUR. Soweit auf dem Umsatzsteuernummer: DE137178746
-                                        // @formatter:on
-                                        .section("currency") //
-                                        .match("^DKB\\-VISA\\-Card betr.gt [\\.,\\d]+ (?<currency>[\\w]{3})\\. .*$") //
-                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
+                                        .oneOf( //
+                                                        section -> section //
+                                                                        .attributes("currency") //
+                                                                        // @formatter:off
+                                                                        // DKB-VISA-Card beträgt 100 EUR. Soweit auf dem Umsatzsteuernummer: DE137178746
+                                                                        // Credit Card beträgt 10.000 EUR.
+                                                                        // @formatter:on
+                                                                        // .section("currency")
+                                                                        .match("^.*Card betr.gt [\\.,\\d]+ (?<currency>[\\w]{3})\\..*$") //
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))),
+                                                        section -> section //
+                                                                        .attributes("currency") //
+                                                                        // @formatter:off
+                                                                        // Das monatliche Kartenlimit Ihrer VISA Card beträgt 100 abrufen können.   
+                                                                        // EUR. Umsatzsteuernummer: DE137178746
+                                                                        // @formatter:on
+                                                                        // .section("currency")
+                                                                        .match("^.*Card betr.gt [\\.,\\d]+ .*$") //
+                                                                        .match("^(?<currency>[\\w]{3})\\..*$") //
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))))
+                                        );
 
         this.addDocumentTyp(type);
 
-        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}(?! Habenzins).* [\\.,\\d]+\\+$");
+        Block depositBlock = new Block(
+                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}(?! Habenzins| Storno Habenzinsen).* [\\.,\\d]+([\\s])?\\+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
@@ -1248,7 +1296,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                         .documentContext("currency") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) " //
                                                                         + "(?<note>Ausgleich Kreditkarte gem\\. Abrechnung) v\\. " //
-                                                                        + "(?<amount>[\\.,\\d]+)\\+$") //
+                                                                        + "(?<amount>[\\.,\\d]+)([\\s])?\\+$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -1261,7 +1309,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})" //
                                                                         + "(?<note>(?! Habenzins).*) " //
                                                                         + "[\\w]{3} [\\.,\\d]+ [\\.,\\d]+ " //
-                                                                        + "(?<amount>[\\.,\\d]+)\\+$") //
+                                                                        + "(?<amount>[\\.,\\d]+)([\\s])?\\+$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -1282,7 +1330,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                         .documentContext("currency") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})" //
                                                                         + "(?<note>(?! Habenzins).*) " //
-                                                                        + "(?<amount>[\\.,\\d]+)\\+$") //
+                                                                        + "(?<amount>[\\.,\\d]+)([\\s])?\\+$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -1301,7 +1349,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} Habenzins auf [\\d]+ Tage [\\.,\\d]+\\+$");
+        Block interestBlock = new Block(
+                        "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (Habenzins auf [\\d]+ Tage|Storno Habenzinsen) [\\.,\\d]+([\\s])?\\+$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -1314,8 +1363,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "amount") //
                         .documentContext("currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) " //
-                                        + "(?<note>Habenzins auf [\\d]+ Tage) " //
-                                        + "(?<amount>[\\.,\\d]+)\\+$") //
+                                        + "(?<note>(Habenzins auf [\\d]+ Tage|Storno Habenzinsen)) " //
+                                        + "(?<amount>[\\.,\\d]+)([\\s])?\\+$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -1325,7 +1374,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) Abgeltungsteuer [\\.,\\d]+ \\-$");
+        Block taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) Abgeltungsteuer [\\.,\\d]+([\\s])?\\-$");
         type.addBlock(taxesBlock);
         taxesBlock.set(new Transaction<AccountTransaction>()
 
@@ -1339,7 +1388,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) " //
                                         + "(?<note>Abgeltungsteuer) " //
-                                        + "(?<amount>[\\.,\\d]+) \\-$") //
+                                        + "(?<amount>[\\.,\\d]+)([\\s])?\\-$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -1349,7 +1398,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}(?! (Abgeltungsteuer|Kartenpreis|PIN\\-Geb.hr)).* [\\.,\\d]+ \\-$");
+        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}(?! (Abgeltungsteuer|Kartenpreis|PIN\\-Geb.hr)).* [\\.,\\d]+([\\s])?\\-$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
@@ -1367,7 +1416,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})" //
                                                                         + "(?<note>(?! (Abgeltungsteuer|Kartenpreis|PIN\\-Geb.hr)).*) " //
                                                                         + "[\\w]{3} [\\.,\\d]+ [\\.,\\d]+ " //
-                                                                        + "(?<amount>[\\.,\\d]+) \\-$") //
+                                                                        + "(?<amount>[\\.,\\d]+)([\\s])?\\-$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -1389,7 +1438,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                         .documentContext("currency") //
                                                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2})" //
                                                                         + "(?<note>(?! (Abgeltungsteuer|Kartenpreis|PIN\\-Geb.hr)).*) " //
-                                                                        + "(?<amount>[\\.,\\d]+) \\-$") //
+                                                                        + "(?<amount>[\\.,\\d]+)([\\s])?\\-$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -1408,7 +1457,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block feeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (Kartenpreis|PIN\\-Geb.hr) [\\.,\\d]+ \\-$");
+        Block feeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (Kartenpreis|PIN\\-Geb.hr) [\\.,\\d]+([\\s])?\\-$");
         type.addBlock(feeBlock);
         feeBlock.set(new Transaction<AccountTransaction>()
 
@@ -1421,7 +1470,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .section("date", "note", "amount") //
                         .documentContext("currency") //
                         .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) " //
-                                        + "(?<note>(Kartenpreis|PIN\\-Geb.hr)) (?<amount>[\\.,\\d]+) \\-$") //
+                                        + "(?<note>(Kartenpreis|PIN\\-Geb.hr)) (?<amount>[\\.,\\d]+)([\\s])?\\-$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));

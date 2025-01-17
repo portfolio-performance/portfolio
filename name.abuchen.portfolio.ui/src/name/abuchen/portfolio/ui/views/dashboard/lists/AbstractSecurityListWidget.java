@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.dashboard;
+package name.abuchen.portfolio.ui.views.dashboard.lists;
 
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +25,10 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 import name.abuchen.portfolio.ui.views.SecurityListView;
+import name.abuchen.portfolio.ui.views.dashboard.ChartHeightConfig;
+import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
+import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
+import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
 import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListWidget.Item>

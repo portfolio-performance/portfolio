@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -16,6 +17,7 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.google.common.base.Strings;
 
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -26,6 +28,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.WebAccess;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public class DivvyDiaryUploader
 {
@@ -149,9 +152,9 @@ public class DivvyDiaryUploader
         if (securities.isEmpty())
             return;
 
-        WebAccess upload = new WebAccess("api.divvydiary.com", "/portfolios/" + portfolioId + "/import"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        upload.addHeader("X-API-Key", apiKey); //$NON-NLS-1$
-        upload.addHeader("Content-Type", "application/json"); //$NON-NLS-1$ //$NON-NLS-2$
+        WebAccess upload = new WebAccess("api.divvydiary.com", "/portfolios/" + portfolioId + "/import");
+        upload.addHeader("X-API-Key", apiKey);
+        upload.addHeader("Content-Type", "application/json");
 
         // inform DivvyDiary that transactions are split adjusted
         upload.addParameter("splitAdjusted", "true");
@@ -162,7 +165,20 @@ public class DivvyDiaryUploader
         if (!activities.isEmpty())
             json.put("activities", activities);
 
-        upload.post(JSONValue.toJSONString(json));
+        var payload = JSONValue.toJSONString(json);
+
+        try
+        {
+            upload.post(payload);
+        }
+        catch (WebAccessException e)
+        {
+            // write diagnostic information to the log file
+            PortfolioLog.error(MessageFormat.format(
+                            "Error uploading data to DivvyDiary: {0}\n\nPayload:\n{1}\n\nResponse:\n{2}",
+                            e.getMessage(), payload, e.getBody()));
+            throw e;
+        }
     }
 
 }

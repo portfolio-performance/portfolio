@@ -711,7 +711,7 @@ public class DekaBankPDFExtractor extends AbstractPDFExtractor
             }
 
             // If currentSecurityItem is not null and its lineNoEnd has not been updated, set it to the last line
-            if (currentSecurityItem != null && currentSecurityItem.lineNoEnd == 0)
+            if (currentSecurityItem != null)
                 currentSecurityItem.lineNoEnd = lines.length - 1;
 
             // Add security items to helper, ignoring those without names

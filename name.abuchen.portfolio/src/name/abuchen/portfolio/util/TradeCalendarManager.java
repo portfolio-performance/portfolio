@@ -149,6 +149,7 @@ public class TradeCalendarManager
         tc.add(fixed(HURRICANE_SANDY, Month.OCTOBER, 29).onlyIn(2012));
         tc.add(fixed(HURRICANE_SANDY, Month.OCTOBER, 30).onlyIn(2012));
         tc.add(fixed(STATE_FUNERAL, Month.DECEMBER, 5).onlyIn(2018)); // funeral of former president Bush Sr.
+        tc.add(fixed(STATE_FUNERAL, Month.JANUARY, 9).onlyIn(2025)); // funeral of former president Carter
         CACHE.put(tc.getCode(), tc);
 
         // see https://www.bolsadesantiago.com/mercado_horarios_feriados
@@ -234,7 +235,7 @@ public class TradeCalendarManager
         // https://www.asx.com.au/markets/market-resources/trading-hours-calendar/cash-market-trading-hours/trading-calendar
         tc = new TradeCalendar("asx", Messages.LabelTradeCalendarASX, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
-        tc.add(fixed(AUSTRALIA_DAY, Month.JANUARY, 26));
+        tc.add(fixed(AUSTRALIA_DAY, Month.JANUARY, 26).moveIf(DayOfWeek.SATURDAY, 2).moveIf(DayOfWeek.SUNDAY, 1));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
         tc.add(fixed(ANZAC_DAY, Month.APRIL, 25));

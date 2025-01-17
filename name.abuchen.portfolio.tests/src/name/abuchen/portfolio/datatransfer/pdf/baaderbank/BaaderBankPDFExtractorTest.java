@@ -4247,6 +4247,37 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void testDividende24()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("NL0011683594"), hasWkn("A2JAHJ"), hasTicker(null), //
+                        hasName("VanEck Mstr.DM Dividend.UC.ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-12-13T00:00"), hasShares(12.371), //
+                        hasSource("Dividende24.txt"), //
+                        hasNote("Transaction No.: 01473347"), //
+                        hasAmount("EUR", 2.94), hasGrossValue("EUR", 3.46), //
+                        hasTaxes("EUR", 0.52), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDividendeStorno01()
     {
         BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
@@ -5130,6 +5161,31 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void StatementofInterestandCharges01()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StatementofInterestandCharges01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-06-30T00:00"), //
+                        hasSource("StatementofInterestandCharges01.txt"), //
+                        hasNote("Transaction No.: 0420015 | 2023-03-31 to 2023-06-30"), //
+                        hasAmount("EUR", 112.45), hasGrossValue("EUR", 112.45), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testEinbuchung01()
     {
         BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
@@ -5261,6 +5317,39 @@ public class BaaderBankPDFExtractorTest
                         outboundDelivery( //
                                         hasDate("2023-03-24T00:00"), hasShares(2.00), //
                                         hasSource("Fusion02.txt"), //
+                                        hasNote(null), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testFusion03()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fusion03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU2089238203"), hasWkn("A2PWMK"), hasTicker(null), //
+                        hasName("Amundi Index Solu.-A.PRIME GL. Nam.-Ant.UC.ETF DR USD Acc.oN"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        outboundDelivery( //
+                                        hasDate("2024-11-22T00:00"), hasShares(26.00), //
+                                        hasSource("Fusion03.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));

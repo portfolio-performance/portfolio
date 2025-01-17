@@ -110,12 +110,14 @@ public class WebAccess
         private static final long serialVersionUID = 1L;
         private final int httpErrorCode;
         private final List<Pair<String, String>> headers;
+        private final String body;
 
-        public WebAccessException(String message, int httpErrorCode, List<Pair<String, String>> headers)
+        public WebAccessException(String message, int httpErrorCode, List<Pair<String, String>> headers, String body)
         {
             super(message);
             this.httpErrorCode = httpErrorCode;
             this.headers = headers;
+            this.body = body;
         }
 
         public int getHttpErrorCode()
@@ -126,6 +128,11 @@ public class WebAccess
         public List<String> getHeader(String key)
         {
             return headers.stream().filter(p -> p.getKey().equalsIgnoreCase(key)).map(Pair::getValue).toList();
+        }
+
+        public String getBody()
+        {
+            return body;
         }
     }
 
@@ -145,9 +152,22 @@ public class WebAccess
             final HttpEntity entity = response.getEntity();
             if (response.getCode() >= HttpStatus.SC_REDIRECTION)
             {
+                String body = null;
+                if (entity != null)
+                {
+                    try
+                    {
+                        body = EntityUtils.toString(entity);
+                    }
+                    catch (final ParseException ignore)
+                    {
+                        // ignore additional exceptions reading the body
+                    }
+                }
+
                 EntityUtils.consume(entity);
                 var headers = Stream.of(response.getHeaders()).map(h -> new Pair<>(h.getName(), h.getValue())).toList();
-                throw new WebAccessException(buildMessage(uri, response.getCode()), response.getCode(), headers);
+                throw new WebAccessException(buildMessage(uri, response.getCode()), response.getCode(), headers, body);
             }
 
             if (entity == null)
@@ -270,7 +290,7 @@ public class WebAccess
         catch (HttpResponseException e)
         {
             throw new WebAccessException(buildMessage(builder.toString(), e.getStatusCode()), e.getStatusCode(),
-                            new ArrayList<>());
+                            new ArrayList<>(), null);
         }
         catch (URISyntaxException e)
         {
