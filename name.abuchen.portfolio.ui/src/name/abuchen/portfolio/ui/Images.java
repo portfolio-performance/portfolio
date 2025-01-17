@@ -39,6 +39,7 @@ public enum Images
     ACCOUNT("account.png"), //$NON-NLS-1$
     PORTFOLIO("portfolio.png"), //$NON-NLS-1$
     GROUPEDACCOUNTS("groupedaccounts.png"), //$NON-NLS-1$
+    GROUPEDACCOUNTS_ON("groupedaccounts_on.png"), //$NON-NLS-1$
     WATCHLIST("watchlist.png"), //$NON-NLS-1$
     INVESTMENTPLAN("investmentplan.png"), //$NON-NLS-1$
     NOTE("note.png"), //$NON-NLS-1$
