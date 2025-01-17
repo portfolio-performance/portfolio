@@ -246,16 +246,16 @@ public class GroupedAccountListView extends AbstractFinanceView implements Modif
         ColumnViewerToolTipSupport.enableFor(groupedAccounts, ToolTip.NO_RECREATE);
         CopyPasteSupport.enableFor(groupedAccounts);
 
-        groupedAccountColumns = new ShowHideColumnHelper(GroupedAccountListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
+        groupedAccountColumns = new ShowHideColumnHelper(GroupedAccountListView.class.getSimpleName() + "@top", //$NON-NLS-1$
                         getPreferenceStore(), groupedAccounts, layout);
 
-        Column column = new NameColumn("0", Messages.ClientEditorLabelClientMasterData, SWT.None, 100, getClient()); //$NON-NLS-1$
+        Column column = new NameColumn("name", Messages.ClientEditorLabelClientMasterData, SWT.None, 100, getClient()); //$NON-NLS-1$
         column.setLabelProvider(new NameColumnLabelProvider(getClient())
         {
             @Override
             public String getText(Object element)
             {
-                return String.valueOf(element);
+                return element instanceof ClientFilterMenu.Item item ? item.getLabel() : super.getText(element);
             }
 
             @Override
@@ -264,13 +264,13 @@ public class GroupedAccountListView extends AbstractFinanceView implements Modif
                 if (element instanceof ClientFilterMenu.Item)
                     return Images.GROUPEDACCOUNTS.image();
                 else
-                    return LogoManager.instance().getDefaultColumnImage(element, getClient().getSettings());
+                    return super.getImage(element);
             }
         });
         new StringEditingSupport(ClientFilterMenu.Item.class, "label").setMandatory(true) //$NON-NLS-1$
                         .addListener((e, n, o) -> groupedAccounts.refresh(e)).attachTo(column);
         column.setRemovable(false);
-        // drag & drop sorting does not work well with auto sorting
+        // order is manually sorted by the user via drag & drop
         column.setSorter(null);
         groupedAccountColumns.addColumn(column);
 

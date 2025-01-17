@@ -71,7 +71,7 @@ public class PortfolioHoldingsPane implements InformationPanePage
             portfolioOrGroupedAccount = Adaptor.adapt(ClientFilterMenu.Item.class, input);
             ClientFilter clientFilter = ((ClientFilterMenu.Item) portfolioOrGroupedAccount).getFilter();
             ClientSnapshot snapshot = ClientSnapshot.create(clientFilter.filter(client), converter, LocalDate.now(),
-                            ((ClientFilterMenu.Item) portfolioOrGroupedAccount).getName());
+                            ((ClientFilterMenu.Item) portfolioOrGroupedAccount).getLabel());
             chart.refresh(snapshot);
         }
         else

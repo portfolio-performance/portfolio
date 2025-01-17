@@ -31,7 +31,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConfigurationSet;
 import name.abuchen.portfolio.model.ConfigurationSet.Configuration;
 import name.abuchen.portfolio.model.ConfigurationSet.WellKnownConfigurationSets;
-import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
@@ -41,7 +40,7 @@ import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 
 public final class ClientFilterMenu implements IMenuListener
 {
-    public static class Item implements Named
+    public static class Item
     {
         /** unique and stable identifier for a filter */
         private final String id;
@@ -54,8 +53,6 @@ public final class ClientFilterMenu implements IMenuListener
 
         // transient to avoid Gson serialization
         private transient ClientFilter filter; // NOSONAR
-
-        private String note;
 
         public Item(String id, String label, String uuids, ClientFilter filter)
         {
@@ -93,30 +90,6 @@ public final class ClientFilterMenu implements IMenuListener
         public ClientFilter getFilter()
         {
             return filter;
-        }
-
-        @Override
-        public String getNote()
-        {
-            return note;
-        }
-
-        @Override
-        public void setNote(String note)
-        {
-            this.note = note;
-        }
-
-        @Override
-        public String getName()
-        {
-            return getLabel();
-        }
-
-        @Override
-        public void setName(String name)
-        {
-            this.label = name;
         }
 
         @Override
@@ -204,9 +177,8 @@ public final class ClientFilterMenu implements IMenuListener
     {
         if (customItems.isEmpty())
         {
-            MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.LabelInfo,
-                            MessageFormat.format(Messages.LabelClientFilterNoCustomFilterExisting,
-                                            Messages.LabelClientFilterNew));
+            MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.LabelInfo, MessageFormat
+                            .format(Messages.LabelClientFilterNoCustomFilterExisting, Messages.LabelClientFilterNew));
             return;
         }
 
@@ -400,7 +372,7 @@ public final class ClientFilterMenu implements IMenuListener
 
     public static Optional<String> getSelectedFilterId(Client client, String key)
     {
-        return client.getSettings().getConfigurationSet(WellKnownConfigurationSets.CLIENT_FILTER_SELECTION)
-                        .lookup(key).map(Configuration::getData);
+        return client.getSettings().getConfigurationSet(WellKnownConfigurationSets.CLIENT_FILTER_SELECTION).lookup(key)
+                        .map(Configuration::getData);
     }
 }

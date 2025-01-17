@@ -157,9 +157,9 @@ public class PortfolioBalanceChart
         this.groupedAccount = groupedAccount;
         this.exchangeRateProviderFactory = exchangeRateProviderFactory;
         this.chartInterval = getInterval(groupedAccount);
-        this.portfolioName = groupedAccount.getName();
+        this.portfolioName = groupedAccount.getLabel();
         this.portfolioUUID = groupedAccount.getUUIDs();
-        chart.getTitle().setText(groupedAccount.getName());
+        chart.getTitle().setText(groupedAccount.getLabel());
 
         // unless we are updating an existing portfolio (for example adding or
         // removing a data series), we clear the chart as to not show wrong data
