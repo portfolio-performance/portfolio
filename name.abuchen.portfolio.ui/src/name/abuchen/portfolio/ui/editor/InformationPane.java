@@ -24,6 +24,7 @@ import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
@@ -212,6 +213,10 @@ public class InformationPane
 
         Named named = Adaptor.adapt(Named.class, input);
         label.setText(named != null ? TextUtil.tooltip(named.getName()) : ""); //$NON-NLS-1$
+        if (named == null && input instanceof ClientFilterMenu.Item item)
+        {
+            label.setText(item.getLabel());
+        }
 
         InformationPanePage page = (InformationPanePage) pagebook.getPage()
                         .getData(InformationPanePage.class.getName());
