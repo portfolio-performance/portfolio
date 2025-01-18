@@ -193,6 +193,7 @@ public class GroupedAccountListView extends AbstractFinanceView implements Modif
     @Override
     public void onModified(Object element, Object newValue, Object oldValue)
     {
+        storeChangedFilter();
         markDirty();
     }
 
@@ -268,7 +269,7 @@ public class GroupedAccountListView extends AbstractFinanceView implements Modif
             }
         });
         new StringEditingSupport(ClientFilterMenu.Item.class, "label").setMandatory(true) //$NON-NLS-1$
-                        .addListener((e, n, o) -> groupedAccounts.refresh(e)).attachTo(column);
+                        .addListener(this).attachTo(column);
         column.setRemovable(false);
         // order is manually sorted by the user via drag & drop
         column.setSorter(null);
