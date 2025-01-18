@@ -37,7 +37,7 @@ public class PortfolioHoldingsPane implements InformationPanePage
     @Named(UIConstants.Context.ACTIVE_CLIENT)
     private Client client;
 
-    private Object account;
+    private Object genericAccount;
     private IPieChart chart;
 
     @Override
@@ -63,7 +63,7 @@ public class PortfolioHoldingsPane implements InformationPanePage
 
         if (input instanceof Portfolio portfolio)
         {
-            account = Adaptor.adapt(Portfolio.class, input);
+            genericAccount = Adaptor.adapt(Portfolio.class, input);
             ClientFilter clientFilter = new PortfolioClientFilter(portfolio);
             ClientSnapshot snapshot = ClientSnapshot.create(clientFilter.filter(client), converter, LocalDate.now(),
                             portfolio.getName());
@@ -71,7 +71,7 @@ public class PortfolioHoldingsPane implements InformationPanePage
         }
         else if (input instanceof ClientFilterMenu.Item item)
         {
-            account = Adaptor.adapt(ClientFilterMenu.Item.class, input);
+            genericAccount = Adaptor.adapt(ClientFilterMenu.Item.class, input);
             ClientFilter clientFilter = item.getFilter();
             ClientSnapshot snapshot = ClientSnapshot.create(clientFilter.filter(client), converter, LocalDate.now(),
                             item.getLabel());
@@ -79,7 +79,7 @@ public class PortfolioHoldingsPane implements InformationPanePage
         }
         else if (input instanceof Account account)
         {
-            account = Adaptor.adapt(Account.class, input);
+            genericAccount = Adaptor.adapt(Account.class, input);
             ClientFilter clientFilter = new PortfolioClientFilter(Collections.emptyList(), Arrays.asList(account));
             ClientSnapshot snapshot = ClientSnapshot.create(clientFilter.filter(client), converter, LocalDate.now(),
                             account.getName());
@@ -90,7 +90,7 @@ public class PortfolioHoldingsPane implements InformationPanePage
     @Override
     public void onRecalculationNeeded()
     {
-        if (account != null)
-            setInput(account);
+        if (genericAccount != null)
+            setInput(genericAccount);
     }
 }
