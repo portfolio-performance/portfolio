@@ -75,8 +75,8 @@ import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.panes.GroupedAccountBalancePane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
-import name.abuchen.portfolio.ui.views.panes.PortfolioBalancePane;
 import name.abuchen.portfolio.ui.views.panes.PortfolioHoldingsPane;
 import name.abuchen.portfolio.ui.views.panes.StatementOfAssetsPane;
 
@@ -337,10 +337,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
 
         groupedAccounts.addSelectionChangedListener(event -> {
             Object treeItem = event.getStructuredSelection().getFirstElement();
-            // only update information pane if a whole grouped accounts is
-            // selected
-            if (treeItem instanceof ClientFilterMenu.Item item)
-                setInformationPaneInput(item);
+                setInformationPaneInput(treeItem);
         });
 
         setupDnD();
@@ -525,7 +522,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
     }
 
     // //////////////////////////////////////////////////////////////
-    // bottom table: transactions and charts
+    // bottom table: statement of assets and charts
     // //////////////////////////////////////////////////////////////
 
     @Override
@@ -533,7 +530,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
     {
         super.addPanePages(pages);
         pages.add(make(StatementOfAssetsPane.class));
-        pages.add(make(PortfolioBalancePane.class));
+        pages.add(make(GroupedAccountBalancePane.class));
         pages.add(make(PortfolioHoldingsPane.class));
     }
 }
