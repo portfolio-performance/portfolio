@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.views.panes;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
 
 import jakarta.inject.Inject;
 
@@ -9,6 +11,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -39,7 +42,7 @@ public class StatementOfAssetsPane implements InformationPanePage
     @Inject
     private ExchangeRateProviderFactory factory;
 
-    private Object portfolioOrGroupedAccount;
+    private Object genericAccount;
 
     private StatementOfAssetsViewer viewer;
 
@@ -66,7 +69,7 @@ public class StatementOfAssetsPane implements InformationPanePage
     {
         toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
                         a -> new TableViewerCSVExporter(viewer.getTableViewer()).export(getLabel(),
-                                        portfolioOrGroupedAccount)));
+                                        genericAccount)));
 
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> viewer.getColumnHelper().menuAboutToShow(manager)));
@@ -75,32 +78,15 @@ public class StatementOfAssetsPane implements InformationPanePage
     @Override
     public void setInput(Object input)
     {
-        if (input instanceof Portfolio)
+        if (input instanceof Portfolio portfolio)
         {
-            portfolioOrGroupedAccount = Adaptor.adapt(Portfolio.class, input);
+            genericAccount = Adaptor.adapt(Portfolio.class, input);
 
-            if (portfolioOrGroupedAccount != null)
+            if (genericAccount != null)
             {
                 CurrencyConverter converter = new CurrencyConverterImpl(factory,
-                                ((Portfolio) portfolioOrGroupedAccount).getReferenceAccount().getCurrencyCode());
-                ClientFilter clientFilter = new PortfolioClientFilter((Portfolio) portfolioOrGroupedAccount);
-                viewer.setInput(clientFilter, LocalDate.now(), converter);
-            }
-            else
-            {
-                CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
-                viewer.setInput(new EmptyFilter(), LocalDate.now(), converter);
-            }
-
-        }
-        else if (input instanceof ClientFilterMenu.Item)
-        {
-            portfolioOrGroupedAccount = Adaptor.adapt(ClientFilterMenu.Item.class, input);
-
-            if (portfolioOrGroupedAccount != null)
-            {
-                CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
-                ClientFilter clientFilter = ((ClientFilterMenu.Item) portfolioOrGroupedAccount).getFilter();
+                                portfolio.getReferenceAccount().getCurrencyCode());
+                ClientFilter clientFilter = new PortfolioClientFilter(portfolio);
                 viewer.setInput(clientFilter, LocalDate.now(), converter);
             }
             else
@@ -109,17 +95,47 @@ public class StatementOfAssetsPane implements InformationPanePage
                 viewer.setInput(new EmptyFilter(), LocalDate.now(), converter);
             }
         }
-        else
+
+        else if (input instanceof ClientFilterMenu.Item groupedAccount)
         {
-            // throw error ?
+            genericAccount = Adaptor.adapt(ClientFilterMenu.Item.class, input);
+
+            if (genericAccount != null)
+            {
+                CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+                ClientFilter clientFilter = groupedAccount.getFilter();
+                viewer.setInput(clientFilter, LocalDate.now(), converter);
+            }
+            else
+            {
+                CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+                viewer.setInput(new EmptyFilter(), LocalDate.now(), converter);
+            }
+        }
+
+        else if (input instanceof Account account)
+        {
+            genericAccount = Adaptor.adapt(Account.class, input);
+            if (genericAccount != null)
+            {
+                CurrencyConverter converter = new CurrencyConverterImpl(factory, account.getCurrencyCode());
+                ClientFilter clientFilter = new PortfolioClientFilter(Collections.emptyList(), Arrays.asList(account));
+                viewer.setInput(clientFilter, LocalDate.now(), converter);
+            }
+            else
+            {
+                CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+                viewer.setInput(new EmptyFilter(), LocalDate.now(), converter);
+            }
+
         }
     }
 
     @Override
     public void onRecalculationNeeded()
     {
-        if (portfolioOrGroupedAccount != null)
-            setInput(portfolioOrGroupedAccount);
+        if (genericAccount != null)
+            setInput(genericAccount);
     }
 
 }
