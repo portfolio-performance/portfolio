@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.views.panes;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -10,6 +12,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -34,7 +37,7 @@ public class PortfolioHoldingsPane implements InformationPanePage
     @Named(UIConstants.Context.ACTIVE_CLIENT)
     private Client client;
 
-    private Object portfolioOrGroupedAccount;
+    private Object genericAccount;
     private IPieChart chart;
 
     @Override
@@ -58,32 +61,36 @@ public class PortfolioHoldingsPane implements InformationPanePage
     {
         CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
 
-        if (input instanceof Portfolio)
+        if (input instanceof Portfolio portfolio)
         {
-            portfolioOrGroupedAccount = Adaptor.adapt(Portfolio.class, input);
-            ClientFilter clientFilter = new PortfolioClientFilter((Portfolio) portfolioOrGroupedAccount);
+            genericAccount = Adaptor.adapt(Portfolio.class, input);
+            ClientFilter clientFilter = new PortfolioClientFilter(portfolio);
             ClientSnapshot snapshot = ClientSnapshot.create(clientFilter.filter(client), converter, LocalDate.now(),
-                            ((Portfolio) portfolioOrGroupedAccount).getName());
+                            portfolio.getName());
             chart.refresh(snapshot);
         }
-        else if (input instanceof ClientFilterMenu.Item)
+        else if (input instanceof ClientFilterMenu.Item item)
         {
-            portfolioOrGroupedAccount = Adaptor.adapt(ClientFilterMenu.Item.class, input);
-            ClientFilter clientFilter = ((ClientFilterMenu.Item) portfolioOrGroupedAccount).getFilter();
+            genericAccount = Adaptor.adapt(ClientFilterMenu.Item.class, input);
+            ClientFilter clientFilter = item.getFilter();
             ClientSnapshot snapshot = ClientSnapshot.create(clientFilter.filter(client), converter, LocalDate.now(),
-                            ((ClientFilterMenu.Item) portfolioOrGroupedAccount).getLabel());
+                            item.getLabel());
             chart.refresh(snapshot);
         }
-        else
+        else if (input instanceof Account account)
         {
-            // throw error ?
+            genericAccount = Adaptor.adapt(Account.class, input);
+            ClientFilter clientFilter = new PortfolioClientFilter(Collections.emptyList(), Arrays.asList(account));
+            ClientSnapshot snapshot = ClientSnapshot.create(clientFilter.filter(client), converter, LocalDate.now(),
+                            account.getName());
+            chart.refresh(snapshot);
         }
     }
 
     @Override
     public void onRecalculationNeeded()
     {
-        if (portfolioOrGroupedAccount != null)
-            setInput(portfolioOrGroupedAccount);
+        if (genericAccount != null)
+            setInput(genericAccount);
     }
 }
