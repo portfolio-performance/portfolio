@@ -46,15 +46,15 @@ public class SolarisbankAGPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2022-10-26"), hasAmount("EUR", 200), //
+        assertThat(results, hasItem(deposit(hasDate("2022-10-26"), hasAmount("EUR", 200.00), //
                         hasSource("GiroKontoauszug01.txt"), hasNote("008eb3a1d003 etoken-google"))));
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2022-10-27"), hasAmount("EUR", 150), //
+        assertThat(results, hasItem(deposit(hasDate("2022-10-27"), hasAmount("EUR", 150.00), //
                         hasSource("GiroKontoauszug01.txt"), hasNote("a141b0b25f9d etoken-google"))));
 
         // assert transaction
-        assertThat(results, hasItem(removal(hasDate("2022-10-26"), hasAmount("EUR", 100), //
+        assertThat(results, hasItem(removal(hasDate("2022-10-26"), hasAmount("EUR", 100.00), //
                         hasSource("GiroKontoauszug01.txt"), hasNote("an Peter Panzwischen Kunden DE11111111111111111111"))));
 
         // assert transaction
@@ -79,7 +79,7 @@ public class SolarisbankAGPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2022-10-26"), hasAmount("EUR", 100), //
+        assertThat(results, hasItem(deposit(hasDate("2022-10-26"), hasAmount("EUR", 100.00), //
                         hasNote("von Peter Panzwischen Kunden DE11111111111111111111"))));
     }
 
@@ -121,7 +121,7 @@ public class SolarisbankAGPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2022-10-03"), hasAmount("EUR", 200), //
+        assertThat(results, hasItem(deposit(hasDate("2022-10-03"), hasAmount("EUR", 200.00), //
                         hasSource("GiroKontoauszug04.txt"), hasNote("von Peter Pan"))));
 
         // assert transaction
@@ -131,5 +131,42 @@ public class SolarisbankAGPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2022-10-20"), hasAmount("EUR", 18.78), //
                         hasSource("GiroKontoauszug04.txt"), hasNote("an Peter Pan"))));
+    }
+
+    @Test
+    public void testReferenzkontoauszug01()
+    {
+        SolarisbankAGPDFExtractor extractor = new SolarisbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Referenzkontoauszug01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-11-08"), hasAmount("EUR", 3000.00), //
+                        hasSource("Referenzkontoauszug01.txt"), hasNote("YLbKRus qXwsATAvg"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-11-10"), hasAmount("EUR", 1000.00), //
+                        hasSource("Referenzkontoauszug01.txt"), hasNote("EUWAX Aktiengesellschaft"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-11-14"), hasAmount("EUR", 1105.19), //
+                        hasSource("Referenzkontoauszug01.txt"), hasNote("EUWAX Aktiengesellschaft"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-11-15"), hasAmount("EUR", 0.01), //
+                        hasSource("Referenzkontoauszug01.txt"), hasNote("sMPghUOQW KOQy PbfeyvP"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-11-15"), hasAmount("EUR", 0.01), //
+                        hasSource("Referenzkontoauszug01.txt"), hasNote("UVOshYrqp ejDi CIXGqbX"))));
     }
 }
