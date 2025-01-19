@@ -49,6 +49,10 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                         })
                         
                         .oneOf(
+                                        // @formatter:off
+                                        // 04/01/22 06/01/22 SVD147529623COMPRA CETES 220203 6,080 9.95730000 2 5.51 60,540.38 0.00 -60,540.10
+                                        // 06/01/22 06/01/22 SVD148097667COMPSI BONDDIA PF2 3 1.57377100 0 0.00 4.72 0.00 1.48
+                                        // @formatter:on
                                         section -> section
                                         .attributes("date", "id", "name", "series", "shares", "term", "rate", "amount") //
                                         .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) (?<id>[A-Z0-9]+)(?<type>COMPRA|COMPSI) (?<name>[A-Z]+) (?<series>[\\dA-Z]+) (?<shares>[\\d,\\.]+) (?<price>[\\d,\\.]+) (?<term>[\\d]+) (?<rate>[\\d\\.]+) (?<amount>[\\d\\,\\.]+) .*$") //
