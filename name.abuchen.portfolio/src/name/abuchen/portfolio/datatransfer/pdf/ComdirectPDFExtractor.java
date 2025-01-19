@@ -405,11 +405,35 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                             }
                                                         }),
                                         // @formatter:off
+                                        // St. 400                   USD  50,722432
+                                        //        Umrechn. zum Dev. kurs 1,045200 vom 06.01.2025
+                                        // IBAN                                  Valuta        Zu Ihren Gunsten vor Steuern
+                                        // DE87 2004 1111 0131 9599 00   EUR     08.01.2025        EUR           19.411,57
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("termCurrency", "exchangeRate", "baseCurrency", "gross") //
+                                                        .match("^([\\s]+)?St\\.[\\s]{1,}[\\.,\\d]+[\\s]{1,}(?<termCurrency>[\\w]{3})[\\s]{1,}[\\.,\\d]+.*$") //
+                                                        .match("^.* Umrechn\\. zum Dev\\. kurs (?<exchangeRate>[\\.,\\d]+) .*$") //
+                                                        .find(".* Zu Ihren (Gunsten|Lasten).*") //
+                                                        .match("^.* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\s]{2,}(?<baseCurrency>[\\w]{3}) [\\s]{2,}(?<gross>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            if (!type.getCurrentContext().getBoolean("negative"))
+                                                            {
+                                                                ExtrExchangeRate rate = asExchangeRate(v);
+                                                                type.getCurrentContext().putType(rate);
+
+                                                                Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                                Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                                                checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                            }
+                                                        }),
+                                        // @formatter:off
                                         //  Summe        St.  720                USD  40,098597    USD           28.870,99
                                         //        Umrechn. zum Dev. kurs 1,120800 vom 12.03.2020 : EUR           25.784,17
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency") // //
+                                                        .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency") //
                                                         .match("^([\\s]+)?Summe[\\s]{1,}St\\.[\\s]{1,}[\\.,\\d]+[\\s]{1,}[\\w]{3}[\\s]{1,}[\\.,\\d]+[\\s]{1,}(?<termCurrency>[\\w]{3})[\\s]{1,}(?<fxGross>[\\.,\\d]+).*$") //
                                                         .match("^.* Umrechn\\. zum Dev\\. kurs (?<exchangeRate>[\\.,\\d]+) .*[\\s]{1,}: (?<baseCurrency>[\\w]{3}) [\\s]{2,}[\\.,\\d]+.*$") //
                                                         .assign((t, v) -> {
@@ -513,6 +537,24 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<name>.*)[\\s]{2,}(?<wkn>[A-Z0-9]{6}).*$") //
                                                         .match("^(?<nameContinued>.*)[\\s]{2,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^([\\s]+)?Summe[\\s]{1,}St\\.[\\s]{1,}[\\.,\\d]+[\\s]{1,}(?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
+                                                            v.put("nameContinued", trim(replaceMultipleBlanks(v.get("nameContinued"))));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // Wertpapier-Bezeichnung                                               WPKNR/ISIN
+                                        // AB SICAV I-Concentr.US Equ.Ptf                                           A1XBWG
+                                        // Actions Nom. I Acc. USD o.N.                                       LU1011999676
+                                        // St. 400                   USD  50,722432
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "nameContinued", "isin", "currency") //
+                                                        .find("Wertpapier\\-Bezeichnung .*") //
+                                                        .match("^(?<name>.*)[\\s]{2,}(?<wkn>[A-Z0-9]{6}).*$") //
+                                                        .match("^(?<nameContinued>.*)[\\s]{2,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^([\\s]+)?St\\.[\\s]{1,}[\\.,\\d]+[\\s]{1,}(?<currency>[\\w]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
                                                             v.put("nameContinued", trim(replaceMultipleBlanks(v.get("nameContinued"))));
