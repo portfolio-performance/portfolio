@@ -34,14 +34,17 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("Movimientos del per");
         this.addDocumentTyp(type);
+        
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
         Block firstRelevantLine = new Block(
                         "^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [A-Z0-9]+.*$");
         //Block firstRelevantLine = new Block("^Saldo inicial+.*$", "^Saldo final+.*$"); // This does not work
         type.addBlock(firstRelevantLine);
         // firstRelevantLine.setMaxSize(1);
-        firstRelevantLine.set(new Transaction<BuySellEntry>()
+        firstRelevantLine.set(pdfTransaction);
 
+        pdfTransaction //
                         .subject(() -> {
                             BuySellEntry portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
@@ -66,6 +69,10 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                                             t.setNote("ID:" + v.get("id") + " Series:" + v.get("series") + " Term:" + v.get("term") + " Rate:" + v.get("rate"));
                                                         }),
 
+                                        // @formatter:off
+                                        // 06/01/22 06/01/22 SVD147779466AMORTIZACION CETES 220106 6,055 0 0.00 60,550.00 9.90
+                                        // 06/01/22 06/01/22 SVD147779466ISR CETES 220106 0 3.70 0.00 6.20
+                                        // @formatter:on
                                         section -> section.attributes("date", "type", "name", "shares", "amount") //
                                         .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) [A-Z0-9]+(?<type>AMORTIZACION|ISR) (?<name>[A-Z]+) (?<series>[\\dA-Z]+) (?<shares>[\\d,\\.]+) (?<price>[\\d,\\.]+) (?<term>[\\d]+)( |)(?<rate>[\\d\\.]+)( |)(?<amount>[\\d\\,\\.]+).*(?<balance>[\\d,\\.\\-]+)$") //
                                         .assign((t, v) -> {
@@ -77,7 +84,7 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                                             t.setAmount(asAmount(v.get("amount")));
                                             if ("AMORTIZACION".equals(v.get("type")))
                                                 t.setType(PortfolioTransaction.Type.SELL);
-                                                        }))
+                                                        })
 
                         .wrap(BuySellEntryItem::new));
 
@@ -160,7 +167,7 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
         //
         // .wrap(BuySellEntryItem::new);
 
-        // addTaxesSectionsTransaction(pdfTransaction, type);
+        addTaxesSectionsTransaction(pdfTransaction, type);
         // addFeesSectionsTransaction(pdfTransaction, type);
         // firstRelevantLine.set(pdfTransaction);
     }
