@@ -89,7 +89,16 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\,\\d\\s]+ (?<name>.*) R.f.rence : .*$") //
-                                                        .match("^Code ISIN : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Cours ex.cu.é : [\\,\\d\\s]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^Code ISIN : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Cours ex.cu.. : [\\,\\d\\s]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // 08/01/2024 7 AM.MSCI WORLD UCITS ETF EUR C
+                                        // Code ISIN : LU1681043599 Cours exécuté : 447,5239 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\,\\d\\s]+ (?<name>.*)$") //
+                                                        .match("^Code ISIN : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Cours ex.cu.. : [\\,\\d\\s]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off

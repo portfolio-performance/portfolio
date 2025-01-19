@@ -1,0 +1,42 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+OPERATION DE BOURSE
+le 08/01/2024
+
+a(B;QEKetEL!JafM+)T!MqBJ1Th/XzG3J+
+ 000000
+fn 'x v!"*TaN= D aV%RaHi&
+;F@|6j,TV
+P26025
+a!!!a!!a!aa!!!aaa!a!aaa!a!!a!!a!!!a!aa!!aa!a!a!!
+MR qKIEgu ksBtL
+Uhr 73
+14 FLZ xi vNJUMaL lGNpYi
+34668 xJGsT
+Références de votre compte titres
+Compte PEA
+11241 79887 49486422235
+Résident Français
+ACHAT COMPTANT
+ACTION
+Date et heure
+locale d'exécution Quantité Informations sur la valeur Informations sur l'exécution
+Référence : 337163166408
+08/01/2024 7 AM.MSCI WORLD UCITS ETF EUR C
+Type d'ordre : au marché
+14:20:31
+Code ISIN : LU1681043599 Cours exécuté : 447,5239 EUR
+Lieu d'exécution : EURONEXT PARIS
+Montant brut Commission Frais (¨) Montant net au débit de votre compte
+3 132,67 EUR 15,66 EUR  3 148,33 EUR
+Sous réserve de bonne fin.
+(¨) Frais inhérents à la Taxe sur les Transactions Financières française
+Cet avis ne tient pas compte des frais inhérents aux Taxes sur les Transactions Financières européennes (hors France), s'ils doivent s'appliquer.
+ 
+Service Clientèle : 01 46 09 49 49 ou +33 146 09 49 49 depuis l'étranger, du lundi au vendredi de 8h à 20h et le samedi de 8h45 à 16h30 – www.boursobank.com
+Boursorama S.A. au capital de 51 171 597,60 € - RCS Nanterre 351 058 151 - TVA 69 351 058 151 - 44 rue Traversière - CS 80134 - 92772 Boulogne Billancourt Cedex
+AA1
+Adresse du médiateur : Médiateur de l'AMF - 17, place de la Bourse - 75082 PARIS CEDEX 02
+000000 F1 P26025 1/1
