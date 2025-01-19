@@ -273,8 +273,19 @@ public class GroupedAccountListView extends AbstractFinanceView implements Modif
         new StringEditingSupport(ClientFilterMenu.Item.class, "label").setMandatory(true) //$NON-NLS-1$
                         .addListener(this).attachTo(column);
         column.setRemovable(false);
-        // order is manually sorted by the user via drag & drop
-        column.setSorter(null);
+        // top level nodes order is manually sorted by the user via drag & drop
+        column.setSorter(ColumnViewerSorter.create(o -> {
+            if (o instanceof Portfolio portfolio)
+            {
+                return portfolio.getName();
+            }
+            else if (o instanceof Account account)
+            {
+                return account.getName();
+            }
+            return null;
+        }));
+
         groupedAccountColumns.addColumn(column);
 
         column = new Column("volume", Messages.ColumnBalance, SWT.RIGHT, 100); //$NON-NLS-1$
