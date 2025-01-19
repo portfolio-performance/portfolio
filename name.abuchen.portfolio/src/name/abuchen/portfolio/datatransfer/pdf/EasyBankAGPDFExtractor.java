@@ -214,7 +214,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        final DocumentType type = new DocumentType("Gesch.ftsart: Ertrag");
+        final DocumentType type = new DocumentType("Gesch.ftsart: (Dividende|Ertrag)(?!\\/Steueranteil)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -388,7 +388,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxesLostAdjustmentTransaction()
     {
-        final DocumentType type = new DocumentType("Gesch.ftsart: (Steuerkorrektur|Ertrag|Verkauf|Tilgung)");
+        final DocumentType type = new DocumentType("Gesch.ftsart: (Steuerkorrektur|(Dividende|Ertrag)(\\/Steueranteil)?|Verkauf|Tilgung)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -416,6 +416,22 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$") //
                                                         .match("^(?<name1>.*)$") //
                                                         .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            if (!v.get("name1").startsWith("Dividende") || !v.get("name1").startsWith("Ertrag"))
+                                                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
+                                        // Titel: IE00BF4RFH31 iShsIII-MSCI Wld Sm.Ca.UCI.ETF
+                                        // Registered Shares USD(Acc)o.N.
+                                        // Ertrag/Steueranteil pro Stk.: 0,011287 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "name", "name1", "currency") //
+                                                        .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$") //
+                                                        .match("^(?<name1>.*)$") //
+                                                        .match("^(Dividende|Ertrag)\\/Steueranteil pro Stk\\.: [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Dividende") || !v.get("name1").startsWith("Ertrag"))
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -565,6 +581,24 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }),
                                         // @formatter:off
+                                        // KESt aus Neubestand: -8,81 USD
+                                        // Auslands-KESt neu: -15,14 USD
+                                        // -23,95 USD
+                                        // Devisenkurs: 1,0366 (09.01.2025) -23,11 EUR
+                                        // Zu Lasten IBAN gW23 6257 9138 2168 9133 Valuta 10.01.2025 -23,11 E
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .find("KESt aus Neubestand: \\-[\\.,\\d]+ [\\w]{3}.*$") //
+                                                        .find("Auslands\\-KESt neu: \\-[\\.,\\d]+ [\\w]{3}.*$") //
+                                                        .match("^Zu Lasten .* \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.TAXES);
+
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
                                         // Gutschrift aus Verlustausgleich: 2,36 EUR
                                         // @formatter:on
                                         section -> section //
@@ -585,8 +619,31 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("termCurrency", "exchangeRate", "gross", "baseCurrency") //
                                                         .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$") //
-                                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) [\\-\\.,\\d]+ [\\w]{3}.*$") //
+                                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) (\\-)?[\\.,\\d]+ [\\w]{3}.*$") //
                                                         .match("^Gutschrift aus Verlustausgleich: (?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Ertrag/Steueranteil pro Stk.: 0,011287 EUR
+                                        // KESt aus Neubestand: -8,81 USD
+                                        // Auslands-KESt neu: -15,14 USD
+                                        // -23,95 USD
+                                        // Devisenkurs: 1,0366 (09.01.2025) -23,11 EUR
+                                        // Zu Lasten IBAN gW23 6257 9138 2168 9133 Valuta 10.01.2025 -23,11 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("termCurrency", "exchangeRate", "gross", "baseCurrency") //
+                                                        .find("Auslands\\-KESt neu:.*")
+                                                        .match("^\\-[\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$") //
+                                                        .match("^Devisenkurs: (?<exchangeRate>[\\.,\\d]+) \\([\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}\\) (\\-)?[\\.,\\d]+ [\\w]{3}.*$") //
+                                                        .match("^Zu Lasten .* \\-(?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             ExtrExchangeRate rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);

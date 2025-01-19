@@ -2864,6 +2864,69 @@ public class EasyBankAGPDFExtractorTest
     }
 
     @Test
+    public void testSteuerkorrektur02()
+    {
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerkorrektur02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BF4RFH31"), hasWkn(null), hasTicker(null), //
+                        hasName("iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-01-10T00:00"), hasShares(753.259), //
+                        hasSource("Steuerkorrektur02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 23.11), hasGrossValue("EUR", 23.11), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSteuerkorrektur02WithSecurityInUSD()
+    {
+        Security security = new Security("iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N.", CurrencyUnit.USD);
+        security.setIsin("IE00BF4RFH31");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerkorrektur02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-01-10T00:00"), hasShares(753.259), //
+                        hasSource("Steuerkorrektur02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 23.11), hasGrossValue("EUR", 23.11), //
+                        hasForexGrossValue("USD", 23.96), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDepotauszug01()
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
