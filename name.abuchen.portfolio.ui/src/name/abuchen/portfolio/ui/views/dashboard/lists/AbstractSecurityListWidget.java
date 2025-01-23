@@ -148,16 +148,13 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
         }
         else
         {
-            int count = 0;
-            for (T item : items)
+            // limit the number of securities listed on the dashboard to 25
+            for (int ii = 0; ii < items.size() && ii < 25; ii++)
             {
-                // limit the number of securities listed on the dashboard to 25
-                if (count >= 25)
-                    break;
-
-                Composite child = createItemControl(list, item);
+                T item = items.get(ii);
+                T previous = ii > 0 ? items.get(ii - 1) : null;
+                Composite child = createItemControl(list, item, previous);
                 child.setData(item);
-                count++;
             }
         }
 
@@ -167,7 +164,7 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
 
     protected abstract void createEmptyControl(Composite parent);
 
-    protected abstract Composite createItemControl(Composite parent, T item);
+    protected abstract Composite createItemControl(Composite parent, T item, T previous);
 
     @Override
     public Control getTitleControl()

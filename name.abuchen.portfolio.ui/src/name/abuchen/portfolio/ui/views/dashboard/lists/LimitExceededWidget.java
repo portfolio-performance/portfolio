@@ -94,7 +94,7 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
     }
 
     @Override
-    protected Composite createItemControl(Composite parent, LimitItem item)
+    protected Composite createItemControl(Composite parent, LimitItem item, LimitItem previous)
     {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new FormLayout());

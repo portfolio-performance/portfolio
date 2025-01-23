@@ -96,7 +96,7 @@ public class EventListWidget extends AbstractSecurityListWidget<EventListWidget.
     }
 
     @Override
-    protected Composite createItemControl(Composite parent, EventItem item)
+    protected Composite createItemControl(Composite parent, EventItem item, EventItem previous)
     {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new FormLayout());
