@@ -81,6 +81,9 @@ public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.Fo
         }
     }
 
+    private LocalDate lastDate;
+    private AttributeType lastAttrType;
+
     public FollowUpWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
@@ -116,7 +119,14 @@ public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.Fo
             }
 
             var comparator = get(SortingConfig.class).getValue().getComparator();
-            Collections.sort(items, (r, l) -> comparator.compare(r.date, l.date));
+            Collections.sort(items, (r, l) -> {
+                int res = comparator.compare(r.date, l.date);
+                // If date is the same, we want to group items by attribute type
+                // (by simply sorting them by it).
+                if (res == 0)
+                    res = r.type.getName().compareTo(l.type.getName());
+                return res;
+            });
 
             return items;
         };
@@ -133,13 +143,20 @@ public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.Fo
 
         Label name = createLabel(composite, item.getSecurity().getName(getClient().getSecurityNameConfig()));
 
-        Label date = createLabel(composite, item.type.getName() + ": " + Values.Date.format(item.date)); //$NON-NLS-1$
-
         composite.addMouseListener(mouseUpAdapter);
         name.addMouseListener(mouseUpAdapter);
-        date.addMouseListener(mouseUpAdapter);
 
-        FormDataFactory.startingWith(logo).thenRight(name).right(new FormAttachment(100)).thenBelow(date);
+        if (!item.date.equals(this.lastDate) || !item.type.equals(this.lastAttrType))
+        {
+            Label date = createLabel(composite, item.type.getName() + ": " + Values.Date.format(item.date)); //$NON-NLS-1$
+            FormDataFactory.startingWith(date).thenBelow(logo).thenRight(name).right(new FormAttachment(100));
+            this.lastDate = item.date;
+            this.lastAttrType = item.type;
+        }
+        else
+        {
+            FormDataFactory.startingWith(logo).thenRight(name).right(new FormAttachment(100));
+        }
 
         return composite;
     }
