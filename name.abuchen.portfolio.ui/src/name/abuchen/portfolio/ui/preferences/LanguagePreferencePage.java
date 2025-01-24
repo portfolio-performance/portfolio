@@ -62,7 +62,8 @@ public class LanguagePreferencePage extends PreferencePage
         SLOVAK("sk", "Slovenská"), //$NON-NLS-1$ //$NON-NLS-2$
         POLISH("pl", "Polskie"), //$NON-NLS-1$ //$NON-NLS-2$
         CHINESE("zh", "中文"), //$NON-NLS-1$ //$NON-NLS-2$
-        DANISH("da", "Dansk"); //$NON-NLS-1$ //$NON-NLS-2$
+        DANISH("da", "Dansk"), //$NON-NLS-1$ //$NON-NLS-2$
+        TURKISH("tr", "Türk"); //$NON-NLS-1$ //$NON-NLS-2$
 
         private String code;
         private String label;

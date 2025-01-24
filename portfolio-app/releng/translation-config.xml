@@ -13,6 +13,7 @@
 		<language identifier="pt_BR" poeditor="pt-br" />
 		<language identifier="ru" poeditor="ru" />
 		<language identifier="sk" poeditor="sk" />
+		<language identifier="tr" poeditor="tr" />
 		<language identifier="zh" poeditor="zh-Hans" />
 		<language identifier="zh_TW" poeditor="zh-TW" />
 	</languages>

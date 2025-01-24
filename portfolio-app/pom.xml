@@ -208,6 +208,11 @@
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_tr</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
 							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_it</id>
 							<removeAll />
 						</filter>
@@ -278,6 +283,11 @@
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_tr</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
 							<id>org.eclipse.e4.ui.swt.gtk.nl_it</id>
 							<removeAll />
 						</filter>
@@ -324,6 +334,11 @@
 						<filter>
 							<type>eclipse-plugin</type>
 							<id>org.eclipse.e4.ui.swt.gtk.nl_pl</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.e4.ui.swt.gtk.nl_tr</id>
 							<removeAll />
 						</filter>
 					</filters>
