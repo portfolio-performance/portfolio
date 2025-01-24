@@ -68,6 +68,7 @@ public abstract class AbstractSecurityListWidget<T extends AbstractSecurityListW
             return;
 
         view.setInformationPaneInput(((Item) item).getSecurity());
+        view.showPane();
     });
 
     public AbstractSecurityListWidget(Widget widget, DashboardData data)

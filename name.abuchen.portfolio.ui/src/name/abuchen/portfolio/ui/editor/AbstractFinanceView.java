@@ -209,6 +209,12 @@ public abstract class AbstractFinanceView
 
     }
 
+    public void showPane()
+    {
+        if (isPaneHidden())
+            flipPane();
+    }
+
     protected abstract Control createBody(Composite parent);
 
     private final Control createHeader(Composite parent)
