@@ -126,8 +126,7 @@ public class EventListWidget extends AbstractSecurityListWidget<EventListWidget.
     @Override
     protected void createEmptyControl(Composite parent)
     {
-        title = new StyledLabel(parent, SWT.WRAP);
-        title.setText(Messages.MsgHintNoEvents);
+        var label = new StyledLabel(parent, SWT.WRAP);
+        label.setText(Messages.MsgHintNoEvents);
     }
-
 }

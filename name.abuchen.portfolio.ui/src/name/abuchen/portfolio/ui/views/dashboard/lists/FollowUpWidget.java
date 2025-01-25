@@ -150,9 +150,9 @@ public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.Fo
         if (get(AttributesConfig.class).hasTypes())
             return;
 
-        title = new StyledLabel(parent, SWT.WRAP);
-        title.setText(MessageFormat.format(Messages.MsgHintNoAttributesConfigured, AttributeFieldType.DATE.toString()));
-        title.setOpenLinkHandler(d -> view.getPart().activateView(SettingsView.class, 1));
+        var label = new StyledLabel(parent, SWT.WRAP);
+        label.setText(MessageFormat.format(Messages.MsgHintNoAttributesConfigured, AttributeFieldType.DATE.toString()));
+        label.setOpenLinkHandler(d -> view.getPart().activateView(SettingsView.class, 1));
     }
 
 }

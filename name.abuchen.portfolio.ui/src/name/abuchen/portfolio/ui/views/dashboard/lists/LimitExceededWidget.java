@@ -85,7 +85,9 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
                 }
             }
 
-            Collections.sort(items, (r, l) -> Double.compare(AttributeColumn.LimitPriceComparator.calculateNormalizedDistance(l.limit, l.price), AttributeColumn.LimitPriceComparator.calculateNormalizedDistance(r.limit, r.price)));
+            Collections.sort(items, (r, l) -> Double.compare(
+                            AttributeColumn.LimitPriceComparator.calculateNormalizedDistance(l.limit, l.price),
+                            AttributeColumn.LimitPriceComparator.calculateNormalizedDistance(r.limit, r.price)));
 
             return items;
         };
@@ -132,9 +134,9 @@ public class LimitExceededWidget extends AbstractSecurityListWidget<LimitExceede
         if (get(AttributesConfig.class).hasTypes())
             return;
 
-        title = new StyledLabel(parent, SWT.WRAP);
-        title.setText(MessageFormat.format(Messages.MsgHintNoAttributesConfigured,
+        var label = new StyledLabel(parent, SWT.WRAP);
+        label.setText(MessageFormat.format(Messages.MsgHintNoAttributesConfigured,
                         AttributeFieldType.LIMIT_PRICE.toString()));
-        title.setOpenLinkHandler(d -> view.getPart().activateView(SettingsView.class, 1));
+        label.setOpenLinkHandler(d -> view.getPart().activateView(SettingsView.class, 1));
     }
 }
