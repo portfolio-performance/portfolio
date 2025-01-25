@@ -188,6 +188,7 @@ public class Messages extends NLS
     public static String ColumnEntity;
     public static String ColumnEntryValue;
     public static String ColumnErrorMessages;
+    public static String ColumnEventType;
     public static String ColumnExchangeRate;
     public static String ColumnExDate;
     public static String ColumnExitValue;

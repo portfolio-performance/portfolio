@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.dashboard.lists;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -12,6 +13,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
@@ -23,7 +25,9 @@ import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 import name.abuchen.portfolio.ui.views.dashboard.ChartHeightConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
+import name.abuchen.portfolio.ui.views.dashboard.EnumBasedConfig;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
+import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class EventListWidget extends AbstractSecurityListWidget<EventListWidget.EventItem>
@@ -39,11 +43,21 @@ public class EventListWidget extends AbstractSecurityListWidget<EventListWidget.
         }
     }
 
+    public class EventTypeConfig extends EnumBasedConfig<SecurityEvent.Type>
+    {
+        public EventTypeConfig(WidgetDelegate<?> delegate)
+        {
+            super(delegate, Messages.ColumnEventType, SecurityEvent.Type.class, Dashboard.Config.EVENT_TYPE,
+                            EnumBasedConfig.Policy.MULTIPLE);
+        }
+    }
+
     public EventListWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
 
         addConfig(new ReportingPeriodConfig(this));
+        addConfig(new EventTypeConfig(this));
         addConfig(new SortingConfig(this));
         addConfig(new ChartHeightConfig(this));
     }
@@ -55,15 +69,22 @@ public class EventListWidget extends AbstractSecurityListWidget<EventListWidget.
 
             var interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
 
+            var types = get(EventTypeConfig.class).getValues();
+            if (types.isEmpty())
+                types = EnumSet.allOf(SecurityEvent.Type.class);
+
             List<EventItem> items = new ArrayList<>();
             for (Security security : getClient().getSecurities())
             {
                 for (var event : security.getEvents())
                 {
-                    if (interval.contains(event.getDate()))
-                    {
-                        items.add(new EventItem(security, event));
-                    }
+                    if (!interval.contains(event.getDate()))
+                        continue;
+
+                    if (!types.contains(event.getType()))
+                        continue;
+
+                    items.add(new EventItem(security, event));
                 }
             }
 
