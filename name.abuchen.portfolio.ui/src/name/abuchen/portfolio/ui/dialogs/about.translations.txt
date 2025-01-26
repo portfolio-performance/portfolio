@@ -2,7 +2,7 @@ Translated with the help of
 
 Spanish by [PabloReyes](https://github.com/PabloReyes), Bolzass, Emilio
 Dutch by Mi, Thomas, Dizzy, Caspar, Husch, Idsert
-Portuguese by [iwalucas](https://github.com/iwalucas), Bruno, Paulo Santos, Teppss
+Portuguese by [iwalucas](https://github.com/iwalucas), Bruno, Paulo Santos, Teppss, David
 Brazilian Portuguese by Rafael
 French by [Skymirrh](https://github.com/Skymirrh), Matthieu, Jérémy
 Italian by [dfdario](https://github.com/dfdario), Luca, Emanuele, Dario Di Ludovico
