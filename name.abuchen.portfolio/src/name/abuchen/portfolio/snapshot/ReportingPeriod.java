@@ -859,7 +859,9 @@ public abstract class ReportingPeriod
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
-            return Interval.of(relativeTo.plusYears(-100), relativeTo);
+            // Assume we're called with relativeTo == today. Then today is not the
+            // past, and as Interval includes the end date, it must be yesterday.
+            return Interval.of(relativeTo.plusYears(-100), relativeTo.plusDays(-1));
         }
 
         @Override
@@ -890,7 +892,13 @@ public abstract class ReportingPeriod
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
-            return Interval.of(relativeTo, relativeTo.plusYears(100));
+            // Assume we're called with relativeTo == today. In Past
+            // implementation, we exclude it, as today cannot reasonably be
+            // considered "past". But then we have to include today in the
+            // Future, to not lose it altogether. That actually makes good
+            // sense on its own as something an hour from now today *is*
+            // the future.
+            return Interval.of(relativeTo.plusDays(-1), relativeTo.plusYears(100));
         }
 
         @Override
