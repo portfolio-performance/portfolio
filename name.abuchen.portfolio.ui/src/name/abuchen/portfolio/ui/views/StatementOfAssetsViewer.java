@@ -404,7 +404,7 @@ public class StatementOfAssetsViewer
                 if (((Element) e).isGroupByTaxonomy())
                     return Messages.ColumnSum;
                 if (el.isCategory())
-                    return super.getText(el) + " (" + el.getChildren().count() + ")";
+                    return super.getText(el) + " (" + el.getChildren().count() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
                 return super.getText(e);
             }
 
@@ -668,10 +668,8 @@ public class StatementOfAssetsViewer
         column.setGroupLabel(Messages.LabelPurchasePrice);
         column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnGrossPurchasePriceMovingAverage_Description);
-        labelProvider = new ReportingPeriodLabelProvider(
-                        new ElementValueProvider(LazySecurityPerformanceRecord::getGrossMovingAverageCostPerSharesHeld,
-                                        null),
-                        false);
+        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
+                        LazySecurityPerformanceRecord::getGrossMovingAverageCostPerSharesHeld, null), false);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
