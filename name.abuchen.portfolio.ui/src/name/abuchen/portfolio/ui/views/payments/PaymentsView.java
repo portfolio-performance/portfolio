@@ -163,10 +163,10 @@ public class PaymentsView extends AbstractFinanceView
         toolBar.add(new StartYearSelectionDropDown(model));
 
         DropDown dropDown = new DropDown(Messages.MenuChooseClientFilter,
-                        clientFilterMenu.hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF, SWT.NONE,
-                        clientFilterMenu::menuAboutToShow);
-        clientFilterMenu.addListener(f -> dropDown
-                        .setImage(clientFilterMenu.hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF));
+                        clientFilterMenu.hasActiveFilter() ? Images.GROUPEDACCOUNTS_ON : Images.GROUPEDACCOUNTS,
+                        SWT.NONE, clientFilterMenu::menuAboutToShow);
+        clientFilterMenu.addListener(f -> dropDown.setImage(
+                        clientFilterMenu.hasActiveFilter() ? Images.GROUPEDACCOUNTS_ON : Images.GROUPEDACCOUNTS));
         clientFilterMenu.addListener(filter -> updateTitle(getDefaultTitle()));
 
         toolBar.add(dropDown);
