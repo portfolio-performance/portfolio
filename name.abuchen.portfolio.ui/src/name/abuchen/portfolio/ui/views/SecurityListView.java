@@ -245,8 +245,11 @@ public class SecurityListView extends AbstractFinanceView
          */
         private long getSharesHeld(Client client, Security security)
         {
-            // collect all shares and return a value greater 0
-            return Math.max(security.getTransactions(client).stream()
+            // TODO: This calculation is simplistic and may be incorrect.
+            // e.g., if one account has 1 (long) share and another - -1 (short) share,
+            // this calculation returns 0. But it's clear that it's not the case that
+            // we have 0 (i.e. none) shares.
+            return security.getTransactions(client).stream()
                             .filter(t -> t.getTransaction() instanceof PortfolioTransaction) //
                             .map(t -> (PortfolioTransaction) t.getTransaction()) //
                             .mapToLong(t -> {
@@ -261,7 +264,7 @@ public class SecurityListView extends AbstractFinanceView
                                     default:
                                         return 0L;
                                 }
-                            }).sum(), 0);
+                            }).sum();
         }
 
         private boolean isLimitPriceExceeded(Security security)
