@@ -7,7 +7,7 @@ if [ -z $PCK_VERSION ]; then
 fi
 
 BASE=$(pwd)/../../portfolio-product/target/repository
-E430BASE=$(pwd)/../../../portfolio-eclipse430/portfolio-app/releng/updatesite/portfolio
+E430BASE=$(pwd)/../../../portfolio-eclipse430/portfolio-product/target/repository
 
 mkdir updatesite
 rm updatesite/CNAME
