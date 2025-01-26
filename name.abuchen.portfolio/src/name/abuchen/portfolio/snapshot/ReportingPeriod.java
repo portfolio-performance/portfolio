@@ -45,7 +45,9 @@ public abstract class ReportingPeriod
         YEAR_TO_DATE('X', YearToDate.class), //
         SINCE_X('S', SinceX.class), //
         FROM_X_TO_Y('F', FromXtoY.class), //
-        YEAR_X('Y', YearX.class);
+        YEAR_X('Y', YearX.class), //
+        PAST('G', Past.class), //
+        FUTURE('H', Future.class);
 
         private char code;
 
@@ -839,6 +841,68 @@ public abstract class ReportingPeriod
         public int hashCode()
         {
             return Objects.hashCode(Type.PREVIOUS_YEAR);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
+    }
+
+    public static class Past extends ReportingPeriod
+    {
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            return Interval.of(relativeTo.plusYears(-100), relativeTo);
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodInThePast;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(Type.PAST);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
+    }
+
+    public static class Future extends ReportingPeriod
+    {
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            return Interval.of(relativeTo, relativeTo.plusYears(100));
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodInTheFuture;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(Type.FUTURE);
         }
 
         @Override

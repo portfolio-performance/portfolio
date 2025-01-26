@@ -56,7 +56,7 @@ public class EventListWidget extends AbstractSecurityListWidget<EventListWidget.
     {
         super(widget, data);
 
-        addConfig(new ReportingPeriodConfig(this));
+        addConfig(new ReportingPeriodConfig(this, true));
         addConfig(new EventTypeConfig(this));
         addConfig(new SortingConfig(this));
         addConfig(new ChartHeightConfig(this));
