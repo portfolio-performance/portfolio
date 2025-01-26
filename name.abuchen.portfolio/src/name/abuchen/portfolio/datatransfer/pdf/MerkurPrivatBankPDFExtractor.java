@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -25,6 +26,7 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction();
         addDividendeTransaction();
         addAccountStatementTransaction();
+        addAdvanceTaxTransaction();
     }
 
     @Override
@@ -238,6 +240,62 @@ public class MerkurPrivatBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    private void addAdvanceTaxTransaction()
+    {
+        final DocumentType type = new DocumentType("Vorabpauschale Investmentfonds");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^.*Abrechnungsnr.*$", "^Keine Steuerbescheinigung.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        .section("name", "isin", "wkn", "nameContinued", "currency") //
+                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
+                        .match("^St.ck (?<shares>[\\.,\\d]+) (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>.*)\\)$") //
+                        .match("^(?<nameContinued>.*)$") //
+                        .match("^.* Vorabpauschale pro St\\. [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("shares") //
+                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)") //
+                        .match("^St.ck (?<shares>[\\.,\\d]+) .*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("date") //
+                        .match("^Den Betrag buchen wir mit Wertstellung (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        .section("currency", "amount") //
+                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .section("note").optional() //
+                        .match("^.*(?<note>Abrechnungsnr\\. [\\d]+).*$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(t -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                            return item;
+                        });
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

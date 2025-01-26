@@ -734,7 +734,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     private void addDividendeTransaction()
     {
         final DocumentType type = new DocumentType("(Dividendengutschrift" //
-                        + "|Ertragsmitteilung" //
+                        + "|(Storno )?Ertragsmitteilung" //
                         + "|Zinsgutschrift" //
                         + "|Best.tigung Dividendenaussch.ttung mit Neuanlage)");
         this.addDocumentTyp(type);
@@ -742,7 +742,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
         Block firstRelevantLine = new Block("^(Dividendengutschrift" //
-                        + "|Ertragsmitteilung" //
+                        + "|(Storno )?Ertragsmitteilung" //
                         + "|Zinsgutschrift" //
                         + "|Best.tigung Dividendenaussch.ttung mit Neuanlage).*$");
         type.addBlock(firstRelevantLine);
@@ -755,6 +755,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
+
+                        // @formatter:off
+                        // Storno Ertragsmitteilung - ausschüttender/teilthesaurierender Fonds
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^(?<type>Storno) Ertragsmitteilung.*$") //
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
 
                         .oneOf( //
                                         // @formatter:off

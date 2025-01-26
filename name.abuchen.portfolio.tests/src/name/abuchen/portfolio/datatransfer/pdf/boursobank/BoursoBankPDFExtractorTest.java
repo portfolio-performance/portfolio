@@ -164,6 +164,37 @@ public class BoursoBankPDFExtractorTest
     }
 
     @Test
+    public void testCompteAChat05()
+    {
+        BoursoBankPDFExtractor extractor = new BoursoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AChat05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1681043599"), hasWkn(null), hasTicker(null), //
+                        hasName("AM.MSCI WORLD UCITS ETF EUR C"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-01-08T14:20:31"), hasShares(7.00), //
+                        hasSource("AChat05.txt"), //
+                        hasNote("au marché | Référence : 337163166408"), //
+                        hasAmount("EUR", 3148.33), hasGrossValue("EUR", 3132.67), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 15.66))));
+    }
+
+    @Test
     public void testCompteVente01()
     {
         BoursoBankPDFExtractor extractor = new BoursoBankPDFExtractor(new Client());

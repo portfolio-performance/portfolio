@@ -1,0 +1,30 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: linux | x86_64 | 23 | Arch Linux
+-----------------------------------------
+Signor
+NySCUtY IyWjXm
+WTmNCh QIjIafB f BBszIwhEpy 7
+51961 kQjxQ btJ OukDTd'
+Goszrd
+PErSD O2036
+Nota Informativa per l'ordine c6954896449059
+Vi Confermiamo il Vs. ordine sopra riportato del 23.09.2023 Data scadenza 23.10.2023
+per l'acquisto di: 9  CROCS INC ISIN US2270461096
+sottostante  cod.  mult. 1
+eseguito per: 9
+tramite l'intermediario ViewTrade
+Tipo di Operazione: Acquisto Mercato di esecuzione: Borsa - NASDAQ
+                                              Quantita'                USD              Euro     Prezzo         Valuta
+24.09.2023 19:02:34 Richiesta Immissione              9           780,3000           732,88*      86,70
+25.09.2023 14:30:10 Inoltro
+25.09.2023 14:30:15 In negoziazione
+25.09.2023 15:30:14 Eseguito   (09:30:14)             9           769,7700           722,99*      85,53     27.09.2023
+                    Controvalore:                                 769,7700           722,99*      85,53
+                    Commissioni:                                    9,0000             8,45*
+                    Totale a Vs. Debito    :                      778,7700           731,44
+Gli effetti fiscali saranno disponibili a data valuta nel menu Info -  2b.Capital Gain
+=C/$=  1,06470
+* - cambio provvisorio
+Torino, 25.09.2023
+       DIRECTA SIM

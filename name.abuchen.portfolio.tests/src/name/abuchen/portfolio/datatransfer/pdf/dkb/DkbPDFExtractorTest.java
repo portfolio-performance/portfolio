@@ -4700,6 +4700,40 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testTagesgeldKontoauszug04()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TagesgeldKontoauszug04.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-01-02"), hasAmount("EUR", 133.51), //
+                        hasSource("TagesgeldKontoauszug04.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-01-03"), hasAmount("EUR", 406.97), //
+                        hasSource("TagesgeldKontoauszug04.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-01-04"), hasAmount("EUR", 406.99), //
+                        hasSource("TagesgeldKontoauszug04.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2025-01-05"), hasAmount("EUR", 0.02), //
+                        hasSource("TagesgeldKontoauszug04.txt"), hasNote("Stornorechnung zur Abrechnung 30.12.2024"))));
+    }
+
+    @Test
     public void testKreditKontoauszug01()
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
@@ -5197,5 +5231,103 @@ public class DkbPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-12-27"), hasAmount("EUR", 500.00), //
                         hasSource("KreditKontoauszug07.txt"), hasNote("PAYPAL *abc, 35314369001"))));
+    }
+
+    @Test
+    public void testKreditKontoauszug08()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug08.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2007-07-21"), hasAmount("EUR", 12.54), //
+                        hasSource("KreditKontoauszug08.txt"), hasNote("Habenzins auf 23 Tage"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2007-07-21"), hasAmount("EUR", 2.92), //
+                        hasSource("KreditKontoauszug08.txt"), hasNote("Habenzins auf 5 Tage"))));
+    }
+
+    @Test
+    public void testKreditKontoauszug09()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug09.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2007-09-21"), hasAmount("EUR", 500.00), //
+                        hasSource("KreditKontoauszug09.txt"), hasNote("Einzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2007-10-11"), hasAmount("EUR", 1017.85), //
+                        hasSource("KreditKontoauszug09.txt"), hasNote("Einzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2007-10-23"), hasAmount("EUR", 19.88), //
+                        hasSource("KreditKontoauszug09.txt"), hasNote("Habenzins auf 31 Tage"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2007-09-22"), hasAmount("EUR", 0.05), //
+                        hasSource("KreditKontoauszug09.txt"), hasNote("Storno Habenzinsen"))));
+    }
+
+    @Test
+    public void testKreditKontoauszug10()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug10.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2009-01-26"), hasAmount("EUR", 18500.00), //
+                        hasSource("KreditKontoauszug10.txt"), hasNote("Auszahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2009-02-03"), hasAmount("EUR", 550.00), //
+                        hasSource("KreditKontoauszug10.txt"), hasNote("Auszahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2009-02-04"), hasAmount("EUR", 300.00), //
+                        hasSource("KreditKontoauszug10.txt"), hasNote("Auszahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2009-02-20"), hasAmount("EUR", 17700.00), //
+                        hasSource("KreditKontoauszug10.txt"), hasNote("Einzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2009-02-21"), hasAmount("EUR", 11.19), //
+                        hasSource("KreditKontoauszug10.txt"), hasNote("Habenzins auf 29 Tage"))));
     }
 }

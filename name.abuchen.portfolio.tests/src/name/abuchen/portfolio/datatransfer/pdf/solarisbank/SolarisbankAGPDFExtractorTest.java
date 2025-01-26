@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -18,7 +19,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.InputFile;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
@@ -33,8 +33,10 @@ public class SolarisbankAGPDFExtractorTest
     public void testGiroKontoauszug01()
     {
         SolarisbankAGPDFExtractor extractor = new SolarisbankAGPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("GiroKontoauszug01.txt"), errors);
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -43,25 +45,31 @@ public class SolarisbankAGPDFExtractorTest
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        assertThat(results, hasItem(deposit(hasDate("2022-10-26"), hasAmount("EUR", 200), //
-                        hasNote("008eb3a1d003 etoken-google"))));
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2022-10-26"), hasAmount("EUR", 200.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("008eb3a1d003 etoken-google"))));
 
-        assertThat(results, hasItem(deposit(hasDate("2022-10-27"), hasAmount("EUR", 150), //
-                        hasNote("a141b0b25f9d etoken-google"))));
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2022-10-27"), hasAmount("EUR", 150.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("a141b0b25f9d etoken-google"))));
 
-        assertThat(results, hasItem(removal(hasDate("2022-10-26"), hasAmount("EUR", 100), //
-                        hasNote("an Peter Panzwischen Kunden DE11111111111111111111"))));
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2022-10-26"), hasAmount("EUR", 100.00), //
+                        hasSource("GiroKontoauszug01.txt"), hasNote("an Peter Panzwischen Kunden DE11111111111111111111"))));
 
+        // assert transaction
         assertThat(results, hasItem(removal(hasDate("2022-10-28"), hasAmount("EUR", 16.10), //
-                        hasNote("Amazon.de AMAZON.DE LU"))));
+                        hasSource("GiroKontoauszug01.txt"), hasNote("Amazon.de AMAZON.DE LU"))));
     }
 
     @Test
     public void testGiroKontoauszug02()
     {
         SolarisbankAGPDFExtractor extractor = new SolarisbankAGPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("GiroKontoauszug02.txt"), errors);
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -70,17 +78,19 @@ public class SolarisbankAGPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        assertThat(results, hasItem(deposit(hasDate("2022-10-26"), hasAmount("EUR", 100), //
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2022-10-26"), hasAmount("EUR", 100.00), //
                         hasNote("von Peter Panzwischen Kunden DE11111111111111111111"))));
     }
-
 
     @Test
     public void testGiroKontoauszug03()
     {
         SolarisbankAGPDFExtractor extractor = new SolarisbankAGPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("GiroKontoauszug03.txt"), errors);
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -89,16 +99,19 @@ public class SolarisbankAGPDFExtractorTest
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
+        // assert transaction
         assertThat(results, hasItem(removal(hasDate("2022-10-19"), hasAmount("EUR", 11.99), //
-                        hasNote("11,99 EUR"))));
+                        hasSource("GiroKontoauszug03.txt"), hasNote("11,99 EUR"))));
     }
 
     @Test
     public void testGiroKontoauszug04()
     {
         SolarisbankAGPDFExtractor extractor = new SolarisbankAGPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(loadFile("GiroKontoauszug04.txt"), errors);
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -107,20 +120,53 @@ public class SolarisbankAGPDFExtractorTest
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2022-10-03"), hasAmount("EUR", 200.00), //
+                        hasSource("GiroKontoauszug04.txt"), hasNote("von Peter Pan"))));
 
-        assertThat(results, hasItem(deposit(hasDate("2022-10-03"), hasAmount("EUR", 200), //
-                        hasNote("von Peter Pan"))));
-
+        // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2022-10-06"), hasAmount("EUR", 0.40), //
-                        hasNote("Visa Geld zurueck AktionVISACLP0324 GB"))));
+                        hasSource("GiroKontoauszug04.txt"), hasNote("Visa Geld zurueck AktionVISACLP0324 GB"))));
 
+        // assert transaction
         assertThat(results, hasItem(removal(hasDate("2022-10-20"), hasAmount("EUR", 18.78), //
-                        hasNote("an Peter Pan"))));
-
+                        hasSource("GiroKontoauszug04.txt"), hasNote("an Peter Pan"))));
     }
 
-    private List<InputFile> loadFile(String filename)
+    @Test
+    public void testReferenzkontoauszug01()
     {
-        return PDFInputFile.loadTestCase(getClass(), filename);
+        SolarisbankAGPDFExtractor extractor = new SolarisbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Referenzkontoauszug01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-11-08"), hasAmount("EUR", 3000.00), //
+                        hasSource("Referenzkontoauszug01.txt"), hasNote("YLbKRus qXwsATAvg"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-11-10"), hasAmount("EUR", 1000.00), //
+                        hasSource("Referenzkontoauszug01.txt"), hasNote("EUWAX Aktiengesellschaft"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-11-14"), hasAmount("EUR", 1105.19), //
+                        hasSource("Referenzkontoauszug01.txt"), hasNote("EUWAX Aktiengesellschaft"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-11-15"), hasAmount("EUR", 0.01), //
+                        hasSource("Referenzkontoauszug01.txt"), hasNote("sMPghUOQW KOQy PbfeyvP"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-11-15"), hasAmount("EUR", 0.01), //
+                        hasSource("Referenzkontoauszug01.txt"), hasNote("UVOshYrqp ejDi CIXGqbX"))));
     }
 }

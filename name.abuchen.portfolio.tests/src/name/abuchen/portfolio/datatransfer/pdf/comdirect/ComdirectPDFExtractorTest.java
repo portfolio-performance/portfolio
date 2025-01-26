@@ -2032,6 +2032,72 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung19()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung19.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1011999676"), hasWkn("A1XBWG"), hasTicker(null), //
+                        hasName("AB SICAV I-Concentr.US Equ.Ptf Actions Nom. I Acc. USD o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-01-03T07:18"), hasShares(400.00), //
+                        hasSource("VerkaufMitSteuerbehandlung19.txt"), //
+                        hasNote("Ord.-Nr.: 396043292201-001 | R.-Nr.: 153648375587D963"), //
+                        hasAmount("EUR", 18365.44), hasGrossValue("EUR", 19411.57), //
+                        hasForexGrossValue("USD", 20288.97), //
+                        hasTaxes("EUR", 991.60 + 54.53), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung19WithSecurityInEUR()
+    {
+        Security security = new Security("AB SICAV I-Concentr.US Equ.Ptf Actions Nom. I Acc. USD o.N.", CurrencyUnit.EUR);
+        security.setIsin("LU1011999676");
+        security.setWkn("A1XBWG");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung19.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-01-03T07:18"), hasShares(400.00), //
+                        hasSource("VerkaufMitSteuerbehandlung19.txt"), //
+                        hasNote("Ord.-Nr.: 396043292201-001 | R.-Nr.: 153648375587D963"), //
+                        hasAmount("EUR", 18365.44), hasGrossValue("EUR", 19411.57), //
+                        hasTaxes("EUR", 991.60 + 54.53), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testWertpapierVerkaufSteuerbehandlung01()
     {
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
