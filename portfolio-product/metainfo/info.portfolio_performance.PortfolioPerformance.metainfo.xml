@@ -37,6 +37,28 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.74.0" date="2025-01-26">
+      <description>
+        <ul>
+          <li>New: Updated to the latest version of the PDFBox library.</li>
+          <li>New: Added a widget for displaying security events.</li>
+          <li>Improved: Temporary option to disable all markers in price charts.</li>
+          <li>Improved: U.S. trading calendar now includes Jimmy Carter Memorial Day (January 9, 2025).</li>
+          <li>Improved: Enhanced debug information for failed uploads to DivvyDiary.</li>
+          <li>Improved: Display of position counts within classifications in the portfolio overview.</li>
+          <li>Improved: PDF importers updated for Solarisbank, Comdirect, BoursoBank, Easybank, Merkus Privat Bank, DKB, FlatEx, Directa SIM, DekaBank, Saxo, Ebase, Trade Republic, and Scalable Capital.</li>
+          <li>Fixed: Resolved an issue with determining the default currency for new files when no country is selected in the locale.</li>
+          <li xml:lang="de">Neu: Aktualisierung auf die neueste Version der PDFBox-Bibliothek.</li>
+          <li xml:lang="de">Neu: Widget zur Anzeige von Wertpapier-Ereignissen hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Möglichkeit temporär alle Markierungen in den Kursdiagrammen auszuschalten.</li>
+          <li xml:lang="de">Verbesserung: US-Handelskalender enthält nun den Gedenktag für Jimmy Carter (9. Januar 2025).</li>
+          <li xml:lang="de">Verbesserung: Erweiterte Debug-Informationen bei fehlgeschlagenen Uploads zu DivvyDiary.</li>
+          <li xml:lang="de">Verbesserung: Anzeige der Anzahl von Positionen innerhalb einer Klassifizierung in der Vermögensaufstellung.</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Solarisbank, Comdirect, BoursoBank, Easybank, Merkus Privat Bank, DKB, FlatEx, Directa SIM, DekaBank, Saxo, Ebase, Trade Republic, Scalable Capital.</li>
+          <li xml:lang="de">Fix: Problem bei der Bestimmung der Standardwährung für neue Dateien behoben, wenn in den Locale-Einstellungen kein Land ausgewählt ist.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.73.0" date="2024-12-30">
       <description>
         <ul>
