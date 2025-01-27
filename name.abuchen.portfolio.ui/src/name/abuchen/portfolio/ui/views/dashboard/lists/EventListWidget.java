@@ -125,7 +125,7 @@ public class EventListWidget extends AbstractSecurityListWidget<EventListWidget.
 
         Label lblType = createLabel(composite, Values.Date.format(item.event.getDate()) + ": " + type); //$NON-NLS-1$
         lblType.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
-        Label name = createLabel(composite, item.getSecurity().getName());
+        Label name = createLabel(composite, item.getSecurity().getName(getClient().getSecurityNameConfig()));
 
         composite.addMouseListener(mouseUpAdapter);
         name.addMouseListener(mouseUpAdapter);

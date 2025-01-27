@@ -131,7 +131,7 @@ public class FollowUpWidget extends AbstractSecurityListWidget<FollowUpWidget.Fo
         Label logo = createLabel(composite,
                         LogoManager.instance().getDefaultColumnImage(item.getSecurity(), getClient().getSettings()));
 
-        Label name = createLabel(composite, item.getSecurity().getName());
+        Label name = createLabel(composite, item.getSecurity().getName(getClient().getSecurityNameConfig()));
 
         Label date = createLabel(composite, item.type.getName() + ": " + Values.Date.format(item.date)); //$NON-NLS-1$
 
