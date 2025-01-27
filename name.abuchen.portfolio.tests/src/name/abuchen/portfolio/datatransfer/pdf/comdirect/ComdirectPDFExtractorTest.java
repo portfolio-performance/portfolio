@@ -6094,6 +6094,44 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testFinanzreport08()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Finanzreport08MitAuslandsueberweisung.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2023-05-07"), hasAmount("EUR", 1000.00), //
+                        hasSource("Finanzreport08MitAuslandsueberweisung.txt"), hasNote("Devisen"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-05-09"), hasAmount("EUR", 1000.00), //
+                        hasSource("Finanzreport08MitAuslandsueberweisung.txt"), hasNote("Übertrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-05-10"), hasAmount("EUR", 2000.00), //
+                        hasSource("Finanzreport08MitAuslandsueberweisung.txt"), hasNote("Übertrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-06-01"), hasAmount("EUR", 345.94), //
+                        hasSource("Finanzreport08MitAuslandsueberweisung.txt"), hasNote("Übertrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee(hasDate("2023-06-01"), hasAmount("EUR", 0.27), //
+                        hasSource("Finanzreport08MitAuslandsueberweisung.txt"), hasNote("Entgelte"))));
+    }
+
+    @Test
     public void testWertpapierVerwahrentgelt01()
     {
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());

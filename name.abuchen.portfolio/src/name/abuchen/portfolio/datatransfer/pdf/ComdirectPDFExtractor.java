@@ -1520,6 +1520,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         + "|Barauszahlung"
                         + "|Kartenverf.gun"
                         + "|Guthaben.bertr"
+                        + "|Devisen"
                         + "|Wechselgeld\\-).* "
                         + "\\-[\\.,\\d]+$");
         type.addBlock(removalBlock);
@@ -1542,6 +1543,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         + "|Barauszahlung"
                                         + "|Kartenverf.gun"
                                         + "|Guthaben.bertr"
+                                        + "|Devisen"
                                         + "|Wechselgeld\\-)"
                                         + "(?<note2>.*) "
                                         + "\\-(?<amount>[\\.,\\d]+)$")
