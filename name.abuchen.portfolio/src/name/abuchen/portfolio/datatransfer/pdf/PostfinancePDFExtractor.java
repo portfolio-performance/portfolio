@@ -802,7 +802,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                         + "|GIRO .*(OST|ANK|ONAL)( \\(SEPA\\))?" //
                                         + "|(KAUF\\/)?ONLINE( S.*|-S.*)(.*\\.[\\d]{4})?" //
                                         + "|BARGELDBEZUG( VOM)?(.*\\.[\\d]{4})?" //
-                                        + "|TWINT .*(ENDEN|DIENSTLEISTUNG)" //
+                                        + "|TWINT .*(ENDEN|DIENSTLEISTUNG)( VOM)?" //
                                         + "|E\\-FINANCE .*\\-[\\d]+" //
                                         + "|AUFTRAG DEBIT DIRECT" //
                                         + "|.BERWEISUNG AUF KONTO)) " //
