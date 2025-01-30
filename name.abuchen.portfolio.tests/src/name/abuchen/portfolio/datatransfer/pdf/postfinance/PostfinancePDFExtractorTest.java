@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf.postfinance;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
@@ -18,6 +19,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
@@ -2361,5 +2363,234 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(11.00))));
         assertThat(transaction.getSource(), is("Kontoauszug04.txt"));
         assertThat(transaction.getNote(), is("Überweisung"));
+    }
+
+    @Test
+    public void testKontoauszug05()
+    {
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug05MitTwintKauf.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        // assertThat(countSecurities(results), is(1L)); // TODO: uncomment
+        // assertThat(countBuySell(results), is(1L)); // TODO: uncomment
+        // assertThat(countAccountTransactions(results), is(31L)); // TODO: uncomment
+        // assertThat(results.size(), is(31)); // TODO: uncomment
+        new AssertImportActions().check(results, "CHF");
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-11-27"), //
+                        hasAmount("CHF", 13.90), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 27.11.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-02"), //
+                        hasAmount("CHF", 24.00), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 02.12.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-08"), //
+                        hasAmount("CHF", 3.20), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 08.12.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-09"), //
+                        hasAmount("CHF", 3.20), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 09.12.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-09"), //
+                        hasAmount("CHF", 20.00), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 09.12.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-09"), //
+                        hasAmount("CHF", 5.00), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Online Shopping"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-10"), //
+                        hasAmount("CHF", 13.80), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 10.12.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-11"), //
+                        hasAmount("CHF", 16.50), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 11.12.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-11"), //
+                        hasAmount("CHF", 18.00), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 11.12.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-12"), //
+                        hasAmount("CHF", 25.00), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 12.12.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-13"), //
+                        hasAmount("CHF", 8.20), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 13.12.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-13"), //
+                        hasAmount("CHF", 20.00), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 13.12.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-14"), //
+                        hasAmount("CHF", 28.85), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 14.12.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-12"), //
+                        hasAmount("CHF", 8.80), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 12.12.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-15"), //
+                        hasAmount("CHF", 21.00), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("TWINT Kauf/Dienstleistung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-16"), //
+                        hasAmount("CHF", 26.00), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 16.12.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-16"), //
+                        hasAmount("CHF", 5.70), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 16.12.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-12-16"), //
+                        hasAmount("CHF", 16.35), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Dividende (18.48 USD)"), //
+                        hasShares(116.652))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-17"), //
+                        hasAmount("CHF", 25.00), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 17.12.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-23"), //
+                        hasAmount("CHF", 16.39), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("ZEICHNUNG VON FONDSANTEILEN"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2024-12-20"), //
+                        hasAmount("CHF", 6465.80), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Gutschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-24"), //
+                        hasAmount("CHF", 2000.00), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-27"), //
+                        hasAmount("CHF", 5056.00), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-27"), //
+                        hasAmount("CHF", 2000.00), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-27"), //
+                        hasAmount("CHF", 1720.00), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2024-12-28"), //
+                        hasAmount("CHF", 2500.00), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kontoübertrag"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal( //
+                        hasDate("2024-12-28"), //
+                        hasAmount("CHF", 12.31), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Kauf/Dienstleistung vom 28.12.2024"))));
+
+        // assert transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-01-02"), //
+                        hasAmount("CHF", 100.33), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Zeichnung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-12-30"), //
+                        hasAmount("CHF", 4.72), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote("Depotgebühr"))));
+
+        // assert transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-12-31"), //
+                        hasAmount("CHF", 5.00), //
+                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
+                        hasNote(""))));
     }
 }
