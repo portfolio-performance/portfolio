@@ -981,6 +981,20 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             t.setNote(note);
                         })
 
+                        .section("note", "amount", "date", "iban").optional() //
+                        .documentContext("currency") //
+                        .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
+                                        + "(?<note>KONTO.BERTRAG( VON)?) " //
+                                        + "(?<amount>[\\.'\\d\\s]+) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
+                        .match("^(?<iban>[A-Z0-9 -]{15,42})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote("Übertrag aus Konto " + trim(v.get("iban")));
+                        })
+
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);

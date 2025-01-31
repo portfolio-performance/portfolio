@@ -19,7 +19,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.inboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
@@ -2378,8 +2377,8 @@ public class PostfinancePDFExtractorTest
         assertThat(errors, empty());
         // assertThat(countSecurities(results), is(1L)); // TODO: uncomment
         // assertThat(countBuySell(results), is(1L)); // TODO: uncomment
-        // assertThat(countAccountTransactions(results), is(31L)); // TODO: uncomment
-        // assertThat(results.size(), is(31)); // TODO: uncomment
+        // assertThat(countAccountTransactions(results), is(29L)); // TODO: uncomment
+        // assertThat(results.size(), is(29)); // TODO: uncomment
         new AssertImportActions().check(results, "CHF");
 
         // assert transaction
@@ -2517,11 +2516,14 @@ public class PostfinancePDFExtractorTest
                         hasNote("Kauf/Dienstleistung vom 17.12.2024"))));
 
         // assert transaction
-        assertThat(results, hasItem(purchase( //
-                        hasDate("2024-12-23"), //
-                        hasAmount("CHF", 16.39), //
-                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
-                        hasNote("ZEICHNUNG VON FONDSANTEILEN"))));
+        // NOTE: purchases can not be created from bank statements of type "Kontoauszug"
+        // because it does not contain the number of bought shares
+        //assertThat(results, hasItem(purchase( //
+        //                hasDate("2024-12-23"), //
+        //                hasAmount("CHF", 16.39), //
+        //                hasSource("Kontoauszug05MitTwintKauf.txt"), //
+        //                hasNote("ZEICHNUNG VON FONDSANTEILEN") //
+        //)));
 
         // assert transaction
         assertThat(results, hasItem(deposit( //
@@ -2559,11 +2561,14 @@ public class PostfinancePDFExtractorTest
                         hasNote("Lastschrift"))));
 
         // assert transaction
-        assertThat(results, hasItem(inboundDelivery( //
-                        hasDate("2024-12-28"), //
+        // NOTE: This is an 'inboundDelivery' from the savings account instead
+        // of a 'deposit', but finding the accompanying 'outboundDelivery' in
+        // the savings accounts bank statement might be impossible
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2024-12-27"), //
                         hasAmount("CHF", 2500.00), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
-                        hasNote("Kontoübertrag"))));
+                        hasNote("Übertrag aus Konto CH0000000000000000000"))));
 
         // assert transaction
         assertThat(results, hasItem(removal( //
@@ -2573,11 +2578,13 @@ public class PostfinancePDFExtractorTest
                         hasNote("Kauf/Dienstleistung vom 28.12.2024"))));
 
         // assert transaction
-        assertThat(results, hasItem(purchase( //
-                        hasDate("2024-01-02"), //
-                        hasAmount("CHF", 100.33), //
-                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
-                        hasNote("Zeichnung"))));
+        // NOTE: purchases can not be created from bank statements of type "Kontoauszug"
+        // because it does not contain the number of bought shares
+        //assertThat(results, hasItem(purchase( //
+        //                hasDate("2024-01-02"), //
+        //                hasAmount("CHF", 100.33), //
+        //                hasSource("Kontoauszug05MitTwintKauf.txt"), //
+        //                hasNote("Zeichnung"))));
 
         // assert transaction
         assertThat(results, hasItem(fee( //
