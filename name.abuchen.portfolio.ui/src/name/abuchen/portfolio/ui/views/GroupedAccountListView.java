@@ -7,10 +7,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
@@ -360,6 +358,14 @@ public class GroupedAccountListView extends AbstractFinanceView implements Modif
         groupedAccounts.addDragSupport(DND.DROP_MOVE, types, new DragSourceAdapter()
         {
             @Override
+            public void dragStart(DragSourceEvent event)
+            {
+                // only allow dragging of filters
+                IStructuredSelection selection = (IStructuredSelection) groupedAccounts.getSelection();
+                event.doit = selection.size() == 1 && selection.getFirstElement() instanceof ClientFilterMenu.Item;
+            }
+
+            @Override
             public void dragSetData(DragSourceEvent event)
             {
                 IStructuredSelection selection = (IStructuredSelection) groupedAccounts.getSelection();
@@ -373,66 +379,14 @@ public class GroupedAccountListView extends AbstractFinanceView implements Modif
             @Override
             public boolean validateDrop(Object target, int operation, TransferData transferType)
             {
-                setExpandEnabled(false);
-
-                int location = determineLocation(this.getCurrentEvent());
-
-                if (target instanceof ClientFilterMenu.Item)
-                    return location == LOCATION_AFTER || location == LOCATION_BEFORE;
-                else
-                    return true;
+                return target instanceof ClientFilterMenu.Item;
             }
 
             @Override
             public boolean performDrop(Object data)
             {
-                TreeSelection selection = (TreeSelection) data;
-                TreePath[] paths = selection.getPaths();
-                for (TreePath p : paths)
-                {
-                    if (p.getSegmentCount() == 1)
-                    {
-                        // parent node clicked (grouped Account itself)
-                        performDropClient(selection);
-                    }
-                    else if (p.getSegmentCount() == 2)
-                    {
-                        // child node clicked (portfolio or account)
-                        Object destination = getCurrentTarget();
+                IStructuredSelection selection = (IStructuredSelection) data;
 
-                        // do not allow dragging at a ClientFilterMenu.Item
-                        if (destination instanceof ClientFilterMenu.Item)
-                            return false;
-
-                        String destinationUUID = destination instanceof Portfolio portfolio ? portfolio.getUUID()
-                                        : ((Account) destination).getUUID();
-                        String originUUID = p.getLastSegment() instanceof Portfolio portfolio ? portfolio.getUUID()
-                                        : ((Account) p.getLastSegment()).getUUID();
-
-                        // do not allow dragging at another
-                        // ClientFilterMenu.Item node :
-                        // if the current selected Grouped Account does not
-                        // contain the destination account, we know for sure
-                        // destination is in another Grouped Account
-                        if (!((ClientFilterMenu.Item) p.getFirstSegment()).getUUIDs().contains(destinationUUID))
-                            return false;
-
-                        // if origin and destination are equals, they are in two
-                        // different Grouped Account
-                        if (Objects.equals(destinationUUID, originUUID))
-                            return false;
-
-                        performDropAccount(p, destinationUUID, originUUID);
-                    }
-                }
-
-                storeChangedFilter();
-                markDirty();
-
-                return true;
-            }
-            private void performDropClient(TreeSelection selection)
-            {
                 List<ClientFilterMenu.Item> movedItems = new ArrayList<>();
                 for (Object o : selection.toList())
                     movedItems.add((ClientFilterMenu.Item) o);
@@ -444,7 +398,7 @@ public class GroupedAccountListView extends AbstractFinanceView implements Modif
                 if (index >= 0)
                 {
                     int location = getCurrentLocation();
-                    if (location == ViewerDropAdapter.LOCATION_AFTER)
+                    if (location == ViewerDropAdapter.LOCATION_ON || location == ViewerDropAdapter.LOCATION_AFTER)
                         index++;
 
                     items.addAll(index, movedItems);
@@ -455,42 +409,8 @@ public class GroupedAccountListView extends AbstractFinanceView implements Modif
                 }
 
                 groupedAccounts.refresh();
-            }
 
-            private void performDropAccount(TreePath p, String destinationUUID, String originUUID)
-            {
-                List<String> movedItems = new ArrayList<>();
-                movedItems.add(originUUID);
-
-                items.forEach(it -> {
-                    if (it == p.getFirstSegment())
-                    { // found parent item
-                        int index = -1;
-                        String[] uuids = it.getUUIDs().split(","); //$NON-NLS-1$
-
-                        List<String> childrenlinkList = new LinkedList<>(Arrays.asList(uuids));
-                        childrenlinkList.removeAll(movedItems);
-                        index = childrenlinkList.indexOf(destinationUUID);
-
-                        if (index >= 0)
-                        {
-                            int location = getCurrentLocation();
-                            if (location == ViewerDropAdapter.LOCATION_ON
-                                            || location == ViewerDropAdapter.LOCATION_AFTER)
-                                index++;
-
-                            childrenlinkList.addAll(index, movedItems);
-                        }
-                        else
-                        {
-                            childrenlinkList.addAll(movedItems);
-                        }
-                        // important step: update UUIDs because this is basic
-                        // information in settings
-                        it.setUUIDs(childrenlinkList.stream().collect(Collectors.joining(","))); //$NON-NLS-1$
-                    }
-                });
-                groupedAccounts.refresh();
+                return true;
             }
         });
     }
