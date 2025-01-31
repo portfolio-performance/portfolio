@@ -41,7 +41,6 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SimpleAction;
-import name.abuchen.portfolio.ui.views.SecuritiesPerformanceView;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
 import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
@@ -162,7 +161,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         this.taxonomy = taxonomy;
 
         this.clientFilterDropDown = new ClientFilterDropDown(getClient(), getPreferenceStore(),
-                        SecuritiesPerformanceView.class.getSimpleName(), filter -> {
+                        TaxonomyView.class.getSimpleName() + "-" + taxonomy.getId(), filter -> {
                             setInformationPaneInput(null);
                             Client filteredClient = filter.filter(getClient());
                             setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
@@ -180,9 +179,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         this.expansionStateReblancing = TaxonomyView.class.getSimpleName() + "-EXPANSION-REBALANCE-" //$NON-NLS-1$
                         + taxonomy.getId();
 
-        Client filteredClient = clientFilterDropDown.getSelectedFilter().filter(getClient());
-        setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
-        this.model = new TaxonomyModel(factory, filteredClient, taxonomy);
+        this.model = new TaxonomyModel(factory, getClient(), taxonomy);
 
         IPreferenceStore preferences = getPreferenceStore();
         this.model.setExcludeUnassignedCategoryInCharts(preferences.getBoolean(identifierUnassigned));
