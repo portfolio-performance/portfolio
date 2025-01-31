@@ -1015,6 +1015,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
                                         + "(?<note>(PREIS F.*" //
+                                        + "|DEPOTGEB.HREN" //
                                         + "|F.R DIE KONTOF.HRUNG" //
                                         + "|F.R GIRO INTERNATIONAL \\(SEPA\\)" //
                                         + "|GUTHABENGEB.HR F.R [\\d]{2}\\.[\\d]{4}" //
@@ -1058,6 +1059,9 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                 String[] parts = note.split("FÜR");
                                 note = "Guthabengebühr für " + stripBlanks(parts[1]);
                             }
+
+                            if (note.matches("DEPOTGEB.HREN"))
+                                note = "Depotgebühr";
 
                             t.setNote(note);
                         })

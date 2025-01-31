@@ -2375,10 +2375,10 @@ public class PostfinancePDFExtractorTest
                         errors);
 
         assertThat(errors, empty());
-        // assertThat(countSecurities(results), is(1L)); // TODO: uncomment
-        // assertThat(countBuySell(results), is(1L)); // TODO: uncomment
-        // assertThat(countAccountTransactions(results), is(29L)); // TODO: uncomment
-        // assertThat(results.size(), is(29)); // TODO: uncomment
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(28L));
+        assertThat(results.size(), is(29));
         new AssertImportActions().check(results, "CHF");
 
         // assert transaction
