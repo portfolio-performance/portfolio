@@ -7,11 +7,14 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.util.AdditionalLocales;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class FrenchKeypadSupport
 {
     private static final boolean IS_FRENCH = Locale.getDefault().getLanguage().equals(Locale.FRENCH.getLanguage());
+    private static final boolean IS_SPANISH = Locale.getDefault().getLanguage()
+                    .equals(AdditionalLocales.SPAIN.getLanguage());
 
     private FrenchKeypadSupport()
     {
@@ -19,7 +22,7 @@ public class FrenchKeypadSupport
 
     public static void configure(Text text)
     {
-        if (IS_FRENCH)
+        if (IS_FRENCH || IS_SPANISH)
         {
             text.addKeyListener(new KeyAdapter()
             {
