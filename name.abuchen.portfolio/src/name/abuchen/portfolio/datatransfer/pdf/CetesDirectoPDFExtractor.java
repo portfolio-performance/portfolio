@@ -54,6 +54,7 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                         
                         .oneOf(
                                         // @formatter:off
+                                        // Registration | Settlement | ID+Type | Product | Series | Shares | Price | Term | Rate | Charge | Credit | Balance
                                         // 04/01/22 06/01/22 SVD147529623COMPRA CETES 220203 6,080 9.95730000 2 5.51 60,540.38 0.00 -60,540.10
                                         // 06/01/22 06/01/22 SVD148097667COMPSI BONDDIA PF2 3 1.57377100 0 0.00 4.72 0.00 1.48
                                         // @formatter:on
@@ -71,12 +72,14 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                                                         }),
 
                                         // @formatter:off
+                                        // Registration | Settlement | ID+Type | Product | Series | Shares | Term | Charge | Credit | Balance
                                         // 06/01/22 06/01/22 SVD147779466AMORTIZACION CETES 220106 6,055 0 0.00 60,550.00 9.90
+                                        // Registration | Settlement | ID+Type | Product | Series | Term | Charge | Credit | Balance
                                         // 06/01/22 06/01/22 SVD147779466ISR CETES 220106 0 3.70 0.00 6.20
                                         // @formatter:on
-                                        section -> section.attributes("date", "type", "name", "shares", "amount", "tax") //
-                                        .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) [A-Z0-9]+(?<type>AMORTIZACION) (?<name>[A-Z]+) (?<series>[\\dA-Z]+) (?<shares>[\\d,\\.]+) (?<price>[\\d,\\.]+) (?<term>[\\d,\\.]+) (?<amount>[\\d\\,\\.]+).*$") //
-                                        .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} (?<dates>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) (?<id>[A-Z0-9]+)(?<types>ISR) (?<names>[A-Z]+) (?<seriess>[\\dA-Z]+) (?<terms>[\\d]+) (?<tax>[\\d\\,\\.]+).*$") //
+                                        section -> section.attributes("date", "id", "type", "name", "series", "shares", "term", "amount", "tax") //
+                                        .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) (?<id>[A-Z0-9]+)(?<type>AMORTIZACION) (?<name>[A-Z]+) (?<series>[\\dA-Z]+) (?<shares>[\\d,\\.]+) (?<term>[\\d,\\.]+) (?<charge>[\\d,\\.]+) (?<amount>[\\d\\,\\.]+).*$") //
+                                        .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [A-Z0-9]+ISR [A-Z]+ [\\dA-Z]+ [\\d]+ (?<tax>[\\d\\,\\.]+).*$") //
                                         .assign((t, v) -> {
                                             v.put("currency", CurrencyUnit.MXN);
                                             t.setSecurity(getOrCreateSecurity(v));
@@ -91,6 +94,7 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                                             t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, moneyTax));
                                             if ("AMORTIZACION".equals(v.get("type")))
                                                 t.setType(PortfolioTransaction.Type.SELL);
+                                            t.setNote("ID:" + v.get("id") + " Series:" + v.get("series") + " Term:" + v.get("term"));
                                                         })
 
                         .wrap(BuySellEntryItem::new));
