@@ -44,7 +44,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.IValidatingConverter;
 import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.util.text.FrenchKeypadSupport;
+import name.abuchen.portfolio.ui.util.text.DecimalKeypadSupport;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.AttributeDesignation;
 import name.abuchen.portfolio.util.ImageUtil;
 
@@ -274,7 +274,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
             if ((attribute.getType().isNumber()
                             || attribute.getType().getConverter() instanceof AttributeType.LimitPriceConverter))
             {
-                FrenchKeypadSupport.configure((Text) value);
+                DecimalKeypadSupport.configure((Text) value);
             }
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(value);
 

@@ -63,7 +63,7 @@ import name.abuchen.portfolio.ui.util.IValidatingConverter;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeTimeSelectionProperty;
 import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
-import name.abuchen.portfolio.ui.util.text.FrenchKeypadSupport;
+import name.abuchen.portfolio.ui.util.text.DecimalKeypadSupport;
 
 public abstract class AbstractTransactionDialog extends TitleAreaDialog
 {
@@ -87,7 +87,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
                 }
             });
 
-            FrenchKeypadSupport.configure(value);
+            DecimalKeypadSupport.configure(value);
 
             currency = new Label(editArea, SWT.NONE);
         }

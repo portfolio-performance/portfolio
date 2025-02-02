@@ -47,7 +47,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.text.FrenchKeypadSupport;
+import name.abuchen.portfolio.ui.util.text.DecimalKeypadSupport;
 import name.abuchen.portfolio.util.Isin;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
@@ -395,7 +395,7 @@ public class BindingHelper
                     int lenghtInCharacters)
     {
         Text txtValue = createTextInput(editArea, label, style, lenghtInCharacters);
-        FrenchKeypadSupport.configure(txtValue);
+        DecimalKeypadSupport.configure(txtValue);
         bindMandatoryDecimalInput(label, property, txtValue, Values.Amount);
         return txtValue;
     }
@@ -403,7 +403,7 @@ public class BindingHelper
     public final Control bindMandatoryQuoteInput(Composite editArea, final String label, String property)
     {
         Text txtValue = createTextInput(editArea, label);
-        FrenchKeypadSupport.configure(txtValue);
+        DecimalKeypadSupport.configure(txtValue);
         bindMandatoryDecimalInput(label, property, txtValue, Values.Quote);
         return txtValue;
     }

@@ -10,13 +10,13 @@ import org.eclipse.swt.widgets.Text;
 import name.abuchen.portfolio.util.AdditionalLocales;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class FrenchKeypadSupport
+public class DecimalKeypadSupport
 {
     private static final boolean IS_FRENCH = Locale.getDefault().getLanguage().equals(Locale.FRENCH.getLanguage());
     private static final boolean IS_SPANISH = Locale.getDefault().getLanguage()
                     .equals(AdditionalLocales.SPAIN.getLanguage());
 
-    private FrenchKeypadSupport()
+    private DecimalKeypadSupport()
     {
     }
 
