@@ -272,7 +272,7 @@ public final class DataSeries implements Adaptable
             case CLASSIFICATION:
                 return Images.CATEGORY.image();
             case CLIENT_FILTER, CLIENT_FILTER_PRETAX:
-                return Images.FILTER_OFF.image();
+                return Images.GROUPEDACCOUNTS.image();
             default:
                 return null;
         }

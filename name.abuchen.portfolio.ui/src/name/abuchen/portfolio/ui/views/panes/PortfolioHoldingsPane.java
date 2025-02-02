@@ -21,6 +21,7 @@ import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.views.IPieChart;
 import name.abuchen.portfolio.ui.views.holdings.HoldingsPieChartSWT;
 
@@ -33,7 +34,7 @@ public class PortfolioHoldingsPane implements InformationPanePage
     @Named(UIConstants.Context.ACTIVE_CLIENT)
     private Client client;
 
-    private Portfolio portfolio;
+    private Object portfolioOrGroupedAccount;
     private IPieChart chart;
 
     @Override
@@ -55,19 +56,34 @@ public class PortfolioHoldingsPane implements InformationPanePage
     @Override
     public void setInput(Object input)
     {
-        this.portfolio = Adaptor.adapt(Portfolio.class, input);
-        CurrencyConverter converter = new CurrencyConverterImpl(factory,
-                        client.getBaseCurrency());
-        ClientFilter clientFilter = new PortfolioClientFilter(portfolio);
-        ClientSnapshot snapshot = ClientSnapshot.create(clientFilter.filter(client), converter, LocalDate.now());
+        CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
 
-        chart.refresh(snapshot);
+        if (input instanceof Portfolio)
+        {
+            portfolioOrGroupedAccount = Adaptor.adapt(Portfolio.class, input);
+            ClientFilter clientFilter = new PortfolioClientFilter((Portfolio) portfolioOrGroupedAccount);
+            ClientSnapshot snapshot = ClientSnapshot.create(clientFilter.filter(client), converter, LocalDate.now(),
+                            ((Portfolio) portfolioOrGroupedAccount).getName());
+            chart.refresh(snapshot);
+        }
+        else if (input instanceof ClientFilterMenu.Item)
+        {
+            portfolioOrGroupedAccount = Adaptor.adapt(ClientFilterMenu.Item.class, input);
+            ClientFilter clientFilter = ((ClientFilterMenu.Item) portfolioOrGroupedAccount).getFilter();
+            ClientSnapshot snapshot = ClientSnapshot.create(clientFilter.filter(client), converter, LocalDate.now(),
+                            ((ClientFilterMenu.Item) portfolioOrGroupedAccount).getLabel());
+            chart.refresh(snapshot);
+        }
+        else
+        {
+            // throw error ?
+        }
     }
 
     @Override
     public void onRecalculationNeeded()
     {
-        if (portfolio != null)
-            setInput(portfolio);
+        if (portfolioOrGroupedAccount != null)
+            setInput(portfolioOrGroupedAccount);
     }
 }
