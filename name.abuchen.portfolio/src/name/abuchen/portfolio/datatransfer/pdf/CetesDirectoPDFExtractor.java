@@ -8,7 +8,9 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.util.AdditionalLocales;
 
 @SuppressWarnings("nls")
@@ -41,7 +43,6 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                         "^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [\\d]{2}\\/[\\d]{2}\\/[\\d]{2} [A-Z0-9]+(COMPRA|COMPSI|AMORTIZACION).*$");
         //Block firstRelevantLine = new Block("^Saldo inicial+.*$", "^Saldo final+.*$"); // This does not work
         type.addBlock(firstRelevantLine);
-        // firstRelevantLine.setMaxSize(1);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
@@ -73,47 +74,29 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                                         // 06/01/22 06/01/22 SVD147779466AMORTIZACION CETES 220106 6,055 0 0.00 60,550.00 9.90
                                         // 06/01/22 06/01/22 SVD147779466ISR CETES 220106 0 3.70 0.00 6.20
                                         // @formatter:on
-                                        section -> section.attributes("date", "type", "name", "shares", "amount") //
+                                        section -> section.attributes("date", "type", "name", "shares", "amount", "tax") //
                                         .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) [A-Z0-9]+(?<type>AMORTIZACION) (?<name>[A-Z]+) (?<series>[\\dA-Z]+) (?<shares>[\\d,\\.]+) (?<price>[\\d,\\.]+) (?<term>[\\d,\\.]+) (?<amount>[\\d\\,\\.]+).*$") //
-                                        //.match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} (?<dates>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) (?<id>[A-Z0-9]+)(?<types>ISR) (?<names>[A-Z]+) (?<seriess>[\\dA-Z]+) (?<terms>[\\d]+) (?<tax>[\\d\\,\\.]+).*$") //
+                                        .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} (?<dates>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) (?<id>[A-Z0-9]+)(?<types>ISR) (?<names>[A-Z]+) (?<seriess>[\\dA-Z]+) (?<terms>[\\d]+) (?<tax>[\\d\\,\\.]+).*$") //
                                         .assign((t, v) -> {
                                             v.put("currency", CurrencyUnit.MXN);
                                             t.setSecurity(getOrCreateSecurity(v));
                                             t.setDate(asDate(v.get("date")));
                                             t.setShares(asShares(v.get("shares")));
                                             t.setCurrencyCode(CurrencyUnit.MXN);
-                                            t.setAmount(asAmount(v.get("amount")));
-                                            //Money tax = Money.of(CurrencyUnit.MXN, asAmount(v.get("tax")));
-                                            //t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, tax));
+                                            long amount = asAmount(v.get("amount"));
+                                            long tax = asAmount(v.get("tax"));
+                                            // Tax discounted after the amount.
+                                            t.setAmount(amount-tax);
+                                            Money moneyTax = Money.of(CurrencyUnit.MXN, tax);
+                                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, moneyTax));
                                             if ("AMORTIZACION".equals(v.get("type")))
                                                 t.setType(PortfolioTransaction.Type.SELL);
-                                                        })//,
-//                                        
-//                                        // @formatter:off
-//                                        // 06/01/22 06/01/22 SVD147779466AMORTIZACION CETES 220106 6,055 0 0.00 60,550.00 9.90
-//                                        // 06/01/22 06/01/22 SVD147779466ISR CETES 220106 0 3.70 0.00 6.20
-//                                        // @formatter:on
-//                                        section -> section.attributes("tax").optional() //
-//                                        .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) [A-Z0-9]+(?<type>AMORTIZACION) (?<name>[A-Z]+) (?<series>[\\dA-Z]+) (?<shares>[\\d,\\.]+) (?<price>[\\d,\\.]+) (?<term>[\\d]+)( |)(?<rate>[\\d\\.]+)( |)(?<amount>[\\d\\,\\.]+).*(?<balance>[\\d,\\.\\-]+)$") //
-//                                        //.match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} (?<dates>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) (?<id>[A-Z0-9]+)(?<types>ISR) (?<names>[A-Z]+) (?<seriess>[\\dA-Z]+) (?<terms>[\\d]+) (?<tax>[\\d\\,\\.]+).*$") //
-//                                        .assign((t, v) -> {
-//                                            v.put("currency", CurrencyUnit.MXN);
-//                                            t.setSecurity(getOrCreateSecurity(v));
-//                                            t.setDate(asDate(v.get("date")));
-//                                            t.setShares(asShares(v.get("shares")));
-//                                            t.setCurrencyCode(CurrencyUnit.MXN);
-//                                            t.setAmount(asAmount(v.get("amount")));
-//                                            //Money tax = Money.of(CurrencyUnit.MXN, asAmount(v.get("tax")));
-//                                            //t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, tax));
-//                                            if ("AMORTIZACION".equals(v.get("type")))
-//                                                t.setType(PortfolioTransaction.Type.SELL);
-//                                                        })
+                                                        })
 
                         .wrap(BuySellEntryItem::new));
 
-        addTaxesSectionsTransaction(pdfTransaction, type);
+        //addTaxesSectionsTransaction(pdfTransaction, type); // Not needed apparently, after adding the TAX Unit.
         // addFeesSectionsTransaction(pdfTransaction, type);
-        // firstRelevantLine.set(pdfTransaction);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
@@ -125,20 +108,6 @@ public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("tax").optional() //
                         .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{2} (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{2}) (?<id>[A-Z0-9]+)(?<type>ISR) (?<name>[A-Z]+) (?<series>[\\dA-Z]+) (?<term>[\\d]+) (?<tax>[\\d\\,\\.]+)") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
-
-                        // @formatter:off
-                        // Solidaritätszuschlag EUR - 21,23
-                        // @formatter:on
-                        .section("currency", "tax").optional() //
-                        .match("^Solidarit.tszuschlag (?<currency>[\\w]{3}) \\-([\\s])?(?<tax>[\\.,\\d]+)") //
-                        .assign((t, v) -> processTaxEntries(t, v, type))
-
-                        // @formatter:off
-                        // Kirchensteuer EUR - 11,11
-                        // @formatter:on
-                        .section("currency", "tax").optional() //
-                        .match("^Kirchensteuer (?<currency>[\\w]{3}) \\-([\\s])?(?<tax>[\\.,\\d]+)") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
 
     }
