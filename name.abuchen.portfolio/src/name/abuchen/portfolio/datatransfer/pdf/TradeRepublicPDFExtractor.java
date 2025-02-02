@@ -2281,6 +2281,70 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
+        Block depositRemovalBlock_Format04 = new Block("^[\\d]{2}[\\s]$");
+        type.addBlock(depositRemovalBlock_Format04);
+        depositRemovalBlock_Format04.setMaxSize(5);
+        depositRemovalBlock_Format04.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // 24 
+                                        // SEPA 
+                                        // Jan. Outgoing transfer for Möbel Heidenreich GmbH 359,37 € 188,25 €
+                                        // Echtzeitüberweisung
+                                        // 2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("day", "month", "year", "note", "amount", "currency") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]$") //
+                                                        .match("^SEPA[\\s]$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) Outgoing transfer for " //
+                                                                        + "(?<note>.*) " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) ([\\.,\\d]+) (\\p{Sc})$") //
+                                                        .match("^Echtzeit.berweisung$") //
+                                                        .match("^(?<year>[\\d]{4})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.REMOVAL);
+                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // 23 
+                                        // SEPA 
+                                        // Jan. Incoming transfer from Vorname Nachname 500,00 € 581,76 €
+                                        // Echtzeitüberweisung
+                                        // 2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("day", "month", "year", "note", "amount", "currency") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]$") //
+                                                        .match("^SEPA[\\s]$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
+                                                                        + "(Incoming transfer from)" //
+                                                                        + "(?<note>.*) " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<year>[\\d]{4})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }))
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
         // @formatter:off
         // 03 Apr.
         // 2024 Gebühren Trade Republic Card 5,00 € 49.997,41 €
