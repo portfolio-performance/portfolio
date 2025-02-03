@@ -1788,7 +1788,8 @@ public class SecuritiesChart
                     dates.add(eventDate);
                     values.add(values.get(values.size() - 1));
 
-                    createFIFOPurchaseLineSeries(values, dates, seriesCounter++);
+                    createPriceLineSeries(values, dates, seriesCounter++, colorFifoPurchasePrice,
+                        Messages.LabelChartDetailMarkerPurchaseFIFO);
 
                     values.clear();
                     dates.clear();
@@ -1809,26 +1810,8 @@ public class SecuritiesChart
         });
 
         if (!dates.isEmpty())
-            createFIFOPurchaseLineSeries(values, dates, seriesCounter);
-    }
-
-    private void createFIFOPurchaseLineSeries(List<Double> values, List<LocalDate> dates, int seriesCounter)
-    {
-        String label = seriesCounter == 0 ? Messages.LabelChartDetailMarkerPurchaseFIFO
-                        : MessageFormat.format(Messages.LabelChartDetailMarkerPurchaseFIFOHoldingPeriod,
-                                        seriesCounter + 1);
-
-        @SuppressWarnings("unchecked")
-        ILineSeries<Integer> series = (ILineSeries<Integer>) chart.getSeriesSet().createSeries(SeriesType.LINE, label);
-
-        series.setSymbolType(PlotSymbolType.NONE);
-        series.setYAxisId(0);
-        series.enableStep(true);
-
-        configureSeriesPainter(series, dates.toArray(new LocalDate[0]), Doubles.toArray(values), colorFifoPurchasePrice,
-                        2, LineStyle.SOLID, false, seriesCounter == 0);
-
-        setupTooltipDisplayCalculatedQuote(label);
+            createPriceLineSeries(values, dates, seriesCounter, colorFifoPurchasePrice,
+                Messages.LabelChartDetailMarkerPurchaseFIFO);
     }
 
     private void addMovingAveragePurchasePrice(ChartInterval chartInterval)
@@ -1884,7 +1867,8 @@ public class SecuritiesChart
                     dates.add(eventDate);
                     values.add(values.get(values.size() - 1));
 
-                    createMovingAveragePurchaseLineSeries(values, dates, seriesCounter++);
+                    createPriceLineSeries(values, dates, seriesCounter++, colorMovingAveragePurchasePrice,
+                        Messages.LabelChartDetailMarkerPurchaseMovingAverage);
 
                     values.clear();
                     dates.clear();
@@ -1905,14 +1889,16 @@ public class SecuritiesChart
         });
 
         if (!dates.isEmpty())
-            createMovingAveragePurchaseLineSeries(values, dates, seriesCounter);
+            createPriceLineSeries(values, dates, seriesCounter, colorMovingAveragePurchasePrice,
+                Messages.LabelChartDetailMarkerPurchaseMovingAverage);
     }
 
-    private void createMovingAveragePurchaseLineSeries(List<Double> values, List<LocalDate> dates, int seriesCounter)
+    private void createPriceLineSeries(List<Double> values, List<LocalDate> dates, int seriesCounter, Color color,
+                    String label)
     {
-        String label = seriesCounter == 0 ? Messages.LabelChartDetailMarkerPurchaseMovingAverage
-                        : MessageFormat.format(Messages.LabelChartDetailMarkerPurchaseMovingAverageHoldingPeriod,
-                                        seriesCounter + 1);
+        if (seriesCounter != 0)
+            label += " " + MessageFormat.format(Messages.LabelChartDetailMarkerPurchasePeriodNo,
+                                          seriesCounter + 1);
 
         @SuppressWarnings("unchecked")
         ILineSeries<Integer> series = (ILineSeries<Integer>) chart.getSeriesSet().createSeries(SeriesType.LINE, label);
@@ -1922,7 +1908,7 @@ public class SecuritiesChart
         series.enableStep(true);
 
         configureSeriesPainter(series, dates.toArray(new LocalDate[0]), Doubles.toArray(values),
-                        colorMovingAveragePurchasePrice, 2, LineStyle.SOLID, false, seriesCounter == 0);
+                        color, 2, LineStyle.SOLID, false, seriesCounter == 0);
 
         setupTooltipDisplayCalculatedQuote(label);
     }
