@@ -802,7 +802,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                         + "|GIRO .*(OST|ANK|ONAL)( \\(SEPA\\))?" //
                                         + "|(KAUF\\/)?ONLINE( S.*|-S.*)(.*\\.[\\d]{4})?" //
                                         + "|BARGELDBEZUG( VOM)?(.*\\.[\\d]{4})?" //
-                                        + "|TWINT .*(ENDEN|DIENSTLEISTUNG)" //
+                                        + "|TWINT .*(ENDEN|DIENSTLEISTUNG)( VOM)?" //
                                         + "|E\\-FINANCE .*\\-[\\d]+" //
                                         + "|AUFTRAG DEBIT DIRECT" //
                                         + "|.BERWEISUNG AUF KONTO)) " //
@@ -981,6 +981,20 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                             t.setNote(note);
                         })
 
+                        .section("note", "amount", "date", "iban").optional() //
+                        .documentContext("currency") //
+                        .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
+                                        + "(?<note>KONTO.BERTRAG( VON)?) " //
+                                        + "(?<amount>[\\.'\\d\\s]+) " //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
+                        .match("^(?<iban>[A-Z0-9 -]{15,42})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote("Übertrag aus Konto " + trim(v.get("iban")));
+                        })
+
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
@@ -1001,6 +1015,7 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )?" //
                                         + "(?<note>(PREIS F.*" //
+                                        + "|DEPOTGEB.HREN" //
                                         + "|F.R DIE KONTOF.HRUNG" //
                                         + "|F.R GIRO INTERNATIONAL \\(SEPA\\)" //
                                         + "|GUTHABENGEB.HR F.R [\\d]{2}\\.[\\d]{4}" //
@@ -1044,6 +1059,9 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                 String[] parts = note.split("FÜR");
                                 note = "Guthabengebühr für " + stripBlanks(parts[1]);
                             }
+
+                            if (note.matches("DEPOTGEB.HREN"))
+                                note = "Depotgebühr";
 
                             t.setNote(note);
                         })
