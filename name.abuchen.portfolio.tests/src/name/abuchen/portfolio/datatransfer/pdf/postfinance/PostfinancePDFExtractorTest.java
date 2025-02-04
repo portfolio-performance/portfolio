@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf.postfinance;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
@@ -2375,10 +2374,10 @@ public class PostfinancePDFExtractorTest
                         errors);
 
         assertThat(errors, empty());
-        assertThat(countSecurities(results), is(1L));
+        assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(28L));
-        assertThat(results.size(), is(29));
+        assertThat(countAccountTransactions(results), is(27L));
+        assertThat(results.size(), is(27));
         new AssertImportActions().check(results, "CHF");
 
         // assert transaction
@@ -2501,29 +2500,11 @@ public class PostfinancePDFExtractorTest
                         hasNote("Kauf/Dienstleistung vom 16.12.2024"))));
 
         // assert transaction
-        assertThat(results, hasItem(dividend( //
-                        hasDate("2024-12-16"), //
-                        hasAmount("CHF", 16.35), //
-                        hasSource("Kontoauszug05MitTwintKauf.txt"), //
-                        hasNote("Dividende (18.48 USD)"), //
-                        hasShares(116.652))));
-
-        // assert transaction
         assertThat(results, hasItem(removal( //
                         hasDate("2024-12-17"), //
                         hasAmount("CHF", 25.00), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 17.12.2024"))));
-
-        // assert transaction
-        // NOTE: purchases can not be created from bank statements of type "Kontoauszug"
-        // because it does not contain the number of bought shares
-        //assertThat(results, hasItem(purchase( //
-        //                hasDate("2024-12-23"), //
-        //                hasAmount("CHF", 16.39), //
-        //                hasSource("Kontoauszug05MitTwintKauf.txt"), //
-        //                hasNote("ZEICHNUNG VON FONDSANTEILEN") //
-        //)));
 
         // assert transaction
         assertThat(results, hasItem(deposit( //
@@ -2576,15 +2557,6 @@ public class PostfinancePDFExtractorTest
                         hasAmount("CHF", 12.31), //
                         hasSource("Kontoauszug05MitTwintKauf.txt"), //
                         hasNote("Kauf/Dienstleistung vom 28.12.2024"))));
-
-        // assert transaction
-        // NOTE: purchases can not be created from bank statements of type "Kontoauszug"
-        // because it does not contain the number of bought shares
-        //assertThat(results, hasItem(purchase( //
-        //                hasDate("2024-01-02"), //
-        //                hasAmount("CHF", 100.33), //
-        //                hasSource("Kontoauszug05MitTwintKauf.txt"), //
-        //                hasNote("Zeichnung"))));
 
         // assert transaction
         assertThat(results, hasItem(fee( //

@@ -1127,55 +1127,6 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                                 return new TransactionItem(t);
                             return null;
                         }));
-
-        Block dividendBlock = new Block("^.* [\\.'\\d\\s]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}.*$");
-        type.addBlock(dividendBlock);
-        dividendBlock.set(new Transaction<AccountTransaction>()
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return accountTransaction;
-                        })
-
-                        // @formatter:off
-                        // NETTOAUSSCHÜTTUNG                16.35                16.12.2024
-                        // USD 18.48 ZUM KURS VON 0.8849
-                        // ISIN LU0245329841
-                        // BESTAND IN ANTEILEN 116.652
-                        // AUSSCHÜTTUNG PRO ANTEIL 0.158437
-                        // BRUTTOAUSSCHÜTTUNG 18.48
-                        // ./. VERRECHNUNGSSTEUER 0.00% 0.00
-                        // = NETTOAUSSCHÜTTUNG 18.48
-                        // TRANSAKTIONS NR. 00000000
-                        // @formatter:on
-                        .section("amount", "date", "currency2", "amount2", "isin", "shares").optional() //
-                        .documentContext("currency") //
-                        .match("^([\\d]{2}\\.[\\d]{2}\\.[\\d]{2} )" //
-                                        + "NETTOAUSSCH.TTUNG " //
-                                        + "(?<amount>[\\.'\\d\\s]+) " //
-                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}).*$") //
-                        .match("^(?<currency2>[\\w]{3}) (?<amount2>[\\.'\\d\\s]+) ZUM KURS.*$") //
-                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                        .match("^BESTAND IN ANTEILEN (?<shares>\\d+(\\.\\d+)?).*$") //
-                        .assign((t, v) -> {
-                            v.put("name", v.get("isin")); // name is not included in document
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setShares(asShares(v.get("shares")));
-
-                            // Formatting some notes (add original currency if
-                            // different than bank account currency)
-                            String note = "Dividende";
-                            if (!v.get("currency").equals(v.get("currency2")))
-                                note += " (" + trim(v.get("amount2")) + " " + trim(v.get("currency2")) + ")";
-                            t.setNote(note);
-                        }).wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
