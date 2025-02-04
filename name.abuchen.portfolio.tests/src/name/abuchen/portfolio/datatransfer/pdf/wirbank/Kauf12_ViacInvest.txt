@@ -1,0 +1,29 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.1.qualifier
+System: win32 | x86_64 | 21.0.5+11-LTS | Eclipse Adoptium
+-----------------------------------------
+VIAC Invest AG
+Strasse 1
+1111 Stadt
+E-Mail info@viac.ch
+Telefon 0000 00 00 00
+www.viac.ch
+Vertrag 1.111.111.111
+Portfolio 1.111.111.111.11
+Herr
+Vorname Nachname
+Strasse 1
+1111 Stadt
+Stadt, 09.01.2025
+Börsenabrechnung - Zeichnung VIAC Equity North America Sustainable
+Wir haben für Sie folgenden Auftrag ausgeführt:
+Order: Zeichnung
+16.839 Anteile VIAC Equity North America Sustainable
+ISIN: CH1336969030
+Kurs: CHF 101.53
+Betrag CHF 1'709.70
+Verrechneter Betrag: Valuta 09.01.2025 CHF 1'709.70
+S. E. & O.
+Freundliche Grüsse
+VIAC Invest AG
+Anzeige ohne Unterschrift

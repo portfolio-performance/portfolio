@@ -895,6 +895,52 @@ public class WirBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf12()
+    {
+        Client client = new Client();
+
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf12_ViacInvest.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("CH1336969030"));
+        assertNull(security.getWkn());
+        assertNull(security.getTickerSymbol());
+        assertThat(security.getName(), is("VIAC Equity North America Sustainable"));
+        assertThat(security.getCurrencyCode(), is("CHF"));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2025-01-09T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(16.839)));
+        assertThat(entry.getSource(), is("Kauf12_ViacInvest.txt"));
+        assertNull(entry.getNote());
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(1709.70))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(),
+                        is(Money.of("CHF", Values.Amount.factorize(1709.70))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+    }
+
+    @Test
     public void testInterest01()
     {
         Client client = new Client();
@@ -1980,6 +2026,36 @@ public class WirBankPDFExtractorTest
                         hasSource("Verkauf04.txt"), hasNote(null), //
                         hasAmount("CHF", 14.41), hasGrossValue("CHF", 14.41), //
                         hasForexGrossValue("USD", 16.30), //
+                        hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf05()
+    {
+        WirBankPDFExtractor extractor = new WirBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05_ViacInvest.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH1336969030"), hasWkn(null), hasTicker(null), //
+                        hasName("VIAC Equity North America Sustainable"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-01-16T00:00"), hasShares(0.181), //
+                        hasSource("Verkauf05_ViacInvest.txt"), hasNote(null), //
+                        hasAmount("CHF", 18.10), hasGrossValue("CHF", 18.10), //
                         hasTaxes("CHF", 0.00), hasFees("CHF", 0.00))));
     }
 
