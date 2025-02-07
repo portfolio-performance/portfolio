@@ -27,6 +27,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("WIR Bank");
         addBankIdentifier("Banque WIR");
+        addBankIdentifier("VIAC Invest AG");
 
         addDepositTransaction();
         addBuySellTransaction();
@@ -86,13 +87,13 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
     private void addBuySellTransaction()
     {
         DocumentType type = new DocumentType("(B.rsenabrechnung|Exchange Settlement|Op.ration de bourse) " //
-                        + "\\- (Kauf|Verkauf|Buy|Sell|Achat|Vente)");
+                        + "\\- (Kauf|Zeichnung|Verkauf|R.cknahme|Buy|Sell|Achat|Vente)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
         Block firstRelevantLine = new Block("^(B.rsenabrechnung|Exchange Settlement|Op.ration de bourse) " //
-                        + "\\- (Kauf|Verkauf|Buy|Sell|Achat|Vente).*$");
+                        + "\\- (Kauf|Zeichnung|Verkauf|R.cknahme|Buy|Sell|Achat|Vente).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -107,9 +108,10 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
                         .match("^(B.rsenabrechnung|Exchange Settlement|Op.ration de bourse) " //
-                                        + "\\- (?<type>(Kauf|Verkauf|Buy|Sell|Achat|Vente)).*$") //
+                                        + "\\- (?<type>(Kauf|Zeichnung|Verkauf|R.cknahme|Buy|Sell|Achat|Vente)).*$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type"))  //
+                                            || "Rücknahme".equals(v.get("type")) //
                                             || "Sell".equals(v.get("type"))  //
                                             || "Vente".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -122,7 +124,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Kurs: USD 262.51
                         // @formatter:on
                         .section("isin", "name", "currency") //
-                        .find("(Order|Ordre): (Kauf|Verkauf|Buy|Sell|Achat|Vente)") //
+                        .find("(Order|Ordre): (Kauf|Zeichnung|Verkauf|R.cknahme|Buy|Sell|Achat|Vente)") //
                         .match("^[\\.,\\d]+ (Anteile|Qty|Ant|units|Qt.|Quantit.|parts|actions)?(?<name>.*)$") //
                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                         .match("^(Kurs|Price|Cours): (?<currency>[\\w]{3}) .*$") //
@@ -133,7 +135,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // 0.027 units Swisscanto Pacific ex Japan
                         // @formatter:on
                         .section("shares") //
-                        .find("(Order|Ordre): (Kauf|Verkauf|Buy|Sell|Achat|Vente)") //
+                        .find("(Order|Ordre): (Kauf|Zeichnung|Verkauf|R.cknahme|Buy|Sell|Achat|Vente)") //
                         .match("^(?<shares>[\\.,\\d]+) (Anteile|Qty|Ant|units|Qt.|Quantit.|parts|actions)?(?<name>.*)$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
@@ -148,7 +150,7 @@ public class WirBankPDFExtractor extends AbstractPDFExtractor
                         // Verrechneter Betrag: Valuta 05.07.2018 CHF 360.43
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^(Verrechneter Betrag: Valuta|Charged amount: Value date|Montant comptabilis.: Valeur) .* (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+)$") //
+                        .match("^(Verrechneter Betrag: Valuta|Charged amount: Value date|Montant comptabilis.: Valeur) .* (?<currency>[\\w]{3}) (?<amount>[\\.,'\\d]+).*$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
