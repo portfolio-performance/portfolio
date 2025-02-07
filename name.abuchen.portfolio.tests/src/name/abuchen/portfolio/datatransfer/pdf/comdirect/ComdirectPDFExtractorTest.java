@@ -6132,6 +6132,83 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testFinanzreport09()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Finanzreport09MitSteuerverrechnungNegativ.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(10L));
+        assertThat(results.size(), is(10));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2024-11-04"), hasAmount("EUR", 200.00), //
+                        hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Übertrag"))));
+
+        assertThat(results, hasItem(removal(hasDate("2024-11-05"), hasAmount("EUR", 47.19), //
+                        hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Lastschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2024-11-05"), hasAmount("EUR", 1.00), //
+                        hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Lastschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2024-11-11"), hasAmount("EUR", 13.70), //
+                        hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Übertrag"))));
+
+        assertThat(results, hasItem(taxes(hasDate("2024-11-11"), hasAmount("EUR", 0.01), //
+                        hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Steuerverrechnung"))));
+
+        assertThat(results, hasItem(removal(hasDate("2024-11-19"), hasAmount("EUR", 84.08), //
+                        hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Lastschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2024-11-26"), hasAmount("EUR", 10.99), //
+                        hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Lastschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2024-11-28"), hasAmount("EUR", 107.58), //
+                        hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Lastschrift"))));
+
+        assertThat(results, hasItem(removal(hasDate("2024-11-28"), hasAmount("EUR", 1.00), //
+                        hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Lastschrift"))));
+
+        assertThat(results, hasItem(fee(hasDate("2024-11-29"), hasAmount("EUR", 4.90), //
+                        hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Entgelte"))));
+    }
+
+    @Test
+    public void testFinanzreport10()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Finanzreport10MitSteuerverrechnungPositiv.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transactions
+        assertThat(results, hasItem(fee(hasDate("2024-11-01"), hasAmount("EUR", 4.33), //
+                        hasSource("Finanzreport10MitSteuerverrechnungPositiv.txt"), hasNote("Entgelte"))));
+
+        assertThat(results, hasItem(taxRefund(hasDate("2024-11-11"), hasAmount("EUR", 33.50), //
+                        hasSource("Finanzreport10MitSteuerverrechnungPositiv.txt"), hasNote("Steuerverrechnung"))));
+
+        assertThat(results, hasItem(fee(hasDate("2024-12-01"), hasAmount("EUR", 4.37), //
+                        hasSource("Finanzreport10MitSteuerverrechnungPositiv.txt"), hasNote("Entgelte"))));
+    }
+
+    @Test
     public void testWertpapierVerwahrentgelt01()
     {
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
