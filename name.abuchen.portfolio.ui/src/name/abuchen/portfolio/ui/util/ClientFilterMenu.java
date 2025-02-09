@@ -99,8 +99,6 @@ public final class ClientFilterMenu implements IMenuListener
         }
     }
 
-    private static final int MAXIMUM_NO_CUSTOM_ITEMS = 30;
-
     private final Client client;
     private final IPreferenceStore preferences;
     private final List<Consumer<ClientFilter>> listeners = new ArrayList<>();
@@ -244,9 +242,6 @@ public final class ClientFilterMenu implements IMenuListener
 
                 selectedItem = newItem;
                 customItems.addFirst(newItem);
-
-                if (customItems.size() > MAXIMUM_NO_CUSTOM_ITEMS)
-                    customItems.removeLast();
 
                 filterConfig.add(new Configuration(newItem.getId(), newItem.getLabel(), newItem.getUUIDs()));
                 client.touch();
