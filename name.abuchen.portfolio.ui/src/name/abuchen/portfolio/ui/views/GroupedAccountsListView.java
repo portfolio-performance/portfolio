@@ -208,12 +208,13 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
     {
         toolBar.add(new DropDown(Messages.MenuCreateAndManageClientFilter, Images.PLUS, SWT.NONE, manager -> {
             manager.add(new LabelOnly(Messages.MenuCreateAndManageClientFilter));
-            manager.add(new SimpleAction(Messages.LabelClientFilterNew, a -> {
-                clientFilterMenu.createCustomFilter();
-                groupedAccounts.refresh();
-                // select the newly created account
-                groupedAccounts.setSelection(new StructuredSelection(items.getFirst()));
-            }));
+            manager.add(new SimpleAction(Messages.LabelClientFilterNew,
+                            a -> clientFilterMenu.createCustomFilter().ifPresent(newItem -> {
+                                groupedAccounts.refresh();
+                                // select the newly created account
+                                groupedAccounts.setSelection(new StructuredSelection(newItem));
+
+                            })));
             manager.add(new SimpleAction(Messages.LabelClientFilterManage, a -> {
                 clientFilterMenu.editCustomFilter();
                 groupedAccounts.refresh();
@@ -337,7 +338,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
 
         groupedAccounts.addSelectionChangedListener(event -> {
             Object treeItem = event.getStructuredSelection().getFirstElement();
-                setInformationPaneInput(treeItem);
+            setInformationPaneInput(treeItem);
         });
 
         setupDnD();

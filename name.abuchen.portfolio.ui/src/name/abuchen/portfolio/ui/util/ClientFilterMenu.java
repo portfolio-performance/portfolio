@@ -208,7 +208,11 @@ public final class ClientFilterMenu implements IMenuListener
         }
     }
 
-    public void createCustomFilter()
+    /**
+     * Opens a dialog to create a new custom filter. Optionally returns the
+     * newly created filter.
+     */
+    public Optional<Item> createCustomFilter()
     {
         LabelProvider labelProvider = new LabelProvider()
         {
@@ -241,14 +245,18 @@ public final class ClientFilterMenu implements IMenuListener
                     newItem.label = label;
 
                 selectedItem = newItem;
-                customItems.addFirst(newItem);
+                customItems.add(newItem);
 
                 filterConfig.add(new Configuration(newItem.getId(), newItem.getLabel(), newItem.getUUIDs()));
                 client.touch();
 
                 listeners.forEach(l -> l.accept(newItem.filter));
+
+                return Optional.of(newItem);
             }
         }
+
+        return Optional.empty();
     }
 
     public static Optional<Item> buildItem(String id, String name, String uuids, Client client)
