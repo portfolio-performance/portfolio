@@ -1757,7 +1757,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block taxesBlock = new Block("^(Kapitalertragsteuer|Solidarit.tszuschlag|Kirchensteuer) [\\.,\\d]+[\\-|\\+] [\\w]{3}$");
+        Block taxesBlock = new Block("^((Kapitalertragsteuer" //
+                        + "|Solidarit.tszuschlag" //
+                        + "|Kirchensteuer) [\\.,\\d]+[\\-|\\+] [\\w]{3}" //
+                        + "|.*Steuerverrechnu(ng)?.*)$");
         type.addBlock(taxesBlock);
         taxesBlock.set(new Transaction<AccountTransaction>()
 
@@ -1767,25 +1770,51 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("note", "amount", "type", "currency")
-                        .match("^(?<note>(Kapitalertragsteuer"
-                                        + "|Solidarit.tszuschlag"
-                                        + "|Kirchensteuer)) "
-                                        + "(?<amount>[\\.,\\d]+)"
-                                        + "(?<type>[\\-|\\+]) "
-                                        + "(?<currency>[\\w]{3})$")
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
+                        .oneOf( //
+                                        section -> section //
+                                                        .attributes("note", "amount", "type", "currency")
+                                                        .match("^(?<note>(Kapitalertragsteuer"
+                                                                        + "|Solidarit.tszuschlag"
+                                                                        + "|Kirchensteuer)) "
+                                                                        + "(?<amount>[\\.,\\d]+)"
+                                                                        + "(?<type>[\\-|\\+]) "
+                                                                        + "(?<currency>[\\w]{3})$")
+                                                        .assign((t, v) -> {
+                                                            Map<String, String> context = type.getCurrentContext();
 
-                            // Is sign --> "-" change from TAXES to TAX_REFUND
-                            if ("-".equals(v.get("type")))
-                                t.setType(AccountTransaction.Type.TAXES);
+                                                            // Is sign --> "-" change from TAX_REFUND to TAXES
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.TAXES);
 
-                            t.setDateTime(asDate(context.get("accountingBillDate")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setNote(v.get("note"));
-                        })
+                                                            t.setDateTime(asDate(context.get("accountingBillDate")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setNote(v.get("note"));
+                                                        }),
+
+                                        // @formatter:off
+                                        // 11.11.2024   Steuerverrechnu                                         -0.01
+                                        // 11.11.2024   ng
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "type", "amount") //
+                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                                                        + "Steuerverrechnu(ng)? " //
+                                                                        + "(?<type>[\\-|\\+])" //
+                                                                        + "(?<amount>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            Map<String, String> context = type.getCurrentContext();
+
+                                                            // Is sign --> "-" change from TAX_REFUND to TAXES
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.TAXES);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(context.get("currency"));
+                                                            t.setNote("Steuerverrechnung");
+                                                        })
+                        )
 
                         .wrap(TransactionItem::new));
     }

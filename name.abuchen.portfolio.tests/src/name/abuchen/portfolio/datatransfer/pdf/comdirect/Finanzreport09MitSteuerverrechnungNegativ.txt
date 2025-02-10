@@ -1,0 +1,209 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.1.qualifier
+System: win32 | x86_64 | 21.0.5+11-LTS | Eclipse Adoptium
+-----------------------------------------
+comdirect, 11111 Stadt 000 00 000
+Herrn Telefon: 00000 - 000 00 00
+Vorname Nachname Telefax: 00000 - 000 00 00
+Strasse 1 E-Mail: www.comdirect.de/kontakt
+11111 Stadt (E-Mail über Kontaktformular)
+Kundennummer: 000 0000000
+Finanzreport Nr. 11 per 02.12.2024 03.12.2024
+Sehr geehrter Herr Nachname,
+in Ihrem aktuellen Finanzreport finden Sie alle Informationen rund um Ihre Kundenverbindung.
+Haben Sie noch Fragen? Alle Informationen zu unseren Produkten und Services finden Sie unter
+www.comdirect.de
+Mit freundlichen Grüßen
+Ihre comdirect
+Aktuelle Informationen:
+comdirect wird 30 – das feiern wir: Sichern Sie sich bis zu 5 x 30 Euro Prämie mit dem Girokonto
+oder 30 Monate Sonderkonditionen3 beim Depot! Jetzt mehr erfahren unter
+www.comdirect.de/aktionen
+Mit dem JuniorDepot feiern wie die Großen! Zum comdirect Geburtstag mit toller Prämie für
+Kids: jetzt eröffnen und mit Wertpapieren für den Nachwuchs vorsorgen. Mehr erfahren unter
+www.comdirect.de/junior-depot
+Bis zu 1.250 Euro Prämie mit cominvest: Partytime für Ihre Geldanlage – bis 15.01.2025 mit
+cominvest in Wertpapiere investieren und bis zu 1.250 Euro comdirect Geburtstagsprämie
+kassieren. Mehr Informationen unter www.comdirect.de/cominvest
+comdirect – eine Marke der Commerzbank AG USt-ID: DE 000 000 000
+11111 Stadt
+Finanzreport Nr. 11 per 02.12.2024 - Seite 2
+Kundennummer 000 0000000
+Kontoübersicht
+Ihre aktuellen Salden IBAN Saldo in Saldo in
+Kontowährung EUR
+Girokonto DE00 0000 0000 0000 0000 00 +858,55
+Währungsanlagekonto (CHF) DE00 0000 0000 0000 0000 00 +5.982,50 +6.419,68
+Depot +16.135,80
+Gesamtsaldo 02.12.2024 +23.414,03
+ 
+Girokonto Dispositionskredit 0 EUR
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 01.11.2024 +929,00
+04.11.2024 Übertrag / Vorname Nachname Buchungstext +200,00
+04.11.2024 Überweisung End-to-End-Ref.:
+AA00000000000 nicht angegeben
+000/00000
+05.11.2024 Lastschrift / Zahlungsempfänger 1 Buchungstext 1 -47,19
+05.11.2024 Belastung Zahlungsempfänger 2 Buchungstext 2
+AA00000000000 Buchungstext 3
+000/00000 End-to-End-Ref.:
+0000000000000
+CORE / Mandatsref.:
+00A00000A0A00
+Gläubiger-ID:
+LU00AAA0000000000000000000
+05.11.2024 Lastschrift / Zahlungsempfänger 1 Buchungstext 1 -1,00
+05.11.2024 Belastung Zahlungsempfänger 2 Buchungstext 2
+AA00000000000 Buchungstext 3
+000/00000 End-to-End-Ref.:
+0000000000000
+CORE / Mandatsref.:
+00A00000A0A00
+Gläubiger-ID:
+LU00AAA0000000000000000000
+11.11.2024 Übertrag / Zahlungsempfänger Buchungstext -13,70
+11.11.2024 Überweisung DE00000000000000000000 End-to-End-Ref.:
+AA000000A0000 BIC/SWIFT nicht angegeben
+000/0
+11.11.2024 Steuerverrechnu -0,01
+11.11.2024 ng
+000A0A0000AA
+0AAA/0
+19.11.2024 Lastschrift / Zahlungsempfänger 1 Buchungstext 1 -84,08
+19.11.2024 Belastung Zahlungsempfänger 2 Buchungstext 2
+AA00000000000 End-to-End-Ref.:
+000/0000 0000000000000
+CORE / Mandatsref.:
+00A00000A0A00
+Gläubiger-ID:
+LU00AAA0000000000000000000
+comdirect – eine Marke der Commerzbank AG USt-ID: DE 000 000 000
+11111 Stadt
+Finanzreport Nr. 11 per 02.12.2024 - Seite 3
+Kundennummer 000 0000000
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+26.11.2024 Lastschrift / Zahlungsempfänger 1 Buchungstext 1 -10,99
+26.11.2024 Belastung Zahlungsempfänger 2 Buchungstext 2
+A0000000000000 End-to-End-Ref.:
+00/00000 0000000000000
+CORE / Mandatsref.:
+00A00000A0A00
+Gläubiger-ID:
+LU00AAA0000000000000000000
+28.11.2024 Lastschrift / Zahlungsempfänger 1 Buchungstext 1 -107,58
+28.11.2024 Belastung Zahlungsempfänger 2 Buchungstext 2
+AA00000000000 Buchungstext 3
+000/00000 End-to-End-Ref.:
+0000000000000
+CORE / Mandatsref.:
+00A00000A0A00
+Gläubiger-ID:
+LU00AAA0000000000000000000
+28.11.2024 Lastschrift / Zahlungsempfänger 1 Buchungstext 1 -1,00
+28.11.2024 Belastung Zahlungsempfänger 2 Buchungstext 2
+AA00000000000 Buchungstext 3
+000/00000 End-to-End-Ref.:
+0000000000000
+CORE / Mandatsref.:
+00A00000A0A00
+Gläubiger-ID:
+LU00AAA0000000000000000000
+02.12.2024 Entgelte Kontoführungsentgelt -4,90
+29.11.2024 0A0A0A0A00A Girokonto
+A000A/000000 Zeitraum: 01.11.2024
+bis 30.11.2024
+Neuer Saldo 02.12.2024 +858,55
+Währungsanlagekonto (CHF)
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 01.11.2024 +5.982,50
+Neuer Saldo 02.12.2024 +5.982,50
+Depot
+Depotbestand EUR EUR EUR
+WKN / Verwahrart Anzahl / Nominal letzter Währung Kurswert Kaufwert Gewinn / Verlust
+Bezeichnung Kurs Stückzinsen
+A2P5CL / Wertpapierrechnung 118,000 50,350 USD 5.645,48 5.025,03 +620,45
+Irland über AKV +0,00
+FT ICAV-FSP500PAC ETF DLA
+A3EUCD / Wertpapierrechnung 39,000 134,200 EUR 5.233,80 5.054,40 +179,40
+USA/Kanada über AKV +0,00
+ARM HLDGS ADR DL-,001
+comdirect – eine Marke der Commerzbank AG USt-ID: DE 000 000 000
+11111 Stadt
+Finanzreport Nr. 11 per 02.12.2024 - Seite 4
+Kundennummer 000 0000000
+Depotbestand EUR EUR EUR
+WKN / Verwahrart Anzahl / Nominal letzter Währung Kurswert Kaufwert Gewinn / Verlust
+Bezeichnung Kurs Stückzinsen
+ETF210 / Wertpapierrechnung 163,000 32,249 EUR 5.256,52 4.999,21 +257,31
+Grossbritannien über AKV +0,00
+AM-PRIME GL.E. DLA
+Gesamtkurswert 16.135,80 15.078,64 +1.057,16
+Stückzinsen gesamt +0,00
+Gesamtwert 16.135,80
+Die Kaufwerte und damit die Gesamtbewertung in der Depotübersicht stellt lediglich eine vereinfachte
+Gewinn/Verlust-Rechnung dar. Steuerliche Gesichtspunkte werden bei dieser Darstellung nicht berücksichtigt.
+Steuerübersicht1
+Steuerliche Daten EUR
+Gewinne/Verluste Aktien (Saldo) 0,00
+Verlustverrechnungstopf Aktien 0,00
+Gewinne/Verluste Sonstige (Saldo) 487,13
+Verlustverrechnungstopf Sonstige 0,00
+Eingereichter Freibetrag 1.000,00
+In Anspruch genommener Freibetrag 487,14
+Verbleibender Freibetrag 512,86
+Anrechenbare ausländische Quellensteuer 0,00
+Abgeführte Kapitalertragsteuer 0,01
+Abgeführter Solidaritätszuschlag 0,01
+Abgeführte Kirchensteuer 0,00
+Angerechnete ausländische Quellensteuer 0,00
+1 Dieses ist keine Steuerbescheinigung.
+Zinsübersicht
+Girokonto
+Zinssatz für die Inanspruchnahme des Dispositionskredites: 9,90 % p. a. (gültig ab: 22.11.2024)
+Zinssatz für geduldete Überziehungen: 14,40 % p. a. (gültig ab: 22.11.2024)
+Zinsgleitklausel für variable Sollzinssätze:
+comdirect – eine Marke der Commerzbank AG (im Folgenden comdirect genannt) wird variable Sollzinssätze entsprechend den Änderungen des
+Hauptrefinanzierungszinssatzes der Europäischen Zentralbank (nachfolgend EZB-Zinssatz) nach folgender Maßgabe anpassen: Sofern am
+letzten Bankarbeitstag vor dem 15. eines Kalendermonats von comdirect eine Erhöhung des EZB-Zinssatzes um mindestens 0,25 Prozentpunkte
+gegenüber dem EZB-Zinssatz im Monat der letzten Zinsanpassung festgestellt wird, erhöht comdirect den variablen Sollzinssatz entsprechend.
+comdirect verpflichtet sich dagegen zur Senkung des variablen Sollzinssatzes um die Veränderung des EZB-Zinssatzes, wenn der EZB-Zinssatz
+um mindestens 0,25 Prozentpunkte gesunken ist. Die Zinsanpassungen werden 5 Bankarbeitstage nach dem 15. eines Kalendermonats ohne
+gesonderte Erklärung gegenüber dem Kontoinhaber bei comdirect wirksam. comdirect wird den Kontoinhaber in regelmäßigen Zeitabständen im
+Finanzreport unterrichten. Der Kontoinhaber kann die Höhe des EZB-Zinssatzes jederzeit auf der Webseite von comdirect bzw. in anderen
+öffentlich zugänglichen Medien (insbesondere www.bundesbank.de) einsehen.
+comdirect – eine Marke der Commerzbank AG USt-ID: DE 000 000 000
+11111 Stadt
+Finanzreport Nr. 11 per 02.12.2024 - Seite 5
+Kundennummer 000 0000000
+Wichtige Hinweise
+1. Ihre individuellen Vergünstigungen
+Vergünstigungen Gültigkeit
+Kostenlose Depotführung (5,85 Euro pro Quartal gespart) 01.10.2024 bis 31.12.2024
+Details zu Ihren persönlichen Vergünstigungen können Sie unter www.comdirect.de im Persönlichen Bereich unter Verwaltung
+> Depot & Trading > Vergünstigungen einsehen. Es gilt das aktuelle Preis- und Leistungsverzeichnis.
+2. Einwendungen zu Konto- und Depotbuchungen
+Sollten Sie Fragen oder Einwendungen zu den Konto- und Depotbuchungen haben, bitten wir Sie, uns dieses innerhalb 6
+Wochen nach Erhalt des Finanzreportes unter Angabe Ihrer Kundennummer in Textform mitzuteilen.
+3. Ihre Kontodisposition
+Der Kontostand berücksichtigt nicht die Valuta (Wertstellung) der einzelnen Buchungen. Das bedeutet, dass der angezeigte
+Kontostand nicht dem tatsächlichen Kontoguthaben entsprechen muss und bei Verfügungen möglicherweise Zinsen für die
+Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können. Bitte berücksichtigen Sie bei Ihrer
+Disposition daher ggf. die Wertstellungen der Kontoumsätze der letzten Tage.
+4. Hinweis zur Einlagensicherung
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen
+können dem "Informationsbogen für den Einleger" entnommen werden. Diesen finden Sie unter www.comdirect.de/infobogen
+5. Information zu Ihren Wertpapieren
+In Ihrem Depot verwahrte Wertpapiere und Kundengelder unterliegen der EU-Richtlinie 2014/65/EU (MIFID II-Richtlinie) und
+ihren Durchführungsbestimmungen.
+6. Hinweis zur standardisierten Zahlungskontenterminologie
+Nachfolgende Begriffe entsprechen den Begriffen der standardisierten Zahlungskontenterminologie: girocard (Debitkarte),
+Bankkarte (Visa-Debitkarte), Visa-Karte (Kreditkarte) und Dispositionskredit (eingeräumte Kontoüberziehung).
+7. Übersicht Ihrer Kontodaten IBAN BIC
+Girokonto DE00 0000 0000 0000 0000 00 COBADEHD001
+Währungsanlagekonto (CHF) DE00 0000 0000 0000 0000 00
+comdirect – eine Marke der Commerzbank AG USt-ID: DE 000 000 000
+11111 Stadt
