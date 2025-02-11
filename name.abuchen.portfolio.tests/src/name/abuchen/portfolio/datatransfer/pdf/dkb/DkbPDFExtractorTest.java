@@ -4609,6 +4609,52 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testGiroKontoauszug29()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug29.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(results.size(), is(7));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-12-09"), hasAmount("EUR", 10.00), //
+                        hasSource("GiroKontoauszug29.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-12-09"), hasAmount("EUR", 500.00), //
+                        hasSource("GiroKontoauszug29.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-12-23"), hasAmount("EUR", 390.11), //
+                        hasSource("GiroKontoauszug29.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-12-23"), hasAmount("EUR", 400.00), //
+                        hasSource("GiroKontoauszug29.txt"), hasNote("Zahlungseingang"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-12-30"), hasAmount("EUR", 110.82), //
+                        hasSource("GiroKontoauszug29.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-12-30"), hasAmount("EUR", 8.70), //
+                        hasSource("GiroKontoauszug29.txt"), hasNote("Kartenzahlung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interestCharge(hasDate("2024-12-30"), hasAmount("EUR", 0.07), //
+                        hasSource("GiroKontoauszug29.txt"), hasNote("Abrechnungszeitraum vom 01.10.2024 bis 31.12.2024"))));
+    }
+
+    @Test
     public void testTagesgeldKontoauszug01()
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());

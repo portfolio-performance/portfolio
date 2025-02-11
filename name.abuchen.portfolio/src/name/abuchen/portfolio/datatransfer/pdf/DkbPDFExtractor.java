@@ -1022,10 +1022,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Block depositRemovalBlock = new Block("^[\\s]+ (\\-)?[\\.,\\d]+$");
-        type.addBlock(depositRemovalBlock);
-        depositRemovalBlock.setMaxSize(2);
-        depositRemovalBlock.set(new Transaction<AccountTransaction>()
+        Block depositRemovalBlock_Format01 = new Block("^[\\s]+ (\\-)?[\\.,\\d]+$");
+        type.addBlock(depositRemovalBlock_Format01);
+        depositRemovalBlock_Format01.setMaxSize(2);
+        depositRemovalBlock_Format01.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction accountTransaction = new AccountTransaction();
@@ -1054,6 +1054,89 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "|Verf.gung Geldautomat" //
                                         + "|Verf.g\\. Geldautom\\. FW" //
                                         + "|.berweis\\. entgeltfr\\.)).*$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type is "-" change from DEPOSIT to REMOVAL
+                            // @formatter:on
+                            if ("-".equals(trim(v.get("type"))))
+                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+
+                            // Formatting some notes
+                            if ("Kreditkartenabr.".equals(v.get("note")))
+                                v.put("note", "Kreditkartenabrechnung");
+
+                            if ("Verfügung Geldautomat".equals(v.get("note")))
+                                v.put("note", "Geldautomat");
+
+                            if ("Verfüg. Geldautom. FW".equals(v.get("note")))
+                                v.put("note", "Geldautomat (Fremdwährung)");
+
+                            if ("Kartenzahlung onl".equals(v.get("note")))
+                                v.put("note", "Kartenzahlung online");
+
+                            if ("Überweis. entgeltfr.".equals(v.get("note")))
+                                v.put("note", "Überweisung entgeltfrei");
+
+                            if ("Kartenzahlung FW".equals(v.get("note")))
+                                v.put("note", "Kartenzahlung (Fremdwährung)");
+
+                            if ("Eingang Echtzeitüberw".equals(v.get("note")))
+                                v.put("note", "Eingang Echtzeitüberweisung");
+
+                            if ("Bareinzahlung am GA".equals(v.get("note")))
+                                v.put("note", "Bareinzahlung am Geldautomat");
+
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap((t) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (t.getDateTime() != null)
+                                return item;
+
+                            return null;
+                        }));
+
+        // @formatter:off
+        // 09.12.2024 Kartenzahlung               -10,00
+        // 9.12.2024 Zahlungseingang               500,00
+        // @formatter:on
+        Block depositRemovalBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})).*[\\.,\\d]+$");
+        type.addBlock(depositRemovalBlock_Format02);
+        depositRemovalBlock_Format02.setMaxSize(1);
+        depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "note", "type", "amount").optional() //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note>(Lohn, Gehalt, Rente" //
+                                        + "|Zahlungseingang" //
+                                        + "|Storno Gutschrift" //
+                                        + "|Bareinzahlung am GA" //
+                                        + "|sonstige Buchung" //
+                                        + "|Eingang Inst\\.Paym\\." //
+                                        + "|Eingang Echtzeit.berw" //
+                                        + "|.berweisung" //
+                                        + "|Dauerauftrag" //
+                                        + "|Basislastschrift" //
+                                        + "|Lastschrift" //
+                                        + "|Kartenzahlung" //
+                                        + "|Kreditkartenabr\\." //
+                                        + "|Verf.gung Geldautomat" //
+                                        + "|Verf.g\\. Geldautom\\. FW" //
+                                        + "|.berweis\\. entgeltfr\\.))[\\s]{1,}" //
+                                        + "(?<type>[\\-\\s])(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type is "-" change from DEPOSIT to REMOVAL
@@ -1268,7 +1351,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                                         section -> section //
                                                                         .attributes("currency") //
                                                                         // @formatter:off
-                                                                        // Das monatliche Kartenlimit Ihrer VISA Card beträgt 100 abrufen können.   
+                                                                        // Das monatliche Kartenlimit Ihrer VISA Card beträgt 100 abrufen können.
                                                                         // EUR. Umsatzsteuernummer: DE137178746
                                                                         // @formatter:on
                                                                         // .section("currency")
