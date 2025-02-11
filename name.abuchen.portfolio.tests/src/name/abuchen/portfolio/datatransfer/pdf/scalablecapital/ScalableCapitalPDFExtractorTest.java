@@ -1,9 +1,12 @@
 package name.abuchen.portfolio.datatransfer.pdf.scalablecapital;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -30,10 +33,15 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.ScalableCapitalPDFExtractor;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
@@ -133,5 +141,75 @@ public class ScalableCapitalPDFExtractorTest
                         hasAmount("EUR", 8.60), hasGrossValue("EUR", 9.59), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.99))));
 
+    }
+
+    @Test
+    public void testDividende01()
+    {
+        ScalableCapitalPDFExtractor extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US00123Q1040"), hasWkn(null), hasTicker(null), //
+                        hasName("AGNC Investment Corp."), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-01-15T00:00"), hasShares(0.663129), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.07), hasGrossValue("EUR", 0.08), //
+                        hasForexGrossValue("USD", 0.08), //
+                        hasTaxes("EUR", 0.01), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende01WithSecurityInEUR()
+    {
+        Security security = new Security("AGNC Investment Corp.", CurrencyUnit.EUR);
+        security.setIsin("US00123Q1040");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        ScalableCapitalPDFExtractor extractor = new ScalableCapitalPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-01-15T00:00"), hasShares(0.663129), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.07), hasGrossValue("EUR", 0.08), //
+                        hasTaxes("EUR", 0.01), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
     }
 }

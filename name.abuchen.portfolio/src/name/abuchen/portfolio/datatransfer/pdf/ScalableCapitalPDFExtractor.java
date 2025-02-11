@@ -1,13 +1,17 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
 public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
@@ -18,7 +22,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("Scalable Capital GmbH");
 
-        addPurchaseTransaction();
+        addBuySellTransaction();
+        addDividendeTransaction();
     }
 
     @Override
@@ -27,7 +32,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         return "Scalable Capital GmbH";
     }
 
-    private void addPurchaseTransaction()
+    private void addBuySellTransaction()
     {
         final DocumentType type = new DocumentType("Wertpapierabrechnung");
         this.addDocumentTyp(type);
@@ -99,6 +104,105 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new);
 
         addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDividendeTransaction()
+    {
+        final DocumentType type = new DocumentType("Dividende");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^.*(Seite|Page) 1 \\/ [\\d]$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Berechtigtes Wertpapier AGNC Investment Corp.
+                                        // ISIN US00123Q1040
+                                        // 15.01.2025 15.01.2025 Gutschrift 0,12 USD 0,663129 0,08 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^Berechtigtes Wertpapier (?<name>.*)$") //
+                                                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^[\\d]{2}\\.[\\w]{2}\\.[\\d]{4} [\\d]{2}\\.[\\w]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //)
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Berechtigte Anzahl 0,663129
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Berechtigte Anzahl (?<shares>[\\.,\\d]+).*$") //")
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 15.01.2025 15.01.2025 Gutschrift 0,12 USD 0,663129 0,08 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^(?<date>[\\d]{2}\\.[\\w]{2}\\.[\\d]{4}) [\\d]{2}\\.[\\w]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\.,\\d]+ [\\w]{3}.*$") //"
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Gesamtbetrag 0,07 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Gesamtbetrag (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // 15.01.2025 15.01.2025 Gutschrift 0,12 USD 0,663129 0,08 EUR
+                                        // USD / EUR 1,0269
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross") //
+                                                        .match("^[\\d]{2}\\.[\\w]{2}\\.[\\d]{4} [\\d]{2}\\.[\\w]{2}\\.[\\d]{4} Gutschrift [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ (?<gross>[\\.,\\d]+) [\\w]{3}.*$") //")
+                                                        .match("^(?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = rate.convert(rate.getBaseCurrency(), gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
+
+                        .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction //
+
+                        // @formatter:off
+                        // Ausländische Quellensteuer -0,01 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Ausl.ndische Quellensteuer \\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
