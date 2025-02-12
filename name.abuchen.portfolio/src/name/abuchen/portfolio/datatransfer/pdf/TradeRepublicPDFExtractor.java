@@ -1803,7 +1803,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         Block depositRemovalBlock_Format01 = new Block("^[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?( [\\d]{4})? " //
-                        + "(.berweisung" //
+                        + "(.berweisung"
+                        + "|SEPA Echtzeit.berweisung" //
                         + "|Transfer" //
                         + "|Referral Refund" //
                         + "|Kartentransaktion) .*$");
@@ -1884,10 +1885,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 01 Apr. 2024 Überweisung PayOut to transit 172,23 € 50.000,00 €
                                         // 26 Sep 2024 Transfer PayOut to transit €15.99 €0.00
                                         // 22 Juli 2024 Überweisung Outgoing transfer for EMYRMzk QpSHhzd 200,00 € 55.357,39 €
+                                        // 18 Dez. 2024 SEPA Echtzeitüberweisung Outgoing transfer for name surname 300,00 € 52.441,43 €
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) .berweisung (PayOut|Outgoing).* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) (SEPA Echtzeit.berweisung|.berweisung) (PayOut|Outgoing).* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
