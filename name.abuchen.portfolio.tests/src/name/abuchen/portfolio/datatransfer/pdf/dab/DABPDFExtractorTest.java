@@ -1954,6 +1954,37 @@ public class DABPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf_Steuerkorrektur01()
+    {
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf_Steuerkorrektur01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1602145119"), hasWkn(null), hasTicker(null), //
+                        hasName("AIS-Am.I.Eq.Gl.M.Sm.Allo.Sc.B. Act.Nom.Uc.ETF DR EUR o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-01-17T00:00"), hasShares(29.00), //
+                        hasSource("Verkauf_Steuerkorrektur01.txt"), //
+                        hasNote("Abrechnungs-Nr. 50345944 | Steuerliche Korrektur Abrechnung Nr. 55935348 vom 09.01.2025"), //
+                        hasAmount("EUR", 47.56), hasGrossValue("EUR", 47.56), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDividende01()
     {
         DABPDFExtractor extractor = new DABPDFExtractor(new Client());
