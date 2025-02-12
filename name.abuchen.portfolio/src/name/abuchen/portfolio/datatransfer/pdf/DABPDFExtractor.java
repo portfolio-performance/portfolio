@@ -73,6 +73,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         // @formatter:off
+                                        // Gattungsbezeichnung ISIN
                                         // ComStage-MSCI USA TRN UCIT.ETF Inhaber-Anteile I o.N. LU0392495700
                                         // STK 43,000 EUR 47,8310
                                         // @formatter:on
@@ -737,12 +738,12 @@ public class DABPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxAdjustmentTransaction()
     {
-        DocumentType type = new DocumentType("Steuerausgleich f.r das Jahr [\\d]{4}");
+        DocumentType type = new DocumentType("(Steuerliche Korrekturabrechnung|Steuerausgleich f.r das Jahr [\\d]{4})");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^Kunden\\-Nr\\. .*$");
+        Block firstRelevantLine = new Block("^(Korrektur \\- Verkauf|Kunden\\-Nr\\.).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -755,41 +756,97 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
-                        // Wert Betrag zu Ihren Gunsten
-                        // 05.05.2023 EUR 143,90
+                        // Gattungsbezeichnung ISIN
+                        // AIS-Am.I.Eq.Gl.M.Sm.Allo.Sc.B. Act.Nom.Uc.ETF DR EUR o.N. LU1602145119
+                        // Nominal Kurs
+                        // STK 29,000 EUR 660,5000
                         // @formatter:on
-                        .section("date") //
-                        .find("Wert Betrag zu Ihren Gunsten") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\w]{3} [\\.,\\d]+$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .section("isin", "name", "currency").optional() //
+                        .find("Gattungsbezeichnung ISIN") //
+                        .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .match("^STK [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
-                        // Wert Betrag zu Ihren Gunsten
-                        // 05.05.2023 EUR 143,90
+                        // STK 29,000 EUR 660,5000
                         // @formatter:on
-                        .section("currency", "amount") //
-                        .find("Wert Betrag zu Ihren Gunsten") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        .section("shares").optional() //
+                        .match("^STK (?<shares>[\\.,\\d]+) [\\w]{3} [\\.,\\d]+$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Wert Betrag zu Ihren Gunsten
+                                        // 05.05.2023 EUR 143,90
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .find("Wert Betrag zu Ihren Gunsten") //
+                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\w]{3} [\\.,\\d]+$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Wert Konto-Nr. Betrag zu Ihren Gunsten
+                                        // 17.01.2025 1111111111 EUR 47,56
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .find("Wert Konto\\-Nr\\. Betrag zu Ihren Gunsten") //
+                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\d]+ [\\w]{3} [\\.,\\d]+$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Wert Betrag zu Ihren Gunsten
+                                        // 05.05.2023 EUR 143,90
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .find("Wert Betrag zu Ihren Gunsten") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Wert Konto-Nr. Betrag zu Ihren Gunsten
+                                        // 17.01.2025 1111111111 EUR 47,56
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .find("Wert Konto\\-Nr\\. Betrag zu Ihren Gunsten") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
                         // @formatter:off
                         // Kunden-Nr. Abrechnungs-Nr. ADRESSZEILE5=
                         // 1234567 12345678 / 05.05.2023 ADRESSZEILE6=
+                        //
+                        // Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+                        // 1111111111 50345944 / 15.01.2025 ADRESSZEILE6=
                         // @formatter:on
-                        .section("note", "note1").optional() //
-                        .match("^Kunden\\-Nr\\. (?<note>Abrechnungs\\-Nr\\.) .*$") //
-                        .match("^[\\d]+ (?<note1>.*) \\/.*$") //
-                        .assign((t, v) -> t.setNote(trim(v.get("note")) + " " + trim(v.get("note1"))))
+                        .section("note1", "note2").optional() //
+                        .match("^(Kunden|Depot)\\-Nr\\. (?<note1>Abrechnungs\\-Nr\\.) .*$") //
+                        .match("^[\\d]+ (?<note2>.*) \\/.*$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2"))))
 
-                        // @formatter:off
-                        // Steuerausgleich für das Jahr 2023
-                        // @formatter:on
-                        .section("note", "note1").optional() //
-                        .match("^(?<note>Steuerausgleich) f.r das Jahr (?<note1>[\\d]{4})$") //
-                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ") + " " + trim(v.get("note1"))))
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Steuerausgleich für das Jahr 2023
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^(?<note1>Steuerausgleich) f.r das Jahr (?<note2>[\\d]{4})$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note1")), " | ") + " " + trim(v.get("note2")))),
+                                        // @formatter:off
+                                        // Steuerliche Korrektur zu Ihrer Abrechnung Nr. 55935348 vom 09.01.2025 mit Steuerausgleich nach § 43a EStG
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^(?<note1>Steuerliche Korrektur) zu Ihrer (?<note2>Abrechnung Nr\\..* vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note1")), " | ") + " " + trim(v.get("note2")))))
 
                         .wrap(TransactionItem::new);
     }
