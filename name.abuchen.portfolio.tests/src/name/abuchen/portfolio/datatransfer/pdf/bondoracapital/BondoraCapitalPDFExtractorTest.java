@@ -885,4 +885,26 @@ public class BondoraCapitalPDFExtractorTest
         assertThat(results, hasItem(interest(hasDate("2024-04-28"), hasAmount("EUR", 32.45), //
                         hasSource("Kontoauszug16.txt"), hasNote("Go & Grow Zinsen"))));
     }
+
+    @Test
+    public void testKontoauszug17()
+    {
+        BondoraCapitalPDFExtractor extractor = new BondoraCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug17.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-02-04"), hasAmount("EUR", 1111.00), //
+                        hasSource("Kontoauszug17.txt"), hasNote("SEPA payment"))));
+    }
 }

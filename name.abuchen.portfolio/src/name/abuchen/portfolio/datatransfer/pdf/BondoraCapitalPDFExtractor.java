@@ -9,7 +9,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.money.CurrencyUnit;
 
 /**
  * @implNote Bondora Capital does not have a specific bank identifier.
@@ -54,6 +53,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                         .match("^([\\d]{1,2}.[\\d]{1,2}.[\\d]{4}|[\\d]{4}.[\\d]{1,2}.[\\d]{1,2}) " //
                                         + "(?<type>(.berweisen" //
                                         + "|SEPA\\-Bank.berweisung" //
+                                        + "|SEPA payment" //
                                         + "|Transfer" //
                                         + "|Abheben" //
                                         + "|Abheben auf Bankkonto" //
@@ -68,7 +68,8 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                 t.setType(AccountTransaction.Type.DEPOSIT);
                             else if ("Abheben".equals(v.get("type")) //
                                             || "Withdrawal".equals(v.get("type")) //
-                                            || "Abheben auf Bankkonto".equals(v.get("type")))
+                                            || "Abheben auf Bankkonto".equals(v.get("type"))
+                                            || "SEPA payment".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
                         })
 
@@ -87,6 +88,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<date>([\\d]{1,2}\\.[\\d]{2}\\.[\\d]{4}|[\\d]{4}\\.[\\d]{2}\\.[\\d]{2})) " //
                                                                         + "(?<note>(.berweisen" //
                                                                         + "|SEPA\\-Bank.berweisung" //
+                                                                        + "|SEPA payment" //
                                                                         + "|Transfer" //
                                                                         + "|Abheben" //
                                                                         + "|Abheben auf Bankkonto" //
@@ -110,7 +112,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                             }
 
                                                             t.setAmount(asAmount(v.get("amount"), language, country));
-                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
+                                                            t.setCurrencyCode("EUR");
                                                             t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
@@ -120,12 +122,14 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                         // 03/04/2023 Go & Grow Zinsen €1.63 €9,077.85
                                         // 4/1/2023 Go & Grow returns €0.84 €4,723.86
                                         // 4/6/2023 Transfer €50 €4,777.24
+                                        // 2/4/2025 SEPA payment €1,000 €1,000
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "note", "amount") //
                                                         .match("^(?<date>([\\d]{1,2}\\/[\\d]{1,2}\\/[\\d]{4}|[\\d]{4}\\/[\\d]{1,2}\\/[\\d]{1,2})) " //
                                                                         + "(?<note>(.berweisen" //
                                                                         + "|SEPA\\-Bank.berweisung" //
+                                                                        + "|SEPA payment" //
                                                                         + "|Transfer" //
                                                                         + "|Abheben" //
                                                                         + "|Abheben auf Bankkonto" //
@@ -144,17 +148,20 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                             int lastDot = v.get("amount").lastIndexOf(".");
                                                             int lastComma = v.get("amount").lastIndexOf(",");
 
-                                                            // returns the
-                                                            // greater of two
-                                                            // int values
                                                             if (Math.max(lastDot, lastComma) == lastDot)
+                                                            {
+                                                                language = "en";
+                                                                country = "US";
+                                                            }
+                                                            else if ((lastComma >= 0 && (v.get("amount").length() - lastComma - 1) >= 3) //
+                                                                            || (lastDot >= 0 && (v.get("amount").length() - lastDot - 1) >= 3))
                                                             {
                                                                 language = "en";
                                                                 country = "US";
                                                             }
 
                                                             t.setAmount(asAmount(v.get("amount"), language, country));
-                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
+                                                            t.setCurrencyCode("EUR");
                                                             t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
@@ -166,6 +173,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<date>([\\d]{1,2}\\-[\\d]{1,2}\\-[\\d]{4}|[\\d]{4}\\-[\\d]{1,2}\\-[\\d]{1,2})) " //
                                                                         + "(?<note>(.berweisen" //
                                                                         + "|SEPA\\-Bank.berweisung" //
+                                                                        + "|SEPA payment" //
                                                                         + "|Transfer" //
                                                                         + "|Abheben" //
                                                                         + "|Abheben auf Bankkonto" //
@@ -178,7 +186,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount"), "de", "DE"));
-                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.EUR));
+                                                            t.setCurrencyCode("EUR");
                                                             t.setNote(trim(v.get("note")));
                                                         }))
 
