@@ -695,6 +695,7 @@ public class Messages extends NLS
     public static String LabelGreenYellowRed;
     public static String LabelGross;
     public static String LabelGrossNetCalculation;
+    public static String LabelGroupedAccounts;
     public static String LabelHeading;
     public static String LabelHeatmap;
     public static String LabelHeatmapEarnings;
@@ -959,6 +960,7 @@ public class Messages extends NLS
     public static String MenuConvertToOutboundDelivery;
     public static String MenuConvertToSell;
     public static String MenuCreateAccountOrTransaction;
+    public static String MenuCreateAndManageClientFilter;
     public static String MenuCreateColumnConfig;
     public static String MenuCreatePortfolioOrTransaction;
     public static String MenuDashboardColumnWidth;
