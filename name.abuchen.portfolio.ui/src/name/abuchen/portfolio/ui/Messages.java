@@ -585,9 +585,8 @@ public class Messages extends NLS
     public static String LabelChartDetailMarkerInvestments;
     public static String LabelChartDetailMarkerLow;
     public static String LabelChartDetailMarkerPurchaseFIFO;
-    public static String LabelChartDetailMarkerPurchaseFIFOHoldingPeriod;
     public static String LabelChartDetailMarkerPurchaseMovingAverage;
-    public static String LabelChartDetailMarkerPurchaseMovingAverageHoldingPeriod;
+    public static String LabelChartDetailMarkerPurchasePeriodNo;
     public static String LabelChartDetailMovingAverage;
     public static String LabelChartDetailMovingAverage_100days;
     public static String LabelChartDetailMovingAverage_200days;
