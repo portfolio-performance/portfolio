@@ -1,0 +1,73 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: linux | x86_64 | 21.0.5+2 | Flathub
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+        Frankfurt, 16.01.2025
+4257066554917753062174
+Herr Auftragsdatum      16.01.2025n
+kZdL uAtvIR unOaXha Handelstag         16.01.2025
+Zl BzOdMiUgPe Ausführungszeit    00:00 Uhr
+wuwND JDtvwQVHHL 78 Valuta             20.01.2025
+32040 TXQLfCTCE Auftragsnummer     218123246/1
+Ausf.platz/-art    KAG/außerbörsl.
+Wertpapierabrechnung Verkauf Fonds/Zertifikate
+Ihre Depotnummer: 1460120153
+Depotinhaber:     hZJfFsi, DVRz lehuBR
+Nr.218123246/1     Verkauf     ISHARES CORE MSCI WORLD E (IE00B4L5Y983/A0RPWH)
+Ausgeführt    :        0,105442 St.     Kurswert      :              11,15 EUR
+Kurs          :      105,760000 EUR     Provision     :               5,90 EUR
+Devisenkurs   :        1,000000         Eigene Spesen :               0,00 EUR
+                                       *Fremde Spesen :               0,00 EUR
+Verwahrart    : Wertpapierrechnung
+Lagerstelle   : Clearstream Lux.
+Lagerland     : Irland                  Bemessungs-
+                                        grundlage     :              -4,11 EUR
+Teilfrei-                 30,00 %
+stellung      :           -1,76 EUR
+Gewinn/Verlust:            0,03 EUR   **Einbeh. Steuer:              -1,08 EUR
+                                        Endbetrag     :               6,33 EUR
+*   Enthalten sind folgende Gebühren Courtage         :               0,00 EUR
+                             Tradinggebühr            :               0,00 EUR
+                             Regulierung              :               0,00 EUR
+                             Schlussnoten             :               0,00 EUR
+                             LS-Umlegung              :               0,00 EUR
+                             Finanztransaktionssteuer :               0,00 EUR
+                             Sonstige                 :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  :              -1,03 EUR
+                                 Solidaritätszuschlag :              -0,05 EUR
+                                 Kirchensteuer        :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    4076392428.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 2496995993
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+ Stephan Simmang, Dr. Matthias Heinrich, Steffen Jentsch, Jens Möbitz
+2000004563973310 0113202280000102
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Oliver Behrens (Vorsitzender), Dr. Benon Janos (stellv. Vorsitzender),
+ Stephan Simmang, Dr. Matthias Heinrich, Steffen Jentsch, Jens Möbitz
+2000004563973310 0113202280000202
