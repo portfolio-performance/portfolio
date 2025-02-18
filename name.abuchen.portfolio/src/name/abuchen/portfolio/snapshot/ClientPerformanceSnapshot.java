@@ -168,6 +168,7 @@ public class ClientPerformanceSnapshot
     private final Interval period;
     private ClientSnapshot snapshotStart;
     private ClientSnapshot snapshotEnd;
+    private boolean useFifo = true;
 
     private final EnumMap<CategoryType, Category> categories = new EnumMap<>(CategoryType.class);
     private final List<TransactionPair<?>> earnings = new ArrayList<>();
@@ -177,11 +178,17 @@ public class ClientPerformanceSnapshot
 
     public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, LocalDate startDate, LocalDate endDate)
     {
-        this(client, converter, Interval.of(startDate, endDate));
+        this(client, converter, Interval.of(startDate, endDate), true);
     }
 
     public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, Interval period)
     {
+        this(client, converter, period, true);
+    }
+
+    public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, Interval period, boolean useFifo)
+    {
+        this.useFifo = useFifo;
         this.client = client;
         this.converter = converter;
         this.period = period;
@@ -345,7 +352,11 @@ public class ClientPerformanceSnapshot
 
         irr = ClientIRRYield.create(client, snapshotStart, snapshotEnd).getIrr();
 
-        addCapitalGains();
+        if (useFifo)
+            addCapitalGainsFifo();
+        else
+            addCapitalGainsMovingAverage();
+
         addEarnings();
         addCurrencyGains();
     }
@@ -356,7 +367,7 @@ public class ClientPerformanceSnapshot
      * are calculated, i.e. the change in value if the investment would have
      * been in cash in the foreign currency.
      */
-    private void addCapitalGains()
+    private void addCapitalGainsFifo()
     {
         SecurityPerformanceSnapshot securityPerformance = SecurityPerformanceSnapshot.create(client, converter, period,
                         snapshotStart, snapshotEnd, SecurityPerformanceIndicator.CapitalGains.class);
@@ -368,6 +379,26 @@ public class ClientPerformanceSnapshot
 
         Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
         addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGains());
+    }
+
+    /**
+     * Calculates realized and unrealized capital gains using the Moving Average
+     * method. If the security is traded in forex then additionally the currency
+     * gains are calculated, i.e. the change in value if the investment would
+     * have been in cash in the foreign currency.
+     */
+    private void addCapitalGainsMovingAverage()
+    {
+        SecurityPerformanceSnapshot securityPerformance = SecurityPerformanceSnapshot.create(client, converter, period,
+                        snapshotStart, snapshotEnd, SecurityPerformanceIndicator.CapitalGains.class);
+
+        Category realizedCapitalGains = categories.get(CategoryType.REALIZED_CAPITAL_GAINS);
+        addCapitalGains(realizedCapitalGains, securityPerformance, record -> record.getRealizedCapitalGainsMovingAvg());
+
+        // create position for unrealized capital gains
+
+        Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
+        addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGainsMovingAvg());
     }
 
     private void addCapitalGains(Category category, SecurityPerformanceSnapshot securityPerformance,

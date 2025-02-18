@@ -62,6 +62,41 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         }
     }
 
+    enum CostMethod
+    {
+        FIFO(Messages.LabelCapitalGainsMethodFIFO, true), //
+        MOVING_AVERAGE(Messages.LabelCapitalGainsMethodMovingAverage, false);
+
+        private String label;
+        private boolean useFifo;
+
+        private CostMethod(String label, boolean useFifo)
+        {
+            this.label = label;
+            this.useFifo = useFifo;
+        }
+
+        @Override
+        public String toString()
+        {
+            return label;
+        }
+
+        public boolean useFifo()
+        {
+            return useFifo;
+        }
+    }
+
+    static class CostMethodConfig extends EnumBasedConfig<CostMethod>
+    {
+        public CostMethodConfig(WidgetDelegate<?> delegate)
+        {
+            super(delegate, Messages.LabelCapitalGainsMethod, CostMethod.class, Dashboard.Config.COST_METHOD,
+                            Policy.EXACTLY_ONE);
+        }
+    }
+
     static class PositionToolTip extends ToolTip
     {
         private static final int MAX_NO_OF_ROWS = 10;
@@ -178,6 +213,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new DataSeriesConfig(this, false));
         addConfig(new LayoutConfig(this));
+        addConfig(new CostMethodConfig(this));
     }
 
     @Override
@@ -275,7 +311,8 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         return () -> {
             PerformanceIndex index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(),
                             get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
-            return index.getClientPerformanceSnapshot().orElseThrow(IllegalArgumentException::new);
+            boolean useFifo = get(CostMethodConfig.class).getValue().useFifo();
+            return index.getClientPerformanceSnapshot(useFifo).orElseThrow(IllegalArgumentException::new);
         };
     }
 

@@ -9,6 +9,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -30,25 +31,48 @@ public class PortfolioBuilder
         this.portfolio.setReferenceAccount(referenceAccount);
     }
 
-    public PortfolioBuilder inbound_delivery(Security security, String date, long shares, long amount)
+    public PortfolioBuilder inbound_delivery(Security security, String date, long shares, long amount) // NOSONAR
     {
         return inbound_delivery(security, date, shares, amount, 0, 0);
     }
 
-    public PortfolioBuilder inbound_delivery(Security security, String date, long shares, long amount, long fees,
+    public PortfolioBuilder inbound_delivery(Security security, String date, long shares, long amount, long fees, // NOSONAR
                     long taxes)
     {
         portfolio.addTransaction(new PortfolioTransaction(AccountBuilder.asDateTime(date), CurrencyUnit.EUR, amount,
-                        security, shares,
-                        Type.DELIVERY_INBOUND, fees, taxes));
+                        security, shares, Type.DELIVERY_INBOUND, fees, taxes));
         return this;
     }
 
-    public PortfolioBuilder outbound_delivery(Security security, String date, long shares, long amount, long fees,
+    public PortfolioBuilder inbound_delivery(Security security, String date, long shares, Transaction.Unit grossValue) // NOSONAR
+    {
+        var tx = new PortfolioTransaction(AccountBuilder.asDateTime(date), //
+                        grossValue.getAmount().getCurrencyCode(), //
+                        grossValue.getAmount().getAmount(), //
+                        security, shares, Type.DELIVERY_INBOUND, 0, 0);
+
+        tx.addUnit(grossValue);
+        portfolio.addTransaction(tx);
+        return this;
+    }
+
+    public PortfolioBuilder outbound_delivery(Security security, String date, long shares, long amount, long fees, // NOSONAR
                     long taxes)
     {
         portfolio.addTransaction(new PortfolioTransaction(AccountBuilder.asDateTime(date), CurrencyUnit.EUR, amount,
                         security, shares, Type.DELIVERY_OUTBOUND, fees, taxes));
+        return this;
+    }
+
+    public PortfolioBuilder outbound_delivery(Security security, String date, long shares, Transaction.Unit grossValue) // NOSONAR
+    {
+        var tx = new PortfolioTransaction(AccountBuilder.asDateTime(date), //
+                        grossValue.getAmount().getCurrencyCode(), //
+                        grossValue.getAmount().getAmount(), //
+                        security, shares, Type.DELIVERY_OUTBOUND, 0, 0);
+
+        tx.addUnit(grossValue);
+        portfolio.addTransaction(tx);
         return this;
     }
 

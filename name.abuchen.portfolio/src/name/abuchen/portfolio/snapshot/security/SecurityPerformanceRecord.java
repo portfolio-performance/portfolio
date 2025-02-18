@@ -175,6 +175,8 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
 
     private CapitalGainsRecord realizedCapitalGains;
     private CapitalGainsRecord unrealizedCapitalGains;
+    private CapitalGainsRecord realizedCapitalGainsMovingAvg;
+    private CapitalGainsRecord unrealizedCapitalGainsMovingAvg;
 
     /* package */ SecurityPerformanceRecord(Client client, Security security, CurrencyConverter converter,
                     Interval interval)
@@ -360,6 +362,16 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
     public CapitalGainsRecord getUnrealizedCapitalGains()
     {
         return unrealizedCapitalGains;
+    }
+
+    public CapitalGainsRecord getRealizedCapitalGainsMovingAvg()
+    {
+        return realizedCapitalGainsMovingAvg;
+    }
+
+    public CapitalGainsRecord getUnrealizedCapitalGainsMovingAvg()
+    {
+        return unrealizedCapitalGainsMovingAvg;
     }
 
     @Override
@@ -548,5 +560,12 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
                         lineItems);
         this.realizedCapitalGains = calculation.getRealizedCapitalGains();
         this.unrealizedCapitalGains = calculation.getUnrealizedCapitalGains();
+
+        CapitalGainsCalculationMovingAverage calculationMovingAvg = Calculation
+                        .perform(CapitalGainsCalculationMovingAverage.class,
+                        converter, security, lineItems);
+
+        this.realizedCapitalGainsMovingAvg = calculationMovingAvg.getRealizedCapitalGains();
+        this.unrealizedCapitalGainsMovingAvg = calculationMovingAvg.getUnrealizedCapitalGains();
     }
 }
