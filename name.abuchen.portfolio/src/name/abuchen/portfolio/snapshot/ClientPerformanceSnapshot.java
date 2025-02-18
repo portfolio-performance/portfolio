@@ -168,6 +168,7 @@ public class ClientPerformanceSnapshot
     private final Interval period;
     private ClientSnapshot snapshotStart;
     private ClientSnapshot snapshotEnd;
+    private boolean fifoMethod = true;
 
     private final EnumMap<CategoryType, Category> categories = new EnumMap<>(CategoryType.class);
     private final List<TransactionPair<?>> earnings = new ArrayList<>();
@@ -182,6 +183,18 @@ public class ClientPerformanceSnapshot
 
     public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, Interval period)
     {
+        this.client = client;
+        this.converter = converter;
+        this.period = period;
+        this.snapshotStart = ClientSnapshot.create(client, converter, period.getStart());
+        this.snapshotEnd = ClientSnapshot.create(client, converter, period.getEnd());
+
+        calculate();
+    }
+
+    public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, Interval period, boolean fifoMethod)
+    {
+        this.fifoMethod = fifoMethod;
         this.client = client;
         this.converter = converter;
         this.period = period;
@@ -345,7 +358,11 @@ public class ClientPerformanceSnapshot
 
         irr = ClientIRRYield.create(client, snapshotStart, snapshotEnd).getIrr();
 
-        addCapitalGains();
+        if (fifoMethod)
+            addCapitalGains();
+        else
+            addCapitalGainsMA();
+
         addEarnings();
         addCurrencyGains();
     }
@@ -368,6 +385,26 @@ public class ClientPerformanceSnapshot
 
         Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
         addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGains());
+    }
+
+    /**
+     * Calculates realized and unrealized capital gains using the MovingAverage
+     * method. If the security is traded in forex then additionally the currency
+     * gains are calculated, i.e. the change in value if the investment would
+     * have been in cash in the foreign currency.
+     */
+    private void addCapitalGainsMA()
+    {
+        SecurityPerformanceSnapshot securityPerformance = SecurityPerformanceSnapshot.create(client, converter, period,
+                        snapshotStart, snapshotEnd, SecurityPerformanceIndicator.CapitalGains.class);
+
+        Category realizedCapitalGains = categories.get(CategoryType.REALIZED_CAPITAL_GAINS);
+        addCapitalGains(realizedCapitalGains, securityPerformance, record -> record.getRealizedCapitalGainsMA());
+
+        // create position for unrealized capital gains
+
+        Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
+        addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGainsMA());
     }
 
     private void addCapitalGains(Category category, SecurityPerformanceSnapshot securityPerformance,

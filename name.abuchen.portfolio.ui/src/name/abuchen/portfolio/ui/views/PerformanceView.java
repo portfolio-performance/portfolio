@@ -60,6 +60,7 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.MoneyTrailDataSource;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -97,6 +98,8 @@ public class PerformanceView extends AbstractHistoricView
     private ClientFilterDropDown clientFilter;
 
     private boolean preTax = false;
+    private boolean useFIFO = true;
+
 
     private TreeViewer calculation;
     private StatementOfAssetsViewer snapshotStart;
@@ -134,6 +137,24 @@ public class PerformanceView extends AbstractHistoricView
 
             action.setChecked(this.preTax);
             manager.add(action);
+
+            manager.add(new Separator());
+
+            manager.add(new LabelOnly("Cost method"));
+
+            SimpleAction fifoMethod = new SimpleAction("FIFO", a -> {
+                this.useFIFO = true;
+                reportingPeriodUpdated();
+            });
+            fifoMethod.setChecked(this.useFIFO);
+            manager.add(fifoMethod);
+
+            SimpleAction movingAverageMethod = new SimpleAction("Moving average", a -> {
+                this.useFIFO = false;
+                reportingPeriodUpdated();
+            });
+            movingAverageMethod.setChecked(!this.useFIFO);
+            manager.add(movingAverageMethod);
         }));
     }
 
@@ -149,7 +170,7 @@ public class PerformanceView extends AbstractHistoricView
 
         setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
 
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period);
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period, useFIFO);
 
         try
         {
