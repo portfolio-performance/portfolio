@@ -23,6 +23,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
@@ -4278,6 +4279,77 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void testDividende25()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US698299AW45"), hasWkn("A0GMJZ"), hasTicker(null), //
+                        hasName("Panama, Republik DL-Bonds 2006(34-36)"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-01-26T00:00"), hasShares(10.00), //
+                        hasSource("Dividende25.txt"), //
+                        hasNote("Transaction No.: 01473347"), //
+                        hasAmount("USD", 33.50), hasGrossValue("USD", 33.50), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testDividende25WithSecurityInEUR()
+    {
+        Security security = new Security("Panama, Republik DL-Bonds 2006(34-36)", CurrencyUnit.EUR);
+        security.setIsin("US698299AW45");
+        security.setWkn("A1JA0GMJZSB");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.USD);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-01-26T00:00"), hasShares(10.00), //
+                        hasSource("Dividende25.txt"), //
+                        hasNote("Transaction No.: 01473347"), //
+                        hasAmount("USD", 33.50), hasGrossValue("USD", 33.50), //
+                        hasForexGrossValue("EUR", 30.81), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.USD);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testDividendeStorno01()
     {
         BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
@@ -5077,6 +5149,79 @@ public class BaaderBankPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-12-27"), hasAmount("EUR", 164.78), //
                         hasSource("Periodenauszug12.txt"), hasNote("Gutschrift"))));
+    }
+
+    @Test
+    public void testPeriodenauszug13()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug13.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-12-19"), hasAmount("EUR", 105.00), //
+                        hasSource("Periodenauszug13.txt"), hasNote("Gutschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-12-19"), hasAmount("EUR", 105.00), //
+                        hasSource("Periodenauszug13.txt"), hasNote("Gutschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-12-20"), hasAmount("EUR", 1000.00), //
+                        hasSource("Periodenauszug13.txt"), hasNote("Gutschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2024-12-30"), hasAmount("EUR", 250.00), //
+                        hasSource("Periodenauszug13.txt"), hasNote("Gutschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest( //
+                                        hasDate("2024-12-31"), //
+                                        hasSource("Periodenauszug13.txt"), //
+                                        hasNote("Rechnungsabschluss"), //
+                                        hasAmount("EUR", 0.01)))));
+    }
+
+    @Test
+    public void testPeriodenauszug14()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug14.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-01-09"), hasAmount("EUR", 100.00), //
+                        hasSource("Periodenauszug14.txt"), hasNote("Ueberweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-01-20"), hasAmount("EUR", 1000.00), //
+                        hasSource("Periodenauszug14.txt"), hasNote("SEPA-Ueberweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-01-27"), hasAmount("EUR", 200.00), //
+                        hasSource("Periodenauszug14.txt"), hasNote("Gutschrift"))));
     }
 
     @Test
