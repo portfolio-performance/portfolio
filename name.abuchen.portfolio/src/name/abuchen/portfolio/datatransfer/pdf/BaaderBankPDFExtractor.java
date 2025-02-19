@@ -861,8 +861,9 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 12.04.2018 Lastschrift aktiv 12.04.2018 10.000,00
         // 11.12.2020 Gutschrift 11.12.2020 20,00
+        // 09.01.2025 Ueberweisung 09.01.2025 100,00
         // @formatter:on
-        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Lastschrift aktiv|Gutschrift) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$");
+        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Lastschrift aktiv|Gutschrift|Ueberweisung) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
@@ -874,7 +875,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("note", "date", "amount") //
                         .documentContext("currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>(Lastschrift aktiv|Gutschrift)) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+)$") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>(Lastschrift aktiv|Gutschrift|Ueberweisung)) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
@@ -911,7 +912,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
 
         // @formatter:off
-        // 12.04.2018 Lastschrift aktiv 12.04.2018 10.000,00
+        // 06.07.2018 Lastschrift aktiv 06.07.2018 6,97 -
         // 22.08.2018 SEPA-Ueberweisung 22.08.2018 2.000,00 -
         // @formatter:on
         Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Lastschrift aktiv|SEPA\\-Ueberweisung) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ \\-$");
@@ -936,6 +937,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
+        // @formatter:off
+        // 06.07.2018 Transaktionskostenpauschale o. MwSt. 10.07.2018 2,56 -
+        // 15.07.2024 Ordergebühr 15.07.2024 0,99 -
+        // @formatter:on
         Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Transaktionskostenpauschale o\\. MwSt\\.|Ordergeb.hr) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+ \\-$");
         type.addBlock(feesBlock);
         feesBlock.setMaxSize(3);
@@ -1007,6 +1012,60 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+
+        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Rechnungsabschluss [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+( \\-)?$");
+        type.addBlock(interestBlock);
+        interestBlock.setMaxSize(1);
+        interestBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        //
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "date", "amount") //
+                                                        .documentContext("currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Rechnungsabschluss) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) \\-$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(v.get("note"));
+                                                        }),
+                                        // @formatter:off
+                                        // 31.12.2024 Rechnungsabschluss 31.12.2024 0,01
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note", "date", "amount") //
+                                                        .documentContext("currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>Rechnungsabschluss) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(v.get("note"));
+                                                        }))
+
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        }));
     }
 
     private void addFeesAssetManagerTransaction()
