@@ -159,4 +159,65 @@ public class C24BankGmbHPDFExtractorTest
         assertThat(results, hasItem(deposit(hasDate("2024-08-05"), hasAmount("EUR", 2800.00), //
                         hasSource("Kontoauszug05.txt"), hasNote("Überweisung"))));
     }
+
+    @Test
+    public void testKontoauszug06()
+    {
+        C24BankGmbHPDFExtractor extractor = new C24BankGmbHPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(12L));
+        assertThat(results.size(), is(12));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-01-31"), hasAmount("EUR", 3800.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-01-30"), hasAmount("EUR", 1055.70), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-01-29"), hasAmount("EUR", 400.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-01-27"), hasAmount("EUR", 400.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-01-27"), hasAmount("EUR", 200.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-01-20"), hasAmount("EUR", 1000.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-01-20"), hasAmount("EUR", 1000.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-01-20"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Lastschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-01-19"), hasAmount("EUR", 1.20), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Echtzeitüberweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-01-16"), hasAmount("EUR", 0.01), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Überweisung"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-01-14"), hasAmount("EUR", 6000.00), //
+                        hasSource("Kontoauszug06.txt"), hasNote("Überweisung"))));
+    }
 }
