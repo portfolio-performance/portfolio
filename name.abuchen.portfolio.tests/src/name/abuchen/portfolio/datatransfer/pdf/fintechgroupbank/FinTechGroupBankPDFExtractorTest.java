@@ -5443,6 +5443,37 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testFlatExDegiroDividendeReinvestGebuehren01()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroDividendeReinvestGebuehren01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("GB0002374006"), hasWkn("851247"), hasTicker(null), //
+                        hasName("DIAGEO PLC"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check fee after dividende reinvest transaction
+        assertThat(results, hasItem(fee( //
+                        hasDate("2024-11-07T00:00"), hasShares(1.00), //
+                        hasSource("FlatExDegiroDividendeReinvestGebuehren01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.37), hasGrossValue("EUR", 0.37), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testFlatExDegiroFusion01()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());

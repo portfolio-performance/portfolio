@@ -44,6 +44,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addDividendeTransaction();
         addDividendeWithNegativeAmountTransaction();
         addStockDividendeTransaction();
+        addDividendeReinvestFeesTransaction();
         addDepotStatementTransaction();
         addDeliveryInOutboundTransaction();
         addAdvanceTaxTransaction();
@@ -1495,6 +1496,63 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2")))))
 
                 .wrap(BuySellEntryItem::new);
+    }
+
+    private void addDividendeReinvestFeesTransaction()
+    {
+        final DocumentType type = new DocumentType("Stamp Duty aus Dividenden\\-Reinvestment");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^Stamp Duty aus Dividenden-Reinvestment$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // 851247  GB0002374006  DIAGEO PLC                      1,000000
+                        // für die neu eingebuchten Stücke Stamp Duty i.H.v.         0,37 EUR fällig.
+                        // @formatter:on
+                        .section("wkn", "isin", "name", "currency") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^(?<wkn>[A-Z0-9]{6})[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]{1,}(?<name>.*)[\\s]{1,}[\\.,\\d]+$") //
+                        .match("^.* [\\.,\\d]+ (?<currency>[\\w]{3}) f.llig\\.$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // 851247  GB0002374006  DIAGEO PLC                      1,000000
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^[A-Z0-9]{6}[\\s]{1,}[A-Z]{2}[A-Z0-9]{9}[0-9] .* (?<shares>[\\.,\\d]+)$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Diese wurde Ihrem Konto mit Valuta 07.11.2024 belastet.
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Diese wurde Ihrem Konto mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // für die neu eingebuchten Stücke Stamp Duty i.H.v.         0,37 EUR fällig.
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^.* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) f.llig\\.$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new);
     }
 
     private void addDepotStatementTransaction()
