@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.views.panes;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
 
 import jakarta.inject.Inject;
 
@@ -9,6 +11,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -21,6 +24,7 @@ import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -38,7 +42,8 @@ public class StatementOfAssetsPane implements InformationPanePage
     @Inject
     private ExchangeRateProviderFactory factory;
 
-    private Portfolio portfolio;
+    private Object genericAccount;
+
     private StatementOfAssetsViewer viewer;
 
     @Override
@@ -63,7 +68,8 @@ public class StatementOfAssetsPane implements InformationPanePage
     public void addButtons(ToolBarManager toolBar)
     {
         toolBar.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT,
-                        a -> new TableViewerCSVExporter(viewer.getTableViewer()).export(getLabel(), portfolio)));
+                        a -> new TableViewerCSVExporter(viewer.getTableViewer()).export(getLabel(),
+                                        genericAccount)));
 
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> viewer.getColumnHelper().menuAboutToShow(manager)));
@@ -72,29 +78,64 @@ public class StatementOfAssetsPane implements InformationPanePage
     @Override
     public void setInput(Object input)
     {
-        portfolio = Adaptor.adapt(Portfolio.class, input);
-
-        if (portfolio != null)
+        if (input instanceof Portfolio portfolio)
         {
-            CurrencyConverter converter = new CurrencyConverterImpl(factory,
-                            portfolio.getReferenceAccount().getCurrencyCode());
+            genericAccount = Adaptor.adapt(Portfolio.class, input);
 
-            ClientFilter clientFilter = new PortfolioClientFilter(portfolio);
-
-            viewer.setInput(clientFilter, LocalDate.now(), converter);
+            if (genericAccount != null)
+            {
+                CurrencyConverter converter = new CurrencyConverterImpl(factory,
+                                portfolio.getReferenceAccount().getCurrencyCode());
+                ClientFilter clientFilter = new PortfolioClientFilter(portfolio);
+                viewer.setInput(clientFilter, LocalDate.now(), converter);
+            }
+            else
+            {
+                CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+                viewer.setInput(new EmptyFilter(), LocalDate.now(), converter);
+            }
         }
-        else
+
+        else if (input instanceof ClientFilterMenu.Item groupedAccount)
         {
-            CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
-            viewer.setInput(new EmptyFilter(), LocalDate.now(), converter);
+            genericAccount = Adaptor.adapt(ClientFilterMenu.Item.class, input);
+
+            if (genericAccount != null)
+            {
+                CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+                ClientFilter clientFilter = groupedAccount.getFilter();
+                viewer.setInput(clientFilter, LocalDate.now(), converter);
+            }
+            else
+            {
+                CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+                viewer.setInput(new EmptyFilter(), LocalDate.now(), converter);
+            }
+        }
+
+        else if (input instanceof Account account)
+        {
+            genericAccount = Adaptor.adapt(Account.class, input);
+            if (genericAccount != null)
+            {
+                CurrencyConverter converter = new CurrencyConverterImpl(factory, account.getCurrencyCode());
+                ClientFilter clientFilter = new PortfolioClientFilter(Collections.emptyList(), Arrays.asList(account));
+                viewer.setInput(clientFilter, LocalDate.now(), converter);
+            }
+            else
+            {
+                CurrencyConverter converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+                viewer.setInput(new EmptyFilter(), LocalDate.now(), converter);
+            }
+
         }
     }
 
     @Override
     public void onRecalculationNeeded()
     {
-        if (portfolio != null)
-            setInput(portfolio);
+        if (genericAccount != null)
+            setInput(genericAccount);
     }
 
 }

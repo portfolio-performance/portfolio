@@ -63,7 +63,6 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
@@ -77,10 +76,10 @@ import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
+import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu.Item;
 import name.abuchen.portfolio.ui.util.DropDown;
-import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -582,8 +581,6 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         private final Predicate<LazySecurityPerformanceRecord> sharesNotZero = r -> r.getSharesHeld().get() != 0;
         private final Predicate<LazySecurityPerformanceRecord> sharesEqualZero = r -> r.getSharesHeld().get() == 0;
 
-        private ClientFilterMenu clientFilterMenu;
-
         public FilterDropDown(IPreferenceStore preferenceStore)
         {
             super(Messages.SecurityFilter, Images.FILTER_OFF, SWT.NONE);
@@ -594,18 +591,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
             if (preferenceStore.getBoolean(SecuritiesPerformanceView.class.getSimpleName() + "-sharesEqualZero")) //$NON-NLS-1$
                 recordFilter.add(sharesEqualZero);
 
-            clientFilterMenu = new ClientFilterMenu(getClient(), preferenceStore, f -> {
-                setImage(recordFilter.isEmpty() && !clientFilterMenu.hasActiveFilter() ? Images.FILTER_OFF
-                                : Images.FILTER_ON);
-                clientFilter = f;
-                notifyModelUpdated();
-            });
-
-            clientFilterMenu.trackSelectedFilterConfigurationKey(SecuritiesPerformanceView.class.getSimpleName());
-
-            clientFilter = clientFilterMenu.getSelectedFilter();
-
-            if (!recordFilter.isEmpty() || clientFilterMenu.hasActiveFilter())
+            if (!recordFilter.isEmpty())
                 setImage(Images.FILTER_ON);
 
             setMenuListener(this);
@@ -623,10 +609,6 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         {
             manager.add(createAction(Messages.SecurityFilterSharesHeldNotZero, sharesNotZero));
             manager.add(createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero));
-
-            manager.add(new Separator());
-            manager.add(new LabelOnly(Messages.MenuChooseClientFilter));
-            clientFilterMenu.menuAboutToShow(manager);
         }
 
         private Action createAction(String label, Predicate<LazySecurityPerformanceRecord> predicate)
@@ -652,8 +634,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                             recordFilter.remove(sharesNotZero);
                     }
 
-                    setImage(recordFilter.isEmpty() && !clientFilterMenu.hasActiveFilter() ? Images.FILTER_OFF
-                                    : Images.FILTER_ON);
+                    setImage(recordFilter.isEmpty() ? Images.FILTER_OFF : Images.FILTER_ON);
 
                     model.invalidatePredicateCache();
                     records.refresh();
@@ -679,7 +660,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
     private ReportingPeriodDropDown dropDown;
     private Font boldFont;
 
-    private ClientFilter clientFilter;
+    private ClientFilterDropDown clientFilter;
     private List<Predicate<LazySecurityPerformanceRecord>> recordFilter = new ArrayList<>();
 
     private Model model;
@@ -698,6 +679,10 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         toolBar.add(dropDown);
 
         toolBar.add(new FilterDropDown(getPreferenceStore()));
+        this.clientFilter = new ClientFilterDropDown(getClient(), getPreferenceStore(),
+                        SecuritiesPerformanceView.class.getSimpleName(), filter -> notifyModelUpdated());
+        toolBar.add(clientFilter);
+
         addExportButton(toolBar);
 
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE, manager -> {
@@ -1724,7 +1709,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
     @Override
     public void reportingPeriodUpdated()
     {
-        Client filteredClient = clientFilter.filter(getClient());
+        Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
         setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
 
         Interval period = dropDown.getSelectedPeriod().toInterval(LocalDate.now());
