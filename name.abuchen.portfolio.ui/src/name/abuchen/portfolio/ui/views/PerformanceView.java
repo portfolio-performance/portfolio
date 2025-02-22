@@ -86,6 +86,8 @@ import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceView extends AbstractHistoricView
 {
+    private static final String CAPITAL_GAIN_METHOD = PerformanceView.class.getSimpleName() + "-CAPITAL-GAIN-METHOD"; //$NON-NLS-1$
+
     @Inject
     private SelectionService selectionService;
 
@@ -99,7 +101,6 @@ public class PerformanceView extends AbstractHistoricView
 
     private boolean preTax = false;
     private boolean useFIFO = true;
-
 
     private TreeViewer calculation;
     private StatementOfAssetsViewer snapshotStart;
@@ -144,6 +145,7 @@ public class PerformanceView extends AbstractHistoricView
 
             SimpleAction fifoMethod = new SimpleAction("FIFO", a -> {
                 this.useFIFO = true;
+                getPreferenceStore().setValue(CAPITAL_GAIN_METHOD, String.valueOf(useFIFO));
                 reportingPeriodUpdated();
             });
             fifoMethod.setChecked(this.useFIFO);
@@ -151,6 +153,7 @@ public class PerformanceView extends AbstractHistoricView
 
             SimpleAction movingAverageMethod = new SimpleAction("Moving average", a -> {
                 this.useFIFO = false;
+                getPreferenceStore().setValue(CAPITAL_GAIN_METHOD, String.valueOf(useFIFO));
                 reportingPeriodUpdated();
             });
             movingAverageMethod.setChecked(!this.useFIFO);
@@ -224,6 +227,19 @@ public class PerformanceView extends AbstractHistoricView
         fees = createTransactionViewer(folder, Messages.PerformanceTabFees);
 
         folder.setSelection(0);
+        String capitalGainMethod = getPreferenceStore().getString(CAPITAL_GAIN_METHOD);
+        if (capitalGainMethod != null && !capitalGainMethod.isEmpty())
+        {
+            try
+            {
+                this.useFIFO = Boolean.valueOf(capitalGainMethod);
+            }
+            catch (IllegalArgumentException e)
+            {
+                // unknown capital gain method type; continue to use the default
+                // one
+            }
+        }
 
         reportingPeriodUpdated();
         updateTitle(getDefaultTitle());
