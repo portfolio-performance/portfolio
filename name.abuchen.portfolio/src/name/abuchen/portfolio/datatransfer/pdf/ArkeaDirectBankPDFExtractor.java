@@ -114,7 +114,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^AVIS D.ENCAISSEMENT COUPON$");
+        Block firstRelevantLine = new Block("^AVIS D.ENCAISSEMENT COUPON.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -127,34 +127,43 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         // @formatter:off
+                        // Supported patterns are:
                         //   n       ACTION  ORANGE (FR0000133308)
-                        // Montant unitaire 0,30 €
+                        //   n       ACTION  ENGIE (FR0010208488))
                         // @formatter:on
-                        .section("name", "isin", "currency") //
-                        .match("^.* ACTION (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
-                        .match("^Montant unitaire [\\,\\d\\s]+ (?<currency>\\p{Sc})$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
+                        .section("name", "isin") //
+                        .match("^.* ACTION (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))) //
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 28/04/2023 Quantité 100
+                                        // @formatter:on
+                                        section -> section.attributes("date", "shares") //
+                                                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) Quantit. (?<shares>[\\,\\d\\s]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                        }),
+                                        // @formatter:off
+                                        // Quantité 450
+                                        // 04/12/2023
+                                        // @formatter:on
+                                        section -> section.attributes("date", "shares") //
+                                                        .match("^Quantit. (?<shares>[\\,\\d\\s]+)$") //
+                                                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                        }))
                         // @formatter:off
-                        // Quantité 450
-                        // @formatter:on
-                        .section("shares") //
-                        .match("^Quantit. (?<shares>[\\,\\d\\s]+)$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        // @formatter:off
-                        // 04/12/2023
-                        // @formatter:on
-                        .section("date") //
-                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4})$") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
-                        // @formatter:off
+                        // Supported patterns are:
                         // Montant Net 135,00 €
+                        // Montant Net 140,00 € 140,00 €
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Montant Net (?<amount>[\\,\\d\\s]+) (?<currency>\\p{Sc})$") //
+                        .match("^Montant Net (?<amount>[\\,\\d\\s]+) (?<currency>\\p{Sc}).*$") //
                         .assign((t, v) -> {
+                            t.getSecurity().setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })

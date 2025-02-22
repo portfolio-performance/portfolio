@@ -227,6 +227,37 @@ public class ArkeaDirectBankPDFExtractorTest
     }
 
     @Test
+    public void testDividende02()
+    {
+        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0010208488"), hasWkn(null), hasTicker(null), //
+                        hasName("ENGIE"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2023-04-28T00:00"), hasShares(100.00), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 140.00), hasGrossValue("EUR", 140.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testSteuern01()
     {
         ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
