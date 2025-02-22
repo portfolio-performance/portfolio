@@ -183,13 +183,7 @@ public class ClientPerformanceSnapshot
 
     public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, Interval period)
     {
-        this.client = client;
-        this.converter = converter;
-        this.period = period;
-        this.snapshotStart = ClientSnapshot.create(client, converter, period.getStart());
-        this.snapshotEnd = ClientSnapshot.create(client, converter, period.getEnd());
-
-        calculate();
+        this(client, converter, period, true);
     }
 
     public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, Interval period, boolean fifoMethod)
