@@ -67,13 +67,6 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                                     Values.Share.format(sold), t.getSecurity().getName(),
                                     Values.DateTime.format(t.getDateTime())));
                 }
-                else if (remaining == 0)
-                {
-                    long gain = netAmount - movingRelativeNetCost;
-                    realizedCapitalGains.addCapitalGains(Money.of(termCurrency, gain));
-                    movingRelativeNetCost = 0;
-                    heldShares = 0;
-                }
                 else
                 {
                     long gain = Math.round((netAmount - movingRelativeNetCost / (double) heldShares * sold));
