@@ -89,7 +89,6 @@ public class CostCalculationTest
 
         assertThat(cost.getFifoCostTrail().getValue(), is(cost.getFifoCost()));
 
-        // expected moving average is identical because it is only one buy
         // transaction
         // (3149,20 + 1684.92) * 146/161 = 4383,736149068322981
 
