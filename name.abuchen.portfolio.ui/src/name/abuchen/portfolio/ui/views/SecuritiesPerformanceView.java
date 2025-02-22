@@ -1284,6 +1284,7 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
     {
         Column column = new Column("cg", //$NON-NLS-1$
                         Messages.ColumnRealizedCapitalGains, SWT.RIGHT, 80);
+        column.setHeading("Capital gain method : FIFO");
         column.setGroupLabel(Messages.LabelCapitalGains);
         column.setLabelProvider(
                         new RowElementLabelProvider(
@@ -1359,6 +1360,48 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
                         .getUnrealizedCapitalGains().get().getCapitalGains()));
         recordColumns.addColumn(column);
+
+        column = new Column("cgMA", //$NON-NLS-1$
+                        Messages.ColumnRealizedCapitalGains, SWT.RIGHT, 80);
+        column.setHeading("Capital gain method : moving average");
+        column.setGroupLabel(Messages.LabelCapitalGains);
+        column.setLabelProvider(
+                        new RowElementLabelProvider(
+                                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
+                                                        .getRealizedCapitalGainsMA().get().getCapitalGains(),
+                                                        getClient()),
+                                        aggregate -> Values.Money.format(
+                                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                                        r -> r.getRealizedCapitalGainsMA().get()
+                                                                                        .getCapitalGains()),
+                                                        getClient().getBaseCurrency())));
+        // column.setToolTipProvider(element -> ((RowElement) element)
+        // .explain(LazySecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
+                        .getRealizedCapitalGainsMA().get().getCapitalGains()));
+        recordColumns.addColumn(column);
+
+        column = new Column("ucgMA", //$NON-NLS-1$
+                        Messages.ColumnUnrealizedCapitalGains, SWT.RIGHT, 80);
+        column.setGroupLabel(Messages.LabelCapitalGains);
+        column.setLabelProvider(
+                        new RowElementLabelProvider(
+                                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
+                                                        .getUnrealizedCapitalGainsMA().get().getCapitalGains(),
+                                                        getClient()),
+                                        aggregate -> Values.Money.format(
+                                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                                        r -> r.getUnrealizedCapitalGainsMA().get()
+                                                                                        .getCapitalGains()),
+                                                        getClient().getBaseCurrency())));
+        // column.setToolTipProvider(element -> ((RowElement) element)
+        // .explain(LazySecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
+                        .getUnrealizedCapitalGainsMA().get().getCapitalGains()));
+        recordColumns.addColumn(column);
+
     }
 
     private void createDividendColumns()

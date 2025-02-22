@@ -58,6 +58,12 @@ public class SecurityPerformanceSnapshotComparator
             assertThat(left.getUnrealizedCapitalGains().getForexCaptialGains(),
                             is(right.getUnrealizedCapitalGains().get().getForexCaptialGains()));
 
+            assertThat(left.getRealizedCapitalGainsMA().getCapitalGains(),
+                            is(right.getRealizedCapitalGainsMA().get().getCapitalGains()));
+
+            assertThat(left.getUnrealizedCapitalGainsMA().getCapitalGains(),
+                            is(right.getUnrealizedCapitalGainsMA().get().getCapitalGains()));
+
             assertCosts(left, right);
 
         }

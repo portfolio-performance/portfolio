@@ -223,6 +223,14 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     private final LazyValue<CapitalGainsRecord> unrealizedCapitalGains = new LazyValue<>(
                     () -> capitalGains.get().getUnrealizedCapitalGains());
 
+    private final LazyValue<CapitalGainsCalculationMovingAverage> capitalGainsMA = new LazyValue<>(() -> Calculation
+                    .perform(CapitalGainsCalculationMovingAverage.class, converter, security, lineItems));
+
+    private final LazyValue<CapitalGainsRecord> realizedCapitalGainsMA = new LazyValue<>(
+                    () -> capitalGainsMA.get().getRealizedCapitalGains());
+    private final LazyValue<CapitalGainsRecord> unrealizedCapitalGainsMA = new LazyValue<>(
+                    () -> capitalGainsMA.get().getUnrealizedCapitalGains());
+
     /* package */ LazySecurityPerformanceRecord(Client client, Security security, CurrencyConverter converter,
                     Interval interval)
     {
@@ -407,6 +415,15 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         return unrealizedCapitalGains;
     }
 
+    public LazyValue<CapitalGainsRecord> getRealizedCapitalGainsMA()
+    {
+        return realizedCapitalGainsMA;
+    }
+
+    public LazyValue<CapitalGainsRecord> getUnrealizedCapitalGainsMA()
+    {
+        return unrealizedCapitalGainsMA;
+    }
     @Override
     public <T> T adapt(Class<T> type)
     {
