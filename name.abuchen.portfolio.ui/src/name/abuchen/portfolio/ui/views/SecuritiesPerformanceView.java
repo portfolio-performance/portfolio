@@ -1382,6 +1382,24 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                         .getRealizedCapitalGainsMA().get().getCapitalGains()));
         recordColumns.addColumn(column);
 
+        column = new Column("cgforexMA", //$NON-NLS-1$
+                        Messages.ColumnCurrencyGains + " / " + Messages.ColumnRealizedCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.LabelCapitalGains);
+        column.setLabelProvider(new RowElementLabelProvider(
+                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
+                                        .getRealizedCapitalGainsMA().get().getForexCaptialGains(), getClient()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                        r -> r.getRealizedCapitalGainsMA().get()
+                                                                        .getForexCaptialGains()),
+                                        getClient().getBaseCurrency())));
+        // column.setToolTipProvider(element -> ((RowElement) element)
+        // .explain(LazySecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS_FOREX));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
+                        .getRealizedCapitalGainsMA().get().getCapitalGains()));
+        recordColumns.addColumn(column);
+
         column = new Column("ucgMA", //$NON-NLS-1$
                         Messages.ColumnUnrealizedCapitalGains, SWT.RIGHT, 80);
         column.setGroupLabel(Messages.LabelCapitalGains);
@@ -1402,6 +1420,25 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
                         .getUnrealizedCapitalGainsMA().get().getCapitalGains()));
         recordColumns.addColumn(column);
 
+        column = new Column("ucgforexMA", //$NON-NLS-1$
+                        Messages.ColumnCurrencyGains + " / " + Messages.ColumnUnrealizedCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.LabelCapitalGains);
+        column.setLabelProvider(new RowElementLabelProvider(
+                        new MoneyColorLabelProvider(
+                                        element -> ((LazySecurityPerformanceRecord) element)
+                                                        .getUnrealizedCapitalGainsMA().get().getForexCaptialGains(),
+                                        getClient()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                        r -> r.getUnrealizedCapitalGainsMA().get()
+                                                                        .getForexCaptialGains()),
+                                        getClient().getBaseCurrency())));
+        // column.setToolTipProvider(element -> ((RowElement) element)
+        // .explain(LazySecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS_FOREX));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
+                        .getUnrealizedCapitalGainsMA().get().getCapitalGains()));
+        recordColumns.addColumn(column);
     }
 
     private void createDividendColumns()
