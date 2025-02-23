@@ -141,8 +141,7 @@ public class ExtractorUtils
                     createFormatter("d MMM yyyy", AdditionalLocales.MEXICO),
                     createFormatter("dd MMM yyyy", AdditionalLocales.MEXICO),
                     createFormatter("d MMMM yyyy", AdditionalLocales.MEXICO),
-                    createFormatter("dd MMMM yyyy", AdditionalLocales.MEXICO),
-                    createFormatter("dd/MM/yy", AdditionalLocales.MEXICO) };
+                    createFormatter("dd MMMM yyyy", AdditionalLocales.MEXICO) };
 
     // Date formatters with case-insensitive support for the United Kingdom
     private static final DateTimeFormatter[] DATE_FORMATTER_UK = { //
