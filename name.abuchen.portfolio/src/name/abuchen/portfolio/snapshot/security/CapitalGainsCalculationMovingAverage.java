@@ -18,6 +18,7 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 {
     private long heldShares = 0;
     private long movingRelativeNetCost = 0;
+    private long movingRelativeNetCostFOREX = 0;
 
     private CapitalGainsRecord realizedCapitalGains;
     private CapitalGainsRecord unrealizedCapitalGains;
@@ -38,6 +39,7 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
         Money converted = value.with(converter.at(valuation.getDateTime()));
 
         movingRelativeNetCost += converted.getAmount();
+        movingRelativeNetCostFOREX += value.getAmount();
         heldShares += position.getShares();
     }
 
@@ -52,6 +54,7 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
         {
             case BUY, DELIVERY_INBOUND:
                 movingRelativeNetCost += netAmount;
+                movingRelativeNetCostFOREX += t.getGrossValue().getAmount();
                 heldShares += t.getShares();
                 break;
 
@@ -61,6 +64,7 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                 if (remaining < 0)
                 {
                     movingRelativeNetCost = 0;
+                    movingRelativeNetCostFOREX = 0;
                     heldShares = 0;
                     // FIXME Oops. More sold than bought.
                     PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
@@ -70,8 +74,21 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                 else
                 {
                     long gain = Math.round((netAmount - movingRelativeNetCost / (double) heldShares * sold));
+                    long gainFOREX = 0L;
+                    if (!termCurrency.equals(t.getSecurity().getCurrencyCode()))
+                    {
+                        Money forex = Money.of(t.getSecurity().getCurrencyCode(),
+                                        Math.round(movingRelativeNetCostFOREX / (double) heldShares * sold));
+                        Money back = forex.with(converter.at(t.getDateTime()));
+                        gainFOREX = Math
+                                    .round((back.getAmount() - movingRelativeNetCost / (double) heldShares * sold));
+                    }
                     realizedCapitalGains.addCapitalGains(Money.of(termCurrency, gain));
+                    realizedCapitalGains.addForexCaptialGains(Money.of(termCurrency, gainFOREX));
+
                     movingRelativeNetCost = Math.round(movingRelativeNetCost / (double) heldShares * remaining);
+                    movingRelativeNetCostFOREX = Math
+                                    .round(movingRelativeNetCostFOREX / (double) heldShares * remaining);
                     heldShares = remaining;
                 }
                 break;
@@ -119,9 +136,14 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                         .collect(MoneyCollectors.sum(getSecurity().getCurrencyCode()));
 
         Money convertedEndValue = endValue.with(converter.at(valuationAtEndDate));
-
         long end = convertedEndValue.getAmount();
+
+        Money forex = Money.of(getSecurity().getCurrencyCode(), movingRelativeNetCostFOREX);
+        Money back = forex.with(converter.at(valuationAtEndDate));
+        long gainFOREX = back.getAmount() - start;
+
         unrealizedCapitalGains.addCapitalGains(Money.of(termCurrency, end - start));
+        unrealizedCapitalGains.addForexCaptialGains(Money.of(termCurrency, gainFOREX));
     }
 
     public CapitalGainsRecord getRealizedCapitalGains()
