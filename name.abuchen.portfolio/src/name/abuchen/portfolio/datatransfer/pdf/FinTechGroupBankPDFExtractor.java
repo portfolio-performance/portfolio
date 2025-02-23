@@ -44,6 +44,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addDividendeTransaction();
         addDividendeWithNegativeAmountTransaction();
         addStockDividendeTransaction();
+        addDividendeReinvestFeesTransaction();
         addDepotStatementTransaction();
         addDeliveryInOutboundTransaction();
         addAdvanceTaxTransaction();
@@ -107,7 +108,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "wkn", "currency") //
                                                         .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf)[\\s]{1,}(?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
-                                                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ %[\\s]{1,}Kurswert[\\s]{1,}(?<currency>[\\w]{3}) ([\\s]+)?[\\.,\\d]+$") //
+                                                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ %[\\s]{1,}Kurswert[\\s]{1,}(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Nr.230975068/1     Kauf                 FRAPORT AG 20/27 (XS2198879145/A3E444)
@@ -138,6 +139,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                 if (t.getPortfolioTransaction().getType().isPurchase())
                                     type.getCurrentContext().putBoolean("isPurchaseBonds", true);
+                            }
+                            else if ("St.".equals(v.get("notation")))
+                            {
+                                t.setShares(asShares(v.get("shares"), "de", "DE"));
                             }
                             else
                             {
@@ -175,9 +180,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         //                                        Endbetrag      EUR                 0,95
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("currency", "amount") //
-                                                        .match("^.*Endbetrag[\\s]{1,}(?<currency>[\\w]{3})[\\s]{1,}(\\-)?(?<amount>[\\.,\\d]+)$") //
+                                                        .attributes("currency", "amount", "type") //
+                                                        .match("^.*Endbetrag[\\s]{1,}(?<currency>[\\w]{3})(?<type>[\\s|\\-]{1,})(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
+                                                            boolean isNegative = "-".equals(trim(v.get("type")));
+
+                                                            if (isNegative)
+                                                                type.getCurrentContext().putBoolean("isNegative", true);
+
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
@@ -186,9 +196,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // Endbetrag     :            -760,09 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("amount", "currency") //
-                                                        .match("^(.* )?Endbetrag([:\\s]+)? (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .attributes("amount", "currency", "type") //
+                                                        .match("^.*Endbetrag([:\\s]+)?(?<type>[\\s|\\-]{1,})(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
+                                                            boolean isNegative = "-".equals(trim(v.get("type")));
+
+                                                            if (isNegative)
+                                                                type.getCurrentContext().putBoolean("isNegative", true);
+
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
@@ -201,7 +216,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("gross", "baseCurrency", "termCurrency", "exchangeRate") //
-                                                        .match("^.* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)([\\s]+)? (?<baseCurrency>[\\w]{3})$") //
+                                                        .match("^.* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)[\\s]{1,}(?<baseCurrency>[\\w]{3})$") //
                                                         .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$") //
                                                         .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
@@ -240,7 +255,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // If the currency of the tax differs from the amount,
                         // it will be converted and reset.
                         // @formatter:on
-
                         .optionalOneOf( //
                                         // @formatter:off
                                         // Gewinn/Verlust 0,00 EUR              **Einbeh. Steuer EUR                -1,00
@@ -248,11 +262,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         //                                     ***Einbeh. SichSt EUR                -1,00
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("currency", "taxRefund", "type") //
+                                                        .attributes("currency", "taxRefund") //
                                                         .match("^.* [\\*]+Einbeh\\. (Steuer|KESt|SichSt)([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}\\-(?<taxRefund>[\\.,\\d]+)$") //
-                                                        .match("^.*Endbetrag[\\s]{1,}(?<currency>[\\w]{3})(?<type>([\\s]\\-)?)(?<amount>[\\.,\\d]+)$") //
+                                                        .match("^.*Endbetrag[\\s]{1,}(?<currency>[\\w]{3})[\\s|\\-]{1,}(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            boolean isNegative = "-".equals(trim(v.get("type")));
                                                             boolean isLiquidation = t.getPortfolioTransaction().getType().isLiquidation();
 
                                                             if (t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
@@ -261,7 +274,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                                                                 Money taxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
 
-                                                                if (isLiquidation && !isNegative)
+                                                                if (isLiquidation && !type.getCurrentContext().getBoolean("isNegative"))
                                                                     t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
                                                                 else
                                                                     t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().add(taxRefund));
@@ -276,12 +289,11 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         //                                     ***Einbeh. SichSt EUR                -1,00
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("exchangeRate", "currency", "taxRefund", "type") //
+                                                        .attributes("exchangeRate", "currency", "taxRefund") //
                                                         .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .match("^.* [\\*]+Einbeh\\. (Steuer|KESt|SichSt)[\\s]{1,}(?<currency>[\\w]{3})[\\s]{1,}\\-(?<taxRefund>[\\.,\\d]+)$") //
-                                                        .match("^.*Endbetrag[\\s]{1,}(?<currency>[\\w]{3})(?<type>([\\s]\\-)?)(?<amount>[\\.,\\d]+)$") //
+                                                        .match("^.*Endbetrag[\\s]{1,}(?<currency>[\\w]{3})[\\s|\\-]{1,}(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            boolean isNegative = "-".equals(trim(v.get("type")));
                                                             boolean isLiquidation = t.getPortfolioTransaction().getType().isLiquidation();
 
                                                             if (t.getPortfolioTransaction().getType().isLiquidation() && !t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
@@ -296,7 +308,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                                 Money taxRefund = Money.of(t.getPortfolioTransaction().getCurrencyCode(),
                                                                                 BigDecimal.valueOf(fxTaxRefund.getAmount()).multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
 
-                                                                if (isLiquidation && !isNegative)
+                                                                if (isLiquidation && !type.getCurrentContext().getBoolean("isNegative"))
                                                                     t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
                                                                 else
                                                                     t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().add(taxRefund));
@@ -311,7 +323,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("taxRefund", "currency", "type") //
                                                         .match("^.* [\\*]+Einbeh\\. (Steuer|KESt)([:\\s]+)? \\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
-                                                        .match("^(.* )?Endbetrag([:\\s]+)?(?<type>([\\s]\\-)?)[\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(.* )?Endbetrag([:\\s]+)?(?<type>[\\s|\\-]{1,})[\\.,\\d]+ [\\w]{3}$") //
                                                         .assign((t, v) -> {
                                                             boolean isNegative = "-".equals(trim(v.get("type")));
                                                             boolean isLiquidation = t.getPortfolioTransaction().getType().isLiquidation();
@@ -340,7 +352,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("taxRefund", "currency", "exchangeRate", "type") //
                                                         .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .match("^.* [\\*]+Einbeh\\. (Steuer|KESt)([:\\s]+)? \\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
-                                                        .match("^(.* )?Endbetrag([:\\s]+)?(?<type>([\\s]\\-)?)[\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(.* )?Endbetrag([:\\s]+)?(?<type>[\\s|\\-]{1,})[\\.,\\d]+ [\\w]{3}$") //
                                                         .assign((t, v) -> {
                                                             boolean isNegative = "-".equals(trim(v.get("type")));
                                                             boolean isLiquidation = t.getPortfolioTransaction().getType().isLiquidation();
@@ -388,6 +400,18 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             BuySellEntryItem item = new BuySellEntryItem(t);
 
                             // @formatter:off
+                            // If in a sale the fees are higher than the amount, then the fees are handled in a separate transaction.
+                            // Finally, we remove the flag.
+                            // @formatter:on
+                            if (t.getPortfolioTransaction().getType().isLiquidation() && type.getCurrentContext().getBoolean("isNegative"))
+                            {
+                                t.setMonetaryAmount(t.getPortfolioTransaction().getUnitSum(Type.FEE).subtract(t.getPortfolioTransaction().getMonetaryAmount()));
+                                t.getPortfolioTransaction().removeUnits(Type.FEE);
+                                type.getCurrentContext().putBoolean("separateFeeTransaction", true);
+                            }
+                            type.getCurrentContext().remove("isNegative");
+
+                            // @formatter:off
                             // If the taxes are negative, then this is a tax refund and has been marked so.
                             // Finally, we remove the flag.
                             // @formatter:on
@@ -398,16 +422,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             // Finally, we remove the flag.
                             // @formatter:on
                             type.getCurrentContext().remove("isPurchaseBonds");
-
-                            // @formatter:off
-                            // If in a sale the fees are higher than the amount, then the fees are handled in a separate transaction.
-                            // @formatter:on
-                            if (t.getPortfolioTransaction().getType().isLiquidation() && t.getPortfolioTransaction().getMonetaryAmount().isLessThan(t.getPortfolioTransaction().getUnitSum(Type.FEE)))
-                            {
-                                t.setMonetaryAmount(t.getPortfolioTransaction().getUnitSum(Type.FEE).subtract(t.getPortfolioTransaction().getMonetaryAmount()));
-                                t.getPortfolioTransaction().removeUnits(Type.FEE);
-                                type.getCurrentContext().putBoolean("separateFeeTransaction", true);
-                            }
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -489,7 +503,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         //                                         Endbetrag     :           4.773,36 USD
                         // @formatter:on
                         .section("amount", "currency").optional() //
-                        .match("^.* Endbetrag([:\\s]+)? (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^.* Endbetrag([:\\s]+)?[\\s|\\-]{1,}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -498,7 +512,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // Kurs : 114,4700 USD Kurswert : 528,10 EUR
                         // Devisenkurs : 1,083790 Provision : 5,90 EUR
                         .section("termCurrency", "gross", "baseCurrency", "exchangeRate").optional() //
-                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<termCurrency>[\\w]{3}) .* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)([\\s]+)? (?<baseCurrency>[\\w]{3})$") //
+                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<termCurrency>[\\w]{3}) .* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)[\\s]{1,}(?<baseCurrency>[\\w]{3})$") //
                         .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+) .*$") //
                         .assign((t, v) -> {
                             ExtrExchangeRate rate = asExchangeRate(v);
@@ -526,26 +540,26 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$") //
                                                         .assign((t, v) -> {
-                                                        if (t.getPortfolioTransaction().getType().isLiquidation() && !t.getPortfolioTransaction().getCurrencyCode().equals(v.get("fxCurrency")))
-                                                        {
-                                                            type.getCurrentContext().putBoolean("negative", true);
+                                                            if (t.getPortfolioTransaction().getType().isLiquidation() && !t.getPortfolioTransaction().getCurrencyCode().equals(v.get("fxCurrency")))
+                                                            {
+                                                                type.getCurrentContext().putBoolean("negative", true);
 
-                                                            Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("gross")));
+                                                                Money fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("gross")));
 
-                                                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                                                            BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                                                                BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
-                                                            Money gross = Money.of(t.getPortfolioTransaction().getCurrencyCode(), BigDecimal.valueOf(fxGross.getAmount())
-                                                                            .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
+                                                                Money gross = Money.of(t.getPortfolioTransaction().getCurrencyCode(), BigDecimal.valueOf(fxGross.getAmount())
+                                                                                .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
 
-                                                            t.setMonetaryAmount(gross);
-                                                        }
-                                                        else if (t.getPortfolioTransaction().getType().isLiquidation() && t.getPortfolioTransaction().getCurrencyCode().equals(v.get("fxCurrency")))
-                                                        {
-                                                            type.getCurrentContext().putBoolean("negative", true);
+                                                                t.setMonetaryAmount(gross);
+                                                            }
+                                                            else if (t.getPortfolioTransaction().getType().isLiquidation() && t.getPortfolioTransaction().getCurrencyCode().equals(v.get("fxCurrency")))
+                                                            {
+                                                                type.getCurrentContext().putBoolean("negative", true);
 
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("fxCurrency")));
-                                                            t.setAmount(asAmount(v.get("gross")));
+                                                                t.setCurrencyCode(asCurrencyCode(v.get("fxCurrency")));
+                                                                t.setAmount(asAmount(v.get("gross")));
                                                             }
                                                         }),
                                         // @formatter:off
@@ -554,10 +568,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         //                                         Endbetrag     :              -4,71 EUR
                                         // @formatter:on
                                         section -> section //
-                                                .attributes("gross", "fxCurrency") //
-                                                .match("^.* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
-                                                .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$") //
-                                                .assign((t, v) -> {
+                                                        .attributes("gross", "fxCurrency") //
+                                                        .match("^.* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
+                                                        .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> {
                                                             if (t.getPortfolioTransaction().getType().isLiquidation() && t.getPortfolioTransaction().getCurrencyCode().equals(v.get("fxCurrency")))
                                                             {
                                                                 type.getCurrentContext().putBoolean("negative", true);
@@ -582,20 +596,20 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+) \\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
-                                                        if (t.getPortfolioTransaction().getType().isLiquidation() && !t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
-                                                        {
-                                                            type.getCurrentContext().putBoolean("negativeTax", true);
+                                                            if (t.getPortfolioTransaction().getType().isLiquidation() && !t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
+                                                            {
+                                                                type.getCurrentContext().putBoolean("negativeTax", true);
 
-                                                            Money fxTaxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
+                                                                Money fxTaxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
 
-                                                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                                                            BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                                                                BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
-                                                            Money taxRefund = Money.of(t.getPortfolioTransaction().getCurrencyCode(), BigDecimal.valueOf(fxTaxRefund.getAmount())
-                                                                            .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
+                                                                Money taxRefund = Money.of(t.getPortfolioTransaction().getCurrencyCode(), BigDecimal.valueOf(fxTaxRefund.getAmount())
+                                                                                .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
 
-                                                            t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
-                                                            }
+                                                                t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
+                                                                }
                                                         }),
                                         // @formatter:off
                                         // Lagerland    : Deutschland           **Einbeh. Steuer :            -100,00 EUR
@@ -1484,6 +1498,63 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 .wrap(BuySellEntryItem::new);
     }
 
+    private void addDividendeReinvestFeesTransaction()
+    {
+        final DocumentType type = new DocumentType("Stamp Duty aus Dividenden\\-Reinvestment");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^Stamp Duty aus Dividenden-Reinvestment$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // 851247  GB0002374006  DIAGEO PLC                      1,000000
+                        // für die neu eingebuchten Stücke Stamp Duty i.H.v.         0,37 EUR fällig.
+                        // @formatter:on
+                        .section("wkn", "isin", "name", "currency") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^(?<wkn>[A-Z0-9]{6})[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]{1,}(?<name>.*)[\\s]{1,}[\\.,\\d]+$") //
+                        .match("^.* [\\.,\\d]+ (?<currency>[\\w]{3}) f.llig\\.$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // 851247  GB0002374006  DIAGEO PLC                      1,000000
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^[A-Z0-9]{6}[\\s]{1,}[A-Z]{2}[A-Z0-9]{9}[0-9] .* (?<shares>[\\.,\\d]+)$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Diese wurde Ihrem Konto mit Valuta 07.11.2024 belastet.
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Diese wurde Ihrem Konto mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // für die neu eingebuchten Stücke Stamp Duty i.H.v.         0,37 EUR fällig.
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^.* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) f.llig\\.$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new);
+    }
+
     private void addDepotStatementTransaction()
     {
         final DocumentType type = new DocumentType("Kontoauszug Nr:", //
@@ -1516,7 +1587,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         // 10.12.     07.12.  Prämie für die Teilnahme an der Morgan                6,00+
         //                    Stanley-Aktion
         // @formatter:on
-        Block depositRemovalblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?" //
+        Block depositRemovalblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
                         + "(.berweisung" //
                         + "|Lastschrift" //
                         + "|CASH .*" //
@@ -1569,7 +1640,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block feeblock = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+        Block feeblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
                         + "(Depotgeb.hren .*," //
                         + "|Depotservicegeb.hr .*" //
                         + "|flatex trader [\\d]\\.[\\d] Basis" //
@@ -1733,7 +1804,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "amount", "type") //
                         .documentContext("year", "currency") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?" //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
                                         + "Storno (?<note>Zinsabschluss).*[\\s]{1,}" //
                                         + "(?<amount>[\\.,\\d]+)" //
@@ -1761,7 +1832,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             return item;
                         }));
 
-        Block taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. ([\\s]+)?[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(Steuertopfoptimierung|Steuerkorrektur) .*$");
+        Block taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(Steuertopfoptimierung|Steuerkorrektur) .*$");
         type.addBlock(taxesBlock);
         taxesBlock.set(new Transaction<AccountTransaction>()
 
@@ -1850,7 +1921,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
-                                                        .match("^Depotausgang ([\\s]+)?(?<name>.*) ([\\s]+)?\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
+                                                        .match("^Depotausgang[\\s]{1,}(?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
                                                         .match("^.* Betrag\\/(Stk|Stck\\.)([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -1859,7 +1930,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
-                                                        .match("^Depotausgang ([\\s]+)?(?<name>.*) ([\\s]+)?\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
+                                                        .match("^Depotausgang[\\s]{1,}(?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
                                                         .match("^.* Geldgegenwert([:\\*\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -1868,8 +1939,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("wkn", "isin", "name", "currency") //
-                                                        .find("WKN ([\\s]+)?ISIN ([\\s]+)?Wertpapierbezeichnung ([\\s]+)?Anzahl") //
-                                                        .match("^(?<wkn>[A-Z0-9]{6}) ([\\s]+)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) ([\\s]+)?(?<name>.*) ([\\s]+)?[\\.,\\d]+$") //
+                                                        .find("WKN[\\s]{1,}ISIN[\\s]{1,}Wertpapierbezeichnung[\\s]{1,}Anzahl") //
+                                                        .match("^(?<wkn>[A-Z0-9]{6})[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]{1,}(?<name>.*)[\\s]{1,}[\\.,\\d]+$") //
                                                         .match("^.* Betrag\\/(Stk|Stck\\.)([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -1881,7 +1952,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares", "notation") //
-                                                        .match("^(St|Stk|Stck)\\.\\/Nominale([*:\\s]+)? (?<shares>[\\.,\\d]+) ([\\s]+)?(?<notation>(St\\.|Stk|[\\w]{3})) .*$") //
+                                                        .match("^(St|Stk|Stck)\\.\\/Nominale([*:\\s]+)? (?<shares>[\\.,\\d]+)[\\s]{1,}(?<notation>(St\\.|Stk|[\\w]{3})) .*$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
@@ -1890,6 +1961,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                             {
                                                                 BigDecimal shares = asBigDecimal(v.get("shares"));
                                                                 t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                            }
+                                                            else if ("St.".equals(v.get("notation")))
+                                                            {
+                                                                t.setShares(asShares(v.get("shares"), "de", "DE"));
                                                             }
                                                             else
                                                             {
@@ -1946,7 +2021,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // Einbeh. Steuer**                                                    -88,53 EUR
                         // @formatter:on
                         .section("taxRefund", "currency").optional() //
-                        .match("^.*Einbeh\\. Steuer[:\\*\\s]+ ([\\s]+)?\\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^.*Einbeh\\. Steuer[:\\*\\s]+[\\s]{1,}\\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
 
@@ -1961,7 +2036,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
-                                                        .match("^(.* )?(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
                                                         .assign((t, v) -> t.setNote(trim(v.get("note")))),
                                         // @formatter:off
                                         //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
@@ -1969,7 +2044,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note1", "note2") //
-                                                        .match("^.* (?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
                                                         .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
                                                         .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + v.get("note2"))))
 
@@ -2042,6 +2117,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             {
                                 BigDecimal shares = asBigDecimal(v.get("shares"));
                                 t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                            }
+                            else if ("St.".equals(v.get("notation")))
+                            {
+                                t.setShares(asShares(v.get("shares"), "de", "DE"));
                             }
                             else
                             {
@@ -2303,7 +2382,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "wkn", "currency") //
                                                         .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf) (?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
-                                                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ %[\\s]{1,}Kurswert([\\s]+)?[\\s]{1,}(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+$") //
+                                                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ %[\\s]{1,}Kurswert[\\s]{1,}(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Nr.230975068/1     Kauf                 FRAPORT AG 20/27 (XS2198879145/A3E444)
@@ -2331,6 +2410,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             {
                                 BigDecimal shares = asBigDecimal(v.get("shares"));
                                 t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                            }
+                            else if ("St.".equals(v.get("notation")))
+                            {
+                                t.setShares(asShares(v.get("shares"), "de", "DE"));
                             }
                             else
                             {
@@ -2369,7 +2452,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency") //
-                                                        .match("^.* Endbetrag[\\s]{1,}(?<currency>[\\w]{3})[\\s]{1,}(\\-)?[\\.,\\d]+$") //
+                                                        .match("^.* Endbetrag[\\s]{1,}(?<currency>[\\w]{3})[\\s|\\-]{1,}[\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setCurrencyCode(asCurrencyCode(v.get("currency")))),
                                         // @formatter:off
                                         //        Endbetrag                   -52,50 EUR
@@ -2377,7 +2460,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency") //
-                                                        .match("^(.* )?Endbetrag([:\\s]+)? (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^(.* )?Endbetrag([:\\s]+)?[\\s|\\-]{1,}[\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setCurrencyCode(asCurrencyCode(v.get("currency")))))
 
                         .optionalOneOf( //
@@ -2533,7 +2616,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "wkn", "currency") //
                                                         .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf) (?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
-                                                        .match("^.* Kurswert([\\s]+)?[\\s]{1,}(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+$") //
+                                                        .match("^.* Kurswert[\\s]{1,}(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Nr.230975068/1     Kauf                 FRAPORT AG 20/27 (XS2198879145/A3E444)
@@ -2561,6 +2644,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             {
                                 BigDecimal shares = asBigDecimal(v.get("shares"));
                                 t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                            }
+                            else if ("St.".equals(v.get("notation")))
+                            {
+                                t.setShares(asShares(v.get("shares"), "de", "DE"));
                             }
                             else
                             {
@@ -2597,7 +2684,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^.* Endbetrag[\\s]{1,}(?<currency>[\\w]{3})[\\s]{1,}(\\-)?(?<amount>[\\.,\\d]+)$") //
+                                                        .match("^.* Endbetrag[\\s]{1,}(?<currency>[\\w]{3})[\\s|\\-]{1,}(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -2607,7 +2694,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^(.* )?Endbetrag([:\\s]+)? (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^(.* )?Endbetrag([:\\s]+)?[\\s|\\-]{1,}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -3168,6 +3255,10 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                                 BigDecimal shares = asBigDecimal(v.get("shares"));
                                                                 t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                             }
+                                                            else if ("St.".equals(v.get("notation")))
+                                                            {
+                                                                t.setShares(asShares(v.get("shares"), "de", "DE"));
+                                                            }
                                                             else
                                                             {
                                                                 t.setShares(asShares(v.get("shares")));
@@ -3378,7 +3469,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // Gewinn/Verlust 0,00 EUR              **Einbeh. KESt   EUR               1,00
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^.* \\*\\*Einbeh\\. (Steuer|KESt)([:\\s]+)? (?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)$") //
+                        .match("^.* \\*\\*Einbeh\\. (Steuer|KESt)([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
                             {
@@ -3403,7 +3494,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         //              ***Einbeh. SichSt EUR                1,00
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^.* \\*\\*\\*Einbeh\\. SichSt([:\\s]+)? (?<currency>[\\w]{3})([\\s]+)? (?<tax>[\\.,\\d]+)$") //
+                        .match("^.* \\*\\*\\*Einbeh\\. SichSt([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
                             {
@@ -3507,7 +3598,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // Devisenkurs                            Provision      EUR                 5,90
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^.* Provision([:\\s]+)? (?<currency>[\\w]{3})([\\s]+)? (?<fee>[\\.,\\d]+)$") //
+                        .match("^.* Provision([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative"))
                             {
@@ -3535,7 +3626,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // Bew-Faktor   : 1,0000                  Eigene Spesen  EUR                 1,00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^.* Eigene Spesen([:\\s]+)? (?<currency>[\\w]{3})([\\s]+)? (?<fee>[\\.,\\d]+)$") //
+                        .match("^.* Eigene Spesen([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);
@@ -3556,7 +3647,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // Verwahrart   : GS-Verwahrung          *Fremde Spesen  EUR                 1,00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^.* \\*Fremde Spesen([:\\s]+)? (?<currency>[\\w]{3})([\\s]+)? (?<fee>[\\.,\\d]+)$") //
+                        .match("^.* \\*Fremde Spesen([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative"))
                                 processFeeEntries(t, v, type);
@@ -3586,7 +3677,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // Lagerland      Deutschland             Zinsbetrag     EUR             9.264,06
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^.* Zinsbetrag([:\\s]+)? (?<currency>[\\w]{3})([\\s]+)? (?<fee>[\\.,\\d]+)$") //
+                        .match("^.* Zinsbetrag([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean("negative") && type.getCurrentContext().getBoolean("isPurchaseBonds"))
                                 processFeeEntries(t, v, type);

@@ -58,7 +58,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(WERTPAPIERABRECHNUNG" //
+        final DocumentType type = new DocumentType("(WERTPAPIERABRECHNUNG" //
                         + "|WERTPAPIERABRECHNUNG SPARPLAN" //
                         + "|PIANO D.INVESTIMENTO" //
                         + "|WERTPAPIERABRECHNUNG ROUND UP" //
@@ -137,7 +137,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "name", "isin") //
-                                                        .match("^[\\d] Ausbuchung .*(?<currency>\\p{Sc}) (?<name>.*)(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+ St.cke$")
+                                                        .match("^[\\d] Ausbuchung Long .[\\.,\\d]+ (?<currency>\\p{Sc}) (?<name>.*)(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+ St.cke$")
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // 1 Ausbuchung Long @639.68 DKK Novo Nordisk A/S Best TurboDE000SW0XUN4 500 Stücke
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "name", "isin") //
+                                                        .match("^[\\d] Ausbuchung Long .[\\.,\\d]+ (?<currency>[\\w]{3}) (?<name>.*)(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+ St.cke$")
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // 1 Repayment Société Générale Effekten GmbH 500 Pcs.
@@ -238,10 +245,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .oneOf( //
                                         // @formatter:off
                                         // 1 Ausbuchung Long @6.07 € TUI AG Best TurboDE000SU34220 2053 Stücke
+                                        // 1 Ausbuchung Long @639.68 DKK Novo Nordisk A/S Best TurboDE000SW0XUN4 500 Stücke
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^[\\d] Ausbuchung .*\\p{Sc} .*[A-Z]{2}[A-Z0-9]{9}[0-9] (?<shares>[\\.,\\d]+) St.cke$") //
+                                                        .match("^[\\d] Ausbuchung .*[A-Z]{2}[A-Z0-9]{9}[0-9] (?<shares>[\\.,\\d]+) St.cke$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR
@@ -713,7 +721,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addSellWithNegativeAmountTransaction()
     {
-        DocumentType type = new DocumentType("(WERTPAPIERABRECHNUNG" //
+        final DocumentType type = new DocumentType("(WERTPAPIERABRECHNUNG" //
                         + "|SECURITIES SETTLEMENT" //
                         + "|REGOLAMENTO TITOLI" //
                         + "|LIQUIDACI.N DE VALORES" //
@@ -865,7 +873,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellCryptoTransaction()
     {
-        DocumentType type = new DocumentType("(ABRECHNUNG CRYPTOGESCH.FT|CRYPTO SPARPLAN|ABRECHNUNG CRYPTO SAVEBACK)");
+        final DocumentType type = new DocumentType("(ABRECHNUNG CRYPTOGESCH.FT|CRYPTO SPARPLAN|ABRECHNUNG CRYPTO SAVEBACK)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -1061,7 +1069,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(AUSSCH.TTUNG" //
+        final DocumentType type = new DocumentType("(AUSSCH.TTUNG" //
                         + "|DIVIDENDE" //
                         + "|REINVESTIERUNG" //
                         + "|STORNO DIVIDENDE" //
@@ -1477,7 +1485,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        DocumentType type = new DocumentType("Vorabpauschale");
+        final DocumentType type = new DocumentType("Vorabpauschale");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -1494,20 +1502,31 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // iShs Core MSCI EM IMI U.ETF 173,3905 Stk.
-                        // Registered Shares o.N.
-                        // ISIN: IE00BKM4GZ66
-                        //
-                        // MUF-Amundi MSCI World II U.E. 5,598 Stück
-                        // Actions au Port.Dist o.N.
-                        // FR0010315770
-                        // @formatter:on
-                        .section("name", "nameContinued", "isin") //
-                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|St.ck)$") //
-                        .match("^(?<nameContinued>.*)$") //
-                        .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .oneOf( //
+                                     // @formatter:off
+                                        // iShs Core MSCI EM IMI U.ETF 173,3905 Stk.
+                                        // Registered Shares o.N.
+                                        // ISIN: IE00BKM4GZ66
+                                        //
+                                        // MUF-Amundi MSCI World II U.E. 5,598 Stück
+                                        // Actions au Port.Dist o.N.
+                                        // FR0010315770
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "nameContinued", "isin") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|St.ck)$") //
+                                                        .match("^(?<nameContinued>.*)$") //
+                                                        .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // S&P 500 Consumer Staples USD (Acc) 591,791634 Stück
+                                        // IE00B40B8R38
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|St.ck)$") //
+                                                        .match("^(ISIN: )?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
                         // iShs Core MSCI EM IMI U.ETF 173,3905 Stk.
@@ -1784,7 +1803,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         Block depositRemovalBlock_Format01 = new Block("^[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?( [\\d]{4})? " //
-                        + "(.berweisung" //
+                        + "(.berweisung"
+                        + "|SEPA Echtzeit.berweisung" //
                         + "|Transfer" //
                         + "|Referral Refund" //
                         + "|Kartentransaktion) .*$");
@@ -1865,10 +1885,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 01 Apr. 2024 Überweisung PayOut to transit 172,23 € 50.000,00 €
                                         // 26 Sep 2024 Transfer PayOut to transit €15.99 €0.00
                                         // 22 Juli 2024 Überweisung Outgoing transfer for EMYRMzk QpSHhzd 200,00 € 55.357,39 €
+                                        // 18 Dez. 2024 SEPA Echtzeitüberweisung Outgoing transfer for name surname 300,00 € 52.441,43 €
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency") //
-                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) .berweisung (PayOut|Outgoing).* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})? [\\d]{4}) (SEPA Echtzeit.berweisung|.berweisung) (PayOut|Outgoing).* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.REMOVAL);
 
@@ -1918,11 +1939,39 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
                         .optionalOneOf( //
                                         // @formatter:off
+                                        // 11 dic Transacción con
+                                        // 2024 tarjeta Tesla Spain, S.L. 9,99 € 45.533,45 €
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "year", "note", "amount", "currency", "amountAfter", "currencyAfter") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]Transacci.n con.*$") //
+                                                        .match("^(?<year>[\\d]{4}) tarjeta (?<note>.*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
+                                                        .assign((t, v) -> {
+                                                            DocumentContext context = type.getCurrentContext();
+                                                            Money amountAfter = Money.of(asCurrencyCode(v.get("currencyAfter")), asAmount(v.get("amountAfter")));
+
+                                                            AccountAmountTransactionHelper accountAmountTransactionHelper = context.getType(AccountAmountTransactionHelper.class).orElseGet(AccountAmountTransactionHelper::new);
+                                                            Optional<AccountAmountTransactionItem> item = accountAmountTransactionHelper.findItem(v.getStartLineNumber(), amountAfter);
+
+                                                            if (item.isPresent())
+                                                            {
+                                                                Money amountBefore = Money.of(item.get().currency, item.get().amount);
+
+                                                                if (amountBefore.isGreaterThan(amountAfter))
+                                                                    t.setType(AccountTransaction.Type.REMOVAL);
+                                                            }
+
+                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
                                         // 20 may Transacción BACKBLAZE INC, 7,38 $, exchange rate: 0,9227642, ECB rate: 0,9221689414, markup:
                                         // 2024 con tarjeta 0,06454984 % 6,81 € 8.204,96 €
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("date", "year", "note", "amount", "currency", "amountAfter", "currencyAfter") //
+                                                        .attributes("date", "note", "year", "amount", "currency", "amountAfter", "currencyAfter") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]Transacci.n (?<note>.*), [\\.,\\d]+ \\p{Sc}.*$") //
                                                         .match("^(?<year>[\\d]{4}) con tarjeta .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .assign((t, v) -> {
@@ -2258,7 +2307,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }),
                                         // @formatter:off
-                                        // 30 
+                                        // 30
                                         // Dez. SEPA Echtzeitüberweisung Outgoing transfer for Vorname Nachname 3.000,00 € 7.342,91 €2024
                                         // @formatter:on
                                         section -> section //
@@ -2273,6 +2322,70 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+
+        Block depositRemovalBlock_Format04 = new Block("^[\\d]{2}[\\s]$");
+        type.addBlock(depositRemovalBlock_Format04);
+        depositRemovalBlock_Format04.setMaxSize(5);
+        depositRemovalBlock_Format04.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // 24
+                                        // SEPA
+                                        // Jan. Outgoing transfer for Möbel Heidenreich GmbH 359,37 € 188,25 €
+                                        // Echtzeitüberweisung
+                                        // 2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("day", "month", "year", "note", "amount", "currency") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]$") //
+                                                        .match("^SEPA[\\s]$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) Outgoing transfer for " //
+                                                                        + "(?<note>.*) " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) ([\\.,\\d]+) (\\p{Sc})$") //
+                                                        .match("^Echtzeit.berweisung$") //
+                                                        .match("^(?<year>[\\d]{4})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setType(AccountTransaction.Type.REMOVAL);
+                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // 23
+                                        // SEPA
+                                        // Jan. Incoming transfer from Vorname Nachname 500,00 € 581,76 €
+                                        // Echtzeitüberweisung
+                                        // 2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("day", "month", "year", "note", "amount", "currency") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]$") //
+                                                        .match("^SEPA[\\s]$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
+                                                                        + "(Incoming transfer from)" //
+                                                                        + "(?<note>.*) " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<year>[\\d]{4})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setNote(trim(v.get("note")));
                                                         }))
 
                         .wrap(t -> {
@@ -2799,7 +2912,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxesCorrectionStatementTransaction()
     {
-        DocumentType type = new DocumentType("STEUERKORREKTUR");
+        final DocumentType type = new DocumentType("STEUERKORREKTUR");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -2868,7 +2981,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addDepositStatementTransaction()
     {
-        DocumentType type = new DocumentType("(ABRECHNUNG EINZAHLUNG" //
+        final DocumentType type = new DocumentType("(ABRECHNUNG EINZAHLUNG" //
                         + "|R.GLEMENT DU VERSEMENT)");
         this.addDocumentTyp(type);
 
@@ -3175,7 +3288,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addFeeStatementTransaction()
     {
-        DocumentType type = new DocumentType("PAIEMENTS PAR CARTE TRADE REPUBLIC");
+        final DocumentType type = new DocumentType("PAIEMENTS PAR CARTE TRADE REPUBLIC");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -3365,7 +3478,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "name", "isin") //
-                                                        .match("^[\\d] Ausbuchung .*(?<currency>\\p{Sc}) (?<name>.*)(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+ St.cke$")
+                                                        .match("^[\\d] Ausbuchung Long .[\\.,\\d]+ (?<currency>\\p{Sc}) (?<name>.*)(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+ St.cke$")
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // 1 Ausbuchung Long @639.68 DKK Novo Nordisk A/S Best TurboDE000SW0XUN4 500 Stücke
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "name", "isin") //
+                                                        .match("^[\\d] Ausbuchung Long .[\\.,\\d]+ (?<currency>[\\w]{3}) (?<name>.*)(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) [\\.,\\d]+ St.cke$")
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // 1 Repayment Société Générale Effekten GmbH 500 Pcs.
@@ -3466,10 +3586,11 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .oneOf( //
                                         // @formatter:off
                                         // 1 Ausbuchung Long @6.07 € TUI AG Best TurboDE000SU34220 2053 Stücke
+                                        // 1 Ausbuchung Long @639.68 DKK Novo Nordisk A/S Best TurboDE000SW0XUN4 500 Stücke
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^[\\d] Ausbuchung .*\\p{Sc} .*[A-Z]{2}[A-Z0-9]{9}[0-9] (?<shares>[\\.,\\d]+) St.cke$") //
+                                                        .match("^[\\d] Ausbuchung .*[A-Z]{2}[A-Z0-9]{9}[0-9] (?<shares>[\\.,\\d]+) St.cke$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Clinuvel Pharmaceuticals Ltd. 80 Stk. 22,82 EUR 1.825,60 EUR

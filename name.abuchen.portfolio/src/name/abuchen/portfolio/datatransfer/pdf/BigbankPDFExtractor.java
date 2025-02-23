@@ -89,6 +89,30 @@ public class BigbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 31.12.2024  Zinsgutschrift  +99,01
+        // @formatter:on
+        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*Zinsgutschrift.* \\+[\\.,\\d\\s]+$");
+        type.addBlock(interestBlock);
+        interestBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "amount") //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*Zinsgutschrift.* \\+(?<amount>[\\.,\\d\\s]+)$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     @Override

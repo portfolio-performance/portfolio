@@ -43,10 +43,12 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
         // 17.05. 17.05. Überweisung - 1.508,42 €
         // 17.05. 17.05. Überweisung + 1.115,22 €
         // 05.08. 05.08. Echtzeitüberweisung - 2.800,00 €
+        // 31.01. 31.01. Lastschrift - 3.800,00 €
         // @formatter:on
         Block depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. "
                         + "(.berweisung"
-                        + "|Echtzeit.berweisung) "
+                        + "|Echtzeit.berweisung"
+                        + "|Lastschrift) "
                         + "[\\-|\\+] [\\.,\\d]+ \\p{Sc}.*$");
         type.addBlock(depositRemovalBlock);
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
@@ -61,7 +63,8 @@ public class C24BankGmbHPDFExtractor extends AbstractPDFExtractor
                         .documentContext("year") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.) [\\d]{2}\\.[\\d]{2}\\. " //
                                         + "(?<note>.berweisung"
-                                        + "|Echtzeit.berweisung) " //
+                                        + "|Echtzeit.berweisung"
+                                        + "|Lastschrift) " //
                                         + "(?<type>[\\-|\\+]) " //
                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}).*$") //
                         .assign((t, v) -> {
