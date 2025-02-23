@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -98,8 +99,6 @@ public final class ClientFilterMenu implements IMenuListener
         }
     }
 
-    private static final int MAXIMUM_NO_CUSTOM_ITEMS = 30;
-
     private final Client client;
     private final IPreferenceStore preferences;
     private final List<Consumer<ClientFilter>> listeners = new ArrayList<>();
@@ -170,30 +169,14 @@ public final class ClientFilterMenu implements IMenuListener
         manager.add(new Separator());
         manager.add(new SimpleAction(Messages.LabelClientFilterNew, a -> createCustomFilter()));
         manager.add(new SimpleAction(Messages.LabelClientFilterManage, a -> editCustomFilter()));
-
-        manager.add(new SimpleAction(Messages.LabelClientClearCustomItems, a -> {
-            if (!MessageDialog.openConfirm(Display.getDefault().getActiveShell(), Messages.LabelClientClearCustomItems,
-                            Messages.LabelClientClearCustomItems + "?")) //$NON-NLS-1$
-                return;
-
-            if (customItems.contains(selectedItem))
-            {
-                selectedItem = defaultItems.get(0);
-                listeners.forEach(l -> l.accept(selectedItem.filter));
-            }
-
-            customItems.clear();
-            filterConfig.clear();
-            client.touch();
-        }));
     }
 
-    private void editCustomFilter()
+    public void editCustomFilter()
     {
         if (customItems.isEmpty())
         {
-            MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.LabelInfo,
-                            Messages.LabelClientFilterNoCustomFilterExisting);
+            MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.LabelInfo, MessageFormat
+                            .format(Messages.LabelClientFilterNoCustomFilterExisting, Messages.LabelClientFilterNew));
             return;
         }
 
@@ -225,7 +208,11 @@ public final class ClientFilterMenu implements IMenuListener
         }
     }
 
-    private void createCustomFilter()
+    /**
+     * Opens a dialog to create a new custom filter. Optionally returns the
+     * newly created filter.
+     */
+    public Optional<Item> createCustomFilter()
     {
         LabelProvider labelProvider = new LabelProvider()
         {
@@ -258,17 +245,18 @@ public final class ClientFilterMenu implements IMenuListener
                     newItem.label = label;
 
                 selectedItem = newItem;
-                customItems.addFirst(newItem);
-
-                if (customItems.size() > MAXIMUM_NO_CUSTOM_ITEMS)
-                    customItems.removeLast();
+                customItems.add(newItem);
 
                 filterConfig.add(new Configuration(newItem.getId(), newItem.getLabel(), newItem.getUUIDs()));
                 client.touch();
 
                 listeners.forEach(l -> l.accept(newItem.filter));
+
+                return Optional.of(newItem);
             }
         }
+
+        return Optional.empty();
     }
 
     public static Optional<Item> buildItem(String id, String name, String uuids, Client client)
@@ -340,6 +328,16 @@ public final class ClientFilterMenu implements IMenuListener
         return Collections.unmodifiableList(customItems);
     }
 
+    public LinkedList<Item> getModifiableCustomItems()
+    {
+        return customItems;
+    }
+
+    public ConfigurationSet getfilterConfig()
+    {
+        return filterConfig;
+    }
+
     public void select(Item item)
     {
         selectedItem = item;
@@ -377,7 +375,7 @@ public final class ClientFilterMenu implements IMenuListener
 
     public static Optional<String> getSelectedFilterId(Client client, String key)
     {
-        return client.getSettings().getConfigurationSet(WellKnownConfigurationSets.CLIENT_FILTER_SELECTION)
-                        .lookup(key).map(Configuration::getData);
+        return client.getSettings().getConfigurationSet(WellKnownConfigurationSets.CLIENT_FILTER_SELECTION).lookup(key)
+                        .map(Configuration::getData);
     }
 }
