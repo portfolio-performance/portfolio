@@ -232,16 +232,16 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         // Devisenkurs zur Handelswährung USD/EUR 1,1223
                         // Bruttoertrag in EUR 21,18 EUR
                         // @formatter:on
-                        .section("fxGross", "fxCurrency", "termCurrency", "baseCurrency", "exchangeRate", "gross", "currency").optional() //
-                        .match("^Bruttoertrag (?<fxGross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
+                        .section("fxGross", "termCurrency", "baseCurrency", "exchangeRate", "currency").optional() //
+                        .match("^Bruttoertrag (?<fxGross>[\\.,\\d]+) [\\w]{3}$") //
                         .match("^Devisenkurs zur Handelsw.hrung (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
-                        .match("^Bruttoertrag in [\\w]{3} (?<gross>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Bruttoertrag in [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             ExtrExchangeRate rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
                             Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -252,6 +252,8 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         .section("note").optional() //
                         .match("^Rechnungsnummer: (?<note>.*)$") //
                         .assign((t, v) -> t.setNote("R.-Nr.: " + trim(v.get("note"))))
+
+                        .conclude(ExtractorUtils.fixGrossValueA())
 
                         .wrap(TransactionItem::new);
 
@@ -325,10 +327,11 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Belastung Ihres Kontos NUMMER mit Wertstellung zum 24. Juni 2020.
+                                        // Belastung Ihres Kontos 536011111111 mit Wertstellung zum 1. Oktober 2020.
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Belastung Ihres Kontos .* (?<date>[\\d]{2}\\. .* [\\d]{4})\\.$") //
+                                                        .match("^Belastung Ihres Kontos .* (?<date>[\\d]{1,2}\\. .* [\\d]{4})\\.$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Only use for dividend transactions, when the pay date is missing

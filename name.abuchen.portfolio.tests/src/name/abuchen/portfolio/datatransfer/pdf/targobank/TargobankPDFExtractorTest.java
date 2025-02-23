@@ -1900,4 +1900,256 @@ public class TargobankPDFExtractorTest
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
+
+    @Test
+    public void testDividende08()
+    {
+        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US1912161007"), hasWkn("850663"), hasTicker(null), //
+                        hasName("Coca-Cola Co., The - Registered Shares DL -,25"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-10-01T00:00"), hasShares(127.00), //
+                        hasSource("Dividende08.txt"), //
+                        hasNote("R.-Nr.: CPS-2020-0223111111-0001111"), //
+                        hasAmount("EUR", 37.70), hasGrossValue("EUR", 37.70), //
+                        hasForexGrossValue("USD", 44.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende08WithSecurityInEUR()
+    {
+        Security security = new Security("Coca-Cola Co., The - Registered Shares DL -,25", CurrencyUnit.EUR);
+        security.setIsin("US1912161007");
+        security.setWkn("850663");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-10-01T00:00"), hasShares(127.00), //
+                        hasSource("Dividende08.txt"), //
+                        hasNote("R.-Nr.: CPS-2020-0223111111-0001111"), //
+                        hasAmount("EUR", 37.70), hasGrossValue("EUR", 37.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testSteuerbehandlungVonDividende08()
+    {
+        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US1912161007"), hasWkn("850663"), hasTicker(null), //
+                        hasName("Coca-Cola Co., The - Registered Shares DL -,25"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2020-10-01T00:00"), hasShares(127.00), //
+                        hasSource("SteuerbehandlungVonDividende08.txt"), //
+                        hasNote("Tr.-Nr.: INDTBK27620CG00000"), //
+                        hasAmount("EUR", 4.68), hasGrossValue("EUR", 4.68), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende08MitSteuerbehandlungVonDividende08()
+    {
+        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Dividende08.txt", "SteuerbehandlungVonDividende08.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US1912161007"), hasWkn("850663"), hasTicker(null), //
+                        hasName("Coca-Cola Co., The - Registered Shares DL -,25"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-10-01T00:00"), hasShares(127.00), //
+                        hasSource("Dividende08.txt; SteuerbehandlungVonDividende08.txt"), //
+                        hasNote("R.-Nr.: CPS-2020-0223111111-0001111 | Tr.-Nr.: INDTBK27620CG00000"), //
+                        hasAmount("EUR", 39.67), hasGrossValue("EUR", 44.35), //
+                        hasForexGrossValue("USD", 52.07), //
+                        hasTaxes("EUR", 4.68), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende08MitSteuerbehandlungVonDividende08WithSecurityInEUR()
+    {
+        Security security = new Security("Coca-Cola Co., The - Registered Shares DL -,25", CurrencyUnit.EUR);
+        security.setIsin("US1912161007");
+        security.setWkn("850663");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende08.txt", "Dividende08.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-10-01T00:00"), hasShares(127.00), //
+                        hasSource("Dividende08.txt; SteuerbehandlungVonDividende08.txt"), //
+                        hasNote("R.-Nr.: CPS-2020-0223111111-0001111 | Tr.-Nr.: INDTBK27620CG00000"), //
+                        hasAmount("EUR", 39.67), hasGrossValue("EUR", 44.35), //
+                        hasTaxes("EUR", 4.68), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende08MitSteuerbehandlungVonDividende07_SourceFilesReversed()
+    {
+        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende08.txt", "Dividende08.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US1912161007"), hasWkn("850663"), hasTicker(null), //
+                        hasName("Coca-Cola Co., The - Registered Shares DL -,25"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-10-01T00:00"), hasShares(127.00), //
+                        hasSource("Dividende08.txt; SteuerbehandlungVonDividende08.txt"), //
+                        hasNote("R.-Nr.: CPS-2020-0223111111-0001111 | Tr.-Nr.: INDTBK27620CG00000"), //
+                        hasAmount("EUR", 39.67), hasGrossValue("EUR", 44.35), //
+                        hasTaxes("EUR", 4.68), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende08MitSteuerbehandlungVonDividende08WithSecurityInEUR_SourceFilesReversed()
+    {
+        Security security = new Security("Coca-Cola Co., The - Registered Shares DL -,25", CurrencyUnit.EUR);
+        security.setIsin("US1912161007");
+        security.setWkn("850663");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende08.txt", "Dividende08.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2020-10-01T00:00"), hasShares(127.00), //
+                        hasSource("Dividende08.txt; SteuerbehandlungVonDividende08.txt"), //
+                        hasNote("R.-Nr.: CPS-2020-0223111111-0001111 | Tr.-Nr.: INDTBK27620CG00000"), //
+                        hasAmount("EUR", 39.67), hasGrossValue("EUR", 44.35), //
+                        hasTaxes("EUR", 4.68), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
 }
