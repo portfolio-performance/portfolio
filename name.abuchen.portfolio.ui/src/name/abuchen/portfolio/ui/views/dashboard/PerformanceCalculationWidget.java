@@ -64,7 +64,8 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
 
     enum CostMethod
     {
-        FIFO("FIFO", true), MOVING_AVERAGE("Moving Average", false);
+        FIFO(Messages.LabelCapitalGainsMethodFIFO, true), MOVING_AVERAGE(Messages.LabelCapitalGainsMethodMovingAverage,
+                        false);
 
         private String label;
         private boolean isFIFO;
@@ -91,7 +92,8 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
     {
         public CostMethodConfig(WidgetDelegate<?> delegate)
         {
-            super(delegate, "Cost Method", CostMethod.class, Dashboard.Config.COST_METHOD, Policy.EXACTLY_ONE);
+            super(delegate, Messages.LabelCapitalGainsMethod, CostMethod.class, Dashboard.Config.COST_METHOD,
+                            Policy.EXACTLY_ONE);
         }
     }
 

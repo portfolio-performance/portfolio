@@ -141,9 +141,9 @@ public class PerformanceView extends AbstractHistoricView
 
             manager.add(new Separator());
 
-            manager.add(new LabelOnly("Cost method"));
+            manager.add(new LabelOnly(Messages.LabelCapitalGainsMethod));
 
-            SimpleAction fifoMethod = new SimpleAction("FIFO", a -> {
+            SimpleAction fifoMethod = new SimpleAction(Messages.LabelCapitalGainsMethodFIFO, a -> {
                 this.useFIFO = true;
                 getPreferenceStore().setValue(CAPITAL_GAIN_METHOD, String.valueOf(useFIFO));
                 reportingPeriodUpdated();
@@ -151,7 +151,7 @@ public class PerformanceView extends AbstractHistoricView
             fifoMethod.setChecked(this.useFIFO);
             manager.add(fifoMethod);
 
-            SimpleAction movingAverageMethod = new SimpleAction("Moving average", a -> {
+            SimpleAction movingAverageMethod = new SimpleAction(Messages.LabelCapitalGainsMethodMovingAverage, a -> {
                 this.useFIFO = false;
                 getPreferenceStore().setValue(CAPITAL_GAIN_METHOD, String.valueOf(useFIFO));
                 reportingPeriodUpdated();
