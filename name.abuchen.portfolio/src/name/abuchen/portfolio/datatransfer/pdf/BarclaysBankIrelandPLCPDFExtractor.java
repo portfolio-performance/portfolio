@@ -19,6 +19,7 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("Barclays Bank Ireland PLC");
+        addBankIdentifier("BAWAG AG Niederlassung Deutschland");
 
         addCreditcardStatementTransaction();
     }

@@ -1,0 +1,114 @@
+```
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+BAWAG AG Niederlassung Deutschland
+Gasstraße 4 c
+BAWAG AG Niederlassung Deutschland | 22792 Hamburg 22761 Hamburg
+Vorname Nachname Produkt ID: 1234567890
+Straße 1
+12345 Ort
+Kontoauszug zu Ihrer Barclays Kreditkarte vom 10. Februar 2025
+Abrechnungszeitraum: 11.01.2025 - 10.02.2025 Alter Saldo: EUR         71,64 -
+Kontonummer: 1234567890 Neuer Saldo: EUR         86,31 -
+IBAN: DE75 2013 0600 0000 0000 00 Kreditrahmen: EUR      4.000,00
+BIC: BARCDEHAXXX Offener Verfügungsrahmen: EUR      3.913,69
+Bitte beachten Sie: Aufgrund der letzten beiden EZB-Leitzinssenkungen senken wir wie in Ziffer 8 unserer AGB
+vereinbart den Zinssatz um 0,50 Prozentpunkte ab Ihrer nächsten Abrechnungsperiode. Ihren neuen Zinssatz werden Sie
+entsprechend in Ihrem März Kontoauszug unter der Sektion "Zinssätze" einsehen können.
+Konto-Saldo und Rückzahlung
+Bezeichnung/Individueller Verwendungszweck Neuer Saldo Rückzahlungsoptionen Nächste Zahlung
+(EUR) (EUR)
+Allgemeine Umsätze         52,99- 100,0 %         52,99
+Ratenkauf: Amazon Marketp... 17.11.24         33,32- 1 offene Raten         33,32
+Gesamt (EUR)         86,31-         86,31
+Wie mit Ihnen vereinbart, ziehen wir zum 10.03.2025 den Betrag in Höhe von EUR 86,31 von Ihrem Konto mit der IBAN
+DE00 0000 0000 0000 0000 00 und BIC BICXXXXX ein.  Dieser Betrag vermindert sich um vorab eingegangene
+Einzahlungen auf Ihrem Konto bei uns.
+Ihre Mandatsreferenz zu dieser Transaktion lautet P200000000000000, unsere Gläubiger-Identifikationsnummer ist
+DE66ZZZ00002739613.
+Ihre Rückzahlungsoptionen können Sie jederzeit per Barclays Privatkunden App oder im Online-Banking einsehen und
+anpassen.
+                   Seite 1 von 3
+BAWAG AG Niederlassung Deutschland | Gasstraße 4 c | 22761 Hamburg | Amtsgericht Hamburg HRB 188720 | Niederlassungsleiter: Tobias Grieß | UID: DE 338324415 |
+Hauptniederlassung: BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postspartasse Aktiengesellschaft, Wiedner Gürtel 11, 1100 Wien | Firmenbuchgericht:
+Handelsgericht Wien | FB-Nummer: 205340x | Vorstand: Anas Abuzaakouk (CEO), Guido Jestädt, David O'Leary, Sat Shah, Enver Sirucic, Andrew Wise | Aufsichtsratvorsitzender:
+Egbert Fleischer.
+Umsatzübersicht
+Beleg- Buchungs-/ Beschreibung Karte Betrag (EUR)
+datum Valutadatum
+Alter Saldo vom 10. Januar 2025             71,64-
+Hauptkarte/n, Vorname Nachname
+21.01.2025 22.01.2025 PAYPAL *DOCMORRIS 59BA 00000000000   NL Visa             52,99-
+Sonstige Umsätze
+07.02.2025 07.02.2025 Per Lastschrift dankend erhalten             38,32+
+P200000000000000
+DE66ZZZ00002739613
+Neuer Saldo am 10. Februar 2025             86,31-
+Hauptkarte/n, Vorname Nachname
+Umsätze Visa Karten-Nr. 123456XXXXXX7890  EUR            52,99
+Zinssätze
+Allgemeine Umsätze
+Allgemeine Umsätze sind alle Umsätze, für deren Rückzahlung Sie keinen Ratenkauf eingerichtet haben. Für diese
+allgemeinen Umsätze gelten folgende Sollzinssätze:
+Sollzinsen bei Einkäufen und Überweisungen (einschl. möglicher Gebühren) 20,64 % p.a.
+Sollzinsen bei Barabhebungen (einschl. möglicher Gebühren) 20,64 % p.a.
+Sofern Sie alle allgemeinen Umsätze bis zum 10.03.2025 vollständig zurückgezahlt haben, fallen die oben genannten
+Zinsen nicht an. Bei Teilzahlung werden Zinsen taggenau ab dem Buchungs-/Valutadatum berechnet.
+Ratenkäufe
+Für Ihre nachfolgend aufgeführten Ratenkäufe gelten ab Einrichtung bis zur Auflösung oder Beendigung des jeweiligen
+Ratenkaufs folgende Sollzinssätze:
+Ratenkauf: " SchuheLampen " - aufgelöst seit 10.12.2024  0,00 % p.a.
+Ratenkauf: " HORNBACH 28.09.24 " - aufgelöst seit 10.12.2024  0,00 % p.a.
+Ratenkauf: " Amazon Marketp... 17.11.24 " - aufgelöst seit 10.02.2025  0,00 % p.a.
+                   Seite 2 von 3
+BAWAG AG Niederlassung Deutschland | Gasstraße 4 c | 22761 Hamburg | Amtsgericht Hamburg HRB 188720 | Niederlassungsleiter: Tobias Grieß | UID: DE 338324415 |
+Hauptniederlassung: BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postspartasse Aktiengesellschaft, Wiedner Gürtel 11, 1100 Wien | Firmenbuchgericht:
+Handelsgericht Wien | FB-Nummer: 205340x | Vorstand: Anas Abuzaakouk (CEO), Guido Jestädt, David O'Leary, Sat Shah, Enver Sirucic, Andrew Wise | Aufsichtsratvorsitzender:
+Egbert Fleischer.
+Der Barclays Ratenkauf
+Für einzelne Umsätze ab 95 Euro bieten wir Ihnen auch den Barclays Ratenkauf an. Diesen richten Sie ganz einfach per
+App oder im Online-Banking zu einem vergünstigten Sollzinssatz ein. Die Gesamtkosten werden Ihnen vor der
+Aktivierung transparent ausgewiesen. Bitte beachten Sie, dass Ihr Konto bei uns für die Nutzung eines Barclays
+Ratenkaufs nicht im Zahlungsverzug sein darf. Mehr Infos unter: barclays.de/ratenkauf
+Wichtige Hinweise
+Reklamation
+Bei Unstimmigkeiten Ihrer Umsätze nehmen Sie bitte direkt Kontakt zu Ihrem Händler auf. Wenn Sie keine Einigung
+erzielen konnten, sind wir für Sie da und versuchen in Ihrem Namen eine Klärung herbeizuführen.
+Informationen zum Reklamationsprozess finden Sie unter: barclays.de/hilfe-und-kontakt/reklamation
+Reklamationen müssen innerhalb von 6 Wochen nach Zugang des Kontoauszuges an Barclays abgesendet werden. Wird
+diese Frist nicht eingehalten, gelten die aufgeführten Umsätze als akzeptiert.
+Betrug
+Wenn Sie ungewöhnliche Bewegungen auf Ihrem Konto bemerken, die Sie nicht selbst getätigt haben, informieren Sie
+uns umgehend über unsere 24h-Notfall-Hotline: +49 40 890 99-900
+Einlagensicherung
+Guthaben auf Ihrem Konto sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig.
+Nähere Informationen finden Sie im "Informationsbogen für Einleger" unter: barclays.de/einlagensicherung
+Karten-PIN Management
+Mit der Barclays Privatkunden App und im Online-Banking können Sie Ihre Karten-PIN jederzeit sicher abrufen, ändern
+und bei Bedarf entsperren. Damit die neue Karten-PIN nach einer Änderung aktiviert wird, muss zunächst immer ein
+Umsatz an einem Online-Terminal getätigt werden, z. B. durch eine Bargeldabhebung an einem Geldautomaten. Bitte
+beachten Sie dabei den Mindestbetrag von 50 € und das Tageslimit von 500 €. Bargeldabhebungen in Geschäften sind
+mit der Barclays Kreditkarte nicht möglich. Mehr Details unter:  barclays.de/karten-pin
+Aktuelles
+Zeit für ein wichtiges Update: Bitte prüfen Sie die Angaben zu Ihrer Lebenssituation und passen Sie diese bei Bedarf in
+der Barclays Privatkunden App oder im Online-Banking an.
+barclays.de/aktuelle-angaben
+       1.  In der App/ im Online-Banking auf "Einstellungen" klicken
+       2.  "Persönliche Daten" auswählen
+       3.  "Aktuelle Angaben" wählen
+Die Barclays Privatkunden App - einfach, schnell und sicher
+Mit der Barclays Privatkunden App können Sie mit wenigen Klicks Ihren Kontostand abrufen, Umsätze checken,
+Kontoauszüge überprüfen und vieles mehr. Für einzelne Ausgaben oder die ganze Monatsrechnung ab 95 Euro können
+Sie per App ganz einfach Ratenkäufe einrichten - sogar noch bis zu 8 Wochen nachträglich. Einfach Höhe der
+Monatsrate auswählen, Namen vergeben, fertig. Mehr erfahren Sie unter: barclays.de/ratenkauf
+Vielen Dank, dass Sie Ihre Barclays Kreditkarten eingesetzt haben!
+                   Seite 3 von 3
+BAWAG AG Niederlassung Deutschland | Gasstraße 4 c | 22761 Hamburg | Amtsgericht Hamburg HRB 188720 | Niederlassungsleiter: Tobias Grieß | UID: DE 338324415 |
+Hauptniederlassung: BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postspartasse Aktiengesellschaft, Wiedner Gürtel 11, 1100 Wien | Firmenbuchgericht:
+Handelsgericht Wien | FB-Nummer: 205340x | Vorstand: Anas Abuzaakouk (CEO), Guido Jestädt, David O'Leary, Sat Shah, Enver Sirucic, Andrew Wise | Aufsichtsratvorsitzender:
+Egbert Fleischer.
+
+
+```

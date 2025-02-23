@@ -177,4 +177,30 @@ public class BarclaysBankIrelandPLCPDFExtractorTest
                         hasNote(null), //
                         hasTaxes("EUR", 35.10 + 1.93), hasFees("EUR", 0.00))));
     }
+
+    @Test
+    public void testKreditKontoauszug04()
+    {
+        BarclaysBankIrelandPLCPDFExtractor extractor = new BarclaysBankIrelandPLCPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KreditKontoauszug04.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+       assertThat(results, hasItem(deposit(hasDate("2025-02-07"), hasAmount("EUR", 38.32), //
+                       hasSource("KreditKontoauszug04.txt"), hasNote("Per Lastschrift dankend erhalten"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-01-22"), hasAmount("EUR", 52.99), //
+                        hasSource("KreditKontoauszug04.txt"), hasNote("PAYPAL *DOCMORRIS 59BA 00000000000"))));
+    }
 }
