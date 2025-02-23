@@ -37,6 +37,18 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.74.1" date="2025-02-23">
+      <description>
+        <ul>
+          <li>New: Support for the comma as a decimal separator on the Spanish keyboard.</li>
+          <li>Improvements to the PDF importers for Arkea Direct Bank, Targo Bank, FlatEx, C24 Bank, Baader Bank, Bondora Capital, DAB, Trade Republic, Scalable Capital, comdirect, Postfinance, WIR Bank, BigBank.</li>
+          <li>Improvement: Securities events from today are displayed in the "Future Events" period (as the day is not over yet).</li>
+          <li xml:lang="de">Neu: Unterstützung für das Komma als Dezimaltrennzeichen auf der spanischen Tastatur.</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Arkea Direct Bank, Targo Bank, FlatEx, C24 Bank, Baader Bank, Bondora Capital, DAB, Trade Republic, Scalable Capital, comdirect, Postfinance, WIR Bank, BigBank.</li>
+          <li xml:lang="de">Verbesserung: Wertpapier-Ereignisse vom heutigen Tag werden im Zeitraum "Ereignisse in der Zukunft" angezeigt (der heutige Tag ist noch nicht vorbei)</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.74.0" date="2025-01-26">
       <description>
         <ul>
