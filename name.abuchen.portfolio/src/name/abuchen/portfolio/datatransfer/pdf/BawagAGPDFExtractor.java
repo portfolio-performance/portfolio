@@ -12,13 +12,13 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
-public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
+public class BawagAGPDFExtractor extends AbstractPDFExtractor
 {
-    public BarclaysBankIrelandPLCPDFExtractor(Client client)
+    public BawagAGPDFExtractor(Client client)
     {
         super(client);
 
-        addBankIdentifier("Barclays Bank Ireland PLC");
+        addBankIdentifier("BAWAG AG Niederlassung Deutschland");
 
         addCreditcardStatementTransaction();
     }
@@ -26,7 +26,7 @@ public class BarclaysBankIrelandPLCPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Barclays Bank Ireland PLC";
+        return "BAWAG AG";
     }
 
     private void addCreditcardStatementTransaction()
