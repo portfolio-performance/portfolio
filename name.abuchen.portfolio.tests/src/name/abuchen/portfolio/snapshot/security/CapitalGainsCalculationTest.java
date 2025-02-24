@@ -2,7 +2,6 @@ package name.abuchen.portfolio.snapshot.security;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-// import static org.hamcrest.Matchers.is;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

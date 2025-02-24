@@ -94,7 +94,7 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                 break;
             case TRANSFER_IN:
             case TRANSFER_OUT:
-                // ignore -> handled via TRANSFER_IN
+                // ignore
                 break;
             default:
                 throw new UnsupportedOperationException();
