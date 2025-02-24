@@ -27,6 +27,11 @@ public final class MoneyColorLabelProvider extends ColumnLabelProvider
     public Color getForeground(Object element)
     {
         Money money = valueProvider.apply(element);
+        return MoneyColorLabelProvider.getForeground(money);
+    }
+
+    public static Color getForeground(Money money)
+    {
         if (money == null || money.isZero())
             return null;
 

@@ -71,6 +71,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
@@ -290,9 +291,10 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
             }
 
             @Override
-            public Color getForeground(Object element)
+            public Color getForeground(Object e)
             {
-                return colorFor((AccountTransaction) element);
+                Money balance = transaction2balance.get(e);
+                return MoneyColorLabelProvider.getForeground(balance);
             }
         });
 
