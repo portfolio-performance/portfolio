@@ -22,6 +22,7 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
                     Messages.LabelNoCurrencyDescription, null);
     public static final String EUR = "EUR"; //$NON-NLS-1$
     public static final String USD = "USD"; //$NON-NLS-1$
+    public static final String MXN = "MXN"; //$NON-NLS-1$
 
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.money.currencies"; //$NON-NLS-1$
     private static final ResourceBundle BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
