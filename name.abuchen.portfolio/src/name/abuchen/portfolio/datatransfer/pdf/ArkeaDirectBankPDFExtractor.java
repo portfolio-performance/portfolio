@@ -34,6 +34,52 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
+        addTransactionFromAvisOperation();
+        addTransactionFromOST();
+    }
+
+    /**
+     * Allow to import BUY transaction at a preferential price of a security
+     * from an OST PDF file.
+     */
+    private void addTransactionFromOST()
+    {
+        final DocumentType type = new DocumentType("(Souscription avec droits|Souscription . titre r.ductible)");
+        this.addDocumentTyp(type);
+
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+
+        // Block firstRelevantLine = new Block("^.*Souscription avec droits$");
+        Block firstRelevantLine = new Block("^RESULTAT D'OST.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+                        .subject(() -> {
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+                        // @formatter:off
+                        // Au 8 octobre 2021
+                        // Nous vous informons que  nous avons procédé à la souscription de 16 titre(s) VEOLIA ENVIRON. (FR0000124141)
+                        // montant net de  : - 363,20 EUR
+                        // @formatter:on
+                        .section("shares", "name", "isin", "amount", "currency", "day", "month", "year") //
+                        .match("^Au (?<day>[\\d]{1,2}) (?<month>[A-Za-z]+) (?<year>[\\d]{4}).*$") //
+                        .match("^.*la souscription de (?<shares>[\\,\\d\\s]+) titre\\(s\\) (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\).*$") //
+                        .match("^montant net.* (?<amount>[\\,\\d\\s]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setDate(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                        }).wrap(BuySellEntryItem::new);
+    }
+
+    private void addTransactionFromAvisOperation()
+    {
         var securityRange = new Block("^.* (ACTION|TRACKER) : .* \\([A-Z]{2}[A-Z0-9]{9}[0-9]\\)$") //
                         .asRange(section -> section //
                                         // @formatter:off
