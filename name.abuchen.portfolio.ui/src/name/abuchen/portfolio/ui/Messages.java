@@ -298,6 +298,9 @@ public class Messages extends NLS
     public static String ColumnQuoteRangeWidget_Description;
     public static String ColumnQuoteRangeWidget_Option;
     public static String ColumnRealizedCapitalGains;
+    public static String ColumnRealizedCapitalGains_Description;
+    public static String ColumnRealizedCapitalGainsMA_Description;
+    public static String ColumnCapitalGainsGeneric_Description;
     public static String ColumnRebalanceAmount;
     public static String ColumnRebalancingIndicatorAbsoluteThreshold;
     public static String ColumnRebalancingIndicatorBarLength;
@@ -337,6 +340,8 @@ public class Messages extends NLS
     public static String ColumnTTWRORpa;
     public static String ColumnTTWRORpa_Option;
     public static String ColumnUnrealizedCapitalGains;
+    public static String ColumnUnrealizedCapitalGains_Description;
+    public static String ColumnUnrealizedCapitalGainsMA_Description;
     public static String ColumnUpdatedQuote;
     public static String ColumnUpdatedShares;
     public static String ColumnUsedForRebalancing;
@@ -563,6 +568,10 @@ public class Messages extends NLS
     public static String LabelBiggerSize;
     public static String LabelBlueGrayOrange;
     public static String LabelCapitalGains;
+    public static String LabelCapitalGainsMethod;
+    public static String LabelCapitalGainsMethodFIFO;
+    public static String LabelCapitalGainsMethodMovingAverage;
+    public static String LabelCapitalGainsMethodMovingAverageAbbr;
     public static String LabelCategoryOtherMovements;
     public static String LabelChartDetailChartDevelopment;
     public static String LabelChartDetailChartDevelopmentClosing;
