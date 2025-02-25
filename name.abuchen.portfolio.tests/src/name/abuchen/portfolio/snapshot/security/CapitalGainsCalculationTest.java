@@ -90,24 +90,28 @@ public class CapitalGainsCalculationTest
         SecurityPerformanceRecord record = snapshot.getRecord(security).orElseThrow(IllegalArgumentException::new);
 
 
-        // expected:
+        // expected Realized Gains for FIFO :
         // 531.5 - 3149.20 * 15/109 = 98,1238532110092
         Money expectedGains = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(98.12));
         CapitalGainsRecord realizedCapitalGains = record.getRealizedCapitalGains();
         assertThat(realizedCapitalGains.getCapitalGains(), is(expectedGains));
 
-        // same for Moving average
-        CapitalGainsRecord realizedCapitalGainsMA = record.getRealizedCapitalGainsMA();
-        assertThat(realizedCapitalGainsMA.getCapitalGains(), is(expectedGains));
+        // expected Realized Gains for moving average is identical because it is
+        // only one buy
+        CapitalGainsRecord realizedCapitalGainsMovingAvg = record.getRealizedCapitalGainsMovingAvg();
+        assertThat(realizedCapitalGainsMovingAvg.getCapitalGains(), is(expectedGains));
 
-        // 100*178- [3149.2*(109-15)/109+1684.92+959.3] = 12439,956146789
-        Money expectedGains2 = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12439.96));
+        // expected Unrealized Gains for FIFO :
+        // 100 * 178 - [3149.2 * (109-15) / 109 + 1684.92 + 959.3] =
+        // 12439,956146789
+        Money expectedUnrealizedGains = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12439.96));
         CapitalGainsRecord unRealizedCapitalGains = record.getUnrealizedCapitalGains();
-        assertThat(unRealizedCapitalGains.getCapitalGains(), is(expectedGains2));
+        assertThat(unRealizedCapitalGains.getCapitalGains(), is(expectedUnrealizedGains));
 
-        // expected moving average is identical because it is only one buy
-        CapitalGainsRecord unRealizedCapitalGainsMA = record.getUnrealizedCapitalGainsMA();
-        assertThat(unRealizedCapitalGainsMA.getCapitalGains(), is(expectedGains2));
+        // expected Unrealized Gains for moving average is identical because it
+        // is only one buy
+        CapitalGainsRecord unRealizedCapitalGainsMovingAvg = record.getUnrealizedCapitalGainsMovingAvg();
+        assertThat(unRealizedCapitalGainsMovingAvg.getCapitalGains(), is(expectedUnrealizedGains));
 
     }
 
@@ -129,30 +133,30 @@ public class CapitalGainsCalculationTest
                         interval);
         SecurityPerformanceRecord record = snapshot.getRecord(security).orElseThrow(IllegalArgumentException::new);
 
-        // expected for FIFO :
+        // expected Realized Gains for FIFO :
         // 531.5 - 3149.20 * 15/109 = 98,1238532110092
         Money expectedGains = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(98.12));
         CapitalGainsRecord realizedCapitalGains = record.getRealizedCapitalGains();
         assertThat(realizedCapitalGains.getCapitalGains(), is(expectedGains));
 
-        // expected for for Moving average
-        // 531.5 - (3149.20 + 1684.92) * 15/(109+52) = 81,116149068323
-        Money expectedGainsMA = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(81.12));
-        CapitalGainsRecord realizedCapitalGainsMA = record.getRealizedCapitalGainsMA();
-        assertThat(realizedCapitalGainsMA.getCapitalGains(), is(expectedGainsMA));
+        // expected Realized Gains for Moving average
+        // 531.5 - (3149.20 + 1684.92) * 15/(109 + 52) = 81,116149068323
+        Money expectedGainsMovingAvg = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(81.12));
+        CapitalGainsRecord realizedCapitalGainsMovingAvg = record.getRealizedCapitalGainsMovingAvg();
+        assertThat(realizedCapitalGainsMovingAvg.getCapitalGains(), is(expectedGainsMovingAvg));
 
-        // expected for FIFO :
-        // 146*100 - [3149,20 + 1684,92 - (3149,20 * 15/109)]=
+        // expected Unrealized Gains for FIFO :
+        // 146 * 100 - [3149,20 + 1684,92 - (3149,20 * 15/109)] =
         // 10199,256146789
-        Money expectedGainsF = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10199.26));
+        Money expectedUnrealizedGains = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10199.26));
         CapitalGainsRecord unRealizedCapitalGainsFiFO = record.getUnrealizedCapitalGains();
-        assertThat(unRealizedCapitalGainsFiFO.getCapitalGains(), is(expectedGainsF));
+        assertThat(unRealizedCapitalGainsFiFO.getCapitalGains(), is(expectedUnrealizedGains));
 
-        // expected for for Moving average
-        // 146*100 - (3149.20 + 1684.92)*146/(109+52) = 10216,2638509317
-        Money expectedGainsMA2 = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10216.26));
-        CapitalGainsRecord unRealizedCapitalGainsMA = record.getUnrealizedCapitalGainsMA();
-        assertThat(unRealizedCapitalGainsMA.getCapitalGains(), is(expectedGainsMA2));
+        // expected Unrealized Gains for Moving average
+        // 146 * 100 - (3149.20 + 1684.92) * 146 / (109 + 52) = 10216,2638509317
+        Money expectedUnrealizedGainsMovingAvg = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10216.26));
+        CapitalGainsRecord unRealizedCapitalGainsMovingAvg = record.getUnrealizedCapitalGainsMovingAvg();
+        assertThat(unRealizedCapitalGainsMovingAvg.getCapitalGains(), is(expectedUnrealizedGainsMovingAvg));
     }
 
 }

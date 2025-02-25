@@ -58,15 +58,15 @@ public class SecurityPerformanceSnapshotComparator
             assertThat(left.getUnrealizedCapitalGains().getForexCaptialGains(),
                             is(right.getUnrealizedCapitalGains().get().getForexCaptialGains()));
 
-            assertThat(left.getRealizedCapitalGainsMA().getCapitalGains(),
-                            is(right.getRealizedCapitalGainsMA().get().getCapitalGains()));
-            assertThat(left.getRealizedCapitalGainsMA().getForexCaptialGains(),
-                            is(right.getRealizedCapitalGainsMA().get().getForexCaptialGains()));
+            assertThat(left.getRealizedCapitalGainsMovingAvg().getCapitalGains(),
+                            is(right.getRealizedCapitalGainsMovingAvg().get().getCapitalGains()));
+            assertThat(left.getRealizedCapitalGainsMovingAvg().getForexCaptialGains(),
+                            is(right.getRealizedCapitalGainsMovingAvg().get().getForexCaptialGains()));
 
-            assertThat(left.getUnrealizedCapitalGainsMA().getCapitalGains(),
-                            is(right.getUnrealizedCapitalGainsMA().get().getCapitalGains()));
-            assertThat(left.getUnrealizedCapitalGainsMA().getForexCaptialGains(),
-                            is(right.getUnrealizedCapitalGainsMA().get().getForexCaptialGains()));
+            assertThat(left.getUnrealizedCapitalGainsMovingAvg().getCapitalGains(),
+                            is(right.getUnrealizedCapitalGainsMovingAvg().get().getCapitalGains()));
+            assertThat(left.getUnrealizedCapitalGainsMovingAvg().getForexCaptialGains(),
+                            is(right.getUnrealizedCapitalGainsMovingAvg().get().getForexCaptialGains()));
 
             assertCosts(left, right);
 

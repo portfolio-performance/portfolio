@@ -1381,18 +1381,16 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setLabelProvider(
                         new RowElementLabelProvider(
                                         new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
-                                                        .getRealizedCapitalGainsMA().get().getCapitalGains(),
+                                                        .getRealizedCapitalGainsMovingAvg().get().getCapitalGains(),
                                                         getClient()),
                                         aggregate -> Values.Money.format(
                                                         aggregate.sum(getClient().getBaseCurrency(),
-                                                                        r -> r.getRealizedCapitalGainsMA().get()
+                                                                        r -> r.getRealizedCapitalGainsMovingAvg().get()
                                                                                         .getCapitalGains()),
                                                         getClient().getBaseCurrency())));
-        // column.setToolTipProvider(element -> ((RowElement) element)
-        // .explain(LazySecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
-                        .getRealizedCapitalGainsMA().get().getCapitalGains()));
+                        .getRealizedCapitalGainsMovingAvg().get().getCapitalGains()));
         recordColumns.addColumn(column);
 
         column = new Column("cgforexMA", //$NON-NLS-1$
@@ -1403,17 +1401,15 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setMenuLabel(Messages.ColumnCurrencyGains + " / " + Messages.ColumnRealizedCapitalGains); //$NON-NLS-1$
         column.setLabelProvider(new RowElementLabelProvider(
                         new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
-                                        .getRealizedCapitalGainsMA().get().getForexCaptialGains(), getClient()),
+                                        .getRealizedCapitalGainsMovingAvg().get().getForexCaptialGains(), getClient()),
                         aggregate -> Values.Money.format(
                                         aggregate.sum(getClient().getBaseCurrency(),
-                                                        r -> r.getRealizedCapitalGainsMA().get()
+                                                        r -> r.getRealizedCapitalGainsMovingAvg().get()
                                                                         .getForexCaptialGains()),
                                         getClient().getBaseCurrency())));
-        // column.setToolTipProvider(element -> ((RowElement) element)
-        // .explain(LazySecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS_FOREX));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
-                        .getRealizedCapitalGainsMA().get().getCapitalGains()));
+                        .getRealizedCapitalGainsMovingAvg().get().getCapitalGains()));
         recordColumns.addColumn(column);
 
         column = new Column("ucgMA", //$NON-NLS-1$
@@ -1428,18 +1424,17 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setLabelProvider(
                         new RowElementLabelProvider(
                                         new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
-                                                        .getUnrealizedCapitalGainsMA().get().getCapitalGains(),
+                                                        .getUnrealizedCapitalGainsMovingAvg().get().getCapitalGains(),
                                                         getClient()),
                                         aggregate -> Values.Money.format(
                                                         aggregate.sum(getClient().getBaseCurrency(),
-                                                                        r -> r.getUnrealizedCapitalGainsMA().get()
+                                                                        r -> r.getUnrealizedCapitalGainsMovingAvg()
+                                                                                        .get()
                                                                                         .getCapitalGains()),
                                                         getClient().getBaseCurrency())));
-        // column.setToolTipProvider(element -> ((RowElement) element)
-        // .explain(LazySecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
-                        .getUnrealizedCapitalGainsMA().get().getCapitalGains()));
+                        .getUnrealizedCapitalGainsMovingAvg().get().getCapitalGains()));
         recordColumns.addColumn(column);
 
         column = new Column("ucgforexMA", //$NON-NLS-1$
@@ -1451,18 +1446,17 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
         column.setLabelProvider(new RowElementLabelProvider(
                         new MoneyColorLabelProvider(
                                         element -> ((LazySecurityPerformanceRecord) element)
-                                                        .getUnrealizedCapitalGainsMA().get().getForexCaptialGains(),
+                                                        .getUnrealizedCapitalGainsMovingAvg().get()
+                                                        .getForexCaptialGains(),
                                         getClient()),
                         aggregate -> Values.Money.format(
                                         aggregate.sum(getClient().getBaseCurrency(),
-                                                        r -> r.getUnrealizedCapitalGainsMA().get()
+                                                        r -> r.getUnrealizedCapitalGainsMovingAvg().get()
                                                                         .getForexCaptialGains()),
                                         getClient().getBaseCurrency())));
-        // column.setToolTipProvider(element -> ((RowElement) element)
-        // .explain(LazySecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS_FOREX));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
-                        .getUnrealizedCapitalGainsMA().get().getCapitalGains()));
+                        .getUnrealizedCapitalGainsMovingAvg().get().getCapitalGains()));
         recordColumns.addColumn(column);
     }
 

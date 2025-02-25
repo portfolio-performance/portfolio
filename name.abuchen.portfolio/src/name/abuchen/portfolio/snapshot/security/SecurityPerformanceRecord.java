@@ -175,8 +175,8 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
 
     private CapitalGainsRecord realizedCapitalGains;
     private CapitalGainsRecord unrealizedCapitalGains;
-    private CapitalGainsRecord realizedCapitalGainsMA;
-    private CapitalGainsRecord unrealizedCapitalGainsMA;
+    private CapitalGainsRecord realizedCapitalGainsMovingAvg;
+    private CapitalGainsRecord unrealizedCapitalGainsMovingAvg;
 
     /* package */ SecurityPerformanceRecord(Client client, Security security, CurrencyConverter converter,
                     Interval interval)
@@ -364,14 +364,14 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
         return unrealizedCapitalGains;
     }
 
-    public CapitalGainsRecord getRealizedCapitalGainsMA()
+    public CapitalGainsRecord getRealizedCapitalGainsMovingAvg()
     {
-        return realizedCapitalGainsMA;
+        return realizedCapitalGainsMovingAvg;
     }
 
-    public CapitalGainsRecord getUnrealizedCapitalGainsMA()
+    public CapitalGainsRecord getUnrealizedCapitalGainsMovingAvg()
     {
-        return unrealizedCapitalGainsMA;
+        return unrealizedCapitalGainsMovingAvg;
     }
 
     @Override
@@ -561,11 +561,11 @@ public final class SecurityPerformanceRecord extends BaseSecurityPerformanceReco
         this.realizedCapitalGains = calculation.getRealizedCapitalGains();
         this.unrealizedCapitalGains = calculation.getUnrealizedCapitalGains();
 
-        CapitalGainsCalculationMovingAverage calculationMA = Calculation
+        CapitalGainsCalculationMovingAverage calculationMovingAvg = Calculation
                         .perform(CapitalGainsCalculationMovingAverage.class,
                         converter, security, lineItems);
 
-        this.realizedCapitalGainsMA = calculationMA.getRealizedCapitalGains();
-        this.unrealizedCapitalGainsMA = calculationMA.getUnrealizedCapitalGains();
+        this.realizedCapitalGainsMovingAvg = calculationMovingAvg.getRealizedCapitalGains();
+        this.unrealizedCapitalGainsMovingAvg = calculationMovingAvg.getUnrealizedCapitalGains();
     }
 }

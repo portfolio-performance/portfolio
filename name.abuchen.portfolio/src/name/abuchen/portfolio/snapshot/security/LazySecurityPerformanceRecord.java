@@ -223,13 +223,14 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     private final LazyValue<CapitalGainsRecord> unrealizedCapitalGains = new LazyValue<>(
                     () -> capitalGains.get().getUnrealizedCapitalGains());
 
-    private final LazyValue<CapitalGainsCalculationMovingAverage> capitalGainsMA = new LazyValue<>(() -> Calculation
+    private final LazyValue<CapitalGainsCalculationMovingAverage> capitalGainsMovingAvg = new LazyValue<>(
+                    () -> Calculation
                     .perform(CapitalGainsCalculationMovingAverage.class, converter, security, lineItems));
 
-    private final LazyValue<CapitalGainsRecord> realizedCapitalGainsMA = new LazyValue<>(
-                    () -> capitalGainsMA.get().getRealizedCapitalGains());
-    private final LazyValue<CapitalGainsRecord> unrealizedCapitalGainsMA = new LazyValue<>(
-                    () -> capitalGainsMA.get().getUnrealizedCapitalGains());
+    private final LazyValue<CapitalGainsRecord> realizedCapitalGainsMovingAvg = new LazyValue<>(
+                    () -> capitalGainsMovingAvg.get().getRealizedCapitalGains());
+    private final LazyValue<CapitalGainsRecord> unrealizedCapitalGainsMovingAvg = new LazyValue<>(
+                    () -> capitalGainsMovingAvg.get().getUnrealizedCapitalGains());
 
     /* package */ LazySecurityPerformanceRecord(Client client, Security security, CurrencyConverter converter,
                     Interval interval)
@@ -415,14 +416,14 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         return unrealizedCapitalGains;
     }
 
-    public LazyValue<CapitalGainsRecord> getRealizedCapitalGainsMA()
+    public LazyValue<CapitalGainsRecord> getRealizedCapitalGainsMovingAvg()
     {
-        return realizedCapitalGainsMA;
+        return realizedCapitalGainsMovingAvg;
     }
 
-    public LazyValue<CapitalGainsRecord> getUnrealizedCapitalGainsMA()
+    public LazyValue<CapitalGainsRecord> getUnrealizedCapitalGainsMovingAvg()
     {
-        return unrealizedCapitalGainsMA;
+        return unrealizedCapitalGainsMovingAvg;
     }
     @Override
     public <T> T adapt(Class<T> type)

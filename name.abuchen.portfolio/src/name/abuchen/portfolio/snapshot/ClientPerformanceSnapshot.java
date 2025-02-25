@@ -393,12 +393,12 @@ public class ClientPerformanceSnapshot
                         snapshotStart, snapshotEnd, SecurityPerformanceIndicator.CapitalGains.class);
 
         Category realizedCapitalGains = categories.get(CategoryType.REALIZED_CAPITAL_GAINS);
-        addCapitalGains(realizedCapitalGains, securityPerformance, record -> record.getRealizedCapitalGainsMA());
+        addCapitalGains(realizedCapitalGains, securityPerformance, record -> record.getRealizedCapitalGainsMovingAvg());
 
         // create position for unrealized capital gains
 
         Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
-        addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGainsMA());
+        addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGainsMovingAvg());
     }
 
     private void addCapitalGains(Category category, SecurityPerformanceSnapshot securityPerformance,
