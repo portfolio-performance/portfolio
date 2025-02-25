@@ -54,7 +54,18 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
         {
             case BUY, DELIVERY_INBOUND:
                 movingRelativeNetCost += netAmount;
-                movingRelativeNetCostFOREX += t.getGrossValue().getAmount();
+                if (t.getGrossValue().getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                {
+                    movingRelativeNetCostFOREX += t.getGrossValue().getAmount();
+                }
+                else
+                {
+                    CurrencyConverter convert2forex = converter.with(t.getSecurity().getCurrencyCode());
+                    Money forex = convert2forex.convert(t.getDateTime(),
+                                    Money.of(t.getGrossValue().getCurrencyCode(), t.getGrossValue().getAmount()));
+
+                    movingRelativeNetCostFOREX += forex.getAmount();
+                }
                 heldShares += t.getShares();
                 break;
 
@@ -77,6 +88,12 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                     long gainFOREX = 0L;
                     if (!termCurrency.equals(t.getSecurity().getCurrencyCode()))
                     {
+                        // calculate currency gains (if the security is
+                        // traded in forex) by converting the start value to
+                        // forex and converting it back with the exchange
+                        // rate at the end of the period (equivalent to
+                        // holding the money as cash in forex currency)
+
                         Money forex = Money.of(t.getSecurity().getCurrencyCode(),
                                         Math.round(movingRelativeNetCostFOREX / (double) heldShares * sold));
                         Money back = forex.with(converter.at(t.getDateTime()));
