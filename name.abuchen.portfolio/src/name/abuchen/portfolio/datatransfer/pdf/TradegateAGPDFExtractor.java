@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -26,6 +27,8 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendeTransaction();
+        addAdvanceTaxTransaction();
+        addTaxAdjustmentTransaction();
     }
 
     @Override
@@ -36,7 +39,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapierabrechnung");
+        final DocumentType type = new DocumentType("Wertpapierabrechnung");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -119,7 +122,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Ertragsgutschrift");
+        final DocumentType type = new DocumentType("Ertragsgutschrift");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -166,7 +169,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Ausmachender Betrag 7,16 EUR
                         // @formatter:on
-                        .section("currency", "amount") //
+                        .section("amount", "currency") //
                         .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -202,6 +205,141 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addAdvanceTaxTransaction()
+    {
+        final DocumentType type = new DocumentType("Vorabpauschale");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^.*Kundennummer.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Wertpapier PFI ETFs-EO Sh.Mat.UC.ETF Registered Shares EUR Acc.o.N.
+                        // ISIN IE00BVZ6SP04
+                        // WKN A14PHG
+                        // Vorabpauschale 1,5871303 EUR pro Stück
+                        // @formatter:on
+                        .section("name", "isin", "wkn", "currency") //
+                        .match("^Wertpapier (?<name>.*)$") //
+                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .match("^WKN (?<wkn>[A-Z0-9]{6})$") //
+                        .match("^Vorabpauschale [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // Nominal/Stück 220 Stück
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^Nominal\\/St.ck (?<shares>[\\.,\\d]+) St.ck$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Ex-Datum 02.01.2025
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Ex\\-Datum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Ausmachender Betrag 0,00 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^Ausmachender Betrag (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // xtmJChhUdfJIJPk 9 d Order-/Ref.nr. 11522032
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>Order\\-\\/Ref\\.nr\\. .*)$")
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(t -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                            return item;
+                        });
+    }
+
+    private void addTaxAdjustmentTransaction()
+    {
+        final DocumentType type = new DocumentType("Durch steuerliche Verrechnungen");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^.*Kundennummer.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return accountTransaction;
+                        })
+
+                        // Is type --> "Belastung" change from TAX_REFUND to TAXES
+                        .section("type").optional() //
+                        .match("^(?<type>(Gutgeschriebener Betrag|Belastung)) (\\-)?[\\.,\\d]+$") //
+                        .assign((t, v) -> {
+                            if ("Belastung".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.TAXES);
+                        })
+
+                        // @formatter:off
+                        // Durch steuerlicheVerrechnungen für IhrDepot 00400731.020wurde für denZeitraumvom13.01.2025bis 14.01.2025
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Durch steuerliche.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Gutgeschriebener Betrag 0,31
+                        // Belastung -0,44
+                        // @formatter:on
+                        .section("amount") //
+                        .match("^(Gutgeschriebener Betrag|Belastung) (\\-)?(?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode("EUR");
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // xtmJChhUdfJIJPk 9 d Order-/Ref.nr. 11522032
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>Order\\-\\/Ref\\.nr\\. .*)$")
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        // @formatter:off
+                        // Durch steuerlicheVerrechnungen für IhrDepot 00400731.020wurde für denZeitraumvom13.01.2025bis 14.01.2025
+                        // @formatter:on
+                        .section("note1", "note2").optional() //
+                        .match("^.*Zeitraum([\\s])?vom([\\s])?(?<note1>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})([\\s])?bis (?<note2>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note1") + " - " + v.get("note2"), " | ")))
+
+                        .wrap(TransactionItem::new);
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
