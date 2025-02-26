@@ -641,17 +641,17 @@ public class TradeRepublicPDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("LU1681038243"), hasWkn(null), hasTicker(null), //
-                        hasName("AIS-Amundi NASDAQ-100 Namens-Anteile C Cap.EUR o.N."), //
+                        hasIsin("AT0000A0E9W5"), hasWkn(null), hasTicker(null), //
+                        hasName("Kontron"), //
                         hasCurrencyCode("EUR"))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2024-05-02T00:00"), hasShares(0.016033), //
+                        hasDate("2024-05-27T08:15"), hasShares(23.00), //
                         hasSource("Kauf15.txt"), //
-                        hasNote("Execution: ab98-f9b9 | Saveback: 3765-0e2e"), //
-                        hasAmount("EUR", 2.97), hasGrossValue("EUR", 2.97), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+                        hasNote("Order: 0e9a-3i77 | Ausführung: b53c-j787"), //
+                        hasAmount("EUR", 481.70), hasGrossValue("EUR", 480.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
     }
 
     @Test
@@ -672,37 +672,6 @@ public class TradeRepublicPDFExtractorTest
 
         // check security
         assertThat(results, hasItem(security( //
-                        hasIsin("AT0000A0E9W5"), hasWkn(null), hasTicker(null), //
-                        hasName("Kontron"), //
-                        hasCurrencyCode("EUR"))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(purchase( //
-                        hasDate("2024-05-27T08:15"), hasShares(23.00), //
-                        hasSource("Kauf16.txt"), //
-                        hasNote("Order: 0e9a-3i77 | Ausführung: b53c-j787"), //
-                        hasAmount("EUR", 481.70), hasGrossValue("EUR", 480.70), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
-    }
-
-    @Test
-    public void testWertpapierKauf17()
-    {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf17.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(1L));
-        assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(0L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
-
-        // check security
-        assertThat(results, hasItem(security( //
                         hasIsin("US86800U3023"), hasWkn(null), hasTicker(null), //
                         hasName("Super Micro Computer"), //
                         hasCurrencyCode("EUR"))));
@@ -710,14 +679,14 @@ public class TradeRepublicPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-10-23T21:56"), hasShares(10.00), //
-                        hasSource("Kauf17.txt"), //
+                        hasSource("Kauf16.txt"), //
                         hasNote("Order: 9eb1-48df | Ausführung: bdc4-0272"), //
                         hasAmount("EUR", 421.60), hasGrossValue("EUR", 420.60), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
     }
 
     @Test
-    public void testBuy01()
+    public void testSecurityBuy01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
 
@@ -745,6 +714,37 @@ public class TradeRepublicPDFExtractorTest
                         hasNote("Order: 10VG-16T0 | Execution: 4A66-g597"), //
                         hasAmount("EUR", 87.40), hasGrossValue("EUR", 86.40), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
+    }
+
+    @Test
+    public void testSecurityBuy02()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1681038243"), hasWkn(null), hasTicker(null), //
+                        hasName("AIS-Amundi NASDAQ-100 Namens-Anteile C Cap.EUR o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-05-02T00:00"), hasShares(0.016033), //
+                        hasSource("Buy02.txt"), //
+                        hasNote("Execution: ab98-f9b9 | Saveback: 3765-0e2e"), //
+                        hasAmount("EUR", 2.97), hasGrossValue("EUR", 2.97), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -779,7 +779,7 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
-    public void testAcquisto01()
+    public void testSecurityAcquisto01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
 
@@ -807,6 +807,68 @@ public class TradeRepublicPDFExtractorTest
                         hasNote("Ordine: cY43-6m6l | Esecuzione: V711-7789"), //
                         hasAmount("EUR", 3719.75), hasGrossValue("EUR", 3718.75), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 1.00))));
+    }
+
+    @Test
+    public void testSecurityAcquisto02()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Acquisto02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BWT3KN65"), hasWkn(null), hasTicker(null), //
+                        hasName("Factor MSCI USA Quality ESG EUR Hedged (Acc)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-02-03T00:00"), hasShares(0.170055), //
+                        hasSource("Acquisto02.txt"), //
+                        hasNote("Esecuzione: 1bfa-7328 | Saveback: b05b-DL1N"), //
+                        hasAmount("EUR", 7.15), hasGrossValue("EUR", 7.15), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testSecurityAcquisto03()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Acquisto03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BWT3KN65"), hasWkn(null), hasTicker(null), //
+                        hasName("Factor MSCI USA Quality ESG EUR Hedged (Acc)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-02-17T00:00"), hasShares(0.100058), //
+                        hasSource("Acquisto03.txt"), //
+                        hasNote("Esecuzione: 2bQ1-76v5"), //
+                        hasAmount("EUR", 4.28), hasGrossValue("EUR", 4.28), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4158,7 +4220,7 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
-    public void testSell01()
+    public void testSecuritySell01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
 
