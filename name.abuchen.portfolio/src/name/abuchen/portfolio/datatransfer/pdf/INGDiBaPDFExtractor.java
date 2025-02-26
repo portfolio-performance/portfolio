@@ -68,13 +68,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "|Kauf Einmalanlage" //
                         + "|Kauf aus Sparplan" //
                         + "|Kauf aus Wiederanlage Fondsaussch.ttung" //
+                        + "|Kauf aus Wiederanlage einer Aussch.ttung" //
                         + "|Kauf Zeichnung" //
                         + "|Bezug" //
                         + "|Verkauf" //
                         + "|Verkauf aus Kapitalmaßnahme" //
                         + "|Verk\\. Teil\\-\\/Bezugsr\\.)" //
                         + "|R.ckzahlung" //
-                        + "|Einl.sung"
+                        + "|Einl.sung" //
                         + "|Operaciones Cuenta de Valores)", jointAccount);
         this.addDocumentTyp(type);
 
@@ -85,13 +86,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "|Kauf Einmalanlage" //
                         + "|Kauf aus Sparplan" //
                         + "|Kauf aus Wiederanlage Fondsaussch.ttung" //
+                        + "|Kauf aus Wiederanlage einer Aussch.ttung" //
                         + "|Kauf Zeichnung" //
                         + "|Bezug" //
                         + "|Verkauf" //
                         + "|Verkauf aus Kapitalmaßnahme" //
                         + "|Verk\\. Teil\\-\\/Bezugsr\\.)" //
                         + "|R.ckzahlung" //
-                        + "|Einl.sung"
+                        + "|Einl.sung" //
                         + "|Operaciones Cuenta de Valores)");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
@@ -111,14 +113,15 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         + "|Kauf Einmalanlage" //
                                         + "|Kauf aus Sparplan" //
                                         + "|Kauf aus Wiederanlage Fondsaussch.ttung" //
+                                        + "|Kauf aus Wiederanlage einer Aussch.ttung" //
                                         + "|Kauf Zeichnung" //
                                         + "|Bezug" //
                                         + "|Verkauf" //
                                         + "|Verkauf aus Kapitalmaßnahme" //
                                         + "|Verk. Teil\\-\\/Bezugsr\\.)" //
                                         + "|R.ckzahlung" //
-                                        + "|Einl.sung"
-                                        + "|Venta)$") //
+                                        + "|Einl.sung" //
+                                        + "|Venta)$")
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")) //
                                             || "Verkauf aus Kapitalmaßnahme".equals(v.get("type")) //
@@ -351,7 +354,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("(Dividendengutschrift" //
                         + "|Ertragsgutschrift" //
-                        + "|Zinsgutschrift"
+                        + "|Zinsgutschrift" //
                         + "|Abono de Dividendos)", //
                         jointAccount);
         this.addDocumentTyp(type);
@@ -360,7 +363,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         Block firstRelevantLine = new Block("^(Dividendengutschrift" //
                         + "|Ertragsgutschrift" //
-                        + "|Zinsgutschrift"
+                        + "|Zinsgutschrift" //
                         + "|Abono de Dividendos).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);

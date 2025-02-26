@@ -1016,6 +1016,37 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf21()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf21.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B9CQXS71"), hasWkn("A1T8GD"), hasTicker(null), //
+                        hasName("SPDR S&P Glob.Div.Aristocr.ETF Registered Shares o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-02-24T09:04:29"), hasShares(8.9548), //
+                        hasSource("Kauf21.txt"), //
+                        hasNote("Ordernummer 381419383.001"), //
+                        hasAmount("EUR", 284.27), hasGrossValue("EUR", 284.27), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testValorCompra01()
     {
         INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
