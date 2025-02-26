@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -260,10 +261,18 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Stempelgebühr 39683058642 05-Dez-2024 09-Dez-2024 -8,22 0,887182 -0,02 -7,29
                         // @formatter:on
-                        .section("tax").optional() //
+                        .section("currencyConversionFee", "tax").optional() //
                         .documentContext("currency") //
-                        .match("^Stempelgeb.hr .* \\-(?<tax>[\\.,\\d]+)$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type));
+                        .match("^Stempelgeb.hr .* \\-(?<currencyConversionFee>[\\.,\\d]+) \\-(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            Money taxes = Money.of(v.get("currency"), asAmount(v.get("tax")));
+                            Money currencyConversionFee = Money.of(v.get("currency"), asAmount(v.get("currencyConversionFee")));
+
+                            // Subtract currency conversion fee from taxes
+                            taxes = taxes.subtract(currencyConversionFee);
+
+                            checkAndSetTax(taxes, t, type.getCurrentContext());
+                        });
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
@@ -271,11 +280,19 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
         transaction //
 
                         // @formatter:off
-                        // Gesamte Trading-Kosten -19,41 CHF
-                        // Saxo is counterparty No Gesamte Trading-Kosten -19,41 CHF
+                        // Stempelgebühr 39683058642 05-Dez-2024 09-Dez-2024 -8,22 0,887182 -0,02 -7,29
                         // @formatter:on
-                        .section("fee", "currency").optional() //
-                        .match("^.*Gesamte Trading\\-Kosten \\-(?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .match("^Stempelgeb.hr .* \\-(?<fee>[\\.,\\d]+) \\-[\\.,\\d]+$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Aktienbetrag 41308584615 05-Feb-2025 07-Feb-2025 -23.714,22 0,904466 -53,48 -21.448,69
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .match("^Aktienbetrag .* \\-(?<fee>[\\.,\\d]+) \\-[\\.,\\d]+$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
