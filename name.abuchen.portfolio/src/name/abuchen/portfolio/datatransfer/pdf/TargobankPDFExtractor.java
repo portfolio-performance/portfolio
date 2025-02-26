@@ -350,7 +350,10 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                         // Gesamtsumme Steuern 5,59 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("partialExemptionTaxes", "currencypartialExemptionTaxes", "grossBeforeTaxes", "currencyBeforeTaxes", "grossAssessmentBasis", "currencyAssessmentBasis", "deductedTaxes", "currencyDeductedTaxes") //
+                                                        .attributes("partialExemptionTaxes", "currencypartialExemptionTaxes", //
+                                                                        "grossBeforeTaxes", "currencyBeforeTaxes", //
+                                                                        "grossAssessmentBasis", "currencyAssessmentBasis", //
+                                                                        "deductedTaxes", "currencyDeductedTaxes") //
                                                         .match("^Teilfreistellung \\(§ 20 InvStG\\) [\\.,\\d]+ % \\- (?<partialExemptionTaxes>[\\.,\\d]+) (?<currencypartialExemptionTaxes>[\\w]{3})$") //
                                                         .match("^Ertr.ge\\/Verluste (?<grossBeforeTaxes>[\\.,\\d]+) (?<currencyBeforeTaxes>[\\w]{3})$") //
                                                         .match("^Bemessungsgrundlage (?<grossAssessmentBasis>[\\.,\\d]+) (?<currencyAssessmentBasis>[\\w]{3})$") //
@@ -380,12 +383,60 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                                             }
                                                         }),
                                         // @formatter:off
+                                        // 1.) No tax burden: The losses offset the income so that no withholding tax is payable.
+                                        // 2.) Offsetting only with tax liability: Withholding tax can only be offset if capital gains tax is levied in Germany.
+                                        // 3.) Loss offsetting: The offsetting reduces the tax assessment basis to zero, which also eliminates offsetting.
+                                        // 4.) Savers' lump sum/exemption order: If used, this could also reduce the tax burden to zero.
+                                        //
+                                        // See test case of taxes treatment transaction ...Dividende05 vs. ...Dividende08
+                                        // ---------------------------------------------------
+                                        // Anrechenbare ausländische Quellensteuer 3,67 EUR
+                                        // Erträge/Verluste 24,49 EUR
+                                        // Anrechnung ausländischer Quellensteuer ** 0,00 EUR
+                                        // Bemessungsgrundlage 0,00 EUR
+                                        // Gesamtsumme Steuern 0,00 EUR
+                                        //
+                                        // Anrechenbare ausländische Quellensteuer 6,65 EUR
+                                        // Erträge/Verluste 44,35 EUR
+                                        // Anrechnung ausländischer Quellensteuer ** - 26,60 EUR
+                                        // Bemessungsgrundlage 17,75 EUR
+                                        // Gesamtsumme Steuern 4,68 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("withHoldingTaxes", "currencyWithHoldingTaxes", //
+                                                                        "grossBeforeTaxes", "currencyBeforeTaxes", //
+                                                                        "withholdingTaxesTimes4", "currencyWithholdingTaxesTimes4", //
+                                                                        "grossAssessmentBasis", "currencyAssessmentBasis", //
+                                                                        "deductedTaxes", "currencyDeductedTaxes") //
+                                                        .match("^Anrechenbare ausl.ndische Quellensteuer (?<withHoldingTaxes>[\\.,\\d]+) (?<currencyWithHoldingTaxes>[\\w]{3})$") //
+                                                        .match("^Ertr.ge\\/Verluste (?<grossBeforeTaxes>[\\.,\\d]+) (?<currencyBeforeTaxes>[\\w]{3})$") //
+                                                        .match("^Anrechnung ausl.ndischer Quellensteuer.* (?<withholdingTaxesTimes4>[\\.,\\d]+) (?<currencyWithholdingTaxesTimes4>[\\w]{3})$") //
+                                                        .match("^Bemessungsgrundlage (?<grossAssessmentBasis>[\\.,\\d]+) (?<currencyAssessmentBasis>[\\w]{3})$") //
+                                                        .match("^Gesamtsumme Steuern (?<deductedTaxes>[\\.,\\d]+) (?<currencyDeductedTaxes>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            Money withHoldingTaxes = Money.of(asCurrencyCode(v.get("currencyWithHoldingTaxes")), asAmount(v.get("withHoldingTaxes")));
+                                                            Money grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
+                                                            Money withholdingTaxesTimes4 = Money.of(asCurrencyCode(v.get("currencyWithholdingTaxesTimes4")), asAmount(v.get("withholdingTaxesTimes4")));
+                                                            Money grossAssessmentBasis = Money.of(asCurrencyCode(v.get("currencyAssessmentBasis")), asAmount(v.get("grossAssessmentBasis")));
+                                                            Money deductedTaxes = Money.of(asCurrencyCode(v.get("currencyDeductedTaxes")), asAmount(v.get("deductedTaxes")));
+
+                                                            // Store in transaction context
+                                                            v.getTransactionContext().put(ATTRIBUTE_GROSS_TAXES_TREATMENT, grossBeforeTaxes);
+
+                                                            if (!grossAssessmentBasis.isZero() && withholdingTaxesTimes4.divide(4).equals(withHoldingTaxes))
+                                                                t.setMonetaryAmount(deductedTaxes.add(withHoldingTaxes));
+                                                            else
+                                                                t.setMonetaryAmount(deductedTaxes);
+                                                        }),
+                                        // @formatter:off
                                         // Erträge/Verluste 3.123,25 EUR
                                         // Bemessungsgrundlage 3.123,25 EUR
                                         // Gesamtsumme Steuern 823,76 EUR
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("grossBeforeTaxes", "currencyBeforeTaxes", "grossAssessmentBasis", "currencyAssessmentBasis", "deductedTaxes", "currencyDeductedTaxes") //
+                                                        .attributes("grossBeforeTaxes", "currencyBeforeTaxes", //
+                                                                        "grossAssessmentBasis", "currencyAssessmentBasis", //
+                                                                        "deductedTaxes", "currencyDeductedTaxes") //
                                                         .match("^Ertr.ge\\/Verluste (?<grossBeforeTaxes>[\\.,\\d]+) (?<currencyBeforeTaxes>[\\w]{3})$") //
                                                         .match("^Bemessungsgrundlage (?<grossAssessmentBasis>[\\.,\\d]+) (?<currencyAssessmentBasis>[\\w]{3})$") //
                                                         .match("^Gesamtsumme Steuern (?<deductedTaxes>[\\.,\\d]+) (?<currencyDeductedTaxes>[\\w]{3})$") //
@@ -397,10 +448,10 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                                             // Calculate the taxes and store gross amount
                                                             if (!grossBeforeTaxes.isZero() && grossAssessmentBasis.isGreaterThan(grossBeforeTaxes))
                                                             {
-                                                                t.setMonetaryAmount(grossAssessmentBasis.subtract(grossBeforeTaxes).add(deductedTaxes));
-
                                                                 // Store in transaction context
                                                                 v.getTransactionContext().put(ATTRIBUTE_GROSS_TAXES_TREATMENT, grossAssessmentBasis);
+
+                                                                t.setMonetaryAmount(grossAssessmentBasis.subtract(grossBeforeTaxes).add(deductedTaxes));
                                                             }
                                                             else
                                                             {
@@ -430,6 +481,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                                             {
                                                                 // Store in transaction context
                                                                 v.getTransactionContext().put(ATTRIBUTE_GROSS_TAXES_TREATMENT, grossBeforeTaxes);
+
                                                                 t.setMonetaryAmount(grossBeforeTaxes);
                                                             }
                                                         }))
