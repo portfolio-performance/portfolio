@@ -71,6 +71,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|CONFIRMATION D.EX.CUTION" //
                         + "|RELEV. DE TRANSACTION" //
                         + "|REGOLAMENTO TITOLI" //
+                        + "|REGOLAMENTO TITOLI ROUND UP" //
                         + "|ZWANGS.BERNAHME" //
                         + "|TILGUNG" //
                         + "|REPAYMENT" //
@@ -111,7 +112,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         + "|ZWANGS.BERNAHME" //
                                         + "|TILGUNG" //
                                         + "|REPAYMENT))" //
-                                        + ".*$") //
+                                        + ".*$")
                         .assign((t, v) -> {
                             if ("Verkauf".equalsIgnoreCase(v.get("type")) //
                                             || "Sell".equalsIgnoreCase(v.get("type")) //
@@ -240,6 +241,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "currency", "isin") //
                                                         .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                                                         .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Factor MSCI USA Quality ESG EUR Hedged (Acc) 0,100058 42,775 EUR 4,28 EUR
+                                        // ISIN: IE00BWT3KN65
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -268,6 +278,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("shares") //
                                                         .match("^.* (?<shares>[\\.,\\d]+) Pcs\\. .*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
+                                        // @formatter:off
+                                        // Factor MSCI USA Quality ESG EUR Hedged (Acc) 0,100058 42,775 EUR 4,28 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // 1 Ausbuchung Quantafuel AS 17 Stk.
                                         // 1 Tilgung HSBC Trinkaus & Burkhardt AG 700 Stk.
@@ -334,6 +351,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Ex.cution de l.investissement programm. .* (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) .*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Esecuzione Saveback del 03.02.2025 su Lang und Schwarz Exchange.
+                                        // Esecuzione Round Up il 17.02.2025 su Lang und Schwarz Exchange.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Esecuzione (Saveback del|Round Up il) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Esecuzione del piano d'accumulo il 16.12.2024 su Lang und Schwarz Exchange.
@@ -873,7 +898,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellCryptoTransaction()
     {
-        final DocumentType type = new DocumentType("(ABRECHNUNG CRYPTOGESCH.FT|CRYPTO SPARPLAN|ABRECHNUNG CRYPTO SAVEBACK)");
+        final DocumentType type = new DocumentType("(ABRECHNUNG CRYPTOGESCH.FT" //
+                        + "|CRYPTO SPARPLAN" //
+                        + "|ABRECHNUNG CRYPTO SAVEBACK)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -900,7 +927,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         + "|SAVINGS PLAN" //
                                         + "|Ex.cution de l.investissement programm." //
                                         + "|REINVESTIERUNG))" //
-                                        + " .*$") //
+                                        + " .*$")
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")))
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -3054,7 +3081,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("(ABRECHNUNG ZINSEN" //
                         + "|RESOCONTO INTERESSI MATURATI" //
-                        + "|INTEREST INVOICE"
+                        + "|INTEREST INVOICE" //
                         + "|RAPPORT D.INT.R.TS)", //
                         documentContext -> documentContext //
 
@@ -3363,9 +3390,9 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
 
         Block firstRelevantLine = new Block("^([\\d] )?(Einbuchung" //
-                        + "|Ausbuchung"
+                        + "|Ausbuchung" //
                         + "|Umtausch\\/Bezug" //
-                        + "|Depot.bertrag .*"
+                        + "|Depot.bertrag .*" //
                         + "|Kapitalerh.hung gegen Bar .*) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
@@ -3581,6 +3608,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "currency", "isin") //
                                                         .match("^(?<name>.*) [\\.,\\d]+ (Stk\\.|titre\\(s\\)|Pcs\\.|Pz\\.|t.t\\.) [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                                                         .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Factor MSCI USA Quality ESG EUR Hedged (Acc) 0,100058 42,775 EUR 4,28 EUR
+                                        // ISIN: IE00BWT3KN65
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin") //
+                                                        .match("^(?<name>.*) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^(ISIN([\\s])?:([\\s])?)?(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -3609,6 +3645,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("shares") //
                                                         .match("^.* (?<shares>[\\.,\\d]+) Pcs\\. .*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares"), "en", "US"))),
+                                        // @formatter:off
+                                        // Factor MSCI USA Quality ESG EUR Hedged (Acc) 0,100058 42,775 EUR 4,28 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^.* (?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // 1 Ausbuchung Quantafuel AS 17 Stk.
                                         // 1 Tilgung HSBC Trinkaus & Burkhardt AG 700 Stk.
@@ -3674,6 +3717,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date") //
                                                         .match("^Ex.cution de l.investissement programm. .* (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) .*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Esecuzione Saveback del 03.02.2025 su Lang und Schwarz Exchange.
+                                        // Esecuzione Round Up il 17.02.2025 su Lang und Schwarz Exchange.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Esecuzione (Saveback del|Round Up il) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Esecuzione del piano d'accumulo il 16.12.2024 su Lang und Schwarz Exchange.
