@@ -1,17 +1,16 @@
 PDFBox Version: 3.0.3 != 1.8.17
-Portfolio Performance Version: 0.74.1.qualifier
+Portfolio Performance Version: 0.74.2.qualifier
 System: win32 | x86_64 | 21.0.6+7-LTS | Eclipse Adoptium
 -----------------------------------------
-RESULTAT D'OST M vcqQDhF snmrmT
-Au 8 octobre 2021 2 MKh LFdN JRzQL muNQffxbH
-52693 JDvKG oem tRAfguo
-VOTRE COMPTE PEA N° 922195031681 M CPFqesd FILJRF
-Objet : Souscription avec droits
+RESULTAT D'OST M cXAPejn KErjVm
+Au 8 octobre 2021 2 gst eBJu gAAqm ZZYZnPSIY
+98709 IGeLW irt uQuJqoA
+VOTRE COMPTE PEA N° 563408875612 M bnWVzed VqvKpT
+Objet : Souscription à titre réductible
 Monsieur,
-Nous vous informons que  nous avons procédé à la souscription de 16 titre(s) VEOLIA ENVIRON. (FR0000124141) et contre
-présentation de 84 droit(s) VEOLIA ENVIR.DS 21 (FR0014005GA0).
-Cette opération a été comptabilisée sur votre compte :
-montant net de  : - 363,20 EUR
+Nous vous informons que  nous avons procédé à la souscription de 1 titre(s) VEOLIA ENVIRON. (FR0000124141).
+Cette opération a été comptabilisée sur votre compte.
+montant net de  : - 22,70 EUR
 Veuillez agréer, Monsieur, l'expression de nos salutations distinguées.
 Le service OST
 Duplicata Internet

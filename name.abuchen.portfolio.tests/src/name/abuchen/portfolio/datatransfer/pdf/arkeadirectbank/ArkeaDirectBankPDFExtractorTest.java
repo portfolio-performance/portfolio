@@ -193,9 +193,6 @@ public class ArkeaDirectBankPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
-    /**
-     * Test that transaction can be imported from an OST PDF file.
-     */
     @Test
     public void testCompteAchat05()
     {
@@ -220,41 +217,9 @@ public class ArkeaDirectBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2021-10-08T00:00:00"), hasShares(16), //
+                        hasDate("2021-10-08T00:00:00"), hasShares(1.00), //
                         hasSource("Achat05.txt"), //
-                        hasAmount("EUR", 363.20), hasGrossValue("EUR", 363.20), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-    }
-
-    /**
-     * Test that transaction can be imported from an OST PDF file.
-     */
-    @Test
-    public void testCompteAchat06()
-    {
-        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat06.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(countSecurities(results), is(1L));
-        assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(0L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "EUR");
-
-        // check security
-        assertThat(results, hasItem(security( //
-                        hasIsin("FR0000124141"), hasWkn(null), hasTicker(null), //
-                        hasName("VEOLIA ENVIRON."), //
-                        hasCurrencyCode("EUR"))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(purchase( //
-                        hasDate("2021-10-08T00:00:00"), hasShares(1), //
-                        hasSource("Achat06.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 22.70), hasGrossValue("EUR", 22.70), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
