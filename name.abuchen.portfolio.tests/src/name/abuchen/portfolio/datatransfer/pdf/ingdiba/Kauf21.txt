@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: Thomas Mustermann
+Herrn Direkt-Depot Nr.: 9999999999
+Thomas Mustermann Datum: 24.02.2025
+Muster-Str. 10 Seite: 1 von 1
+99999 Musterort
+Wertpapierabrechnung Kauf aus Wiederanlage einer Ausschüttung
+Ordernummer 381419383.001
+ISIN (WKN) IE00B9CQXS71 (A1T8GD)
+Wertpapierbezeichnung SPDR S&P Glob.Div.Aristocr.ETF
+Registered Shares o.N.
+Nominale Stück 8,9548
+Kurs (Festpreisgeschäft) EUR 31,745
+Handelsplatz Direktgeschäft Inl.
+Ausführungstag / -zeit 24.02.2025 um 09:04:29 Uhr
+Kurswert EUR 284,27
+Zwischensumme EUR 284,27
+Endbetrag zu Ihren Lasten EUR 284,27
+Abrechnungs-IBAN DE99 9999 9999 9999 9999 99
+Valuta 26.02.2025
+Wertpapiere zugunsten Wertpapierrechnung Großbritannien.
+Ihren Ertrag haben wir für Sie wiederangelegt.
+Bei Fragen besuchen Sie uns einfach unter www.ing.de/wertpapierwissen - da gibt es viele schnelle
+Antworten.
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzende des Aufsichtsrates: Susanne Klöß-Braekler · Vorstand: Lars Stoy (Vorsitzender),
+Michael Clijdesdale, Eddy Henning, Nikolaus Maximilian Linaric, Dr. Ralph Müller, Nurten Spitzer-Erdogan · Sitz: Frankfurt am Main · AG Frankfurt am Main · HRB 7727
+Steuernummer: 014 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+34WAAD8030557526_T
