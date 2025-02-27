@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.csv;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -118,11 +119,19 @@ public abstract class CSVExtractor implements Extractor
         String dateValue = getText(dateColumn, rawValues, field2column);
         if (dateValue == null)
             return null;
+        boolean isTimeInData = dateValue.contains("T"); //$NON-NLS-1$
 
         LocalDateTime result;
         try
         {
-            Date date = (Date) field2column.get(dateColumn).getFormat().getFormat().parseObject(dateValue);
+            String simpleDateFormatText = field2column.get(dateColumn).getFormat().toPattern();
+            boolean isTimeInFormat = simpleDateFormatText.contains("\'T\'"); //$NON-NLS-1$
+            if (isTimeInData && !isTimeInFormat)
+            {
+                simpleDateFormatText += "\'T\'HH:mm"; //$NON-NLS-1$
+            }
+            SimpleDateFormat formatter = new SimpleDateFormat(simpleDateFormatText);
+            Date date = (Date) formatter.parseObject(dateValue);
             result = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
         }
         catch (ParseException e)
