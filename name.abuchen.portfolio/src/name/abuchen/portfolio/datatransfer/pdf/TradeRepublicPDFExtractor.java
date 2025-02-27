@@ -2527,22 +2527,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
-        // @formatter:off
-        // 01 Apr.
-        // 2024 Zinszahlung Your interest payment 147,34 € 50.152,41 €
-        //
-        // 01 may Pago de
-        // 2024 intereses Your interest payment 26,13 € 15.692,15 €
-        //
-        // 01 juil. Paiement
-        // 2024 d'intérêts Your interest payment 1,24 € 397,24 €
-        //
-        // 01 août Paiement
-        // 2024 d'intérêts Your interest payment 1,30 € 605,60 €
-        // @formatter:on
+
         Block interestBlock_Format02 = new Block("^[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?[\\s]((Pago|Paiement).*)?$");
         type.addBlock(interestBlock_Format02);
-        interestBlock_Format02.setMaxSize(2);
+        interestBlock_Format02.setMaxSize(5);
         interestBlock_Format02.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
@@ -2552,10 +2540,41 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .optionalOneOf( //
+                                        // @formatter:off
+                                        // 01 Apr.
+                                        // 2024 Zinszahlung Your interest payment 147,34 € 50.152,41 €
+                                        //
+                                        // 01 may Pago de
+                                        // 2024 intereses Your interest payment 26,13 € 15.692,15 €
+                                        //
+                                        // 01 juil. Paiement
+                                        // 2024 d'intérêts Your interest payment 1,24 € 397,24 €
+                                        //
+                                        // 01 août Paiement
+                                        // 2024 d'intérêts Your interest payment 1,30 € 605,60 €
+                                        // @formatter:on
                                         section -> section //
                                                         .attributes("date", "year", "amount", "currency") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]((Pago|Paiement).*)?$")
                                                         .match("^(?<year>[\\d]{4}) (Zinszahlung|intereses|d.int.r.ts) Your interest payment (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                                                        }),
+                                        // @formatter:off
+                                        // 01 nov Pago de
+                                        //
+                                        // Your interest payment 124,66 € 43.997,82 €
+                                        //
+                                        // 2024 intereses
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount", "currency", "year") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]((Pago|Paiement).*)?$")
+                                                        .match("^Your interest payment (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^(?<year>[\\d]{4}) (Zinszahlung|intereses|d.int.r.ts)$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
                                                             t.setAmount(asAmount(v.get("amount")));
