@@ -128,7 +128,16 @@ public abstract class CSVExtractor implements Extractor
             boolean isTimeInFormat = simpleDateFormatText.contains("\'T\'"); //$NON-NLS-1$
             if (isTimeInData && !isTimeInFormat)
             {
-                simpleDateFormatText += "\'T\'HH:mm"; //$NON-NLS-1$
+                int numberColons = dateValue.split(":").length - 1; //$NON-NLS-1$
+                if (numberColons == 1)
+                {
+                    simpleDateFormatText += "\'T\'HH:mm"; //$NON-NLS-1$
+                }
+                else if (numberColons == 2)
+                {
+
+                    simpleDateFormatText += "\'T\'HH:mm:ss"; //$NON-NLS-1$
+                }
             }
             SimpleDateFormat formatter = new SimpleDateFormat(simpleDateFormatText);
             Date date = (Date) formatter.parseObject(dateValue);
