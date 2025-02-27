@@ -79,6 +79,7 @@ public class Messages extends NLS
     public static String CSVFormatYYYYMM;
     public static String CSVFormatYYYYMMDD;
     public static String CSVFormatYYYYMMDDSlashes;
+    public static String CSVFormatYYYYMMDDTHHMM;
     public static String CSVImportedSecurityLabel;
     public static String CSVImportGenericColumnLabel;
     public static String CSVImportMissingField;

@@ -28,6 +28,11 @@ public abstract class CSVExtractor implements Extractor
 {
     public abstract List<Field> getFields();
 
+    public Field getField(String code)
+    {
+        return getFields().stream().filter(f -> f.getCode().equals(code)).findFirst().orElse(null);
+    }
+
     public abstract List<Item> extract(int skipLines, List<String[]> rawValues, Map<String, Column> field2column,
                     List<Exception> errors);
 
