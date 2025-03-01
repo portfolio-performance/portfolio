@@ -3,7 +3,6 @@ package name.abuchen.portfolio.datatransfer.csv;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -116,31 +115,17 @@ public abstract class CSVExtractor implements Extractor
     protected final LocalDateTime getDate(String dateColumn, String timeColumn, String[] rawValues,
                     Map<String, Column> field2column) throws ParseException
     {
+        String timeDateSeparater = "T"; //$NON-NLS-1$
         String dateValue = getText(dateColumn, rawValues, field2column);
+        String timeValue = null;
         if (dateValue == null)
             return null;
-        boolean isTimeInData = dateValue.contains("T"); //$NON-NLS-1$
+        boolean isTimeInDateValue = dateValue.contains(timeDateSeparater);
 
         LocalDateTime result;
         try
         {
-            String simpleDateFormatText = field2column.get(dateColumn).getFormat().toPattern();
-            boolean isTimeInFormat = simpleDateFormatText.contains("\'T\'"); //$NON-NLS-1$
-            if (isTimeInData && !isTimeInFormat)
-            {
-                int numberColons = dateValue.split(":").length - 1; //$NON-NLS-1$
-                if (numberColons == 1)
-                {
-                    simpleDateFormatText += "\'T\'HH:mm"; //$NON-NLS-1$
-                }
-                else if (numberColons == 2)
-                {
-
-                    simpleDateFormatText += "\'T\'HH:mm:ss"; //$NON-NLS-1$
-                }
-            }
-            SimpleDateFormat formatter = new SimpleDateFormat(simpleDateFormatText);
-            Date date = (Date) formatter.parseObject(dateValue);
+            Date date = (Date) field2column.get(dateColumn).getFormat().getFormat().parseObject(dateValue);
             result = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
         }
         catch (ParseException e)
@@ -150,10 +135,15 @@ public abstract class CSVExtractor implements Extractor
                             field2column.get(dateColumn).getFormat().toPattern()), e.getErrorOffset());
         }
 
-        if (timeColumn == null)
-            return result;
+        if (timeColumn != null)
+        {
+            // timeColumn defined
+            timeValue = getText(timeColumn, rawValues, field2column);
+        }
 
-        String timeValue = getText(timeColumn, rawValues, field2column);
+        if (timeValue == null && isTimeInDateValue && dateValue.split(timeDateSeparater).length > 1)
+            timeValue = dateValue.split(timeDateSeparater)[1];
+
         if (timeValue != null)
         {
             String[] timeToks = timeValue.split(":"); //$NON-NLS-1$
