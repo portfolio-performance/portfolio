@@ -1,6 +1,6 @@
 name: PDF Import Issue
 description: Report a problem with the PDF importer
-title: ""
+title: "[PDF] "
 labels: ["pdf"]
 projects: ["portfolio-performance/1"]
 assignees:
