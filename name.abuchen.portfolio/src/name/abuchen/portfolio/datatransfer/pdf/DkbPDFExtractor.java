@@ -772,7 +772,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
-                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                            if (t.getType() == AccountTransaction.Type.INTEREST)
+                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                            else
+                                t.setMonetaryAmount(t.getMonetaryAmount().add(tax));
                         })
 
                         .section("tax").optional() //
@@ -782,7 +785,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
-                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                            if (t.getType() == AccountTransaction.Type.INTEREST)
+                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                            else
+                                t.setMonetaryAmount(t.getMonetaryAmount().add(tax));
                         })
 
                         .section("tax").optional() //
@@ -792,7 +798,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
-                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                            if (t.getType() == AccountTransaction.Type.INTEREST)
+                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                            else
+                                t.setMonetaryAmount(t.getMonetaryAmount().add(tax));
                         })
 
                         .wrap(t -> {
@@ -1293,7 +1302,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
-                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                            if (t.getType() == AccountTransaction.Type.INTEREST)
+                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                            else
+                                t.setMonetaryAmount(t.getMonetaryAmount().add(tax));
                         })
 
                         .section("tax").optional() //
@@ -1303,7 +1315,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
-                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                            if (t.getType() == AccountTransaction.Type.INTEREST)
+                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                            else
+                                t.setMonetaryAmount(t.getMonetaryAmount().add(tax));
                         })
 
                         .section("tax").optional() //
@@ -1313,7 +1328,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
-                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                            if (t.getType() == AccountTransaction.Type.INTEREST)
+                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                            else
+                                t.setMonetaryAmount(t.getMonetaryAmount().add(tax));
                         })
 
                         .wrap(t -> {
