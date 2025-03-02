@@ -21,6 +21,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -724,6 +725,19 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
+        // @formatter:off
+        // Abrechnungszeitraum vom 01.04.2023 bis 30.06.2023
+        // Zinsen für Guthaben                                                302,54+
+        // Kapitalertragsteuer                                   75,64-
+        // Solidaritätszuschlag                                   4,16-
+        //
+        // Abrechnungszeitraum vom 01.10.2015 bis 31.12.2015
+        // Zinsen für Guthaben                                                  0,22+
+        // Kapitalertragsteuer                                    0,06-
+        //
+        // Abrechnungszeitraum vom 01.01.2021 bis 31.03.2021
+        // Zinsen für eingeräumte Kontoüberziehung                              0,24-
+        // @formatter:on
         Block interestChargeBlock = new Block("^Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
         type.addBlock(interestChargeBlock);
         interestChargeBlock.set(new Transaction<AccountTransaction>()
@@ -751,6 +765,36 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note"));
                         })
 
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^Kapitalertrags(s)?teuer[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                        })
+
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^Solidarit.tszuschlag[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                        })
+
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^Kirchensteuer[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                        })
+
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
@@ -763,7 +807,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .subject(() -> {
                             AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
                             return accountTransaction;
                         })
 
@@ -771,40 +815,6 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .documentContext("date", "currency") //
                         .match("^(?<note>Zinsen f.r Dispositionskredit) ([\\s]+)?(?<amount>[\\.,\\d]+)(?<type>([\\-|\\+]))$") //
                         .assign((t, v) -> {
-                            // @formatter:off
-                            // Is type is "-" change from INTEREST to INTEREST_CHARGE
-                            // @formatter:on
-                            if ("-".equals(v.get("type")))
-                                t.setType(AccountTransaction.Type.INTEREST_CHARGE);
-
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setNote(v.get("note"));
-                        })
-
-                        .wrap(TransactionItem::new));
-
-        Block taxesBlock = new Block("^(Kapitalertrags(s)?teuer|Solidarit.tszuschlag|Kirchensteuer)[\\s]{1,}[\\.,\\d]+(([\\-|\\+]))$");
-        type.addBlock(taxesBlock);
-        taxesBlock.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
-
-                        .section("note", "amount", "type") //
-                        .documentContext("date", "currency") //
-                        .match("^(?<note>(Kapitalertrags(s)?teuer|Solidarit.tszuschlag|Kirchensteuer))[\\s]{1,}(?<amount>[\\.,\\d]+)(?<type>([\\-|\\+]))$") //
-                        .assign((t, v) -> {
-                            // @formatter:off
-                            // Is type is "+" change from TAXES to TAX_REFUND
-                            // @formatter:on
-                            if ("+".equals(v.get("type")))
-                                t.setType(AccountTransaction.Type.TAX_REFUND);
-
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
@@ -1237,8 +1247,17 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         }));
 
         // @formatter:off
-        // Abrechnungszeitraum vom 01.07.2023 bis 30.09.2023
-        // Zinsen für eingeräumte Kontoüberziehung                              0,01-
+        // Abrechnungszeitraum vom 01.04.2023 bis 30.06.2023
+        // Zinsen für Guthaben                                                302,54+
+        // Kapitalertragsteuer                                   75,64-
+        // Solidaritätszuschlag                                   4,16-
+        //
+        // Abrechnungszeitraum vom 01.10.2015 bis 31.12.2015
+        // Zinsen für Guthaben                                                  0,22+
+        // Kapitalertragsteuer                                    0,06-
+        //
+        // Abrechnungszeitraum vom 01.01.2021 bis 31.03.2021
+        // Zinsen für eingeräumte Kontoüberziehung                              0,24-
         // @formatter:on
         Block interestChargeBlock = new Block("^Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
         type.addBlock(interestChargeBlock);
@@ -1267,39 +1286,41 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setNote(v.get("note"));
                         })
 
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^Kapitalertrags(s)?teuer[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                        })
+
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^Solidarit.tszuschlag[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                        })
+
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^Kirchensteuer[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                        })
+
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
                             return null;
                         }));
-
-        Block taxesBlock = new Block("^(Kapitalertrags(s)?teuer|Solidarit.tszuschlag|Kirchensteuer)[\\s]{1,}[\\.,\\d]+(([\\-|\\+]))$");
-        type.addBlock(taxesBlock);
-        taxesBlock.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
-
-                        .section("note", "amount", "type") //
-                        .documentContext("date", "currency") //
-                        .match("^(?<note>(Kapitalertrags(s)?teuer|Solidarit.tszuschlag|Kirchensteuer))[\\s]{1,}(?<amount>[\\.,\\d]+)(?<type>([\\-|\\+]))$") //
-                        .assign((t, v) -> {
-                            // @formatter:off
-                            // Is type is "+" change from TAXES to TAX_REFUND
-                            // @formatter:on
-                            if ("+".equals(v.get("type")))
-                                t.setType(AccountTransaction.Type.TAX_REFUND);
-
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setNote(v.get("note"));
-                        })
-
-                        .wrap(TransactionItem::new));
 
         // @formatter:off
         // 05.01.2025 Stornorechnung
