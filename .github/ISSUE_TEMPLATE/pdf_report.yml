@@ -35,7 +35,7 @@ body:
     id: pdf-debug
     attributes:
       label: Extracted Text from PDF
-      description: 'File' --> 'Import' --> 'Debug: Create text from PDF...'
+      description: "'File' --> 'Import' --> 'Debug: Create text from PDF...'"
       render: shell
     validations:
       required: true
