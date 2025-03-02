@@ -14,7 +14,7 @@ Cash Zinsen 4,00% 01.06.2024 - 11.06.2024 21,02 EUR
 Cash Zinsen 3,75% 12.06.2024 - 30.06.2024 52,06 EUR
 BUCHUNG
 IBAN BUCHUNGSDATUM GESAMT
-DE12321546856552266333 01.07.2024 74,08 EUR
+DE12321546856552266333 01.07.2024 73,08 EUR
 Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
 Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
 10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
