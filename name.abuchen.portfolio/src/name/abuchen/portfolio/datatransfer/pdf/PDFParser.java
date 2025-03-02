@@ -570,6 +570,8 @@ import name.abuchen.portfolio.model.TypedMap;
         private String[] attributes;
         /** attributes mixed in from the document context */
         private String[] documentAttributes;
+        /** attributes mixed in from the document context optionally */
+        private String[] documentAttributesOptionally;
         /** attributes mixed in from the document matched in the given range */
         private String[] rangeAttributes;
 
@@ -602,6 +604,12 @@ import name.abuchen.portfolio.model.TypedMap;
         public Section<T> documentContext(String... documentAttributes)
         {
             this.documentAttributes = documentAttributes;
+            return this;
+        }
+
+        public Section<T> documentContextOptionally(String... documentAttributesOptionally)
+        {
+            this.documentAttributesOptionally = documentAttributesOptionally;
             return this;
         }
 
@@ -685,6 +693,16 @@ import name.abuchen.portfolio.model.TypedMap;
                                 }
 
                                 values.put(attribute, documentContext.get(attribute));
+                            }
+                        }
+
+                        // enrich extracted values with context values (Optionally)
+                        if (documentAttributesOptionally != null)
+                        {
+                            for (String attribute : documentAttributesOptionally)
+                            {
+                                if (documentContext.containsKey(attribute))
+                                    values.put(attribute, documentContext.get(attribute));
                             }
                         }
 
