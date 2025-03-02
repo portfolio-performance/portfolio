@@ -817,12 +817,15 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                         .optionalOneOf( //
                                                         // @formatter:off
                                                         // STEUER 28.03. 8800 31.03. 68,98-
-                                                        // SUMME STEUERN 68,98 S
                                                         // @formatter:on
                                                         section -> section //
-                                                                        .attributes("tax") //
-                                                                        .match("^STEUER [\\d]{2}\\.[\\d]{2}\\. [\\d]+ [\\d]{2}\\.[\\d]{2}\\. (?<tax>[\\.,\\d]+)\\-$") //
-                                                                        .assign((ctx, v) -> ctx.put("tax", v.get("tax"))),
+                                                                        .attributes("year", "taxDate", "tax") //
+                                                                        .match("^Datum [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{2}) .* Kontow.hrung [\\w]{3}$") //
+                                                                        .match("^STEUER [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<taxDate>[\\d]{2}\\.[\\d]{2}\\.) (?<tax>[\\.,\\d]+)\\-$") //
+                                                                        .assign((ctx, v) -> {
+                                                                            ctx.put("taxDate", v.get("taxDate") + v.get("year"));
+                                                                            ctx.put("tax", v.get("tax"));
+                                                                        }),
                                                         // @formatter:off
                                                         // SUMME STEUERN 68,98 S
                                                         // @formatter:on
@@ -928,7 +931,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "amount", "type") //
                         .documentContext("year", "currency") //
-                        .documentContextOptionally("tax") //
+                        .documentContextOptionally("taxDate", "tax") //
                         .match("^ABSCHLUSS [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+])$") //
                         .assign((t, v) -> {
                             // @formatter:off
@@ -941,7 +944,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
 
-                            if (v.containsKey("tax"))
+                            if (v.containsKey("tax") && t.getDateTime().equals(asDate(v.get("taxDate"))))
                             {
                                 Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
