@@ -17,13 +17,13 @@ body:
 
         **Steps:**
         1. Open Portfolio Performance.
-        2. Click `File` → `Import` → `Debug: Create text from PDF…`.
+        2. Click 'File' --> 'Import' --> 'Debug: Create text from PDF...'.
         3. Select the file you're trying to import.
         4. Use the built-in anonymization feature to remove personal data (e.g., name, address, deposit number).
         5. Do **not** anonymize the bank's address, stock names, or dates. Only anonymize amounts if they remain consistent.
         6. Click "Copy to Clipboard" and paste the anonymized text below.
 
-        ⚠️ **Do NOT upload PDFs to GitHub.** Always use the debug feature instead.
+        **Do NOT upload PDFs to GitHub.** Always use the debug feature instead.
   - type: input
     id: bank
     attributes:
@@ -35,7 +35,7 @@ body:
     id: pdf-debug
     attributes:
       label: Extracted Text from PDF
-      description: `File` → `Import` → `Debug: Create text from PDF…`
+      description: 'File' --> 'Import' --> 'Debug: Create text from PDF...'
       render: shell
     validations:
       required: true
