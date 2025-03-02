@@ -17,6 +17,7 @@ public class N26BankAGkPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("N26 Bank AG");
+        addBankIdentifier("N26 Bank SE");
 
         addAccountStatementDepositRemovalTransaction();
         addAccountStatementInterestTransaction();
@@ -30,7 +31,7 @@ public class N26BankAGkPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementDepositRemovalTransaction()
     {
-        DocumentType type = new DocumentType("Kontoauszug");
+        final DocumentType type = new DocumentType("Kontoauszug");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -74,7 +75,7 @@ public class N26BankAGkPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementInterestTransaction()
     {
-        DocumentType type = new DocumentType("Kontoauszug");
+        final DocumentType type = new DocumentType("Kontoauszug");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
