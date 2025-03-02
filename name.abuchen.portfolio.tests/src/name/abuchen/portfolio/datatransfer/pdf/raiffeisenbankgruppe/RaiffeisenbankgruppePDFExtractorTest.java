@@ -2113,8 +2113,8 @@ public class RaiffeisenbankgruppePDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(10L));
-        assertThat(results.size(), is(10));
+        assertThat(countAccountTransactions(results), is(7L));
+        assertThat(results.size(), is(7));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
@@ -2142,20 +2142,12 @@ public class RaiffeisenbankgruppePDFExtractorTest
                         hasSource("Kontoauszug06.txt"), hasNote("Überweisung"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 534.59), //
-                        hasSource("Kontoauszug06.txt"), hasNote(null))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2023-12-31"), hasAmount("EUR", 0.46), //
-                        hasSource("Kontoauszug06.txt"), hasNote(null))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2023-12-31"), hasAmount("EUR", 0.76), //
-                        hasSource("Kontoauszug06.txt"), hasNote(null))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2023-12-31"), hasAmount("EUR", 8.46), //
-                        hasSource("Kontoauszug06.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-12-31"), hasShares(0), //
+                        hasSource("Kontoauszug06.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 524.91), hasGrossValue("EUR", 534.59), //
+                        hasTaxes("EUR", (8.46 + 0.46 + 0.76)), hasFees("EUR", 0.00))));
     }
 
     @Test
