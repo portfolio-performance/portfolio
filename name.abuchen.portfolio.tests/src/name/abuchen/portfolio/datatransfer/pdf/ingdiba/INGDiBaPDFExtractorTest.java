@@ -3841,12 +3841,12 @@ public class INGDiBaPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug02.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(9));
+        assertThat(results.size(), is(5));
 
         // check transaction
         // get transactions
         Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(9L));
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(5L));
 
         Item item = iter.next();
 
@@ -3892,60 +3892,13 @@ public class INGDiBaPDFExtractorTest
         assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
         assertThat(transaction.getNote(), is("Gutschrift"));
 
-        item = iter.next();
-
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-06-14T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.40)));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("01.01.2016 bis 14.06.2016 (0,50%)"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-31T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(5.22)));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("15.06.2016 bis 31.12.2016 (0,35%)"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.38)));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kapitalertragsteuer"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.07)));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Solidaritätszuschlag"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.11)));
-        assertThat(transaction.getSource(), is("GiroKontoauszug02.txt"));
-        assertThat(transaction.getNote(), is("Kirchensteuer"));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2016-12-30"), hasShares(0), //
+                        hasSource("GiroKontoauszug02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.40 + 5.22), hasGrossValue("EUR", 7.18), //
+                        hasTaxes("EUR", (1.38 + 0.07 + 0.11)), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4061,8 +4014,12 @@ public class INGDiBaPDFExtractorTest
                         hasSource("ExtraKontoauszug01.txt"), hasNote("Gutschrift"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 0.01), //
-                        hasSource("ExtraKontoauszug01.txt"), hasNote("16.12.2023 bis 31.12.2023 (3,750%)"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-12-29"), hasShares(0), //
+                        hasSource("ExtraKontoauszug01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.01), hasGrossValue("EUR", 0.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4077,8 +4034,8 @@ public class INGDiBaPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(15L));
-        assertThat(results.size(), is(15));
+        assertThat(countAccountTransactions(results), is(13L));
+        assertThat(results.size(), is(13));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transactions
@@ -4129,21 +4086,13 @@ public class INGDiBaPDFExtractorTest
         assertThat(results, hasItem(deposit(hasDate("2022-12-02"), hasAmount("EUR", 50.00), //
                         hasSource("ExtraKontoauszug02.txt"), hasNote("Gutschrift/Dauerauftrag"))));
 
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        interest( //
-                                        hasDate("2022-12-05T00:00"), //
-                                        hasSource("ExtraKontoauszug02.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
-        // assert transactions
-        assertThat(results, hasItem(interest(hasDate("2022-12-31"), hasAmount("EUR", 0.02), //
-                        hasSource("ExtraKontoauszug02.txt"), hasNote("06.12.2022 bis 31.12.2022 (0,300%)"))));
-
-        // assert transactions
-        assertThat(results, hasItem(taxes(hasDate("2022-12-30"), hasAmount("EUR", 0.01), //
-                        hasSource("ExtraKontoauszug02.txt"), hasNote("Kapitalertragsteuer"))));
+        // assert transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2022-12-30"), hasShares(0), //
+                        hasSource("ExtraKontoauszug02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.03), //
+                        hasTaxes("EUR", 0.01), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4175,8 +4124,12 @@ public class INGDiBaPDFExtractorTest
                         hasSource("VLKontoauszug01.txt"), hasNote("Gutschrift-VWL"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2020-12-31"), hasAmount("EUR", 0.02), //
-                        hasSource("VLKontoauszug01.txt"), hasNote("Zinsgutschrift"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2020-12-31"), hasShares(0), //
+                        hasSource("VLKontoauszug01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4191,8 +4144,8 @@ public class INGDiBaPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(14L));
-        assertThat(results.size(), is(14));
+        assertThat(countAccountTransactions(results), is(11L));
+        assertThat(results.size(), is(11));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transactions
@@ -4236,20 +4189,12 @@ public class INGDiBaPDFExtractorTest
                         hasSource("VLKontoauszug02.txt"), hasNote("Gutschrift-VWL"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-12-31"), hasAmount("EUR", 2.55), //
-                        hasSource("VLKontoauszug02.txt"), hasNote("Zinsgutschrift"))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2023-12-31"), hasAmount("EUR", 0.62), //
-                        hasSource("VLKontoauszug02.txt"), hasNote("Kapitalertragsteuer"))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2023-12-31"), hasAmount("EUR", 0.03), //
-                        hasSource("VLKontoauszug02.txt"), hasNote("Solidaritätszuschlag"))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2023-12-31"), hasAmount("EUR", 0.05), //
-                        hasSource("VLKontoauszug02.txt"), hasNote("Kirchensteuer"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-12-31"), hasShares(0), //
+                        hasSource("VLKontoauszug02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 2.55), hasGrossValue("EUR", 3.25), //
+                        hasTaxes("EUR", (0.62 + 0.03 + 0.05)), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4264,8 +4209,8 @@ public class INGDiBaPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(5L));
-        assertThat(results.size(), is(5));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transactions
@@ -4277,12 +4222,12 @@ public class INGDiBaPDFExtractorTest
                         hasSource("VLKontoauszug03.txt"), hasNote("Gutschrift-VWL"))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-03-06"), hasAmount("EUR", 0.21), //
-                        hasSource("VLKontoauszug03.txt"), hasNote("Zinsgutschrift"))));
-
-        // assert transactions
-        assertThat(results, hasItem(taxes(hasDate("2023-03-06"), hasAmount("EUR", 0.05), //
-                        hasSource("VLKontoauszug03.txt"), hasNote("Kapitalertragsteuer"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-03-06"), hasShares(0), //
+                        hasSource("VLKontoauszug03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.21), hasGrossValue("EUR", 0.26), //
+                        hasTaxes("EUR", 0.05), hasFees("EUR", 0.00))));
 
         // assert transactions
         assertThat(results, hasItem(removal(hasDate("2023-03-06"), hasAmount("EUR", 1161.10), //
