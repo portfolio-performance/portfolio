@@ -18,6 +18,7 @@ import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -52,7 +53,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("((Gesch.ftsart:|Wertpapier Abrechnung) (Kauf|Verkauf|R.cknahme Fonds).*" //
+        final DocumentType type = new DocumentType("((Gesch.ftsart:|Wertpapier Abrechnung) (Kauf|Verkauf|R.cknahme Fonds).*" //
                         + "|B.rse \\- (Zeichnung|Kauf))");
         this.addDocumentTyp(type);
 
@@ -253,7 +254,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Ertrag|Dividendengutschrift|Kapitaltransaktion|Ertragsgutschrift nach .*)");
+        final DocumentType type = new DocumentType("(Ertrag|Dividendengutschrift|Kapitaltransaktion|Ertragsgutschrift nach .*)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -503,7 +504,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addFeeTransaction()
     {
-        DocumentType type = new DocumentType("Geb.hrenbelastung Depot");
+        final DocumentType type = new DocumentType("Geb.hrenbelastung Depot");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -566,7 +567,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
 
     private void addDeliveryInOutBoundTransaction()
     {
-        DocumentType type = new DocumentType("Gesch.ftsart: (Einbuchung|Ausbuchung)");
+        final DocumentType type = new DocumentType("Gesch.ftsart: (Einbuchung|Ausbuchung)");
         this.addDocumentTyp(type);
 
         Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
@@ -894,7 +895,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
-        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. .* [S|H]$");
+        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Abschluss.* [S|H]$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -913,7 +914,7 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("day", "month", "amount1", "amount2", "note") //
                                                         .documentContext("currency", "nr", "year") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2}).(?<month>[\\d]{2}). (Abschluss) .* [\\.,\\d]+ S$") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2}).(?<month>[\\d]{2}). Abschluss .* [\\.,\\d]+ S$") //
                                                         .match("^.*[\\.,\\d]+% einger\\. Konto.berziehung .* (?<amount1>[\\.,\\d]+)S$") //
                                                         .match("^.*[\\.,\\d]+% einger\\. Konto.berziehung .* (?<amount2>[\\.,\\d]+)S$") //
                                                         .match("^.*(?<note>Entgelte vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} .* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
@@ -943,6 +944,55 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
+
+                        // @formatter:off
+                        // 29.12. 31.12. Kapitalertragsteuer aus PN:905 8,46 S
+                        // @formatter:on
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Kapitalertrags(s)?teuer .* (?<tax>[\\.,\\d]+) S$") //
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+
+                            if (t.getType() == AccountTransaction.Type.INTEREST)
+                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                            else
+                                t.setMonetaryAmount(t.getMonetaryAmount().add(tax));
+                        })
+
+                        // @formatter:off
+                        // 29.12. 31.12. Solid.-Zuschlag aus PN:905 0,46 S
+                        // @formatter:on
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Solid\\.\\-Zuschlag .* (?<tax>[\\.,\\d]+) S$") //
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+
+                            if (t.getType() == AccountTransaction.Type.INTEREST)
+                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                            else
+                                t.setMonetaryAmount(t.getMonetaryAmount().add(tax));
+                        })
+
+                        // @formatter:off
+                        // 29.12. 31.12. Kirchensteuer aus PN:905 0,76 S
+                        // @formatter:on
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. Kirchensteuer .* (?<tax>[\\.,\\d]+) S$") //
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+
+                            if (t.getType() == AccountTransaction.Type.INTEREST)
+                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                            else
+                                t.setMonetaryAmount(t.getMonetaryAmount().add(tax));
+                        })
+
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)
                                 return new TransactionItem(t);
@@ -1014,48 +1064,6 @@ public class RaiffeisenBankgruppePDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount1")) + asAmount(v.get("amount2")));
                             t.setNote(v.get("note"));
-                        })
-
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
-
-        Block taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. (Kapitalertragsteuer|Solid\\.-Zuschlag|Kirchensteuer) .* ([\\.,\\d]+) [S|H]");
-        type.addBlock(taxesBlock);
-        taxesBlock.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
-
-                        // @formatter:off
-                        // 29.12. 31.12. Solid.-Zuschlag aus PN:905 0,46 S
-                        // 29.12. 31.12. Kirchensteuer aus PN:905 0,76 S
-                        // 29.12. 31.12. Kapitalertragsteuer aus PN:905 8,46 S
-                        // Abschluss vom 30.07.2021 bis 31.08.2021
-                        // @formatter:on
-                        .section("day", "month", "sign", "amount").optional() //
-                        .documentContext("currency", "nr", "year") //
-                        .match("^[\\d]{2}\\.[\\d]{2}\\. (?<day>[\\d]{2})\\.(?<month>[\\d]{2})\\. "
-                                        + "(Kapitalertragsteuer"
-                                        + "|Solid\\.-Zuschlag"
-                                        + "|Kirchensteuer) .* "
-                                        + "(?<amount>[\\.,\\d]+) (?<sign>[S|H])$") //
-                        .assign((t, v) -> {
-                        // @formatter:off
-                            // Is type --> "H" change from TAXES to TAX_REFUND
-                            // @formatter:on
-                            if ("H".equals(v.get("sign")))
-                                t.setType(AccountTransaction.Type.TAX_REFUND);
-
-                            dateTranactionHelper(t, v);
-
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setAmount(asAmount(v.get("amount")));
                         })
 
                         .wrap(t -> {
