@@ -691,6 +691,13 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         .match("^PLAN DE INVERSIÓN (?<note>.*\\-.*)$") //
                                                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Plan de Invesión: "))),
                                         // @formatter:off
+                                        // PLAN D'ÉPARGNE 78c5-4592
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^PLAN D..PARGNE (?<note>.*\\-.*)$") //
+                                                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Plan de D'épargne: "))),
+                                        // @formatter:off
                                         // PIANO D'INVESTIMENTO d9I1-588y
                                         // @formatter:on
                                         section -> section //
