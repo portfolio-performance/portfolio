@@ -2148,11 +2148,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 01 Dez.
                                         // Kartentransaktion HubNsrxbIO HbYYXkTJHpUamm 6,70 € 7.496,19 €
                                         // 2024
+                                        //
+                                        // 17 Feb. 
+                                        // SEPA-Lastschrift Sepa Direct Debit transfer to Stadt Wohnort 187,96 € 1.550,54 €
+                                        // 2025
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "note", "amount", "currency", "amountAfter", "currencyAfter", "year") //
                                                         .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?).*$") //
-                                                        .match("^(Kartentransaktion|con tarjeta|Virement|Parrainage) " //
+                                                        .match("^(Kartentransaktion|con tarjeta|Virement|Parrainage|SEPA\\-Lastschrift) " //
                                                                         + "(?<note>(?!(Einzahlung|Ingreso|Paiement)).*) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) " //
                                                                         + "(?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
@@ -2568,6 +2572,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // Jan. Incoming transfer from Vorname Nachname 500,00 € 581,76 €
                                         // Echtzeitüberweisung
                                         // 2025
+
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("day", "month", "year", "note", "amount", "currency") //
@@ -2583,6 +2588,27 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // 04 
+                                        // Einzahlung akzeptiert: DE00000000000000000000 auf 
+                                        // Feb. Überweisung 1.200,00 € 7.534,39 €
+                                        // DE00000000000000000000
+                                        // 2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("day", "month", "year", "amount", "currency") //
+                                                        .match("^(?<day>[\\d]{2})[\\s]$") //
+                                                        .match("^(Einzahlung akzeptiert).*$") //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) " //
+                                                                        + "(.berweisung) " //
+                                                                        + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc}$") //
+                                                        .match("^.*$") //
+                                                        .match("^(?<year>[\\d]{4})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("day") + " " + v.get("month") + " " + v.get("year")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
                                                         }))
 
                         .wrap(t -> {
