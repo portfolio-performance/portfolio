@@ -220,6 +220,9 @@ public class TradeCollector
 
         long sharesToTransfer = pair.getTransaction().getShares();
 
+        // sort positions to get fifo
+        Collections.sort(positions, BY_DATE_AND_TYPE);
+
         for (TransactionPair<PortfolioTransaction> candidate : new ArrayList<>(positions))
         {
             if (sharesToTransfer == 0)
