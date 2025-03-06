@@ -191,4 +191,13 @@ public class TextUtilTest
         assertEquals("first-second", TextUtil.concatenate("first", "second", "-"));
     }
 
+    @Test
+    public void testCompareNullCheck()
+    {
+        assertEquals(-1, TextUtil.compare(null, "a"));
+        assertEquals(1, TextUtil.compare("a", null));
+        assertEquals(0, TextUtil.compare(null, null));
+        assertEquals(0, TextUtil.compare("abc", "abc"));
+    }
+
 }
