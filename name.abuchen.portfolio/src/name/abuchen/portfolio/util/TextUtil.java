@@ -325,6 +325,13 @@ public final class TextUtil
      */
     public static int compare(String left, String right)
     {
+        if (left == null && right == null)
+            return 0;
+        else if (left == null)
+            return -1;
+        else if (right == null)
+            return 1;
+
         return COLLATOR.compare(left, right);
     }
 
