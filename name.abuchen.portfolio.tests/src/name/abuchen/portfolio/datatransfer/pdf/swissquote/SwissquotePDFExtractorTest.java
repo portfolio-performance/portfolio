@@ -1270,6 +1270,76 @@ public class SwissquotePDFExtractorTest
     }
 
     @Test
+    public void testDividende08()
+    {
+        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US82889N6739"), hasWkn(null), hasTicker(null), //
+                        hasName("SIMPLIFY BITCOIN STGY INC ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-02-28T00:00"), hasShares(281.000), //
+                        hasSource("Dividende08.txt"), //
+                        hasNote("Referenz: 795604930"), //
+                        hasAmount("CHF", 21.48), hasGrossValue("CHF", 25.28), //
+                        hasForexGrossValue("USD", 28.10), //
+                        hasTaxes("CHF", 3.80), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende08WithSecurityInCHF()
+    {
+        Security security = new Security("SIMPLIFY BITCOIN STGY INC ETF", "CHF");
+        security.setIsin("US82889N6739");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-02-28T00:00"), hasShares(281.000), //
+                        hasSource("Dividende08.txt"), //
+                        hasNote("Referenz: 795604930"), //
+                        hasAmount("CHF", 21.48), hasGrossValue("CHF", 25.28), //
+                        hasTaxes("CHF", 3.80), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode("CHF");
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testZahlungsverkehr01()
     {
         SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
