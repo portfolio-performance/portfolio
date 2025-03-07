@@ -284,11 +284,10 @@ The importer extracts the following elements:
 * `taxes` --> The total amount of tax for the transaction.
 * `ibCommission` --> The total amount of commission for the transaction.
 * `ibCommissionCurrency` --> The currency denomination of the trade.
-* `accountId` --> Account identification
+* `accountId` --> The ID of the account.
 * `assetCategory` --> e.g. Stock, Options, Futures
 * `tradeID` --> The ID of the trade.
 * `transactionID` --> The ID of the transaction.
-* `accountId` --> The account number.
 
 All available elements can be found at [ibkrguides.com](https://ibkrguides.com/reportingreference/reportguide/tradesfq.htm).
 
