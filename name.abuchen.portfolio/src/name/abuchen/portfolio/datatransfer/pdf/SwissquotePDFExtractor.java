@@ -50,7 +50,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("((B.rsen|Derivate)transaktion: )?(Kauf|Verkauf|Sell|Buy)", //
+        final DocumentType type = new DocumentType("((B.rsen|Derivate)transaktion: )?(Kauf|Verkauf|Sell|Buy)", //
                         "Anzahl W.hrung Rate");
         this.addDocumentTyp(type);
 
@@ -211,7 +211,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellCryptoTransaction()
     {
-        DocumentType type = new DocumentType("(B.rsentransaktion: )?(Kauf|Verkauf)", //
+        final DocumentType type = new DocumentType("(B.rsentransaktion: )?(Kauf|Verkauf)", //
                         "Anzahl Preis Betrag");
         this.addDocumentTyp(type);
 
@@ -285,7 +285,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendsTransaction()
     {
-        DocumentType type = new DocumentType("(Dividende|Kapitalgewinn)");
+        final DocumentType type = new DocumentType("(Dividende|Kapitalgewinn)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -302,55 +302,97 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // HARVEST CAPITAL CREDIT ORD ISIN: US41753F1093NKN: 350
-                        // Dividende 0.08 USD
-                        // @formatter:on
-                        .section("name", "isin", "currency") //
-                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                        .match("^(Dividende|Kapitalgewinn) [\\.'\\d]+ (?<currency>[\\w]{3})$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // HARVEST CAPITAL CREDIT ORD ISIN: US41753F1093NKN: 350
+                                        // Dividende 0.08 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^(Dividende|Kapitalgewinn) [\\.'\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // SIMPLIFY BITCOIN STGY INC ETF ISIN: US82889N6739
+                                        // Dividende pro Aktie USD 0.1
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^Dividende pro Aktie (?<currency>[\\w]{3}) [\\.'\\d]+.*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
                         // Anzahl 350
                         // @formatter:on
                         .section("shares") //
-                        .match("^Anzahl (?<shares>[\\.'\\d]+)$") //
+                        .match("^Anzahl (?<shares>[\\.'\\d]+).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
                         // Valutadatum 27.06.2019
                         // @formatter:on
                         .section("date") //
-                        .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .match("^Valutadatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                        // @formatter:off
-                        // Total USD 19.60
-                        // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Total USD 23.88 CHF 21.48
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Total [\\w]{3} [\\.'\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // Total USD 19.60
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }))
 
-                        // @formatter:off
-                        // Betrag EUR 134.40
-                        // Wechselkurs EUR / CHF : 0.94515
-                        // @formatter:on
-                        .section("baseCurrency", "termCurrency", "exchangeRate", "currency", "gross").optional()//
-                        .match("^Betrag (?<currency>[\\w]{3}) (?<gross>[\\.'\\d]+)$") //
-                        .match("^Wechselkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) : (?<exchangeRate>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
-                            type.getCurrentContext().putType(rate);
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Betrag USD 28.10 CHF 25.28
+                                        // Wechselkurs USD / CHF : 0.89959
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross") //
+                                                        .match("^Betrag [\\w]{3} [\\.'\\d]+ [\\w]{3} (?<gross>[\\.'\\d]+).*$") //
+                                                        .match("^Wechselkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) : (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                                                            Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = rate.convert(rate.getBaseCurrency(), gross);
 
-                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
-                        })
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Betrag EUR 134.40
+                                        // Wechselkurs EUR / CHF : 0.94515
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross") //
+                                                        .match("^Betrag [\\w]{3} (?<gross>[\\.'\\d]+)$") //
+                                                        .match("^Wechselkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) : (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
 
                         // @formatter:off
                         // Dividende Unsere Referenz: 32484929
@@ -367,7 +409,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
     private void addPaymentTransaction()
     {
-        DocumentType type = new DocumentType("(Zahlungsverkehr|Depotgeb.hren Unsere Referenz:)");
+        final DocumentType type = new DocumentType("(Zahlungsverkehr|Depotgeb.hren Unsere Referenz:)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -452,7 +494,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
     private void addInterestTransaction()
     {
-        DocumentType type = new DocumentType("Zinsabrechnung");
+        final DocumentType type = new DocumentType("Zinsabrechnung");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -580,7 +622,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
     private void addNonImportableTransaction()
     {
-        DocumentType type = new DocumentType("((B.rsen|Derivate)transaktion: )?Verfall", //
+        final DocumentType type = new DocumentType("((B.rsen|Derivate)transaktion: )?Verfall", //
                         "Anzahl W.hrung Rate");
         this.addDocumentTyp(type);
 
@@ -666,28 +708,29 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // Abgabe (Eidg. Stempelsteuer) USD 4.75
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Abgabe \\(Eidg\\. Stempelsteuer\\) (?<currency>[\\w]{3}) (?<tax>[\\.'\\d]+)$") //
+                        .match("^Abgabe \\(Eidg\\. Stempelsteuer\\) (?<currency>[\\w]{3}) (?<tax>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Quellensteuer 15.00% (US) USD 4.20
+                        // Quellensteuer 15.00% (US) USD 4.22 CHF 3.80
                         // @formatter:on
                         .section("currency", "withHoldingTax").optional() //
-                        .match("^Quellensteuer [\\.'\\d]+% \\(.*\\) (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.'\\d]+)$") //
+                        .match("^Quellensteuer [\\.'\\d]+% \\(.*\\)( [\\w]{3} [\\.'\\d]+)? (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Zusätzlicher Steuerrückbehalt 15% USD 4.20
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Zus.tzlicher Steuerr.ckbehalt [\\.'\\d]+% (?<currency>[\\w]{3}) (?<tax>[\\.'\\d]+)$") //
+                        .match("^Zus.tzlicher Steuerr.ckbehalt [\\.'\\d]+% (?<currency>[\\w]{3}) (?<tax>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Verrechnungssteuer 35% (CH) CHF 63.88
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Verrechnungssteuer [\\.'\\d]+% \\(.*\\) (?<currency>[\\w]{3}) (?<tax>[\\.'\\d]+)$") //
+                        .match("^Verrechnungssteuer [\\.'\\d]+% \\(.*\\) (?<currency>[\\w]{3}) (?<tax>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -699,21 +742,21 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // Kommission Swissquote Bank AG USD 0.85
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Kommission Swissquote Bank AG (?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+)$") //
+                        .match("^Kommission Swissquote Bank AG (?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Börsengebühren CHF 1.00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^B.rsengeb.hren (?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+)$") //
+                        .match("^B.rsengeb.hren (?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Kommission CHF 1.00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Kommission (?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+)$") //
+                        .match("^Kommission (?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
