@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
+import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -1055,7 +1056,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .section("type", "amount", "date", "note").optional() //
                         .documentContext("currency") //
                         .match("^[\\s]+ (?<type>[\\-\\s])(?<amount>[\\.,\\d]+)$") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                        .match("^(?<date>[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))" //
                                         + "(?<note>(Lohn, Gehalt, Rente" //
                                         + "|Zahlungseingang" //
@@ -1080,7 +1081,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(trim(v.get("type"))))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -1123,9 +1124,11 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 09.12.2024 Kartenzahlung               -10,00
-        // 9.12.2024 Zahlungseingang               500,00
+        // 09.12.2024 Zahlungseingang               500,00
+        // 06.02.2025 Kartenzahlung onl              -460,00
+        //  1 7.02.2025 Kartenzahlung               -44,00
         // @formatter:on
-        Block depositRemovalBlock_Format02 = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})).*[\\.,\\d]+$");
+        Block depositRemovalBlock_Format02 = new Block("^[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4}(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})).*[\\.,\\d]+$");
         type.addBlock(depositRemovalBlock_Format02);
         depositRemovalBlock_Format02.setMaxSize(1);
         depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
@@ -1138,7 +1141,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "note", "type", "amount").optional() //
                         .documentContext("currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                        .match("^(?<date>[\\d\\s]{1,4}.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?<note>(Lohn, Gehalt, Rente" //
                                         + "|Zahlungseingang" //
                                         + "|Storno Gutschrift" //
@@ -1151,6 +1154,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "|Basislastschrift" //
                                         + "|Lastschrift" //
                                         + "|Kartenzahlung" //
+                                        + "|Kartenzahlung onl" //
                                         + "|Kreditkartenabr\\." //
                                         + "|Verf.gung Geldautomat" //
                                         + "|Verf.g\\. Geldautom\\. FW" //
@@ -1163,7 +1167,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(trim(v.get("type"))))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
 
@@ -1218,7 +1222,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .section("type", "amount", "date", "note1", "note2").optional() //
                         .documentContext("currency") //
                         .match("^[\\s]+ (?<type>[\\-\\s])(?<amount>[\\.,\\d]+)$") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
+                        .match("^(?<date>[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))" //
                                         + "(?<note1>(Rechnung" //
                                         + "|Buchung" //
@@ -1236,7 +1240,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if ("-".equals(trim(v.get("type"))))
                                 t.setType(AccountTransaction.Type.FEES);
 
-                            t.setDateTime(asDate(v.get("date")));
+                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setNote(v.get("note1") + " " + v.get("note2"));

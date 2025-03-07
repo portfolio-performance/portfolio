@@ -1,0 +1,57 @@
+```
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.2.qualifier
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Deutsche Kreditbank AG
+Herrn Internes Zeichen:
+Max Mustermann 180 41 00
+Musterstr. Str. 3  
+01111 City  
+ 
+ 
+ 
+ 
+ 
+ 
+ 5. März 2025
+Kontoauszug 3/2025 Seite 1 von 3
+G  irokonto 1111111111, DE45 1203 0000 1111 1111 11 
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+ Kontostand am 04.02.2025, Auszug Nr.    2                 585,61
+06.02.2025 Kartenzahlung onl              -460,00
+WOKO.GMBH..TEAMDUELL.D/LEIPZIG/../D E 
+2025-02-05T02:44 Debitk.54 1111-12 Zahl.System VISA 
+Debit
+ 1 7.02.2025 Kartenzahlung               -44,00
+FREIBERGER.SCHANKHAUS/City/../DE 
+2025-02-14T14:59 Debitk.54 1111-12 Zahl.System VISA 
+Debit
+ Kontostand am 04.03.2025 um 18:04 Uhr                 81,61
+Ihr Dispositionskredit EUR: 2.000,00
+Gesamtumsatzsummen Summe Soll EUR Anzahl Summe Haben EUR Anzahl
+ . -3.219,29 25 3.279,75 4
+Hinweise zum Kontoauszug:
+l Bitte den Kontoauszug prüfen. Nicht autorisierte oder fehlerhaft ausgeführte Aufträge müssen uns unverzüglich angezeigt 
+werden.
+l Der Kontoauszug am Ende eines Kalenderquartals beinhaltet regelmäßig einen Rechnungsabschluss. Dieser gilt als genehmigt, 
+wenn ihm nicht vor Ablauf von sechs Wochen nach Zugang widersprochen wird. Einwendungen gegen Rechnungsabschlüsse 
+müssen der Deutschen Kreditbank AG in Textform zugehen. Zur Fristwahrung genügt die rechtzeitige Absendung (Nr. 7 Abs. 3 
+der Allgemeinen Geschäftsbedingungen).
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte 
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise 
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Die Gutschrift von Schecks, Lastschriften oder anderen Einzugspapieren vor ihrer Einlösung geschieht unter Vorbehalt 
+(E.v.-Gutschrift). Werden Schecks oder Lastschriften nicht eingelöst oder geht der DKB der Gegenwert nicht zu, so macht sie die 
+Gutschrift gemäß Nr. 23 der AGB rückgängig (Stornobuchung), und zwar auch nach einem zwischenzeitlich erfolgten 
+Rechnungsabschluss.
+l Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen: im 
+"Informationsbogen für Einleger" sowie auf unserer Webseite unter dkb.de/kundenservice/einlagensicherung.
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Dr. Sven Deglow (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-CharlMustermannenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Trink (HRB 34165 B)
+
+```

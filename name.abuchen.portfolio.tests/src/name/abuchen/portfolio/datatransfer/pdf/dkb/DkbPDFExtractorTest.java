@@ -4638,6 +4638,32 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testGiroKontoauszug30()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug30.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-02-06"), hasAmount("EUR", 460.00), //
+                        hasSource("GiroKontoauszug30.txt"), hasNote("Kartenzahlung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-02-17"), hasAmount("EUR", 44.00), //
+                        hasSource("GiroKontoauszug30.txt"), hasNote("Kartenzahlung"))));
+    }
+
+    @Test
     public void testTagesgeldKontoauszug01()
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
