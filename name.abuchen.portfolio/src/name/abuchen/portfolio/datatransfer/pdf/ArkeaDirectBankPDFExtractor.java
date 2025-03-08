@@ -111,7 +111,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction_Format02()
     {
-        final DocumentType type = new DocumentType("Souscription . titre r.ductible");
+        final DocumentType type = new DocumentType("(Souscription . titre r.ductible|Souscription avec droits)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
