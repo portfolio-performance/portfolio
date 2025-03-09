@@ -37,6 +37,22 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.74.2" date="2025-03-09">
+      <description>
+        <ul>
+          <li xml:lang="en">Improvement: Instruments in the "Follow-up" widget are now grouped by date and type for better clarity.</li>
+          <li xml:lang="en">Improvement: CSV import now also supports time in ISO format yyyy-MM-dd'T'HH:mm.</li>
+          <li xml:lang="en">Improvement: The "Balance" column is now color-coded depending on whether the balance is positive or negative (instead of whether the transaction increases or decreases the value).</li>
+          <li xml:lang="en">Improvements to the PDF importers for Arkea Direct Bank, Swissquote, DKB, Trade Republic, ING-DiBa, Consorsbank, C24 Bank, ABN AMRO, akf bank, N26, Raiffeisenbank, Audi Bank, Saxo, and PhrozenByte.</li>
+          <li xml:lang="en">Fix: Corrected an issue with trade assignment during multiple portfolio transfers of a position.</li>
+          <li xml:lang="de">Verbesserung: Wertpapiere im Widget "Termin erreicht" werden nun zur besseren Übersicht gruppiert.</li>
+          <li xml:lang="de">Verbesserung: CSV Import unterstützt jetzt auch die Uhrzeit mit dem ISO Format yyyy-MM-dd'T'HH:mm.</li>
+          <li xml:lang="de">Verbesserung: Die Spalte "Saldo" wird nun farblich markiert, abhängig davon, ob der Saldo positiv oder negativ ist (statt ob die Buchung den Wert erhöht oder verringert).</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Arkea Direct Bank, Swissquote, DKB, Trade Republic, ING-DiBa, Consorsbank, C24 Bank, ABN AMRO, akf bank, N26, Raiffeisenbank, Audi Bank, Saxo, PhrozenByte</li>
+          <li xml:lang="de">Fix: Korrigiert ein Problem bei der Zuordnung von Trades bei mehrfachen Depotübertragungen einer Position.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.74.1" date="2025-02-23">
       <description>
         <ul>
