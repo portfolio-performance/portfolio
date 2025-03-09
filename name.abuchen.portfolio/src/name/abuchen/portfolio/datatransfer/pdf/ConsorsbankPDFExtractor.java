@@ -19,6 +19,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -811,8 +812,27 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                                         .assign((ctx, v) -> {
                                                                             ctx.put("currency", asCurrencyCode(v.get("currency")));
                                                                             ctx.put("date", v.get("date"));
+                                                                        }))
 
-                                                                        })));
+                                        .optionalOneOf( //
+                                                        // @formatter:off
+                                                        // STEUER 28.03. 8800 31.03. 68,98-
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("year", "taxDate", "tax") //
+                                                                        .match("^Datum [\\d]{2}\\.[\\d]{2}\\.(?<year>[\\d]{2}) .* Kontow.hrung [\\w]{3}$") //
+                                                                        .match("^STEUER [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<taxDate>[\\d]{2}\\.[\\d]{2}\\.) (?<tax>[\\.,\\d]+)\\-$") //
+                                                                        .assign((ctx, v) -> {
+                                                                            ctx.put("taxDate", v.get("taxDate") + v.get("year"));
+                                                                            ctx.put("tax", v.get("tax"));
+                                                                        }),
+                                                        // @formatter:off
+                                                        // SUMME STEUERN 68,98 S
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("tax") //
+                                                                        .match("^SUMME STEUERN (?<tax>[\\.,\\d]+) S$") //
+                                                                        .assign((ctx, v) -> ctx.put("tax", v.get("tax")))));
 
         this.addDocumentTyp(type);
 
@@ -911,6 +931,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "amount", "type") //
                         .documentContext("year", "currency") //
+                        .documentContextOptionally("taxDate", "tax") //
                         .match("^ABSCHLUSS [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+])$") //
                         .assign((t, v) -> {
                             // @formatter:off
@@ -922,6 +943,17 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date") + v.get("year")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
+
+                            if (v.containsKey("tax") && t.getDateTime().equals(asDate(v.get("taxDate"))))
+                            {
+                                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                                t.addUnit(new Unit(Unit.Type.TAX, tax));
+
+                                if (t.getType() == AccountTransaction.Type.INTEREST)
+                                    t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                                else
+                                    t.setMonetaryAmount(t.getMonetaryAmount().add(tax));
+                            }
                         })
 
                         .wrap(TransactionItem::new));
@@ -941,6 +973,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         .section("amount", "type") //
                         .documentContext("currency", "date") //
+                        .documentContextOptionally("tax")
                         .match("^SUMME DER ABSCHLUSSPOSTEN (?<amount>[\\.,\\d]+) (?<type>[H|S])$") //
                         .assign((t, v) -> {
                             // @formatter:off
@@ -952,66 +985,17 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(v.get("currency"));
                             t.setAmount(asAmount(v.get("amount")));
-                        })
 
-                        .wrap(TransactionItem::new));
+                            if (v.containsKey("tax"))
+                            {
+                                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                                t.addUnit(new Unit(Unit.Type.TAX, tax));
 
-        // @formatter:off
-        // STEUER 28.03. 8800 31.03. 68,98-
-        // @formatter:on
-        Block taxesBlock_Format01 = new Block("^STEUER [\\d]{2}\\.[\\d]{2}\\. [\\d]+ [\\d]{2}\\.[\\d]{2}\\. [\\.,\\d]+[\\-|\\+]$");
-        type.addBlock(taxesBlock_Format01);
-        taxesBlock_Format01.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
-
-                        .section("date", "amount", "type") //
-                        .documentContext("year", "currency") //
-                        .match("^STEUER [\\d]{2}\\.[\\d]{2}\\. [\\d]+ (?<date>[\\d]{2}\\.[\\d]{2}\\.) (?<amount>[\\.,\\d]+)(?<type>[\\-|\\+])$") //
-                        .assign((t, v) -> {
-                            // @formatter:off
-                            // Is type --> "S" change from TAXES to TAX_REFUND
-                            // @formatter:on
-                            if ("+".equals(v.get("type")))
-                                t.setType(AccountTransaction.Type.TAX_REFUND);
-
-                            t.setDateTime(asDate(v.get("date") + v.get("year")));
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        .wrap(TransactionItem::new));
-
-        // @formatter:off
-        // SUMME STEUERN 68,98 S
-        // @formatter:on
-        Block taxesBlock_Format02 = new Block("^SUMME STEUERN [\\.,\\d]+ [H|S]$");
-        type.addBlock(taxesBlock_Format02);
-        taxesBlock_Format02.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
-                            return accountTransaction;
-                        })
-
-                        .section("amount", "type") //
-                        .documentContext("currency", "date") //
-                        .match("^SUMME STEUERN (?<amount>[\\.,\\d]+) (?<type>[H|S])$") //
-                        .assign((t, v) -> {
-                            // @formatter:off
-                            // Is type --> "S" change from TAX_REFUND to TAXES
-                            // @formatter:on
-                            if ("S".equals(v.get("type")))
-                                t.setType(AccountTransaction.Type.TAXES);
-
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setAmount(asAmount(v.get("amount")));
+                                if (t.getType() == AccountTransaction.Type.INTEREST)
+                                    t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                                else
+                                    t.setMonetaryAmount(t.getMonetaryAmount().add(tax));
+                            }
                         })
 
                         .wrap(TransactionItem::new));

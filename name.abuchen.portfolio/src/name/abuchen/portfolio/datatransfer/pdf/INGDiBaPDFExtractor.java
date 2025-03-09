@@ -20,6 +20,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -68,13 +69,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "|Kauf Einmalanlage" //
                         + "|Kauf aus Sparplan" //
                         + "|Kauf aus Wiederanlage Fondsaussch.ttung" //
+                        + "|Kauf aus Wiederanlage einer Aussch.ttung" //
                         + "|Kauf Zeichnung" //
                         + "|Bezug" //
                         + "|Verkauf" //
                         + "|Verkauf aus Kapitalmaßnahme" //
                         + "|Verk\\. Teil\\-\\/Bezugsr\\.)" //
                         + "|R.ckzahlung" //
-                        + "|Einl.sung"
+                        + "|Einl.sung" //
                         + "|Operaciones Cuenta de Valores)", jointAccount);
         this.addDocumentTyp(type);
 
@@ -85,13 +87,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "|Kauf Einmalanlage" //
                         + "|Kauf aus Sparplan" //
                         + "|Kauf aus Wiederanlage Fondsaussch.ttung" //
+                        + "|Kauf aus Wiederanlage einer Aussch.ttung" //
                         + "|Kauf Zeichnung" //
                         + "|Bezug" //
                         + "|Verkauf" //
                         + "|Verkauf aus Kapitalmaßnahme" //
                         + "|Verk\\. Teil\\-\\/Bezugsr\\.)" //
                         + "|R.ckzahlung" //
-                        + "|Einl.sung"
+                        + "|Einl.sung" //
                         + "|Operaciones Cuenta de Valores)");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
@@ -111,14 +114,15 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         + "|Kauf Einmalanlage" //
                                         + "|Kauf aus Sparplan" //
                                         + "|Kauf aus Wiederanlage Fondsaussch.ttung" //
+                                        + "|Kauf aus Wiederanlage einer Aussch.ttung" //
                                         + "|Kauf Zeichnung" //
                                         + "|Bezug" //
                                         + "|Verkauf" //
                                         + "|Verkauf aus Kapitalmaßnahme" //
                                         + "|Verk. Teil\\-\\/Bezugsr\\.)" //
                                         + "|R.ckzahlung" //
-                                        + "|Einl.sung"
-                                        + "|Venta)$") //
+                                        + "|Einl.sung" //
+                                        + "|Venta)$")
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type")) //
                                             || "Verkauf aus Kapitalmaßnahme".equals(v.get("type")) //
@@ -351,7 +355,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("(Dividendengutschrift" //
                         + "|Ertragsgutschrift" //
-                        + "|Zinsgutschrift"
+                        + "|Zinsgutschrift" //
                         + "|Abono de Dividendos)", //
                         jointAccount);
         this.addDocumentTyp(type);
@@ -360,7 +364,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
         Block firstRelevantLine = new Block("^(Dividendengutschrift" //
                         + "|Ertragsgutschrift" //
-                        + "|Zinsgutschrift"
+                        + "|Zinsgutschrift" //
                         + "|Abono de Dividendos).*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
@@ -649,6 +653,42 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                                         .assign((ctx, v) -> {
                                                                             if ("Euro".equals(v.get("currency")))
                                                                                 ctx.put("currency", asCurrencyCode("EUR"));
+                                                                        }))
+
+                                        .optionalOneOf( //
+                                                        // @formatter:off
+                                                        // 30.12.2016 Kapitalertragsteuer -1,38
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("taxDate1", "tax1").multipleTimes() //
+                                                                        .match("^(?<taxDate1>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Kapitalertrags(s)?teuer \\-(?<tax1>[\\.,\\d]+)$") //
+                                                                        .assign((ctx, v) -> {
+                                                                            ctx.put("taxDate1", v.get("taxDate1"));
+                                                                            ctx.put("tax1", v.get("tax1"));
+                                                                        }))
+
+                                        .optionalOneOf( //
+                                                        // @formatter:off
+                                                        // 30.12.2016 Solidaritätszuschlag -0,07
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("taxDate2", "tax2") //
+                                                                        .match("^(?<taxDate2>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Solidarit.tszuschlag \\-(?<tax2>[\\.,\\d]+)$") //
+                                                                        .assign((ctx, v) -> {
+                                                                            ctx.put("taxDate2", v.get("taxDate2"));
+                                                                            ctx.put("tax2", v.get("tax2"));
+                                                                        }))
+
+                                        .optionalOneOf( //
+                                                        // @formatter:off
+                                                        // 30.12.2016 Kirchensteuer -0,11
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("taxDate3", "tax3") //
+                                                                        .match("^(?<taxDate3>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Kirchensteuer \\-(?<tax3>[\\.,\\d]+)$") //
+                                                                        .assign((ctx, v) -> {
+                                                                            ctx.put("taxDate3", v.get("taxDate3"));
+                                                                            ctx.put("tax3", v.get("tax3"));
                                                                         })));
 
         this.addDocumentTyp(type);
@@ -737,7 +777,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (bis|Zinsen|Zinsgutschrift)( [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})?.* [\\.,\\d]+$");
+        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Zinsertrag|Zinsgutschrift) [\\.,\\d]+$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
@@ -749,94 +789,40 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         // @formatter:off
-                                        // 01.01.2016 bis 14.06.2016 0,50%  Zins 0,40
-                                        // 15.06.2016 bis 31.12.2016 0,35%  Zins 5,22
-                                        // 16.12.2023 bis 31.12.2023 3,750%  bis 250.000 Euro für das 1. Extra-Konto 0,01
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("note1", "date", "note2", "amount") //
-                                                        .documentContext("currency") //
-                                                        .match("^(?<note1>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})) " //
-                                                                        + "(?<note2>[\\.,\\d]+%) " //
-                                                                        + ".* (?<amount>[\\.,\\d]+)$") //
-                                                        .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                            t.setCurrencyCode(v.get("currency"));
-                                                            t.setNote(v.get("note1") + " (" + v.get("note2") + ")");
-                                                        }),
-                                        // @formatter:off
-                                        // 01.01.2022 bis 05.12.2022 keine Zinsen erwirtschaftet 0,00
+                                        // 30.12.2016 Zinsertrag 5,62
+                                        // 31.12.2020 Zinsgutschrift 0,02
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount") //
                                                         .documentContext("currency") //
-                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                                                        + "keine Zinsen erwirtschaftet " //
-                                                                        + "(?<amount>[\\.,\\d]+)$") //
+                                                        .documentContextOptionally("taxDate1", "taxDate2", "taxDate3", "tax1", "tax2", "tax3")
+                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Zinsertrag|Zinsgutschrift) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
 
-                                                            t.setDateTime(asDate(v.get("date")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                            t.setCurrencyCode(v.get("currency"));
-                                                        }),
-                                        // @formatter:off
-                                        // 31.12.2020 Zinsgutschrift 0,02
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("note1", "date", "amount") //
-                                                        .documentContext("currency") //
-                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                                                        + "(?<note1>Zinsgutschrift) " //
-                                                                        + "(?<amount>[\\.,\\d]+)$") //
-                                                        .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                            t.setCurrencyCode(v.get("currency"));
-                                                            t.setNote(v.get("note1"));
+                                                            if (v.containsKey("taxDate1") && v.containsKey("tax1")
+                                                                            && t.getDateTime().equals(asDate(v.get("taxDate1"))))
+                                                            {
+                                                                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax1")));
+                                                                t.addUnit(new Unit(Unit.Type.TAX, tax));
+                                                            }
+
+                                                            if (v.containsKey("taxDate2") && v.containsKey("tax2")
+                                                                            && t.getDateTime().equals(asDate(v.get("taxDate2"))))
+                                                            {
+                                                                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax2")));
+                                                                t.addUnit(new Unit(Unit.Type.TAX, tax));
+                                                            }
+
+                                                            if (v.containsKey("taxDate3") && v.containsKey("tax3")
+                                                                            && t.getDateTime().equals(asDate(v.get("taxDate3"))))
+                                                            {
+                                                                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax3")));
+                                                                t.addUnit(new Unit(Unit.Type.TAX, tax));
+                                                            }
                                                         }))
-
-                        .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
-
-                            if (ctx.getString(FAILURE) != null)
-                                item.setFailureMessage(ctx.getString(FAILURE));
-
-                            return item;
-                        }));
-
-        // @formatter:off
-        // 30.12.2016 Kapitalertragsteuer -1,38
-        // 30.12.2016 Solidaritätszuschlag -0,07
-        // 30.12.2016 Kirchensteuer -0,11
-        // @formatter:on
-        Block taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
-                        + "(Kapitalertrags(s)?teuer" //
-                        + "|Solidarit.tszuschlag" //
-                        + "|Kirchensteuer) \\-[\\.,\\d]+$");
-        type.addBlock(taxesBlock);
-        taxesBlock.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
-
-                        .section("date", "note", "amount") //
-                        .documentContext("currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) " //
-                                        + "(?<note>Kapitalertrags(s)?teuer" //
-                                        + "|Solidarit.tszuschlag" //
-                                        + "|Kirchensteuer) " //
-                                        + "\\-(?<amount>[\\.,\\d]+)$") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setNote(v.get("note"));
-                        })
 
                         .wrap(TransactionItem::new));
 

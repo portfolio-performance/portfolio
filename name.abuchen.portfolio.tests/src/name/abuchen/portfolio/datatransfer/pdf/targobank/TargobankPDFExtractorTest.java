@@ -1748,7 +1748,7 @@ public class TargobankPDFExtractorTest
                         hasDate("2024-12-18T00:00"), hasShares(4.00), //
                         hasSource("SteuerbehandlungVonDividende07.txt"), //
                         hasNote("Tr.-Nr.: INDTBK35424CG007898O00"), //
-                        hasAmount("EUR", 0.83), hasGrossValue("EUR", 0.83), //
+                        hasAmount("EUR", 0.83 + 1.18), hasGrossValue("EUR", 0.83 + 1.18), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -1781,9 +1781,9 @@ public class TargobankPDFExtractorTest
                         hasDate("2024-12-18T00:00"), hasShares(4.00), //
                         hasSource("Dividende07.txt; SteuerbehandlungVonDividende07.txt"), //
                         hasNote("R.-Nr.: CPS-2024-0223620171-0003969 | Tr.-Nr.: INDTBK35424CG007898O00"), //
-                        hasAmount("EUR", 7.06), hasGrossValue("EUR", 7.89), //
+                        hasAmount("EUR", 7.06 - 1.18), hasGrossValue("EUR", 7.89), //
                         hasForexGrossValue("USD", 8.24), //
-                        hasTaxes("EUR", 0.83), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 0.83 + 1.18), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1816,8 +1816,8 @@ public class TargobankPDFExtractorTest
                         hasDate("2024-12-18T00:00"), hasShares(4.00), //
                         hasSource("Dividende07.txt; SteuerbehandlungVonDividende07.txt"), //
                         hasNote("R.-Nr.: CPS-2024-0223620171-0003969 | Tr.-Nr.: INDTBK35424CG007898O00"), //
-                        hasAmount("EUR", 7.06), hasGrossValue("EUR", 7.89), //
-                        hasTaxes("EUR", 0.83), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 7.06 - 1.18), hasGrossValue("EUR", 7.89), //
+                        hasTaxes("EUR", 0.83 + 1.18), hasFees("EUR", 0.00), //
                         check(tx -> {
                             CheckCurrenciesAction c = new CheckCurrenciesAction();
                             Account account = new Account();
@@ -1856,8 +1856,8 @@ public class TargobankPDFExtractorTest
                         hasDate("2024-12-18T00:00"), hasShares(4.00), //
                         hasSource("Dividende07.txt; SteuerbehandlungVonDividende07.txt"), //
                         hasNote("R.-Nr.: CPS-2024-0223620171-0003969 | Tr.-Nr.: INDTBK35424CG007898O00"), //
-                        hasAmount("EUR", 7.06), hasGrossValue("EUR", 7.89), //
-                        hasTaxes("EUR", 0.83), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 7.06 - 1.18), hasGrossValue("EUR", 7.89), //
+                        hasTaxes("EUR", 0.83 + 1.18), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -1890,8 +1890,8 @@ public class TargobankPDFExtractorTest
                         hasDate("2024-12-18T00:00"), hasShares(4.00), //
                         hasSource("Dividende07.txt; SteuerbehandlungVonDividende07.txt"), //
                         hasNote("R.-Nr.: CPS-2024-0223620171-0003969 | Tr.-Nr.: INDTBK35424CG007898O00"), //
-                        hasAmount("EUR", 7.06), hasGrossValue("EUR", 7.89), //
-                        hasTaxes("EUR", 0.83), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 7.06 - 1.18), hasGrossValue("EUR", 7.89), //
+                        hasTaxes("EUR", 0.83 + 1.18), hasFees("EUR", 0.00), //
                         check(tx -> {
                             CheckCurrenciesAction c = new CheckCurrenciesAction();
                             Account account = new Account();
@@ -2000,7 +2000,7 @@ public class TargobankPDFExtractorTest
                         hasDate("2020-10-01T00:00"), hasShares(127.00), //
                         hasSource("SteuerbehandlungVonDividende08.txt"), //
                         hasNote("Tr.-Nr.: INDTBK27620CG00000"), //
-                        hasAmount("EUR", 4.68), hasGrossValue("EUR", 4.68), //
+                        hasAmount("EUR", 4.68 + 6.65), hasGrossValue("EUR", 4.68 + 6.65), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -2033,9 +2033,9 @@ public class TargobankPDFExtractorTest
                         hasDate("2020-10-01T00:00"), hasShares(127.00), //
                         hasSource("Dividende08.txt; SteuerbehandlungVonDividende08.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223111111-0001111 | Tr.-Nr.: INDTBK27620CG00000"), //
-                        hasAmount("EUR", 39.67), hasGrossValue("EUR", 44.35), //
+                        hasAmount("EUR", 33.02), hasGrossValue("EUR", 44.35), //
                         hasForexGrossValue("USD", 52.07), //
-                        hasTaxes("EUR", 4.68), hasFees("EUR", 0.00))));
+                        hasTaxes("EUR", 4.68 + 6.65), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2068,8 +2068,8 @@ public class TargobankPDFExtractorTest
                         hasDate("2020-10-01T00:00"), hasShares(127.00), //
                         hasSource("Dividende08.txt; SteuerbehandlungVonDividende08.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223111111-0001111 | Tr.-Nr.: INDTBK27620CG00000"), //
-                        hasAmount("EUR", 39.67), hasGrossValue("EUR", 44.35), //
-                        hasTaxes("EUR", 4.68), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 39.67 - 6.65), hasGrossValue("EUR", 44.35), //
+                        hasTaxes("EUR", 4.68 + 6.65), hasFees("EUR", 0.00), //
                         check(tx -> {
                             CheckCurrenciesAction c = new CheckCurrenciesAction();
                             Account account = new Account();
@@ -2080,7 +2080,7 @@ public class TargobankPDFExtractorTest
     }
 
     @Test
-    public void testDividende08MitSteuerbehandlungVonDividende07_SourceFilesReversed()
+    public void testDividende08MitSteuerbehandlungVonDividende08_SourceFilesReversed()
     {
         TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
 
@@ -2108,8 +2108,8 @@ public class TargobankPDFExtractorTest
                         hasDate("2020-10-01T00:00"), hasShares(127.00), //
                         hasSource("Dividende08.txt; SteuerbehandlungVonDividende08.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223111111-0001111 | Tr.-Nr.: INDTBK27620CG00000"), //
-                        hasAmount("EUR", 39.67), hasGrossValue("EUR", 44.35), //
-                        hasTaxes("EUR", 4.68), hasFees("EUR", 0.00))));
+                        hasAmount("EUR", 39.67 - 6.65), hasGrossValue("EUR", 44.35), //
+                        hasTaxes("EUR", 4.68 + 6.65), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -2142,8 +2142,8 @@ public class TargobankPDFExtractorTest
                         hasDate("2020-10-01T00:00"), hasShares(127.00), //
                         hasSource("Dividende08.txt; SteuerbehandlungVonDividende08.txt"), //
                         hasNote("R.-Nr.: CPS-2020-0223111111-0001111 | Tr.-Nr.: INDTBK27620CG00000"), //
-                        hasAmount("EUR", 39.67), hasGrossValue("EUR", 44.35), //
-                        hasTaxes("EUR", 4.68), hasFees("EUR", 0.00), //
+                        hasAmount("EUR", 39.67 - 6.65), hasGrossValue("EUR", 44.35), //
+                        hasTaxes("EUR", 4.68 + 6.65), hasFees("EUR", 0.00), //
                         check(tx -> {
                             CheckCurrenciesAction c = new CheckCurrenciesAction();
                             Account account = new Account();

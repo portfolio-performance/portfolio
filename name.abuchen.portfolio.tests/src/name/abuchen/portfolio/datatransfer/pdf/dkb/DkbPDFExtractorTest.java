@@ -3495,21 +3495,27 @@ public class DkbPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug10.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(3));
+        assertThat(results.size(), is(2));
 
         // check transaction
         // get transactions
         Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(2L));
 
         Item item = iter.next();
 
         // assert transaction
         AccountTransaction transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-09-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.04)));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.03))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.04))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.01))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getSource(), is("GiroKontoauszug10.txt"));
         assertThat(transaction.getNote(), is("Abrechnungszeitraum vom 01.07.2015 bis 30.09.2015"));
 
@@ -3523,17 +3529,6 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.18)));
         assertThat(transaction.getSource(), is("GiroKontoauszug10.txt"));
         assertThat(transaction.getNote(), is("Zinsen für Dispositionskredit"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-09-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.01)));
-        assertThat(transaction.getSource(), is("GiroKontoauszug10.txt"));
-        assertThat(transaction.getNote(), is("Kapitalertragsteuer"));
     }
 
     @Test
@@ -3544,6 +3539,53 @@ public class DkbPDFExtractorTest
         List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check transaction
+        // get transactions
+        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(2L));
+
+        Item item = iter.next();
+
+        // assert transaction
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-12-30T00:00")));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.16))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.22))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.06))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getSource(), is("GiroKontoauszug11.txt"));
+        assertThat(transaction.getNote(), is("Abrechnungszeitraum vom 01.10.2015 bis 31.12.2015"));
+
+        item = iter.next();
+
+        // assert transaction
+        transaction = (AccountTransaction) item.getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-12-30T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.14)));
+        assertThat(transaction.getSource(), is("GiroKontoauszug11.txt"));
+        assertThat(transaction.getNote(), is("Zinsen für Dispositionskredit"));
+    }
+
+    @Test
+    public void testGiroKontoauszug12()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug12.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
@@ -3559,72 +3601,17 @@ public class DkbPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-12-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.22)));
-        assertThat(transaction.getSource(), is("GiroKontoauszug11.txt"));
-        assertThat(transaction.getNote(), is("Abrechnungszeitraum vom 01.10.2015 bis 31.12.2015"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-12-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.14)));
-        assertThat(transaction.getSource(), is("GiroKontoauszug11.txt"));
-        assertThat(transaction.getNote(), is("Zinsen für Dispositionskredit"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-12-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.06)));
-        assertThat(transaction.getSource(), is("GiroKontoauszug11.txt"));
-        assertThat(transaction.getNote(), is("Kapitalertragsteuer"));
-    }
-
-    @Test
-    public void testGiroKontoauszug12()
-    {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
-
-        List<Exception> errors = new ArrayList<>();
-
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug12.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(results.size(), is(4));
-
-        // check transaction
-        // get transactions
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(4L));
-
-        Item item = iter.next();
-
-        // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-06-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.19)));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.14))));
+        assertThat(transaction.getGrossValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.19))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.05))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getSource(), is("GiroKontoauszug12.txt"));
         assertThat(transaction.getNote(), is("Abrechnungszeitraum vom 01.04.2015 bis 30.06.2015"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-06-30T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.05)));
-        assertThat(transaction.getSource(), is("GiroKontoauszug12.txt"));
-        assertThat(transaction.getNote(), is("Kapitalertragsteuer"));
 
         item = iter.next();
 
@@ -4549,21 +4536,17 @@ public class DkbPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(3L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-06-30"), hasAmount("EUR", 302.54), //
-                        hasSource("GiroKontoauszug27.txt"), hasNote("Abrechnungszeitraum vom 01.04.2023 bis 30.06.2023"))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2023-06-30"), hasAmount("EUR", 75.64), //
-                        hasSource("GiroKontoauszug27.txt"), hasNote("Kapitalertragsteuer"))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2023-06-30"), hasAmount("EUR", 4.16), //
-                        hasSource("GiroKontoauszug27.txt"), hasNote("Solidaritätszuschlag"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-06-30"), hasShares(0), //
+                        hasSource("GiroKontoauszug27.txt"), //
+                        hasNote("Abrechnungszeitraum vom 01.04.2023 bis 30.06.2023"), //
+                        hasAmount("EUR", 222.74), hasGrossValue("EUR", 302.54), //
+                        hasTaxes("EUR", (75.64 + 4.16)), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4655,6 +4638,32 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testGiroKontoauszug30()
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "GiroKontoauszug30.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-02-06"), hasAmount("EUR", 460.00), //
+                        hasSource("GiroKontoauszug30.txt"), hasNote("Kartenzahlung online"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-02-17"), hasAmount("EUR", 44.00), //
+                        hasSource("GiroKontoauszug30.txt"), hasNote("Kartenzahlung"))));
+    }
+
+    @Test
     public void testTagesgeldKontoauszug01()
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
@@ -4727,22 +4736,17 @@ public class DkbPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(3L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-07-01"), hasAmount("EUR", 76.70), //
-                        hasSource("TagesgeldKontoauszug03.txt"),
-                        hasNote("Abrechnungszeitraum vom 01.04.2024 bis 30.06.2024"))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2024-07-01"), hasAmount("EUR", 19.18), //
-                        hasSource("TagesgeldKontoauszug03.txt"), hasNote("Kapitalertragsteuer"))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2024-07-01"), hasAmount("EUR", 1.05), //
-                        hasSource("TagesgeldKontoauszug03.txt"), hasNote("Solidaritätszuschlag"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-07-01"), hasShares(0), //
+                        hasSource("TagesgeldKontoauszug03.txt"), //
+                        hasNote("Abrechnungszeitraum vom 01.04.2024 bis 30.06.2024"), //
+                        hasAmount("EUR", 56.47), hasGrossValue("EUR", 76.70), //
+                        hasTaxes("EUR", (19.18 + 1.05)), hasFees("EUR", 0.00))));
     }
 
     @Test

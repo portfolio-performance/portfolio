@@ -24,7 +24,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
@@ -4595,17 +4594,17 @@ public class ConsorsbankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(2L));
-        assertThat(results.size(), is(2));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2024-03-31"), hasAmount("EUR", 68.98), //
-                        hasSource("Kontoauszug06.txt"), hasNote(null))));
-
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-03-31"), hasAmount("EUR", 261.56), //
-                        hasSource("Kontoauszug06.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-03-31"), hasShares(0), //
+                        hasSource("Kontoauszug06.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 192.58), hasGrossValue("EUR", 261.56), //
+                        hasTaxes("EUR", 68.98), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4620,8 +4619,8 @@ public class ConsorsbankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(6L));
-        assertThat(results.size(), is(6));
+        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(results.size(), is(5));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
@@ -4641,12 +4640,12 @@ public class ConsorsbankPDFExtractorTest
                         hasSource("Kontoauszug07.txt"), hasNote("Euro-Überweisung"))));
 
         // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2023-09-30"), hasAmount("EUR", 22.20), //
-                        hasSource("Kontoauszug07.txt"), hasNote(null))));
-
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-09-30"), hasAmount("EUR", 84.21), //
-                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-09-30"), hasShares(0), //
+                        hasSource("Kontoauszug07.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 62.01), hasGrossValue("EUR", 84.21), //
+                        hasTaxes("EUR", 22.20), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4661,17 +4660,17 @@ public class ConsorsbankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(2L));
-        assertThat(results.size(), is(2));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-03-31"), hasAmount("EUR", 261.56), //
-                        hasSource("Kontoabschluss01.txt"), hasNote(null))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2024-03-31"), hasAmount("EUR", 68.98), //
-                        hasSource("Kontoabschluss01.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-03-31"), hasShares(0), //
+                        hasSource("Kontoabschluss01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 192.58), hasGrossValue("EUR", 261.56), //
+                        hasTaxes("EUR", 68.98), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4686,16 +4685,16 @@ public class ConsorsbankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(2L));
-        assertThat(results.size(), is(2));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2023-09-30"), hasAmount("EUR", 22.20), //
-                        hasSource("Kontoabschluss02.txt"), hasNote(null))));
-
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-09-30"), hasAmount("EUR", 84.21), //
-                        hasSource("Kontoabschluss02.txt"), hasNote(null))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-09-30"), hasShares(0), //
+                        hasSource("Kontoabschluss02.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 62.01), hasGrossValue("EUR", 84.21), //
+                        hasTaxes("EUR", 22.20), hasFees("EUR", 0.00))));
     }
 }

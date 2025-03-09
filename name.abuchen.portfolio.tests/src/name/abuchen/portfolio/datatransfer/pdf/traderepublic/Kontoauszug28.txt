@@ -1,0 +1,35 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH BRUNNENSTRASSE 19-21 10119 BERLIN
+MHcTAU IdmAMk SEITE 1 von 4
+pUxkTvT 22, 03063 DATUM 01 Jan. 2025 - 31 Jan. 2025
+asdfasdfsfdsfd, DE IBAN DE52352355345345354
+BIC DCkyffdUvTR
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Cashkonto 5.657,22 € 2.747,01 € 1.108,01 € 7.296,22 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+26 Jan. BACKBLAZE INC, 5,58 $, exchange rate: 0,9605735, ECB rate:
+Kartentransaktion 5,36 € 7.242,04 €
+2025 0,9549274255, markup: 0,59125692 %
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 09 Feb. 2025 Seite 3 von 4
+HAFTUNGSAUSSCHLUSS
+Sehr geehrte Kundin, sehr geehrter Kunde
+Bitte überprüfe unbedingt deine Buchungen, Berechnungen und den Schlusssaldo auf dem Kontoauszug, der gleichzeitig deinen Rechnungsabschluss
+darstellt. Der Rechnungsabschluss gilt als anerkannt, wenn du innerhalb von sechs Wochen nach Zugang keine Einwendungen erhebst. Einwendungen
+gegen Kontoauszüge sind schriftlich an uns zu richten. Guthaben sind einlagefähig im Sinne des Einlagensicherungsgesetzes (EinSiG). Weitere
+Informationen entnehme bitte dem Merkblatt für den Einleger, das zusammen mit unseren Allgemeinen Geschäftsbedingungen eingesehen werden kann.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 09 Feb. 2025 Seite 4 von 4

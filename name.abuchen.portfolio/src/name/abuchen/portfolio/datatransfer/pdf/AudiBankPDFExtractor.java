@@ -1,11 +1,12 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
 public class AudiBankPDFExtractor extends AbstractPDFExtractor
@@ -90,6 +91,9 @@ public class AudiBankPDFExtractor extends AbstractPDFExtractor
 
         // @formatter:off
         // 1 23.12.2021 Habenzinsen 25.12.2021 0,83
+        // 2 23.12.2021 Solidaritätszuschlag 25.12.2021 -0,01
+        // 3 23.12.2021 Kirchensteuer 25.12.2021 -0,01
+        // 4 23.12.2021 Abgeltungsteuer 25.12.2021 -0,20
         // @formatter:on
         Block interestBlock = new Block("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Habenzinsen [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\.,\\d]+$");
         type.addBlock(interestBlock);
@@ -110,40 +114,36 @@ public class AudiBankPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(v.get("currency"));
                         })
 
-                        .wrap(TransactionItem::new));
-
-        // @formatter:off
-        // 2 23.12.2021 Solidaritätszuschlag 25.12.2021 -0,01
-        // 3 23.12.2021 Kirchensteuer 25.12.2021 -0,01
-        // 4 23.12.2021 Abgeltungsteuer 25.12.2021 -0,20
-        // @formatter:on
-        Block taxesBlock = new Block("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Solidarit.tszuschlag|Kirchensteuer|Abgeltungsteuer) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-[\\.,\\d]+$");
-        type.addBlock(taxesBlock);
-        taxesBlock.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.TAXES);
-                            return accountTransaction;
-                        })
-
-                        .section("note", "date", "amount") //
+                        .section("tax").optional() //
                         .documentContext("currency") //
-                        .match("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<note>(Solidarit.tszuschlag|Kirchensteuer|Abgeltungsteuer)) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) \\-(?<amount>[\\.,\\d]+)$") //
+                        .match("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Abgeltungsteuer [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
-                            t.setNote(v.get("note"));
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                         })
 
-                        .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Solidarit.tszuschlag [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
 
-                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
-                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                        })
 
-                            return item;
-                        }));
+                        .section("tax").optional() //
+                        .documentContext("currency") //
+                        .match("^[\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Kirchensteuer [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\-(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 }

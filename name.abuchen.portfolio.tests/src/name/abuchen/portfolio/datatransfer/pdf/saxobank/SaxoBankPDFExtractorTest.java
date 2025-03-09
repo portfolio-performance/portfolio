@@ -72,9 +72,9 @@ public class SaxoBankPDFExtractorTest
                         hasDate("2024-12-05T11:21:27"), hasShares(49.00), //
                         hasSource("Kauf01.txt"), //
                         hasNote("Order-ID 5236807355 | Trade-ID 6093088529"), //
-                        hasAmount("CHF", 4869.43), hasGrossValue("CHF", 4842.73), //
-                        hasForexGrossValue("USD", 5458.55), //
-                        hasTaxes("CHF", 7.29), hasFees("CHF", 19.41))));
+                        hasAmount("CHF", 4869.43), hasGrossValue("CHF", 4850.02), //
+                        hasForexGrossValue("USD", 5466.77), //
+                        hasTaxes("CHF", 7.29 - 0.02), hasFees("CHF", 12.12 + 0.02))));
     }
 
     @Test
@@ -105,8 +105,8 @@ public class SaxoBankPDFExtractorTest
                         hasDate("2024-12-05T11:21:27"), hasShares(49.00), //
                         hasSource("Kauf01.txt"), //
                         hasNote("Order-ID 5236807355 | Trade-ID 6093088529"), //
-                        hasAmount("CHF", 4869.43), hasGrossValue("CHF", 4842.73), //
-                        hasTaxes("CHF", 7.29), hasFees("CHF", 19.41), //
+                        hasAmount("CHF", 4869.43), hasGrossValue("CHF", 4850.02), //
+                        hasTaxes("CHF", 7.29 - 0.02), hasFees("CHF", 12.12 + 0.02), //
                         check(tx -> {
                             CheckCurrenciesAction c = new CheckCurrenciesAction();
                             Status s = c.process((PortfolioTransaction) tx, new Portfolio());
@@ -141,9 +141,9 @@ public class SaxoBankPDFExtractorTest
                         hasDate("2024-12-05T11:21:27"), hasShares(49.00), //
                         hasSource("Kauf02.txt"), //
                         hasNote("Order-ID 5236807355 | Trade-ID 6093088529"), //
-                        hasAmount("CHF", 4869.43), hasGrossValue("CHF", 4842.73), //
-                        hasForexGrossValue("USD", 5458.55), //
-                        hasTaxes("CHF", 7.29), hasFees("CHF", 19.41))));
+                        hasAmount("CHF", 4869.43), hasGrossValue("CHF", 4850.02), //
+                        hasForexGrossValue("USD", 5466.77), //
+                        hasTaxes("CHF", 7.29 - 0.02), hasFees("CHF", 12.12 + 0.02))));
     }
 
     @Test
@@ -174,8 +174,77 @@ public class SaxoBankPDFExtractorTest
                         hasDate("2024-12-05T11:21:27"), hasShares(49.00), //
                         hasSource("Kauf02.txt"), //
                         hasNote("Order-ID 5236807355 | Trade-ID 6093088529"), //
-                        hasAmount("CHF", 4869.43), hasGrossValue("CHF", 4842.73), //
-                        hasTaxes("CHF", 7.29), hasFees("CHF", 19.41), //
+                        hasAmount("CHF", 4869.43), hasGrossValue("CHF", 4850.02), //
+                        hasTaxes("CHF", 7.29 - 0.02), hasFees("CHF", 12.12 + 0.02), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testWertpapierKauf03()
+    {
+        SaxoBankPDFExtractor extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B4L5Y983"), hasWkn(null), hasTicker("SWDA"), //
+                        hasName("iShares Core MSCI World UCITS ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-02-05T10:35:00"), hasShares(214.00), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Order-ID 5253341230 | Trade-ID 6154473459"), //
+                        hasAmount("CHF", 21480.86), hasGrossValue("CHF", 21395.21), //
+                        hasForexGrossValue("USD", 23655.07), //
+                        hasTaxes("CHF", 32.17 - 0.08), hasFees("CHF", 53.48 + 0.08))));
+    }
+
+    @Test
+    public void testWertpapierKauf03WithSecurityInCHF()
+    {
+        Security security = new Security("iShares Core MSCI World UCITS ETF", "CHF");
+        security.setIsin("IE00B4L5Y983");
+        security.setTickerSymbol("SWDA");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        SaxoBankPDFExtractor extractor = new SaxoBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-02-05T10:35:00"), hasShares(214.00), //
+                        hasSource("Kauf03.txt"), //
+                        hasNote("Order-ID 5253341230 | Trade-ID 6154473459"), //
+                        hasAmount("CHF", 21480.86), hasGrossValue("CHF", 21395.21), //
+                        hasTaxes("CHF", 32.17 - 0.08), hasFees("CHF", 53.48 + 0.08), //
                         check(tx -> {
                             CheckCurrenciesAction c = new CheckCurrenciesAction();
                             Status s = c.process((PortfolioTransaction) tx, new Portfolio());

@@ -4,17 +4,20 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.util.ArrayList;
@@ -323,25 +326,17 @@ public class AkfBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(4L));
-        assertThat(results.size(), is(4));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2023-09-30"), hasAmount("EUR", 1.03), //
-                        hasSource("Kontoauszug13.txt"), hasNote("31.08.2023 - 30.09.2023 (2,000 %)"))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2023-09-30"), hasAmount("EUR", 0.25), //
-                        hasSource("Kontoauszug13.txt"), hasNote("Abgeltungssteuer (1,03 EUR)"))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2023-09-30"), hasAmount("EUR", 0.01), //
-                        hasSource("Kontoauszug13.txt"), hasNote("Solidaritätszuschlag (0,25 EUR)"))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2023-09-30"), hasAmount("EUR", 0.02), //
-                        hasSource("Kontoauszug13.txt"), hasNote("Kirchensteuer (0,25 EUR)"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2023-09-30"), hasShares(0), //
+                        hasSource("Kontoauszug13.txt"), //
+                        hasNote("31.08.2023 - 30.09.2023 (2,000 %)"), //
+                        hasAmount("EUR", 0.75), hasGrossValue("EUR", 1.03), //
+                        hasTaxes("EUR", (0.25 + 0.01 + 0.02)), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -356,28 +351,28 @@ public class AkfBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(6L));
-        assertThat(results.size(), is(6));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-08-21"), hasAmount("EUR", 2.26), //
-                        hasSource("Kontoauszug14.txt"), hasNote("30.12.2023 - 21.08.2024 (3,550 %)"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-08-21"), hasShares(0), //
+                        hasSource("Kontoauszug14.txt"), //
+                        hasNote("30.12.2023 - 21.08.2024 (3,550 %)"), //
+                        hasAmount("EUR", 2.26), hasGrossValue("EUR", 2.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-08-21"), hasAmount("EUR", 1.26), //
-                        hasSource("Kontoauszug14.txt"), hasNote("21.08.2023 - 30.12.2023 (3,550 %)"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-08-21"), hasShares(0), //
+                        hasSource("Kontoauszug14.txt"), //
+                        hasNote("21.08.2023 - 30.12.2023 (3,550 %)"), //
+                        hasAmount("EUR", 0.28), hasGrossValue("EUR", 1.26), //
+                        hasTaxes("EUR", (0.86 + 0.05 + 0.07)), hasFees("EUR", 0.00))));
 
         // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2024-08-21"), hasAmount("EUR", 0.86), //
-                        hasSource("Kontoauszug14.txt"), hasNote("Abgeltungssteuer (3,52 EUR)"))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2024-08-21"), hasAmount("EUR", 0.05), //
-                        hasSource("Kontoauszug14.txt"), hasNote("Solidaritätszuschlag (0,86 EUR)"))));
-
-        // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2024-08-21"), hasAmount("EUR", 0.07), //
-                        hasSource("Kontoauszug14.txt"), hasNote("Kirchensteuer (0,86 EUR)"))));
+        assertThat(results, hasItem(removal(hasDate("2024-08-21"), hasAmount("EUR", 101.54), //
+                        hasSource("Kontoauszug14.txt"), hasNote("Festgeld Anlage"))));
     }
 }

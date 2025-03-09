@@ -3,17 +3,20 @@ package name.abuchen.portfolio.datatransfer.pdf.c24bankgmbh;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasShares;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.removal;
-import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 import java.util.ArrayList;
@@ -68,17 +71,17 @@ public class C24BankGmbHPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(3L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2024-05-31"), hasAmount("EUR", 2.29), //
-                        hasSource("Kontoauszug02.txt"), hasNote("Steuern"))));
-
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-05-31"), hasAmount("EUR", 1.93), //
-                        hasSource("Kontoauszug02.txt"), hasNote("Zinsen"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-05-31"), hasShares(0), //
+                        hasSource("Kontoauszug02.txt"), //
+                        hasNote("Zinsen"), //
+                        hasAmount("EUR", 1.93), hasGrossValue("EUR", 4.22), //
+                        hasTaxes("EUR", 2.29), hasFees("EUR", 0.00))));
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-05-17"), hasAmount("EUR", 1460.11), //
@@ -97,17 +100,17 @@ public class C24BankGmbHPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(2L));
-        assertThat(results.size(), is(2));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2024-06-30"), hasAmount("EUR", 4.04), //
-                        hasSource("Kontoauszug03.txt"), hasNote("Steuern"))));
-
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-06-30"), hasAmount("EUR", 15.32), //
-                        hasSource("Kontoauszug03.txt"), hasNote("Zinsen"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-06-30"), hasShares(0), //
+                        hasSource("Kontoauszug03.txt"), //
+                        hasNote("Zinsen"), //
+                        hasAmount("EUR", 15.32), hasGrossValue("EUR", 19.36), //
+                        hasTaxes("EUR", 4.04), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -122,17 +125,17 @@ public class C24BankGmbHPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(2L));
-        assertThat(results.size(), is(2));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(taxes(hasDate("2024-07-31"), hasAmount("EUR", 4.18), //
-                        hasSource("Kontoauszug04.txt"), hasNote("Steuern"))));
-
-        // assert transaction
-        assertThat(results, hasItem(interest(hasDate("2024-07-31"), hasAmount("EUR", 15.86), //
-                        hasSource("Kontoauszug04.txt"), hasNote("Zinsen"))));
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-07-31"), hasShares(0), //
+                        hasSource("Kontoauszug04.txt"), //
+                        hasNote("Zinsen"), //
+                        hasAmount("EUR", 15.86), hasGrossValue("EUR", 20.04), //
+                        hasTaxes("EUR", 4.18), hasFees("EUR", 0.00))));
     }
 
     @Test

@@ -122,4 +122,30 @@ public class N26BankAGPDFExtractorTest
                         hasAmount("EUR", 0.42), hasGrossValue("EUR", 0.56), //
                         hasTaxes("EUR", 0.14), hasFees("EUR", 0.00))));
     }
+
+    @Test
+    public void testKontoauszug04()
+    {
+        N26BankAGkPDFExtractor extractor = new N26BankAGkPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2025-03-01T00:00"), //
+                        hasSource("Kontoauszug04.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 43.08), hasGrossValue("EUR", 58.51), //
+                        hasTaxes("EUR", 14.63 + 0.80), hasFees("EUR", 0.00))));
+    }
 }
