@@ -18,6 +18,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.views.PortfolioBalanceChart;
 
 public class PortfolioBalancePane implements InformationPanePage
@@ -34,6 +35,7 @@ public class PortfolioBalancePane implements InformationPanePage
     private ExchangeRateProviderFactory factory;
 
     private Portfolio portfolio;
+    private ClientFilterMenu.Item groupedAccount;
     private PortfolioBalanceChart chart;
 
     @Inject
@@ -66,8 +68,16 @@ public class PortfolioBalancePane implements InformationPanePage
     @Override
     public void setInput(Object input)
     {
-        portfolio = Adaptor.adapt(Portfolio.class, input);
-        chart.updateChart(portfolio, factory);
+        if (input instanceof Portfolio)
+        {
+            portfolio = Adaptor.adapt(Portfolio.class, input);
+            chart.updateChart(portfolio, factory);
+        }
+        else if (input instanceof ClientFilterMenu.Item)
+        {
+            groupedAccount = Adaptor.adapt(ClientFilterMenu.Item.class, input);
+            chart.updateChart(groupedAccount, factory);
+        }
     }
 
     @Override
@@ -75,6 +85,8 @@ public class PortfolioBalancePane implements InformationPanePage
     {
         if (portfolio != null)
             setInput(portfolio);
+        if (groupedAccount != null)
+            setInput(groupedAccount);
     }
 
     @Override
