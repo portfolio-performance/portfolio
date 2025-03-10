@@ -62,6 +62,8 @@ public class PerformanceIndex
     private Volatility volatility;
     private ClientPerformanceSnapshot performanceSnapshot;
 
+    private boolean useFIFO = true;
+
     /* package */ PerformanceIndex(Client client, CurrencyConverter converter, Interval reportInterval)
     {
         this.client = client;
@@ -255,8 +257,21 @@ public class PerformanceIndex
      */
     public Optional<ClientPerformanceSnapshot> getClientPerformanceSnapshot()
     {
-        if (performanceSnapshot == null)
-            performanceSnapshot = new ClientPerformanceSnapshot(client, converter, reportInterval);
+        return getClientPerformanceSnapshot(true);
+    }
+
+    /**
+     * Returns the ClientPerformanceSnapshot if available with a choice between
+     * FIFO (useFIFOmethod=true) or MovingAverage (useFIFOmethod=false) CapitalGains . The
+     * snapshot is not available for benchmarks and the consumer price indices.
+     */
+    public Optional<ClientPerformanceSnapshot> getClientPerformanceSnapshot(boolean useFIFOmethod)
+    {
+        if (performanceSnapshot == null || useFIFO != useFIFOmethod)
+        {
+            performanceSnapshot = new ClientPerformanceSnapshot(client, converter, reportInterval, useFIFOmethod);
+            useFIFO = useFIFOmethod;
+        }
 
         return Optional.of(performanceSnapshot);
     }
