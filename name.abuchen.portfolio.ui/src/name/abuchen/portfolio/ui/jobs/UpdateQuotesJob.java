@@ -22,13 +22,14 @@ import org.eclipse.core.runtime.jobs.JobGroup;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.online.AuthenticationExpiredException;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.RateLimitExceededException;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.util.RateLimitExceededException;
 import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public final class UpdateQuotesJob extends AbstractClientJob
@@ -249,6 +250,10 @@ public final class UpdateQuotesJob extends AbstractClientJob
                             dirtyable.markDirty();
                     });
 
+                    return Status.OK_STATUS;
+                }
+                catch (AuthenticationExpiredException e)
+                {
                     return Status.OK_STATUS;
                 }
                 catch (RateLimitExceededException e)

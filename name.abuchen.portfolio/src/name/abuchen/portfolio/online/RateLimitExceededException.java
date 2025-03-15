@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.util;
+package name.abuchen.portfolio.online;
 
 /**
  * Exception thrown by the quote feed provider to indicate that the rate limit
@@ -7,6 +7,11 @@ package name.abuchen.portfolio.util;
 public class RateLimitExceededException extends RuntimeException
 {
     private static final long serialVersionUID = 1L;
+
+    public RateLimitExceededException()
+    {
+        super();
+    }
 
     public RateLimitExceededException(String message)
     {
