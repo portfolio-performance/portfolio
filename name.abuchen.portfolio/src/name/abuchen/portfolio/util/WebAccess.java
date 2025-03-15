@@ -240,6 +240,12 @@ public class WebAccess
         return this;
     }
 
+    public WebAccess addBearer(String bearer)
+    {
+        this.headers.add(new BasicHeader("Authorization", "Bearer " + bearer)); //$NON-NLS-1$ //$NON-NLS-2$
+        return this;
+    }
+
     public WebAccess addUserAgent(String userAgent)
     {
         this.userAgent = userAgent;
