@@ -263,6 +263,7 @@ public class Trade implements Adaptable
             return null;
     }
 
+    @Override
     public String toString()
     {
         return String.format("<Trade sh=%s %s %s -> %s %s>", //$NON-NLS-1$

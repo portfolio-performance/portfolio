@@ -1897,7 +1897,7 @@ public class SecuritiesChart
                     String label)
     {
         if (seriesCounter != 0)
-            label += " " + MessageFormat.format(Messages.LabelChartDetailMarkerPurchasePeriodNo,
+            label += " " + MessageFormat.format(Messages.LabelChartDetailMarkerPurchasePeriodNo, //$NON-NLS-1$
                                           seriesCounter + 1);
 
         @SuppressWarnings("unchecked")

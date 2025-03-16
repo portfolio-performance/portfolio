@@ -38,7 +38,7 @@ public class Issue4446FIFOMultipleTransfers
 
         Trade t = trades.getFirst();
 
-        assertThat(t.getLastTransaction().getTransaction().getNote(), is("buy-in should be 1000"));
+        assertThat(t.getLastTransaction().getTransaction().getNote(), is("buy-in should be 1000")); //$NON-NLS-1$
         assertThat(t.getEntryValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000))));
     }
 }
