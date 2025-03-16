@@ -209,6 +209,8 @@ public final class UpdateQuotesJob extends AbstractClientJob
             QuoteFeed feed = Factory.getQuoteFeedProvider(feedId);
             if (feed == null)
                 continue;
+            if (QuoteFeed.MANUAL.equals(feed.getId()))
+                continue;
 
             // skip download if the latest quotes are downloaded as part of the
             // download of the historic quotes
@@ -235,7 +237,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
     private Job createLatestQuoteJob(Dirtyable dirtyable, QuoteFeed feed, Security security)
     {
-        return new Job(feed.getName())
+        return new Job(feed.getName() + ": " + security.getName() + " " + Messages.EditWizardLatestQuoteFeedTitle) //$NON-NLS-1$ //$NON-NLS-2$
         {
             @Override
             protected IStatus run(IProgressMonitor monitor)
@@ -264,23 +266,21 @@ public final class UpdateQuotesJob extends AbstractClientJob
         // small; otherwise entries would be evicted in order
         Collections.shuffle(securities);
 
-        int jobCounter = 0;
-
         for (Security security : securities)
         {
-            jobCounter++;
+            QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
+            if (feed == null)
+                continue;
+            if (QuoteFeed.MANUAL.equals(feed.getId()))
+                continue;
 
-            Job job = new Job("#" + jobCounter + " / " + security.getName()) //$NON-NLS-1$//$NON-NLS-2$
+            Job job = new Job(feed.getName() + ": " + security.getName()) //$NON-NLS-1$
             {
                 @Override
                 protected IStatus run(IProgressMonitor monitor)
                 {
                     try
                     {
-                        QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
-                        if (feed == null)
-                            return Status.OK_STATUS;
-
                         QuoteFeedData data = feed.getHistoricalQuotes(security, false);
 
                         if (security.addAllPrices(data.getPrices()))
