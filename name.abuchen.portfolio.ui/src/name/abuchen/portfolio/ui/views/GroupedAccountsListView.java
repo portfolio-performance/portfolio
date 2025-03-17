@@ -14,6 +14,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TreeColumnLayout;
@@ -23,7 +24,6 @@ import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
@@ -62,7 +62,6 @@ import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
-import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -172,7 +171,6 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
         }
         else
         {
-            // fall back -> collapse all grouped accounts
             groupedAccounts.collapseAll();
         }
     }
@@ -206,20 +204,16 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
 
     private void addNewButton(ToolBarManager toolBar)
     {
-        toolBar.add(new DropDown(Messages.MenuCreateAndManageClientFilter, Images.PLUS, SWT.NONE, manager -> {
-            manager.add(new LabelOnly(Messages.MenuCreateAndManageClientFilter));
-            manager.add(new SimpleAction(Messages.LabelClientFilterNew,
-                            a -> clientFilterMenu.createCustomFilter().ifPresent(newItem -> {
-                                groupedAccounts.refresh();
-                                // select the newly created account
-                                groupedAccounts.setSelection(new StructuredSelection(newItem));
+        toolBar.add(new DropDown(Messages.LabelClientFilterNew, Images.PLUS, SWT.NONE,
+                        manager -> manager.add(new SimpleAction(Messages.LabelClientFilterNew,
+                                        a -> clientFilterMenu.createCustomFilter().ifPresent(newItem -> {
+                                            groupedAccounts.refresh();
+                                            // expand the selected node
+                                            groupedAccounts.setExpandedState(newItem, true);
+                                            // select the newly created account
+                                            groupedAccounts.setSelection(new StructuredSelection(newItem));
 
-                            })));
-            manager.add(new SimpleAction(Messages.LabelClientFilterManage, a -> {
-                clientFilterMenu.editCustomFilter();
-                groupedAccounts.refresh();
-            }));
-        }));
+                                        })))));
     }
 
     private void addConfigButton(final ToolBarManager toolBar)
@@ -251,7 +245,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
         groupedAccountColumns = new ShowHideColumnHelper(GroupedAccountsListView.class.getSimpleName() + "@top", //$NON-NLS-1$
                         getPreferenceStore(), groupedAccounts, layout);
 
-        Column column = new NameColumn("name", Messages.ClientEditorLabelClientMasterData, SWT.None, 100, getClient()); //$NON-NLS-1$
+        Column column = new NameColumn("name", Messages.ClientEditorLabelClientMasterData, SWT.None, 200, getClient()); //$NON-NLS-1$
         column.setLabelProvider(new NameColumnLabelProvider(getClient())
         {
             @Override
@@ -343,7 +337,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
 
         setupDnD();
 
-        hookContextMenu(tree, this::fillGroupedAccountContextMenu);
+        hookContextMenu(tree, this::fillContextMenu);
 
         return container;
     }
@@ -411,67 +405,68 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
         });
     }
 
-    private void fillGroupedAccountContextMenu(IMenuManager manager)
+    private void fillContextMenu(IMenuManager manager)
     {
-        final Object treeItem = groupedAccounts.getStructuredSelection().getFirstElement();
-        if (treeItem == null)
+        var treeSelection = (TreeSelection) groupedAccounts.getSelection();
+        var element = treeSelection.getFirstElement();
+        if (element == null)
             return;
 
-        if (treeItem instanceof ClientFilterMenu.Item selectedFilterElement)
+        if (element instanceof ClientFilterMenu.Item selectedFilterElement)
+        {
             manager.add(new SimpleAction(Messages.MenuReportingPeriodInsert, a -> {
                 insertElementInFilter(selectedFilterElement);
                 storeChangedFilter();
-                // update bottom panes
                 onRecalculationNeeded();
             }));
-        if (treeItem instanceof Portfolio || treeItem instanceof Account || treeItem instanceof ClientFilterMenu.Item)
+
+            manager.add(new Separator());
+
             manager.add(new SimpleAction(Messages.MenuReportingPeriodDelete, a -> {
-                deleteElementInFilter();
+                deleteFilter(selectedFilterElement);
                 storeChangedFilter();
-                if (treeItem instanceof ClientFilterMenu.Item && groupedAccounts.getTree().getItemCount() > 0
+                if (groupedAccounts.getTree().getItemCount() > 0 && !items.isEmpty())
+                    groupedAccounts.setSelection(new StructuredSelection(items.getFirst()));
+                onRecalculationNeeded();
+            }));
+
+        }
+        else if (element instanceof Portfolio || element instanceof Account)
+        {
+            var filterItem = (ClientFilterMenu.Item) treeSelection.getPathsFor(element)[0].getFirstSegment();
+
+            manager.add(new SimpleAction(Messages.ChartSeriesPickerRemove, a -> {
+                deleteElementInFilter(element, filterItem);
+                storeChangedFilter();
+                if (element instanceof ClientFilterMenu.Item && groupedAccounts.getTree().getItemCount() > 0
                                 && !items.isEmpty())
                     groupedAccounts.setSelection(new StructuredSelection(items.getFirst()));
-                // update bottom panes
                 onRecalculationNeeded();
             }));
+        }
     }
 
-    private void deleteElementInFilter()
+    private void deleteFilter(ClientFilterMenu.Item filterItem)
     {
-        if (!(groupedAccounts.getSelection() instanceof TreeSelection))
-            return;
-
-        TreeSelection selection = (TreeSelection) groupedAccounts.getSelection();
-        TreePath[] paths = selection.getPaths();
-
-        for (TreePath p : paths)
+        String message = MessageFormat.format(Messages.MenuReportingPeriodDeleteConfirm, filterItem.getLabel());
+        if (MessageDialog.openConfirm(Display.getDefault().getActiveShell(), Messages.MenuReportingPeriodDelete,
+                        message))
         {
-            if (p.getSegmentCount() == 1)
-            {
-                // parent node clicked (filter itself)
-                ClientFilterMenu.Item parentFilter = (ClientFilterMenu.Item) p.getFirstSegment();
-                String message = MessageFormat.format(Messages.MenuReportingPeriodDeleteConfirm,
-                                parentFilter.getLabel());
-                if (MessageDialog.openConfirm(Display.getDefault().getActiveShell(), Messages.MenuReportingPeriodDelete,
-                                message))
-                    items.remove(p.getFirstSegment());
-            }
-            else if (p.getSegmentCount() == 2)
-            {
-                // child node clicked (portfolio or account)
-                items.forEach(it -> {
-                    if (it == p.getFirstSegment() && it.getFilter() instanceof PortfolioClientFilter filter)
-                    { // found parent item --> now remove selected child item
-                        filter.removeElement(p.getLastSegment());
-
-                        // important step: update UUIDs because this is basic
-                        // information in settings
-                        it.setUUIDs(ClientFilterMenu.buildUUIDs(filter.getAllElements()));
-                    }
-                });
-            }
+            items.remove(filterItem);
+            groupedAccounts.refresh();
         }
-        groupedAccounts.refresh();
+    }
+
+    private void deleteElementInFilter(Object element, ClientFilterMenu.Item filterItem)
+    {
+        if (filterItem.getFilter() instanceof PortfolioClientFilter filter)
+        {
+            filter.removeElement(element);
+            // important step: update UUIDs because this is basic
+            // information in settings
+            filterItem.setUUIDs(ClientFilterMenu.buildUUIDs(filter.getAllElements()));
+            groupedAccounts.refresh();
+        }
     }
 
     private void insertElementInFilter(ClientFilterMenu.Item selectedFilterElement)
@@ -519,7 +514,6 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
                 groupedAccounts.refresh();
             }
         }
-
     }
 
     // //////////////////////////////////////////////////////////////
