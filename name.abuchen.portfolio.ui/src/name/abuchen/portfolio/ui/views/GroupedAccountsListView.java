@@ -17,6 +17,8 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -64,6 +66,7 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -81,17 +84,18 @@ import name.abuchen.portfolio.ui.views.panes.StatementOfAssetsPane;
 
 public class GroupedAccountsListView extends AbstractFinanceView implements ModificationListener
 {
+    private static final String EXPANSION_STATE = GroupedAccountsListView.class.getSimpleName()
+                    + "-EXPANSION-DEFINITION"; //$NON-NLS-1$
+
     @Inject
     private ExchangeRateProviderFactory factory;
+
     private TreeViewer groupedAccounts;
     private ConfigurationSet filterConfig;
     private String expansionStateDefinition;
     private ShowHideColumnHelper groupedAccountColumns;
     private LinkedList<ClientFilterMenu.Item> items = new LinkedList<>();
     private ClientFilterMenu clientFilterMenu;
-    // Keys in PreferenceStore
-    private static final String EXPANSION_STATE = GroupedAccountsListView.class.getSimpleName()
-                    + "-EXPANSION-DEFINITION"; //$NON-NLS-1$
 
     @Override
     protected String getDefaultTitle()
@@ -229,7 +233,19 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
     @Override
     protected Control createBody(Composite parent)
     {
-        Composite container = new Composite(parent, SWT.NONE);
+        var parentComposite = new Composite(parent, SWT.NONE);
+        GridLayoutFactory.fillDefaults().numColumns(1).applyTo(parentComposite);
+
+        if (items.isEmpty())
+        {
+            // show a help message if no items exist
+            var label = new StyledLabel(parentComposite, SWT.WRAP);
+            GridDataFactory.fillDefaults().grab(true, false).indent(5, 0).applyTo(label);
+            label.setText(Messages.HelpGroupedAccountsListView);
+        }
+
+        Composite container = new Composite(parentComposite, SWT.NONE);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(container);
         TreeColumnLayout layout = new TreeColumnLayout();
         container.setLayout(layout);
 
@@ -339,7 +355,7 @@ public class GroupedAccountsListView extends AbstractFinanceView implements Modi
 
         hookContextMenu(tree, this::fillContextMenu);
 
-        return container;
+        return parentComposite;
     }
 
     private void setupDnD()
