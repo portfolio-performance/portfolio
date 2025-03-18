@@ -218,7 +218,7 @@ public class EODHistoricalDataSearchProvider implements SecuritySearchProvider
             security.setFeed(EODHistoricalDataQuoteFeed.ID);
             return security;
         }
-        
+
         @Override
         public String getSource()
         {
@@ -282,14 +282,14 @@ public class EODHistoricalDataSearchProvider implements SecuritySearchProvider
      * @return <code>List</code> of the found securities.
      */
     @Override
-    public List<ResultItem> search(String query, Type type) throws IOException
+    public List<ResultItem> search(String query) throws IOException
     {
         if (apiKey == null || apiKey.isBlank() || query == null || query.isBlank())
             return Collections.emptyList();
 
         List<ResultItem> answer = new ArrayList<>();
 
-        addSymbolSearchResults(answer, query, type);
+        addSymbolSearchResults(answer, query);
 
         if (answer.size() >= 10)
         {
@@ -315,50 +315,7 @@ public class EODHistoricalDataSearchProvider implements SecuritySearchProvider
         }
     }
 
-    /**
-     * <p>
-     * Map the Portfolio Performance (PP) {@link Type} to the {@link String}
-     * used by the EODHistoricalData.com Search API.
-     * </p>
-     * <p>
-     * The Search API documentation shows the following values for type:
-     * <ul>
-     * <li>all</li>
-     * <li>stock</li>
-     * <li>etf</li>
-     * <li>fund</li>
-     * <li>bonds</li>
-     * <li>index</li>
-     * <li>commodity</li>
-     * <li>crypto</li>
-     * </ul>
-     * </p>
-     * 
-     * @param type
-     *            the {@link Type} used by Portfolio Performance
-     * @return the type used by the EODHistoricalData.com Search API
-     */
-    private static String mapPpTypeToEodType(Type type)
-    {
-        final String eodType;
-        switch (type)
-        {
-            case BOND:
-                eodType = "bonds"; //$NON-NLS-1$
-                break;
-            case SHARE:
-                eodType = "stock"; //$NON-NLS-1$
-                break;
-            case ALL:
-                // fall through
-            default:
-                eodType = "all"; //$NON-NLS-1$
-                break;
-        }
-        return eodType;
-    }
-
-    private void addSymbolSearchResults(List<ResultItem> answer, String query, Type type) throws IOException
+    private void addSymbolSearchResults(List<ResultItem> answer, String query) throws IOException
     {
         try
         {
@@ -366,8 +323,6 @@ public class EODHistoricalDataSearchProvider implements SecuritySearchProvider
             final var webAccess = new WebAccess("eodhistoricaldata.com", "api/search/" + urlEncodeQuery(query))
                             .addParameter("api_token", apiKey) //
                             .addParameter("fmt", "json");
-            if (type != null)
-                webAccess.addParameter("type", mapPpTypeToEodType(type)); //$NON-NLS-1$
 
             var html = webAccess.get();
 

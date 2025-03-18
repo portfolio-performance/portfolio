@@ -23,23 +23,13 @@ public class YahooSearchProvider implements SecuritySearchProvider
     }
 
     @Override
-    public List<ResultItem> search(String query, Type type) throws IOException
+    public List<ResultItem> search(String query) throws IOException
     {
         List<ResultItem> answer = new ArrayList<>();
 
         // search both the HTML page as well as the symbol search
         addSearchPage(answer, query);
         addSymbolSearchResults(answer, query);
-
-        // filter the search result using the German terms as we search the
-        // German Yahoo Finance site
-
-        if (type == Type.SHARE)
-            answer = answer.stream().filter(r -> SecuritySearchProvider.Type.SHARE.toString().equals(r.getType()))
-                            .collect(Collectors.toList());
-        if (type == Type.BOND)
-            answer = answer.stream().filter(r -> SecuritySearchProvider.Type.BOND.toString().equals(r.getType()))
-                            .collect(Collectors.toList());
 
         if (answer.size() >= 10)
         {

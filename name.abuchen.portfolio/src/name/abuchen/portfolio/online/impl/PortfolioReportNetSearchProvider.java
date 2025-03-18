@@ -16,9 +16,9 @@ public class PortfolioReportNetSearchProvider implements SecuritySearchProvider
     }
 
     @Override
-    public List<ResultItem> search(String query, Type type) throws IOException
+    public List<ResultItem> search(String query) throws IOException
     {
-        return new PortfolioReportNet().search(query, type);
+        return new PortfolioReportNet().search(query, null);
     }
 
     /**
@@ -30,7 +30,7 @@ public class PortfolioReportNetSearchProvider implements SecuritySearchProvider
     {
         if (coins == null)
         {
-            coins = search("", Type.CRYPTO); //$NON-NLS-1$
+            coins = new PortfolioReportNet().search("", PortfolioReportNet.TYPE_CRYPTO); //$NON-NLS-1$
         }
 
         return coins;

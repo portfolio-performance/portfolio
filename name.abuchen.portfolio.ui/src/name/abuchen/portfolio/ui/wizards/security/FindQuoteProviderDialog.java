@@ -42,7 +42,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.Factory;
-import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
@@ -160,7 +159,7 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
         private boolean searchByIdentifier(SecurityItem item, String identifier, Function<ResultItem, String> property)
                         throws IOException
         {
-            var results = new PortfolioReportNet().search(identifier, SecuritySearchProvider.Type.ALL);
+            var results = new PortfolioReportNet().search(identifier, null);
 
             // searching by WKN must be a direct match
             if (results.size() != 1)

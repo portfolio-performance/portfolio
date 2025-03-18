@@ -33,11 +33,6 @@ public interface SecuritySearchProvider
             return null;
         }
 
-        default String getExtraAttributes()
-        {
-            return null;
-        }
-
         default String getOnlineId()
         {
             return null;
@@ -52,33 +47,12 @@ public interface SecuritySearchProvider
 
     }
 
-    public enum Type
-    {
-        ALL(Messages.LabelSearchAll), //
-        SHARE(Messages.LabelSearchShare), //
-        BOND(Messages.LabelSearchBond), //
-        CRYPTO(Messages.LabelSearchCryptoCurrency);
-
-        private final String label;
-
-        private Type(String label)
-        {
-            this.label = label;
-        }
-
-        @Override
-        public String toString()
-        {
-            return label;
-        }
-    }
-
     default String getName()
     {
         return getClass().getSimpleName();
     }
 
-    default List<ResultItem> search(String query, Type type) throws IOException
+    default List<ResultItem> search(String query) throws IOException
     {
         return Collections.emptyList();
     }

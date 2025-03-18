@@ -141,7 +141,7 @@ public class FinnhubSearchProvider implements SecuritySearchProvider
      * @return <code>List</code> of the found securities.
      */
     @Override
-    public List<ResultItem> search(String query, Type type) throws IOException
+    public List<ResultItem> search(String query) throws IOException
     {
         if (apiKey == null || apiKey.isBlank())
             return Collections.emptyList();

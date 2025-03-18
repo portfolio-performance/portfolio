@@ -185,7 +185,7 @@ public class NewDomainElementHandler
                             .collect(Collectors.toMap(i -> i.getSymbol(), i -> i, (r, l) -> r));
 
             Factory.getSearchProvider(CoinGeckoSearchProvider.class) //
-                            .search("", SecuritySearchProvider.Type.CRYPTO) //$NON-NLS-1$
+                            .search("") //$NON-NLS-1$
                             .stream().filter(item -> {
                                 var other = existingCryptos.get(item.getSymbol());
                                 return other == null || !other.getName().equals(item.getName());

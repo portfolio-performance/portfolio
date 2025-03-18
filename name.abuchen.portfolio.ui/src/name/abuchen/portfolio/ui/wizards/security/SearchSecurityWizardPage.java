@@ -12,12 +12,10 @@ import java.util.function.Consumer;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -63,17 +61,12 @@ public class SearchSecurityWizardPage extends WizardPage
     public void createControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NULL);
-        GridLayoutFactory.fillDefaults().numColumns(3).applyTo(container);
+        GridLayoutFactory.fillDefaults().numColumns(2).applyTo(container);
 
         final Text searchBox = new Text(container, SWT.BORDER | SWT.SINGLE);
         searchBox.setText(""); //$NON-NLS-1$
         searchBox.setFocus();
         GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(searchBox);
-
-        final ComboViewer typeBox = new ComboViewer(container, SWT.READ_ONLY);
-        typeBox.setContentProvider(ArrayContentProvider.getInstance());
-        typeBox.setInput(SecuritySearchProvider.Type.values());
-        typeBox.setSelection(new StructuredSelection(SecuritySearchProvider.Type.ALL));
 
         final Button searchButton = new Button(container, SWT.PUSH);
         searchButton.setText(Messages.LabelSearch);
@@ -131,8 +124,7 @@ public class SearchSecurityWizardPage extends WizardPage
                 e.doit = false;
         });
 
-        Consumer<SelectionEvent> onSearchEvent = e -> doSearch(searchBox.getText(),
-                        (SecuritySearchProvider.Type) typeBox.getStructuredSelection().getFirstElement(), resultTable);
+        Consumer<SelectionEvent> onSearchEvent = e -> doSearch(searchBox.getText(), resultTable);
 
         searchBox.addSelectionListener(SelectionListener.widgetDefaultSelectedAdapter(onSearchEvent));
         searchBox.addModifyListener(e -> {
@@ -165,7 +157,7 @@ public class SearchSecurityWizardPage extends WizardPage
         return item;
     }
 
-    private void doSearch(String query, SecuritySearchProvider.Type type, TableViewer resultTable)
+    private void doSearch(String query, TableViewer resultTable)
     {
         try
         {
@@ -188,7 +180,7 @@ public class SearchSecurityWizardPage extends WizardPage
                     try
                     {
                         progressMonitor.setTaskName(provider.getName());
-                        result.addAll(provider.search(query, type));
+                        result.addAll(provider.search(query));
                     }
                     catch (IOException e)
                     {

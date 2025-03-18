@@ -160,7 +160,7 @@ public class TwelveDataSearchProvider implements SecuritySearchProvider
     }
 
     @Override
-    public List<ResultItem> search(String query, Type type) throws IOException
+    public List<ResultItem> search(String query) throws IOException
     {
         List<ResultItem> answer = new ArrayList<>();
 
