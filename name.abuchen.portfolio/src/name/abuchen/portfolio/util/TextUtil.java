@@ -351,4 +351,15 @@ public final class TextUtil
 
         return first == null ? second : first + separator + second;
     }
+
+    public static String escapeHtml(String input)
+    {
+        if (input == null)
+            return null;
+        return input.replace("&", "&amp;") //$NON-NLS-1$ //$NON-NLS-2$
+                        .replace("<", "&lt;") //$NON-NLS-1$ //$NON-NLS-2$
+                        .replace(">", "&gt;") //$NON-NLS-1$ //$NON-NLS-2$
+                        .replace("\"", "&quot;") //$NON-NLS-1$ //$NON-NLS-2$
+                        .replace("'", "&#39;"); //$NON-NLS-1$ //$NON-NLS-2$ Ï
+    }
 }

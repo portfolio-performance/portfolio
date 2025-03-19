@@ -41,6 +41,11 @@ public class SearchSecurityWizardDialog extends WizardDialog // NOSONAR
         super.finishPressed();
     }
 
+    public void triggerFinish()
+    {
+        finishPressed();
+    }
+
     @Override
     protected void buttonPressed(int buttonId)
     {

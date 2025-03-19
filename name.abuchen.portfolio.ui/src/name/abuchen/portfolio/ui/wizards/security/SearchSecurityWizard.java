@@ -5,16 +5,15 @@ import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.ui.Images;
 
 public class SearchSecurityWizard extends Wizard
 {
-    private final Client client;
+    private final SearchSecurityDataModel model;
 
     public SearchSecurityWizard(Client client)
     {
-        this.client = client;
+        this.model = new SearchSecurityDataModel(client);
 
         this.setNeedsProgressMonitor(true);
     }
@@ -28,32 +27,28 @@ public class SearchSecurityWizard extends Wizard
     @Override
     public void addPages()
     {
-        addPage(new SearchSecurityWizardPage(client));
+        addPage(new SearchSecurityWizardPage(model));
+        addPage(new SearchSecurityPreviewPricesWizardPage(model));
     }
 
     public Security getSecurity()
     {
-        ResultItem item = getResultItem();
+        var item = model.getSelectedItem();
 
         if (item == null)
             return null;
 
-        return item.create(client);
+        return item.create(model.getClient());
     }
 
     public Client getClient()
     {
-        return client;
+        return model.getClient();
     }
 
     @Override
     public boolean performFinish()
     {
-        return getResultItem() != null;
-    }
-
-    private ResultItem getResultItem()
-    {
-        return ((SearchSecurityWizardPage) this.getPage(SearchSecurityWizardPage.PAGE_ID)).getResult();
+        return model.getSelectedItem() != null;
     }
 }

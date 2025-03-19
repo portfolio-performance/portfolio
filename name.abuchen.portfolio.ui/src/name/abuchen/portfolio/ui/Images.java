@@ -113,6 +113,9 @@ public enum Images
     VISIBLE("visible.png"), //$NON-NLS-1$
     HIDDEN("hidden.png"), //$NON-NLS-1$
 
+    ARROW_FORWARD("arrow_forward.png"), //$NON-NLS-1$
+    ARROW_BACK("arrow_back.png"), //$NON-NLS-1$
+
     // 3rd party logos
 
     POEDITOR_LOGO("poeditor-logo.png"), //$NON-NLS-1$

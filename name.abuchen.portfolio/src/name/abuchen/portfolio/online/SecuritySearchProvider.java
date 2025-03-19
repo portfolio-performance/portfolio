@@ -20,6 +20,20 @@ public interface SecuritySearchProvider
 
         String getSymbol();
 
+        /**
+         * Returns the ticker symbol (if available) without the stock market
+         * extension.
+         */
+        default String getSymbolWithoutStockMarket()
+        {
+            String symbol = getSymbol();
+            if (symbol == null)
+                return null;
+
+            int p = symbol.indexOf('.');
+            return p >= 0 ? symbol.substring(0, p) : symbol;
+        }
+
         String getIsin();
 
         String getWkn();
@@ -47,6 +61,10 @@ public interface SecuritySearchProvider
 
         Security create(Client client);
 
+        default List<ResultItem> getMarkets()
+        {
+            return Collections.emptyList();
+        }
     }
 
     default String getName()
