@@ -1,0 +1,287 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+SRjLGIAHv zYovmnU PUsJT SEITE 1 von 5
+ZgSDKZTHQC 1, 75409 DATUM 01 Jan. 2025 - 28 Feb. 2025
+Anonym Anonym, DE IBAN Anonym
+BIC TRBKDEBBXXX
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Cashkonto 1.173,16 € 7.270,31 € 7.964,78 € 478,69 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+01 Jan. 
+Zinszahlung Your interest payment 9,07 € 1.182,23 €
+2025
+02 Jan. 
+Kartentransaktion qo xzWAzeVDSUbhaMSprBw 222,22 € 960,01 €
+2025
+02 Jan. 
+Erträge Cash Dividend for ISIN US0530151036 1,44 € 961,45 €
+2025
+02 Jan. 
+Prämie Your Saveback payment 8,64 € 970,09 €
+2025
+02 Jan. Savings plan execution IE00B4L5Y983 iShares III plc - iShares Core MSCI 
+Handel 8,64 € 961,45 €
+2025 World UCITS ETF USD (Acc), quantity: 0.082387
+03 Jan. 
+Kartentransaktion PAYPAL Anonym 35,00 € 926,45 €
+2025
+03 Jan. 
+Kartentransaktion Lidl sagt Danke 20,34 € 906,11 €
+2025
+03 Jan. 
+Kartentransaktion Netto Marken-Discount 25,09 € 881,02 €
+2025
+03 Jan. 
+Kartentransaktion Anonym 168 62,39 € 818,63 €
+2025
+03 Jan. 
+Kartentransaktion SONDERPREIS BAUMARKT 11,41 € 807,22 €
+2025
+10 Jan. 
+Kartentransaktion ALDI SUED 5,98 € 801,24 €
+2025
+10 Jan. 
+Kartentransaktion Anonym Anonym. 25,00 € 776,24 €
+2025
+12 Jan. 
+Kartentransaktion KAUFLAND Anonym 4850 73,91 € 702,33 €
+2025
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 01 März 2025 Seite 1 von 5
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+13 Jan. 
+Kartentransaktion Anonym Anonym Anonym 8,00 € 694,33 €
+2025
+13 Jan. 
+Kartentransaktion Anonym Anonym Anonym 4,67 € 689,66 €
+2025
+14 Jan. 
+Kartentransaktion Anonym Anonym 20,00 € 669,66 €
+2025
+14 Jan. 
+Kartentransaktion DM-Drogerie Markt 3,10 € 666,56 €
+2025
+15 Jan. 
+Überweisung Incoming transfer from Anonym Anonym 400,00 € 1.066,56 €
+2025
+16 Jan. 
+Handel Savings plan execution DE000A1EWWW0 ADIDAS AG, quantity: 0.123406 30,00 € 1.036,56 €
+2025
+16 Jan. 
+Kartentransaktion Anonym Anonym 767,90 € 268,66 €
+2025
+16 Jan. Savings plan execution IE00B4L5Y983 iShares III plc - iShares Core MSCI 
+Handel 50,00 € 218,66 €
+2025 World UCITS ETF USD (Acc), quantity: 0.473036
+17 Jan. 
+Erträge Cash Dividend for ISIN US2538681030 1,96 € 220,62 €
+2025
+17 Jan. 
+Handel Sell trade DE000A2YN504 KNAUS AG INH O.N., quantity: 444 5.729,95 € 5.950,57 €
+2025
+18 Jan. 
+Kartentransaktion Lidl sagt Danke 17,28 € 5.933,29 €
+2025
+18 Jan. 
+Kartentransaktion Netto Marken-Discount 28,03 € 5.905,26 €
+2025
+20 Jan. 
+Kartentransaktion Anonym Anonym Anonym 4,00 € 5.901,26 €
+2025
+22 Jan. 
+Kartentransaktion Anonym Anonym 20,00 € 5.881,26 €
+2025
+22 Jan. 
+Erträge Cash Dividend for ISIN US17275R1023 1,45 € 5.882,71 €
+2025
+23 Jan. 
+Kartentransaktion Netto Marken-Discount 65,69 € 5.817,02 €
+2025
+24 Jan. 
+Kartentransaktion Anonym Anonym 25,00 € 5.792,02 €
+2025
+26 Jan. SEPA 
+Outgoing transfer for Anonym Anonym 200,00 € 5.592,02 €
+2025 Echtzeitüberweisung
+28 Jan. 
+Kartentransaktion Penny Anonym 52,84 € 5.539,18 €
+2025
+28 Jan. 
+Kartentransaktion Lidl sagt Danke 28,95 € 5.510,23 €
+2025
+28 Jan. 
+Kartentransaktion GLS*0G7FAFB9 20,00 € 5.490,23 €
+2025
+28 Jan. 
+Kartentransaktion Anonym Anonym 8,58 € 5.481,65 €
+2025
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 01 März 2025 Seite 2 von 5
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+28 Jan. 
+Erträge Vorabpauschale for ISIN LU0779800910 2,13 € 5.479,52 €
+2025
+29 Jan. 
+Kartentransaktion Anonym Anonym Restaur 16,00 € 5.463,52 €
+2025
+29 Jan. 
+Erträge Vorabpauschale for ISIN IE00B4L5Y983 3,10 € 5.460,42 €
+2025
+30 Jan. 
+Kartentransaktion eBay Anonym 2,80 € 5.457,62 €
+2025
+30 Jan. 
+Kartentransaktion eBay Anonym 4,49 € 5.453,13 €
+2025
+30 Jan. Sepa Direct Debit transfer to Anonym Anonym Anonym 
+SEPA-Lastschrift 500,00 € 4.953,13 €
+2025 Anonym 
+30 Jan. 
+Kartentransaktion Shop Apotheke 5,00 € 4.948,13 €
+2025
+30 Jan. 
+Erträge Vorabpauschale for ISIN DE000A0F5UF5 1,04 € 4.947,09 €
+2025
+30 Jan. 
+Überweisung Outgoing transfer for Anonym Anonym Anonym 1.500,00 € 3.447,09 €
+2025
+31 Jan. SEPA 
+Outgoing transfer for Anonym Anonym 2.500,00 € 947,09 €
+2025 Echtzeitüberweisung
+31 Jan. 
+Erträge Cash Dividend for ISIN US8636671013 0,48 € 947,57 €
+2025
+01 Feb. 
+Zinszahlung Your interest payment 5,67 € 953,24 €
+2025
+01 Feb. 
+Kartentransaktion Netto Marken-Discount 25,32 € 927,92 €
+2025
+03 Feb. 
+Prämie Your Saveback payment 13,42 € 941,34 €
+2025
+03 Feb. Savings plan execution IE00B4L5Y983 iShares III plc - iShares Core MSCI 
+Handel 13,42 € 927,92 €
+2025 World UCITS ETF USD (Acc), quantity: 0.125276
+04 Feb. 
+Kartentransaktion Netto Marken-Discount 3,65 € 924,27 €
+2025
+04 Feb. 
+Kartentransaktion Netto Marken-Discount 2,19 € 922,08 €
+2025
+06 Feb. 
+Kartentransaktion Anonym Anonym 20,00 € 902,08 €
+2025
+07 Feb. 
+Kartentransaktion Lidl sagt Danke 22,28 € 879,80 €
+2025
+11 Feb. 
+Erträge Cash Dividend for ISIN US8825081040 2,17 € 881,97 €
+2025
+11 Feb. 
+Kartentransaktion NORDSEE GMBH 9,49 € 872,48 €
+2025
+11 Feb. SEPA 
+Outgoing transfer for Anonym Anonym 450,00 € 422,48 €
+2025 Echtzeitüberweisung
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 01 März 2025 Seite 3 von 5
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+12 Feb. 
+Kartentransaktion Anonym Anonym 20,00 € 402,48 €
+2025
+13 Feb. 
+Kartentransaktion BestSecret 2131544279 260,95 € 141,53 €
+2025
+14 Feb. 
+Kartentransaktion Lidl sagt Danke 35,65 € 105,88 €
+2025
+17 Feb. 
+Handel Savings plan execution DE000A1EWWW0 ADIDAS AG, quantity: 0.116054 30,00 € 75,88 €
+2025
+17 Feb. SEPA 
+Incoming transfer from bMCHytMkX bVvms 500,00 € 575,88 €
+2025 Echtzeitüberweisung
+17 Feb. Savings plan execution IE00B4L5Y983 iShares III plc - iShares Core MSCI 
+Handel 50,00 € 525,88 €
+2025 World UCITS ETF USD (Acc), quantity: 0.461573
+18 Feb. 
+Erträge Cash Dividend for ISIN US7427181091 1,20 € 527,08 €
+2025
+19 Feb. 
+Kartentransaktion Lidl sagt Danke 4,51 € 522,57 €
+2025
+19 Feb. 
+Kartentransaktion DM-Drogerie Markt 5,20 € 517,37 €
+2025
+19 Feb. 
+Erträge Cash Dividend for ISIN NL0010273215 0,90 € 518,27 €
+2025
+20 Feb. 
+Kartentransaktion M and M Direct Limited 50,98 € 569,25 €
+2025
+21 Feb. 
+Kartentransaktion Anonym Anonym 20,00 € 549,25 €
+2025
+21 Feb. 
+Kartentransaktion Amazon.de*Anonym 391,76 € 157,49 €
+2025
+21 Feb. SEPA 
+Incoming transfer from gIzfkDZbc gsOiG 400,00 € 557,49 €
+2025 Echtzeitüberweisung
+22 Feb. 
+Kartentransaktion DM-Drogerie Markt 17,35 € 540,14 €
+2025
+22 Feb. 
+Kartentransaktion rZWeDfE 168 126,07 € 414,07 €
+2025
+23 Feb. 
+Kartentransaktion Lidl sagt Danke 26,70 € 387,37 €
+2025
+25 Feb. 
+Kartentransaktion BestSecret 2131544279 82,98 € 470,35 €
+2025
+25 Feb. 
+Kartentransaktion Anony-E-NCDMJeoa tsVr 60,00 € 530,35 €
+2025
+27 Feb. 
+Kartentransaktion zryFpdTXMhjkx N/O 20,00 € 510,35 €
+2025
+28 Feb. 
+Kartentransaktion Lidl sagt Danke 31,66 € 478,69 €
+2025
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 01 März 2025 Seite 4 von 5
+HAFTUNGSAUSSCHLUSS
+Sehr geehrte Kundin, sehr geehrter Kunde
+Bitte überprüfe unbedingt deine Buchungen, Berechnungen und den Schlusssaldo auf dem Kontoauszug, der gleichzeitig deinen Rechnungsabschluss 
+darstellt. Der Rechnungsabschluss gilt als anerkannt, wenn du innerhalb von sechs Wochen nach Zugang keine Einwendungen erhebst. Einwendungen 
+gegen Kontoauszüge sind schriftlich an uns zu richten. Guthaben sind einlagefähig im Sinne des Einlagensicherungsgesetzes (EinSiG). Weitere 
+Informationen entnehme bitte dem Merkblatt für den Einleger, das zusammen mit unseren Allgemeinen Geschäftsbedingungen eingesehen werden kann.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 01 März 2025 Seite 5 von 5
