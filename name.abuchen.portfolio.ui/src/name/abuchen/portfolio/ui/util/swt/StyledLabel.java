@@ -47,6 +47,7 @@ import name.abuchen.portfolio.ui.util.DesktopAPI;
  * <ul>
  * <li>green</li>
  * <li>red</li>
+ * <li>gray</li>
  * <li>strong</li>
  * <li>em</li>
  * <li>a</li>
@@ -113,6 +114,11 @@ public class StyledLabel extends Canvas // NOSONAR
             {
                 styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start,
                                 Colors.theme().greenForeground(), null));
+            }
+            else if ("gray".equals(qName)) //$NON-NLS-1$
+            {
+                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start,
+                                Colors.theme().grayForeground(), null));
             }
             else if ("strong".equals(qName)) //$NON-NLS-1$
             {
