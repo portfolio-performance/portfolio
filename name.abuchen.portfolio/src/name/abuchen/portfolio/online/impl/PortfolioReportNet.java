@@ -82,6 +82,12 @@ public class PortfolioReportNet
         }
 
         @Override
+        public String getCurrencyCode()
+        {
+            return "EUR, USD, AED, AUD, BGN, BRL, CAD, CHF, CNY, CZK, DKK, GBP, GBX, HKD, HRK, HUF, IDR, ILS, INR, ISK, JPY, KRW, MXN, MYR, NOK, NZD, PHP, PLN, RON, RUB, SEK, SGD, THB, TRY, ZAR"; //$NON-NLS-1$
+        }
+
+        @Override
         public String getType()
         {
             if (TYPE_SHARE.equals(securityType))
