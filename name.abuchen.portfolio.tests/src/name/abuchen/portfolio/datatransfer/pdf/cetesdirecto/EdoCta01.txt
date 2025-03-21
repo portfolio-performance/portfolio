@@ -1,0 +1,101 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Nombre: IPzyS JkuKzI CNnOg DMcBtsNo
+Domicilio:
+RFC: XGHT553425OM9
+Contrato/Cuenta CLABE: 529556644906340154
+Período del: 01/01/2022 al 31/01/2022
+Numero de dias del período: 31
+Hoja: 1/3
+Resumen del portafolio
+Composición del portafolio Moneda: PESOS Total de cartera: $ 138,886.81
+ISR del período: $ 7.59 Ingresos del período: $ 0.00
+ISR acumulado del ejercicio fiscal: $ 7.59 Egresos del período: $ 0.00
+Intereses del período: $ 514.11 Total de efectivo: $ 0.80
+Intereses acumulados del ejercicio fiscal: $ 514.11 Total final: $ 138,887.61
+CETES 90% Resultado por Venta Anticipada GUBER: $ 0.00
+EFECTIVO 0% Servicios derivados del Depósito Bancario: $ 0.00
+UDIBONO 9% Servicios de Comisión Mercantil: $ 0.00 Ganancia de capital (BONDDIA): $ 0.00
+BONDDIA 2% Avisos
+Posición final del período
+Emisora Serie Títulos Precio de mercado Valuación % de participación Precio ponderado Plazo Tasa ponderada
+BONDDIA PF2 1,332 1.57958700 2,104.01 1.51 1.54443151 2.28
+CETES 220203 6,080 9.99540200 60,772.04 43.76 9.95730000 3 5.51
+CETES 220210 21 9.98474600 209.68 0.15 9.95722220 10 5.52
+CETES 220217 2,872 9.97437700 28,646.41 20.63 9.95683330 17 5.57
+CETES 220224 3,505 9.96333500 34,921.49 25.14 9.95737780 24 5.50
+UDIBONO 231116 17 719.59861600 12,233.18 8.81 786.14790884 654 2.29
+Posición Total                 138,886.81
+* Plusvalía/Minusvalía: Utilidad o Pérdida que resulta del efecto de valuación a mercado, de un activo o instrumento de inversión, con respecto a su precio de adquisición a una fecha determinada de corte.
+Nombre: kFhQo kaBpiP sswZe nfufgUea
+Domicilio:
+RFC: XGHT553425OM9
+Contrato/Cuenta CLABE: 150923731997561671
+Período del: 01/01/2022 al 31/01/2022
+Numero de dias del período: 31
+Hoja: 2/3
+Posición inicial del período
+Total de cartera: $ 138,436.95
+Total de efectivo: $ 0.28
+Total inicial: $ 138,437.23
+Emisora Serie Títulos Precio de mercado Valuación % de participación
+BONDDIA PF2 1,322 1.57245300 2,078.78 1.50
+CETES 220106 6,055 9.99090800 60,494.95 43.70
+CETES 220113 21 9.98025000 209.59 0.15
+CETES 220120 2,860 9.96975800 28,513.51 20.60
+CETES 220127 3,491 9.95899400 34,766.85 25.11
+UDIBONO 231116 17 727.83957800 12,373.27 8.94
+Posición Total                 138,436.95
+Movimientos del período
+Fecha de Fecha de Folio Descripción Emisora Serie Títulos Precio Plazo Tasa Cargo Abono Saldo efectivo
+registro liquidación
+Saldo inicial 0.28
+04/01/22 06/01/22 SVD147529623COMPRA CETES 220203 6,080 9.95730000 2 5.51 60,540.38 0.00 -60,540.10
+06/01/22 06/01/22 SVD147779466AMORTIZACION CETES 220106 6,055 0 0.00 60,550.00 9.90
+06/01/22 06/01/22 SVD147779466ISR CETES 220106 0 3.70 0.00 6.20
+06/01/22 06/01/22 SVD148097667COMPSI BONDDIA PF2 3 1.57377100 0 0.00 4.72 0.00 1.48
+11/01/22 13/01/22 SVD148801631COMPRA CETES 220210 21 9.95722220 2 5.52 209.10 0.00 -207.62
+13/01/22 13/01/22 SVD148972304AMORTIZACION CETES 220113 21 0 0.00 210.00 2.38
+13/01/22 13/01/22 SVD148972304ISR CETES 220113 0 0.01 0.00 2.37
+13/01/22 13/01/22 SVD149165188COMPSI BONDDIA PF2 1 1.57540700 0 0.00 1.58 0.00 0.79
+18/01/22 20/01/22 SVD149724600COMPRA CETES 220217 2,872 9.95683330 2 5.57 28,596.03 0.00 -28,595.24
+20/01/22 20/01/22 SVD149962624AMORTIZACION CETES 220120 2,860 0 0.00 28,600.00 4.76
+20/01/22 20/01/22 SVD149962624ISR CETES 220120 0 1.75 0.00 3.01
+20/01/22 20/01/22 SVD150259785COMPSI BONDDIA PF2 1 1.57703800 0 0.00 1.58 0.00 1.43
+25/01/22 27/01/22 SVD150921807COMPRA CETES 220224 3,505 9.95737780 2 5.50 34,900.61 0.00 -34,899.18
+27/01/22 27/01/22 SVD151085643AMORTIZACION CETES 220127 3,491 0 0.00 34,910.00 10.82
+27/01/22 27/01/22 SVD151085643ISR CETES 220127 0 2.13 0.00 8.69
+27/01/22 27/01/22 SVD151273788COMPSI BONDDIA PF2 5 1.57866800 0 0.00 7.89 0.00 0.80
+Saldo final 0.80
+Nombre: SKxSW EpoUKI EZrCQ tkWmdtff
+Domicilio:
+RFC: XGHT553425OM9
+Contrato/Cuenta CLABE: 937485968529274455
+Período del: 01/01/2022 al 31/01/2022
+Numero de dias del período: 31
+Hoja: 3/3
+ 
+Centro de Atención Telefónica (CAT) ABREVIATURAS/GLOSARIO
+Cualquier consulta, aclaración o reclamación será atendida comunicándose al teléfono 55 5000 7999, AMORTIZACION AMORTIZACION DE EMISORA
+de lunes a viernes de 9:00 a 18:00 horas, o si lo prefiere, puede enviar un correo electrónico a
+contacto@cetesdirecto.com. Si no está de acuerdo con alguno de los movimientos que aparecen en BONDES Bonos de Desarrollo del Gobierno Federal
+este estado de cuenta tiene un plazo de noventa días naturales para presentar una solicitud de BONOS Bonos de Desarrollo del Gobierno Federal con tasa de Interés Fija
+aclaración. CETES Certificados de la Tesorería de la Federación
+Unidad Especializada de Atención a Usuarios de NAFIN (UNE) COMPRA COMPRA DE TITULOS
+En caso de no estar de acuerdo con la respuesta del CAT, puede acudir ante la UNE, en un horario COMPSI COMPRA ACCIONES DE SOCIEDAD DE INV. LIQ
+de lunes a viernes de 9:00 a 18:00 horas, con domicilio en Avenida Insurgentes Sur 1971, Colonia
+Guadalupe Inn, Álvaro Obregón, Código Postal 01020, en la Ciudad de México, cuya Titular es la Lic. CONDUSEF Comisión Nacional para la Protección y Defensa de los Usuarios de ServiciosFinancieros
+Tania Elizabeth Vázquez Moreno con correo electrónico tevazquez@nafin.gob.mx y teléfono 55 5325
+6112. EGREFVO EGRESO DE EFECTIVO
+INGEFVO INGRESO DE EFECTIVO
+Comisión Nacional para la Protección y Defensa de los Usuarios de
+Servicios Financieros (CONDUSEF) ISR RETENCION DE ISR
+PAGINTCU PAGO INTERESES CUPON
+De no obtener una respuesta de la UNE satisfactoria a sus intereses, puede acudir a la CONDUSEF
+con oficinas en Avenida Insurgentes Sur 762, Colonia del Valle, Benito Juárez, Código Postal 03100, UDIBONOS Bonos de Desarrollo del Gobierno Federal denominados en unidades de
+en la Ciudad de México, para lo cual podrá consultar la página electrónica www.condusef.gob.mx o inversión
+llamar al número telefónico 55 5340 0999 del Centro de Atención Telefónica de la CONDUSEF. VTASI VENTA DE ACCIONES DE SOCIEDAD DE INV LIQ
+Domicilio: Av. Insurgentes Sur 1971, Nivel Jardín Anexo Piso Financiero, Demarcación Territorial Álvaro Obregón C.P. 01020, Ciudad de México.
+
