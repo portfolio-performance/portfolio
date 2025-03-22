@@ -37,6 +37,7 @@ import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
 import name.abuchen.portfolio.online.impl.KrakenQuoteFeed;
 import name.abuchen.portfolio.online.impl.LeewayQuoteFeed;
 import name.abuchen.portfolio.online.impl.MFAPIQuoteFeed;
+import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
@@ -213,6 +214,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     {
         if (exchange != null)
             return getFeed() + exchange.getId();
+        else if (PortfolioPerformanceFeed.ID.equals(getFeed()))
+            return PortfolioPerformanceFeed.ID + getModel().getTickerSymbol();
         else if (PortfolioReportQuoteFeed.ID.equals(getFeed()))
             return PortfolioReportQuoteFeed.ID + getModel().getCurrencyCode();
         else if (AlphavantageQuoteFeed.ID.equals(getFeed()))
@@ -291,7 +294,7 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
             showRawResponse.setEnabled(false);
 
             Job job = new LoadHistoricalQuotes(feed, exchange, cacheKey);
-            job.setUser(true);
+            job.setUser(false);
             job.schedule(150);
         }
     }
