@@ -1,6 +1,15 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
+
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -10,11 +19,19 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.Pair;
 
 @SuppressWarnings("nls")
 public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 {
+
+    private static record TransactionTaxesPair(Item transaction, Item tax)
+    {
+    }
+
     public ArkeaDirectBankPDFExtractor(Client client)
     {
         super(client);
@@ -294,7 +311,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "amount") //
                         .match("^Montant global soumis à la TTF : [\\,\\d\\s]+ (?<currency>\\p{Sc})$") //
                         .find("Taux de TTF : [\\,\\d\\s]+ %")
-                        .match("^(?<amount>[\\,\\d\\s]+)$") //
+                        .match("(Montant de la TTF:[\\s]*|^)(?<amount>[\\,\\d\\s]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -351,5 +368,132 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
     protected long asShares(String value)
     {
         return ExtractorUtils.convertToNumberLong(value, Values.Share, "fr", "FR");
+    }
+
+    /**
+     * @formatter:off
+     * This method performs post-processing on a list transaction items, categorizing and
+     * modifying them based on their types and associations. It follows several steps:
+     *
+     * 1. Filters the input list to isolate taxes treatment transactions and buy transactions.
+     * 2. Matches buy transactions with their corresponding taxes treatment transactions.
+     * 3. Adjusts buy transactions by adding tax amounts, adding tax units, combining source information, appending tax-related notes,
+     *    and removing taxes treatment's from the list of items.
+     *
+     * The goal of this method is to process transactions and ensure that taxes treatment is accurately reflected
+     * in buy transactions, making the transaction's more comprehensive and accurate.
+     *
+     * @param items The list of transaction items to be processed.
+     * @return A modified list of transaction items after post-processing.
+     * @formatter:on
+     */
+    @Override
+    public void postProcessing(List<Item> items)
+    {
+        // Filter transactions by taxes
+        List<Item> taxesTreatmentList = items.stream() //
+                        .filter(TransactionItem.class::isInstance) //
+                        .filter(i -> i.getSubject() instanceof AccountTransaction) //
+                        .filter(i -> AccountTransaction.Type.TAXES
+                                        .equals(((AccountTransaction) i.getSubject()).getType())) //
+                        .toList();
+
+        // Filter transactions by buySell transactions
+        List<Item> buyTransactionList = items.stream() //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .filter(i -> i.getSubject() instanceof BuySellEntry) //
+                        .filter(i -> PortfolioTransaction.Type.BUY //
+                                        .equals((((BuySellEntry) i.getSubject()).getPortfolioTransaction().getType()))) //
+                        .toList();
+
+        var transactionTaxPairs = matchTransactionPair(buyTransactionList, taxesTreatmentList);
+
+        // @formatter:off
+        // This loop iterates through a list of buy and tax pairs and processes them.
+        //
+        // For each pair, it adds the tax amount to the buy transaction's total amount,
+        // adds the tax as a tax unit to the buy transaction, combines source information if needed,
+        // appends taxes treatment notes to the buy transaction, and removes the tax treatment from the 'items' list.
+        //
+        // It performs these operations when a valid tax transaction is found.
+        // @formatter:on
+        for (TransactionTaxesPair pair : transactionTaxPairs)
+        {
+            var buyTransaction = (BuySellEntry) pair.transaction.getSubject();
+            var taxesTransaction = pair.tax() != null ? (AccountTransaction) pair.tax().getSubject() : null;
+
+            if (taxesTransaction != null && taxesTransaction.getType() == AccountTransaction.Type.TAXES)
+            {
+                buyTransaction.setMonetaryAmount(buyTransaction.getPortfolioTransaction().getMonetaryAmount()
+                                .add(taxesTransaction.getMonetaryAmount()));
+
+                buyTransaction.getPortfolioTransaction()
+                                .addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
+
+                buyTransaction.setSource(concatenate(buyTransaction.getSource(), taxesTransaction.getSource(), "; "));
+
+                buyTransaction.setNote(concatenate(buyTransaction.getNote(), taxesTransaction.getNote(), " | "));
+
+                items.remove(pair.tax());
+            }
+        }
+    }
+
+    /**
+     * @formatter:off
+     * Matches transactions and taxes treatment's, ensuring unique pairs based on date and security.
+     *
+     * This method matches transactions and taxes treatment's by creating a Pair consisting of the transaction's
+     * date and security. It uses a Set called 'keys' to prevent duplicates based on these Pair keys,
+     * ensuring that the same combination of date and security is not processed multiple times.
+     * Duplicate transactions for the same security on the same day are avoided.
+     *
+     * @param transactionList      A list of transactions to be matched.
+     * @param taxesTreatmentList   A list of taxes treatment's to be considered for matching.
+     * @return A collection of TransactionTaxesPair objects representing matched transactions and taxes treatment's.
+     * @formatter:on
+     */
+    private Collection<TransactionTaxesPair> matchTransactionPair(List<Item> transactionList,
+                    List<Item> taxesTreatmentList)
+    {
+        // Use a Set to prevent duplicates
+        Set<Pair<LocalDate, Security>> keys = new HashSet<>();
+        Map<Pair<LocalDate, Security>, TransactionTaxesPair> pairs = new HashMap<>();
+
+        // Match identified transactions and taxes treatment's
+        transactionList.forEach( //
+                        transaction -> {
+                            var key = new Pair<>(transaction.getDate().toLocalDate(), transaction.getSecurity());
+
+                            // Prevent duplicates
+                            if (keys.add(key))
+                                pairs.put(key, new TransactionTaxesPair(transaction, null));
+                        } //
+        );
+
+        // Iterate through the list of taxes treatment's to match them with
+        // transactions
+        taxesTreatmentList.forEach( //
+                        tax -> {
+                            // Check if the taxes treatment has a security
+                            if (tax.getSecurity() == null)
+                                return;
+
+                            // Create a key based on the taxes treatment date
+                            // and security
+                            var key = new Pair<>(tax.getDate().toLocalDate(), tax.getSecurity());
+
+                            // Retrieve the TransactionTaxesPair associated with
+                            // this key, if it exists
+                            var pair = pairs.get(key);
+
+                            // Skip if no transaction is found or if a taxes
+                            // treatment already exists
+                            if (pair != null && pair.tax() == null)
+                                pairs.put(key, new TransactionTaxesPair(pair.transaction(), tax));
+                        } //
+        );
+
+        return pairs.values();
     }
 }
