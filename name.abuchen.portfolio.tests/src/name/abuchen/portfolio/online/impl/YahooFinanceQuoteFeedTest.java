@@ -105,16 +105,16 @@ public class YahooFinanceQuoteFeedTest
 
         LatestSecurityPrice price = new LatestSecurityPrice(LocalDate.of(2017, Month.NOVEMBER, 27), //
                         Values.Quote.factorize(188.55), //
-                        0, //
-                        0, //
-                        0);
+                        LatestSecurityPrice.NOT_AVAILABLE, //
+                        LatestSecurityPrice.NOT_AVAILABLE, //
+                        LatestSecurityPrice.NOT_AVAILABLE);
         assertThat(prices.get(0), equalTo(price));
 
         price = new LatestSecurityPrice(LocalDate.of(2018, Month.MAY, 25), //
                         Values.Quote.factorize(188.3), //
-                        0, //
-                        0, //
-                        0);
+                        LatestSecurityPrice.NOT_AVAILABLE, //
+                        LatestSecurityPrice.NOT_AVAILABLE, //
+                        LatestSecurityPrice.NOT_AVAILABLE);
         assertThat(prices.get(prices.size() - 1), equalTo(price));
     }
 
@@ -154,16 +154,16 @@ public class YahooFinanceQuoteFeedTest
 
         LatestSecurityPrice price = new LatestSecurityPrice(LocalDate.of(2017, Month.NOVEMBER, 27), //
                         Values.Quote.factorize(180.344), //
-                        0, //
-                        0, //
-                        0);
+                        LatestSecurityPrice.NOT_AVAILABLE, //
+                        LatestSecurityPrice.NOT_AVAILABLE, //
+                        LatestSecurityPrice.NOT_AVAILABLE);
         assertThat(prices.get(0), equalTo(price));
 
         price = new LatestSecurityPrice(LocalDate.of(2018, Month.MAY, 25), //
                         Values.Quote.factorize(188.3), //
-                        0, //
-                        0, //
-                        0);
+                        LatestSecurityPrice.NOT_AVAILABLE, //
+                        LatestSecurityPrice.NOT_AVAILABLE, //
+                        LatestSecurityPrice.NOT_AVAILABLE);
         assertThat(prices.get(prices.size() - 1), equalTo(price));
     }
 

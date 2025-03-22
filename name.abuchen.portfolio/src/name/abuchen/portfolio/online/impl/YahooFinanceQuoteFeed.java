@@ -271,6 +271,11 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                     // digits which seems to round it to the right value
                     double v = Math.round(q * 10000) / 10000d;
                     price.setValue(convertBritishPounds(Values.Quote.factorize(v), quoteCurrency, securityCurrency));
+
+                    price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
+                    price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
+                    price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
+
                     answer.add(price);
                 }
             }
