@@ -250,6 +250,7 @@ public class ArkeaDirectBankPDFExtractorTest
         assertThat(results, hasItem(purchase( //
                         hasDate("2021-10-08T00:00:00"), hasShares(16), //
                         hasSource("Achat06.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 363.20), hasGrossValue("EUR", 363.20), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
@@ -261,7 +262,7 @@ public class ArkeaDirectBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat07.txt", "Taxes07.txt"),
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat07.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -279,10 +280,107 @@ public class ArkeaDirectBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
-                        hasDate("2020-04-22T10:42:24"), hasShares(100), //
-                        hasSource("Achat07.txt; Taxes07.txt"), //
-                        hasAmount("EUR", 1774.2), hasGrossValue("EUR", 1765), //
+                        hasDate("2020-04-22T10:42:24"), hasShares(100.00), //
+                        hasSource("Achat07.txt"), //
+                        hasNote("Référence 16S7998181666921"), //
+                        hasAmount("EUR", 1768.90), hasGrossValue("EUR", 1765.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 3.90))));
+    }
+
+    @Test
+    public void testCompteAchat07WithAchatTaxesTreatment07()
+    {
+        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat07.txt", "AchatTaxesTreatment07.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000124141"), hasWkn(null), hasTicker(null), //
+                        hasName("VEOLIA ENVIRONNEMENT"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-04-22T10:42:24"), hasShares(100.00), //
+                        hasSource("Achat07.txt; AchatTaxesTreatment07.txt"), //
+                        hasNote("Référence 16S7998181666921"), //
+                        hasAmount("EUR", 1774.2), hasGrossValue("EUR", 1765.00), //
                         hasTaxes("EUR", 5.30), hasFees("EUR", 3.90))));
+    }
+
+    @Test
+    public void testCompteAchat07WithTaxesTreatment07_SourceFilesReversed()
+    {
+        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AchatTaxesTreatment07.txt", "Achat07.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000124141"), hasWkn(null), hasTicker(null), //
+                        hasName("VEOLIA ENVIRONNEMENT"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2020-04-22T10:42:24"), hasShares(100.00), //
+                        hasSource("Achat07.txt; AchatTaxesTreatment07.txt"), //
+                        hasNote("Référence 16S7998181666921"), //
+                        hasAmount("EUR", 1774.20), hasGrossValue("EUR", 1765.00), //
+                        hasTaxes("EUR", 5.30), hasFees("EUR", 3.90))));
+    }
+
+    @Test
+    public void testCompteAchatTaxesTreatment07()
+    {
+        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AchatTaxesTreatment07.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000124141"), hasWkn(null), hasTicker(null), //
+                        hasName("VEOLIA ENVIRONNEMENT"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2020-04-22T00:00"), hasShares(100.00), //
+                        hasSource("AchatTaxesTreatment07.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 5.30), hasGrossValue("EUR", 5.30), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -379,13 +477,13 @@ public class ArkeaDirectBankPDFExtractorTest
     }
 
     @Test
-    public void testSteuern01()
+    public void testTaxesTreatment01()
     {
         ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuern01.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TaxesTreatment01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -403,20 +501,20 @@ public class ArkeaDirectBankPDFExtractorTest
         // check dividends transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2024-03-26T00:00"), hasShares(46.00), //
-                        hasSource("Steuern01.txt"), //
+                        hasSource("TaxesTreatment01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 1.47), hasGrossValue("EUR", 1.47), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
     @Test
-    public void testSteuern02()
+    public void testTaxesTreatment02()
     {
         ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuern02.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TaxesTreatment02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(2L));
@@ -440,7 +538,7 @@ public class ArkeaDirectBankPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2023-07-04T00:00"), hasShares(460.00), //
-                        hasSource("Steuern02.txt"), //
+                        hasSource("TaxesTreatment02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 15.17), hasGrossValue("EUR", 15.17), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
@@ -448,7 +546,7 @@ public class ArkeaDirectBankPDFExtractorTest
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
                         hasDate("2023-07-04T00:00"), hasShares(450.00), //
-                        hasSource("Steuern02.txt"), //
+                        hasSource("TaxesTreatment02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 14.45), hasGrossValue("EUR", 14.45), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));

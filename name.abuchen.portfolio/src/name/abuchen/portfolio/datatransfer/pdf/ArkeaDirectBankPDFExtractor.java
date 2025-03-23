@@ -41,7 +41,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction_Format01();
         addBuySellTransaction_Format02();
         addDividendeTransaction();
-        addTaxesTransaction();
+        addTaxesTreatmentTransaction();
     }
 
     @Override
@@ -261,7 +261,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addTaxesTransaction()
+    private void addTaxesTreatmentTransaction()
     {
         DocumentType type = new DocumentType("AVIS RECAPITULATIF DE LA TAXE SUR LES");
         this.addDocumentTyp(type);
