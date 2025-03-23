@@ -1223,7 +1223,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-13T00:00"), hasShares(420.000), //
+                        hasDate("2023-12-13T00:00"), hasShares(420.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote("Referenz: 548895976"), //
                         hasAmount("EUR", 114.24), hasGrossValue("EUR", 134.40), //
@@ -1254,7 +1254,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2023-12-13T00:00"), hasShares(420.000), //
+                        hasDate("2023-12-13T00:00"), hasShares(420.00), //
                         hasSource("Dividende07.txt"), //
                         hasNote("Referenz: 548895976"), //
                         hasAmount("EUR", 114.24), hasGrossValue("EUR", 134.40), //
@@ -1293,7 +1293,7 @@ public class SwissquotePDFExtractorTest
 
         // check dividend transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-02-28T00:00"), hasShares(281.000), //
+                        hasDate("2025-02-28T00:00"), hasShares(281.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote("Referenz: 795604930"), //
                         hasAmount("CHF", 21.48), hasGrossValue("CHF", 25.28), //
@@ -1325,11 +1325,151 @@ public class SwissquotePDFExtractorTest
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
-                        hasDate("2025-02-28T00:00"), hasShares(281.000), //
+                        hasDate("2025-02-28T00:00"), hasShares(281.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote("Referenz: 795604930"), //
                         hasAmount("CHF", 21.48), hasGrossValue("CHF", 25.28), //
                         hasTaxes("CHF", 3.80), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode("CHF");
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende09()
+    {
+        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US37954Y4594"), hasWkn(null), hasTicker(null), //
+                        hasName("GLOBAL X RUSSELL 2000 CVRED CALL ET F"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-03-03T00:00"), hasShares(300.00), //
+                        hasSource("Dividende09.txt"), //
+                        hasNote("Referenz: 532146499"), //
+                        hasAmount("CHF", 37.44), hasGrossValue("CHF", 44.05), //
+                        hasForexGrossValue("USD", 48.81), //
+                        hasTaxes("CHF", 6.61), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende09WithSecurityInCHF()
+    {
+        Security security = new Security("GLOBAL X RUSSELL 2000 CVRED CALL ET F", "CHF");
+        security.setIsin("US37954Y4594");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-03-03T00:00"), hasShares(300.00), //
+                        hasSource("Dividende09.txt"), //
+                        hasNote("Referenz: 532146499"), //
+                        hasAmount("CHF", 37.44), hasGrossValue("CHF", 44.05), //
+                        hasTaxes("CHF", 6.61), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Account account = new Account();
+                            account.setCurrencyCode("CHF");
+                            Status s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende10()
+    {
+        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US87612E1064"), hasWkn(null), hasTicker(null), //
+                        hasName("TARGET ORD"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-03-03T00:00"), hasShares(8.00), //
+                        hasSource("Dividende10.txt"), //
+                        hasNote("Referenz: 055857024"), //
+                        hasAmount("CHF", 5.67), hasGrossValue("CHF", 8.09), //
+                        hasForexGrossValue("USD", 8.96), //
+                        hasTaxes("CHF", 2.42), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende10WithSecurityInCHF()
+    {
+        Security security = new Security("TARGET ORD", "CHF");
+        security.setIsin("US87612E1064");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-03-03T00:00"), hasShares(8.00), //
+                        hasSource("Dividende10.txt"), //
+                        hasNote("Referenz: 055857024"), //
+                        hasAmount("CHF", 5.67), hasGrossValue("CHF", 8.09), //
+                        hasTaxes("CHF", 2.42), hasFees("CHF", 0.00), //
                         check(tx -> {
                             CheckCurrenciesAction c = new CheckCurrenciesAction();
                             Account account = new Account();
