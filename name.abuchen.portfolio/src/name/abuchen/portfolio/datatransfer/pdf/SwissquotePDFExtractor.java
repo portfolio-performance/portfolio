@@ -342,7 +342,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Total [\\w]{3} [\\.'\\d]+ (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+).*$") //
+                                                        .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+) [\\w]{3} [\\.'\\d]+.*$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -365,14 +365,14 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross") //
-                                                        .match("^Betrag [\\w]{3} [\\.'\\d]+ [\\w]{3} (?<gross>[\\.'\\d]+).*$") //
+                                                        .match("^Betrag [\\w]{3} (?<gross>[\\.'\\d]+) [\\w]{3} [\\.'\\d]+.*$") //
                                                         .match("^Wechselkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) : (?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
                                                             ExtrExchangeRate rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = rate.convert(rate.getBaseCurrency(), gross);
+                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),

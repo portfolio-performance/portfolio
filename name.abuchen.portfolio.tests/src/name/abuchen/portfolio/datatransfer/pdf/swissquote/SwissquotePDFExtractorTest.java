@@ -1283,7 +1283,7 @@ public class SwissquotePDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "CHF");
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1296,9 +1296,8 @@ public class SwissquotePDFExtractorTest
                         hasDate("2025-02-28T00:00"), hasShares(281.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote("Referenz: 795604930"), //
-                        hasAmount("CHF", 21.48), hasGrossValue("CHF", 25.28), //
-                        hasForexGrossValue("USD", 28.10), //
-                        hasTaxes("CHF", 3.80), hasFees("CHF", 0.00))));
+                        hasAmount("USD", 23.88), hasGrossValue("USD", 28.10), //
+                        hasTaxes("USD", 4.22), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -1321,19 +1320,20 @@ public class SwissquotePDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, "CHF");
+        new AssertImportActions().check(results, "USD");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2025-02-28T00:00"), hasShares(281.00), //
                         hasSource("Dividende08.txt"), //
                         hasNote("Referenz: 795604930"), //
-                        hasAmount("CHF", 21.48), hasGrossValue("CHF", 25.28), //
-                        hasTaxes("CHF", 3.80), hasFees("CHF", 0.00), //
+                        hasAmount("USD", 23.88), hasGrossValue("USD", 28.10), //
+                        hasForexGrossValue("CHF", 25.28), //
+                        hasTaxes("USD", 4.22), hasFees("USD", 0.00), //
                         check(tx -> {
                             CheckCurrenciesAction c = new CheckCurrenciesAction();
                             Account account = new Account();
-                            account.setCurrencyCode("CHF");
+                            account.setCurrencyCode("USD");
                             Status s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -1353,7 +1353,7 @@ public class SwissquotePDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "CHF");
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1366,9 +1366,8 @@ public class SwissquotePDFExtractorTest
                         hasDate("2025-03-03T00:00"), hasShares(300.00), //
                         hasSource("Dividende09.txt"), //
                         hasNote("Referenz: 532146499"), //
-                        hasAmount("CHF", 37.44), hasGrossValue("CHF", 44.05), //
-                        hasForexGrossValue("USD", 48.81), //
-                        hasTaxes("CHF", 6.61), hasFees("CHF", 0.00))));
+                        hasAmount("USD", 41.49), hasGrossValue("USD", 48.81), //
+                        hasTaxes("USD", 7.32), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -1391,19 +1390,20 @@ public class SwissquotePDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, "CHF");
+        new AssertImportActions().check(results, "USD");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2025-03-03T00:00"), hasShares(300.00), //
                         hasSource("Dividende09.txt"), //
                         hasNote("Referenz: 532146499"), //
-                        hasAmount("CHF", 37.44), hasGrossValue("CHF", 44.05), //
-                        hasTaxes("CHF", 6.61), hasFees("CHF", 0.00), //
+                        hasAmount("USD", 41.49), hasGrossValue("USD", 48.81), //
+                        hasForexGrossValue("CHF", 44.05), //
+                        hasTaxes("USD", 7.32), hasFees("USD", 0.00), //
                         check(tx -> {
                             CheckCurrenciesAction c = new CheckCurrenciesAction();
                             Account account = new Account();
-                            account.setCurrencyCode("CHF");
+                            account.setCurrencyCode("USD");
                             Status s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -1423,7 +1423,7 @@ public class SwissquotePDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, "CHF");
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1436,9 +1436,8 @@ public class SwissquotePDFExtractorTest
                         hasDate("2025-03-03T00:00"), hasShares(8.00), //
                         hasSource("Dividende10.txt"), //
                         hasNote("Referenz: 055857024"), //
-                        hasAmount("CHF", 5.67), hasGrossValue("CHF", 8.09), //
-                        hasForexGrossValue("USD", 8.96), //
-                        hasTaxes("CHF", 2.42), hasFees("CHF", 0.00))));
+                        hasAmount("USD", 6.28), hasGrossValue("USD", 8.96), //
+                        hasTaxes("USD", 2.68), hasFees("USD", 0.00))));
     }
 
     @Test
@@ -1461,19 +1460,20 @@ public class SwissquotePDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, "CHF");
+        new AssertImportActions().check(results, "USD");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
                         hasDate("2025-03-03T00:00"), hasShares(8.00), //
                         hasSource("Dividende10.txt"), //
                         hasNote("Referenz: 055857024"), //
-                        hasAmount("CHF", 5.67), hasGrossValue("CHF", 8.09), //
-                        hasTaxes("CHF", 2.42), hasFees("CHF", 0.00), //
+                        hasAmount("USD", 6.28), hasGrossValue("USD", 8.96), //
+                        hasForexGrossValue("CHF", 8.09), //
+                        hasTaxes("USD", 2.68), hasFees("USD", 0.00), //
                         check(tx -> {
                             CheckCurrenciesAction c = new CheckCurrenciesAction();
                             Account account = new Account();
-                            account.setCurrencyCode("CHF");
+                            account.setCurrencyCode("USD");
                             Status s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
