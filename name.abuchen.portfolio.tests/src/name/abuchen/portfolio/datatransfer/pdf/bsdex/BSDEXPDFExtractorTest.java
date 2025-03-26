@@ -105,27 +105,27 @@ public class BSDEXPDFExtractorTest
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getTickerSymbol(), is("BTC"));
-        assertThat(security.getName(), is("Bitcoin")); // Or check for a specific name if applicable
+        assertThat(security.getTickerSymbol(), is("XRP"));
+        assertThat(security.getName(), is("XRP")); // Or check for a specific name if applicable
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
         
         // check buy sell transaction
         BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                       .orElseThrow(IllegalArgumentException::new).getSubject();
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2024-12-18T04:14:42")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.001)));
-        assertThat(entry.getSource(), is("Kauf.txt"));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2024-12-17T18:07:05")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(15)));
+        assertThat(entry.getSource(), is("Verkauf.txt"));
         
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-            is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99.2))));
+            is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(37.72))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-            is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(99))));
+            is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(37.8))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
             is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-            is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.2))));
+            is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.08))));
     }
 }
