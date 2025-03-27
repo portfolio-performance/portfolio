@@ -23,7 +23,8 @@ import name.abuchen.portfolio.util.Interval;
 
 public class QuoteRangeColumn extends Column
 {
-    private static final class QuoteReportingPeriodLabelProvider extends ParameterizedOwnerDrawLabelProvider
+    private static final class QuoteReportingPeriodLabelProvider
+                    extends ParameterizedOwnerDrawLabelProvider<ReportingPeriod>
     {
         private BiFunction<Object, ReportingPeriod, AllTimeHigh> valueProvider;
 
@@ -35,7 +36,7 @@ public class QuoteRangeColumn extends Column
         @Override
         public String getToolTipText(Object e)
         {
-            var range = valueProvider.apply(e, (ReportingPeriod) getOption());
+            var range = valueProvider.apply(e, getOption());
             if (range == null || range.getLow() == null || range.getHigh() == null)
                 return null;
             Double value = range.getRelLowDistance();
@@ -55,7 +56,7 @@ public class QuoteRangeColumn extends Column
             final int TICK_WIDTH = 3;
             final int BAR_HEIGHT = 16;
 
-            ReportingPeriod option = (ReportingPeriod) getOption();
+            ReportingPeriod option = getOption();
             var range = valueProvider.apply(event.item.getData(), option);
             if (range == null)
                 return;

@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
@@ -91,7 +90,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
-import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ParameterizedColumnLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
@@ -570,37 +569,16 @@ public final class SecuritiesTable implements ModificationListener
         // reporting periods
         List<ReportingPeriod> options = view.getPart().getReportingPeriods().stream().collect(toMutableList());
 
-        BiFunction<Object, ReportingPeriod, Double> valueProvider = (element, option) -> {
-
-            Interval interval = option.toInterval(LocalDate.now());
-
-            Security security = (Security) element;
-
-            SecurityPrice latest = security.getSecurityPrice(interval.getEnd());
-            SecurityPrice previous = security.getSecurityPrice(interval.getStart());
-
-            if (latest == null || previous == null)
-                return null;
-
-            if (previous.getValue() == 0)
-                return null;
-
-            if (previous.getDate().isAfter(interval.getStart()))
-                return null;
-
-            return Double.valueOf((latest.getValue() - previous.getValue()) / (double) previous.getValue());
-        };
-
         Column column = new Column("delta-w-period", Messages.ColumnQuoteChange, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnQuoteChange_Option, options));
         column.setDescription(Messages.ColumnQuoteChange_Description);
-        column.setLabelProvider(new QuoteReportingPeriodLabelProvider(valueProvider));
+        column.setLabelProvider(() -> new QuoteReportingPeriodLabelProvider());
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
             ReportingPeriod option = (ReportingPeriod) ColumnViewerSorter.SortingContext.getColumnOption();
 
-            Double v1 = valueProvider.apply(o1, option);
-            Double v2 = valueProvider.apply(o2, option);
+            Double v1 = QuoteReportingPeriodLabelProvider.getQuoteChange((Security) o1, option);
+            Double v2 = QuoteReportingPeriodLabelProvider.getQuoteChange((Security) o2, option);
 
             if (v1 == null && v2 == null)
                 return 0;
@@ -1235,29 +1213,30 @@ public final class SecuritiesTable implements ModificationListener
         }
     }
 
-    private static final class QuoteReportingPeriodLabelProvider extends OptionLabelProvider<ReportingPeriod>
+    private static final class QuoteReportingPeriodLabelProvider
+                    extends ParameterizedColumnLabelProvider<ReportingPeriod>
     {
-        private BiFunction<Object, ReportingPeriod, Double> valueProvider;
-
-        public QuoteReportingPeriodLabelProvider(BiFunction<Object, ReportingPeriod, Double> valueProvider)
-        {
-            this.valueProvider = valueProvider;
-        }
 
         @Override
-        public String getText(Object e, ReportingPeriod option)
+        public String getText(Object e)
         {
-            Double value = valueProvider.apply(e, option);
-            if (value == null)
+            Optional<Pair<SecurityPrice, SecurityPrice>> prices = getPrices((Security) e, getOption());
+            if (prices.isEmpty())
                 return null;
 
+            return getTextInternal(prices.get());
+        }
+
+        private static String getTextInternal(Pair<SecurityPrice, SecurityPrice> prices)
+        {
+            Double value = getQuoteChange(prices);
             return String.format("%,.2f %%", value * 100); //$NON-NLS-1$
         }
 
         @Override
-        public Color getForeground(Object e, ReportingPeriod option)
+        public Color getForeground(Object e)
         {
-            Double value = valueProvider.apply(e, option);
+            Double value = getQuoteChange((Security) e, getOption());
             if (value == null)
                 return null;
 
@@ -1270,9 +1249,81 @@ public final class SecuritiesTable implements ModificationListener
         }
 
         @Override
-        public Image getImage(Object element, ReportingPeriod option)
+        public String getToolTipText(Object e)
         {
-            Double value = valueProvider.apply(element, option);
+            Security security = (Security) e;
+
+            Optional<Pair<SecurityPrice, SecurityPrice>> prices = getPrices(security, getOption());
+            if (prices.isEmpty())
+                return null;
+
+            String value = getTextInternal(prices.get());
+            if (value == null)
+                return null;
+
+            Double valuePA = getAnnualizedQuoteChange(prices.get());
+
+            String firstPrice = Values.Quote.format(security.getCurrencyCode(), prices.get().getLeft().getValue());
+            String secondPrice = Values.Quote.format(security.getCurrencyCode(), prices.get().getRight().getValue());
+
+            String firstDate = Values.Date.format(prices.get().getLeft().getDate());
+            String secondDate = Values.Date.format(prices.get().getRight().getDate());
+
+            String stringValuePA = String.format("%,.2f %%", valuePA * 100); //$NON-NLS-1$
+
+            return firstDate + " \u27A4 " + secondDate + "\r\n" // dates //$NON-NLS-1$ //$NON-NLS-2$
+                            + firstPrice + " \u27A4 " + secondPrice + "\r\n" // prices //$NON-NLS-1$ //$NON-NLS-2$
+                            + value + " \u2259 " + stringValuePA + " p.a."; // annualized //$NON-NLS-1$ //$NON-NLS-2$
+        }
+
+        /* package */ static Double getQuoteChange(Security security, ReportingPeriod period)
+        {
+            Optional<Pair<SecurityPrice, SecurityPrice>> prices = getPrices(security, period);
+
+            if (prices.isEmpty())
+                return null;
+
+            return getQuoteChange(prices.get());
+        }
+
+        private static Double getQuoteChange(Pair<SecurityPrice, SecurityPrice> prices)
+        {
+            return Double.valueOf((prices.getRight().getValue() / (double) prices.getLeft().getValue()) - 1);
+        }
+
+        private static Double getAnnualizedQuoteChange(Pair<SecurityPrice, SecurityPrice> prices)
+        {
+            SecurityPrice previous = prices.getLeft();
+            SecurityPrice latest = prices.getRight();
+
+            double totalDays = java.time.temporal.ChronoUnit.DAYS.between(previous.getDate(), latest.getDate());
+            double totalGain = latest.getValue() / (double) previous.getValue();
+            return Double.valueOf(Math.pow(totalGain, 365 / totalDays)) - 1;
+        }
+
+        private static Optional<Pair<SecurityPrice, SecurityPrice>> getPrices(Security security, ReportingPeriod period)
+        {
+            Interval interval = period.toInterval(LocalDate.now());
+
+            SecurityPrice latest = security.getSecurityPrice(interval.getEnd());
+            SecurityPrice previous = security.getSecurityPrice(interval.getStart());
+
+            if (latest == null || previous == null)
+                return Optional.empty();
+
+            if (previous.getValue() == 0)
+                return Optional.empty();
+
+            if (previous.getDate().isAfter(interval.getStart()))
+                return Optional.empty();
+
+            return Optional.of(new Pair<>(previous, latest));
+        }
+
+        @Override
+        public Image getImage(Object e)
+        {
+            Double value = getQuoteChange((Security) e, getOption());
             if (value == null)
                 return null;
 
