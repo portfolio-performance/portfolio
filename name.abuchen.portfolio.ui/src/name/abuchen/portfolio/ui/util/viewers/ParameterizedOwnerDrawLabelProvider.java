@@ -16,7 +16,7 @@ import name.abuchen.portfolio.PortfolioLog;
  * ColumnLabelProvider subclass which allows to completely override rendering of
  * cell foreground, e.g. draw graphics, etc.
  */
-public class ParameterizedOwnerDrawLabelProvider extends ParameterizedColumnLabelProvider implements Listener
+public class ParameterizedOwnerDrawLabelProvider<O> extends ParameterizedColumnLabelProvider<O> implements Listener
 {
     @Override
     protected void initialize(ColumnViewer viewer, ViewerColumn column)

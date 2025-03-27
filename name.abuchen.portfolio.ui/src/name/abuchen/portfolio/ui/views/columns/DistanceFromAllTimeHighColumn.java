@@ -21,7 +21,8 @@ import name.abuchen.portfolio.util.Interval;
 
 public class DistanceFromAllTimeHighColumn extends Column
 {
-    private static final class QuoteReportingPeriodLabelProvider extends ParameterizedColumnLabelProvider
+    private static final class QuoteReportingPeriodLabelProvider
+                    extends ParameterizedColumnLabelProvider<ReportingPeriod>
     {
         private BiFunction<Object, ReportingPeriod, AllTimeHigh> valueProvider;
 
@@ -33,7 +34,7 @@ public class DistanceFromAllTimeHighColumn extends Column
         @Override
         public String getText(Object e)
         {
-            var ath = valueProvider.apply(e, (ReportingPeriod) getOption());
+            var ath = valueProvider.apply(e, getOption());
             if (ath == null)
                 return null;
             Double value = ath.getDistance();
@@ -46,7 +47,7 @@ public class DistanceFromAllTimeHighColumn extends Column
         @Override
         public String getToolTipText(Object e)
         {
-            var ath = valueProvider.apply(e, (ReportingPeriod) getOption());
+            var ath = valueProvider.apply(e, getOption());
             if (ath == null || ath.getValue() == null)
                 return null;
 
