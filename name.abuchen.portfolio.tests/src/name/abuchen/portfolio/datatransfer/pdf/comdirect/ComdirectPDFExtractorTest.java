@@ -6150,30 +6150,39 @@ public class ComdirectPDFExtractorTest
         assertThat(results, hasItem(deposit(hasDate("2024-11-04"), hasAmount("EUR", 200.00), //
                         hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Übertrag"))));
 
+        // assert transactions
         assertThat(results, hasItem(removal(hasDate("2024-11-05"), hasAmount("EUR", 47.19), //
                         hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Lastschrift"))));
 
+        // assert transactions
         assertThat(results, hasItem(removal(hasDate("2024-11-05"), hasAmount("EUR", 1.00), //
                         hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Lastschrift"))));
 
+        // assert transactions
         assertThat(results, hasItem(removal(hasDate("2024-11-11"), hasAmount("EUR", 13.70), //
                         hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Übertrag"))));
 
+        // assert transactions
         assertThat(results, hasItem(taxes(hasDate("2024-11-11"), hasAmount("EUR", 0.01), //
                         hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Steuerverrechnung"))));
 
+        // assert transactions
         assertThat(results, hasItem(removal(hasDate("2024-11-19"), hasAmount("EUR", 84.08), //
                         hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Lastschrift"))));
 
+        // assert transactions
         assertThat(results, hasItem(removal(hasDate("2024-11-26"), hasAmount("EUR", 10.99), //
                         hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Lastschrift"))));
 
+        // assert transactions
         assertThat(results, hasItem(removal(hasDate("2024-11-28"), hasAmount("EUR", 107.58), //
                         hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Lastschrift"))));
 
+        // assert transactions
         assertThat(results, hasItem(removal(hasDate("2024-11-28"), hasAmount("EUR", 1.00), //
                         hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Lastschrift"))));
 
+        // assert transactions
         assertThat(results, hasItem(fee(hasDate("2024-11-29"), hasAmount("EUR", 4.90), //
                         hasSource("Finanzreport09MitSteuerverrechnungNegativ.txt"), hasNote("Entgelte"))));
     }
@@ -6199,11 +6208,55 @@ public class ComdirectPDFExtractorTest
         assertThat(results, hasItem(fee(hasDate("2024-11-01"), hasAmount("EUR", 4.33), //
                         hasSource("Finanzreport10MitSteuerverrechnungPositiv.txt"), hasNote("Entgelte"))));
 
+        // assert transactions
         assertThat(results, hasItem(taxRefund(hasDate("2024-11-11"), hasAmount("EUR", 33.50), //
                         hasSource("Finanzreport10MitSteuerverrechnungPositiv.txt"), hasNote("Steuerverrechnung"))));
 
+        // assert transactions
         assertThat(results, hasItem(fee(hasDate("2024-12-01"), hasAmount("EUR", 4.37), //
                         hasSource("Finanzreport10MitSteuerverrechnungPositiv.txt"), hasNote("Entgelte"))));
+    }
+
+    @Test
+    public void testFinanzreport11()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Finanzreport11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(6L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2025-02-19"), hasAmount("EUR", 1500.00), //
+                        hasSource("Finanzreport11.txt"), hasNote("Übertrag"))));
+
+        // assert transactions
+        assertThat(results, hasItem(removal(hasDate("2025-02-21"), hasAmount("EUR", 336.00), //
+                        hasSource("Finanzreport11.txt"), hasNote("Lastschrift"))));
+
+        // assert transactions
+        assertThat(results, hasItem(removal(hasDate("2025-02-21"), hasAmount("EUR", 1000.00), //
+                        hasSource("Finanzreport11.txt"), hasNote("Lastschrift"))));
+
+        // assert transactions
+        assertThat(results, hasItem(removal(hasDate("2025-02-21"), hasAmount("EUR", 164.00), //
+                        hasSource("Finanzreport11.txt"), hasNote("Lastschrift"))));
+
+        // assert transactions
+        assertThat(results, hasItem(removal(hasDate("2025-02-19"), hasAmount("EUR", 69854.00), //
+                        hasSource("Finanzreport11.txt"), hasNote("Übertrag"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2025-02-21"), hasAmount("EUR", 20000.00), //
+                        hasSource("Finanzreport11.txt"), hasNote("Übertrag"))));
     }
 
     @Test
