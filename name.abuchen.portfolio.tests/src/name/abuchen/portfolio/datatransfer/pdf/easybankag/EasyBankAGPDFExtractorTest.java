@@ -16,10 +16,12 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.outboundDelivery;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -36,6 +38,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
@@ -1635,6 +1638,45 @@ public class EasyBankAGPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf06()
+    {
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AT0000A3EPA4"), hasWkn(null), hasTicker(null), //
+                        hasName("ams-OSRAM AG Inhaber-Aktien o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-02-18T10:56:36"), hasShares(133.00), //
+                        hasSource("Verkauf06.txt"), //
+                        hasNote("Auftrags-Nr.: 49674060 | Limit: 9,900000"), //
+                        hasAmount("EUR", 1311.75), hasGrossValue("EUR", 1316.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.95))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-02-20T00:00"), hasShares(133.00), //
+                        hasSource("Verkauf06.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 109.69), hasGrossValue("EUR", 109.69), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDividende01()
     {
         EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
@@ -3036,5 +3078,38 @@ public class EasyBankAGPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.50))));
         assertThat(transaction.getSource(), is("Depotauszug04.txt"));
         assertThat(transaction.getNote(), is("Kontoführungsgebühr"));
+    }
+
+    @Test
+    public void testUmtausch01()
+    {
+        EasyBankAGPDFExtractor extractor = new EasyBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umtausch01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("AT0000A1Z023"), hasWkn(null), hasTicker(null), //
+                        hasName("CONWERT IMMOBILIEN INVEST SE AKTIEN O.N./ANSPR.NACHZAHLUNG"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check unsupported transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        outboundDelivery( //
+                                        hasDate("2025-02-18T00:00"), hasShares(27.00), //
+                                        hasSource("Umtausch01.txt"), //
+                                        hasNote("Auftrags-Nr.: 17374528 - 28.01.2025"), //
+                                        hasAmount("EUR", 14.85), hasGrossValue("EUR", 14.85), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 }
