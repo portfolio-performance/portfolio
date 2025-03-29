@@ -59,7 +59,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         + "|Spitzenregulierung" //
                         + "|Gesamtr.ckzahlung" //
                         + "|Ablauf der Optionsfrist" //
-                        + "|Obligatorische Barabfindung)");
+                        + "|Obligatorische Barabfindung" //
+                        + "|Squeeze Out)");
         this.addDocumentTyp(type);
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
@@ -84,7 +85,8 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         + "|Purchase" //
                                         + "|Sale)).*$") //
                         .assign((t, v) -> {
-                            if ("Verkauf".equals(v.get("type")) || "Sale".equals(v.get("type"))) //
+                            if ("Verkauf".equals(v.get("type")) //
+                                            || "Sale".equals(v.get("type"))) //
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -93,17 +95,20 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // Is type --> "Gesamtrückzahlung" change from BUY to SELL
                         // Is type --> "Ablauf der Optionsfrist" change from BUY to SELL
                         // Is type --> "Obligatorische Barabfindung" change from BUY to SELL
+                        // Is type --> "Squeeze Out" change from BUY to SELL
                         // @formatter:off
                         .section("type").optional() //
                         .match("^(?<type>(Spitzenregulierung" //
                                         + "|Gesamtr.ckzahlung" //
                                         + "|Ablauf der Optionsfrist" //
-                                        + "|Obligatorische Barabfindung)).*$") //
+                                        + "|Obligatorische Barabfindung" //
+                                        + "|Squeeze Out)).*$") //
                         .assign((t, v) -> {
                             if ("Spitzenregulierung".equals(v.get("type")) //
                                             || "Gesamtrückzahlung".equals(v.get("type")) //
                                             || "Ablauf der Optionsfrist".equals(v.get("type")) //
-                                            || "Obligatorische Barabfindung".equals(v.get("type"))) //
+                                            || "Obligatorische Barabfindung".equals(v.get("type")) //
+                                            || "Squeeze Out".equals(v.get("type"))) //
                                 t.setType(PortfolioTransaction.Type.SELL);
                         })
 
@@ -313,9 +318,10 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // Spitzenregulierung KOPIE
                         // Ablauf der Optionsfrist
                         // Obligatorische Barabfindung
+                        // Squeeze Out
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^(?<note>(Spitzenregulierung|Ablauf der Optionsfrist|Obligatorische Barabfindung)).*$") //
+                        .match("^(?<note>(Spitzenregulierung|Ablauf der Optionsfrist|Obligatorische Barabfindung|Squeeze Out)).*$") //
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         // @formatter:off
@@ -417,7 +423,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         + "|Zinsabrechnung)", //
                         "(Kontoauszug" //
                         + "|Account Statement" //
-                        + "|Transaction Statement"
+                        + "|Transaction Statement" //
                         + "|Steuerausgleichsrechnung)");
         this.addDocumentTyp(type);
 
@@ -631,7 +637,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("(Vorabpauschale|Advance Lump Sum)", //
                         "(Wertpapierabrechnung" //
-                        + "|Steuerausgleichsrechnung"
+                        + "|Steuerausgleichsrechnung" //
                         + "|Fusion \\/ Zusammenlegung" //
                         + "|Transaction Statement" //
                         + "|Kontoauszug" //
