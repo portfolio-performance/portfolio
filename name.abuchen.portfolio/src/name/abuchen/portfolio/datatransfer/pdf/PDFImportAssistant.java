@@ -53,6 +53,7 @@ public class PDFImportAssistant
         extractors.add(new CommSecPDFExtractor(client));
         extractors.add(new ComputersharePDFExtractor(client));
         extractors.add(new ConsorsbankPDFExtractor(client));
+        extractors.add(new CreditMutuelAllianceFederalePDFExtractor(client));
         extractors.add(new CreditSuisseAGPDFExtractor(client));
         extractors.add(new CrowdestorPDFExtractor(client));
         extractors.add(new DABPDFExtractor(client));
