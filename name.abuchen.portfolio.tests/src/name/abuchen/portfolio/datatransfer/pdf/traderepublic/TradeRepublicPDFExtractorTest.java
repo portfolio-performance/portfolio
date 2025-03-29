@@ -1085,6 +1085,36 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testCryptoKauf08()
+    {
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf08.txt"), errors);
+
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("XRP"), //
+                        hasName("XRP"), //
+                        hasCurrencyCode("EUR"), //
+                        hasFeed(CoinGeckoQuoteFeed.ID), //
+                        hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "xrp"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-03-24T00:00"), hasShares(4.305443), //
+                        hasSource("CryptoKauf08.txt"), //
+                        hasNote("Ausführung: 5d58-8434 | Sparplan: 6a76-2917"), //
+                        hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testCryptoVerkauf01()
     {
         List<Exception> errors = new ArrayList<>();
