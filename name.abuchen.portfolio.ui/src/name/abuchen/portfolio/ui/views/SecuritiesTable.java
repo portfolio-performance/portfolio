@@ -91,7 +91,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
-import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ParameterizedColumnLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
@@ -570,8 +570,8 @@ public final class SecuritiesTable implements ModificationListener
         // reporting periods
         List<ReportingPeriod> options = view.getPart().getReportingPeriods().stream().collect(toMutableList());
 
-        BiFunction<Object, ReportingPeriod, Double> valueProvider = (element, option) -> {
-
+        BiFunction<Object, ReportingPeriod, Optional<Pair<SecurityPrice, SecurityPrice>>> pricesProvider = (element,
+                        option) -> {
             Interval interval = option.toInterval(LocalDate.now());
 
             Security security = (Security) element;
@@ -580,21 +580,47 @@ public final class SecuritiesTable implements ModificationListener
             SecurityPrice previous = security.getSecurityPrice(interval.getStart());
 
             if (latest == null || previous == null)
-                return null;
+                return Optional.empty();
 
             if (previous.getValue() == 0)
-                return null;
+                return Optional.empty();
 
             if (previous.getDate().isAfter(interval.getStart()))
+                return Optional.empty();
+            
+            return Optional.of(new Pair<>(previous, latest));
+        };
+        
+        BiFunction<Object, ReportingPeriod, Double> valueProvider = (element, option) -> {
+
+            Optional<Pair<SecurityPrice, SecurityPrice>> prices = pricesProvider.apply(element, option);
+
+            if (prices.isEmpty())
                 return null;
 
-            return Double.valueOf((latest.getValue() - previous.getValue()) / (double) previous.getValue());
+            return Double.valueOf(
+                            (prices.get().getRight().getValue() / (double) prices.get().getLeft().getValue()) - 1);
+        };
+        
+        BiFunction<Object, ReportingPeriod, Double> valueProviderAnnualized = (element, option) -> {
+
+            Optional<Pair<SecurityPrice, SecurityPrice>> prices = pricesProvider.apply(element, option);
+
+            if (prices.isEmpty())
+                return null;
+
+            SecurityPrice previous = prices.get().getLeft();
+            SecurityPrice latest = prices.get().getRight();
+
+            double totalDays = java.time.temporal.ChronoUnit.DAYS.between(previous.getDate(), latest.getDate());
+            double totalGain = latest.getValue() / (double) previous.getValue();
+            return Double.valueOf(Math.pow(totalGain, 365 / totalDays)) - 1;
         };
 
         Column column = new Column("delta-w-period", Messages.ColumnQuoteChange, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnQuoteChange_Option, options));
         column.setDescription(Messages.ColumnQuoteChange_Description);
-        column.setLabelProvider(new QuoteReportingPeriodLabelProvider(valueProvider));
+        column.setLabelProvider(() -> new QuoteReportingPeriodLabelProvider(valueProvider, valueProviderAnnualized));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
             ReportingPeriod option = (ReportingPeriod) ColumnViewerSorter.SortingContext.getColumnOption();
@@ -1235,19 +1261,23 @@ public final class SecuritiesTable implements ModificationListener
         }
     }
 
-    private static final class QuoteReportingPeriodLabelProvider extends OptionLabelProvider<ReportingPeriod>
+    private static final class QuoteReportingPeriodLabelProvider
+                    extends ParameterizedColumnLabelProvider<ReportingPeriod>
     {
         private BiFunction<Object, ReportingPeriod, Double> valueProvider;
+        private BiFunction<Object, ReportingPeriod, Double> valueProviderAnnualized;
 
-        public QuoteReportingPeriodLabelProvider(BiFunction<Object, ReportingPeriod, Double> valueProvider)
+        public QuoteReportingPeriodLabelProvider(BiFunction<Object, ReportingPeriod, Double> valueProvider,
+                        BiFunction<Object, ReportingPeriod, Double> valueProviderAnnualized)
         {
             this.valueProvider = valueProvider;
+            this.valueProviderAnnualized = valueProviderAnnualized;
         }
 
         @Override
-        public String getText(Object e, ReportingPeriod option)
+        public String getText(Object e)
         {
-            Double value = valueProvider.apply(e, option);
+            Double value = valueProvider.apply(e, getOption());
             if (value == null)
                 return null;
 
@@ -1255,9 +1285,9 @@ public final class SecuritiesTable implements ModificationListener
         }
 
         @Override
-        public Color getForeground(Object e, ReportingPeriod option)
+        public Color getForeground(Object e)
         {
-            Double value = valueProvider.apply(e, option);
+            Double value = valueProvider.apply(e, getOption());
             if (value == null)
                 return null;
 
@@ -1270,9 +1300,19 @@ public final class SecuritiesTable implements ModificationListener
         }
 
         @Override
-        public Image getImage(Object element, ReportingPeriod option)
+        public String getToolTipText(Object e)
         {
-            Double value = valueProvider.apply(element, option);
+            Double value = valueProviderAnnualized.apply(e, getOption());
+            if (value == null)
+                return null;
+
+            return "\u2259 " + String.format("%,.2f %%", value * 100) + " p.a."; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        }
+
+        @Override
+        public Image getImage(Object element)
+        {
+            Double value = valueProvider.apply(element, getOption());
             if (value == null)
                 return null;
 
