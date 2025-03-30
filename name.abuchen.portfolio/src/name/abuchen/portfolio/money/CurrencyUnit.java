@@ -3,13 +3,13 @@ package name.abuchen.portfolio.money;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
 
@@ -20,6 +20,7 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
 {
     public static final CurrencyUnit EMPTY = new CurrencyUnit(Messages.LabelNoCurrency,
                     Messages.LabelNoCurrencyDescription, null);
+
     public static final String EUR = "EUR"; //$NON-NLS-1$
     public static final String USD = "USD"; //$NON-NLS-1$
 
@@ -29,14 +30,14 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
 
     static
     {
-        Enumeration<String> codes = BUNDLE.getKeys();
+        var codes = BUNDLE.getKeys();
         while (codes.hasMoreElements())
         {
-            String currencyCode = codes.nextElement();
+            var currencyCode = codes.nextElement();
             if (currencyCode.indexOf('.') >= 0)
                 continue;
 
-            String displayName = BUNDLE.getString(currencyCode);
+            var displayName = BUNDLE.getString(currencyCode);
 
             // currency symbol
             String currencySymbol = null;
@@ -115,7 +116,7 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
 
         for (CurrencyUnit unit : CACHE.values())
         {
-            int letter = unit.getCurrencyCode().charAt(0) - 'A';
+            var letter = unit.getCurrencyCode().charAt(0) - 'A';
             sublists.floorEntry(letter).getValue().getRight().add(unit);
         }
 
@@ -162,8 +163,8 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
     @Override
     public int hashCode()
     {
-        final int prime = 31;
-        int result = 1;
+        final var prime = 31;
+        var result = 1;
         result = prime * result + ((currencyCode == null) ? 0 : currencyCode.hashCode());
         return result;
     }
@@ -173,17 +174,15 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
     {
         if (this == obj)
             return true;
+
         if (obj == null)
             return false;
+
         if (getClass() != obj.getClass())
             return false;
-        CurrencyUnit other = (CurrencyUnit) obj;
-        if (currencyCode == null)
-        {
-            if (other.currencyCode != null)
-                return false;
-        }
-        else if (!currencyCode.equals(other.currencyCode))
+
+        var other = (CurrencyUnit) obj;
+        if (!Objects.equals(currencyCode, other.currencyCode))
             return false;
         return true;
     }
