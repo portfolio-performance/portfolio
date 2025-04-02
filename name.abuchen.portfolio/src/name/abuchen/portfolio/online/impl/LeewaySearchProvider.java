@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.online.impl;
 
-import static name.abuchen.portfolio.util.TextUtil.trim;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,18 +53,19 @@ public class LeewaySearchProvider implements SecuritySearchProvider
         public static Result from(JSONObject json)
         {
             // Extract values from the JSON object
-            String tickerSymbol = (String) json.get("Code");
-            String exchange = (String) json.get("Exchange");
-            String name = (String) json.get("Name");
-            String type = (String) json.get("Type");
-            String isin = (String) json.get("ISIN");
-            String currencyCode = (String) json.get("currencyCode");
+            var tickerSymbol = (String) json.get("Code");
+            var exchange = (String) json.get("Exchange");
+            var name = (String) json.get("Name");
+            var type = (String) json.get("Type");
+            var isin = (String) json.get("ISIN");
+            var currencyCode = (String) json.get("currencyCode");
 
-            // Convert the security type using the SecuritySearchProvider instance
-            type = SecuritySearchProvider.convertType(trim(type.toLowerCase()));
+            // Convert the security type using the SecuritySearchProvider
+            // instance
+            type = SecuritySearchProvider.convertType(type);
 
             // Combine the symbol and exchange codes to create the security ID
-            StringBuilder symbol = new StringBuilder(tickerSymbol);
+            var symbol = new StringBuilder(tickerSymbol);
             symbol.append(".");
             symbol.append(exchange);
 
@@ -140,7 +139,7 @@ public class LeewaySearchProvider implements SecuritySearchProvider
         @Override
         public Security create(Client client)
         {
-            Security security = new Security(name, currencyCode);
+            var security = new Security(name, currencyCode);
             security.setTickerSymbol(symbol);
             security.setIsin(isin);
             security.setFeed(LeewayQuoteFeed.ID);
@@ -176,7 +175,7 @@ public class LeewaySearchProvider implements SecuritySearchProvider
     @SuppressWarnings("nls")
     private void addISINSearchPage(List<ResultItem> answer, String query) throws IOException
     {
-        String array = new WebAccess("api.leeway.tech", "/api/v1/public/general/isin/" + query) //
+        var array = new WebAccess("api.leeway.tech", "/api/v1/public/general/isin/" + query) //
                         .addParameter("apitoken", apiKey) //
                         .get();
 
@@ -185,14 +184,14 @@ public class LeewaySearchProvider implements SecuritySearchProvider
 
     void extract(List<ResultItem> answer, String array)
     {
-        JSONArray jsonArray = (JSONArray) JSONValue.parse(array);
+        var jsonArray = (JSONArray) JSONValue.parse(array);
 
         if (jsonArray.isEmpty())
             return;
 
         for (Object element : jsonArray)
         {
-            JSONObject item = (JSONObject) element;
+            var item = (JSONObject) element;
             answer.add(Result.from(item));
         }
     }

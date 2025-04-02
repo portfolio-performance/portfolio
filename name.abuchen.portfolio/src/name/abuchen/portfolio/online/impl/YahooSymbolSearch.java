@@ -2,9 +2,7 @@ package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -16,6 +14,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.util.WebAccess;
 import name.abuchen.portfolio.util.WebAccess.WebAccessException;
@@ -47,10 +46,9 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
             if (type == null)
                 type = (String) json.get("quoteType"); //$NON-NLS-1$
 
-            type = identifier2label.getOrDefault(type.toLowerCase(), type);
-
-            if ("equity".equalsIgnoreCase(String.valueOf(type))) //$NON-NLS-1$
-                type = Messages.LabelSearchShare;
+            // Convert the security type using the SecuritySearchProvider
+            // instance
+            type = SecuritySearchProvider.convertType(type);
 
             var exchange = (String) json.get("exchDisp"); //$NON-NLS-1$
             if (exchange == null)
@@ -117,19 +115,11 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
         @Override
         public Security create(Client client)
         {
-            Security security = new Security(name, client.getBaseCurrency());
+            var security = new Security(name, client.getBaseCurrency());
             security.setTickerSymbol(symbol);
             security.setFeed(YahooFinanceQuoteFeed.ID);
             return security;
         }
-    }
-
-    private static final Map<String, String> identifier2label = new HashMap<>();
-
-    static
-    {
-        identifier2label.put("equity", Messages.LabelSearchShare);
-        identifier2label.put("cryptocurrency", Messages.LabelSearchCryptoCurrency);
     }
 
     public Stream<Result> search(String query) throws IOException
@@ -139,7 +129,7 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
         try
         {
             @SuppressWarnings("nls")
-            String html = new WebAccess("query2.finance.yahoo.com", "/v1/finance/search") //
+            var html = new WebAccess("query2.finance.yahoo.com", "/v1/finance/search") //
                             .addParameter("q", query) //
                             .addParameter("region", "DE") //
                             .addParameter("lang", "de-DE") //
@@ -154,13 +144,13 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
                             .addParameter("enableEnhancedTrivialQuery", "false") //
                             .get();
 
-            JSONObject responseData = (JSONObject) JSONValue.parse(html);
+            var responseData = (JSONObject) JSONValue.parse(html);
             if (responseData != null)
             {
-                JSONArray result = (JSONArray) responseData.get("quotes"); //$NON-NLS-1$
+                var result = (JSONArray) responseData.get("quotes"); //$NON-NLS-1$
                 if (result != null)
                 {
-                    for (int ii = 0; ii < result.size(); ii++)
+                    for (var ii = 0; ii < result.size(); ii++)
                         Result.from((JSONObject) result.get(ii)).ifPresent(answer::add);
                 }
             }
