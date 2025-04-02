@@ -2807,7 +2807,7 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2024-12-01"), hasAmount("EUR", 6.70),
+        assertThat(results, hasItem(removal(hasDate("2024-12-01"), hasAmount("EUR", 6.70),
                         hasSource("Kontoauszug27.txt"), hasNote("HubNsrxbIO HbYYXkTJHpUamm"))));
 
         // assert transaction
@@ -3401,6 +3401,27 @@ public class TradeRepublicPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2025-02-28"), hasAmount("EUR", 100.00),
                         hasSource("Kontoauszug31.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testKontoauszug32()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug32.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-03-18"), hasAmount("EUR", 7.33),
+                        hasSource("Kontoauszug32.txt"), hasNote("Sepa Direct Debit transfer to Vodafone West GmbH"))));
     }
 
     @Test

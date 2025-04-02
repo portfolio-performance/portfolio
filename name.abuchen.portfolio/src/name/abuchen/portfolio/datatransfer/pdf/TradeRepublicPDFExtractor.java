@@ -1668,7 +1668,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction_Format01()
     {
-        final DocumentType type = new DocumentType("KONTOAUSZUG", //
+        final DocumentType type = new DocumentType("(?<! )KONTOAUSZUG(?! )", //
                         documentContext -> documentContext //
                                         .oneOf( //
                                                         // @formatter:off
@@ -1813,10 +1813,10 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|RESUMEN DE ESTADO DE CUENTA" //
                         + "|SYNTH.SE DU RELEV. DE COMPTE" //
                         + "|ACCOUNT STATEMENT SUMMARY)", (context, lines) -> { //
-            Pattern pAccountAmountTransaction_Format01 = Pattern.compile("^(?!(Depotkonto|Cuenta de valores|Compte titres)).*[\\.,\\d]+ \\p{Sc} (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}).*$");
+            Pattern pAccountAmountTransaction_Format01 = Pattern.compile("^(?!(Depotkonto|Cuenta de valores|Compte titres|Cashkonto)).*[\\.,\\d]+ \\p{Sc} (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}).*$");
             Pattern pAccountAmountTransaction_Format02 = Pattern.compile("^(?!(Securities Account)).*\\p{Sc}[\\.,\\d]+ (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+).*$");
 
-            Pattern pAccountInitialSaldoTransaction_Format01 = Pattern.compile("^(Depotkonto|Cuenta de valores|Compte titres) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc}$");
+            Pattern pAccountInitialSaldoTransaction_Format01 = Pattern.compile("^(Depotkonto|Cuenta de valores|Compte titres|Cashkonto) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc} [\\.,\\d]+ \\p{Sc}$");
             Pattern pAccountInitialSaldoTransaction_Format02 = Pattern.compile("^(Securities Account) (?<currency>\\p{Sc})(?<amount>[\\.,\\d]+) \\p{Sc}[\\.,\\d]+ \\p{Sc}[\\.,\\d]+ \\p{Sc}[\\.,\\d]+$");
 
             AccountAmountTransactionHelper accountAmountTransactionHelper = new AccountAmountTransactionHelper();
@@ -2388,11 +2388,15 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // 28
                                         // Apr. Kartentransaktion Hornbach Baumarkt AG FIL. 2,40 € 1.902,38 €
                                         // 2024
+                                        // 
+                                        // 18 
+                                        // März SEPA-Lastschrift Sepa Direct Debit transfer to Vodafone West GmbH 7,33 € 800,96 €
+                                        // 2025
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("day", "month", "year", "note", "amount", "currency", "amountAfter", "currencyAfter") //
                                                         .match("^(?<day>[\\d]{2})[\\s]$") //
-                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) Kartentransaktion " //
+                                                        .match("^(?<month>[\\p{L}]{3,4}([\\.]{1})?) (Kartentransaktion|SEPA\\-Lastschrift) " //
                                                                         + "(?<note>.*) " //
                                                                         + "(?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
                                                         .match("^(?<year>[\\d]{4})$") //
