@@ -959,6 +959,7 @@ public class Messages extends NLS
     public static String MenuConfigureCurrentDashboard;
     public static String MenuConfigureDashboards;
     public static String MenuConfigureRebalancingIndicator;
+    public static String MenuConfigureRebalancingPurchaseValue;
     public static String MenuConfigureView;
     public static String MenuConfirmDeleteAllTransactions;
     public static String MenuConvertToBuy;
@@ -1236,6 +1237,7 @@ public class Messages extends NLS
     public static String PresetsPrefPageTitle;
     public static String RebalanceAmbiguousTooltip;
     public static String RebalanceInexactTooltip;
+    public static String RebalancingPurchaseValue;
     public static String SearchSecurityWizardPageSymbolAlreadyExistsInfo;
     public static String SecuritiesChart_NoDataMessage_NoHoldings;
     public static String SecuritiesChart_NoDataMessage_NoPrices;
