@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.getTickerSymbolForCrypto;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
@@ -36,6 +37,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("flatexDEGIRO Bank AG");
 
         addBuySellTransaction();
+        addBuySellCryptoTransaction();
         addBuyStockDividendeTransaction();
         addSummaryStatementBuySellTransaction();
         addSellTransaction();
@@ -432,6 +434,102 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
         addBuySellTaxReturnBlock(type);
         addBuySellFeeBlock(type);
+    }
+
+    private void addBuySellCryptoTransaction()
+    {
+        final var type = new DocumentType("Sammelabrechnung \\(Kauf\\/\\-verkauf Kryptowerte\\)");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<BuySellEntry>();
+
+        var firstRelevantLine = new Block("^Kundenservice(:)?$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(?<type>(Kauf|Verkauf)).*$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
+
+                        // @formatter:off
+                        // Nr.293999994/1    Kauf                           BITCOIN
+                        // Kurs           : 76.064,2600 EUR         Kurswert      :             10,65 EUR
+                        // @formatter:on
+                        .section("name", "currency") //
+                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf)[\\s]{1,}(?<name>.*)$") //
+                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> {
+                            var tickerSymbol = getTickerSymbolForCrypto(v.get("name"));
+                            v.put("tickerSymbol", tickerSymbol);
+
+                            t.setSecurity(getOrCreateCryptoCurrency(v));
+                        })
+
+                        // @formatter:off
+                        // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
+                        // davon ausgef. : 4.550,00 St.            Schlusstag    :  01.11.2017, 14:41 Uhr
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^davon ausgef\\.([:\\s]+)? (?<shares>[\\.,\\d]+) St\\..*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
+                        // davon ausgef. : 540,00 St.              Schlusstag    :      09.04.2019, 16:52
+                        // @formatter:on
+                        .section("date", "time") //
+                        .match("^.* Schlusstag([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), (?<time>[\\d]{2}:[\\d]{2}).*$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+
+                        // @formatter:off
+                        // Valuta       : 30.01.2014              Endbetrag      :          -5.893,10 EUR
+                        //                                         Endbetrag     :           4.773,36 USD
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^.* Endbetrag([:\\s]+)?[\\s|\\-]{1,}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // Kurs : 114,4700 USD Kurswert : 528,10 EUR
+                        // Devisenkurs : 1,083790 Provision : 5,90 EUR
+                        .section("termCurrency", "gross", "baseCurrency", "exchangeRate").optional() //
+                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<termCurrency>[\\w]{3}) .* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)[\\s]{1,}(?<baseCurrency>[\\w]{3})$") //
+                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+) .*$") //
+                        .assign((t, v) -> {
+                            var rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        // @formatter:off
+                        // Vorgangs-Nr.: KRY 000000123456
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addSummaryStatementBuySellTransaction()

@@ -7,6 +7,8 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeed;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFeedProperty;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
@@ -52,6 +54,7 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.FinTechGroupBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.datatransfer.pdf.TestCoinSearchProvider;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -64,10 +67,21 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 
 @SuppressWarnings("nls")
 public class FinTechGroupBankPDFExtractorTest
 {
+    FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
+    {
+        @Override
+        protected List<SecuritySearchProvider> lookupCryptoProvider()
+        {
+            return TestCoinSearchProvider.cryptoProvider();
+        }
+    };
+
     @Test
     public void testFinTechSammelabrechnung01()
     {
@@ -4335,6 +4349,37 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testCryptoKauf01()
+    {
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroCryptoKauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("BTC"), //
+                        hasName("Bitcoin"), //
+                        hasCurrencyCode("EUR"), //
+                        hasFeed(CoinGeckoQuoteFeed.ID), //
+                        hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "bitcoin"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-03-30T18:55"), hasShares(0.00014), //
+                        hasSource("FlatExDegiroCryptoKauf01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 10.70), hasGrossValue("EUR", 10.65), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.05))));
+    }
+
+    @Test
     public void testFlatExDegiroVerkauf01()
     {
         var extractor = new FinTechGroupBankPDFExtractor(new Client());
@@ -4645,6 +4690,37 @@ public class FinTechGroupBankPDFExtractorTest
                         hasNote("Transaktion-Nr.: 5623076367"), //
                         hasAmount("EUR", 63704.10), hasGrossValue("EUR", 63712.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.90 + 2.00))));
+    }
+
+    @Test
+    public void testCryptoVerkauf01()
+    {
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatExDegiroCryptoVerkauf01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("BTC"), //
+                        hasName("Bitcoin"), //
+                        hasCurrencyCode("EUR"), //
+                        hasFeed(CoinGeckoQuoteFeed.ID), //
+                        hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "bitcoin"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-04-01T17:16"), hasShares(0.00014), //
+                        hasSource("FlatExDegiroCryptoVerkauf01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 10.94), hasGrossValue("EUR", 10.99), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.05))));
     }
 
     @Test
