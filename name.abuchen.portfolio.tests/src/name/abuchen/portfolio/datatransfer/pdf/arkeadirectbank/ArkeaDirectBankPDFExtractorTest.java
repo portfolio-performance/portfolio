@@ -30,7 +30,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.ArkeaDirectBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
@@ -42,11 +41,11 @@ public class ArkeaDirectBankPDFExtractorTest
     @Test
     public void testCompteAchat01()
     {
-        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -73,11 +72,11 @@ public class ArkeaDirectBankPDFExtractorTest
     @Test
     public void testCompteAchat02()
     {
-        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(2L));
@@ -118,11 +117,11 @@ public class ArkeaDirectBankPDFExtractorTest
     @Test
     public void testCompteAchat03()
     {
-        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -149,11 +148,11 @@ public class ArkeaDirectBankPDFExtractorTest
     @Test
     public void testCompteAchat04()
     {
-        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -196,11 +195,11 @@ public class ArkeaDirectBankPDFExtractorTest
     @Test
     public void testCompteAchat05()
     {
-        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -227,11 +226,11 @@ public class ArkeaDirectBankPDFExtractorTest
     @Test
     public void testCompteAchat06()
     {
-        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -258,11 +257,11 @@ public class ArkeaDirectBankPDFExtractorTest
     @Test
     public void testCompteAchat07()
     {
-        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat07.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat07.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -288,13 +287,107 @@ public class ArkeaDirectBankPDFExtractorTest
     }
 
     @Test
-    public void testCompteAchat07WithAchatTaxesTreatment07()
+    public void testCompteAchat08()
     {
-        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat07.txt", "AchatTaxesTreatment07.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat08.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE0002XZSHO1"), hasWkn(null), hasTicker(null), //
+                        hasName("IS.MSCI WLD SW.PEA UC.ETF EUR"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-03-10T09:04:13"), hasShares(1450.00), //
+                        hasSource("Achat08.txt"), //
+                        hasNote("Référence 00F2012613550101"), //
+                        hasAmount("EUR", 7994.33), hasGrossValue("EUR", 7966.45), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 27.88))));
+    }
+
+    @Test
+    public void testCompteAchat09()
+    {
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat09.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(4L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0013412038"), hasWkn(null), hasTicker(null), //
+                        hasName("AM.ETF PEA MSCI EUROPE UC.ETF"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU1681043599"), hasWkn(null), hasTicker(null), //
+                        hasName("AM.MSCI WORLD UCITS ETF EUR C"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-03-06T09:04:19"), hasShares(40.00), //
+                        hasSource("Achat09.txt"), //
+                        hasNote("Référence 00F2010258400102"), //
+                        hasAmount("EUR", 1327.30), hasGrossValue("EUR", 1322.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.90))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-03-06T12:49:04"), hasShares(700.00), //
+                        hasSource("Achat09.txt"), //
+                        hasNote("Référence 00F2010319500103"), //
+                        hasAmount("EUR", 23001.45), hasGrossValue("EUR", 22967.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 34.45))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-03-06T13:03:10"), hasShares(60.00), //
+                        hasSource("Achat09.txt"), //
+                        hasNote("Référence 00F2010481600104"), //
+                        hasAmount("EUR", 1972.60), hasGrossValue("EUR", 1967.70), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 4.90))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-03-06T09:33:30"), hasShares(45.00), //
+                        hasSource("Achat09.txt"), //
+                        hasNote("Référence 00F2010542700105"), //
+                        hasAmount("EUR", 24923.35), hasGrossValue("EUR", 24885.91), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 37.44))));
+    }
+
+    @Test
+    public void testCompteAchat07WithAchatTaxesTreatment07()
+    {
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat07.txt", "AchatTaxesTreatment07.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -322,11 +415,11 @@ public class ArkeaDirectBankPDFExtractorTest
     @Test
     public void testCompteAchat07WithTaxesTreatment07_SourceFilesReversed()
     {
-        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AchatTaxesTreatment07.txt", "Achat07.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AchatTaxesTreatment07.txt", "Achat07.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -354,11 +447,11 @@ public class ArkeaDirectBankPDFExtractorTest
     @Test
     public void testCompteAchatTaxesTreatment07()
     {
-        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AchatTaxesTreatment07.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AchatTaxesTreatment07.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -386,11 +479,11 @@ public class ArkeaDirectBankPDFExtractorTest
     @Test
     public void testDividende01()
     {
-        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -417,11 +510,11 @@ public class ArkeaDirectBankPDFExtractorTest
     @Test
     public void testDividende02()
     {
-        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -448,11 +541,11 @@ public class ArkeaDirectBankPDFExtractorTest
     @Test
     public void testDividende03()
     {
-        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -479,11 +572,11 @@ public class ArkeaDirectBankPDFExtractorTest
     @Test
     public void testTaxesTreatment01()
     {
-        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TaxesTreatment01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TaxesTreatment01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -510,11 +603,11 @@ public class ArkeaDirectBankPDFExtractorTest
     @Test
     public void testTaxesTreatment02()
     {
-        ArkeaDirectBankPDFExtractor extractor = new ArkeaDirectBankPDFExtractor(new Client());
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TaxesTreatment02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TaxesTreatment02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(2L));
