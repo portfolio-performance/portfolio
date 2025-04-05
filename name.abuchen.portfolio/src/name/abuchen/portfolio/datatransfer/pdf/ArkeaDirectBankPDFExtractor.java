@@ -65,29 +65,30 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^.* (ACTION|TRACKER) : (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
                                         .match("^Quantit. [\\,\\d\\s]+ Cours [\\,\\d\\s]+ (?<currency>\\p{Sc})$"));
 
-        final DocumentType type = new DocumentType("AVIS D.OP.RATIONS", securityRange);
+        final var type = new DocumentType("AVIS D.OP.RATIONS", securityRange);
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} R.f.rence .*$", "^Montant NET .*$");
+        var firstRelevantLine = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} R.f.rence .*$", "^Montant NET .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
 
                         // @formatter:off
                         // Quantité 46 Cours 10,646 €
+                        // Quantité 1 450 Cours 5,4941 €
                         // @formatter:on
                         .section("shares") //
                         .documentRange("name", "isin", "currency") //
-                        .match("^Quantit. (?<shares>[\\,\\d]+) Cours [\\,\\d\\s]+ \\p{Sc}$") //
+                        .match("^Quantit. (?<shares>[\\d\\s]+) Cours [\\,\\d\\s]+ \\p{Sc}$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
@@ -107,7 +108,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         // Montant NET 5 068,28 € 5 068,28 €
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Montant NET [\\,\\d\\s]+ \\p{Sc} (?<amount>[\\,\\d\\s]+) (?<currency>\\p{Sc})$") //
+                        .match("^Montant NET [\\d\\s]+,[\\d]{2} \\p{Sc} (?<amount>[\\d\\s]+,[\\d]{2}) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -128,19 +129,19 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction_Format02()
     {
-        final DocumentType type = new DocumentType("(Souscription . titre r.ductible|Souscription avec droits)");
+        final var type = new DocumentType("(Souscription . titre r.ductible|Souscription avec droits)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^RESULTAT D'OST.*$");
+        var firstRelevantLine = new Block("^RESULTAT D'OST.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -183,19 +184,19 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("AVIS D.ENCAISSEMENT COUPON");
+        var type = new DocumentType("AVIS D.ENCAISSEMENT COUPON");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^AVIS D.ENCAISSEMENT COUPON.*$");
+        var firstRelevantLine = new Block("^AVIS D.ENCAISSEMENT COUPON.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -263,19 +264,19 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxesTreatmentTransaction()
     {
-        DocumentType type = new DocumentType("AVIS RECAPITULATIF DE LA TAXE SUR LES");
+        var type = new DocumentType("AVIS RECAPITULATIF DE LA TAXE SUR LES");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^.* \\([A-Z]{2}[A-Z0-9]{9}[0-9]\\)$");
+        var firstRelevantLine = new Block("^.* \\([A-Z]{2}[A-Z0-9]{9}[0-9]\\)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
@@ -391,7 +392,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
     public void postProcessing(List<Item> items)
     {
         // Filter transactions by taxes
-        List<Item> taxesTreatmentList = items.stream() //
+        var taxesTreatmentList = items.stream() //
                         .filter(TransactionItem.class::isInstance) //
                         .filter(i -> i.getSubject() instanceof AccountTransaction) //
                         .filter(i -> AccountTransaction.Type.TAXES
@@ -399,7 +400,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         .toList();
 
         // Filter transactions by buySell transactions
-        List<Item> buyTransactionList = items.stream() //
+        var buyTransactionList = items.stream() //
                         .filter(BuySellEntryItem.class::isInstance) //
                         .filter(i -> i.getSubject() instanceof BuySellEntry) //
                         .filter(i -> PortfolioTransaction.Type.BUY //
