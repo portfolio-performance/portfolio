@@ -1,0 +1,37 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+OPERATION DE BOURSE
+le 01/06/2023
+526255
+P8101
+rp WfbYkARAbfe dHKuNTBExRR
+8 fSgeqIPV ST uECHgjs
+21 Gro kVOPtt LDJzIa
+43898 aEdfc ck axstSIO
+MgzoBqjHUB de votre compte titres
+57946 14993 60218495139 Résident Français
+ACHAT COMPTANT ETR
+ACTION
+Date et heure
+locale d'exécution Quantité Informations sur la valeur Informations sur l'exécution
+31/05/2023 1 LOWE S Référence : 70Q065050p7509
+Type d'ordre : non spécifié
+17:45:50
+Code ISIN : US5486611073 Cours exécuté : 200,4 USD
+Lieu d'exécution : NEW YORK STOCK EXCHANGE I
+Montant transaction
+Montant transaction brut Intérêts total brut Courtages Montant transaction net
+200,40 USD 0,00 USD 200,40 USD 0,00 USD 200,40 USD
+000 jours
+ACHAT DEVISES A TERME Cours de change Montant transaction net contrevalorisé
+Contrevalorisation en EURO 1,06491900 188,18 EUR
+Commission Frais divers Montant total des frais
+6,95 EUR 0,00 EUR 6,95 EUR
+Montant net au débit de votre compte
+195,13 EUR
+Sous réserve de bonne fin.
+Cet avis ne tient pas compte des frais inhérents aux Taxes sur les Transactions Financières européennes (hors France), s'ils doivent s'appliquer.
+AA1
+526255 F8101 P8101 1/1
