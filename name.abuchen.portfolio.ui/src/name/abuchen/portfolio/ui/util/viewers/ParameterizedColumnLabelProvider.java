@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.TableColumn;
  * with a column. This can be e.g. reporting period (and there can be multiple
  * instance of the same base column with different reporting periods set).
  */
-public class ParameterizedColumnLabelProvider extends ColumnLabelProvider
+public class ParameterizedColumnLabelProvider<O> extends ColumnLabelProvider
 {
     private TableColumn tableColumn;
 
@@ -25,8 +25,10 @@ public class ParameterizedColumnLabelProvider extends ColumnLabelProvider
         this.tableColumn = tableColumn;
     }
 
-    public Object getOption()
+
+    @SuppressWarnings("unchecked")
+    public O getOption()
     {
-        return this.tableColumn.getData(ShowHideColumnHelper.OPTIONS_KEY);
+        return (O) this.tableColumn.getData(ShowHideColumnHelper.OPTIONS_KEY);
     }
 }
