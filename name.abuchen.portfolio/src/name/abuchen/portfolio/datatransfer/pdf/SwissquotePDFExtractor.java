@@ -234,13 +234,11 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // 0.02 BTC 63'643.9
                         // Bruttobetrag USD  1'272.88
                         // @formatter:on
-                        .section("name", "currency") //
+                        .section("tickerSymbol", "currency") //
                         .find("Anzahl W.hrung Rate")
-                        .match("^[\\.'\\d]+ (?<name>[A-Z]{3}) [\\.'\\d]+$") //
+                        .match("^[\\.'\\d]+ (?<tickerSymbol>[A-Z]{3}) [\\.'\\d]+$") //
                         .match("^Bruttobetrag (?<currency>[A-Z]{3})[\\s]{1,}[\\.'\\d]+$") //
                         .assign((t, v) -> {
-                            v.put("tickerSymbol", v.get("name"));
-
                             t.setSecurity(getOrCreateCryptoCurrency(v));
                         })
 
