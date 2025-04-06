@@ -82,6 +82,14 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                             return portfolioTransaction;
                         })
 
+                        // Is type --> "Vente" change from BUY to SELL
+                        .section("type").optional() //
+                        .match(".* Sens (?<type>(Achat|Vente)).*$") //
+                        .assign((t, v) -> {
+                            if ("Vente".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
+
                         // @formatter:off
                         // Quantité 46 Cours 10,646 €
                         // Quantité 1 450 Cours 5,4941 €

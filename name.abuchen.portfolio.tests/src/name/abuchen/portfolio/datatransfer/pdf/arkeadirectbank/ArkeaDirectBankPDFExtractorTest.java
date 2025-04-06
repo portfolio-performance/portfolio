@@ -15,6 +15,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.sale;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.taxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -372,11 +373,11 @@ public class ArkeaDirectBankPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 4.90))));
 
         // check buy sell transaction
-        assertThat(results, hasItem(purchase( //
+        assertThat(results, hasItem(sale( //
                         hasDate("2025-03-06T09:33:30"), hasShares(45.00), //
                         hasSource("Achat09.txt"), //
                         hasNote("Référence 00F2010542700105"), //
-                        hasAmount("EUR", 24923.35), hasGrossValue("EUR", 24885.91), //
+                        hasAmount("EUR", 24923.35), hasGrossValue("EUR", 24960.79), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 37.44))));
     }
 
