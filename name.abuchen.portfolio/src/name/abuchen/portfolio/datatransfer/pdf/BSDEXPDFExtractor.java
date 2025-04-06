@@ -25,6 +25,7 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
 //        addTransactionHistory();
         addBuyTransaction();
         addSellTransaction();
+        addDepositAndWithdrawal();
     }
 
     @Override
@@ -40,7 +41,7 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
         System.out.println("Hello from addTransactionHistory");
 
 //        addPurchaseAndSale(type);
-        addDepositAndWithdrawal(type);
+//        addDepositAndWithdrawal(type);
 //        addBuySellTransaction(type);
     }
     
@@ -148,25 +149,42 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
             .wrap(BuySellEntryItem::new));
     }
 
-    private void addDepositAndWithdrawal(DocumentType type)
+    private void addDepositAndWithdrawal()
     {
-        Block depositWithdrawal = new Block("(Einzahlung|Auszahlung) .* EUR$");
+        // Define the document type for BSDEX transaction history
+        DocumentType type = new DocumentType("Transaktionshistorie");
+        this.addDocumentTyp(type);
+
+        Block depositWithdrawal = new Block(".*(Einzahlung|Auszahlung).*", "^([a-f0-9\\-]+)? ?(\\d{2}\\:\\d{2}\\:\\d{2}) \\d \\d$");
         type.addBlock(depositWithdrawal);
 
         depositWithdrawal.set(new Transaction<AccountTransaction>()
+            .subject(() -> new AccountTransaction())
 
-                        .subject(() -> new AccountTransaction())
+            // @formatter:off
+            // f5f27cba-6e3a-4120-8d96-c6be8859ce6f Einzahlung 14.06.2024 25.5 EUR IBAN-A IBAN-B
+            // 06:00:26 4 6
+            // c2c3eea6-cbee-4352-b87a- Auszahlung 17.12.2024 113.66 EUR IBAN-A IBAN-B
+            // 87557f1886c3 06:30:23 6 4
+            // @formatter:on
+            .section("type", "date", "amount", "currency", "time")
+            .match("^([a-f0-9\\-]+) (?<type>Einzahlung|Auszahlung) (?<date>\\d{2}\\.\\d{2}\\.\\d{4}) (?<amount>[\\d\\.,]+) (?<currency>[A-Z]+) [A-Z0-9]+ [A-Z0-9]+$")
+            .match("^([a-f0-9\\-]+)? ?(?<time>\\d{2}\\:\\d{2}\\:\\d{2}) \\d \\d")
+            .assign((t, v) -> {
+                System.out.println("Keys available: " + v.keySet());
+                System.out.println("Date: " + v.get("date"));
+                System.out.println("time: " + v.get("time"));
+                System.out.println("Amount: " + v.get("amount"));
+                System.out.println("currency: " + v.get("currency"));
+                System.out.println("IBANfrom: " + v.get("IBANfrom"));
+                System.out.println("IBANto: " + v.get("IBANto"));
+                t.setType("Auszahlung".equals(v.get("type")) ? AccountTransaction.Type.REMOVAL : AccountTransaction.Type.DEPOSIT);
+                t.setCurrencyCode(v.get("currency"));
+                t.setAmount(asAmount(v.get("amount").replace(".", ",")));
+                t.setDateTime(asDate(v.get("date"), v.get("time")));
+            })
 
-                        .section("type", "date", "time", "amount")
-                        .match("(?<type>Einzahlung|Auszahlung) (?<date>\\d{2}\\.\\d{2}\\.\\d{4}) (?<time>\\d{2}:\\d{2}:\\d{2}) (?<amount>[\\d\\.,]+) EUR$")
-                        .assign((t, v) -> {
-                            t.setType("Auszahlung".equals(v.get("type")) ? AccountTransaction.Type.REMOVAL : AccountTransaction.Type.DEPOSIT);
-                            t.setCurrencyCode("EUR");
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setDateTime(asDate(v.get("date"), v.get("time")));
-                        })
-
-                        .wrap(TransactionItem::new));
+            .wrap(TransactionItem::new));
     }
     
     /**
