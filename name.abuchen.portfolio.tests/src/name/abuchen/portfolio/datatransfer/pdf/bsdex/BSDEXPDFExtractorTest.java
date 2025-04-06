@@ -72,7 +72,7 @@ public class BSDEXPDFExtractorTest
                         hasCurrencyCode("EUR"), //
                         hasFeed(CoinGeckoQuoteFeed.ID), //
                         hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "bitcoin"))));
-        
+
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-12-18T04:14:42"), hasShares(0.001), //
@@ -80,7 +80,7 @@ public class BSDEXPDFExtractorTest
                         hasAmount("EUR", 99.2), hasGrossValue("EUR", 99), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.2))));
     }
-    
+
     @Test
     public void testCryptoBuy2()
     {
@@ -90,7 +90,7 @@ public class BSDEXPDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
-        
+
         // check security
         assertThat(results, hasItem(security( //
                         hasIsin(null), hasWkn(null), hasTicker("BTC"), //
@@ -98,7 +98,7 @@ public class BSDEXPDFExtractorTest
                         hasCurrencyCode("EUR"), //
                         hasFeed(CoinGeckoQuoteFeed.ID), //
                         hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "bitcoin"))));
-        
+
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-04-30T19:16:59"), hasShares(0.0001283), //
@@ -106,7 +106,7 @@ public class BSDEXPDFExtractorTest
                         hasAmount("EUR", 7.19), hasGrossValue("EUR", 7.18), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.01))));
     }
-    
+
     @Test
     public void testCryptoSell()
     {
@@ -124,7 +124,6 @@ public class BSDEXPDFExtractorTest
                         hasCurrencyCode("EUR"), //
                         hasFeed(CoinGeckoQuoteFeed.ID), //
                         hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "xrp"))));
-        
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-12-17T18:07:05"), hasShares(15), //
