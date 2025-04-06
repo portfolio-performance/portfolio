@@ -37,38 +37,53 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.datatransfer.pdf.TestCoinSearchProvider;
 import name.abuchen.portfolio.datatransfer.pdf.BSDEXPDFExtractor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 
 @SuppressWarnings("nls")
 public class BSDEXPDFExtractorTest
 {
-    @Test
-    public void testCryptoKauf()
+    BSDEXPDFExtractor extractor = new BSDEXPDFExtractor(new Client())
     {
-        BSDEXPDFExtractor extractor = new BSDEXPDFExtractor(new Client());
+        @Override
+        protected List<SecuritySearchProvider> lookupCryptoProvider()
+        {
+            System.out.println("BSDEXPDFExtractor override lookupCryptoProvider!");
+            return TestCoinSearchProvider.cryptoProvider();
+        }
+    };
 
+    @Test
+    public void testCryptoBuy()
+    {
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf.txt"), errors);
 
         assertThat(errors, empty());
         System.out.println("Extraction errors: " + errors.size());
-        for (Exception error : errors)
+        if (!errors.isEmpty())
         {
-            System.out.println("Error: " + error.getMessage());
-            error.printStackTrace(); // Prints the stack trace for debugging
+            System.out.println("Errors encountered during extraction:");
+            for (Exception error : errors)
+            {
+                System.out.println("Error: " + error.getMessage());
+                error.printStackTrace(); // This will print the full stack trace
+            }
         }
-        assertThat(results.size(), is(2));
+
         System.out.println("Extracted results: " + results.size());
         for (Item item : results)
         {
             System.out.println(item);
         }
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
-        
+
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
@@ -91,10 +106,8 @@ public class BSDEXPDFExtractorTest
     }
     
     @Test
-    public void testCryptoKauf2()
+    public void testCryptoBuy2()
     {
-        BSDEXPDFExtractor extractor = new BSDEXPDFExtractor(new Client());
-
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf2.txt"), errors);
 
@@ -135,10 +148,8 @@ public class BSDEXPDFExtractorTest
     }
     
     @Test
-    public void testWertpapierVerkauf()
+    public void testCryptoSell()
     {
-        BSDEXPDFExtractor extractor = new BSDEXPDFExtractor(new Client());
-
         List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf.txt"), errors);
 
@@ -162,7 +173,7 @@ public class BSDEXPDFExtractorTest
                         hasName("XRP"), //
                         hasCurrencyCode("EUR"), //
                         hasFeed(CoinGeckoQuoteFeed.ID), //
-                        hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "ripple"))));
+                        hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "xrp"))));
         
         // check buy sell transaction
         assertThat(results, hasItem(sale( //

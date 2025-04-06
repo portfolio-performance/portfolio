@@ -22,7 +22,6 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("ID Typ Ausführung eingehender eingehendes ausgehender ausgehendes");
 
-//        addTransactionHistory();
         addBuyTransaction();
         addSellTransaction();
         addDepositAndWithdrawal();
@@ -32,17 +31,6 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
     public String getLabel()
     {
         return "BSDEX";
-    }
-
-    private void addTransactionHistory()
-    {
-        DocumentType type = new DocumentType("Transaktionshistorie");
-        this.addDocumentTyp(type);
-        System.out.println("Hello from addTransactionHistory");
-
-//        addPurchaseAndSale(type);
-//        addDepositAndWithdrawal(type);
-//        addBuySellTransaction(type);
     }
     
     private void addBuyTransaction()
@@ -68,8 +56,8 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
             // d207c7f3-ebd2-416c-b451-34353cfcc23d Kauf 30.04.2024 0.0001283 BTC 7.18 EUR 0.01 EUR
             // 19:16:59
             // @formatter:on
-            .section("date", "shares", "tickerSymbol", "amount", "currency", "fee", "currencyFee", "time")
-            .match("^([a-f0-9\\-]+) Kauf (?<date>\\d{2}\\.\\d{2}\\.\\d{4}) (?<shares>[\\d\\.,]+) (?<tickerSymbol>[A-Z]+) (?<amount>[\\d\\.,]+) (?<currency>[A-Z]{3}) (?<fee>[\\d\\.,]+) (?<currencyFee>[A-Z]{3})$")
+            .section("date", "shares", "tickerSymbol", "amount", "currency", "fee", "feeCurrency", "time")
+            .match("^([a-f0-9\\-]+) Kauf (?<date>\\d{2}\\.\\d{2}\\.\\d{4}) (?<shares>[\\d\\.,]+) (?<tickerSymbol>[A-Z]+) (?<amount>[\\d\\.,]+) (?<currency>[A-Z]{3}) (?<fee>[\\d\\.,]+) (?<feeCurrency>[A-Z]{3})$")
             .match("^([a-f0-9\\-]+)? ?(?<time>\\d{2}\\:\\d{2}\\:\\d{2})")
             .assign((t, v) -> {
                 System.out.println("Keys available: " + v.keySet());
@@ -80,7 +68,7 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
                 System.out.println("Amount: " + v.get("amount"));
                 System.out.println("fee: " + v.get("fee"));
                 System.out.println("currency: " + v.get("currency"));
-                System.out.println("currencyFee: " + v.get("currencyFee"));
+                System.out.println("feeCurrency: " + v.get("feeCurrency"));
                 
                 v.put("fee", v.get("fee").replace(".", ",")); // fix factor 1000 problem
                 v.put("name", getCryptoName(v.get("tickerSymbol")));
@@ -119,8 +107,8 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
             // 750968db-6059-481b-9dd4- Verkauf 17.12.2024 37.8 EUR 15.0 XRP 0.08 EUR
             // f04544597f50 18:07:05
             // @formatter:on
-            .section("date", "shares", "tickerSymbol", "amount", "currency", "fee", "currencyFee", "time")
-            .match("^([a-f0-9\\-]+) Verkauf (?<date>\\d{2}\\.\\d{2}\\.\\d{4}) (?<amount>[\\d\\.,]+) (?<currency>[A-Z]+) (?<shares>[\\d\\.,]+) (?<tickerSymbol>[A-Z]{3}) (?<fee>[\\d\\.,]+) (?<currencyFee>[A-Z]{3})$")
+            .section("date", "shares", "tickerSymbol", "amount", "currency", "fee", "feeCurrency", "time")
+            .match("^([a-f0-9\\-]+) Verkauf (?<date>\\d{2}\\.\\d{2}\\.\\d{4}) (?<amount>[\\d\\.,]+) (?<currency>[A-Z]+) (?<shares>[\\d\\.,]+) (?<tickerSymbol>[A-Z]{3}) (?<fee>[\\d\\.,]+) (?<feeCurrency>[A-Z]{3})$")
             .match("^([a-f0-9\\-]+)? ?(?<time>\\d{2}\\:\\d{2}\\:\\d{2})")
             .assign((t, v) -> {
                 System.out.println("Keys available: " + v.keySet());
@@ -131,7 +119,7 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
                 System.out.println("Amount: " + v.get("amount"));
                 System.out.println("fee: " + v.get("fee"));
                 System.out.println("currency: " + v.get("currency"));
-                System.out.println("currencyFee: " + v.get("currencyFee"));
+                System.out.println("feeCurrency: " + v.get("feeCurrency"));
                 
                 v.put("fee", v.get("fee").replace(".", ",")); // fix factor 1000 problem
                 v.put("name", getCryptoName(v.get("tickerSymbol")));
@@ -189,6 +177,7 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
     
     /**
      * Maps a ticker symbol to the cryptocurrency name using a predefined map.
+     * This helps identifying the correct crypto since there are for example several ones with ticker "BTC".
      * @param tickerSymbol The ticker symbol to look up (e.g., "BTC").
      * @return The name of the cryptocurrency, or null if the ticker symbol is not found.
      */
