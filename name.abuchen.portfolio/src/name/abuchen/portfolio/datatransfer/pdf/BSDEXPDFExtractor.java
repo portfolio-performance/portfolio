@@ -20,6 +20,7 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
+        // there is no "real" bank identifier available in the document, therefore use the column headers
         addBankIdentifier("ID Typ Ausführung eingehender eingehendes ausgehender ausgehendes");
 
         addBuyTransaction();
@@ -35,15 +36,12 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
     
     private void addBuyTransaction()
     {
-        // Define the document type for BSDEX transaction history
         DocumentType type = new DocumentType("Transaktionshistorie");
         this.addDocumentTyp(type);
 
-        // Define a transaction block to process "Kauf" and "Verkauf" entries
         Block transactionBlock = new Block("^[a-f0-9\\-]+ Kauf .*EUR$", "^([a-f0-9\\-]+)? ?(\\d{2}\\:\\d{2}\\:\\d{2})$");
         type.addBlock(transactionBlock);
 
-        // Define transaction matching logic for "Kauf" and "Verkauf"
         transactionBlock.set(new Transaction<BuySellEntry>()
             .subject(() -> {
                 BuySellEntry transaction = new BuySellEntry();
@@ -60,19 +58,8 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
             .match("^([a-f0-9\\-]+) Kauf (?<date>\\d{2}\\.\\d{2}\\.\\d{4}) (?<shares>[\\d\\.,]+) (?<tickerSymbol>[A-Z]+) (?<amount>[\\d\\.,]+) (?<currency>[A-Z]{3}) (?<fee>[\\d\\.,]+) (?<feeCurrency>[A-Z]{3})$")
             .match("^([a-f0-9\\-]+)? ?(?<time>\\d{2}\\:\\d{2}\\:\\d{2})")
             .assign((t, v) -> {
-                System.out.println("Keys available: " + v.keySet());
-                System.out.println("Date: " + v.get("date"));
-                System.out.println("time: " + v.get("time"));
-                System.out.println("shares: " + v.get("shares"));
-                System.out.println("tickerSymbol: " + v.get("tickerSymbol"));
-                System.out.println("Amount: " + v.get("amount"));
-                System.out.println("fee: " + v.get("fee"));
-                System.out.println("currency: " + v.get("currency"));
-                System.out.println("feeCurrency: " + v.get("feeCurrency"));
-                
                 v.put("fee", v.get("fee").replace(".", ",")); // fix factor 1000 problem
-                v.put("name", getCryptoName(v.get("tickerSymbol")));
-                System.out.println("name: " + v.get("name"));
+                v.put("name", getCryptoName(v.get("tickerSymbol"))); // set crypto name for correct matching
                 
                 // Set transaction details
                 t.setDate(asDate(v.get("date"), v.get("time")));
@@ -88,15 +75,12 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
     
     private void addSellTransaction()
     {
-        // Define the document type for BSDEX transaction history
         DocumentType type = new DocumentType("Transaktionshistorie");
         this.addDocumentTyp(type);
 
-        // Define a transaction block to process "Kauf" and "Verkauf" entries
         Block transactionBlock = new Block("^[a-f0-9\\-]+ Verkauf .*EUR$", "^([a-f0-9\\-]+)? ?(\\d{2}\\:\\d{2}\\:\\d{2})$");
         type.addBlock(transactionBlock);
 
-        // Define transaction matching logic for "Kauf" and "Verkauf"
         transactionBlock.set(new Transaction<BuySellEntry>()
             .subject(() -> {
                 BuySellEntry transaction = new BuySellEntry();
@@ -111,19 +95,8 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
             .match("^([a-f0-9\\-]+) Verkauf (?<date>\\d{2}\\.\\d{2}\\.\\d{4}) (?<amount>[\\d\\.,]+) (?<currency>[A-Z]+) (?<shares>[\\d\\.,]+) (?<tickerSymbol>[A-Z]{3}) (?<fee>[\\d\\.,]+) (?<feeCurrency>[A-Z]{3})$")
             .match("^([a-f0-9\\-]+)? ?(?<time>\\d{2}\\:\\d{2}\\:\\d{2})")
             .assign((t, v) -> {
-                System.out.println("Keys available: " + v.keySet());
-                System.out.println("Date: " + v.get("date"));
-                System.out.println("time: " + v.get("time"));
-                System.out.println("shares: " + v.get("shares"));
-                System.out.println("tickerSymbol: " + v.get("tickerSymbol"));
-                System.out.println("Amount: " + v.get("amount"));
-                System.out.println("fee: " + v.get("fee"));
-                System.out.println("currency: " + v.get("currency"));
-                System.out.println("feeCurrency: " + v.get("feeCurrency"));
-                
                 v.put("fee", v.get("fee").replace(".", ",")); // fix factor 1000 problem
-                v.put("name", getCryptoName(v.get("tickerSymbol")));
-                System.out.println("name: " + v.get("name"));
+                v.put("name", getCryptoName(v.get("tickerSymbol"))); // set crypto name for correct matching
                 
                 // Set transaction details
                 t.setDate(asDate(v.get("date"), v.get("time")));
@@ -139,7 +112,6 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
 
     private void addDepositAndWithdrawal()
     {
-        // Define the document type for BSDEX transaction history
         DocumentType type = new DocumentType("Transaktionshistorie");
         this.addDocumentTyp(type);
 
@@ -159,19 +131,11 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
             .match("^([a-f0-9\\-]+) (?<type>Einzahlung|Auszahlung) (?<date>\\d{2}\\.\\d{2}\\.\\d{4}) (?<amount>[\\d\\.,]+) (?<currency>[A-Z]+) [A-Z0-9]+ [A-Z0-9]+$")
             .match("^([a-f0-9\\-]+)? ?(?<time>\\d{2}\\:\\d{2}\\:\\d{2}) \\d \\d")
             .assign((t, v) -> {
-                System.out.println("Keys available: " + v.keySet());
-                System.out.println("Date: " + v.get("date"));
-                System.out.println("time: " + v.get("time"));
-                System.out.println("Amount: " + v.get("amount"));
-                System.out.println("currency: " + v.get("currency"));
-                System.out.println("IBANfrom: " + v.get("IBANfrom"));
-                System.out.println("IBANto: " + v.get("IBANto"));
                 t.setType("Auszahlung".equals(v.get("type")) ? AccountTransaction.Type.REMOVAL : AccountTransaction.Type.DEPOSIT);
                 t.setCurrencyCode(v.get("currency"));
                 t.setAmount(asAmount(v.get("amount").replace(".", ",")));
                 t.setDateTime(asDate(v.get("date"), v.get("time")));
             })
-
             .wrap(TransactionItem::new));
     }
     
@@ -183,7 +147,7 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
      */
     private String getCryptoName(String tickerSymbol)
     {
-        // Predefined map for ticker symbols to cryptocurrency names
+        // Predefined map for ticker symbols to cryptocurrency names that can be traded on BSDEX (as of April 2025)
         Map<String, String> tickerToName = Map.of(
             "BTC", "Bitcoin",
             "ETH", "Ethereum",

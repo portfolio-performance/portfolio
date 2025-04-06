@@ -34,13 +34,11 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.TestCoinSearchProvider;
 import name.abuchen.portfolio.datatransfer.pdf.BSDEXPDFExtractor;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
@@ -53,7 +51,6 @@ public class BSDEXPDFExtractorTest
         @Override
         protected List<SecuritySearchProvider> lookupCryptoProvider()
         {
-            System.out.println("BSDEXPDFExtractor override lookupCryptoProvider!");
             return TestCoinSearchProvider.cryptoProvider();
         }
     };
@@ -65,31 +62,10 @@ public class BSDEXPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf.txt"), errors);
 
         assertThat(errors, empty());
-        System.out.println("Extraction errors: " + errors.size());
-        if (!errors.isEmpty())
-        {
-            System.out.println("Errors encountered during extraction:");
-            for (Exception error : errors)
-            {
-                System.out.println("Error: " + error.getMessage());
-                error.printStackTrace(); // This will print the full stack trace
-            }
-        }
-
-        System.out.println("Extracted results: " + results.size());
-        for (Item item : results)
-        {
-            System.out.println(item);
-        }
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getTickerSymbol(), is("BTC"));
-        assertThat(security.getName(), is("Bitcoin"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(results, hasItem(security( //
                         hasIsin(null), hasWkn(null), hasTicker("BTC"), //
                         hasName("Bitcoin"), //
@@ -112,26 +88,10 @@ public class BSDEXPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf2.txt"), errors);
 
         assertThat(errors, empty());
-        System.out.println("Extraction errors: " + errors.size());
-        for (Exception error : errors)
-        {
-            System.out.println("Error: " + error.getMessage());
-            error.printStackTrace(); // Prints the stack trace for debugging
-        }
         assertThat(results.size(), is(2));
-        System.out.println("Extracted results: " + results.size());
-        for (Item item : results)
-        {
-            System.out.println(item);
-        }
         new AssertImportActions().check(results, CurrencyUnit.EUR);
         
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
-                        .orElseThrow(IllegalArgumentException::new).getSecurity();
-        assertThat(security.getTickerSymbol(), is("BTC"));
-        assertThat(security.getName(), is("Bitcoin"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(results, hasItem(security( //
                         hasIsin(null), hasWkn(null), hasTicker("BTC"), //
                         hasName("Bitcoin"), //
@@ -154,20 +114,10 @@ public class BSDEXPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf.txt"), errors);
 
         assertThat(errors, empty());
-        System.out.println("Extraction errors: " + errors.size());
-        for (Exception error : errors)
-        {
-            System.out.println("Error: " + error.getMessage());
-            error.printStackTrace(); // Prints the stack trace for debugging
-        }
         assertThat(results.size(), is(2));
-        System.out.println("Extracted results: " + results.size());
-        for (Item item : results)
-        {
-            System.out.println("Results " + item);
-        }
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
+        // check security
         assertThat(results, hasItem(security( //
                         hasIsin(null), hasWkn(null), hasTicker("XRP"), //
                         hasName("XRP"), //
