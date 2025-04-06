@@ -2,7 +2,10 @@ package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -49,6 +52,8 @@ public class LeewaySearchProvider implements SecuritySearchProvider
         private String isin;
         private String currencyCode;
 
+        private List<ResultItem> markets = new ArrayList<>();
+
         @SuppressWarnings("nls")
         public static Result from(JSONObject json)
         {
@@ -85,7 +90,8 @@ public class LeewaySearchProvider implements SecuritySearchProvider
         @Override
         public String getSymbol()
         {
-            return symbol;
+            return markets.isEmpty() ? symbol
+                            : markets.stream().map(e -> e.getSymbol()).distinct().collect(Collectors.joining(", ")); //$NON-NLS-1$
         }
 
         @Override
@@ -121,7 +127,9 @@ public class LeewaySearchProvider implements SecuritySearchProvider
         @Override
         public String getCurrencyCode()
         {
-            return currencyCode;
+            return markets.isEmpty() ? currencyCode
+                            : markets.stream().map(e -> e.getCurrencyCode()).distinct()
+                                            .collect(Collectors.joining(", ")); //$NON-NLS-1$
         }
 
         @Override
@@ -134,6 +142,17 @@ public class LeewaySearchProvider implements SecuritySearchProvider
         public boolean hasPrices()
         {
             return true;
+        }
+
+        @Override
+        public List<ResultItem> getMarkets()
+        {
+            return markets;
+        }
+
+        Result copy()
+        {
+            return new Result(isin, symbol, currencyCode, name, type, exchange);
         }
 
         @Override
@@ -179,20 +198,51 @@ public class LeewaySearchProvider implements SecuritySearchProvider
                         .addParameter("apitoken", apiKey) //
                         .get();
 
-        extract(answer, array);
+        var result = extract(array);
+
+        // group by ISIN (= return with a list of markets)
+
+        var isin2result = new HashMap<String, Result>();
+
+        for (var item : result)
+        {
+            var isin = item.getIsin();
+            if (isin == null || isin.isBlank())
+            {
+                answer.add(item);
+            }
+            else
+            {
+                var grouped = isin2result.get(isin);
+
+                if (grouped != null)
+                {
+                    grouped.markets.add(item);
+                }
+                else
+                {
+                    grouped = item.copy();
+                    isin2result.put(isin, grouped);
+                    grouped.markets.add(item);
+                    answer.add(grouped);
+                }
+            }
+        }
     }
 
-    void extract(List<ResultItem> answer, String array)
+    private List<Result> extract(String array)
     {
         var jsonArray = (JSONArray) JSONValue.parse(array);
 
         if (jsonArray.isEmpty())
-            return;
+            return Collections.emptyList();
 
+        List<Result> answer = new ArrayList<>();
         for (Object element : jsonArray)
         {
             var item = (JSONObject) element;
             answer.add(Result.from(item));
         }
+        return answer;
     }
 }
