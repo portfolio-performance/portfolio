@@ -36,15 +36,12 @@ import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -81,20 +78,20 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.USD);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US0378331005"));
         assertNull(security.getWkn());
@@ -103,7 +100,7 @@ public class SwissquotePDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -127,20 +124,20 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testWertpapierKauf02()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0001752309"));
         assertNull(security.getWkn());
@@ -149,7 +146,7 @@ public class SwissquotePDFExtractorTest
         assertThat(security.getCurrencyCode(), is("CHF"));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -173,20 +170,20 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testWertpapierKauf03()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DK0010268606"));
         assertNull(security.getWkn());
@@ -195,7 +192,7 @@ public class SwissquotePDFExtractorTest
         assertThat(security.getCurrencyCode(), is("DKK"));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -215,7 +212,7 @@ public class SwissquotePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(39.10))));
 
-        Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of("DKK", Values.Amount.factorize(37301.50))));
     }
@@ -223,24 +220,24 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testWertpapierKauf03WithSecurityInCHF()
     {
-        Security security = new Security("VESTAS WIND SYSTEMS ORD", "CHF");
+        var security = new Security("VESTAS WIND SYSTEMS ORD", "CHF");
         security.setIsin("DK0010268606");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -260,30 +257,30 @@ public class SwissquotePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(39.10))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode("CHF");
-        Status s = c.process(entry, account, entry.getPortfolio());
+        var s = c.process(entry, account, entry.getPortfolio());
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testWertpapierKauf04()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3RBWM25"));
         assertNull(security.getWkn());
@@ -292,7 +289,7 @@ public class SwissquotePDFExtractorTest
         assertThat(security.getCurrencyCode(), is("CHF"));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -316,27 +313,27 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testWertpapierKauf05()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0210483332"));
         assertThat(security.getName(), is("RICHEMONT N"));
         assertThat(security.getCurrencyCode(), is("CHF"));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -360,11 +357,11 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testWertpapierKauf06()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -391,11 +388,11 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testWertpapierKauf07()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -422,11 +419,11 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testWertpapierKauf08()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -453,11 +450,11 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testWertpapierKauf09()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -482,22 +479,55 @@ public class SwissquotePDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf01()
+    public void testSecurityBuy01()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3RBWM25"), hasWkn(null), hasTicker(null), //
+                        hasName("Vanguard FTSE All-World UCITS ETF USD"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-02-06T00:00"), hasShares(3.00), //
+                        hasSource("Buy01.txt"), //
+                        hasNote("Ref.-Nr.: 123456789"), //
+                        hasAmount("CHF", 390.45), hasGrossValue("CHF", 387.85), //
+                        hasTaxes("CHF", 0.60), hasFees("CHF", 2.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf01()
+    {
+        var client = new Client();
+
+        var extractor = new SwissquotePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0363463438"));
         assertNull(security.getWkn());
@@ -506,7 +536,7 @@ public class SwissquotePDFExtractorTest
         assertThat(security.getCurrencyCode(), is("CHF"));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -530,20 +560,20 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testWertpapierVerkauf02()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DK0010268606"));
         assertNull(security.getWkn());
@@ -552,7 +582,7 @@ public class SwissquotePDFExtractorTest
         assertThat(security.getCurrencyCode(), is("DKK"));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -572,7 +602,7 @@ public class SwissquotePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(31.85))));
 
-        Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of("DKK", Values.Amount.factorize(35410.50))));
     }
@@ -580,24 +610,24 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testWertpapierVerkauf02WithSecurityInCHF()
     {
-        Security security = new Security("VESTAS WIND SYSTEMS ORD", "CHF");
+        var security = new Security("VESTAS WIND SYSTEMS ORD", "CHF");
         security.setIsin("DK0010268606");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -617,21 +647,21 @@ public class SwissquotePDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", Values.Amount.factorize(31.85))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode("CHF");
-        Status s = c.process(entry, account, entry.getPortfolio());
+        var s = c.process(entry, account, entry.getPortfolio());
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testWertpapierVerkauf03()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -658,11 +688,11 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testWertpapierVerkauf04()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -689,11 +719,11 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testWertpapierVerkauf05()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -720,11 +750,11 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testWertpapierVerkauf06()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -751,11 +781,11 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testExpiryOption01()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OptionVerfall01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OptionVerfall01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -786,7 +816,7 @@ public class SwissquotePDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -815,20 +845,20 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende01()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.USD);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US41753F1093"));
         assertNull(security.getWkn());
@@ -837,7 +867,7 @@ public class SwissquotePDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -860,17 +890,17 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende01WithSecurityInCHF()
     {
-        Security security = new Security("HARVEST CAPITAL CREDIT ORD", "CHF");
+        var security = new Security("HARVEST CAPITAL CREDIT ORD", "CHF");
         security.setIsin("US41753F1093");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -888,10 +918,10 @@ public class SwissquotePDFExtractorTest
                         hasForexGrossValue("CHF", 27.37), //
                         hasTaxes("USD", 8.40), hasFees("USD", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.USD);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -899,20 +929,20 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende02()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0025751329"));
         assertNull(security.getWkn());
@@ -921,7 +951,7 @@ public class SwissquotePDFExtractorTest
         assertThat(security.getCurrencyCode(), is("CHF"));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -944,20 +974,20 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende03()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.USD);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3RBWM25"));
         assertNull(security.getWkn());
@@ -966,7 +996,7 @@ public class SwissquotePDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -989,17 +1019,17 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende03WithSecurityInCHF()
     {
-        Security security = new Security("Vanguard All World ETF Dist", "CHF");
+        var security = new Security("Vanguard All World ETF Dist", "CHF");
         security.setIsin("IE00B3RBWM25");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1017,10 +1047,10 @@ public class SwissquotePDFExtractorTest
                         hasForexGrossValue("CHF", 12.74), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.USD);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1028,20 +1058,20 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende04()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0371153492"));
         assertNull(security.getWkn());
@@ -1050,7 +1080,7 @@ public class SwissquotePDFExtractorTest
         assertThat(security.getCurrencyCode(), is("CHF"));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -1073,20 +1103,20 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende05()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "CHF");
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CH0012032048"));
         assertNull(security.getWkn());
@@ -1095,7 +1125,7 @@ public class SwissquotePDFExtractorTest
         assertThat(security.getCurrencyCode(), is("CHF"));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -1118,20 +1148,20 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende06()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.USD);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B8GKDB10"));
         assertNull(security.getWkn());
@@ -1140,7 +1170,7 @@ public class SwissquotePDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -1163,17 +1193,17 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende06WithSecurityInCHF()
     {
-        Security security = new Security("Vanguard AllWrld Div ETF Dist", "CHF");
+        var security = new Security("Vanguard AllWrld Div ETF Dist", "CHF");
         security.setIsin("IE00B8GKDB10");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1191,10 +1221,10 @@ public class SwissquotePDFExtractorTest
                         hasForexGrossValue("CHF", 1.34), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.USD);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1202,11 +1232,11 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende07()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1233,17 +1263,17 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende07WithSecurityInCHF()
     {
-        Security security = new Security("VanEck Global Real Estate ETF", "CHF");
+        var security = new Security("VanEck Global Real Estate ETF", "CHF");
         security.setIsin("NL0009690239");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1261,10 +1291,10 @@ public class SwissquotePDFExtractorTest
                         hasForexGrossValue("CHF", 127.03), //
                         hasTaxes("EUR", 20.16), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1272,11 +1302,11 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende08()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1303,17 +1333,17 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende08WithSecurityInCHF()
     {
-        Security security = new Security("SIMPLIFY BITCOIN STGY INC ETF", "CHF");
+        var security = new Security("SIMPLIFY BITCOIN STGY INC ETF", "CHF");
         security.setIsin("US82889N6739");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1331,10 +1361,10 @@ public class SwissquotePDFExtractorTest
                         hasForexGrossValue("CHF", 25.28), //
                         hasTaxes("USD", 4.22), hasFees("USD", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode("USD");
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1342,11 +1372,11 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende09()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1373,17 +1403,17 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende09WithSecurityInCHF()
     {
-        Security security = new Security("GLOBAL X RUSSELL 2000 CVRED CALL ET F", "CHF");
+        var security = new Security("GLOBAL X RUSSELL 2000 CVRED CALL ET F", "CHF");
         security.setIsin("US37954Y4594");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1401,10 +1431,10 @@ public class SwissquotePDFExtractorTest
                         hasForexGrossValue("CHF", 44.05), //
                         hasTaxes("USD", 7.32), hasFees("USD", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode("USD");
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1412,11 +1442,11 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende10()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1443,17 +1473,17 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende10WithSecurityInCHF()
     {
-        Security security = new Security("TARGET ORD", "CHF");
+        var security = new Security("TARGET ORD", "CHF");
         security.setIsin("US87612E1064");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1471,10 +1501,10 @@ public class SwissquotePDFExtractorTest
                         hasForexGrossValue("CHF", 8.09), //
                         hasTaxes("USD", 2.68), hasFees("USD", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode("USD");
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1482,11 +1512,11 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende11()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1513,17 +1543,17 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testDividende11WithSecurityInCHF()
     {
-        Security security = new Security("META PLATFORMS CL A ORD", "CHF");
+        var security = new Security("META PLATFORMS CL A ORD", "CHF");
         security.setIsin("US30303M1027");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1540,10 +1570,10 @@ public class SwissquotePDFExtractorTest
                         hasForexGrossValue("CHF", 13.46), //
                         hasTaxes("USD", 2.28 + 2.28), hasFees("USD", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode("USD");
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1551,24 +1581,24 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testZahlungsverkehr01()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zahlungsverkehr01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zahlungsverkehr01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-27T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
@@ -1579,24 +1609,24 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testZahlungsverkehr02()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zahlungsverkehr02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zahlungsverkehr02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-27T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(250.00))));
@@ -1607,24 +1637,24 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testZahlungsverkehr03()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zahlungsverkehr03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zahlungsverkehr03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.00))));
@@ -1635,24 +1665,24 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testZahlungsverkehr04()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zahlungsverkehr04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zahlungsverkehr04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(605.66))));
@@ -1663,20 +1693,20 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testZahlungsverkehr05()
     {
-        Client client = new Client();
+        var client = new Client();
 
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+        var extractor = new SwissquotePDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zahlungsverkehr05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zahlungsverkehr05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
 
         // check fee transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
@@ -1698,11 +1728,11 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testZinsabrechnung01()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
@@ -1710,13 +1740,13 @@ public class SwissquotePDFExtractorTest
         // new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-30T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1.36))));
@@ -1747,11 +1777,11 @@ public class SwissquotePDFExtractorTest
     @Test
     public void testKontoauszug01()
     {
-        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(new Client());
+        var extractor = new SwissquotePDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
