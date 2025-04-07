@@ -744,12 +744,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 14.02.2020 Dauerauftrag/Terminueberw. Max Mustermann -30,00
         // 29.04.2021 Gehalt/Rente Hauptkasse des Freistaates Sachsen 806,83
         // 13.10.2020 Gutschrift-VWL 40,00
+        // 04.06.2024 Lastschrift-Einzug mvezSX fnHyElys 5.300,00
         // @formatter:on
         Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(Gutschrift-VWL" //
                         + "|Gutschrift\\/Dauerauftrag" //
                         + "|Gehalt\\/Rente" //
-                        + "|Gutschrift)" //
+                        + "|Gutschrift"
+                        + "|Lastschrift\\-Einzug)" //
                         + ".* [\\.,\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
@@ -766,7 +768,8 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                         + "(?<note>Gutschrift\\-VWL" //
                                         + "|Gutschrift\\/Dauerauftrag" //
                                         + "|Gehalt\\/Rente" //
-                                        + "|Gutschrift)" //
+                                        + "|Gutschrift"
+                                        + "|Lastschrift\\-Einzug)" //
                                         + ".* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -798,14 +801,16 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .documentContextOptionally("taxDate1", "taxDate2", "taxDate3", "tax1", "tax2", "tax3")
                                                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Zinsertrag|Zinsgutschrift) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
+                                                            Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+
                                                             t.setDateTime(asDate(v.get("date")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setMonetaryAmount(amount);
 
                                                             if (v.containsKey("taxDate1") && v.containsKey("tax1")
                                                                             && t.getDateTime().equals(asDate(v.get("taxDate1"))))
                                                             {
                                                                 Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax1")));
+                                                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                                                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                                                             }
 
@@ -813,6 +818,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                                             && t.getDateTime().equals(asDate(v.get("taxDate2"))))
                                                             {
                                                                 Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax2")));
+                                                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                                                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                                                             }
 
@@ -820,6 +826,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                                             && t.getDateTime().equals(asDate(v.get("taxDate3"))))
                                                             {
                                                                 Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax3")));
+                                                                t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                                                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                                                             }
                                                         }))

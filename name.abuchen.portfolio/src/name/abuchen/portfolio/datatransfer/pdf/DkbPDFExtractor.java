@@ -5,14 +5,12 @@ import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import java.math.BigDecimal;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.DocumentContext;
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -43,7 +41,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
     private static final String IS_JOINT_ACCOUNT = "isJointAccount";
 
     BiConsumer<DocumentContext, String[]> isJointAccount = (context, lines) -> {
-        Pattern pJointAccount = Pattern.compile("^Anteilige Berechnungsgrundlage f.r \\([\\d]{2},[\\d]{2}([\\s]+)?%\\).*$");
+        var pJointAccount = Pattern.compile("^Anteilige Berechnungsgrundlage f.r \\([\\d]{2},[\\d]{2}([\\s]+)?%\\).*$");
 
         for (String line : lines)
         {
@@ -81,7 +79,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Kauf" //
+        var type = new DocumentType("(Kauf" //
                         + "|Kauf Direkthandel" //
                         + "|Ausgabe" //
                         + "|Ausgabe Investmentfonds" //
@@ -94,9 +92,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         + "|Teilliquidation mit Nennwertreduzierung)", isJointAccount);
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^(Wertpapier Abrechnung )?" //
+        var firstRelevantLine = new Block("^(Wertpapier Abrechnung )?" //
                         + "(Kauf" //
                         + "|Kauf Direkthandel" //
                         + "|Ausgabe" //
@@ -117,7 +115,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -190,7 +188,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             // Percentage quotation, workaround for bonds
                             if (v.get("notation") != null && !"Stück".equalsIgnoreCase(v.get("notation")))
                             {
-                                BigDecimal shares = asBigDecimal(v.get("shares"));
+                                var shares = asBigDecimal(v.get("shares"));
                                 t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                             }
                             else
@@ -247,11 +245,11 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("^Devisenkurs \\((?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+).*$") //
                         .match("^Kurswert (?<gross>[\\.,\\d]+)(\\-)? (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
-                            Money fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
+                            var gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(asCurrencyCode(v.get("termCurrency")), gross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -272,7 +270,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | ")))
 
                         .wrap((t, ctx) -> {
-                            BuySellEntryItem item = new BuySellEntryItem(t);
+                            var item = new BuySellEntryItem(t);
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -296,7 +294,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Dividendengutschrift" //
+        var type = new DocumentType("(Dividendengutschrift" //
                         + "|Zinsgutschrift" //
                         + "|Gutschrift von Investmenterträgen" //
                         + "|Aussch.ttung aus Genussschein" //
@@ -306,16 +304,16 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         + "|Ertr.gnisgutschrift aus Wertpapieren)", isJointAccount);
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^10919 Berlin( Seite 1)?$", "^Den Betrag buchen wir mit.*$");
+        var firstRelevantLine = new Block("^10919 Berlin( Seite 1)?$", "^Den Betrag buchen wir mit.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -371,7 +369,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             // Percentage quotation, workaround for bonds
                             if (v.get("notation") != null && !"Stück".equalsIgnoreCase(v.get("notation")))
                             {
-                                BigDecimal shares = asBigDecimal(v.get("shares"));
+                                var shares = asBigDecimal(v.get("shares"));
                                 t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                             }
                             else
@@ -405,11 +403,11 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+).*$") //
                         .match("^(Aussch.ttung|Dividendengutschrift|Kurswert) (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)\\+ [\\w]{3}") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -446,19 +444,19 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private void addTransferOutTransaction()
     {
-        DocumentType type = new DocumentType("Depotbuchung \\- Belastung", isJointAccount);
+        var type = new DocumentType("Depotbuchung \\- Belastung", isJointAccount);
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Depotnummer.*$");
+        var firstRelevantLine = new Block("^Depotnummer.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.TRANSFER_OUT);
                             return portfolioTransaction;
                         })
@@ -476,7 +474,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
 
                             // Percentage quotation, workaround for bonds
-                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                            var shares = asBigDecimal(v.get("shares"));
                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
 
                             t.setAmount(0L);
@@ -510,19 +508,19 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        DocumentType type = new DocumentType("Vorabpauschale Investmentfonds");
+        var type = new DocumentType("Vorabpauschale Investmentfonds");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Abrechnungsnr.*$", "^Keine Steuerbescheinigung\\.$");
+        var firstRelevantLine = new Block("^Abrechnungsnr.*$", "^Keine Steuerbescheinigung\\.$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
@@ -551,7 +549,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             // Percentage quotation, workaround for bonds
                             if (v.get("notation") != null && !"Stück".equalsIgnoreCase(v.get("notation")))
                             {
-                                BigDecimal shares = asBigDecimal(v.get("shares"));
+                                var shares = asBigDecimal(v.get("shares"));
                                 t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                             }
                             else
@@ -606,7 +604,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .wrap(t -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
@@ -617,7 +615,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private void addBuyTransactionFundsSavingsPlan()
     {
-        final DocumentType type = new DocumentType("Halbjahresabrechnung Sparplan", //
+        final var type = new DocumentType("Halbjahresabrechnung Sparplan", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
@@ -639,16 +637,16 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Kauf [\\.,\\d]+ .*$");
+        var firstRelevantLine = new Block("^Kauf [\\.,\\d]+ .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -698,7 +696,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction_Format01()
     {
-        final DocumentType type = new DocumentType("Kontoauszug Nummer", //
+        final var type = new DocumentType("Kontoauszug Nummer", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
@@ -739,12 +737,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         // Abrechnungszeitraum vom 01.01.2021 bis 31.03.2021
         // Zinsen für eingeräumte Kontoüberziehung                              0,24-
         // @formatter:on
-        Block interestChargeBlock = new Block("^Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
+        var interestChargeBlock = new Block("^Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
         type.addBlock(interestChargeBlock);
         interestChargeBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
@@ -770,7 +768,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^Kapitalertrags(s)?teuer[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             if (t.getType() == AccountTransaction.Type.INTEREST)
@@ -783,7 +781,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^Solidarit.tszuschlag[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             if (t.getType() == AccountTransaction.Type.INTEREST)
@@ -796,7 +794,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^Kirchensteuer[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             if (t.getType() == AccountTransaction.Type.INTEREST)
@@ -811,12 +809,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
-        Block interestChargeCreditBlock = new Block("^Zinsen f.r Dispositionskredit ([\\s]+)?[\\.,\\d]+([\\-|\\+])$");
+        var interestChargeCreditBlock = new Block("^Zinsen f.r Dispositionskredit ([\\s]+)?[\\.,\\d]+([\\-|\\+])$");
         type.addBlock(interestChargeCreditBlock);
         interestChargeCreditBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
                             return accountTransaction;
                         })
@@ -833,7 +831,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block removalBlock = new Block("^(?i)[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
+        var removalBlock = new Block("^(?i)[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
                         + "(.berweisung" //
                         + "|Dauerauftrag" //
                         + "|Basislastschrift" //
@@ -848,7 +846,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         removalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.REMOVAL);
                             return accountTransaction;
                         })
@@ -896,7 +894,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block depositBlock = new Block("^(?i)[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
+        var depositBlock = new Block("^(?i)[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
                         + "(Lohn, Gehalt, Rente" //
                         + "|Zahlungseingang" //
                         + "|Storno Gutschrift" //
@@ -909,7 +907,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -943,12 +941,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block taxReturnBlock = new Block("^(?i)[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. [\\d]+ Steuerausgleich [\\.,\\d]+$");
+        var taxReturnBlock = new Block("^(?i)[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. [\\d]+ Steuerausgleich [\\.,\\d]+$");
         type.addBlock(taxReturnBlock);
         taxReturnBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
                             return accountTransaction;
                         })
@@ -968,7 +966,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block feesBlock = new Block("^(?i)[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
+        var feesBlock = new Block("^(?i)[\\d]{2}\\.[\\d]{2}\\. [\\d]{2}\\.[\\d]{2}\\. " //
                         + "(Rechnung" //
                         + "|Buchung" //
                         + "|sonstige Entgelte) " //
@@ -977,7 +975,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         feesBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES);
                             return accountTransaction;
                         })
@@ -1021,7 +1019,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction_Format02()
     {
-        final DocumentType type = new DocumentType("Kontoauszug [\\d]{1,2}\\/[\\d]{4}", //
+        final var type = new DocumentType("Kontoauszug [\\d]{1,2}\\/[\\d]{4}", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Gesamtumsatzsummen Summe Soll EUR Anzahl Summe Haben EUR Anzahl
@@ -1035,27 +1033,28 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         //
                                         // 02.10.2023 Abrechnung 29.09.2023 / Wert: 01.10.2023
                                         // 01.07.2024 Abrechnung 28.06.2024
+                                        //  01.04.2025 Abrechnung 31.03.2025                -0,04
                                         // @formatter:on
                                         .section("date").optional() //
-                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*") //
-                                        .assign((ctx, v) -> ctx.put("date", v.get("date"))));
+                                        .match("^(?<date>[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4}) Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*") //
+                                        .assign((ctx, v) -> ctx.put("date", stripBlanks(v.get("date")))));
 
         this.addDocumentTyp(type);
 
-        Block depositRemovalBlock_Format01 = new Block("^[\\s]+ (\\-)?[\\.,\\d]+$");
+        var depositRemovalBlock_Format01 = new Block("^[\\s]+(\\-)?[\\.,\\d]+$");
         type.addBlock(depositRemovalBlock_Format01);
         depositRemovalBlock_Format01.setMaxSize(2);
         depositRemovalBlock_Format01.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
 
                         .section("type", "amount", "date", "note").optional() //
                         .documentContext("currency") //
-                        .match("^[\\s]+ (?<type>[\\-\\s])(?<amount>[\\.,\\d]+)$") //
+                        .match("^[\\s]+(?<type>[\\-\\s])(?<amount>[\\.,\\d]+)$") //
                         .match("^(?<date>[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))" //
                                         + "(?<note>(Lohn, Gehalt, Rente" //
@@ -1114,7 +1113,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap((t) -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (t.getDateTime() != null)
                                 return item;
@@ -1128,13 +1127,13 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         // 06.02.2025 Kartenzahlung onl              -460,00
         //  1 7.02.2025 Kartenzahlung               -44,00
         // @formatter:on
-        Block depositRemovalBlock_Format02 = new Block("^[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4}(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})).*[\\.,\\d]+$");
+        var depositRemovalBlock_Format02 = new Block("^[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4}(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})).*[\\.,\\d]+$");
         type.addBlock(depositRemovalBlock_Format02);
         depositRemovalBlock_Format02.setMaxSize(1);
         depositRemovalBlock_Format02.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -1200,7 +1199,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap((t) -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (t.getDateTime() != null)
                                 return item;
@@ -1208,20 +1207,121 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
-        Block feesBlock = new Block("^[\\s]+ (\\-)?[\\.,\\d]+$");
+        // @formatter:off
+        //  0 1.04.2025 Basislastschrift
+        //                -5,99
+        // @formatter:on
+        var depositRemovalBlock_Format03 = new Block("^[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(Lohn, Gehalt, Rente" //
+                        + "|Zahlungseingang" //
+                        + "|Storno Gutschrift" //
+                        + "|Bareinzahlung am GA" //
+                        + "|sonstige Buchung" //
+                        + "|Eingang Inst\\.Paym\\." //
+                        + "|Eingang Echtzeit.berw" //
+                        + "|.berweisung" //
+                        + "|Dauerauftrag" //
+                        + "|Basislastschrift" //
+                        + "|Lastschrift" //
+                        + "|Kartenzahlung" //
+                        + "|Kartenzahlung onl" //
+                        + "|Kreditkartenabr\\." //
+                        + "|Verf.gung Geldautomat" //
+                        + "|Verf.g\\. Geldautom\\. FW" //
+                        + "|.berweis\\. entgeltfr\\.)$");
+        type.addBlock(depositRemovalBlock_Format03);
+        depositRemovalBlock_Format03.setMaxSize(2);
+        depositRemovalBlock_Format03.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "note", "type", "amount").optional() //
+                        .documentContext("currency") //
+                        .match("^(?<date>[\\d\\s]{1,4}.[\\d]{2}\\.[\\d]{4}) " //
+                                        + "(?<note>(Lohn, Gehalt, Rente" //
+                                        + "|Zahlungseingang" //
+                                        + "|Storno Gutschrift" //
+                                        + "|Bareinzahlung am GA" //
+                                        + "|sonstige Buchung" //
+                                        + "|Eingang Inst\\.Paym\\." //
+                                        + "|Eingang Echtzeit.berw" //
+                                        + "|.berweisung" //
+                                        + "|Dauerauftrag" //
+                                        + "|Basislastschrift" //
+                                        + "|Lastschrift" //
+                                        + "|Kartenzahlung" //
+                                        + "|Kartenzahlung onl" //
+                                        + "|Kreditkartenabr\\." //
+                                        + "|Verf.gung Geldautomat" //
+                                        + "|Verf.g\\. Geldautom\\. FW" //
+                                        + "|.berweis\\. entgeltfr\\.))$") //
+                        .match("^[\\s]+(?<type>[\\-\\s])(?<amount>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Is type is "-" change from DEPOSIT to REMOVAL
+                            // @formatter:on
+                            if ("-".equals(trim(v.get("type"))))
+                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+
+                            // Formatting some notes
+                            if ("Kreditkartenabr.".equals(v.get("note")))
+                                v.put("note", "Kreditkartenabrechnung");
+
+                            if ("Verfügung Geldautomat".equals(v.get("note")))
+                                v.put("note", "Geldautomat");
+
+                            if ("Verfüg. Geldautom. FW".equals(v.get("note")))
+                                v.put("note", "Geldautomat (Fremdwährung)");
+
+                            if ("Kartenzahlung onl".equals(v.get("note")))
+                                v.put("note", "Kartenzahlung online");
+
+                            if ("Überweis. entgeltfr.".equals(v.get("note")))
+                                v.put("note", "Überweisung entgeltfrei");
+
+                            if ("Kartenzahlung FW".equals(v.get("note")))
+                                v.put("note", "Kartenzahlung (Fremdwährung)");
+
+                            if ("Eingang Echtzeitüberw".equals(v.get("note")))
+                                v.put("note", "Eingang Echtzeitüberweisung");
+
+                            if ("Bareinzahlung am GA".equals(v.get("note")))
+                                v.put("note", "Bareinzahlung am Geldautomat");
+
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap((t) -> {
+                            var item = new TransactionItem(t);
+
+                            if (t.getDateTime() != null)
+                                return item;
+
+                            return null;
+                        }));
+
+        var feesBlock = new Block("^[\\s]+(\\-)?[\\.,\\d]+$");
         type.addBlock(feesBlock);
         feesBlock.setMaxSize(3);
         feesBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES_REFUND);
                             return accountTransaction;
                         })
 
                         .section("type", "amount", "date", "note1", "note2").optional() //
                         .documentContext("currency") //
-                        .match("^[\\s]+ (?<type>[\\-\\s])(?<amount>[\\.,\\d]+)$") //
+                        .match("^[\\s]+(?<type>[\\-\\s])(?<amount>[\\.,\\d]+)$") //
                         .match("^(?<date>[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4}) " //
                                         + "(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}))" //
                                         + "(?<note1>(Rechnung" //
@@ -1251,7 +1351,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap((t) -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (t.getDateTime() != null)
                                 return item;
@@ -1272,12 +1372,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         // Abrechnungszeitraum vom 01.01.2021 bis 31.03.2021
         // Zinsen für eingeräumte Kontoüberziehung                              0,24-
         // @formatter:on
-        Block interestChargeBlock = new Block("^Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
+        var interestChargeBlock = new Block("^Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$");
         type.addBlock(interestChargeBlock);
         interestChargeBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
@@ -1303,7 +1403,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^Kapitalertrags(s)?teuer[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             if (t.getType() == AccountTransaction.Type.INTEREST)
@@ -1316,7 +1416,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^Solidarit.tszuschlag[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             if (t.getType() == AccountTransaction.Type.INTEREST)
@@ -1329,7 +1429,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^Kirchensteuer[\\s]{1,}(?<tax>[\\.,\\d]+)\\-$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
 
                             if (t.getType() == AccountTransaction.Type.INTEREST)
@@ -1348,12 +1448,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         // 05.01.2025 Stornorechnung
         // Stornorechnung zur Abrechnung 30.12.2024 Erstattung:
         // Habenzinsen 0,02 EUR 20250103-BY111-00111111111
-        Block interestStorno = new Block("^[\\s]+ (\\-)?[\\.,\\d]+$");
+        var interestStorno = new Block("^[\\s]+ (\\-)?[\\.,\\d]+$");
         type.addBlock(interestStorno);
         interestStorno.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
@@ -1379,7 +1479,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private void addCreditcardStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Ihre Abrechnung vom ", //
+        final var type = new DocumentType("Ihre Abrechnung vom ", //
                         documentContext -> documentContext //
                                         .oneOf( //
                                                         section -> section //
@@ -1405,13 +1505,13 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Block depositBlock = new Block(
+        var depositBlock = new Block(
                         "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}(?! Habenzins| Storno Habenzinsen).* [\\.,\\d]+([\\s])?\\+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -1475,13 +1575,13 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block interestBlock = new Block(
+        var interestBlock = new Block(
                         "^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (Habenzins auf [\\d]+ Tage|Storno Habenzinsen) [\\.,\\d]+([\\s])?\\+$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
@@ -1500,12 +1600,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) Abgeltungsteuer [\\.,\\d]+([\\s])?\\-$");
+        var taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{2}) Abgeltungsteuer [\\.,\\d]+([\\s])?\\-$");
         type.addBlock(taxesBlock);
         taxesBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
@@ -1524,12 +1624,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}(?! (Abgeltungsteuer|Kartenpreis|PIN\\-Geb.hr)).* [\\.,\\d]+([\\s])?\\-$");
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2}(?! (Abgeltungsteuer|Kartenpreis|PIN\\-Geb.hr)).* [\\.,\\d]+([\\s])?\\-$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.REMOVAL);
                             return accountTransaction;
                         })
@@ -1583,12 +1683,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block feeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (Kartenpreis|PIN\\-Geb.hr) [\\.,\\d]+([\\s])?\\-$");
+        var feeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{2} (Kartenpreis|PIN\\-Geb.hr) [\\.,\\d]+([\\s])?\\-$");
         type.addBlock(feeBlock);
         feeBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES);
                             return accountTransaction;
                         })
@@ -1609,16 +1709,16 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxLostAdjustmentTransaction(Map<String, String> context, DocumentType type)
     {
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Steuerliche Ausgleichrechnung$");
+        var firstRelevantLine = new Block("^Steuerliche Ausgleichrechnung$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
                             return accountTransaction;
                         })
@@ -1862,12 +1962,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
      */
     private void dateTranactionHelper(AccountTransaction t, ParsedData v)
     {
-        final String SPECIAL_NR = "1";
+        final var SPECIAL_NR = "1";
 
-        String nr = v.get("nr");
-        int month1 = Integer.parseInt(v.get("month1"));
-        int month2 = Integer.parseInt(v.get("month2"));
-        int year = Integer.parseInt(v.get("year"));
+        var nr = v.get("nr");
+        var month1 = Integer.parseInt(v.get("month1"));
+        var month2 = Integer.parseInt(v.get("month2"));
+        var year = Integer.parseInt(v.get("year"));
 
         if (nr.compareTo(SPECIAL_NR) == 0 && month1 != month2)
         {

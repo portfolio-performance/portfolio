@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
@@ -11,6 +12,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
@@ -22,6 +24,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("Boursorama S.A.");
         addBankIdentifier("Compte PEA");
+        addBankIdentifier("Résident Français");
 
         addBuySellTransaction();
         addDividendeTransaction();
@@ -35,19 +38,19 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("(ACHAT|SOUSCRIPTION|VENTE|REPRISE)");
+        var type = new DocumentType("(ACHAT|SOUSCRIPTION|VENTE|REPRISE)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^(ACHAT|SOUSCRIPTION|VENTE|REPRISE) .*$");
+        var firstRelevantLine = new Block("^.*R.sident Fran.ais.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -135,7 +138,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("amount", "currency") //
                                                         .find("Montant .*")
-                                                        .match("^(?<amount>[\\,\\d\\s]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^(?<amount>[\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -147,7 +150,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("amount", "currency") //
                                                         .find("Montant .*")
-                                                        .match("^[\\,\\d\\s]+ [\\w]{3} [\\,\\d\\s]+ [\\w]{3} (?<amount>[\\,\\d\\s]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^[\\d\\s]+,[\\d]{2} [\\w]{3} [\\d\\s]+,[\\d]{2} [\\w]{3} (?<amount>[\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -159,10 +162,33 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("amount", "currency") //
                                                         .find("Montant .*")
-                                                        .match("^[\\,\\d\\s]+ [\\w]{3} [\\,\\d\\s]+ [\\w]{3} [\\,\\d\\s]+ [\\w]{3} (?<amount>[\\,\\d\\s]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^[\\d\\s]+,[\\d]{2} [\\w]{3} [\\d\\s]+,[\\d]{2} [\\w]{3} [\\d\\s]+,[\\d]{2} [\\w]{3} (?<amount>[\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Montant transaction brut Intérêts total brut Courtages Montant transaction net
+                                        // 200,40 USD 0,00 USD 200,40 USD 0,00 USD 200,40 USD
+                                        // 000 jours
+                                        // ACHAT DEVISES A TERME Cours de change Montant transaction net contrevalorisé
+                                        // Contrevalorisation en EURO 1,06491900 188,18 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "termCurrency", "exchangeRate", "baseCurrency") //
+                                                        .find("Montant transaction brut.*") //
+                                                        .match("^(?<fxGross>[\\d\\s]+,[\\d]{2}) (?<termCurrency>[\\w]{3}) .*$") //
+                                                        .match("^Contrevalorisation en .* (?<exchangeRate>[\\.,\\d]+) [\\d\\s]+,[\\d]{2} (?<baseCurrency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
 
                         .optionalOneOf( //
@@ -196,19 +222,19 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("COUPONS");
+        var type = new DocumentType("COUPONS");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^.* COUPONS$");
+        var firstRelevantLine = new Block("^.* COUPONS$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -240,7 +266,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         // COUPONS : NETS FISCAUX  28,24 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^COUPONS : NETS FISCAUX (?<amount>[\\,\\d\\s]+) (?<currency>[\\w]{3})$") //
+                        .match("^COUPONS : NETS FISCAUX (?<amount>[\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -276,7 +302,16 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("fee", "currency").optional() //
                         .find("Montant.*")
-                        .match("^[\\,\\d\\s]+ [\\w]{3} (?<fee>[\\,\\d\\s]+) (?<currency>[\\w]{3}) [\\,\\d\\s]+ [\\w]{3}$") //
+                        .match("^[\\d\\s]+,[\\d]{2} [\\w]{3} (?<fee>[\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3}) [\\d\\s]+,[\\d]{2} [\\w]{3}$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Commission Frais divers Montant total des frais
+                        // 6,95 EUR 0,00 EUR 6,95 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .find("Commission Frais divers.*")
+                        .match("^(?<fee>[\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3}) [\\d\\s]+,[\\d]{2} [\\w]{3} [\\d\\s]+,[\\d]{2} [\\w]{3}$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 

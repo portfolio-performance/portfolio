@@ -45,13 +45,17 @@ public class PDFImportAssistant
         extractors.add(new BigbankPDFExtractor(client));
         extractors.add(new BisonPDFExtractor(client));
         extractors.add(new BondoraCapitalPDFExtractor(client));
+        extractors.add(new BourseDirectPDFExtractor(client));
         extractors.add(new BoursoBankPDFExtractor(client));
+        extractors.add(new BSDEXPDFExtractor(client));
         extractors.add(new C24BankGmbHPDFExtractor(client));
+        extractors.add(new CetesDirectoPDFExtractor(client));
         extractors.add(new ComdirectPDFExtractor(client));
         extractors.add(new CommerzbankPDFExtractor(client));
         extractors.add(new CommSecPDFExtractor(client));
         extractors.add(new ComputersharePDFExtractor(client));
         extractors.add(new ConsorsbankPDFExtractor(client));
+        extractors.add(new CreditMutuelAllianceFederalePDFExtractor(client));
         extractors.add(new CreditSuisseAGPDFExtractor(client));
         extractors.add(new CrowdestorPDFExtractor(client));
         extractors.add(new DABPDFExtractor(client));
@@ -86,6 +90,7 @@ public class PDFImportAssistant
         extractors.add(new KFintechPDFExtractor(client));
         extractors.add(new MerkurPrivatBankPDFExtractor(client));
         extractors.add(new MLPBankingAGPDFExtractor(client));
+        extractors.add(new ModenaEstoniaPDFExtractor(client));
         extractors.add(new N26BankAGkPDFExtractor(client));
         extractors.add(new NIBCBankPDFExtractor(client));
         extractors.add(new OldenburgischeLandesbankAGPDFExtractor(client));

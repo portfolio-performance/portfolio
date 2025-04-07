@@ -43,15 +43,12 @@ import static org.junit.Assert.assertTrue;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -90,18 +87,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE0032895942"));
         assertThat(security.getWkn(), is("911950"));
@@ -110,7 +107,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -134,18 +131,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf02()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A1C22M3"));
         assertThat(security.getWkn(), is("A1C22M"));
@@ -154,7 +151,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -178,18 +175,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf03()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0489337690"));
         assertThat(security.getWkn(), is("DBX0F1"));
@@ -198,7 +195,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -222,18 +219,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf04()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0677077884"));
         assertThat(security.getWkn(), is("DBX0MB"));
@@ -242,7 +239,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -266,18 +263,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf05()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3XXRP09"));
         assertThat(security.getWkn(), is("A1JX53"));
@@ -286,7 +283,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -310,18 +307,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf06()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("ES0173093024"));
         assertThat(security.getWkn(), is("A2ANA3"));
@@ -330,7 +327,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -354,18 +351,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf07()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("JP3436100006"));
         assertThat(security.getWkn(), is("891624"));
@@ -374,7 +371,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -398,18 +395,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf08()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US5021751020"));
         assertThat(security.getWkn(), is("884625"));
@@ -418,7 +415,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -442,18 +439,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf09()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0908500753"));
         assertThat(security.getWkn(), is("LYX0Q0"));
@@ -462,7 +459,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -486,18 +483,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf10()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A3H3MG0"));
         assertThat(security.getWkn(), is("A3H3MG"));
@@ -506,7 +503,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -530,18 +527,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf11()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf11.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B4L5Y983"));
         assertThat(security.getWkn(), is("A0RPWH"));
@@ -550,7 +547,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -574,18 +571,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf12()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf12.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf12.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CA2553311002"));
         assertThat(security.getWkn(), is("A12C65"));
@@ -594,7 +591,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -618,18 +615,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf13()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf13.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf13.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BFYN8Y92"));
         assertThat(security.getWkn(), is("A2JR0G"));
@@ -638,7 +635,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -662,18 +659,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf14()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf14.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf14.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US0378331005"));
         assertThat(security.getWkn(), is("865985"));
@@ -682,7 +679,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -706,18 +703,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf15()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf15.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf15.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BQZJBM26"));
         assertThat(security.getWkn(), is("A12HUS"));
@@ -726,7 +723,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -750,18 +747,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf16()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf16.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf16.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BTN1Y115"));
         assertThat(security.getWkn(), is("A14M2J"));
@@ -770,7 +767,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -794,18 +791,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf17()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf17.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf17.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B3XXRP09"));
         assertThat(security.getWkn(), is("A1JX53"));
@@ -814,7 +811,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -838,18 +835,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf18()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf18.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf18.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US1912161007"));
         assertThat(security.getWkn(), is("850663"));
@@ -858,7 +855,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -882,18 +879,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf19()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf19.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf19.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0F5UH1"));
         assertThat(security.getWkn(), is("A0F5UH"));
@@ -902,7 +899,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -926,18 +923,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf20()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf20.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf20.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0WMPJ6"));
         assertThat(security.getWkn(), is("A0WMPJ"));
@@ -946,7 +943,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -970,18 +967,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf21()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf21.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf21.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US94106L1098"));
         assertThat(security.getWkn(), is("893579"));
@@ -990,7 +987,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -1014,18 +1011,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf22()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf22.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf22.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US5007541064"));
         assertThat(security.getWkn(), is("A14TU4"));
@@ -1034,7 +1031,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -1058,11 +1055,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf23()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf23.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf23.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1089,11 +1086,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf24()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf24.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf24.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1120,11 +1117,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf25()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf25.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf25.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1151,11 +1148,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf26()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf26.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf26.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1182,11 +1179,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf27()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf27.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf27.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1213,18 +1210,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf27WithSecurityInEUR()
     {
-        Security security = new Security("Great Eagle Holdings Ltd. Registered Shares HD -,50", CurrencyUnit.EUR);
+        var security = new Security("Great Eagle Holdings Ltd. Registered Shares HD -,50", CurrencyUnit.EUR);
         security.setIsin("BMG4069C1486");
         security.setWkn("879151");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf27.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf27.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1241,8 +1238,8 @@ public class BaaderBankPDFExtractorTest
                         hasAmount("EUR", 91.89), hasGrossValue("EUR", 91.77), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.12), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1250,11 +1247,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf28()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf28.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf28.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1281,11 +1278,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf29()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf29.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf29.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1313,18 +1310,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf29WithSecurityInEUR()
     {
-        Security security = new Security("BKW AG Namens-Aktien SF 2,50", CurrencyUnit.EUR);
+        var security = new Security("BKW AG Namens-Aktien SF 2,50", CurrencyUnit.EUR);
         security.setIsin("CH0130293662");
         security.setWkn("A1JLZG");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf29.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf29.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1341,8 +1338,8 @@ public class BaaderBankPDFExtractorTest
                         hasAmount("EUR", 813.38), hasGrossValue("EUR", 804.17), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 5.21 + 4.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1350,11 +1347,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf30()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf30.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf30.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1381,11 +1378,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf31()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf31.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf31.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1413,18 +1410,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf31WithSecurityInEUR()
     {
-        Security security = new Security("Mexiko DL-Medium-Term Notes 2004(34)", CurrencyUnit.EUR);
+        var security = new Security("Mexiko DL-Medium-Term Notes 2004(34)", CurrencyUnit.EUR);
         security.setIsin("US91086QAS75");
         security.setWkn("A0DDHM");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf31.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf31.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1441,8 +1438,8 @@ public class BaaderBankPDFExtractorTest
                         hasAmount("EUR", 970.27), hasGrossValue("EUR", 970.27), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1450,11 +1447,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf32()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf32.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf32.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1482,18 +1479,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf32WithSecurityInEUR()
     {
-        Security security = new Security("On Holding AG Namens-Aktien A SF-,01", CurrencyUnit.EUR);
+        var security = new Security("On Holding AG Namens-Aktien A SF-,01", CurrencyUnit.EUR);
         security.setIsin("CH1134540470");
         security.setWkn("A3C20K");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf32.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf32.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1510,8 +1507,8 @@ public class BaaderBankPDFExtractorTest
                         hasAmount("EUR", 2621.66), hasGrossValue("EUR", 2613.71), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 3.95 + 4.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1519,11 +1516,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf33()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf33.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf33.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1550,11 +1547,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf34()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf34.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf34.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1581,11 +1578,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf35()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf35.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf35.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1610,20 +1607,51 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf01()
+    public void testWertpapierKauf36()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf36.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BM97MR69"), hasWkn("A2P7TP"), hasTicker(null), //
+                        hasName("Xtr.(IE)-US Trs.UlSh.Bd U.ETF Reg. Shares 1C-USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-02-25T18:26:12"), hasShares(44.00), //
+                        hasSource("Kauf36.txt"), //
+                        hasNote("Vorgangs-Nr.: 442896746"), //
+                        hasAmount("EUR", 2524.63), hasGrossValue("EUR", 2524.63), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf01()
+    {
+        var extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0446734526"));
         assertThat(security.getWkn(), is("A0X97T"));
@@ -1632,7 +1660,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -1656,18 +1684,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf02()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE0032895942"));
         assertThat(security.getWkn(), is("911950"));
@@ -1676,7 +1704,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -1700,18 +1728,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf03()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("LU0446734526"));
         assertThat(security.getWkn(), is("A0X97T"));
@@ -1720,7 +1748,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -1744,18 +1772,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf04()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0TGJ55"));
         assertThat(security.getWkn(), is("A0TGJ5"));
@@ -1764,7 +1792,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -1788,18 +1816,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf05()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US30212P3038"));
         assertThat(security.getWkn(), is("A1JRLJ"));
@@ -1808,7 +1836,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -1832,18 +1860,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf06()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CA55378N1078"));
         assertThat(security.getWkn(), is("120504"));
@@ -1852,7 +1880,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is("CAD"));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -1872,7 +1900,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+        var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of("CAD", Values.Amount.factorize(12.92))));
     }
@@ -1880,25 +1908,25 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf06WithSecurityInEUR()
     {
-        Security security = new Security("MTY Food Group Inc. Registered Shares o.N.", CurrencyUnit.EUR);
+        var security = new Security("MTY Food Group Inc. Registered Shares o.N.", CurrencyUnit.EUR);
         security.setIsin("CA55378N1078");
         security.setWkn("120504");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -1918,28 +1946,28 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(entry, account, entry.getPortfolio());
+        var s = c.process(entry, account, entry.getPortfolio());
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testWertpapierVerkauf07()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US75513E1010"));
         assertThat(security.getWkn(), is("A2PZ0R"));
@@ -1948,7 +1976,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -1972,18 +2000,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf08()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000TT410K7"));
         assertThat(security.getWkn(), is("TT410K"));
@@ -1992,7 +2020,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -2016,18 +2044,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf09()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BJ5JP105"));
         assertThat(security.getWkn(), is("A2PHCF"));
@@ -2036,7 +2064,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -2060,18 +2088,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf10()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf10.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("FR0010524777"));
         assertThat(security.getWkn(), is("LYX0CB"));
@@ -2080,7 +2108,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -2104,18 +2132,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf11()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf11.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BMW3QX54"));
         assertThat(security.getWkn(), is("A12DB1"));
@@ -2124,7 +2152,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -2148,18 +2176,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf12()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf12.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf12.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BYXG2H39"));
         assertThat(security.getWkn(), is("A2DWAW"));
@@ -2168,7 +2196,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -2192,18 +2220,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf13()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf13.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf13.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BZ163K21"));
         assertThat(security.getWkn(), is("A143JM"));
@@ -2212,7 +2240,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -2236,18 +2264,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf14()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf14.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf14.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BYWQWR46"));
         assertThat(security.getWkn(), is("A2PLDF"));
@@ -2256,7 +2284,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -2280,18 +2308,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf15()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf15.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf15.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BYZK4552"));
         assertThat(security.getWkn(), is("A2ANH0"));
@@ -2300,7 +2328,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -2324,11 +2352,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf16()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf16.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf16.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -2345,7 +2373,7 @@ public class BaaderBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2023-12-22T00:00"), hasShares(3), //
+                        hasDate("2023-12-22T00:00"), hasShares(3.00), //
                         hasSource("Verkauf16.txt"), //
                         hasNote("Vorgangs-Nr.: 77777888"), //
                         hasAmount("EUR", 2088.13), hasGrossValue("EUR", 2100.00), //
@@ -2355,11 +2383,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf17()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf17.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf17.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -2376,7 +2404,7 @@ public class BaaderBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2024-01-04T11:54:40"), hasShares(20), //
+                        hasDate("2024-01-04T11:54:40"), hasShares(20.00), //
                         hasSource("Verkauf17.txt"), //
                         hasNote("Vorgangs-Nr.: 123456789"), //
                         hasAmount("EUR", 2785.40), hasGrossValue("EUR", 2792.72), //
@@ -2386,11 +2414,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf18()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf18.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf18.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -2407,7 +2435,7 @@ public class BaaderBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2022-05-25T00:00"), hasShares(6), //
+                        hasDate("2022-05-25T00:00"), hasShares(6.00), //
                         hasSource("Verkauf18.txt"), //
                         hasNote("Vorgangs-Nr.: 8679954 | Ablauf der Optionsfrist"), //
                         hasAmount("EUR", 60.00), hasGrossValue("EUR", 60.00), //
@@ -2417,11 +2445,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf19()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf19.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf19.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -2449,18 +2477,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf19WithSecurityInEUR()
     {
-        Security security = new Security("Mirati Therapeutics Inc. Registered Shares DL -,01", CurrencyUnit.EUR);
+        var security = new Security("Mirati Therapeutics Inc. Registered Shares DL -,01", CurrencyUnit.EUR);
         security.setIsin("US60468T1051");
         security.setWkn("A1W1XV");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf19.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf19.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2471,14 +2499,14 @@ public class BaaderBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2024-01-25T00:00"), hasShares(4), //
+                        hasDate("2024-01-25T00:00"), hasShares(4.00), //
                         hasSource("Verkauf19.txt"), //
                         hasNote("Vorgangs-Nr.: 25742277 | Obligatorische Barabfindung"), //
                         hasAmount("EUR", 212.68), hasGrossValue("EUR", 212.68), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -2486,11 +2514,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf20()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf20.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf20.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -2507,7 +2535,7 @@ public class BaaderBankPDFExtractorTest
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2024-03-15T00:00"), hasShares(2080), //
+                        hasDate("2024-03-15T00:00"), hasShares(2080.00), //
                         hasSource("Verkauf20.txt"), //
                         hasNote("Vorgangs-Nr.: 06501068"), //
                         hasAmount("EUR", 206626.75), hasGrossValue("EUR", 208000.00), //
@@ -2515,11 +2543,73 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf21()
+    {
+        var extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf21.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BFMNHK08"), hasWkn("A2JHSG"), hasTicker(null), //
+                        hasName("Xtr.(IE)-MSCI Europe ESG U.ETF Registered Shares 1C o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-02-24T20:31:51"), hasShares(174.00), //
+                        hasSource("Verkauf21.txt"), //
+                        hasNote("Vorgangs-Nr.: 442024039"), //
+                        hasAmount("EUR", 5576.69), hasGrossValue("EUR", 5828.13), //
+                        hasTaxes("EUR", 219.61 + 19.76 + 12.07), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierSqueezeOut01()
+    {
+        var extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SqueezeOut01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("FR0000035818"), hasWkn("907928"), hasTicker(null), //
+                        hasName("Esker S.A. Actions Port. EO 2"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-03-04T00:00"), hasShares(6.00), //
+                        hasSource("SqueezeOut01.txt"), //
+                        hasNote("Vorgangs-Nr.: 94320248 | Squeeze Out"), //
+                        hasAmount("EUR", 1572.00), hasGrossValue("EUR", 1572.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testCryptoKauf01()
     {
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -2548,18 +2638,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testVorabpauschale01()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BWBXM385"));
         assertThat(security.getWkn(), is("A14QBZ"));
@@ -2568,7 +2658,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check tax transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
@@ -2591,11 +2681,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testVorabpauschale02()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -2614,7 +2704,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(results, hasItem(withFailureMessage( //
                         Messages.MsgErrorTransactionTypeNotSupported, //
                         taxes( //
-                                        hasDate("2024-01-02T00:00"), hasShares(220), //
+                                        hasDate("2024-01-02T00:00"), hasShares(220.00), //
                                         hasSource("Vorabpauschale02.txt"), //
                                         hasNote("Vorgangs-Nr.: $Vorgangsnummer | Zahlungszeitraum: 01.01.2023 - 31.12.2023"), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
@@ -2622,13 +2712,46 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
-    public void testAdvanceTax01()
+    public void testVorabpauschale03()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AdvanceTax01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BL25JL35"), hasWkn("A1103D"), hasTicker(null), //
+                        hasName("Xtr.(IE) - MSCI World Quality Registered Shares 1C USD o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        taxes( //
+                                        hasDate("2025-01-02T00:00"), hasShares(48.00), //
+                                        hasSource("Vorabpauschale03.txt"), //
+                                        hasNote("Vorgangs-Nr.: 14803933 | Zahlungszeitraum: 01.01.2024 - 31.12.2024"), //
+                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
+    }
+
+    @Test
+    public void testAdvanceTax01()
+    {
+        var extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AdvanceTax01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -2655,18 +2778,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende01()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("FR0000130577"));
         assertThat(security.getWkn(), is("859386"));
@@ -2675,7 +2798,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -2698,18 +2821,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende02()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005933931"));
         assertThat(security.getWkn(), is("593393"));
@@ -2718,7 +2841,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check dividends tax transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
@@ -2741,18 +2864,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende03()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B2NPKV68"));
         assertThat(security.getWkn(), is("A0NECU"));
@@ -2761,7 +2884,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -2780,32 +2903,32 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(3.94))));
     }
 
     @Test
     public void testDividende03WithSecurityInEUR()
     {
-        Security security = new Security("iShsII-J.P.M.$ EM Bond U.ETF Registered Shares o.N.", CurrencyUnit.EUR);
+        var security = new Security("iShsII-J.P.M.$ EM Bond U.ETF Registered Shares o.N.", CurrencyUnit.EUR);
         security.setIsin("IE00B2NPKV68");
         security.setWkn("A0NECU");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -2824,28 +2947,28 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testDividende04()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A14KRD3"));
         assertThat(security.getWkn(), is("A14KRD"));
@@ -2854,7 +2977,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -2877,18 +3000,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende05()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US57636Q1040"));
         assertThat(security.getWkn(), is("A0F602"));
@@ -2897,7 +3020,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -2916,32 +3039,32 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.20))));
     }
 
     @Test
     public void testDividende05WithSecurityInEUR()
     {
-        Security security = new Security("Mastercard Inc.", CurrencyUnit.EUR);
+        var security = new Security("Mastercard Inc.", CurrencyUnit.EUR);
         security.setIsin("US57636Q1040");
         security.setWkn("A0F602");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -2960,28 +3083,28 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testDividende06()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US56035L1044"));
         assertThat(security.getWkn(), is("A0X8Y3"));
@@ -2990,7 +3113,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -3009,32 +3132,32 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4.72))));
     }
 
     @Test
     public void testDividende06WithSecurityInEUR()
     {
-        Security security = new Security("Main Street Capital Corp.", CurrencyUnit.EUR);
+        var security = new Security("Main Street Capital Corp.", CurrencyUnit.EUR);
         security.setIsin("US56035L1044");
         security.setWkn("A0X8Y3");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -3053,28 +3176,28 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testDividende07()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US92936U1097"));
         assertThat(security.getWkn(), is("A1J5SB"));
@@ -3083,7 +3206,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -3102,32 +3225,32 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(14.56))));
     }
 
     @Test
     public void testDividende07WithSecurityInEUR()
     {
-        Security security = new Security("W.P. Carey Inc.", CurrencyUnit.EUR);
+        var security = new Security("W.P. Carey Inc.", CurrencyUnit.EUR);
         security.setIsin("US92936U1097");
         security.setWkn("A1J5SB");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -3146,28 +3269,28 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testDividende08()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A2G9LL1"));
         assertThat(security.getWkn(), is("A2G9LL"));
@@ -3176,7 +3299,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -3203,18 +3326,18 @@ public class BaaderBankPDFExtractorTest
          * We know that there is still an delivery in-/outbound exit here, but
          * we don't know how to post it.
          */
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005557508"));
         assertThat(security.getWkn(), is("555750"));
@@ -3223,7 +3346,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -3246,18 +3369,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende10()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BYSX4739"));
         assertThat(security.getWkn(), is("A2PQDR"));
@@ -3266,7 +3389,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -3285,32 +3408,32 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.22))));
     }
 
     @Test
     public void testDividende10WithSecurityInEUR()
     {
-        Security security = new Security("F.UC.-Fid.Em.Mkt.Qual.In.U.ETF Reg. Shs USD Dis. oN", CurrencyUnit.EUR);
+        var security = new Security("F.UC.-Fid.Em.Mkt.Qual.In.U.ETF Reg. Shs USD Dis. oN", CurrencyUnit.EUR);
         security.setIsin("IE00BYSX4739");
         security.setWkn("A2PQDR");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -3329,28 +3452,28 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testDividende11()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0H0744"));
         assertThat(security.getWkn(), is("A0H074"));
@@ -3359,7 +3482,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -3382,18 +3505,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende12()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US1101221083"));
         assertThat(security.getWkn(), is("850501"));
@@ -3402,7 +3525,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -3421,32 +3544,32 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(17.10))));
     }
 
     @Test
     public void testDividende12WithSecurityInEUR()
     {
-        Security security = new Security("Bristol-Myers Squibb Co.", CurrencyUnit.EUR);
+        var security = new Security("Bristol-Myers Squibb Co.", CurrencyUnit.EUR);
         security.setIsin("US1101221083");
         security.setWkn("850501");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -3465,28 +3588,28 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testDividende13()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US09075V1026"));
         assertThat(security.getWkn(), is("A2PSR2"));
@@ -3495,7 +3618,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -3514,32 +3637,32 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(30.00))));
     }
 
     @Test
     public void testDividende13WithSecurityInEUR()
     {
-        Security security = new Security("BioNTech SE Nam.-Akt.(sp.ADRs)1/o.N.", CurrencyUnit.EUR);
+        var security = new Security("BioNTech SE Nam.-Akt.(sp.ADRs)1/o.N.", CurrencyUnit.EUR);
         security.setIsin("US09075V1026");
         security.setWkn("A2PSR2");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -3558,28 +3681,28 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testDividende14()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005557508"));
         assertThat(security.getWkn(), is("555750"));
@@ -3588,7 +3711,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -3611,11 +3734,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende15()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -3643,18 +3766,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende15WithSecurityInEUR()
     {
-        Security security = new Security("Apple Inc.", CurrencyUnit.EUR);
+        var security = new Security("Apple Inc.", CurrencyUnit.EUR);
         security.setIsin("US0378331005");
         security.setWkn("865985");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -3671,10 +3794,10 @@ public class BaaderBankPDFExtractorTest
                         hasAmount("EUR", 0.26), hasGrossValue("EUR", 0.43), //
                         hasTaxes("EUR", 0.03 + 0.14), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -3682,11 +3805,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende16()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende16.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende16.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -3714,18 +3837,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende16WithSecurityInEUR()
     {
-        Security security = new Security("Apple Inc.", CurrencyUnit.EUR);
+        var security = new Security("Apple Inc.", CurrencyUnit.EUR);
         security.setIsin("US0378331005");
         security.setWkn("865985");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende16.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende16.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -3742,10 +3865,10 @@ public class BaaderBankPDFExtractorTest
                         hasAmount("EUR", 0.32), hasGrossValue("EUR", 0.44), //
                         hasTaxes("EUR", 0.12), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -3753,11 +3876,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende17()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -3784,18 +3907,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende17WithSecurityInEUR()
     {
-        Security security = new Security("Apple Inc.", CurrencyUnit.EUR);
+        var security = new Security("Apple Inc.", CurrencyUnit.EUR);
         security.setIsin("US0378331005");
         security.setWkn("865985");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -3813,10 +3936,10 @@ public class BaaderBankPDFExtractorTest
                         hasForexGrossValue("EUR", 13.24), //
                         hasTaxes("USD", 2.16), hasFees("USD", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.USD);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -3824,11 +3947,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende18()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende18.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende18.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -3855,18 +3978,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende18WithSecurityInEUR()
     {
-        Security security = new Security("Microsoft Corp.", CurrencyUnit.EUR);
+        var security = new Security("Microsoft Corp.", CurrencyUnit.EUR);
         security.setIsin("US5949181045");
         security.setWkn("870747");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende18.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende18.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -3884,10 +4007,10 @@ public class BaaderBankPDFExtractorTest
                         hasForexGrossValue("EUR", 3.43), //
                         hasTaxes("USD", 0.38 + 0.02 + 0.56), hasFees("USD", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.USD);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -3895,11 +4018,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende19()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende19.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende19.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -3926,18 +4049,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende19WithSecurityInEUR()
     {
-        Security security = new Security("iShsII-Gl.Clean Energy U.ETF Registered Shares o.N.", CurrencyUnit.EUR);
+        var security = new Security("iShsII-Gl.Clean Energy U.ETF Registered Shares o.N.", CurrencyUnit.EUR);
         security.setIsin("IE00B1XNHC34");
         security.setWkn("A0MW0M");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende19.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende19.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -3955,10 +4078,10 @@ public class BaaderBankPDFExtractorTest
                         hasForexGrossValue("EUR", 5.70), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.USD);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -3966,11 +4089,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende20()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende20.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende20.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -3997,18 +4120,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende20WithSecurityInEUR()
     {
-        Security security = new Security("Blackrock Inc.", CurrencyUnit.EUR);
+        var security = new Security("Blackrock Inc.", CurrencyUnit.EUR);
         security.setIsin("US09247X1019");
         security.setWkn("928193");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende20.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende20.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -4026,10 +4149,10 @@ public class BaaderBankPDFExtractorTest
                         hasForexGrossValue("EUR", 17.98), //
                         hasTaxes("USD", 2.00 + 0.11 + 3.00), hasFees("USD", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.USD);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -4037,11 +4160,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende21()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende21.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende21.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -4068,18 +4191,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende21WithSecurityInEUR()
     {
-        Security security = new Security("Realty Income Corp.", CurrencyUnit.EUR);
+        var security = new Security("Realty Income Corp.", CurrencyUnit.EUR);
         security.setIsin("US7561091049");
         security.setWkn("899744");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende21.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende21.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -4097,10 +4220,10 @@ public class BaaderBankPDFExtractorTest
                         hasForexGrossValue("EUR", 3.28), //
                         hasTaxes("USD", 0.36 + 0.02 + 0.54), hasFees("USD", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.USD);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -4108,11 +4231,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende22()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende22.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende22.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -4139,18 +4262,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende22WithSecurityInEUR()
     {
-        Security security = new Security("Panama, Republik DL-Bonds 2006(34-36)", CurrencyUnit.EUR);
+        var security = new Security("Panama, Republik DL-Bonds 2006(34-36)", CurrencyUnit.EUR);
         security.setIsin("US698299AW45");
         security.setWkn("A0GMJZ");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende22.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende22.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -4168,10 +4291,10 @@ public class BaaderBankPDFExtractorTest
                         hasForexGrossValue("EUR", 30.81), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.USD);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -4179,11 +4302,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende23()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -4211,18 +4334,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende23WithSecurityInEUR()
     {
-        Security security = new Security("W.P. Carey Inc.", CurrencyUnit.EUR);
+        var security = new Security("W.P. Carey Inc.", CurrencyUnit.EUR);
         security.setIsin("US92936U1097");
         security.setWkn("A1J5SB");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -4239,10 +4362,10 @@ public class BaaderBankPDFExtractorTest
                         hasAmount("EUR", 4.88), hasGrossValue("EUR", 4.88), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -4250,11 +4373,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende24()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -4281,11 +4404,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende25()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -4312,18 +4435,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende25WithSecurityInEUR()
     {
-        Security security = new Security("Panama, Republik DL-Bonds 2006(34-36)", CurrencyUnit.EUR);
+        var security = new Security("Panama, Republik DL-Bonds 2006(34-36)", CurrencyUnit.EUR);
         security.setIsin("US698299AW45");
         security.setWkn("A1JA0GMJZSB");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -4341,10 +4464,81 @@ public class BaaderBankPDFExtractorTest
                         hasForexGrossValue("EUR", 30.81), //
                         hasTaxes("USD", 0.00), hasFees("USD", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.USD);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende26()
+    {
+        var extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende26.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("JP3481800005"), hasWkn("857771"), hasTicker(null), //
+                        hasName("Daikin Industries Ltd."), //
+                        hasCurrencyCode("JPY"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-12-03T00:00"), hasShares(0.867), //
+                        hasSource("Dividende26.txt"), //
+                        hasNote("Vorgangs-Nr.: 37229865"), //
+                        hasAmount("EUR", 0.72), hasGrossValue("EUR", 1.01), //
+                        hasForexGrossValue("JPY", 160.00), //
+                        hasTaxes("EUR", 0.11 + 0.02 + 0.16), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende26WithSecurityInEUR()
+    {
+        var security = new Security("Daikin Industries Ltd.", CurrencyUnit.EUR);
+        security.setIsin("JP3481800005");
+        security.setWkn("857771");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new BaaderBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende26.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2024-12-03T00:00"), hasShares(0.867), //
+                        hasSource("Dividende26.txt"), //
+                        hasNote("Vorgangs-Nr.: 37229865"), //
+                        hasAmount("EUR", 0.72), hasGrossValue("EUR", 1.01), //
+                        hasTaxes("EUR", 0.11 + 0.02 + 0.16), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -4352,11 +4546,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividendeStorno01()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -4384,18 +4578,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividendeStorno02()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US85571B1052"));
         assertThat(security.getWkn(), is("A0N9JF"));
@@ -4404,7 +4598,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check cancellation (Storno) transaction
-        TransactionItem cancellation = (TransactionItem) results.stream() //
+        var cancellation = (TransactionItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(TransactionItem.class::isInstance) //
                         .findFirst().orElseThrow(IllegalArgumentException::new);
@@ -4426,7 +4620,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = ((Transaction) cancellation.getSubject()).getUnit(Unit.Type.GROSS_VALUE)
+        var grossValueUnit = ((Transaction) cancellation.getSubject()).getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(120.00))));
     }
@@ -4434,11 +4628,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividendeStorno03()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno03.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno03.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -4468,18 +4662,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividendeStorno03WithSecurityInEUR()
     {
-        Security security = new Security("Realty Income Corp.", CurrencyUnit.EUR);
+        var security = new Security("Realty Income Corp.", CurrencyUnit.EUR);
         security.setIsin("US7561091049");
         security.setWkn("899744");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -4498,10 +4692,10 @@ public class BaaderBankPDFExtractorTest
                                         hasAmount("EUR", 1.14), hasGrossValue("EUR", 1.34), //
                                         hasTaxes("EUR", 0.20), hasFees("EUR", 0.00), //
                                         check(tx -> {
-                                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                                            Account account = new Account();
+                                            var c = new CheckCurrenciesAction();
+                                            var account = new Account();
                                             account.setCurrencyCode(CurrencyUnit.EUR);
-                                            Status s = c.process((AccountTransaction) tx, account);
+                                            var s = c.process((AccountTransaction) tx, account);
                                             assertThat(s, is(Status.OK_STATUS));
                                         })))));
     }
@@ -4509,11 +4703,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividendeStorno04()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -4543,19 +4737,19 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividendeStorno04WithSecurityInEUR()
     {
-        Security security = new Security("Essential Properties Real.Tr.",
+        var security = new Security("Essential Properties Real.Tr.",
                         CurrencyUnit.EUR);
         security.setIsin("US29670E1073");
         security.setWkn("A2JN57");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(client);
+        var extractor = new BaaderBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -4574,10 +4768,10 @@ public class BaaderBankPDFExtractorTest
                                         hasAmount("EUR", 1.45), hasGrossValue("EUR", 2.00), //
                                         hasTaxes("EUR", 0.49 + 0.04 + 0.02), hasFees("EUR", 0.00), //
                                         check(tx -> {
-                                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                                            Account account = new Account();
+                                            var c = new CheckCurrenciesAction();
+                                            var account = new Account();
                                             account.setCurrencyCode(CurrencyUnit.EUR);
-                                            Status s = c.process((AccountTransaction) tx, account);
+                                            var s = c.process((AccountTransaction) tx, account);
                                             assertThat(s, is(Status.OK_STATUS));
                                         })))));
     }
@@ -4585,11 +4779,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividendeStorno05()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -4618,11 +4812,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testSteuerausgleichsrechnung01()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung01.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung01.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -4630,7 +4824,7 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check tax refund transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
@@ -4652,11 +4846,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testSteuerausgleichsrechnung02()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung02.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung02.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -4664,7 +4858,7 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check tax refund transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
@@ -4686,11 +4880,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testSteuerausgleichsrechnung03()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung03.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung03.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -4698,7 +4892,7 @@ public class BaaderBankPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check tax refund transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
@@ -4720,11 +4914,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testSteuerausgleichsrechnung04()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -4745,11 +4939,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testSteuerausgleichsrechnung05()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -4770,24 +4964,24 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testPeriodenauszug01()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug01.txt"), errors);
 
         assertThat(results.size(), is(1));
         assertThat(errors, empty());
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-12T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10000.00))));
@@ -4798,24 +4992,24 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testPeriodenauszug02()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug02.txt"), errors);
 
         assertThat(results.size(), is(3));
         assertThat(errors, empty());
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-07-06T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.97))));
@@ -4846,24 +5040,24 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testPeriodenauszug03()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug03.txt"), errors);
 
         assertThat(results.size(), is(1));
         assertThat(errors, empty());
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-05-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
@@ -4874,24 +5068,24 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testPeriodenauszug04()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug04.txt"), errors);
 
         assertThat(results.size(), is(3));
         assertThat(errors, empty());
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
@@ -4922,24 +5116,24 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testPeriodenauszug05()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug05.txt"), errors);
 
         assertThat(results.size(), is(1));
         assertThat(errors, empty());
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.99))));
@@ -4950,11 +5144,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testPeriodenauszug06()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug06.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug06.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -4980,11 +5174,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testPeriodenauszug07()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug07.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug07.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -5010,11 +5204,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testPeriodenauszug08()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug08.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug08.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -5032,11 +5226,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testPeriodenauszug09()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug09.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug09.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -5078,11 +5272,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testPeriodenauszug10()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug10.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug10.txt"),
                         errors);
 
         // Check if the results list is not empty
@@ -5092,13 +5286,13 @@ public class BaaderBankPDFExtractorTest
         assertTrue(!errors.isEmpty());
 
         // Extract the first error from the list
-        Exception firstError = errors.get(0);
+        var firstError = errors.get(0);
 
         // Check if the first error is an UnsupportedOperationException
         assertTrue(firstError instanceof UnsupportedOperationException);
 
         // Check the error message of the first error
-        String expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
+        var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
                         "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH / Traders Place GmbH & Co. KGaA", "Periodenauszug10.txt");
         assertEquals(expectedErrorMessage, firstError.getMessage());
     }
@@ -5106,11 +5300,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testPeriodenauszug11()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug11.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug11.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -5132,11 +5326,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testPeriodenauszug12()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug12.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug12.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -5154,11 +5348,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testPeriodenauszug13()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug13.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug13.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -5197,11 +5391,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testPeriodenauszug14()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug14.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug14.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -5225,26 +5419,58 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
-    public void testTageskontoauszug01()
+    public void testPeriodenauszug15()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Tageskontoauszug01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug15.txt"), errors);
+
+        // Check if the results list is not empty
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(0));
+        assertTrue(results.isEmpty());
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // Check if at least one error is present
+        assertTrue(!errors.isEmpty());
+
+        // Extract the first error from the list
+        var firstError = errors.get(0);
+
+        // Check if the first error is an UnsupportedOperationException
+        assertTrue(firstError instanceof UnsupportedOperationException);
+
+        // Check the error message of the first error
+        var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
+                        "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH / Traders Place GmbH & Co. KGaA", "Periodenauszug15.txt");
+        assertEquals(expectedErrorMessage, firstError.getMessage());
+    }
+
+    @Test
+    public void testTageskontoauszug01()
+    {
+        var extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Tageskontoauszug01.txt"), errors);
 
         assertThat(results.size(), is(1));
         assertThat(errors, empty());
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-11T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(20.00))));
@@ -5255,24 +5481,24 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testRechnung01()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rechnung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rechnung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-08-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.48))));
@@ -5283,11 +5509,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testRechnungsabschluss01()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rechnungsabschluss01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rechnungsabschluss01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -5308,11 +5534,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void StatementofInterestandCharges01()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StatementofInterestandCharges01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StatementofInterestandCharges01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -5333,18 +5559,18 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testEinbuchung01()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Einbuchung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Einbuchung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(4));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security1.getIsin(), is("DE000A3H3MF2"));
         assertThat(security1.getWkn(), is("A3H3MF"));
@@ -5352,7 +5578,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security1.getName(), is("Enapter AG Inhaber-Bezugsrechte"));
         assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
 
-        Security security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
+        var security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security2.getIsin(), is("DE000A3H3MG0"));
         assertThat(security2.getWkn(), is("A3H3MG"));
@@ -5361,7 +5587,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check delivery outbound (Auslieferung) transaction
-        PortfolioTransaction entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
@@ -5404,11 +5630,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testFusion01()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fusion01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fusion01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5437,11 +5663,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testFusion02()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fusion02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fusion02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5470,11 +5696,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testFusion03()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fusion03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fusion03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5503,11 +5729,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDepoteinlieferung01()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depoteinlieferung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depoteinlieferung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5536,11 +5762,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDepoteinlieferung02()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depoteinlieferung02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depoteinlieferung02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5569,11 +5795,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDepoteinlieferung03()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depoteinlieferung03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depoteinlieferung03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5602,11 +5828,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testSplit01()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Split01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Split01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5635,11 +5861,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testSplit02()
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+        var extractor = new BaaderBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Split02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Split02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));

@@ -1,0 +1,30 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRANSACTION NOTIFICATION
+Client: 1234567 - TRADING
+IBAN: CH1234567891011121314
+Mr. eZRqHh mVSIupt
+UtMQdlNGkYyjHe 19
+CH-4000 qiBmXPGFs
+Gland, 06.02.2025
+Stock-Exchange Transaction: Buy Our reference: 123456789 
+In accordance with your buy order of 06.02.2025, we have carried out the following transactions:
+Security Exchange
+Vanguard FTSE All-World UCITS ETF USD ISIN: IE00B3RBWM25 SIX Swiss Exchange 
+Distributing NKN: 18575459
+Quantity Price Amount
+3 129.28 CHF 387.85
+Total CHF 387.85
+Commission Swissquote Bank Ltd CHF 3.00
+Tax (Federal stamp duty) CHF 0.60
+Stock exchange fee CHF 2.00
+Used Trading Credit 3.00
+To your debit CHF 390.45
+Amount debited from your account number  123456789, on value date of 10.02.2025
+This notification as well as the transaction  it concerns are governed by our General Terms and Conditions and Safe Custody Regulations.
+Our sincere thanks for your order.
+Swissquote Bank Ltd, 33 chemin de la Crétaux, CH-1196 Gland  Advice without signature | E&OE.
+Customer Care : 0848 25 88 88 (from abroad +41 44 825 88 88)
+VAT n° CHE-116.310.079

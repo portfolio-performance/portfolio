@@ -31,6 +31,7 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
         addDividendTransaction();
         addTaxesLostAdjustmentTransaction();
         addDepotStatementTransaction();
+        addNonImportableTransaction();
     }
 
     @Override
@@ -410,12 +411,16 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                         // Titel: AT0000APOST4  O E S T E R R E I C H ISCHE POST AG
                                         // AKTIEN O.N.
                                         // Dividende: 1,9 EUR
+                                        //
+                                        // Titel: AT0000A3EPA4 ams-OSRAM AG
+                                        // Inhaber-Aktien o.N.
+                                        // Kurs: 9,9 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("isin", "name", "name1", "currency") //
                                                         .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$") //
                                                         .match("^(?<name1>.*)$") //
-                                                        .match("^(Dividende|Ertrag): [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                                                        .match("^(Dividende|Ertrag|Kurs): [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Dividende") || !v.get("name1").startsWith("Ertrag"))
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -607,6 +612,16 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+                                        // @formatter:off
+                                        // KESt-Gutschrift 109,69 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^KESt\\-Gutschrift (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                         }))
 
                         .optionalOneOf( //
@@ -750,6 +765,84 @@ public class EasyBankAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+    }
+
+    private void addNonImportableTransaction()
+    {
+        final DocumentType type = new DocumentType("Gesch.ftsart: Umtausch\\/Bezug");
+        this.addDocumentTyp(type);
+
+        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^Wir haben f.r Sie am [\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4} unten angef.hrtes Gesch.ft abgerechnet:$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                            return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // Titel: AT0000A1Z023 CONWERT IMMOBILIEN INVEST SE
+                        // AKTIEN O.N./ANSPR.NACHZAHLUNG
+                        // Kurs: 0,55 EUR
+                        // @formatter:on
+                        .section("isin", "name", "name1", "currency") //
+                        .match("^Titel: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)$") //
+                        .match("^(?<name1>.*)$") //
+                        .match("^Kurs: [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!v.get("name1").startsWith("Kurs"))
+                                v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
+
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        // @formatter:off
+                        // Abgang: Stk 27
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^Abgang: Stk (?<shares>[\\.,\\d]+)$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Zu Gunsten IBAN as17 4873 4614 7852 4461 Valuta 18.02.2025 14,85 EUR
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Zu Gunsten .* Valuta (?<date>[\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Zu Gunsten IBAN as17 4873 4614 7852 4461 Valuta 18.02.2025 14,85 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^Zu Gunsten .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        // @formatter:off
+                        // Geschäftsart: Umtausch/Bezug Auftrags-Nr.: 17374528 - 28.01.2025
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.* (?<note>Auftrags\\-Nr\\.: .* \\- [\\d]{1,2}\\.[\\d]{1,2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)

@@ -1,0 +1,30 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.3.qualifier
+System: win32 | x86_64 | 21.0.6+7-LTS | Eclipse Adoptium
+-----------------------------------------
+AVIS D'OPÉRATIONS T RnrRMTp OISXNw
+Au 22 avril 2020 0 gKA ZTWi bJdcZ isgWKxJaK
+15349 cESBC SNn djzQALP
+VOTRE COMPTE PEA N° 558650906726 k URHHdmB kOBaAZ
+Date
+Désignation Débit Crédit
+opération
+¢ ACTION : VEOLIA ENVIRONNEMENT (FR0000124141)
+22-04-2020 Référence 16S7998181666921
+10:42:24 Sens Achat - Exécution unique
+Modalité Limité
+Marché Comptant
+Lieu d'exécution EQUIDUCT
+Quantité 100 Cours 17,65 €
+Montant Brut 1 765,00 €
+Courtage et Commission 3,90 €
+Montant NET 1 768,90 € 1 768,90 €
+Sous réserve de bonne fin.
+Lorsqu'elle s'applique, l'exonération de TVA relève de l'article 261 C du CGI.
+Sous réserve de son application à la présente transaction, la Taxe sur les Transactions Financières prévue par l'article 235 ter ZD du
+CGI est prélevée sur votre compte espèces et fait l'objet d'un avis récapitulatif spécifique.
+Duplicata Internet
+Page 1/1
+Fortuneo est une marque commerciale d'Arkéa Direct Bank. Arkéa Direct Bank, Société Anonyme à Directoire et Conseil de Surveillance
+au capital de 89 198 952 euros. RCS Nanterre 384 288 890. Siège social : Tour Ariane - 5, place de la Pyramide 92088 Paris La Défense.
+Courtier en assurance n°ORIAS 07 008 441. Adresse postale : Fortuneo - Service Clients - TSA41707 - 35917 RENNES CEDEX 9.

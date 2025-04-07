@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -141,7 +142,8 @@ public class ExtractorUtils
                     createFormatter("d MMM yyyy", AdditionalLocales.MEXICO),
                     createFormatter("dd MMM yyyy", AdditionalLocales.MEXICO),
                     createFormatter("d MMMM yyyy", AdditionalLocales.MEXICO),
-                    createFormatter("dd MMMM yyyy", AdditionalLocales.MEXICO) };
+                    createFormatter("dd MMMM yyyy", AdditionalLocales.MEXICO),
+                    createFormatter("dd/MM/yy", AdditionalLocales.MEXICO) };
 
     // Date formatters with case-insensitive support for the United Kingdom
     private static final DateTimeFormatter[] DATE_FORMATTER_UK = { //
@@ -258,7 +260,7 @@ public class ExtractorUtils
 
         if (rate.isPresent())
         {
-            Money fxTax = rate.get().convert(t.getCurrencyCode(), tax);
+            var fxTax = rate.get().convert(t.getCurrencyCode(), tax);
 
             if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                 t.addUnit(new Unit(Unit.Type.TAX, fxTax));
@@ -290,7 +292,7 @@ public class ExtractorUtils
 
         if (rate.isPresent())
         {
-            Money fxFee = rate.get().convert(t.getCurrencyCode(), fee);
+            var fxFee = rate.get().convert(t.getCurrencyCode(), fee);
 
             if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                 t.addUnit(new Unit(Unit.Type.FEE, fxFee));
@@ -301,7 +303,7 @@ public class ExtractorUtils
 
     public static long convertToNumberLong(String value, Values<Long> valueType, String language, String country)
     {
-        DecimalFormat newNumberFormat = (DecimalFormat) NumberFormat
+        var newNumberFormat = (DecimalFormat) NumberFormat
                         .getInstance(Locale.forLanguageTag(language + "-" + country));
 
         /**
@@ -334,7 +336,7 @@ public class ExtractorUtils
              * 8217?) instead. This is wrong, ASCII 39 was the correct
              * character.
              */
-            DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+            var decimalFormatSymbols = new DecimalFormatSymbols();
             decimalFormatSymbols.setDecimalSeparator('.');
             decimalFormatSymbols.setGroupingSeparator('\'');
             newNumberFormat.setDecimalFormatSymbols(decimalFormatSymbols);
@@ -374,7 +376,7 @@ public class ExtractorUtils
          */
         value = trim(value).replaceAll("\\s", "");
 
-        DecimalFormat newNumberFormat = (DecimalFormat) NumberFormat
+        var newNumberFormat = (DecimalFormat) NumberFormat
                         .getInstance(Locale.forLanguageTag(language + "-" + country));
 
         if ("CH".equals(country))
@@ -386,7 +388,7 @@ public class ExtractorUtils
              * 8217?) instead. This is wrong, ASCII 39 was the correct
              * character.
              */
-            DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+            var decimalFormatSymbols = new DecimalFormatSymbols();
             decimalFormatSymbols.setDecimalSeparator('.');
             decimalFormatSymbols.setGroupingSeparator('\'');
             newNumberFormat.setDecimalFormatSymbols(decimalFormatSymbols);
@@ -413,13 +415,13 @@ public class ExtractorUtils
         // the box anymore
         value = value.replaceAll("(?i)\\bMrz\\b", "Mär");
 
-        Locale[] locales = hints.length > 0 ? hints
+        var locales = hints.length > 0 ? hints
                         : new Locale[] { Locale.GERMANY, Locale.FRENCH, Locale.US, Locale.CANADA, Locale.CANADA_FRENCH,
                                         Locale.UK, AdditionalLocales.SPAIN, AdditionalLocales.MEXICO };
 
         for (Locale l : locales)
         {
-            DateTimeFormatter[] formatters = LOCALE2DATE.get(l);
+            var formatters = LOCALE2DATE.get(l);
             if (formatters == null)
             {
                 continue; // Skip this locale if no formatters are found
@@ -464,7 +466,7 @@ public class ExtractorUtils
         // the box anymore
         date = date.replaceAll("(?i)\\bMrz\\b", "Mär");
 
-        String value = String.format("%s %s", date, time);
+        var value = String.format("%s %s", date, time);
 
         for (DateTimeFormatter formatter : DATE_TIME_FORMATTER)
         {
@@ -481,6 +483,39 @@ public class ExtractorUtils
         throw new DateTimeParseException(MessageFormat.format(Messages.MsgErrorNotAValidDate, value), value, 0);
     }
 
+    public static String getTickerSymbolForCrypto(String cryptoAssetName)
+    {
+        if (cryptoAssetName == null || cryptoAssetName.isBlank())
+            return "";
+
+        cryptoAssetName = cryptoAssetName.trim().toUpperCase();
+
+        Map<String, String> cryptoTickerMap = new HashMap<>();
+
+        cryptoTickerMap.put("AAVE", "AAVE");
+        cryptoTickerMap.put("AVALANCHE", "AVAX");
+        cryptoTickerMap.put("BITCOIN", "BTC");
+        cryptoTickerMap.put("BITCOIN CASH", "BCH");
+        cryptoTickerMap.put("CARDANO", "ADA");
+        cryptoTickerMap.put("CHAINLINK", "LINK");
+        cryptoTickerMap.put("COMPOUND", "COMP");
+        cryptoTickerMap.put("COSMOS", "ATOM");
+        cryptoTickerMap.put("DOGECOIN", "DOGE");
+        cryptoTickerMap.put("EOS", "EOS");
+        cryptoTickerMap.put("ETHEREUM", "ETH");
+        cryptoTickerMap.put("ETHEREUM CLASSIC", "ETC");
+        cryptoTickerMap.put("LITECOIN", "LTC");
+        cryptoTickerMap.put("POLKADOT", "DOT");
+        cryptoTickerMap.put("POLYGON", "MATIC");
+        cryptoTickerMap.put("RIPPLE", "XRP");
+        cryptoTickerMap.put("SOLANA", "SOL");
+        cryptoTickerMap.put("STELLAR LUMEN", "XLM");
+        cryptoTickerMap.put("TRON", "TRX");
+        cryptoTickerMap.put("UNISWAP", "UNI");
+
+        return cryptoTickerMap.getOrDefault(cryptoAssetName, "");
+    }
+
     public static Consumer<Transaction> fixGrossValue()
     {
         return t -> {
@@ -495,19 +530,19 @@ public class ExtractorUtils
 
             // check if the reported gross value fits to the
             // expected gross value
-            Optional<Unit> actualGross = t.getUnit(Unit.Type.GROSS_VALUE);
+            var actualGross = t.getUnit(Unit.Type.GROSS_VALUE);
 
             if (actualGross.isPresent())
             {
-                Unit grossUnit = actualGross.get();
-                Money expectedGross = t.getGrossValue();
+                var grossUnit = actualGross.get();
+                var expectedGross = t.getGrossValue();
 
                 if (!expectedGross.equals(grossUnit.getAmount()))
                 {
                     // check if it a rounding difference that is acceptable
                     try
                     {
-                        Unit u = new Unit(Unit.Type.GROSS_VALUE, expectedGross, grossUnit.getForex(),
+                        var u = new Unit(Unit.Type.GROSS_VALUE, expectedGross, grossUnit.getForex(),
                                         grossUnit.getExchangeRate());
 
                         t.removeUnit(grossUnit);
@@ -519,7 +554,7 @@ public class ExtractorUtils
                         // recalculate the unit to fix the gross value
                     }
 
-                    Money caculatedGrossValue = Money.of(grossUnit.getForex().getCurrencyCode(),
+                    var caculatedGrossValue = Money.of(grossUnit.getForex().getCurrencyCode(),
                                     BigDecimal.valueOf(expectedGross.getAmount())
                                                     .divide(grossUnit.getExchangeRate(), Values.MC)
                                                     .setScale(0, RoundingMode.HALF_EVEN).longValue());
