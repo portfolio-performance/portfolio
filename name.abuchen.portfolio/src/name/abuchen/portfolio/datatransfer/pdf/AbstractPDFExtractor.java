@@ -220,13 +220,11 @@ public abstract class AbstractPDFExtractor implements Extractor
         try
         {
             String tickerSymbol = values.get("tickerSymbol").trim(); //$NON-NLS-1$
-            String name = values.getOrDefault("name", null); //$NON-NLS-1$
 
             for (SecuritySearchProvider provider : lookupCryptoProvider())
             {
                 var coins = provider.getCoins();
-                var candidate = coins.stream().filter(c -> c.getSymbol().equalsIgnoreCase(tickerSymbol))
-                                .filter(c -> name == null || c.getName().equalsIgnoreCase(name)).findAny();
+                var candidate = coins.stream().filter(c -> c.getSymbol().equalsIgnoreCase(tickerSymbol)).findAny();
                 if (candidate.isPresent())
                     return candidate;
             }

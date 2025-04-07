@@ -33,15 +33,15 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.datatransfer.pdf.BSDEXPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.TestCoinSearchProvider;
-import name.abuchen.portfolio.datatransfer.pdf.BSDEXPDFExtractor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
+
 
 @SuppressWarnings("nls")
 public class BSDEXPDFExtractorTest
@@ -56,10 +56,10 @@ public class BSDEXPDFExtractorTest
     };
 
     @Test
-    public void testCryptoBuy()
+    public void testCryptoKauf01()
     {
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -76,16 +76,17 @@ public class BSDEXPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-12-18T04:14:42"), hasShares(0.001), //
-                        hasSource("Kauf.txt"), //
-                        hasAmount("EUR", 99.2), hasGrossValue("EUR", 99), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.2))));
+                        hasSource("Kauf01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 99.20), hasGrossValue("EUR", 99.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.20))));
     }
 
     @Test
-    public void testCryptoBuy2()
+    public void testCryptoKauf02()
     {
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf2.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -102,16 +103,17 @@ public class BSDEXPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-04-30T19:16:59"), hasShares(0.0001283), //
-                        hasSource("Kauf2.txt"), //
+                        hasSource("Kauf02.txt"), //
+                        hasNote(null), //
                         hasAmount("EUR", 7.19), hasGrossValue("EUR", 7.18), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.01))));
     }
 
     @Test
-    public void testCryptoSell()
+    public void testCryptoVerkauf01()
     {
         List<Exception> errors = new ArrayList<>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -124,22 +126,24 @@ public class BSDEXPDFExtractorTest
                         hasCurrencyCode("EUR"), //
                         hasFeed(CoinGeckoQuoteFeed.ID), //
                         hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "xrp"))));
+
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
-                        hasDate("2024-12-17T18:07:05"), hasShares(15), //
-                        hasSource("Verkauf.txt"), //
-                        hasAmount("EUR", 37.72), hasGrossValue("EUR", 37.8), //
+                        hasDate("2024-12-17T18:07:05"), hasShares(15.00), //
+                        hasSource("Verkauf01.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 37.72), hasGrossValue("EUR", 37.80), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
     }
 
     @Test
-    public void testDepositRemoval()
+    public void testDepositRemoval01()
     {
-        BSDEXPDFExtractor extractor = new BSDEXPDFExtractor(new Client());
+        var extractor = new BSDEXPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Deposit_Removal.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepositRemoval01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -149,11 +153,11 @@ public class BSDEXPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2024-06-14T06:00:26"), hasAmount("EUR", 25.5), //
-                        hasSource("Deposit_Removal.txt"), hasNote(null))));
+        assertThat(results, hasItem(deposit(hasDate("2024-06-14T06:00:26"), hasAmount("EUR", 25.50), //
+                        hasSource("DepositRemoval01.txt"), hasNote(null))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-12-17T06:30:23"), hasAmount("EUR", 113.66), //
-                        hasSource("Deposit_Removal.txt"), hasNote(null))));
+                        hasSource("DepositRemoval01.txt"), hasNote(null))));
     }
 }
