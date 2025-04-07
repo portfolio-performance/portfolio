@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.DocumentContext;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
@@ -116,7 +117,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
                                                         .match("^[\\d]{3} [\\d]+ [\\d]+ (?<name>.*) [\\d]\\/[\\d]$") //
-                                                        .match("^WKN (?<wkn>[A-Z0-9]{6}) .*$") //
+                                                        .match("^WKN (?<wkn>[A-Z0-9]{6}).*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Kurs (?<currency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -207,7 +208,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // Kurswert 1.289,64 EUR
                         // @formatter:on
                         .section("baseCurrency", "termCurrency", "exchangeRate", "gross").optional() //
-                        .match("^Devisenkurs \\((?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+) .*$") //
+                        .match("^Devisenkurs \\((?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})\\) (?<exchangeRate>[\\.,\\d]+).*$") //
                         .match("^Kurswert (?<gross>[\\.,\\d]+)(\\-)? [\\w]{3}$") //
                         .assign((t, v) -> {
                             ExtrExchangeRate rate = asExchangeRate(v);
@@ -281,7 +282,27 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
+                        // @formatter:off
+                        // Storno einer Ertragsgutschrift
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^(?<type>Storno) einer Ertragsgutschrift$") //
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
+
                         .oneOf( //
+                                        // @formatter:off
+                                        // Stück WKN ISIN
+                                        // 60,000000 890454 US6819361006
+                                        // OMEGA HEALTHCARE INVEST. INC.RG.SH. DL -,10
+                                        // Ausschüttung pro Stück 0,6700000000 USD Zahlbar 15.05.2024
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("wkn", "isin", "name", "currency") //
+                                                        .find("St.ck WKN ISIN") //
+                                                        .match("^[\\.,\\d]+ (?<wkn>[A-Z0-9]{6}) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("(?<name>.*)") //
+                                                        .match("^(Aussch.ttung|Dividende|Ertrag) pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Stück 12 JOHNSON & JOHNSON SHARES US4781601046 (853260)
                                         // REGISTERED SHARES DL 1
@@ -291,7 +312,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "wkn", "name1", "currency") //
                                                         .match("^St.ck [\\.,\\d]+ (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\)$") //
                                                         .match("(?<name1>.*)") //
-                                                        .match("^.* (Aussch.ttung|Dividende|Ertrag) ([\\s]+)?pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^.* (Aussch.ttung|Dividende|Ertrag)[\\s]{1,}pro (St\\.|St.ck) [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Zahlbarkeitstag"))
                                                                 v.put("name", trim(v.get("name")) + " " + trim(v.get("name1")));
@@ -325,8 +346,16 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         // @formatter:off
+                                        // Stück WKN ISIN
+                                        // 60,000000 890454 US6819361006
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .find("St.ck WKN ISIN")
+                                                        .match("^(?<shares>[\\.,\\d]+) [A-Z0-9]{6} [A-Z]{2}[A-Z0-9]{9}[0-9]$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
                                         // Stück 12 JOHNSON & JOHNSON SHARES
-                                        // US4781601046 (853260)
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
@@ -334,7 +363,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // EUR 15.000,00 ENEL FINANCE INTL N.V.
-                                        // XS0177089298 (908043)
+                                        // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
                                                         .match("^[\\w]{3} (?<shares>[\\.,\\d]+) .* [A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\)$") //
@@ -365,17 +394,34 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Zahlbarkeitstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                                                        .match("^Zahlbarkeitstag (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Belastung mit Wert 17.05.2024 31,42 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Belastung mit Wert (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
                                         // @formatter:off
                                         // Gutschrift mit Wert 16.01.2023 309,23 EUR
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date") //
-                                                        .match("^Gutschrift mit Wert (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .*$") //
+                                                        .match("^Gutschrift mit Wert (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                                                         .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
 
                         .oneOf( //
+                                        // @formatter:off
+                                        // Belastung mit Wert 17.05.2024 31,42 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Belastung mit Wert [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<amount>[\\.,\\d]+) (?<currency>\\w{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
                                         // @formatter:off
                                         // Ausmachender Betrag 8,64+ EUR
                                         // @formatter:on
@@ -391,7 +437,7 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount", "currency") //
-                                                        .match("^Wir überweisen den Betrag von (?<amount>[\\.,\\d]+) (?<currency>\\w{3}) .*$") //
+                                                        .match("^Wir überweisen den Betrag von (?<amount>[\\.,\\d]+) (?<currency>\\w{3}).*$") //
                                                         .assign((t, v) -> {
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -466,7 +512,14 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
 
                         .conclude(ExtractorUtils.fixGrossValueA())
 
-                        .wrap(TransactionItem::new);
+                        .wrap((t, ctx) -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
@@ -624,6 +677,13 @@ public class PostbankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
                         .match("^Einbehaltene Quellensteuer [\\.,\\d]+([\\s]+)?% .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
+                        // @formatter:off
+                        // 15,0000000 % Ausländische Quellensteuer - 6,03 USD - 5,54 EUR
+                        // @formatter:on
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^[\\.,\\d]+([\\s]+)?% Ausl.ndische Quellensteuer \\- [\\.,\\d]+ [\\w]{3} \\- (?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off

@@ -1,6 +1,15 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
+
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -10,11 +19,19 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.Pair;
 
 @SuppressWarnings("nls")
 public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 {
+
+    private static record TransactionTaxesPair(Item transaction, Item tax)
+    {
+    }
+
     public ArkeaDirectBankPDFExtractor(Client client)
     {
         super(client);
@@ -24,7 +41,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction_Format01();
         addBuySellTransaction_Format02();
         addDividendeTransaction();
-        addTaxesTransaction();
+        addTaxesTreatmentTransaction();
     }
 
     @Override
@@ -48,29 +65,38 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                                         .match("^.* (ACTION|TRACKER) : (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
                                         .match("^Quantit. [\\,\\d\\s]+ Cours [\\,\\d\\s]+ (?<currency>\\p{Sc})$"));
 
-        final DocumentType type = new DocumentType("AVIS D.OP.RATIONS", securityRange);
+        final var type = new DocumentType("AVIS D.OP.RATIONS", securityRange);
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} R.f.rence .*$", "^Montant NET .*$");
+        var firstRelevantLine = new Block("^[\\d]{2}\\-[\\d]{2}\\-[\\d]{4} R.f.rence .*$", "^Montant NET .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
 
+                        // Is type --> "Vente" change from BUY to SELL
+                        .section("type").optional() //
+                        .match(".* Sens (?<type>(Achat|Vente)).*$") //
+                        .assign((t, v) -> {
+                            if ("Vente".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
+
                         // @formatter:off
                         // Quantité 46 Cours 10,646 €
+                        // Quantité 1 450 Cours 5,4941 €
                         // @formatter:on
                         .section("shares") //
                         .documentRange("name", "isin", "currency") //
-                        .match("^Quantit. (?<shares>[\\,\\d]+) Cours [\\,\\d\\s]+ \\p{Sc}$") //
+                        .match("^Quantit. (?<shares>[\\d\\s]+) Cours [\\,\\d\\s]+ \\p{Sc}$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
@@ -90,7 +116,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         // Montant NET 5 068,28 € 5 068,28 €
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Montant NET [\\,\\d\\s]+ \\p{Sc} (?<amount>[\\,\\d\\s]+) (?<currency>\\p{Sc})$") //
+                        .match("^Montant NET [\\d\\s]+,[\\d]{2} \\p{Sc} (?<amount>[\\d\\s]+,[\\d]{2}) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -111,19 +137,19 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction_Format02()
     {
-        final DocumentType type = new DocumentType("(Souscription . titre r.ductible|Souscription avec droits)");
+        final var type = new DocumentType("(Souscription . titre r.ductible|Souscription avec droits)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^RESULTAT D'OST.*$");
+        var firstRelevantLine = new Block("^RESULTAT D'OST.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -166,19 +192,19 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("AVIS D.ENCAISSEMENT COUPON");
+        var type = new DocumentType("AVIS D.ENCAISSEMENT COUPON");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^AVIS D.ENCAISSEMENT COUPON.*$");
+        var firstRelevantLine = new Block("^AVIS D.ENCAISSEMENT COUPON.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -244,21 +270,21 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
-    private void addTaxesTransaction()
+    private void addTaxesTreatmentTransaction()
     {
-        DocumentType type = new DocumentType("AVIS RECAPITULATIF DE LA TAXE SUR LES");
+        var type = new DocumentType("AVIS RECAPITULATIF DE LA TAXE SUR LES");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^.* \\([A-Z]{2}[A-Z0-9]{9}[0-9]\\)$");
+        var firstRelevantLine = new Block("^.* \\([A-Z]{2}[A-Z0-9]{9}[0-9]\\)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
@@ -294,7 +320,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "amount") //
                         .match("^Montant global soumis à la TTF : [\\,\\d\\s]+ (?<currency>\\p{Sc})$") //
                         .find("Taux de TTF : [\\,\\d\\s]+ %")
-                        .match("^(?<amount>[\\,\\d\\s]+)$") //
+                        .match("(Montant de la TTF:[\\s]*|^)(?<amount>[\\,\\d\\s]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -351,5 +377,132 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
     protected long asShares(String value)
     {
         return ExtractorUtils.convertToNumberLong(value, Values.Share, "fr", "FR");
+    }
+
+    /**
+     * @formatter:off
+     * This method performs post-processing on a list transaction items, categorizing and
+     * modifying them based on their types and associations. It follows several steps:
+     *
+     * 1. Filters the input list to isolate taxes treatment transactions and buy transactions.
+     * 2. Matches buy transactions with their corresponding taxes treatment transactions.
+     * 3. Adjusts buy transactions by adding tax amounts, adding tax units, combining source information, appending tax-related notes,
+     *    and removing taxes treatment's from the list of items.
+     *
+     * The goal of this method is to process transactions and ensure that taxes treatment is accurately reflected
+     * in buy transactions, making the transaction's more comprehensive and accurate.
+     *
+     * @param items The list of transaction items to be processed.
+     * @return A modified list of transaction items after post-processing.
+     * @formatter:on
+     */
+    @Override
+    public void postProcessing(List<Item> items)
+    {
+        // Filter transactions by taxes
+        var taxesTreatmentList = items.stream() //
+                        .filter(TransactionItem.class::isInstance) //
+                        .filter(i -> i.getSubject() instanceof AccountTransaction) //
+                        .filter(i -> AccountTransaction.Type.TAXES
+                                        .equals(((AccountTransaction) i.getSubject()).getType())) //
+                        .toList();
+
+        // Filter transactions by buySell transactions
+        var buyTransactionList = items.stream() //
+                        .filter(BuySellEntryItem.class::isInstance) //
+                        .filter(i -> i.getSubject() instanceof BuySellEntry) //
+                        .filter(i -> PortfolioTransaction.Type.BUY //
+                                        .equals((((BuySellEntry) i.getSubject()).getPortfolioTransaction().getType()))) //
+                        .toList();
+
+        var transactionTaxPairs = matchTransactionPair(buyTransactionList, taxesTreatmentList);
+
+        // @formatter:off
+        // This loop iterates through a list of buy and tax pairs and processes them.
+        //
+        // For each pair, it adds the tax amount to the buy transaction's total amount,
+        // adds the tax as a tax unit to the buy transaction, combines source information if needed,
+        // appends taxes treatment notes to the buy transaction, and removes the tax treatment from the 'items' list.
+        //
+        // It performs these operations when a valid tax transaction is found.
+        // @formatter:on
+        for (TransactionTaxesPair pair : transactionTaxPairs)
+        {
+            var buyTransaction = (BuySellEntry) pair.transaction.getSubject();
+            var taxesTransaction = pair.tax() != null ? (AccountTransaction) pair.tax().getSubject() : null;
+
+            if (taxesTransaction != null && taxesTransaction.getType() == AccountTransaction.Type.TAXES)
+            {
+                buyTransaction.setMonetaryAmount(buyTransaction.getPortfolioTransaction().getMonetaryAmount()
+                                .add(taxesTransaction.getMonetaryAmount()));
+
+                buyTransaction.getPortfolioTransaction()
+                                .addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
+
+                buyTransaction.setSource(concatenate(buyTransaction.getSource(), taxesTransaction.getSource(), "; "));
+
+                buyTransaction.setNote(concatenate(buyTransaction.getNote(), taxesTransaction.getNote(), " | "));
+
+                items.remove(pair.tax());
+            }
+        }
+    }
+
+    /**
+     * @formatter:off
+     * Matches transactions and taxes treatment's, ensuring unique pairs based on date and security.
+     *
+     * This method matches transactions and taxes treatment's by creating a Pair consisting of the transaction's
+     * date and security. It uses a Set called 'keys' to prevent duplicates based on these Pair keys,
+     * ensuring that the same combination of date and security is not processed multiple times.
+     * Duplicate transactions for the same security on the same day are avoided.
+     *
+     * @param transactionList      A list of transactions to be matched.
+     * @param taxesTreatmentList   A list of taxes treatment's to be considered for matching.
+     * @return A collection of TransactionTaxesPair objects representing matched transactions and taxes treatment's.
+     * @formatter:on
+     */
+    private Collection<TransactionTaxesPair> matchTransactionPair(List<Item> transactionList,
+                    List<Item> taxesTreatmentList)
+    {
+        // Use a Set to prevent duplicates
+        Set<Pair<LocalDate, Security>> keys = new HashSet<>();
+        Map<Pair<LocalDate, Security>, TransactionTaxesPair> pairs = new HashMap<>();
+
+        // Match identified transactions and taxes treatment's
+        transactionList.forEach( //
+                        transaction -> {
+                            var key = new Pair<>(transaction.getDate().toLocalDate(), transaction.getSecurity());
+
+                            // Prevent duplicates
+                            if (keys.add(key))
+                                pairs.put(key, new TransactionTaxesPair(transaction, null));
+                        } //
+        );
+
+        // Iterate through the list of taxes treatment's to match them with
+        // transactions
+        taxesTreatmentList.forEach( //
+                        tax -> {
+                            // Check if the taxes treatment has a security
+                            if (tax.getSecurity() == null)
+                                return;
+
+                            // Create a key based on the taxes treatment date
+                            // and security
+                            var key = new Pair<>(tax.getDate().toLocalDate(), tax.getSecurity());
+
+                            // Retrieve the TransactionTaxesPair associated with
+                            // this key, if it exists
+                            var pair = pairs.get(key);
+
+                            // Skip if no transaction is found or if a taxes
+                            // treatment already exists
+                            if (pair != null && pair.tax() == null)
+                                pairs.put(key, new TransactionTaxesPair(pair.transaction(), tax));
+                        } //
+        );
+
+        return pairs.values();
     }
 }

@@ -1,0 +1,34 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 3268088 - TRADING
+IBAN: CH0000000000000000000
+shIZp BUVUwIF PENLrOiY
+bGfaQJmKSnvmUxAfZ 58
+CH-9494 vclhnWkVMCYd
+Gland, 03.03.2025
+Dividende Unsere Referenz: 055857024 
+Im Hinblick auf folgenden Titel:
+Titel
+Bezeichnung Anzahl
+TARGET ORD ISIN: US87612E1064 8
+NKN: 1036943
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben: 
+Kontonummer 3268088112
+Ausführungsdatum 12.02.2025
+Valutadatum 03.03.2025
+Anzahl 8
+Dividende pro Aktie USD 1.12 
+Bezeichnung Währung Referenzwährung
+Betrag USD 8.96 CHF 8.09
+Quellensteuer 15.00% (US) USD 1.34 CHF 1.21
+Zusätzlicher Steuerrückbehalt 15% USD 1.34 CHF
+Total USD 6.28 CHF 5.67
+Diese Erklärung dient der Geltendmachung von Verrechnungs- und Rückforderungsansprüchen Zusätzlicher Steuerrückbehalt 
+Wechselkurs USD / CHF : 0.90247
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland  Formular ohne Unterschrift | SE&O.
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+CHE-116.310.079 MwSt

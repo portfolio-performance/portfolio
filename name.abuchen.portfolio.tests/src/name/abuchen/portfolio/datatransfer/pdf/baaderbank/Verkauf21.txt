@@ -1,0 +1,87 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Smartbroker AG
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Ritterstraße 11
+10969 Berlin
+Seite 1/2
+Berlin
+MRrQAz GwcpRGi 24.02.2025
+Günselstr. 02
+pdutnz vfbTgPZ
+94821 MyEtsva Stamm-Nr.: 3232988    Portfolio: 1
+Depot-Nr.: 8110959257
+Vorgangs-Nr.: 442024039
+Referenz-Nr.: 723889251
+Wertpapierabrechnung: Verkauf
+Auftragsdatum: 24.02.2025 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 20:31:51:00
+Nominale ISIN: IE00BFMNHK08 WKN: A2JHSG Kurs 
+STK 174    Xtr.(IE)-MSCI Europe ESG U.ETF EUR 33,495
+Registered Shares 1C o.N.
+Auftraggeber: Depotinhaber
+Art der Auftragserteilung: Orderroutingsystem
+Kurswert EUR 5.828,13
+Kapitalertragsteuer EUR 219,61 -
+Kirchensteuer EUR 19,76 -
+Solidaritätszuschlag EUR 12,07 -
+Zu Gunsten Konto 7925218625 Valuta: 26.02.2025 EUR 5.576,69
+Die Wertpapiere buchen wir zu Lasten Ihres Depots.
+Details zur Ausführung: Handels- Handels- 
+Nominale Kurs Ausführungsplatz datum uhrzeit 
+STK   174    EUR 33,495 GETTEX - MM Munich 24.02.2025 20:31:51:626
+Verwahrart: Wertpapierrechnung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 1419 MIC des Ausführungsplatzes: MUNC
+Lagerland: Luxemburg
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und Vollständigkeit. Etwaige 
+Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden. 
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Dr. Louis Hagen • Amtsgericht München HRB 121537 • Sitz der Gesellschaft: 
+Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+WPABRECHNUNG-060.114
+Wertpapierabrechnung: Verkauf
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Kapitalertragsteuer EUR 103,10 EUR 219,61 EUR 322,71
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Veräußerungsergebnis vor Teilfreistellung Aktienfonds EUR 1.435,95 EUR 852,35
+Veräußerungsergebnis Teilfreistellung 30% EUR 430,79 - EUR 0,00
+Abzug besitzanteilige Vorabpauschale vor Teilfreistellung EUR 152,81 - EUR 0,00
+Abzug besitzanteilige Vorabpauschale Teilfreistellung 30% EUR 45,84 EUR 45,84
+Bemessungsgrundlage zur Kapitalertragsteuer bei 9% Kirchensteuer EUR 898,19 EUR 898,19
+Bemessungsgrundlage zur Kapitalertragsteuer bei 9% Kirchensteuer
+Kapitalertragsteuer 24,45 % EUR 219,61 - EUR 219,61 -
+Kirchensteuer 9,00 % EUR 19,76 - EUR 19,76 -
+Solidaritätszuschlag 5,50 % EUR 12,07 - EUR 12,07 -
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP-Einlief. mit AK 43422516 01.09.2021 STK 29,291 777,38 981,10 203,72
+akk.Vorabpauschale Aktienfonds 25,73 0,00 25,73
+WP-Einlief. mit AK 43422516 01.12.2021 STK 38 1.007,38 1.272,81 265,43
+akk.Vorabpauschale Aktienfonds 33,37 0,00 33,37
+WP-Einlief. mit AK 43422516 25.01.2022 STK 39 1.000,35 1.306,31 305,96
+akk.Vorabpauschale Aktienfonds 34,25 0,00 34,25
+WP-Einlief. mit AK 43422516 09.03.2022 STK 67,709 1.607,07 2.267,91 660,84
+akk.Vorabpauschale Aktienfonds 59,46 0,00 59,46
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Dr. Louis Hagen • Amtsgericht München HRB 121537 • Sitz der Gesellschaft: 
+Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+WPABRECHNUNG-060.114

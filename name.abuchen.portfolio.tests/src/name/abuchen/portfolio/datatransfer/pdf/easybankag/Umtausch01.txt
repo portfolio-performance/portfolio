@@ -1,0 +1,42 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+XwgRy
+eAwIcPZ oOqPzPfhA
+dMaqVRIyVQoKmJRvmh 17/24
+5960 KJpX
+Wien, den 18.02.2025
+Wir haben für Sie am 18.02.2025 unten angeführtes Geschäft abgerechnet:
+Depot: 20473-391-448
+Geschäftsart: Umtausch/Bezug Auftrags-Nr.: 17374528 - 28.01.2025
+Abgang: Stk 27
+davon
+davon
+KESt-Altbestand: Stk 27
+KESt-Altbestand: Stk 27
+Titel: AT0000A1Z023 CONWERT IMMOBILIEN INVEST SE
+AKTIEN O.N./ANSPR.NACHZAHLUNG
+Kurs: 0,55 EUR
+Verwahrart: SVK
+Positionsdaten: Loco: Wien_K
+Bezugsverhältnis: 1: 1
+Barausgleich: 14,85 EUR
+Zu Gunsten IBAN as17 4873 4614 7852 4461 Valuta 18.02.2025 14,85 EUR
+Eingang vorbehalten
+Kassatag: 18.02.2025
+KESt-pflichtiges Wertpapier
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe.
+Die BAWAG erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle steuerliche
+Nachteile im Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen ihrer
+Kunden. Die Besteuerung der Kapitaleinkünfte hängt von den persönlichen Verhältnissen des Anlegers
+ab und kann künftigen Änderungen unterworfen sein. Vor einer Veranlagungsentscheidung sollten Sie
+sich bei Ihrem Steuerberater über die damit verbundenen steuerlichen Konsequenzen und
+Meldepflichten informieren.
+Mit freundlichen Grüßen
+Ihr easybank Service Center
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 1 von 1
+easybank Service Center | www.easybank.at | Wiedner Gürtel 11 | 1100 Wien
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postsparkasse Aktiengesellschaft | Handelsgericht Wien | FN 205340x
+GEODRU02 WGEWTGSDR15ABREP2025021800309P18_a/221

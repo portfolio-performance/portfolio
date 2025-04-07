@@ -1,0 +1,181 @@
+﻿PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Smartbroker AG
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Ritterstraße 11
+10969 Berlin
+Seite 1/3
+Berlin
+OYhoxr eDqaliL 10.10.2024
+Günselstr. 99
+iNsHHi wMJPHLR
+90877 uhcqIRt PF 03
+Stamm-Nr.: 1746595    Portfolio: 2
+Konto-Nr.: 5455244207
+IBAN: Ii47 1318 0104 7658 9553 28
+BLZ: 631 320 76
+BIC: GBnUSEXT
+Vorgangs-Nr.: 538295864
+Referenz-Nr.: 636330051
+Perioden-Kontoauszug: EUR-Konto
+Periodenauszugs-Nr. 024003
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Kontostand in EUR am 30.08.2024 4.541,17
+03.09.2024 Kauf 05.09.2024 49,94 -
+DEUTSCHE BOERSE NA O.N.
+ISIN DE0005810055
+STK               0,246
+Vorgangs-Nr.: WWUM 00359120685
+03.09.2024 Kauf 05.09.2024 49,54 -
+LVMH EO 0,3
+ISIN FR0000121014
+STK               0,073
+Vorgangs-Nr.: WWUM 00359134037
+03.09.2024 Kauf 05.09.2024 49,91 -
+PEPSICO INC. DL-,0166
+ISIN US7134481081
+STK               0,319
+Vorgangs-Nr.: WWUM 00359372277
+03.09.2024 Kauf 05.09.2024 49,08 -
+CISCO SYSTEMS DL-,001
+ISIN US17275R1023
+STK               1,075
+Vorgangs-Nr.: WWUM 00359373541
+03.09.2024 Kauf 05.09.2024 49,97 -
+MCDONALDS CORP. DL-,01
+ISIN US5801351017
+STK               0,192
+Vorgangs-Nr.: WWUM 00359373414
+Übertrag: 4.292,73
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der Gesellschaft: 
+Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+KKTKK801-043.041
+Perioden-Kontoauszug: EUR-Konto
+Periodenauszugs-Nr. 024003
+Fortsetzung: Seite 2/3
+Konto-Nr.: 8979658524   BLZ: 327 511 05   IBAN: sr76 6436 4831 6925 5295 38   BIC: QZsoXmMV
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Übertrag: 4.292,73
+03.09.2024 Kauf 05.09.2024 99,96 -
+AMAZON.COM INC. DL-,01
+ISIN US0231351067
+STK               0,624
+Vorgangs-Nr.: WWUM 00359376929
+03.09.2024 Kauf 05.09.2024 99,86 -
+VISA INC. CL. A DL -,0001
+ISIN US92826C8394
+STK               0,393
+Vorgangs-Nr.: WWUM 00359402876
+03.09.2024 Kauf 05.09.2024 100,00 -
+JOHNSON + JOHNSON DL 1
+ISIN US4781601046
+STK               0,664
+Vorgangs-Nr.: WWUM 00359402784
+04.09.2024 Coupons/Dividende 03.09.2024 0,15
+VISA INC. CL. A DL -,0001
+ISIN US92826C8394
+STK               0,418
+33951780
+Vorgangs-Nr.: WWEK 32091273
+12.09.2024 Coupons/Dividende 10.09.2024 0,56
+JOHNSON + JOHNSON DL 1
+ISIN US4781601046
+STK               0,67
+34291865
+Vorgangs-Nr.: WWEK 32426264
+17.09.2024 Coupons/Dividende 16.09.2024 0,25
+HERSHEY CO. DL 1
+ISIN US4278661081
+STK               0,274
+34533176
+Vorgangs-Nr.: WWEK 32661647
+18.09.2024 Coupons/Dividende 17.09.2024 0,45
+MCDONALDS CORP. DL-,01
+ISIN US5801351017
+STK               0,402
+34667710
+Vorgangs-Nr.: WWEK 32789567
+25.09.2024 Coupons/Dividende 24.09.2024 0,14
+UNITEDHEALTH GROUP DL-,01
+ISIN US91324P1021
+STK               0,094
+34861493
+Vorgangs-Nr.: WWEK 32975304
+Übertrag: 3.994,46
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der Gesellschaft: 
+Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+KKTKK801-043.041
+Perioden-Kontoauszug: EUR-Konto
+Periodenauszugs-Nr. 024003
+Fortsetzung: Seite 3/3
+Konto-Nr.: 7999792265   BLZ: 993 744 97   IBAN: ia38 2323 0725 3201 3203 70   BIC: wqDdCqRO
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Übertrag: 3.994,46
+30.09.2024 Kauf 05.09.2024 49,99 -
+AHOLD DELHAIZE,KON.EO-,01
+ISIN NL0011794037
+STK               1,596
+Vorgangs-Nr.: WWUM 00369465007
+30.09.2024 Kauf 05.09.2024 99,94 -
+AMERICAN TOWER DL -,01
+ISIN US03027X1000
+STK               0,488
+Vorgangs-Nr.: WWUM 00369466883
+30.09.2024 Kauf 05.09.2024 99,99 -
+BECHTLE AG O.N.
+ISIN DE0005158703
+STK               2,604
+Vorgangs-Nr.: WWUM 00369468304
+30.09.2024 Kauf 05.09.2024 100,01 -
+DAIKIN IND. LTD
+ISIN JP3481800005
+STK               0,867
+Vorgangs-Nr.: WWUM 00369469767
+30.09.2024 Kauf 05.09.2024 49,99 -
+DIAGEO PLC LS-,28935185
+ISIN GB0002374006
+STK               1,693
+Vorgangs-Nr.: WWUM 00369470329
+30.09.2024 Kauf 05.09.2024 49,94 -
+HERSHEY CO. DL 1
+ISIN US4278661081
+STK               0,287
+Vorgangs-Nr.: WWUM 00369471902
+30.09.2024 Kauf 05.09.2024 100,00 -
+HEXAGON AB B FRIA O.N.
+ISIN SE0015961909
+STK              10,82
+Vorgangs-Nr.: WWUM 00369473509
+30.09.2024 Kauf 05.09.2024 99,99 -
+REALTY INC. CORP. DL 1
+ISIN US7561091049
+STK               1,784
+Vorgangs-Nr.: WWUM 00369501928
+Kontostand in EUR am 30.09.2024 3.344,61
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der Gesellschaft: 
+Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+KKTKK801-043.041

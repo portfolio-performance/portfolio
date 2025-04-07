@@ -1511,17 +1511,17 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block removalBlock = new Block("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
-                        + "(Konto.bertrag"
-                        + "|.bertrag"
-                        + "|Lastschrift"
-                        + "|Visa\\-Umsatz"
-                        + "|Auszahlung"
-                        + "|Barauszahlung"
-                        + "|Kartenverf.gun"
-                        + "|Guthaben.bertr"
-                        + "|Devisen"
-                        + "|Wechselgeld\\-).* "
+        Block removalBlock = new Block("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(Konto.bertrag" //
+                        + "|.bertrag" //
+                        + "|Lastschrift" //
+                        + "|Visa\\-Umsatz" //
+                        + "|Auszahlung" //
+                        + "|Barauszahlung" //
+                        + "|Kartenverf.gun" //
+                        + "|Guthaben.bertr" //
+                        + "|Devisen" //
+                        + "|Wechselgeld\\-).*" //
                         + "\\-[\\.,\\d]+$");
         type.addBlock(removalBlock);
         removalBlock.setMaxSize(3);
@@ -1533,21 +1533,21 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("note1", "note2", "amount", "date")
-                        .match("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
-                                        + "(?<note1>Konto.bertrag"
-                                        + "|.bertrag"
-                                        + "|Lastschrift"
-                                        + "|Visa\\-Umsatz"
-                                        + "|Auszahlung"
-                                        + "|Barauszahlung"
-                                        + "|Kartenverf.gun"
-                                        + "|Guthaben.bertr"
-                                        + "|Devisen"
-                                        + "|Wechselgeld\\-)"
-                                        + "(?<note2>.*) "
+                        .section("note1", "note2", "amount", "date") //
+                        .match("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + "(?<note1>Konto.bertrag" //
+                                        + "|.bertrag" //
+                                        + "|Lastschrift" //
+                                        + "|Visa\\-Umsatz" //
+                                        + "|Auszahlung" //
+                                        + "|Barauszahlung" //
+                                        + "|Kartenverf.gun" //
+                                        + "|Guthaben.bertr" //
+                                        + "|Devisen" //
+                                        + "|Wechselgeld\\-)" //
+                                        + "(?<note2>.*) " //
                                         + "\\-(?<amount>[\\.,\\d]+)$")
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDateTime(asDate(v.get("date")));
@@ -1588,14 +1588,14 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block depositBlock = new Block("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
-                        + "(Konto.bertrag"
-                        + "|.bertrag"
-                        + "|Guthaben.bertr"
-                        + "|Gutschrift"
-                        + "|Bar"
-                        + "|Visa\\-Kartenabre"
-                        + "|Korrektur Barauszahlung).* "
+        Block depositBlock = new Block("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(Konto.bertrag" //
+                        + "|.bertrag" //
+                        + "|Guthaben.bertr" //
+                        + "|Gutschrift" //
+                        + "|Bar" //
+                        + "|Visa\\-Kartenabre" //
+                        + "|Korrektur Barauszahlung).* " //
                         + "\\+[\\.,\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.setMaxSize(3);
@@ -1607,18 +1607,18 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("note1", "note2", "amount", "date")
-                        .match("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
-                                        + "(?<note1>Konto.bertrag"
-                                        + "|.bertrag"
-                                        + "|Guthaben.bertr"
-                                        + "|Gutschrift"
-                                        + "|Bar"
-                                        + "|Visa\\-Kartenabre"
-                                        + "|Korrektur Barauszahlung)"
-                                        + "(?<note2>.*) "
-                                        + "\\+(?<amount>[\\.,\\d]+)$")
-                        .match("(^|^A)(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                        .section("note1", "note2", "amount", "date") //
+                        .match("(^|^A)[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + "(?<note1>Konto.bertrag" //
+                                        + "|.bertrag" //
+                                        + "|Guthaben.bertr" //
+                                        + "|Gutschrift" //
+                                        + "|Bar" //
+                                        + "|Visa\\-Kartenabre" //
+                                        + "|Korrektur Barauszahlung)" //
+                                        + "(?<note2>.*) " //
+                                        + "\\+(?<amount>[\\.,\\d]+)$") //
+                        .match("(^|^A)(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDateTime(asDate(v.get("date")));
@@ -1663,12 +1663,12 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
-                        + "(Geb.hren\\/Spesen"
-                        + "|Geb.hr Barauszahlung"
-                        + "|Entgelte"
-                        + "|Kontof.hrungse"
-                        + "|Auslandsentgelt).* "
+        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                        + "(Geb.hren\\/Spesen" //
+                        + "|Geb.hr Barauszahlung" //
+                        + "|Entgelte" //
+                        + "|Kontof.hrungse" //
+                        + "|Auslandsentgelt).*" //
                         + "\\-[\\.,\\d]+$");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
@@ -1679,15 +1679,15 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "amount", "note")
-                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
-                                        + "(?<note>Geb.hren\\/Spesen"
-                                        + "|Geb.hr Barauszahlung"
-                                        + "|Entgelte"
-                                        + "|Kontof.hrungse"
-                                        + "|Auslandsentgelt).* "
-                                        + "\\-(?<amount>[\\.,\\d]+)$")
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$")
+                        .section("date", "amount", "note") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+                                        + "(?<note>Geb.hren\\/Spesen" //
+                                        + "|Geb.hr Barauszahlung" //
+                                        + "|Entgelte" //
+                                        + "|Kontof.hrungse" //
+                                        + "|Auslandsentgelt).*" //
+                                        + "\\-(?<amount>[\\.,\\d]+)$") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDateTime(asDate(v.get("date")));
@@ -1713,10 +1713,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("note", "amount", "currency")
-                        .match("^(?<note>Versandpauschale) "
-                                        + "(?<amount>[\\.,\\d]+)\\- "
-                                        + "(?<currency>[\\w]{3})$")
+                        .section("note", "amount", "currency") //
+                        .match("^(?<note>Versandpauschale) " //
+                                        + "(?<amount>[\\.,\\d]+)\\- " //
+                                        + "(?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setDateTime(asDate(context.get("accountingBillDate")));
@@ -1750,9 +1750,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return accountTransaction;
                         })
 
-                        .section("date", "type", "amount")
+                        .section("date", "type", "amount") //
                         .documentContext("currency") //
-                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* "
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) .* " //
                                         + "(?<type>[\\-|\\+])(?<amount>[\\.,\\d]+)$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();

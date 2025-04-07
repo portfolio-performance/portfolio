@@ -1,10 +1,12 @@
 package name.abuchen.portfolio.datatransfer.pdf.boursobank;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasFees;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasForexGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasGrossValue;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasIsin;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasName;
@@ -30,11 +32,16 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.BoursoBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class BoursoBankPDFExtractorTest
@@ -42,11 +49,11 @@ public class BoursoBankPDFExtractorTest
     @Test
     public void testCompteAChat01()
     {
-        BoursoBankPDFExtractor extractor = new BoursoBankPDFExtractor(new Client());
+        var extractor = new BoursoBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AChat01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AChat01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -73,11 +80,11 @@ public class BoursoBankPDFExtractorTest
     @Test
     public void testCompteAChat02()
     {
-        BoursoBankPDFExtractor extractor = new BoursoBankPDFExtractor(new Client());
+        var extractor = new BoursoBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AChat02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AChat02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -104,11 +111,11 @@ public class BoursoBankPDFExtractorTest
     @Test
     public void testCompteAChat03()
     {
-        BoursoBankPDFExtractor extractor = new BoursoBankPDFExtractor(new Client());
+        var extractor = new BoursoBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AChat03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AChat03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -135,11 +142,11 @@ public class BoursoBankPDFExtractorTest
     @Test
     public void testCompteAChat04()
     {
-        BoursoBankPDFExtractor extractor = new BoursoBankPDFExtractor(new Client());
+        var extractor = new BoursoBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AChat04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AChat04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -166,11 +173,11 @@ public class BoursoBankPDFExtractorTest
     @Test
     public void testCompteAChat05()
     {
-        BoursoBankPDFExtractor extractor = new BoursoBankPDFExtractor(new Client());
+        var extractor = new BoursoBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AChat05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AChat05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -195,13 +202,81 @@ public class BoursoBankPDFExtractorTest
     }
 
     @Test
-    public void testCompteVente01()
+    public void testCompteAChat06()
     {
-        BoursoBankPDFExtractor extractor = new BoursoBankPDFExtractor(new Client());
+        var extractor = new BoursoBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vente01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AChat06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US5486611073"), hasWkn(null), hasTicker(null), //
+                        hasName("LOWE S"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-05-31T17:45:50"), hasShares(1.00), //
+                        hasSource("AChat06.txt"), //
+                        hasNote("non spécifié | Référence : 70Q065050p7509"), //
+                        hasAmount("EUR", 195.13), hasGrossValue("EUR", 188.18), //
+                        hasForexGrossValue("USD", 200.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 6.95))));
+    }
+
+    @Test
+    public void testCompteAChat06WithSecurityInEUR()
+    {
+        var security = new Security("LOWE S", CurrencyUnit.EUR);
+        security.setIsin("US5486611073");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new BoursoBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AChat06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-05-31T17:45:50"), hasShares(1.00), //
+                        hasSource("AChat06.txt"), //
+                        hasNote("non spécifié | Référence : 70Q065050p7509"), //
+                        hasAmount("EUR", 195.13), hasGrossValue("EUR", 188.18), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 6.95), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testCompteVente01()
+    {
+        var extractor = new BoursoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vente01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -228,11 +303,11 @@ public class BoursoBankPDFExtractorTest
     @Test
     public void testCompteVente02()
     {
-        BoursoBankPDFExtractor extractor = new BoursoBankPDFExtractor(new Client());
+        var extractor = new BoursoBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vente02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vente02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -259,11 +334,11 @@ public class BoursoBankPDFExtractorTest
     @Test
     public void testCompteVente03()
     {
-        BoursoBankPDFExtractor extractor = new BoursoBankPDFExtractor(new Client());
+        var extractor = new BoursoBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vente03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vente03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -290,11 +365,11 @@ public class BoursoBankPDFExtractorTest
     @Test
     public void testDividende01()
     {
-        BoursoBankPDFExtractor extractor = new BoursoBankPDFExtractor(new Client());
+        var extractor = new BoursoBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));

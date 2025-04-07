@@ -3897,7 +3897,7 @@ public class INGDiBaPDFExtractorTest
                         hasDate("2016-12-30"), hasShares(0), //
                         hasSource("GiroKontoauszug02.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 0.40 + 5.22), hasGrossValue("EUR", 7.18), //
+                        hasAmount("EUR", 4.06), hasGrossValue("EUR", 5.62), //
                         hasTaxes("EUR", (1.38 + 0.07 + 0.11)), hasFees("EUR", 0.00))));
     }
 
@@ -4091,8 +4091,93 @@ public class INGDiBaPDFExtractorTest
                         hasDate("2022-12-30"), hasShares(0), //
                         hasSource("ExtraKontoauszug02.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.03), //
+                        hasAmount("EUR", 0.01), hasGrossValue("EUR", 0.02), //
                         hasTaxes("EUR", 0.01), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testExtraKontoauszug03()
+    {
+        INGDiBaPDFExtractor extractor = new INGDiBaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ExtraKontoauszug03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(17L));
+        assertThat(results.size(), is(17));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2024-04-23"), hasAmount("EUR", 5000.00), //
+                        hasSource("ExtraKontoauszug03.txt"), hasNote("Gutschrift"))));
+
+        // assert transactions
+        assertThat(results, hasItem(removal(hasDate("2024-06-03"), hasAmount("EUR", 3500.00), //
+                        hasSource("ExtraKontoauszug03.txt"), hasNote("Überweisung"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2024-06-04"), hasAmount("EUR", 5300.00), //
+                        hasSource("ExtraKontoauszug03.txt"), hasNote("Lastschrift-Einzug"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2024-06-28"), hasAmount("EUR", 70000.00), //
+                        hasSource("ExtraKontoauszug03.txt"), hasNote("Gutschrift"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2024-07-09"), hasAmount("EUR", 48000.00), //
+                        hasSource("ExtraKontoauszug03.txt"), hasNote("Gutschrift"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2024-07-29"), hasAmount("EUR", 700.00), //
+                        hasSource("ExtraKontoauszug03.txt"), hasNote("Lastschrift-Einzug"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2024-08-05"), hasAmount("EUR", 10000.00), //
+                        hasSource("ExtraKontoauszug03.txt"), hasNote("Gutschrift"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2024-08-06"), hasAmount("EUR", 700.00), //
+                        hasSource("ExtraKontoauszug03.txt"), hasNote("Lastschrift-Einzug"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2024-09-02"), hasAmount("EUR", 500.00), //
+                        hasSource("ExtraKontoauszug03.txt"), hasNote("Gutschrift"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2024-09-02"), hasAmount("EUR", 200.00), //
+                        hasSource("ExtraKontoauszug03.txt"), hasNote("Gutschrift"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2024-10-02"), hasAmount("EUR", 500.00), //
+                        hasSource("ExtraKontoauszug03.txt"), hasNote("Lastschrift-Einzug"))));
+
+        // assert transactions
+        assertThat(results, hasItem(removal(hasDate("2024-10-21"), hasAmount("EUR", 500.00), //
+                        hasSource("ExtraKontoauszug03.txt"), hasNote("Überweisung"))));
+
+        // assert transactions
+        assertThat(results, hasItem(removal(hasDate("2024-10-23"), hasAmount("EUR", 25386.95), //
+                        hasSource("ExtraKontoauszug03.txt"), hasNote("Überweisung"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2024-12-03"), hasAmount("EUR", 500.00), //
+                        hasSource("ExtraKontoauszug03.txt"), hasNote("Lastschrift-Einzug"))));
+
+        // assert transactions
+        assertThat(results, hasItem(deposit(hasDate("2024-12-16"), hasAmount("EUR", 500.00), //
+                        hasSource("ExtraKontoauszug03.txt"), hasNote("Gutschrift"))));
+
+        // assert transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2024-12-30"), hasShares(0), //
+                        hasSource("ExtraKontoauszug03.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 272.47), hasGrossValue("EUR", 370.07), //
+                        hasTaxes("EUR", 92.52 + 5.08), hasFees("EUR", 0.00))));
     }
 
     @Test
@@ -4193,7 +4278,7 @@ public class INGDiBaPDFExtractorTest
                         hasDate("2023-12-31"), hasShares(0), //
                         hasSource("VLKontoauszug02.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 2.55), hasGrossValue("EUR", 3.25), //
+                        hasAmount("EUR", 1.85), hasGrossValue("EUR", 2.55), //
                         hasTaxes("EUR", (0.62 + 0.03 + 0.05)), hasFees("EUR", 0.00))));
     }
 
@@ -4226,7 +4311,7 @@ public class INGDiBaPDFExtractorTest
                         hasDate("2023-03-06"), hasShares(0), //
                         hasSource("VLKontoauszug03.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 0.21), hasGrossValue("EUR", 0.26), //
+                        hasAmount("EUR", 0.16), hasGrossValue("EUR", 0.21), //
                         hasTaxes("EUR", 0.05), hasFees("EUR", 0.00))));
 
         // assert transactions

@@ -1,0 +1,139 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Datum 30.12.2024
+Herrn Auszugsnummer 1
+UHBmDl rEwyGiyS Alter Saldo 0,00 Euro
+DFGSDGSDGR. 361 Neuer Saldo 1.272,47 Euro
+56786 IWYyFS
+dsjl Qu25 4829 9030 3163 0700 64
+BIC INGDDEFFXXX
+Seite 1 von 3
+Extra-Konto Nummer 4538260609
+Kontoauszug 2024
+Buchung Buchung / Verwendungszweck Betrag (EUR)
+Valuta
+23.04.2024 Gutschrift qaPHnx GoUBDjvD 5.000,00
+23.04.2024
+Referenz: 4f1e8f760587424d8b00a03bde1da5be
+02.05.2024 Wertpapierkauf -500,00
+06.05.2024 WP-ABRECHNUNG 0338216517001 Kauf ISIN IE00BFMXXD54 V.S+P500
+U.ETF DLA
+03.06.2024 Wertpapierkauf -500,00
+05.06.2024 WP-ABRECHNUNG 0342287697001 Kauf ISIN IE00BFMXXD54 V.S+P500
+U.ETF DLA
+03.06.2024 Ueberweisung qcAfBwsS -3.500,00
+03.06.2024
+04.06.2024 Lastschrift-Einzug mvezSX fnHyElys 5.300,00
+04.06.2024
+28.06.2024 Gutschrift GebjSw slEgOvkw 70.000,00
+28.06.2024
+Referenz: 39a75424df5843a39cd2ea82a2706a60
+01.07.2024 Wertpapierkauf -500,00
+03.07.2024 WP-ABRECHNUNG 0345303581001 Kauf ISIN IE00BFMXXD54 V.S+P500
+U.ETF BoY
+09.07.2024 Gutschrift VUpvDC JaFuUYIK 48.000,00
+09.07.2024
+Referenz: f132c1c508764af0b9e4d6c476fc1a1d
+11.07.2024 Wertpapierkauf -98.071,80
+15.07.2024 WP-ABRECHNUNG 0347475039001 Kauf ISIN IE00BFMXXD54 V.S+P500
+U.ETF DLA
+29.07.2024 Lastschrift-Einzug FxSkbY iomDFPRB 700,00
+29.07.2024
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzende des Aufsichtsrates: Susanne Klöß-Braekler · Vorstand: Lars Stoy (Vorsitzender),
+Michael Clijdesdale, Eddy Henning, Nikolaus Maximilian Linaric, Dr. Ralph Müller, Nurten Spitzer-Erdogan · Sitz: Frankfurt am Main · AG Frankfurt am Main · HRB 7727
+Steuernummer: 014 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+34EXMUSDG@#EG#D_T
+Extra-Konto Nummer 9140121344
+Kontoauszug 2024
+Datum 30.12.2024
+Seite 2 von 3
+Buchung Buchung / Verwendungszweck Betrag (EUR)
+Valuta
+01.08.2024 Wertpapierkauf -500,00
+05.08.2024 WP-ABRECHNUNG 0349715148001 Kauf ISIN IE00BFMXXD54 V.S+P500
+U.ETF DLA
+05.08.2024 Gutschrift BaTqSR MFOodQHf 10.000,00
+05.08.2024
+Referenz: 4e06a88f8430454285a8c5fa8da2c9ec
+06.08.2024 Lastschrift-Einzug sVBOEV POzGjMEG 700,00
+06.08.2024
+08.08.2024 Wertpapierkauf -9.941,25
+12.08.2024 WP-ABRECHNUNG 0351638414001 Kauf ISIN IE00BFMXXD54 V.S+P500
+U.ETF DLA
+02.09.2024 Gutschrift VqAUcs QXGCxRyX 500,00
+01.09.2024
+02.09.2024 Gutschrift gwiBrH DfcIXnTQ 200,00
+01.09.2024
+02.09.2024 Wertpapierkauf -500,00
+04.09.2024 WP-ABRECHNUNG 0354107542001 Kauf ISIN IE00BFMXXD54 V.S+P500
+U.ETF DLA
+01.10.2024 Wertpapierkauf -500,00
+03.10.2024 WP-ABRECHNUNG 0358107791001 Kauf ISIN IE00BFMXXD54 V.S+P500
+U.ETF DLA
+02.10.2024 Lastschrift-Einzug JfDzzg vrgJTHTd 500,00
+02.10.2024
+21.10.2024 Ueberweisung ubQMDV ytXpZLuE -500,00
+20.10.2024
+23.10.2024 Ueberweisung nMYTCeCd -25.386,95
+23.10.2024 Umbuchung
+01.11.2024 Wertpapierkauf -500,00
+05.11.2024 WP-ABRECHNUNG 0362495170001 Kauf ISIN IE00BFMXXD54 V.S+P500
+U.ETF DLA
+04.11.2024 Lastschrift-Einzug AKRJgc BmeNrNmx 500,00
+04.11.2024
+02.12.2024 Wertpapierkauf -500,00
+04.12.2024 WP-ABRECHNUNG 0367207375001 Kauf ISIN IE00BFMXXD54 V.S+P500
+U.ETF DLA
+03.12.2024 Lastschrift-Einzug FcHCSQ omZMOALT 500,00
+03.12.2024
+34EXMUDFSDFSDFSDF_T
+Extra-Konto Nummer 8443807893
+Kontoauszug 2024
+Datum 30.12.2024
+Seite 3 von 3
+Buchung Buchung / Verwendungszweck Betrag (EUR)
+Valuta
+16.12.2024 Gutschrift HzPljY PLWmJPVr 500,00
+16.12.2024
+Referenz: 8cac99136de9436f8fb9d5f4481fc553
+30.12.2024 Kapitalertragsteuer -92,52
+30.12.2024
+30.12.2024 Solidaritätszuschlag -5,08
+30.12.2024
+30.12.2024 Zinsertrag 370,07
+30.12.2024
+Neuer Saldo 1.272,47
+Abschluss für Konto 435345235235
+Zeitraum Zins p.a. Ertrag
+23.03.2024 bis 22.09.2024 3,300%  bis 250.000 Euro für das 1. Extra-Konto 340,26
+23.09.2024 bis 31.12.2024 1,250%  Zins 29,81
+Abschlussbetrag 370,07
+Kunden-Information
+Vorliegender Freistellungsauftrag 0,00
+Wir bedanken uns für Ihr Vertrauen und wünschen Ihnen ein gesundes und erfolgreiches Jahr 2025.
+Ihre ING
+34EXMU23423523523_T
+Bitte beachten Sie die nachstehenden Hinweise:
+Rechnungsabschluss (Kontoübersicht)
+Wir bitten Sie, den Kontoauszug gemäß Ziffer 11 Absatz 4 unserer Allgemeinen Geschäftsbedingungen (www.ing.de/agb/)
+auf Vollständigkeit und Richtigkeit zu prüfen und uns Einwendungen in Textform unverzüglich mitzuteilen.
+Rechnungsabschluss inkl. Saldenmitteilung
+Wir bitten Sie, den Saldo Ihres Kontos/die Salden Ihrer Konten zu prüfen und uns Einwendungen in Textform unverzüg-
+lich, spätestens innerhalb von 6 Wochen nach Zugang, mitzuteilen. Werden innerhalb der Frist keine Einwendungen
+vorgebracht, so gilt der Saldo/gelten die Salden wie oben aufgeführt entsprechend unseren Allgemeinen Geschäfts-
+bedingungen als von Ihnen anerkannt. Sie können zwar auch nach Fristablauf eine Berichtigung des Rechnungs-
+abschlusses verlangen, müssen dann aber beweisen, dass zu Unrecht Ihr Konto belastet oder eine Ihnen zustehende
+Gutschrift nicht erteilt wurde.
+Einlagensicherung
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen
+können dem "Informationsbogen für den Einleger" (siehe auch www.ing.de/einlagensicherung) entnommen werden.
+Neben der gesetzlichen Einlagensicherung nach dem Einlagensicherungsgesetz wirkt die ING außerdem am Einlagen-
+sicherungsfonds deutscher Banken (Einlagensicherungsfonds) mit. Dieser sichert nach Maßgabe seines Statuts Einlagen
+bis zu den Sicherungsgrenzen, wie in Ziffer 20 ("Schutz der Einlagen") unserer Allgemeinen Geschäftsbedingungen
+dargelegt. Weitere Informationen zum Schutz Ihrer Einlagen finden Sie unter: www.ing.de/einlagensicherung.
+Auszahlung bei der Kontolöschung des Extra-Kontos
+Das Guthaben wird grundsätzlich nur auf das hinterlegte Referenzkonto ausbezahlt.
+ING-DiBa AG

@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -25,6 +26,7 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendeTransaction();
+        addAdvanceTaxTransaction();
     }
 
     @Override
@@ -77,7 +79,7 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .oneOf(
-                                        // @formatter:off
+                        // @formatter:off
                                         // Handelsdatum: 24.05.2024
                                         // @formatter:on
                                         section -> section //
@@ -90,7 +92,8 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "time") //
                                                         .match("^Handelsdatum, Uhrzeit: (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
-                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
+                                                        .assign((t, v) -> t
+                                                                        .setDate(asDate(v.get("date"), v.get("time")))))
 
                         // @formatter:off
                         // Valuta Betrag zu Ihren Lasten
@@ -215,11 +218,82 @@ public class RaisinBankAGPDFExtractor extends AbstractPDFExtractor
         addTaxesSectionsTransaction(pdfTransaction, type);
     }
 
+    private void addAdvanceTaxTransaction()
+    {
+        final DocumentType type = new DocumentType("Vorabpauschale gem\\. §18 InvStG");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^Es wurde eine Steuervorauszahlung geleistet.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Wertpapierbezeichnung Vanguard FTSE N.America U.ETF Registered Shares USD Dis.oN
+                        // ISIN IE00BKX55R35
+                        // Höhe der Vorabpauschale pro Anteil 0,33 EUR
+                        // @formatter:on
+                        .section("name", "isin", "currency") //
+                        .match("^Wertpapierbezeichnung (?<name>.*)$") //
+                        .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                        .match("^.*Vorabpauschale pro Anteil [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // Bestand 257,84 Stück
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^Bestand (?<shares>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Tag des steuerpflichtigen Zuflusses 02.01.2025
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Tag des steuerpflichtigen Zuflusses (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Betrag zu Ihren Lasten -13,47 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^Betrag zu Ihren Lasten \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Dokument ID: 2B872G39-X017-1587-197O-25Ekj9aZ1321
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>Dokument ID: .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(t -> {
+                            TransactionItem item = new TransactionItem(t);
+
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                            return item;
+                        });
+    }
+
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
 
-                        // @formatter:off
+        // @formatter:off
                         // Einbehaltene deutsche Kapitalertragsteuer: 19,63 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //

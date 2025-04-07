@@ -1,0 +1,52 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Smartbroker AG
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Ritterstraße 11
+10969 Berlin
+Seite 1/1
+Berlin
+QrwzZe BVnQCyW 26.02.2025
+Günselstr. 79
+ItwPCS WOLHQAK
+20618 FPoJvOD Stamm-Nr.: 3232988    Portfolio: 1
+Depot-Nr.: 4940807759
+Vorgangs-Nr.: 442896746
+Referenz-Nr.: 724539191
+Wertpapierabrechnung: Kauf
+Auftragsdatum: 25.02.2025 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 18:26:11:00
+Nominale ISIN: IE00BM97MR69 WKN: A2P7TP Kurs 
+STK 44 Xtr.(IE)-US Trs.UlSh.Bd U.ETF EUR 57,378
+Reg. Shares 1C-USD o.N.
+Auftraggeber: Depotinhaber
+Art der Auftragserteilung: Orderroutingsystem
+Kurswert EUR 2.524,63
+Zu Lasten Konto 2536814359 Valuta: 27.02.2025 EUR 2.524,63
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung: Handels- Handels- 
+Nominale Kurs Ausführungsplatz datum uhrzeit 
+STK   44 EUR 57,378 GETTEX - MM Munich 25.02.2025 18:26:12:196
+Verwahrart: Wertpapierrechnung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 1419 MIC des Ausführungsplatzes: MUNC
+Lagerland: Luxemburg
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und Vollständigkeit. Etwaige 
+Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden. 
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Die Aushändigung des Fondsprospektes/Offering Memorandum sowie des aktuellen Rechenschaftsberichtes durch die Bank ist im Rahmen der 
+Kooperation der Bank mit Ihrem Finanzdienstleister nicht erforderlich bzw. wird von diesem übernommen. Sofern Sie einen Fondsprospekt 
+wünschen, wenden Sie sich daher bitte direkt an den Finanzdienstleister.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Dr. Louis Hagen • Amtsgericht München HRB 121537 • Sitz der Gesellschaft: 
+Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+WPABRECHNUNG-060.114

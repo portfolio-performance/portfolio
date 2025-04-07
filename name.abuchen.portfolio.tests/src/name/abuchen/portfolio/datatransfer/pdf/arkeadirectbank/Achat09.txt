@@ -1,0 +1,63 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+AVIS D'OPÉRATIONS M DUPONT BAPTISTE
+Au 06 mars 2025 77 AVENUE DU GENERAL DE GAULLE
+75000 PARIS
+VOTRE COMPTE PEA N° 012345678910 M DUPONT BAPTISTE
+Date
+opération Désignation Débit Crédit
+¢ TRACKER : AM.ETF PEA MSCI EUROPE UC.ETF (FR0013412038)
+06-03-2025 Référence 00F2010258400102
+09:04:19 Sens Achat - Exécution fractionnée
+Modalité Au marché
+Marché Comptant
+Lieu d'exécution EURONEXT PARIS
+Quantité 40 Cours 33,06 €
+Montant Brut 1 322,40 €
+Courtage et Commission 4,90 €
+Montant NET 1 327,30 € 1 327,30 €
+06-03-2025 Référence 00F2010319500103
+12:49:04 Sens Achat - Exécution unique
+Modalité Au marché
+Marché Comptant
+Lieu d'exécution EURONEXT PARIS
+Quantité 700 Cours 32,81 €
+Montant Brut 22 967,00 €
+Courtage et Commission 34,45 €
+Montant NET 23 001,45 € 23 001,45 €
+06-03-2025 Référence 00F2010481600104
+13:03:10 Sens Achat - Exécution unique
+Modalité Au marché
+Marché Comptant
+Lieu d'exécution EURONEXT PARIS
+Quantité 60 Cours 32,795 €
+Montant Brut 1 967,70 €
+Courtage et Commission 4,90 €
+Montant NET 1 972,60 € 1 972,60 €
+Duplicata Internet
+Page 1/2
+
+Fortuneo est une marque commerciale d'Arkéa Direct Bank. Arkéa Direct Bank, Société Anonyme à Directoire et Conseil de Surveillance
+au capital de 89 198 952 euros. RCS Nanterre 384 288 890. Siège social : Tour Trinity - 1bis, place de la Défense 92400 Courbevoie.
+Courtier en assurance n°ORIAS 07 008 441. Adresse postale : Fortuneo - Service Clients - TSA41707 - 35917 RENNES CEDEX 9.
+VOTRE COMPTE PEA N° 012345678910 M DUPONT BAPTISTE
+Date
+opération Désignation Débit Crédit
+¢ TRACKER : AM.MSCI WORLD UCITS ETF EUR C (LU1681043599)
+06-03-2025 Référence 00F2010542700105
+09:33:30 Sens Vente - Exécution unique
+Modalité Au marché
+Marché Comptant
+Lieu d'exécution EURONEXT PARIS
+Quantité 45 Cours 554,6843 €
+Montant Brut 24 960,79 €
+Courtage et Commission 37,44 €
+Montant NET 24 923,35 € 24 923,35 €
+Sous réserve de bonne fin.
+Lorsqu'elle s'applique, l'exonération de TVA relève de l'article 261 C du CGI.
+Sous réserve de son application à la présente transaction, la Taxe sur les Transactions Financières prévue par l'article 235 ter ZD du
+CGI est prélevée sur votre compte espèces et fait l'objet d'un avis récapitulatif spécifique.
+Duplicata Internet
+Page 2/2
