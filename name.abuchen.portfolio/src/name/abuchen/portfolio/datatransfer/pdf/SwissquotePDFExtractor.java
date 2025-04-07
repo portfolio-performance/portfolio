@@ -65,7 +65,6 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         .subject(() -> {
                             var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
-                            System.out.println("hier");
                             return portfolioTransaction;
                         })
 
