@@ -41,15 +41,12 @@ import static org.junit.Assert.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
@@ -88,18 +85,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKM4GZ66"));
         assertNull(security.getWkn());
@@ -108,7 +105,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -132,18 +129,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierKauf02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US08862E1091"));
         assertNull(security.getWkn());
@@ -152,7 +149,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -176,18 +173,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierKauf03()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US88160R1014"));
         assertNull(security.getWkn());
@@ -196,7 +193,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -220,18 +217,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierKauf04()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007472060"));
         assertNull(security.getWkn());
@@ -240,7 +237,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -264,18 +261,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierKauf05()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US7561091049"));
         assertNull(security.getWkn());
@@ -284,7 +281,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -308,18 +305,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierKauf06()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US88579Y1010"));
         assertNull(security.getWkn());
@@ -328,7 +325,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -352,18 +349,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierKauf07()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000BASF111"));
         assertNull(security.getWkn());
@@ -372,7 +369,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -396,18 +393,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierKauf08()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB0007980591"));
         assertNull(security.getWkn());
@@ -416,7 +413,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -440,11 +437,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierKauf09()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -471,11 +468,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierKauf10()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -502,11 +499,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierKauf11()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf11.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -533,11 +530,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierKauf12()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf12.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf12.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -564,11 +561,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierKauf13()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf13.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf13.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -595,11 +592,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierKauf14()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf14.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf14.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -626,11 +623,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierKauf15()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf15.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf15.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -657,11 +654,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierKauf16()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf16.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf16.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -688,11 +685,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSecurityBuy01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -719,11 +716,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSecurityBuy02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -750,11 +747,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testCompra01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Compra01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Compra01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -781,11 +778,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSecurityAcquisto01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Acquisto01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Acquisto01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -812,11 +809,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSecurityAcquisto02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Acquisto02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Acquisto02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -843,11 +840,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSecurityAcquisto03()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Acquisto03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Acquisto03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -876,7 +873,7 @@ public class TradeRepublicPDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -907,7 +904,7 @@ public class TradeRepublicPDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -938,7 +935,7 @@ public class TradeRepublicPDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -969,7 +966,7 @@ public class TradeRepublicPDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf04.txt"), errors);
 
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
@@ -999,7 +996,7 @@ public class TradeRepublicPDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf05.txt"), errors);
 
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
@@ -1029,7 +1026,7 @@ public class TradeRepublicPDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf06.txt"), errors);
 
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
@@ -1059,7 +1056,7 @@ public class TradeRepublicPDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf07.txt"), errors);
 
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
@@ -1089,7 +1086,7 @@ public class TradeRepublicPDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoKauf08.txt"), errors);
 
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
@@ -1119,7 +1116,7 @@ public class TradeRepublicPDFExtractorTest
     {
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoVerkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CryptoVerkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1148,18 +1145,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testAchat01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US88032Q1094"));
         assertNull(security.getWkn());
@@ -1168,7 +1165,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -1192,11 +1189,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testAchat02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1223,11 +1220,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testAchat03()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1254,11 +1251,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testAchat04()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1285,11 +1282,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testAchat05()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1316,11 +1313,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testAchat06()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Achat06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1347,11 +1344,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -1359,13 +1356,13 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(5L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-04-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(150.00))));
@@ -1416,11 +1413,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -1428,13 +1425,13 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-10-01T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(299.96))));
@@ -1445,11 +1442,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug03()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -1457,13 +1454,13 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(1L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-11-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.20))));
@@ -1474,11 +1471,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug04()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -1486,13 +1483,13 @@ public class TradeRepublicPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
+        var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
         assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(3L));
 
-        Item item = iter.next();
+        var item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2021-01-13T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(123.45))));
@@ -1523,11 +1520,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug05()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1586,11 +1583,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug06()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1685,11 +1682,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug07()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1844,11 +1841,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug08()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1929,11 +1926,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug09()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1972,11 +1969,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug10()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug10.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1999,11 +1996,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug11()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug11.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2058,11 +2055,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug12()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug12.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug12.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2127,11 +2124,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug13()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug13.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug13.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2192,11 +2189,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug14()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug14.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug14.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2229,11 +2226,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug15()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug15.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug15.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2272,11 +2269,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug16()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug16.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug16.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2305,11 +2302,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug17()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug17.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug17.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2326,11 +2323,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug18()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug18.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug18.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2353,11 +2350,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug19()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug19.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug19.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2426,11 +2423,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug20()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug20.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug20.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2451,11 +2448,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug21()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug21.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug21.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2576,11 +2573,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug22()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug22.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug22.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2597,11 +2594,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug23()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug23.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug23.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2630,11 +2627,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug24()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug24.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug24.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2659,11 +2656,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug25()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug25.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug25.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2688,11 +2685,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug26()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug26.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug26.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -2793,11 +2790,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug27()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug27.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug27.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -3020,11 +3017,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug28()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug28.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug28.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -3041,11 +3038,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug29()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug29.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug29.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -3066,11 +3063,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug30()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug30.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug30.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -3327,11 +3324,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug31()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug31.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug31.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -3406,11 +3403,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKontoauszug32()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug32.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug32.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -3427,11 +3424,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testReleveDeCompte01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ReleveDeCompte01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ReleveDeCompte01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -3472,11 +3469,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testReleveDeCompte02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ReleveDeCompte02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ReleveDeCompte02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -3507,11 +3504,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testReleveDeCompte03()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ReleveDeCompte03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ReleveDeCompte03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -3551,11 +3548,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testTransaccionesDeCuenta01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TransaccionesDeCuenta01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TransaccionesDeCuenta01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -4006,11 +4003,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testTransaccionesDeCuenta02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TransaccionesDeCuenta02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TransaccionesDeCuenta02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -4125,11 +4122,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testTransaccionesDeCuenta03()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TransaccionesDeCuenta03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TransaccionesDeCuenta03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -4212,11 +4209,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testTransaccionesDeCuenta04()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TransaccionesDeCuenta04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TransaccionesDeCuenta04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -4240,13 +4237,52 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
-    public void testAccountStatementSummary01()
+    public void testTransaccionesDeCuenta05()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatementSummary01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TransaccionesDeCuenta05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(5L));
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest(hasDate("2025-03-01"), hasAmount("EUR", 2.29), //
+                        hasSource("TransaccionesDeCuenta05.txt"), hasNote(null)))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-03-02"), hasAmount("EUR", 1.00), //
+                        hasSource("TransaccionesDeCuenta05.txt"), hasNote("HrhUNwjjL WMXjOiKn LL"))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-03-03"), hasAmount("EUR", 1425.00), //
+                        hasSource("TransaccionesDeCuenta05.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2025-03-03"), hasAmount("EUR", 2.69), //
+                        hasSource("TransaccionesDeCuenta05.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-03-22"), hasAmount("EUR", 51.00), //
+                        hasSource("TransaccionesDeCuenta05.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testAccountStatementSummary01()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AccountStatementSummary01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -4275,18 +4311,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSteuerabrechnung01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerabrechnung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerabrechnung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check tax refund transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
@@ -4309,11 +4345,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSteuerabrechnung02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerabrechnung02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerabrechnung02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -4340,11 +4376,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSteueroptimierung01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steueroptimierung01.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steueroptimierung01.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -4366,11 +4402,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSteueroptimierung02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steueroptimierung02.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steueroptimierung02.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -4392,11 +4428,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSteueroptimierung03()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steueroptimierung03.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steueroptimierung03.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -4418,18 +4454,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSteuerkorrektur01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerkorrektur01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerkorrektur01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US92936U1097"));
         assertNull(security.getWkn());
@@ -4438,7 +4474,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
@@ -4457,18 +4493,18 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6.94))));
     }
 
     @Test
     public void testStornoSteuerkorrektur01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StornoSteuerkorrektur01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StornoSteuerkorrektur01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -4498,17 +4534,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testStornoSteuerkorrektur01WithSecurityInUSD()
     {
-        Security security = new Security("W.P. Carey Inc. Registered Shares DL -,01", CurrencyUnit.EUR);
+        var security = new Security("W.P. Carey Inc. Registered Shares DL -,01", CurrencyUnit.EUR);
         security.setIsin("US92936U1097");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StornoSteuerkorrektur01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StornoSteuerkorrektur01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -4527,10 +4563,10 @@ public class TradeRepublicPDFExtractorTest
                                         hasAmount("EUR", 6.30), hasGrossValue("EUR", 6.30), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                                         check(tx -> {
-                                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                                            Account account = new Account();
+                                            var c = new CheckCurrenciesAction();
+                                            var account = new Account();
                                             account.setCurrencyCode(CurrencyUnit.EUR);
-                                            Status s = c.process((AccountTransaction) tx, account);
+                                            var s = c.process((AccountTransaction) tx, account);
                                             assertThat(s, is(Status.OK_STATUS));
                                         })))));
     }
@@ -4538,18 +4574,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierVerkauf01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("AU000000CUV3"));
         assertNull(security.getWkn());
@@ -4558,7 +4594,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -4582,18 +4618,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierVerkauf02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000TR95XU9"));
         assertNull(security.getWkn());
@@ -4602,7 +4638,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -4623,7 +4659,7 @@ public class TradeRepublicPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
 
         // check tax refund transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
@@ -4646,18 +4682,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierVerkauf03()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0007100000"));
         assertNull(security.getWkn());
@@ -4666,7 +4702,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -4687,7 +4723,7 @@ public class TradeRepublicPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
 
         // check tax refund transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
@@ -4710,18 +4746,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierVerkauf04()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B0M62Q58"));
         assertNull(security.getWkn());
@@ -4730,7 +4766,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -4754,18 +4790,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierVerkauf05()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A3H2333"));
         assertNull(security.getWkn());
@@ -4774,7 +4810,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -4798,18 +4834,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierVerkauf06()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A3H23V7"));
         assertNull(security.getWkn());
@@ -4818,7 +4854,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -4839,7 +4875,7 @@ public class TradeRepublicPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check fee transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
@@ -4862,18 +4898,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierVerkauf07()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0006070006"));
         assertNull(security.getWkn());
@@ -4882,7 +4918,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -4903,7 +4939,7 @@ public class TradeRepublicPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
 
         // check tax refund transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
@@ -4926,18 +4962,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierVerkauf08()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US6700024010"));
         assertNull(security.getWkn());
@@ -4946,7 +4982,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -4967,7 +5003,7 @@ public class TradeRepublicPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
 
         // check tax refund transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
@@ -4990,11 +5026,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierVerkauf09()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5021,11 +5057,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierVerkauf10()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf10.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5052,11 +5088,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testWertpapierVerkauf11()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf11.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5085,11 +5121,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSecuritySell01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sell01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sell01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5116,11 +5152,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testVenta01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Venta01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Venta01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5147,11 +5183,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testVente01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vente01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vente01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5178,11 +5214,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testRepayment01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Repayment01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Repayment01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5209,18 +5245,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testTilgung01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Tilgung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Tilgung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000TT22GS8"));
         assertNull(security.getWkn());
@@ -5229,7 +5265,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -5250,7 +5286,7 @@ public class TradeRepublicPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check tax refund transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
@@ -5273,18 +5309,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testTilgung02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Tilgung02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Tilgung02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE1234567891"));
         assertNull(security.getWkn());
@@ -5293,7 +5329,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -5317,11 +5353,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testAusbuchung01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ausbuchung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ausbuchung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5348,11 +5384,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividendeStorno01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5393,17 +5429,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividendeStorno01WithSecurityInEUR()
     {
-        Security security = new Security("Realty Income Corp. Registered Shares DL 1", CurrencyUnit.EUR);
+        var security = new Security("Realty Income Corp. Registered Shares DL 1", CurrencyUnit.EUR);
         security.setIsin("US7561091049");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -5422,10 +5458,10 @@ public class TradeRepublicPDFExtractorTest
                                         hasAmount("EUR", 30.17), hasGrossValue("EUR", 40.61), //
                                         hasTaxes("EUR", ((6.81 / 1.1105) + 4.09 + 0.22)), hasFees("EUR", 0.00), //
                                         check(tx -> {
-                                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                                            Account account = new Account();
+                                            var c = new CheckCurrenciesAction();
+                                            var account = new Account();
                                             account.setCurrencyCode(CurrencyUnit.EUR);
-                                            Status s = c.process((AccountTransaction) tx, account);
+                                            var s = c.process((AccountTransaction) tx, account);
                                             assertThat(s, is(Status.OK_STATUS));
                                         })))));
 
@@ -5439,10 +5475,10 @@ public class TradeRepublicPDFExtractorTest
                                         hasAmount("EUR", 0.36), hasGrossValue("EUR", 0.36), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                                         check(tx -> {
-                                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                                            Account account = new Account();
+                                            var c = new CheckCurrenciesAction();
+                                            var account = new Account();
                                             account.setCurrencyCode(CurrencyUnit.EUR);
-                                            Status s = c.process((AccountTransaction) tx, account);
+                                            var s = c.process((AccountTransaction) tx, account);
                                             assertThat(s, is(Status.OK_STATUS));
                                         })))));
     }
@@ -5450,18 +5486,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividendeStorno02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US36162J1060"));
         assertNull(security.getWkn());
@@ -5470,7 +5506,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check cancellation (Storno) transaction
-        TransactionItem cancellation = (TransactionItem) results.stream() //
+        var cancellation = (TransactionItem) results.stream() //
                         .filter(i -> i.isFailure()) //
                         .filter(TransactionItem.class::isInstance) //
                         .findFirst().orElseThrow(IllegalArgumentException::new);
@@ -5492,7 +5528,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = ((Transaction) cancellation.getSubject()).getUnit(Unit.Type.GROSS_VALUE)
+        var grossValueUnit = ((Transaction) cancellation.getSubject()).getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(37.92))));
     }
@@ -5500,11 +5536,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividendeStorno03()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -5533,18 +5569,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B652H904"));
         assertNull(security.getWkn());
@@ -5553,7 +5589,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5572,31 +5608,31 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(5.63))));
     }
 
     @Test
     public void testDividende01WithSecurityInEUR()
     {
-        Security security = new Security("iShsV-EM Dividend UCITS ETF Registered Shares USD o.N.", CurrencyUnit.EUR);
+        var security = new Security("iShsV-EM Dividend UCITS ETF Registered Shares USD o.N.", CurrencyUnit.EUR);
         security.setIsin("IE00B652H904");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5615,28 +5651,28 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testDividende02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US5949181045"));
         assertNull(security.getWkn());
@@ -5645,7 +5681,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5664,31 +5700,31 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4.60))));
     }
 
     @Test
     public void testDividende02WithSecurityInEUR()
     {
-        Security security = new Security("Microsoft Corp. Registered Shares DL-,00000625", CurrencyUnit.EUR);
+        var security = new Security("Microsoft Corp. Registered Shares DL-,00000625", CurrencyUnit.EUR);
         security.setIsin("US5949181045");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5707,28 +5743,28 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testDividende03()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US09247X1019"));
         assertNull(security.getWkn());
@@ -5737,7 +5773,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5756,31 +5792,31 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(3.30))));
     }
 
     @Test
     public void testDividende03WithSecurityInEUR()
     {
-        Security security = new Security("Blackrock Inc. Reg. Shares Class A DL -,01", CurrencyUnit.EUR);
+        var security = new Security("Blackrock Inc. Reg. Shares Class A DL -,01", CurrencyUnit.EUR);
         security.setIsin("US09247X1019");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5799,28 +5835,28 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testDividende04()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0F5UH1"));
         assertNull(security.getWkn());
@@ -5829,7 +5865,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5852,18 +5888,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende05()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US8754651060"));
         assertNull(security.getWkn());
@@ -5872,7 +5908,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5891,31 +5927,31 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(50.41))));
     }
 
     @Test
     public void testDividende05WithSecurityInEUR()
     {
-        Security security = new Security("Tanger Fact.Outlet Centrs Inc. Registered Shares DL -,01", CurrencyUnit.EUR);
+        var security = new Security("Tanger Fact.Outlet Centrs Inc. Registered Shares DL -,01", CurrencyUnit.EUR);
         security.setIsin("US8754651060");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5934,28 +5970,28 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testDividende06()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB00B03MLX29"));
         assertNull(security.getWkn());
@@ -5964,7 +6000,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -5983,31 +6019,31 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(80.00))));
     }
 
     @Test
     public void testDividende06WithSecurityInEUR()
     {
-        Security security = new Security("Royal Dutch Shell Reg. Shares Class A EO -,07", CurrencyUnit.EUR);
+        var security = new Security("Royal Dutch Shell Reg. Shares Class A EO -,07", CurrencyUnit.EUR);
         security.setIsin("GB00B03MLX29");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -6026,28 +6062,28 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testDividende07()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US9314271084"));
         assertNull(security.getWkn());
@@ -6056,7 +6092,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -6075,31 +6111,31 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.56))));
     }
 
     @Test
     public void testDividende07WithSecurityInEUR()
     {
-        Security security = new Security("Walgreens Boots Alliance Inc. Reg. Shares DL -,01", CurrencyUnit.EUR);
+        var security = new Security("Walgreens Boots Alliance Inc. Reg. Shares DL -,01", CurrencyUnit.EUR);
         security.setIsin("US9314271084");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -6118,28 +6154,28 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testDividende08()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B1FZS574"));
         assertNull(security.getWkn());
@@ -6148,7 +6184,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -6167,31 +6203,31 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(41.04))));
     }
 
     @Test
     public void testDividende08WithSecurityInEUR()
     {
-        Security security = new Security("iShsII-MSCI Turkey UCITS ETF Registered Shs USD (Dist) o.N.", CurrencyUnit.EUR);
+        var security = new Security("iShsII-MSCI Turkey UCITS ETF Registered Shs USD (Dist) o.N.", CurrencyUnit.EUR);
         security.setIsin("IE00B1FZS574");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -6210,28 +6246,28 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testDividende09()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE0005785604"));
         assertNull(security.getWkn());
@@ -6240,7 +6276,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -6263,18 +6299,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende10()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("FI0009005961"));
         assertNull(security.getWkn());
@@ -6283,7 +6319,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -6306,18 +6342,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende11()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("FI0009005987"));
         assertNull(security.getWkn());
@@ -6326,7 +6362,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -6349,18 +6385,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende12()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB00BH4HKS39"));
         assertNull(security.getWkn());
@@ -6369,7 +6405,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is("GBP"));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -6388,11 +6424,11 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of("GBP", Values.Amount.factorize(26.80))));
 
         // check for the reinvestment of dividends
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -6416,24 +6452,24 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende12WithSecurityInEUR()
     {
-        Security security = new Security("Vodafone Group PLC Registered Shares DL 0,2095238", CurrencyUnit.EUR);
+        var security = new Security("Vodafone Group PLC Registered Shares DL 0,2095238", CurrencyUnit.EUR);
         security.setIsin("GB00BH4HKS39");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -6453,7 +6489,7 @@ public class TradeRepublicPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check for the reinvestment of dividends
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -6473,28 +6509,28 @@ public class TradeRepublicPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testDividende13()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKBF6H24"));
         assertNull(security.getWkn());
@@ -6503,7 +6539,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -6526,18 +6562,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende14()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("US7960542030"));
         assertNull(security.getWkn());
@@ -6546,7 +6582,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -6565,31 +6601,31 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.12 / 1.0958))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.23))));
     }
 
     @Test
     public void testDividende14WithSecurityInEUR()
     {
-        Security security = new Security("Samsung SDI Co. Ltd. Reg.Shs(Sp.GDRs 144A)/4 SW5000", CurrencyUnit.EUR);
+        var security = new Security("Samsung SDI Co. Ltd. Reg.Shs(Sp.GDRs 144A)/4 SW5000", CurrencyUnit.EUR);
         security.setIsin("US7960542030");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -6608,21 +6644,21 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.12 / 1.0958))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testDividende15()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -6650,17 +6686,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende15WithSecurityInEUR()
     {
-        Security security = new Security("MSCI World USD (Dist)", CurrencyUnit.EUR);
+        var security = new Security("MSCI World USD (Dist)", CurrencyUnit.EUR);
         security.setIsin("IE00BK1PV551");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -6677,10 +6713,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 99.99), hasGrossValue("EUR", 112.21), //
                         hasTaxes("EUR", 11.11 + 1.11), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -6688,11 +6724,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende16()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende16.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende16.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -6729,17 +6765,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende16WithSecurityInEUR()
     {
-        Security security = new Security("Philip Morris Internat. Inc. Registered Shares o.N.", CurrencyUnit.EUR);
+        var security = new Security("Philip Morris Internat. Inc. Registered Shares o.N.", CurrencyUnit.EUR);
         security.setIsin("US7181721090");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende16.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende16.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -6756,10 +6792,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 63.31), hasGrossValue("EUR", 63.31), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
 
@@ -6771,10 +6807,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 5.43), hasGrossValue("EUR", 5.43), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -6782,11 +6818,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende17()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -6814,17 +6850,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende17WithSecurityInEUR()
     {
-        Security security = new Security("Apple Inc. Registered Shares o.N.", CurrencyUnit.EUR);
+        var security = new Security("Apple Inc. Registered Shares o.N.", CurrencyUnit.EUR);
         security.setIsin("US0378331005");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -6841,10 +6877,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 0.38), hasGrossValue("EUR", 0.44), //
                         hasTaxes("EUR", 0.06), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -6852,11 +6888,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende18()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende18.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende18.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -6883,11 +6919,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende19()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende19.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende19.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -6922,11 +6958,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende20()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende20.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende20.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -6954,17 +6990,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende20WithSecurityInEUR()
     {
-        Security security = new Security("Realty Income", CurrencyUnit.EUR);
+        var security = new Security("Realty Income", CurrencyUnit.EUR);
         security.setIsin("US7561091049");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende20.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende20.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -6981,10 +7017,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 4.97), hasGrossValue("EUR", 5.84), //
                         hasTaxes("EUR", 0.87), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -6992,11 +7028,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende21()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende21.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende21.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7023,11 +7059,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende22()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende22.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende22.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7054,11 +7090,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende23()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7086,17 +7122,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende23WithSecurityInEUR()
     {
-        Security security = new Security("UnitedHealth", CurrencyUnit.EUR);
+        var security = new Security("UnitedHealth", CurrencyUnit.EUR);
         security.setIsin("US91324P1021");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -7113,10 +7149,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 19.97), hasGrossValue("EUR", 23.49), //
                         hasTaxes("EUR", 3.78 / 1.073), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -7124,11 +7160,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende24()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7156,17 +7192,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende24WithSecurityInEUR()
     {
-        Security security = new Security("MSCI World USD (Dist)", CurrencyUnit.EUR);
+        var security = new Security("MSCI World USD (Dist)", CurrencyUnit.EUR);
         security.setIsin("IE00BK1PV551");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -7183,10 +7219,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 29.44), hasGrossValue("EUR", 36.10), //
                         hasTaxes("EUR", 6.32 + 0.34), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -7194,11 +7230,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende25()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7233,11 +7269,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende26()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende26.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende26.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7264,11 +7300,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende27()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende27.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende27.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7296,17 +7332,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende27WithSecurityInEUR()
     {
-        Security security = new Security("Microsoft", CurrencyUnit.EUR);
+        var security = new Security("Microsoft", CurrencyUnit.EUR);
         security.setIsin("US5949181045");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende27.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende27.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -7323,10 +7359,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 0.33), hasGrossValue("EUR", 0.39), //
                         hasTaxes("EUR", 0.06), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -7334,11 +7370,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende28()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende28.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende28.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7366,17 +7402,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividende28WithSecurityInEUR()
     {
-        Security security = new Security("NVIDIA", CurrencyUnit.EUR);
+        var security = new Security("NVIDIA", CurrencyUnit.EUR);
         security.setIsin("US67066G1040");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende28.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende28.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -7393,10 +7429,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 0.22), hasGrossValue("EUR", 0.29), //
                         hasTaxes("EUR", 0.07), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -7404,11 +7440,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7436,17 +7472,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend01WithSecurityInEUR()
     {
-        Security security = new Security("Apple Inc. Registered Shares o.N.", CurrencyUnit.EUR);
+        var security = new Security("Apple Inc. Registered Shares o.N.", CurrencyUnit.EUR);
         security.setIsin("US0378331005");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -7463,10 +7499,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -7474,11 +7510,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7506,17 +7542,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend02WithSecurityInEUR()
     {
-        Security security = new Security("Mondelez", CurrencyUnit.EUR);
+        var security = new Security("Mondelez", CurrencyUnit.EUR);
         security.setIsin("US6092071058");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -7533,10 +7569,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 0.66), hasGrossValue("EUR", 0.78), //
                         hasTaxes("EUR", 0.12), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -7544,11 +7580,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend03()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7575,11 +7611,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend04()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7607,17 +7643,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend04WithSecurityInEUR()
     {
-        Security security = new Security("Realty Income", CurrencyUnit.EUR);
+        var security = new Security("Realty Income", CurrencyUnit.EUR);
         security.setIsin("US7561091049");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -7634,10 +7670,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 3.11), hasGrossValue("EUR", 3.66), //
                         hasTaxes("EUR", 0.55), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -7645,11 +7681,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend05()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7677,17 +7713,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend05WithSecurityInEUR()
     {
-        Security security = new Security("Vici Properties", CurrencyUnit.EUR);
+        var security = new Security("Vici Properties", CurrencyUnit.EUR);
         security.setIsin("US9256521090");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -7704,10 +7740,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 9.86), hasGrossValue("EUR", 11.60), //
                         hasTaxes("EUR", 1.74), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -7715,11 +7751,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend06()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7747,17 +7783,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend06WithSecurityInEUR()
     {
-        Security security = new Security("Realty Income", CurrencyUnit.EUR);
+        var security = new Security("Realty Income", CurrencyUnit.EUR);
         security.setIsin("US7561091049");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -7774,10 +7810,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 3.09), hasGrossValue("EUR", 3.63), //
                         hasTaxes("EUR", 0.54), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -7785,11 +7821,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend07()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7817,17 +7853,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend07WithSecurityInEUR()
     {
-        Security security = new Security("Vici Properties", CurrencyUnit.EUR);
+        var security = new Security("Vici Properties", CurrencyUnit.EUR);
         security.setIsin("US9256521090");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -7844,10 +7880,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 9.86), hasGrossValue("EUR", 11.60), //
                         hasTaxes("EUR", 1.74), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -7855,11 +7891,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend08()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7887,17 +7923,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend08WithSecurityInEUR()
     {
-        Security security = new Security("Alphabet (A)", CurrencyUnit.EUR);
+        var security = new Security("Alphabet (A)", CurrencyUnit.EUR);
         security.setIsin("US02079K3059");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -7914,10 +7950,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 0.31), hasGrossValue("EUR", 0.37), //
                         hasTaxes("EUR", 0.06), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -7925,11 +7961,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend09()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -7957,17 +7993,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividend09WithSecurityInEUR()
     {
-        Security security = new Security("Realty Income", CurrencyUnit.EUR);
+        var security = new Security("Realty Income", CurrencyUnit.EUR);
         security.setIsin("US7561091049");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividend09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -7984,10 +8020,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 3.11), hasGrossValue("EUR", 3.66), //
                         hasTaxes("EUR", 0.55), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -7995,11 +8031,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividendo01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividendo01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividendo01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8027,17 +8063,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDividendo01WithSecurityInEUR()
     {
-        Security security = new Security("Enbridge Inc. Registered Shares o.N.", CurrencyUnit.EUR);
+        var security = new Security("Enbridge Inc. Registered Shares o.N.", CurrencyUnit.EUR);
         security.setIsin("CA29250N1050");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividendo01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividendo01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -8054,10 +8090,10 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 9.56), hasGrossValue("EUR", 12.74), //
                         hasTaxes("EUR", (4.65 / 1.46055)), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -8065,11 +8101,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDistribuzione01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Distribuzione01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Distribuzione01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8096,18 +8132,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testKaptialreduktion01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kapitalreduktion01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kapitalreduktion01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("CA0679011084"));
         assertNull(security.getWkn());
@@ -8116,7 +8152,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
 
         // check capital reduction transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -8135,31 +8171,31 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.18))));
     }
 
     @Test
     public void testKaptialreduktion01WithSecurityInEUR()
     {
-        Security security = new Security("Barrick Gold Corp. Registered Shares o.N.", CurrencyUnit.EUR);
+        var security = new Security("Barrick Gold Corp. Registered Shares o.N.", CurrencyUnit.EUR);
         security.setIsin("CA0679011084");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kapitalreduktion01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kapitalreduktion01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check dividends transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
@@ -8178,21 +8214,21 @@ public class TradeRepublicPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
-        CheckCurrenciesAction c = new CheckCurrenciesAction();
-        Account account = new Account();
+        var c = new CheckCurrenciesAction();
+        var account = new Account();
         account.setCurrencyCode(CurrencyUnit.EUR);
-        Status s = c.process(transaction, account);
+        var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
 
     @Test
     public void testKapitalerhoehungGegenBar01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KapitalerhoehungGegenBar01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KapitalerhoehungGegenBar01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8221,11 +8257,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testDepotuebertragEingehend()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotuebertragEingehend.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepotuebertragEingehend.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8254,11 +8290,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSpinOff01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SpinOff01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SpinOff01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8287,11 +8323,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testUmtausch01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umtausch01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umtausch01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8320,11 +8356,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testUmtausch02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umtausch02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umtausch02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8353,18 +8389,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testVorabpauschale01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00BKM4GZ66"));
         assertNull(security.getWkn());
@@ -8373,7 +8409,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check transaction
-        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
                         .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
@@ -8396,11 +8432,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testVorabpauschale02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8429,11 +8465,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testVorabpauschale03()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8460,11 +8496,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testVorabpauschale04()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8491,11 +8527,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testVorabpauschale05()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vorabpauschale05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8522,18 +8558,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSparplan01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B4L5Y983"));
         assertNull(security.getWkn());
@@ -8542,7 +8578,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8566,18 +8602,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSparplan02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("DE000A0H0744"));
         assertNull(security.getWkn());
@@ -8586,7 +8622,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8610,18 +8646,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSparplan03()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE0031442068"));
         assertNull(security.getWkn());
@@ -8630,7 +8666,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8654,18 +8690,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSparplan04()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("FR0000121014"));
         assertNull(security.getWkn());
@@ -8674,7 +8710,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8698,18 +8734,18 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSparplan05()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
-        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+        var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("NL0010273215"));
         assertNull(security.getWkn());
@@ -8718,7 +8754,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
-        BuySellEntry entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
+        var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -8742,11 +8778,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSparplan06()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8773,11 +8809,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSparplan07()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8804,11 +8840,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSparplan08()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8835,11 +8871,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSparplan09()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8866,11 +8902,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSparplan10()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan10.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8897,11 +8933,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSparplan11()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan11.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Sparplan11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8928,11 +8964,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testPianoDinvestimento01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PianoDinvestimento01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PianoDinvestimento01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8959,11 +8995,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testPlanDeInvestion01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PlanDeInvestion01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PlanDeInvestion01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -8990,11 +9026,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testFusion01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fusion01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Fusion01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(2L));
@@ -9038,11 +9074,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSplit01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Split01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Split01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -9071,11 +9107,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testZwangsuebernahme01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zwangsuebernahme01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zwangsuebernahme01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -9103,17 +9139,17 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testZwangsuebernahme01WithSecurityInEUR()
     {
-        Security security = new Security("Quantafuel AS Navne-Aksjer NK -,01", CurrencyUnit.EUR);
+        var security = new Security("Quantafuel AS Navne-Aksjer NK -,01", CurrencyUnit.EUR);
         security.setIsin("NO0010785967");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(client);
+        var extractor = new TradeRepublicPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zwangsuebernahme01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zwangsuebernahme01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -9130,8 +9166,8 @@ public class TradeRepublicPDFExtractorTest
                         hasAmount("EUR", 9.54), hasGrossValue("EUR", 9.54), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -9139,11 +9175,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSteuerlicherUmtausch01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerlicherUmtausch01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerlicherUmtausch01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -9172,11 +9208,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSteuerlicherUmtausch02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerlicherUmtausch02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerlicherUmtausch02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -9205,11 +9241,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testVergleichsverfahren01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vergleichsverfahren01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vergleichsverfahren01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(2L));
@@ -9253,11 +9289,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testTitelumtausch01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Titelumtausch01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Titelumtausch01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(2L));
@@ -9301,11 +9337,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testEinzahlungsabrechnung01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Einzahlungsabrechnung01.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Einzahlungsabrechnung01.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -9327,11 +9363,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testReglementDuVersement01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ReglementDuVersement01.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ReglementDuVersement01.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -9353,11 +9389,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testZinsabrechnung01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung01.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung01.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -9379,11 +9415,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testZinsabrechnung02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung02.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung02.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -9405,11 +9441,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testZinsabrechnung03()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung03.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung03.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -9431,11 +9467,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testZinsabrechnung04()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung04.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung04.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -9465,11 +9501,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testZinsabrechnung05()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung05.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung05.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -9491,11 +9527,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testZinsabrechnung06()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung06.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung06.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -9525,11 +9561,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testZinsabrechnung07()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -9550,11 +9586,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testZinsabrechnung08()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung08.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung08.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -9584,11 +9620,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testRapportDInterets01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "RapportDInterets01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "RapportDInterets01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -9609,11 +9645,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testRescontoInteressiMaturati01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "RescontoInteressiMaturati01.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "RescontoInteressiMaturati01.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -9635,11 +9671,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testInterestInvoice01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "InterestInvoice01.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "InterestInvoice01.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -9661,11 +9697,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testInterestInvoice02()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "InterestInvoice02.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "InterestInvoice02.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -9688,11 +9724,11 @@ public class TradeRepublicPDFExtractorTest
     @Test
     public void testSynthese01()
     {
-        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+        var extractor = new TradeRepublicPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Synthese01.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Synthese01.txt"),
                         errors);
 
         assertThat(errors, empty());
