@@ -159,7 +159,7 @@ public class BSDEXPDFExtractor extends AbstractPDFExtractor
                         .match("^([a-f0-9\\-]+) (?<type>Einzahlung|Auszahlung) (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
                         .match("^([a-f0-9\\-\\s]+)?(?<time>[\\d]{2}\\:[\\d]{2}\\:[\\d]{2}).*") //
                         .assign((t, v) -> {
-                            // Is type --> "-" change from DEPOSIT to REMOVAL
+                            // Is type --> "Auszahlung" change from DEPOSIT to REMOVAL
                             if ("Auszahlung".equals(v.get("type")))
                                 t.setType(AccountTransaction.Type.REMOVAL);
 
