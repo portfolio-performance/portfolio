@@ -1,0 +1,14 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+VORNAME(N) NACHNAME
+(mail@mail.com)
+01.01.2024 00:00 - 20.03.2025 17:33
+Transaktionshistorie
+ID Typ Ausführung eingehender eingehendes ausgehender ausgehendes Transaktionsentgel Entgeltwährun Sender Empfänger
+Betrag Asset Betrag Asset t g
+d207c7f3-ebd2-416c-b451-34353cfcc23d Kauf 30.04.2024 0.0001283 BTC 7.18 EUR 0.01 EUR
+19:16:59
+20.03.2025 17:33
+Seite 1 / 1
