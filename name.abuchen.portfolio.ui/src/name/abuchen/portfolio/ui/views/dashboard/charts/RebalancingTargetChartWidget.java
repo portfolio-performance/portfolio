@@ -15,21 +15,21 @@ import name.abuchen.portfolio.ui.views.dashboard.ClientFilterConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
 import name.abuchen.portfolio.ui.views.dashboard.TaxonomyConfig;
-import name.abuchen.portfolio.ui.views.taxonomy.DonutChartBuilder;
+import name.abuchen.portfolio.ui.views.taxonomy.TargetsDonutChartBuilder;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel;
 
 
-public class TaxonomyChartWidget extends CircularChartWidget<TaxonomyModel>
+public class RebalancingTargetChartWidget extends CircularChartWidget<TaxonomyModel>
 {
-    private DonutChartBuilder builder = new DonutChartBuilder();
+    private TargetsDonutChartBuilder builder = new TargetsDonutChartBuilder();
 
-    public TaxonomyChartWidget(Widget widget, DashboardData data)
+    public RebalancingTargetChartWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
 
         addConfigAfter(ReportingPeriodConfig.class, new TaxonomyConfig(this));
         addConfigAfter(ClientFilterConfig.class, new IncludeUnassignedCategoryConfig(this, true));
-        addConfigAfter(ClientFilterConfig.class, new IncludeSecuritiesConfig(this, true));
+        addConfigAfter(ClientFilterConfig.class, new IncludeSecuritiesConfig(this, false));
     }
 
     @Override
@@ -54,11 +54,11 @@ public class TaxonomyChartWidget extends CircularChartWidget<TaxonomyModel>
                 if (filteredClient != getClient())
                     model.updateClientSnapshot(filteredClient);
 
-                model.setExcludeUnassignedCategoryInCharts(
-                                !get(IncludeUnassignedCategoryConfig.class).isUnassignedCategoryIncluded());
+                model.setExcludeUnassignedCategoryInCharts(true);
                 
                 model.setExcludeSecuritiesInPieChart(
                                 !get(IncludeSecuritiesConfig.class).isSecuritiesIncluded());
+
                 return model;
             }
             else
@@ -73,7 +73,7 @@ public class TaxonomyChartWidget extends CircularChartWidget<TaxonomyModel>
     {
         if (model != null)
         {
-            builder.createCircularSeries(getChart(), model);
+            builder.createCircularSeries(getChart(), model); 
         }
         else
         {
