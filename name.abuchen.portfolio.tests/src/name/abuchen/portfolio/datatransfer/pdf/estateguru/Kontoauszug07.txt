@@ -1,0 +1,3234 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.72.2
+-----------------------------------------
+Transaktionsbericht
+ 
+OehHk zebSww (Investor) 
+ 
+Anfangssaldo € 0,00
+Zins € 455,61
+Investition € -7.565,00
+Hauptbetrag € 4.103,85
+Einzahlung € 3.000,00
+Gebühr € -6,65
+Strafe € 2,27
+Entschädigung € 0,55
+Empfehlung € 9,70
+Endsaldo € 0,33
+ 
+ 
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#89351822
+11.12.2024, 19:01 11.12.2024, 19:01 Investition Genehmigt Überbrückungskredit (€ -51,00) € 0,33
+(Estland)
+#7101
+Überbrückung
+30.10.2024, 03:00 11.12.2024, 05:00 Zins Genehmigt skredit - € 0,63 € 51,33
+7.Stufe
+(Estland)
+#7101
+Überbrückung
+30.10.2024, 03:00 11.12.2024, 05:00 Hauptbetrag Genehmigt skredit - € 50,00 € 50,70
+7.Stufe
+(Estland)
+#29936148
+10.12.2024, 16:21 10.12.2024, 16:21 Investition Ausstehend Entwicklungskredit - 10.Stufe (€ -53,00) € 0,70
+(Estland)
+#98586056
+Überbrückung
+10.12.2024, 03:00 10.12.2024, 05:00 Zins Genehmigt skredit - € 0,49 € 53,70
+5.Stufe
+(Portugal)
+#81199125
+08.12.2024, 22:36 08.12.2024, 22:36 Investition Ausstehend Entwicklungskredit - 1.Stufe (€ -53,00) € 53,21
+(Litauen)
+#09638875
+06.12.2024, 13:22 06.12.2024, 13:22 Investition Genehmigt Entwicklungskredit - 3.Stufe (€ -50,00) € 106,21
+(Litauen)
+#29936148
+06.12.2024, 09:24 06.12.2024, 09:24 Investition Genehmigt Entwicklungskredit - 9.Stufe (€ -75,00) € 156,21
+(Estland)
+#15885907
+06.12.2024, 03:00 06.12.2024, 05:00 Zins Genehmigt Entwicklungskredit - 4.Stufe € 1,71 € 231,21
+(Estland)
+#0638
+Überbrückung
+05.12.2024, 22:53 05.12.2024, 22:53 Investition Ausstehend skredit - (€ -75,00) € 229,50
+27.Stufe
+(Lettland)
+#6687
+Überbrückung
+04.12.2024, 03:00 05.12.2024, 05:00 Zins Genehmigt skredit - € 1,02 € 304,50
+37.Stufe
+(Finnland)
+#6687
+Überbrückung
+04.12.2024, 03:00 05.12.2024, 05:00 Zins Genehmigt skredit - € 2,09 € 303,48
+33.Stufe
+(Finnland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#6687
+Überbrückung
+04.12.2024, 03:00 05.12.2024, 05:00 Zins Genehmigt skredit - € 1,91 € 301,39
+30.Stufe
+(Finnland)
+#6687
+Überbrückung
+04.12.2024, 03:00 05.12.2024, 05:00 Zins Genehmigt skredit - € 1,71 € 299,48
+13.Stufe
+(Finnland)
+#6687
+Überbrückung
+30.11.2024, 03:00 05.12.2024, 05:00 Hauptbetrag Genehmigt skredit - € 61,00 € 297,77
+37.Stufe
+(Finnland)
+#6687
+Überbrückung
+30.11.2024, 03:00 05.12.2024, 05:00 Hauptbetrag Genehmigt skredit - € 75,00 € 236,77
+33.Stufe
+(Finnland)
+#6687
+Überbrückung
+30.11.2024, 03:00 05.12.2024, 05:00 Hauptbetrag Genehmigt skredit - € 75,00 € 161,77
+30.Stufe
+(Finnland)
+#6687
+Überbrückung
+30.11.2024, 03:00 05.12.2024, 05:00 Hauptbetrag Genehmigt skredit - € 75,00 € 86,77
+13.Stufe
+(Finnland)
+05.12.2024, 00:30 05.12.2024, 00:30 Vermögensverwaltungsgebühr Genehmigt (€ -1,07) € 11,77
+#06434872
+03.12.2024, 12:37 03.12.2024, 12:37 Investition Genehmigt Geschäftskredit - 1.Stufe (€ -75,00) € 12,84
+(Lettland)
+#2315
+30.11.2024, 03:00 03.12.2024, 05:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 2,02 € 87,84
+(Litauen)
+#2315
+09.12.2024, 03:00 03.12.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 2.Stufe € 75,00 € 85,82
+(Litauen)
+#33414354
+22.11.2024, 03:00 03.12.2024, 05:00 Zins Genehmigt Geschäftskredit - 3.Stufe € 0,66 € 10,82
+(Estland)
+#0638
+Überbrückung
+30.11.2024, 03:00 02.12.2024, 05:00 Zins Genehmigt skredit - € 1,26 € 10,16
+23.Stufe
+(Lettland)
+#99942488
+28.11.2024, 03:00 29.11.2024, 05:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 0,62 € 8,90
+(Finnland)
+#99942488
+28.11.2024, 03:00 29.11.2024, 05:00 Zins Genehmigt Entwicklungskredit - 5.Stufe € 0,62 € 8,28
+(Finnland)
+#99942488
+28.11.2024, 03:00 29.11.2024, 05:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 0,42 € 7,66
+(Finnland)
+#76652803
+Überbrückung
+29.11.2024, 02:45 29.11.2024, 02:45 Investition Genehmigt skredit - (€ -75,00) € 7,24
+1.Stufe
+(Litauen)
+#29936148
+27.11.2024, 03:00 28.11.2024, 05:00 Zins Genehmigt Entwicklungskredit - 4.Stufe € 0,59 € 82,24
+(Estland)
+#72947666
+27.11.2024, 03:00 28.11.2024, 05:00 Zins Genehmigt Entwicklungskredit - 13.Stufe € 0,57 € 81,65
+(Finnland)
+#86757244
+Überbrückung
+26.11.2024, 03:00 28.11.2024, 05:00 Zins Genehmigt skredit - € 0,42 € 81,08
+1.Stufe
+(Lettland)
+#3463
+10.11.2023, 03:00 28.11.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 40.Stufe € 52,55 € 80,66
+(Estland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 2
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#27157720
+22.11.2024, 03:00 28.11.2024, 05:00 Zins Genehmigt Geschäftskredit - 5.Stufe € 0,70 € 28,11
+(Estland)
+#27157720
+22.11.2024, 03:00 28.11.2024, 05:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 0,70 € 27,41
+(Estland)
+#18180689
+Überbrückung
+20.11.2024, 03:00 26.11.2024, 05:00 Zins Genehmigt skredit - € 0,53 € 26,71
+1.Stufe
+(Lettland)
+#96638141
+Überbrückung
+26.11.2024, 03:00 26.11.2024, 05:00 Zins Genehmigt skredit - € 0,49 € 26,18
+1.Stufe
+(Estland)
+#4467
+23.11.2024, 03:00 26.11.2024, 05:00 Hauptbetrag Genehmigt Geschäftskredit - 6.Stufe € 2,65 € 25,69
+(Estland)
+#4467
+23.11.2024, 03:00 26.11.2024, 05:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,02 € 23,04
+(Estland)
+#78293043
+Überbrückung
+22.11.2024, 03:00 25.11.2024, 05:00 Zins Genehmigt skredit - € 0,09 € 23,02
+1.Stufe
+(Litauen)
+#78293043
+Überbrückung
+22.11.2024, 03:00 25.11.2024, 05:00 Hauptbetrag Genehmigt skredit - € 22,28 € 22,93
+1.Stufe
+(Litauen)
+#61199149
+Überbrückung
+25.11.2024, 03:00 25.11.2024, 05:00 Zins Genehmigt skredit - € 0,61 € 0,65
+1.Stufe
+(Estland)
+#77405413
+21.11.2024, 18:55 21.11.2024, 18:55 Investition Ausstehend Entwicklungskredit - 1.Stufe (€ -70,00) € 0,04
+(Lettland)
+#9343
+Überbrückung
+19.11.2024, 03:00 21.11.2024, 05:00 Zins Genehmigt skredit - € 0,51 € 70,04
+21.Stufe
+(Litauen)
+#9343
+Überbrückung
+30.05.2025, 03:00 21.11.2024, 05:00 Hauptbetrag Genehmigt skredit - € 24,03 € 69,53
+21.Stufe
+(Litauen)
+#19725702
+21.11.2024, 03:00 21.11.2024, 05:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 1,78 € 45,50
+(Lettland)
+#51800484
+19.11.2024, 03:00 19.11.2024, 05:00 Zins Genehmigt Entwicklungskredit - 1.Stufe € 2,06 € 43,72
+(Estland)
+#99942488
+28.10.2024, 03:00 14.11.2024, 05:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 0,80 € 41,66
+(Finnland)
+#99942488
+28.10.2024, 03:00 14.11.2024, 05:00 Zins Genehmigt Entwicklungskredit - 5.Stufe € 0,62 € 40,86
+(Finnland)
+#99942488
+28.10.2024, 03:00 14.11.2024, 05:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 0,42 € 40,24
+(Finnland)
+#40315710
+13.11.2024, 20:44 13.11.2024, 20:44 Investition Genehmigt Geschäftskredit - 1.Stufe (€ -75,00) € 39,82
+(Lettland)
+#15811410
+13.11.2024, 20:41 13.11.2024, 20:41 Investition Genehmigt Geschäftskredit - 1.Stufe (€ -75,00) € 114,82
+(Litauen)
+#1782
+11.11.2024, 03:00 13.11.2024, 05:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 14,36 € 189,82
+(Estland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 3
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#3080
+11.11.2024, 03:00 13.11.2024, 05:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 14,42 € 175,46
+(Estland)
+#1782
+07.12.2024, 03:00 13.11.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 2.Stufe € 75,00 € 161,04
+(Estland)
+#3080
+28.11.2024, 03:00 13.11.2024, 05:00 Entschädigung Genehmigt Entwicklungskredit - 2.Stufe € 0,01 € 86,04
+(Estland)
+#3080
+28.11.2024, 03:00 13.11.2024, 05:00 Strafe Genehmigt Entwicklungskredit - 2.Stufe € 0,16 € 86,03
+(Estland)
+#3080
+28.11.2024, 03:00 13.11.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 2.Stufe € 75,00 € 85,87
+(Estland)
+#23194181
+Überbrückung
+12.11.2024, 03:00 12.11.2024, 05:00 Zins Genehmigt skredit - € 1,49 € 10,87
+1.Stufe
+(Litauen)
+#98586056
+Überbrückung
+10.11.2024, 03:00 11.11.2024, 05:00 Zins Genehmigt skredit - € 0,49 € 9,38
+5.Stufe
+(Portugal)
+#78293043
+Überbrückung
+08.11.2024, 03:00 09.11.2024, 05:00 Zins Genehmigt skredit - € 0,81 € 8,89
+1.Stufe
+(Litauen)
+#61199149
+Überbrückung
+06.11.2024, 22:52 06.11.2024, 22:52 Investition Genehmigt skredit - (€ -75,00) € 8,08
+2.Stufe
+(Estland)
+#9343
+Überbrückung
+05.11.2024, 03:00 06.11.2024, 05:00 Zins Genehmigt skredit - € 0,09 € 83,08
+21.Stufe
+(Litauen)
+#9343
+Überbrückung
+05.11.2024, 03:00 06.11.2024, 05:00 Hauptbetrag Genehmigt skredit - € 5,25 € 82,99
+21.Stufe
+(Litauen)
+#6333
+13.10.2024, 03:00 06.11.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 39.Stufe € 37,97 € 77,74
+(Litauen)
+#33414354
+22.10.2024, 03:00 06.11.2024, 05:00 Zins Genehmigt Geschäftskredit - 1.Stufe € 0,66 € 39,77
+(Estland)
+#27157720
+22.10.2024, 03:00 05.11.2024, 05:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 0,70 € 39,11
+(Estland)
+#4467
+28.10.2024, 03:00 05.11.2024, 05:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,03 € 38,41
+(Estland)
+05.11.2024, 00:32 05.11.2024, 00:32 Vermögensverwaltungsgebühr Genehmigt (€ -0,98) € 38,38
+#7682
+31.10.2024, 03:00 31.10.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 2.Stufe € 3,77 € 39,36
+(Lettland)
+#18180689
+Überbrückung
+20.10.2024, 03:00 29.10.2024, 05:00 Zins Genehmigt skredit - € 0,53 € 35,59
+1.Stufe
+(Lettland)
+#72947666
+27.10.2024, 03:00 28.10.2024, 05:00 Zins Genehmigt Entwicklungskredit - 13.Stufe € 0,57 € 35,06
+(Finnland)
+#96638141
+Überbrückung
+26.10.2024, 03:00 28.10.2024, 05:00 Zins Genehmigt skredit - € 0,49 € 34,49
+1.Stufe
+(Estland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 4
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#86757244
+Überbrückung
+26.10.2024, 03:00 28.10.2024, 05:00 Zins Genehmigt skredit - € 0,42 € 34,00
+1.Stufe
+(Lettland)
+#6687
+Überbrückung
+06.10.2024, 03:00 28.10.2024, 05:00 Zins Genehmigt skredit - € 0,53 € 33,58
+37.Stufe
+(Finnland)
+#02205604
+Überbrückung
+26.10.2024, 03:00 28.10.2024, 05:00 Zins Genehmigt skredit - € 1,88 € 33,05
+1.Stufe
+(Litauen)
+#9343
+Überbrückung
+23.10.2024, 03:00 24.10.2024, 06:00 Zins Genehmigt skredit - € 0,01 € 31,17
+21.Stufe
+(Litauen)
+#9343
+Überbrückung
+23.10.2024, 03:00 24.10.2024, 06:00 Hauptbetrag Genehmigt skredit - € 0,78 € 31,16
+21.Stufe
+(Litauen)
+#27157720
+22.10.2024, 03:00 24.10.2024, 06:00 Zins Genehmigt Geschäftskredit - 5.Stufe € 0,70 € 30,38
+(Estland)
+#33414354
+22.10.2024, 03:00 24.10.2024, 06:00 Zins Genehmigt Geschäftskredit - 3.Stufe € 0,66 € 29,68
+(Estland)
+#61199149
+Überbrückung
+22.10.2024, 10:39 22.10.2024, 10:39 Investition Genehmigt skredit - (€ -75,00) € 29,02
+1.Stufe
+(Estland)
+#93822699
+21.10.2024, 03:00 22.10.2024, 06:00 Zins Genehmigt Entwicklungskredit - 3.Stufe € 0,26 € 104,02
+(Estland)
+#7682
+22.10.2024, 03:00 22.10.2024, 06:00 Entschädigung Genehmigt Entwicklungskredit - 2.Stufe € 0,29 € 103,76
+(Lettland)
+#7682
+22.10.2024, 03:00 22.10.2024, 06:00 Strafe Genehmigt Entwicklungskredit - 2.Stufe € 1,21 € 103,47
+(Lettland)
+#67615117
+22.10.2024, 03:00 22.10.2024, 06:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 0,81 € 102,26
+(Lettland)
+#67615117
+22.10.2024, 03:00 22.10.2024, 06:00 Hauptbetrag Genehmigt Geschäftskredit - 2.Stufe € 52,70 € 101,45
+(Lettland)
+#93822699
+10.12.2024, 03:00 22.10.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 3.Stufe € 20,23 € 48,75
+(Estland)
+#2288
+Überbrückung
+18.10.2024, 03:00 18.10.2024, 06:00 Zins Genehmigt skredit - € 1,88 € 28,52
+7.Stufe
+(Litauen)
+#9343
+Überbrückung
+15.10.2024, 03:00 15.10.2024, 06:00 Zins Genehmigt skredit - € 0,06 € 26,64
+21.Stufe
+(Litauen)
+#9343
+Überbrückung
+15.10.2024, 03:00 15.10.2024, 06:00 Hauptbetrag Genehmigt skredit - € 4,51 € 26,58
+21.Stufe
+(Litauen)
+#98586056
+Überbrückung
+10.10.2024, 03:00 10.10.2024, 06:00 Zins Genehmigt skredit - € 0,49 € 22,07
+5.Stufe
+(Portugal)
+#27157720
+22.09.2024, 03:00 07.10.2024, 06:00 Zins Genehmigt Geschäftskredit - 5.Stufe € 0,70 € 21,58
+(Estland)
+#33414354
+22.09.2024, 03:00 07.10.2024, 06:00 Zins Genehmigt Geschäftskredit - 1.Stufe € 0,66 € 20,88
+(Estland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 5
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#4467
+28.09.2024, 03:00 07.10.2024, 06:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,03 € 20,22
+(Estland)
+05.10.2024, 00:42 05.10.2024, 00:42 Vermögensverwaltungsgebühr Genehmigt (€ -0,88) € 20,19
+#5505
+Überbrückung
+04.10.2024, 03:00 04.10.2024, 06:00 Zins Genehmigt skredit - € 1,88 € 21,07
+4.Stufe
+(Litauen)
+#1606
+29.09.2024, 03:00 04.10.2024, 06:00 Zins Genehmigt Entwicklungskredit - 14.Stufe € 8,25 € 19,19
+(Lettland)
+#3598
+30.09.2024, 03:00 02.10.2024, 06:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,18 € 10,94
+(Litauen)
+#3598
+06.10.2024, 03:00 02.10.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 6,52 € 10,76
+(Litauen)
+#72947666
+30.09.2024, 03:00 30.09.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 13.Stufe € 2,29 € 4,24
+(Finnland)
+#99942488
+28.09.2024, 03:00 30.09.2024, 06:00 Zins Genehmigt Entwicklungskredit - 5.Stufe € 0,99 € 1,95
+(Finnland)
+#99942488
+28.09.2024, 03:00 30.09.2024, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 0,42 € 0,96
+(Finnland)
+#29936148
+27.09.2024, 18:37 27.09.2024, 18:37 Investition Genehmigt Entwicklungskredit - 4.Stufe (€ -50,00) € 0,54
+(Estland)
+#72947666
+27.09.2024, 03:00 27.09.2024, 06:00 Zins Genehmigt Entwicklungskredit - 13.Stufe € 0,62 € 50,54
+(Finnland)
+#96638141
+Überbrückung
+26.09.2024, 03:00 27.09.2024, 06:00 Zins Genehmigt skredit - € 0,49 € 49,92
+1.Stufe
+(Estland)
+#86757244
+Überbrückung
+26.09.2024, 03:00 27.09.2024, 06:00 Zins Genehmigt skredit - € 0,42 € 49,43
+1.Stufe
+(Lettland)
+#78293043
+Überbrückung
+25.09.2024, 03:00 26.09.2024, 06:00 Zins Genehmigt skredit - € 0,23 € 49,01
+1.Stufe
+(Litauen)
+#78293043
+Überbrückung
+25.09.2024, 03:00 26.09.2024, 06:00 Hauptbetrag Genehmigt skredit - € 17,51 € 48,78
+1.Stufe
+(Litauen)
+#46500915
+Überbrückung
+25.09.2024, 03:00 26.09.2024, 06:00 Zins Genehmigt skredit - € 1,69 € 31,27
+2.Stufe
+(Litauen)
+#33414354
+22.09.2024, 03:00 25.09.2024, 06:00 Zins Genehmigt Geschäftskredit - 3.Stufe € 0,66 € 29,58
+(Estland)
+#9147
+24.09.2024, 03:00 24.09.2024, 06:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 0,57 € 28,92
+(Lettland)
+#9147
+28.09.2024, 03:00 24.09.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 6.Stufe € 21,95 € 28,35
+(Lettland)
+#27157720
+22.09.2024, 03:00 24.09.2024, 06:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 0,70 € 6,40
+(Estland)
+#0638
+Überbrückung
+23.09.2024, 22:38 23.09.2024, 22:38 Investition Genehmigt skredit - (€ -75,00) € 5,70
+25.Stufe
+(Lettland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 6
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#6687
+Überbrückung
+20.09.2024, 03:00 23.09.2024, 06:00 Zins Genehmigt skredit - € 2,23 € 80,70
+13.Stufe
+(Finnland)
+#3239
+Überbrückung
+20.09.2024, 03:00 22.09.2024, 06:00 Zins Genehmigt skredit - € 1,15 € 78,47
+3.Stufe
+(Lettland)
+#3239
+Überbrückung
+30.09.2024, 03:00 22.09.2024, 06:00 Hauptbetrag Genehmigt skredit - € 75,00 € 77,32
+3.Stufe
+(Lettland)
+#2315
+09.09.2024, 03:00 20.09.2024, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 2,08 € 2,32
+(Litauen)
+#51800484
+19.09.2024, 18:40 19.09.2024, 18:40 Investition Genehmigt Entwicklungskredit - 3.Stufe (€ -56,00) € 0,24
+(Estland)
+#8616
+18.09.2024, 03:00 19.09.2024, 06:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 0,61 € 56,24
+(Litauen)
+#8616
+22.03.2025, 03:00 19.09.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 6.Stufe € 23,66 € 55,63
+(Litauen)
+#1617
+11.09.2024, 03:00 17.09.2024, 06:00 Zins Genehmigt Entwicklungskredit - 4.Stufe € 3,05 € 31,97
+(Lettland)
+#6687
+Überbrückung
+14.09.2024, 03:00 16.09.2024, 06:00 Zins Genehmigt skredit - € 0,89 € 28,92
+30.Stufe
+(Finnland)
+#99942488
+14.09.2024, 04:42 14.09.2024, 04:42 Investition Genehmigt Entwicklungskredit - 6.Stufe (€ -75,00) € 28,03
+(Finnland)
+#35919683
+Überbrückung
+13.09.2024, 03:00 13.09.2024, 06:00 Zins Genehmigt skredit - € 0,16 € 103,03
+4.Stufe
+(Estland)
+#35919683
+Überbrückung
+13.09.2024, 03:00 13.09.2024, 06:00 Hauptbetrag Genehmigt skredit - € 26,94 € 102,87
+4.Stufe
+(Estland)
+#85332175
+12.09.2024, 03:00 13.09.2024, 06:00 Zins Genehmigt Entwicklungskredit - 1.Stufe € 7,87 € 75,93
+(Estland)
+#85332175
+20.10.2024, 03:00 13.09.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 1.Stufe € 56,97 € 68,06
+(Estland)
+#93822699
+10.09.2024, 03:00 13.09.2024, 06:00 Zins Genehmigt Entwicklungskredit - 3.Stufe € 0,96 € 11,09
+(Estland)
+#31411322
+12.09.2024, 11:31 12.09.2024, 11:31 Investition Genehmigt Geschäftskredit - 1.Stufe (€ -53,00) € 10,13
+(Estland)
+#9343
+Überbrückung
+11.09.2024, 03:00 12.09.2024, 06:00 Zins Genehmigt skredit - € 0,02 € 63,13
+21.Stufe
+(Litauen)
+#9343
+Überbrückung
+11.09.2024, 03:00 12.09.2024, 06:00 Hauptbetrag Genehmigt skredit - € 4,75 € 63,11
+21.Stufe
+(Litauen)
+#62539548
+10.09.2024, 03:00 12.09.2024, 06:00 Zins Genehmigt Geschäftskredi € 0,23 € 58,36
+t (Lettland)
+#62539548
+10.09.2024, 03:00 12.09.2024, 06:00 Hauptbetrag Genehmigt Geschäftskredi € 54,00 € 58,13
+t (Lettland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 7
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#98586056
+Überbrückung
+10.09.2024, 03:00 12.09.2024, 06:00 Zins Genehmigt skredit - € 0,49 € 4,13
+5.Stufe
+(Portugal)
+#6687
+Überbrückung
+06.09.2024, 03:00 06.09.2024, 06:00 Zins Genehmigt skredit - € 0,53 € 3,64
+37.Stufe
+(Finnland)
+#27157720
+22.08.2024, 03:00 06.09.2024, 06:00 Zins Genehmigt Geschäftskredit - 5.Stufe € 0,70 € 3,11
+(Estland)
+#27157720
+22.08.2024, 03:00 06.09.2024, 06:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 0,70 € 2,41
+(Estland)
+#6687
+Überbrückung
+06.09.2024, 03:00 06.09.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 1,71
+33.Stufe
+(Finnland)
+#4467
+28.08.2024, 03:00 06.09.2024, 06:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,03 € 0,99
+(Estland)
+#4467
+28.07.2024, 03:00 06.09.2024, 06:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,03 € 0,96
+(Estland)
+#18180689
+Überbrückung
+05.09.2024, 14:44 05.09.2024, 14:44 Investition Genehmigt skredit - (€ -61,00) € 0,93
+1.Stufe
+(Lettland)
+#38351095
+Überbrückung
+04.09.2024, 03:00 05.09.2024, 06:00 Zins Genehmigt skredit - € 1,69 € 61,93
+4.Stufe
+(Lettland)
+#38351095
+Überbrückung
+04.09.2024, 03:00 05.09.2024, 06:00 Hauptbetrag Genehmigt skredit - € 42,34 € 60,24
+4.Stufe
+(Lettland)
+05.09.2024, 00:32 05.09.2024, 00:32 Vermögensverwaltungsgebühr Genehmigt (€ -0,75) € 17,90
+#35919683
+Überbrückung
+03.09.2024, 03:00 03.09.2024, 06:00 Zins Genehmigt skredit - € 0,05 € 18,65
+4.Stufe
+(Estland)
+#35919683
+Überbrückung
+03.09.2024, 03:00 03.09.2024, 06:00 Hauptbetrag Genehmigt skredit - € 15,94 € 18,60
+4.Stufe
+(Estland)
+#72947666
+27.08.2024, 03:00 02.09.2024, 06:00 Zins Genehmigt Entwicklungskredit - 13.Stufe € 0,82 € 2,66
+(Finnland)
+#9343
+Überbrückung
+30.08.2024, 03:00 02.09.2024, 06:00 Zins Genehmigt skredit - € 0,93 € 1,84
+21.Stufe
+(Litauen)
+#15885907
+30.08.2024, 18:44 30.08.2024, 18:44 Investition Genehmigt Entwicklungskredit - 4.Stufe (€ -65,00) € 0,91
+(Estland)
+#38351095
+Überbrückung
+27.08.2024, 03:00 30.08.2024, 06:00 Zins Genehmigt skredit - € 1,23 € 65,91
+4.Stufe
+(Lettland)
+#38351095
+Überbrückung
+27.08.2024, 03:00 30.08.2024, 06:00 Hauptbetrag Genehmigt skredit - € 32,66 € 64,68
+4.Stufe
+(Lettland)
+#1606
+30.08.2024, 03:00 30.08.2024, 06:00 Zins Genehmigt Entwicklungskredit - 12.Stufe € 8,25 € 32,02
+(Lettland)
+#1606
+30.08.2024, 03:00 30.08.2024, 06:00 Zins Genehmigt Entwicklungskredit - 8.Stufe € 8,25 € 23,77
+(Lettland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 8
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#99942488
+28.08.2024, 03:00 28.08.2024, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 0,42 € 15,52
+(Finnland)
+#3598
+25.08.2024, 03:00 27.08.2024, 06:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,12 € 15,10
+(Litauen)
+#3598
+25.08.2024, 03:00 27.08.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 7,14 € 14,98
+(Litauen)
+#35919683
+Überbrückung
+25.08.2024, 03:00 27.08.2024, 06:00 Zins Genehmigt skredit - € 0,39 € 7,84
+4.Stufe
+(Estland)
+#33414354
+22.08.2024, 03:00 27.08.2024, 06:00 Zins Genehmigt Geschäftskredit - 3.Stufe € 0,66 € 7,45
+(Estland)
+#33414354
+22.08.2024, 03:00 27.08.2024, 06:00 Zins Genehmigt Geschäftskredit - 1.Stufe € 0,66 € 6,79
+(Estland)
+#3239
+Überbrückung
+31.07.2024, 03:00 27.08.2024, 06:00 Zins Genehmigt skredit - € 2,07 € 6,13
+3.Stufe
+(Lettland)
+#62539548
+25.08.2024, 03:00 26.08.2024, 06:00 Zins Genehmigt Geschäftskredi € 0,43 € 4,06
+t (Lettland)
+#96638141
+Überbrückung
+26.08.2024, 03:00 26.08.2024, 06:00 Zins Genehmigt skredit - € 0,49 € 3,63
+1.Stufe
+(Estland)
+#86757244
+Überbrückung
+26.08.2024, 03:00 26.08.2024, 06:00 Zins Genehmigt skredit - € 0,42 € 3,14
+1.Stufe
+(Lettland)
+#99450254
+Überbrückung
+25.08.2024, 03:00 26.08.2024, 06:00 Zins Genehmigt skredit - € 0,62 € 2,72
+2.Stufe
+(Litauen)
+#67615117
+26.08.2024, 03:00 26.08.2024, 06:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 1,33 € 2,10
+(Lettland)
+#0638
+Überbrückung
+23.08.2024, 16:38 23.08.2024, 16:38 Investition Genehmigt skredit - (€ -56,00) € 0,77
+23.Stufe
+(Lettland)
+#70382548
+23.08.2024, 10:20 23.08.2024, 10:20 Investition Genehmigt Entwicklungskredit - 1.Stufe (€ -75,00) € 56,77
+(Litauen)
+#05923614
+23.08.2024, 09:30 23.08.2024, 09:30 Investition Aufgehoben Geschäftskredi € 64,00 € 131,77
+t (Estland)
+#3598
+22.08.2024, 03:00 23.08.2024, 06:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,01 € 67,77
+(Litauen)
+#3598
+22.08.2024, 03:00 23.08.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 0,33 € 67,76
+(Litauen)
+#35919683
+Überbrückung
+23.08.2024, 03:00 23.08.2024, 06:00 Zins Genehmigt skredit - € 0,27 € 67,43
+4.Stufe
+(Estland)
+#35919683
+Überbrückung
+23.08.2024, 03:00 23.08.2024, 06:00 Hauptbetrag Genehmigt skredit - € 32,12 € 67,16
+4.Stufe
+(Estland)
+#19725702
+21.08.2024, 03:00 22.08.2024, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 1,78 € 35,04
+(Lettland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 9
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#98586056
+Überbrückung
+10.08.2024, 03:00 19.08.2024, 06:00 Zins Genehmigt skredit - € 0,61 € 33,26
+5.Stufe
+(Portugal)
+#9343
+Überbrückung
+14.08.2024, 03:00 14.08.2024, 06:00 Zins Genehmigt skredit - € 0,09 € 32,65
+21.Stufe
+(Litauen)
+#9343
+Überbrückung
+14.08.2024, 03:00 14.08.2024, 06:00 Hauptbetrag Genehmigt skredit - € 4,59 € 32,56
+21.Stufe
+(Litauen)
+#3598
+09.08.2024, 03:00 12.08.2024, 06:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,08 € 27,97
+(Litauen)
+#3598
+09.08.2024, 03:00 12.08.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 7,52 € 27,89
+(Litauen)
+#4467
+28.06.2024, 03:00 09.08.2024, 06:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,03 € 20,37
+(Estland)
+#6687
+Überbrückung
+06.08.2024, 03:00 07.08.2024, 06:00 Zins Genehmigt skredit - € 0,53 € 20,34
+37.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.08.2024, 03:00 07.08.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 19,81
+33.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.08.2024, 03:00 07.08.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 19,09
+30.Stufe
+(Finnland)
+05.08.2024, 00:28 06.08.2024, 06:15 Vermögensverwaltungsgebühr Genehmigt (€ -0,63) € 18,37
+#93822699
+02.08.2024, 03:00 04.08.2024, 06:00 Zins Genehmigt Entwicklungskredit - 3.Stufe € 0,65 € 19,00
+(Estland)
+#93822699
+02.08.2024, 03:00 04.08.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 3.Stufe € 18,31 € 18,35
+(Estland)
+#32732998
+02.08.2024, 20:46 02.08.2024, 20:46 Investition Genehmigt Entwicklungskredit - 1.Stufe (€ -71,00) € 0,04
+(Lettland)
+#99942488
+02.08.2024, 20:41 02.08.2024, 20:41 Investition Genehmigt Entwicklungskredit - 5.Stufe (€ -75,00) € 71,04
+(Finnland)
+#51800484
+02.08.2024, 18:37 02.08.2024, 18:37 Investition Genehmigt Entwicklungskredit - 1.Stufe (€ -75,00) € 146,04
+(Estland)
+#4108
+Überbrückung
+31.07.2024, 03:00 02.08.2024, 06:00 Zins Genehmigt skredit - € 0,70 € 221,04
+29.Stufe
+(Lettland)
+#85332175
+31.07.2024, 03:00 02.08.2024, 06:00 Zins Genehmigt Entwicklungskredit - 1.Stufe € 2,23 € 220,34
+(Estland)
+#85332175
+31.07.2024, 03:00 02.08.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 1.Stufe € 18,03 € 218,11
+(Estland)
+#7869
+31.07.2024, 03:00 02.08.2024, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 8,90 € 200,08
+(Estland)
+#4418
+31.07.2024, 03:00 02.08.2024, 06:00 Zins Genehmigt Entwicklungskredit - 21.Stufe € 0,02 € 191,18
+(Litauen)
+#7869
+12.08.2024, 03:00 02.08.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 2.Stufe € 75,00 € 191,16
+(Estland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 10
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#4108
+Überbrückung
+30.09.2024, 03:00 02.08.2024, 06:00 Hauptbetrag Genehmigt skredit - € 75,00 € 116,16
+29.Stufe
+(Lettland)
+#4418
+29.04.2025, 03:00 02.08.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 21.Stufe € 31,20 € 41,16
+(Litauen)
+#33414354
+22.07.2024, 03:00 02.08.2024, 06:00 Zins Genehmigt Geschäftskredit - 3.Stufe € 0,66 € 9,96
+(Estland)
+#33414354
+22.07.2024, 03:00 02.08.2024, 06:00 Zins Genehmigt Geschäftskredit - 1.Stufe € 0,66 € 9,30
+(Estland)
+#27157720
+22.07.2024, 03:00 01.08.2024, 06:00 Zins Genehmigt Geschäftskredit - 5.Stufe € 0,70 € 8,64
+(Estland)
+#27157720
+22.07.2024, 03:00 01.08.2024, 06:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 0,70 € 7,94
+(Estland)
+#4418
+29.07.2024, 03:00 31.07.2024, 06:00 Zins Genehmigt Entwicklungskredit - 21.Stufe € 0,78 € 7,24
+(Litauen)
+#99942488
+28.07.2024, 03:00 29.07.2024, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 0,42 € 6,46
+(Finnland)
+#96638141
+Überbrückung
+26.07.2024, 03:00 27.07.2024, 06:00 Zins Genehmigt skredit - € 0,58 € 6,04
+1.Stufe
+(Estland)
+#02205604
+Überbrückung
+26.07.2024, 03:00 27.07.2024, 06:00 Zins Genehmigt skredit - € 1,88 € 5,46
+1.Stufe
+(Litauen)
+#27157720
+22.06.2024, 03:00 27.07.2024, 06:00 Zins Genehmigt Geschäftskredit - 5.Stufe € 0,70 € 3,58
+(Estland)
+#27157720
+22.06.2024, 03:00 27.07.2024, 06:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 0,70 € 2,88
+(Estland)
+#35919683
+Überbrückung
+26.07.2024, 03:00 27.07.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 2,18
+4.Stufe
+(Estland)
+#86757244
+Überbrückung
+26.07.2024, 03:00 26.07.2024, 06:00 Zins Genehmigt skredit - € 0,42 € 1,46
+1.Stufe
+(Lettland)
+#05923614
+25.07.2024, 18:39 25.07.2024, 18:39 Investition Abgebrochen Geschäftskredi (€ -64,00) € 1,04
+t (Estland)
+#67615117
+25.07.2024, 03:00 25.07.2024, 06:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 0,36 € 65,04
+(Lettland)
+#67615117
+25.07.2024, 03:00 25.07.2024, 06:00 Hauptbetrag Genehmigt Geschäftskredit - 2.Stufe € 22,30 € 64,68
+(Lettland)
+#99450254
+Überbrückung
+25.07.2024, 03:00 25.07.2024, 06:00 Zins Genehmigt skredit - € 0,62 € 42,38
+2.Stufe
+(Litauen)
+#2288
+Überbrückung
+18.07.2024, 03:00 25.07.2024, 06:00 Zins Genehmigt skredit - € 1,88 € 41,76
+7.Stufe
+(Litauen)
+#62539548
+24.07.2024, 11:39 24.07.2024, 11:39 Investition Genehmigt Geschäftskredi (€ -54,00) € 39,88
+t (Lettland)
+#11993955
+24.07.2024, 11:21 24.07.2024, 11:21 Investition Aufgehoben Entwicklungskredit - 1.Stufe € 75,00 € 93,88
+(Finnland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 11
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#93822699
+19.07.2024, 03:00 22.07.2024, 06:00 Zins Genehmigt Entwicklungskredit - 3.Stufe € 0,57 € 18,88
+(Estland)
+#93822699
+19.07.2024, 03:00 22.07.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 3.Stufe € 18,28 € 18,31
+(Estland)
+#71504184
+Überbrückung
+17.07.2024, 18:37 17.07.2024, 18:37 Investition Genehmigt skredit - (€ -64,00) € 0,03
+2.Stufe
+(Lettland)
+#93822699
+16.07.2024, 03:00 17.07.2024, 06:00 Zins Genehmigt Entwicklungskredit - 3.Stufe € 0,55 € 64,03
+(Estland)
+#93822699
+16.07.2024, 03:00 17.07.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 3.Stufe € 18,18 € 63,48
+(Estland)
+#72947666
+16.07.2024, 10:46 16.07.2024, 10:46 Investition Genehmigt Entwicklungskredit - 13.Stufe (€ -75,00) € 45,30
+(Finnland)
+#35919683
+Überbrückung
+15.07.2024, 03:00 16.07.2024, 06:00 Zins Genehmigt skredit - € 0,44 € 120,30
+2.Stufe
+(Estland)
+#35919683
+Überbrückung
+17.07.2024, 03:00 16.07.2024, 06:00 Hauptbetrag Genehmigt skredit - € 75,00 € 119,86
+2.Stufe
+(Estland)
+#33414354
+22.06.2024, 03:00 15.07.2024, 06:00 Zins Genehmigt Geschäftskredit - 3.Stufe € 0,66 € 44,86
+(Estland)
+#6333
+13.07.2024, 03:00 15.07.2024, 06:00 Zins Genehmigt Entwicklungskredit - 39.Stufe € 1,05 € 44,20
+(Litauen)
+#1231
+Überbrückung
+12.07.2024, 03:00 15.07.2024, 06:00 Hauptbetrag Genehmigt skredit - € 28,75 € 43,15
+16.Stufe
+(Litauen)
+#1231
+Überbrückung
+12.07.2024, 03:00 15.07.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 14,40
+16.Stufe
+(Litauen)
+#33414354
+22.06.2024, 03:00 15.07.2024, 06:00 Zins Genehmigt Geschäftskredit - 1.Stufe € 0,66 € 13,68
+(Estland)
+#99942488
+28.06.2024, 03:00 10.07.2024, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 0,42 € 13,02
+(Finnland)
+#3598
+06.07.2024, 03:00 09.07.2024, 06:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 1,30 € 12,60
+(Litauen)
+#1231
+Überbrückung
+05.07.2024, 03:00 08.07.2024, 06:00 Zins Genehmigt skredit - € 0,17 € 11,30
+16.Stufe
+(Litauen)
+#1231
+Überbrückung
+05.07.2024, 03:00 08.07.2024, 06:00 Hauptbetrag Genehmigt skredit - € 7,49 € 11,13
+16.Stufe
+(Litauen)
+#6687
+Überbrückung
+06.07.2024, 03:00 08.07.2024, 06:00 Zins Genehmigt skredit - € 0,53 € 3,64
+37.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.07.2024, 03:00 08.07.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 3,11
+33.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.07.2024, 03:00 08.07.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 2,39
+30.Stufe
+(Finnland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 12
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#11993955
+05.07.2024, 20:42 05.07.2024, 20:42 Investition Abgebrochen Entwicklungskredit - 1.Stufe (€ -75,00) € 1,67
+(Finnland)
+#4108
+Überbrückung
+03.07.2024, 03:00 05.07.2024, 06:00 Zins Genehmigt skredit - € 1,45 € 76,67
+19.Stufe
+(Lettland)
+#4108
+Überbrückung
+30.04.2024, 03:00 05.07.2024, 06:00 Entschädigung Genehmigt skredit - € 0,01 € 75,22
+19.Stufe
+(Lettland)
+#4108
+Überbrückung
+30.04.2024, 03:00 05.07.2024, 06:00 Strafe Genehmigt skredit - € 0,11 € 75,21
+19.Stufe
+(Lettland)
+#4108
+Überbrückung
+26.07.2024, 03:00 05.07.2024, 06:00 Hauptbetrag Genehmigt skredit - € 75,00 € 75,10
+19.Stufe
+(Lettland)
+05.07.2024, 00:28 05.07.2024, 00:28 Vermögensverwaltungsgebühr Genehmigt (€ -0,50) € 0,10
+#23194181
+Überbrückung
+03.07.2024, 18:45 03.07.2024, 18:45 Investition Genehmigt skredit - (€ -66,00) € 0,60
+1.Stufe
+(Litauen)
+#60572767
+01.07.2024, 03:00 03.07.2024, 06:00 Zins Genehmigt Entwicklungskredit - 1.Stufe € 0,15 € 66,60
+(Finnland)
+#60572767
+21.04.2025, 03:00 03.07.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 1.Stufe € 56,00 € 66,45
+(Finnland)
+#98586056
+Überbrückung
+02.07.2024, 14:37 02.07.2024, 14:37 Investition Genehmigt skredit - (€ -53,00) € 10,45
+5.Stufe
+(Portugal)
+#3598
+01.07.2024, 03:00 02.07.2024, 06:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,52 € 63,45
+(Litauen)
+#3598
+01.07.2024, 03:00 02.07.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 8,98 € 62,93
+(Litauen)
+#4108
+Überbrückung
+30.06.2024, 03:00 02.07.2024, 06:00 Zins Genehmigt skredit - € 8,25 € 53,95
+29.Stufe
+(Lettland)
+#9147
+28.06.2024, 03:00 01.07.2024, 06:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 0,37 € 45,70
+(Lettland)
+#78293043
+Überbrückung
+29.06.2024, 06:39 29.06.2024, 06:39 Investition Genehmigt skredit - (€ -50,00) € 45,33
+1.Stufe
+(Litauen)
+#4418
+27.06.2024, 03:00 28.06.2024, 06:00 Zins Genehmigt Entwicklungskredit - 21.Stufe € 0,71 € 95,33
+(Litauen)
+#4418
+27.06.2024, 03:00 28.06.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 21.Stufe € 43,80 € 94,62
+(Litauen)
+#8391
+27.06.2024, 03:00 28.06.2024, 06:00 Zins Genehmigt Entwicklungskredit - 17.Stufe € 0,43 € 50,82
+(Litauen)
+#8391
+22.02.2025, 03:00 28.06.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 17.Stufe € 47,19 € 50,39
+(Litauen)
+#5505
+Überbrückung
+27.06.2024, 12:39 27.06.2024, 12:39 Investition Genehmigt skredit - (€ -75,00) € 3,20
+4.Stufe
+(Litauen)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 13
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#79473571
+Überbrückung
+26.06.2024, 03:00 27.06.2024, 06:00 Zins Genehmigt skredit - € 0,02 € 78,20
+1.Stufe
+(Estland)
+#79473571
+Überbrückung
+25.03.2025, 03:00 27.06.2024, 06:00 Hauptbetrag Genehmigt skredit - € 42,10 € 78,18
+1.Stufe
+(Estland)
+#79473571
+Überbrückung
+25.06.2024, 03:00 27.06.2024, 06:00 Zins Genehmigt skredit - € 1,00 € 36,08
+1.Stufe
+(Estland)
+#86757244
+Überbrückung
+26.06.2024, 03:00 26.06.2024, 06:00 Zins Genehmigt skredit - € 0,42 € 35,08
+1.Stufe
+(Lettland)
+#46500915
+Überbrückung
+25.06.2024, 03:00 26.06.2024, 06:00 Zins Genehmigt skredit - € 1,69 € 34,66
+2.Stufe
+(Litauen)
+#35919683
+Überbrückung
+26.06.2024, 03:00 26.06.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 32,97
+4.Stufe
+(Estland)
+#35919683
+Überbrückung
+26.06.2024, 03:00 26.06.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 32,25
+2.Stufe
+(Estland)
+#99450254
+Überbrückung
+25.06.2024, 03:00 25.06.2024, 06:00 Zins Genehmigt skredit - € 0,62 € 31,53
+2.Stufe
+(Litauen)
+#8616
+22.06.2024, 03:00 25.06.2024, 06:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 0,62 € 30,91
+(Litauen)
+#8391
+20.06.2024, 03:00 21.06.2024, 06:00 Zins Genehmigt Entwicklungskredit - 17.Stufe € 0,20 € 30,29
+(Litauen)
+#8391
+20.06.2024, 03:00 21.06.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 17.Stufe € 27,81 € 30,09
+(Litauen)
+#60572767
+21.06.2024, 03:00 21.06.2024, 06:00 Zins Genehmigt Entwicklungskredit - 1.Stufe € 0,44 € 2,28
+(Finnland)
+#2315
+09.06.2024, 03:00 21.06.2024, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 1,68 € 1,84
+(Litauen)
+#4467
+28.05.2024, 03:00 19.06.2024, 06:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,03 € 0,16
+(Estland)
+#96638141
+Überbrückung
+11.06.2024, 04:41 11.06.2024, 04:41 Investition Genehmigt skredit - (€ -53,00) € 0,13
+1.Stufe
+(Estland)
+#5483
+07.06.2024, 03:00 10.06.2024, 06:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,43 € 53,13
+(Litauen)
+#5483
+06.07.2024, 03:00 10.06.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 25,63 € 52,70
+(Litauen)
+#71504184
+Überbrückung
+07.06.2024, 16:46 07.06.2024, 16:46 Investition Genehmigt skredit - (€ -53,00) € 27,07
+1.Stufe
+(Lettland)
+#9343
+Überbrückung
+07.06.2024, 03:00 07.06.2024, 06:00 Zins Genehmigt skredit - € 0,01 € 80,07
+21.Stufe
+(Litauen)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 14
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#9343
+Überbrückung
+07.06.2024, 03:00 07.06.2024, 06:00 Hauptbetrag Genehmigt skredit - € 7,09 € 80,06
+21.Stufe
+(Litauen)
+#5483
+07.06.2024, 03:00 07.06.2024, 06:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 0,78 € 72,97
+(Litauen)
+#5483
+07.06.2024, 03:00 07.06.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 25,63 € 72,19
+(Litauen)
+#6687
+Überbrückung
+06.06.2024, 03:00 06.06.2024, 06:00 Zins Genehmigt skredit - € 0,53 € 46,56
+37.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.06.2024, 03:00 06.06.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 46,03
+33.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.06.2024, 03:00 06.06.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 45,31
+30.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.06.2024, 03:00 06.06.2024, 06:00 Zins Genehmigt skredit - € 0,66 € 44,59
+13.Stufe
+(Finnland)
+#1231
+Überbrückung
+05.06.2024, 03:00 05.06.2024, 06:00 Zins Genehmigt skredit - € 0,59 € 43,93
+17.Stufe
+(Litauen)
+#1231
+Überbrückung
+12.07.2024, 03:00 05.06.2024, 06:00 Hauptbetrag Genehmigt skredit - € 36,24 € 43,34
+17.Stufe
+(Litauen)
+05.06.2024, 00:30 05.06.2024, 00:30 Vermögensverwaltungsgebühr Genehmigt (€ -0,57) € 7,10
+#33414354
+22.05.2024, 03:00 04.06.2024, 06:00 Zins Genehmigt Geschäftskredit - 3.Stufe € 0,66 € 7,67
+(Estland)
+#33414354
+22.05.2024, 03:00 04.06.2024, 06:00 Zins Genehmigt Geschäftskredit - 1.Stufe € 0,66 € 7,01
+(Estland)
+#99450254
+Überbrückung
+25.05.2024, 03:00 31.05.2024, 06:00 Zins Genehmigt skredit - € 0,90 € 6,35
+2.Stufe
+(Litauen)
+#9343
+Überbrückung
+28.05.2024, 08:37 28.05.2024, 08:37 Investition Genehmigt skredit - (€ -51,00) € 5,45
+21.Stufe
+(Litauen)
+#86757244
+Überbrückung
+26.05.2024, 03:00 28.05.2024, 06:00 Zins Genehmigt skredit - € 0,42 € 56,45
+1.Stufe
+(Lettland)
+#99942488
+28.05.2024, 03:00 28.05.2024, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 0,61 € 56,03
+(Finnland)
+#67615117
+26.05.2024, 03:00 28.05.2024, 06:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 1,88 € 55,42
+(Lettland)
+#27157720
+22.05.2024, 03:00 28.05.2024, 06:00 Zins Genehmigt Geschäftskredit - 5.Stufe € 0,70 € 53,54
+(Estland)
+#35919683
+Überbrückung
+26.05.2024, 03:00 28.05.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 52,84
+4.Stufe
+(Estland)
+#35919683
+Überbrückung
+26.05.2024, 03:00 28.05.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 52,12
+2.Stufe
+(Estland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 15
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#3598
+24.05.2024, 03:00 26.05.2024, 06:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,10 € 51,40
+(Litauen)
+#3598
+24.05.2024, 03:00 26.05.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 2,08 € 51,30
+(Litauen)
+#27157720
+22.05.2024, 03:00 24.05.2024, 06:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 0,70 € 49,22
+(Estland)
+#8391
+22.05.2024, 03:00 22.05.2024, 06:00 Zins Genehmigt Entwicklungskredit - 17.Stufe € 1,78 € 48,52
+(Litauen)
+#19725702
+20.05.2024, 14:22 20.05.2024, 14:22 Investition Genehmigt Entwicklungskredit - 2.Stufe (€ -75,00) € 46,74
+(Lettland)
+#38351095
+Überbrückung
+20.05.2024, 13:13 20.05.2024, 13:13 Investition Aufgehoben skredit - € 75,00 € 121,74
+5.Stufe
+(Lettland)
+#3598
+16.05.2024, 03:00 19.05.2024, 06:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,45 € 46,74
+(Litauen)
+#3598
+16.05.2024, 03:00 19.05.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 10,47 € 46,29
+(Litauen)
+#6687
+Überbrückung
+06.05.2024, 03:00 06.05.2024, 06:00 Zins Genehmigt skredit - € 0,53 € 35,82
+37.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.05.2024, 03:00 06.05.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 35,29
+33.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.05.2024, 03:00 06.05.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 34,57
+30.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.05.2024, 03:00 06.05.2024, 06:00 Zins Genehmigt skredit - € 0,66 € 33,85
+13.Stufe
+(Finnland)
+05.05.2024, 00:30 05.05.2024, 00:30 Vermögensverwaltungsgebühr Genehmigt (€ -0,44) € 33,19
+#3239
+Überbrückung
+17.04.2024, 03:00 03.05.2024, 06:00 Zins Genehmigt skredit - € 2,06 € 33,63
+3.Stufe
+(Lettland)
+#1231
+Überbrückung
+30.04.2024, 03:00 02.05.2024, 06:00 Zins Genehmigt skredit - € 0,03 € 31,57
+17.Stufe
+(Litauen)
+#1231
+Überbrückung
+30.04.2024, 03:00 02.05.2024, 06:00 Zins Genehmigt skredit - € 0,03 € 31,54
+16.Stufe
+(Litauen)
+#1231
+Überbrückung
+30.04.2024, 03:00 02.05.2024, 06:00 Hauptbetrag Genehmigt skredit - € 5,46 € 31,51
+17.Stufe
+(Litauen)
+#1231
+Überbrückung
+30.04.2024, 03:00 02.05.2024, 06:00 Hauptbetrag Genehmigt skredit - € 5,46 € 26,05
+16.Stufe
+(Litauen)
+#27157720
+22.04.2024, 03:00 02.05.2024, 06:00 Zins Genehmigt Geschäftskredit - 5.Stufe € 0,70 € 20,59
+(Estland)
+#27157720
+22.04.2024, 03:00 02.05.2024, 06:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 0,70 € 19,89
+(Estland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 16
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#33414354
+22.04.2024, 03:00 02.05.2024, 06:00 Zins Genehmigt Geschäftskredit - 3.Stufe € 0,66 € 19,19
+(Estland)
+#33414354
+22.04.2024, 03:00 02.05.2024, 06:00 Zins Genehmigt Geschäftskredit - 1.Stufe € 0,66 € 18,53
+(Estland)
+#4467
+28.04.2024, 03:00 01.05.2024, 06:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,03 € 17,87
+(Estland)
+#2062
+30.04.2024, 03:00 30.04.2024, 06:00 Zins Genehmigt Entwicklungskredit - 29.Stufe € 0,11 € 17,84
+(Lettland)
+#2062
+12.07.2024, 03:00 30.04.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 29.Stufe € 2,93 € 17,73
+(Lettland)
+#4108
+Überbrückung
+26.04.2024, 03:00 30.04.2024, 06:00 Zins Genehmigt skredit - € 8,25 € 14,80
+19.Stufe
+(Lettland)
+#3598
+26.04.2024, 03:00 29.04.2024, 06:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,10 € 6,55
+(Litauen)
+#3598
+26.04.2024, 03:00 29.04.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 2,79 € 6,45
+(Litauen)
+#9147
+28.04.2024, 03:00 29.04.2024, 06:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 0,34 € 3,66
+(Lettland)
+#02205604
+Überbrückung
+26.04.2024, 03:00 26.04.2024, 06:00 Zins Genehmigt skredit - € 1,88 € 3,32
+1.Stufe
+(Litauen)
+#35919683
+Überbrückung
+26.04.2024, 03:00 26.04.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 1,44
+4.Stufe
+(Estland)
+#35919683
+Überbrückung
+26.04.2024, 03:00 26.04.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 0,72
+2.Stufe
+(Estland)
+#4418
+26.04.2024, 00:43 26.04.2024, 00:43 Investition Genehmigt Entwicklungskredit - 21.Stufe (€ -75,00) € 0,00
+(Litauen)
+#60572767
+25.04.2024, 22:40 25.04.2024, 22:40 Investition Genehmigt Entwicklungskredit - 1.Stufe (€ -56,00) € 75,00
+(Finnland)
+#8616
+25.04.2024, 03:00 25.04.2024, 06:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 0,21 € 131,00
+(Litauen)
+#8616
+25.04.2024, 03:00 25.04.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 6.Stufe € 21,91 € 130,79
+(Litauen)
+#90165650
+23.04.2024, 03:00 25.04.2024, 06:00 Zins Genehmigt Entwicklungskredit - 3.Stufe € 0,15 € 108,88
+(Finnland)
+#10530334
+Überbrückung
+13.12.2023, 03:00 25.04.2024, 06:00 Hauptbetrag Genehmigt skredit - € 75,00 € 108,73
+4.Stufe
+(Estland)
+#90165650
+30.08.2024, 03:00 25.04.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 3.Stufe € 21,83 € 33,73
+(Finnland)
+#79473571
+Überbrückung
+22.04.2024, 03:00 24.04.2024, 06:00 Zins Genehmigt skredit - € 0,07 € 11,90
+1.Stufe
+(Estland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 17
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#79473571
+Überbrückung
+22.04.2024, 03:00 24.04.2024, 06:00 Hauptbetrag Genehmigt skredit - € 9,50 € 11,83
+1.Stufe
+(Estland)
+#86757244
+Überbrückung
+21.04.2024, 10:39 21.04.2024, 10:39 Investition Genehmigt skredit - (€ -51,00) € 2,33
+1.Stufe
+(Lettland)
+#93822699
+10.04.2024, 03:00 20.04.2024, 06:00 Zins Genehmigt Entwicklungskredit - 3.Stufe € 2,11 € 53,33
+(Estland)
+#38351095
+Überbrückung
+19.04.2024, 06:39 19.04.2024, 06:39 Investition Abgebrochen skredit - (€ -75,00) € 51,22
+5.Stufe
+(Lettland)
+#3598
+18.04.2024, 03:00 19.04.2024, 06:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,07 € 126,22
+(Litauen)
+#3598
+18.04.2024, 03:00 19.04.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 2,09 € 126,15
+(Litauen)
+#6333
+18.04.2024, 03:00 19.04.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 39.Stufe € 2,57 € 124,06
+(Litauen)
+#2288
+Überbrückung
+18.04.2024, 03:00 19.04.2024, 06:00 Zins Genehmigt skredit - € 1,88 € 121,49
+7.Stufe
+(Litauen)
+#8616
+15.04.2024, 03:00 16.04.2024, 06:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 0,20 € 119,61
+(Litauen)
+#8616
+15.04.2024, 03:00 16.04.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 6.Stufe € 29,43 € 119,41
+(Litauen)
+#6333
+13.04.2024, 03:00 16.04.2024, 06:00 Zins Genehmigt Entwicklungskredit - 39.Stufe € 1,12 € 89,98
+(Litauen)
+#9757
+18.04.2024, 00:00 15.04.2024, 06:00 Strafe Genehmigt Geschäftskredit - 8.Stufe € 0,32 € 88,86
+(Litauen)
+#33414354
+11.04.2024, 00:00 15.04.2024, 06:00 Entschädigung Genehmigt Geschäftskredit - 3.Stufe € 0,01 € 88,54
+(Estland)
+#33414354
+11.04.2024, 00:00 15.04.2024, 06:00 Entschädigung Genehmigt Geschäftskredit - 1.Stufe € 0,01 € 88,53
+(Estland)
+#9757
+07.04.2024, 03:00 15.04.2024, 06:00 Hauptbetrag Genehmigt Geschäftskredit - 8.Stufe € 75,00 € 88,52
+(Litauen)
+#1231
+Überbrückung
+12.04.2024, 03:00 12.04.2024, 06:00 Zins Genehmigt skredit - € 1,15 € 13,52
+17.Stufe
+(Litauen)
+#1231
+Überbrückung
+12.04.2024, 03:00 12.04.2024, 06:00 Zins Genehmigt skredit - € 1,06 € 12,37
+16.Stufe
+(Litauen)
+#33414354
+21.03.2024, 00:00 11.04.2024, 06:00 Entschädigung Genehmigt Geschäftskredit - 1.Stufe € 0,01 € 11,31
+(Estland)
+#33414354
+22.03.2024, 03:00 11.04.2024, 06:00 Zins Genehmigt Geschäftskredit - 3.Stufe € 0,66 € 11,30
+(Estland)
+#33414354
+22.03.2024, 03:00 11.04.2024, 06:00 Zins Genehmigt Geschäftskredit - 1.Stufe € 0,66 € 10,64
+(Estland)
+#99942488
+10.04.2024, 14:22 10.04.2024, 14:22 Investition Genehmigt Entwicklungskredit - 2.Stufe (€ -51,00) € 9,98
+(Finnland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 18
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#79473571
+Überbrückung
+08.04.2024, 03:00 09.04.2024, 06:00 Zins Genehmigt skredit - € 0,03 € 60,98
+1.Stufe
+(Estland)
+#79473571
+Überbrückung
+08.04.2024, 03:00 09.04.2024, 06:00 Hauptbetrag Genehmigt skredit - € 8,40 € 60,95
+1.Stufe
+(Estland)
+#9757
+07.04.2024, 03:00 09.04.2024, 06:00 Zins Genehmigt Geschäftskredit - 8.Stufe € 0,70 € 52,55
+(Litauen)
+#3598
+06.04.2024, 03:00 08.04.2024, 06:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,07 € 51,85
+(Litauen)
+#3598
+06.04.2024, 03:00 08.04.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 2,33 € 51,78
+(Litauen)
+#2062
+05.04.2024, 03:00 08.04.2024, 06:00 Zins Genehmigt Entwicklungskredit - 29.Stufe € 0,09 € 49,45
+(Lettland)
+#2062
+05.04.2024, 03:00 08.04.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 29.Stufe € 3,15 € 49,36
+(Lettland)
+#6687
+Überbrückung
+06.04.2024, 03:00 08.04.2024, 06:00 Zins Genehmigt skredit - € 0,54 € 46,21
+37.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.04.2024, 03:00 08.04.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 45,67
+33.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.04.2024, 03:00 08.04.2024, 06:00 Zins Genehmigt skredit - € 0,72 € 44,95
+30.Stufe
+(Finnland)
+#5483
+06.04.2024, 03:00 08.04.2024, 06:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,88 € 44,23
+(Litauen)
+#4467
+28.03.2024, 03:00 08.04.2024, 06:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,03 € 43,35
+(Estland)
+#6687
+Überbrückung
+06.04.2024, 03:00 08.04.2024, 06:00 Zins Genehmigt skredit - € 0,66 € 43,32
+13.Stufe
+(Finnland)
+05.04.2024, 08:14 05.04.2024, 08:14 Vermögensverwaltungsgebühr Genehmigt (€ -0,44) € 42,66
+#2062
+05.04.2024, 03:00 05.04.2024, 06:00 Zins Genehmigt Entwicklungskredit - 22.Stufe € 0,59 € 43,10
+(Lettland)
+#2062
+05.04.2024, 03:00 05.04.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 22.Stufe € 6,08 € 42,51
+(Lettland)
+#38351095
+Überbrückung
+03.04.2024, 22:46 03.04.2024, 22:46 Investition Genehmigt skredit - (€ -75,00) € 36,43
+4.Stufe
+(Lettland)
+#99450254
+Überbrückung
+03.04.2024, 22:42 03.04.2024, 22:42 Investition Genehmigt skredit - (€ -75,00) € 111,43
+2.Stufe
+(Litauen)
+#27371712
+02.04.2024, 03:00 03.04.2024, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 2,01 € 186,43
+(Estland)
+#27371712
+02.04.2024, 03:00 03.04.2024, 06:00 Zins Genehmigt Entwicklungskredit - 1.Stufe € 2,68 € 184,42
+(Estland)
+#27371712
+31.12.2024, 03:00 03.04.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 2.Stufe € 75,00 € 181,74
+(Estland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 19
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#27371712
+30.11.2024, 03:00 03.04.2024, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 1.Stufe € 75,00 € 106,74
+(Estland)
+#90165650
+28.03.2024, 03:00 28.03.2024, 05:00 Zins Genehmigt Entwicklungskredit - 3.Stufe € 0,19 € 31,74
+(Finnland)
+#6013
+Überbrückung
+25.03.2024, 03:00 27.03.2024, 05:00 Zins Genehmigt skredit - € 0,44 € 31,55
+4.Stufe
+(Estland)
+#6013
+Überbrückung
+09.04.2024, 03:00 27.03.2024, 05:00 Hauptbetrag Genehmigt skredit - € 20,99 € 31,11
+4.Stufe
+(Estland)
+#3463
+26.03.2024, 03:00 26.03.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 40.Stufe € 4,29 € 10,12
+(Estland)
+#35919683
+Überbrückung
+26.03.2024, 03:00 26.03.2024, 05:00 Zins Genehmigt skredit - € 0,72 € 5,83
+4.Stufe
+(Estland)
+#35919683
+Überbrückung
+26.03.2024, 03:00 26.03.2024, 05:00 Zins Genehmigt skredit - € 0,72 € 5,11
+2.Stufe
+(Estland)
+#27157720
+22.03.2024, 03:00 25.03.2024, 05:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 0,70 € 4,39
+(Estland)
+#8616
+22.03.2024, 03:00 22.03.2024, 05:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 1,97 € 3,69
+(Litauen)
+#27157720
+22.03.2024, 03:00 22.03.2024, 05:00 Zins Genehmigt Geschäftskredit - 5.Stufe € 0,70 € 1,72
+(Estland)
+#33414354
+13.02.2024, 00:00 21.03.2024, 05:00 Entschädigung Genehmigt Geschäftskredit - 1.Stufe € 0,01 € 1,02
+(Estland)
+#33414354
+22.02.2024, 03:00 21.03.2024, 05:00 Zins Genehmigt Geschäftskredit - 1.Stufe € 0,66 € 1,01
+(Estland)
+#79473571
+Überbrückung
+21.03.2024, 02:37 21.03.2024, 02:37 Investition Genehmigt skredit - (€ -60,00) € 0,35
+1.Stufe
+(Estland)
+#46500915
+Überbrückung
+20.03.2024, 21:56 20.03.2024, 21:56 Investition Genehmigt skredit - (€ -75,00) € 60,35
+2.Stufe
+(Litauen)
+#2315
+19.03.2024, 03:00 20.03.2024, 05:00 Strafe Genehmigt Entwicklungskredit - 2.Stufe € 0,26 € 135,35
+(Litauen)
+#2062
+18.03.2024, 03:00 20.03.2024, 05:00 Zins Genehmigt Entwicklungskredit - 29.Stufe € 0,34 € 135,09
+(Lettland)
+#2062
+18.03.2024, 03:00 20.03.2024, 05:00 Zins Genehmigt Entwicklungskredit - 22.Stufe € 1,35 € 134,75
+(Lettland)
+#2062
+18.03.2024, 03:00 20.03.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 29.Stufe € 14,86 € 133,40
+(Lettland)
+#2062
+18.03.2024, 03:00 20.03.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 22.Stufe € 14,86 € 118,54
+(Lettland)
+#3610
+19.03.2024, 03:00 20.03.2024, 05:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 0,29 € 103,68
+(Litauen)
+#3610
+06.04.2024, 03:00 20.03.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 6.Stufe € 75,00 € 103,39
+(Litauen)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 20
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#4467
+28.02.2024, 03:00 20.03.2024, 05:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,03 € 28,39
+(Estland)
+#5483
+15.03.2024, 03:00 18.03.2024, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,06 € 28,36
+(Litauen)
+#5483
+15.03.2024, 03:00 18.03.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 1,82 € 28,30
+(Litauen)
+#5483
+15.03.2024, 03:00 18.03.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 1,82 € 26,48
+(Litauen)
+#2315
+09.03.2024, 03:00 14.03.2024, 05:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 1,86 € 24,66
+(Litauen)
+#27157720
+13.02.2024, 00:00 12.03.2024, 05:00 Entschädigung Genehmigt Geschäftskredit - 2.Stufe € 0,01 € 22,80
+(Estland)
+#6013
+Überbrückung
+08.03.2024, 03:00 11.03.2024, 05:00 Zins Genehmigt skredit - € 0,29 € 22,79
+4.Stufe
+(Estland)
+#6013
+Überbrückung
+08.03.2024, 03:00 11.03.2024, 05:00 Hauptbetrag Genehmigt skredit - € 18,00 € 22,50
+4.Stufe
+(Estland)
+#1617
+08.03.2024, 13:22 08.03.2024, 13:22 Investition Genehmigt Entwicklungskredit - 4.Stufe (€ -61,00) € 4,50
+(Lettland)
+#3610
+06.03.2024, 03:00 08.03.2024, 05:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 2,07 € 65,50
+(Litauen)
+#9757
+07.03.2024, 03:00 08.03.2024, 05:00 Zins Genehmigt Geschäftskredit - 8.Stufe € 2,07 € 63,43
+(Litauen)
+#8053
+07.03.2024, 03:00 08.03.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 2.Stufe € 44,16 € 61,36
+(Litauen)
+#8053
+07.03.2024, 03:00 08.03.2024, 05:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 1,17 € 17,20
+(Litauen)
+#5483
+07.03.2024, 03:00 07.03.2024, 05:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 0,91 € 16,03
+(Litauen)
+#6687
+Überbrückung
+06.03.2024, 03:00 06.03.2024, 05:00 Zins Genehmigt skredit - € 0,72 € 15,12
+33.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.03.2024, 03:00 06.03.2024, 05:00 Zins Genehmigt skredit - € 0,72 € 14,40
+30.Stufe
+(Finnland)
+#33414354
+22.02.2024, 03:00 06.03.2024, 05:00 Zins Genehmigt Geschäftskredit - 3.Stufe € 0,66 € 13,68
+(Estland)
+#6687
+Überbrückung
+06.03.2024, 03:00 06.03.2024, 05:00 Zins Genehmigt skredit - € 0,66 € 13,02
+13.Stufe
+(Finnland)
+#2062
+02.03.2024, 03:00 05.03.2024, 05:00 Zins Genehmigt Entwicklungskredit - 29.Stufe € 0,09 € 12,36
+(Lettland)
+#2062
+02.03.2024, 03:00 05.03.2024, 05:00 Zins Genehmigt Entwicklungskredit - 22.Stufe € 0,44 € 12,27
+(Lettland)
+#2062
+02.03.2024, 03:00 05.03.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 29.Stufe € 5,10 € 11,83
+(Lettland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 21
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#2062
+02.03.2024, 03:00 05.03.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 22.Stufe € 5,10 € 6,73
+(Lettland)
+#27157720
+13.02.2024, 00:00 05.03.2024, 05:00 Entschädigung Genehmigt Geschäftskredit - 5.Stufe € 0,01 € 1,63
+(Estland)
+#27157720
+22.02.2024, 03:00 05.03.2024, 05:00 Zins Genehmigt Geschäftskredit - 5.Stufe € 0,70 € 1,62
+(Estland)
+#27157720
+22.02.2024, 03:00 05.03.2024, 05:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 0,70 € 0,92
+(Estland)
+#6687
+Überbrückung
+01.03.2024, 10:25 01.03.2024, 10:25 Investition Genehmigt skredit - (€ -61,00) € 0,22
+37.Stufe
+(Finnland)
+#3104
+26.02.2024, 03:00 29.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 5.Stufe € 0,35 € 61,22
+(Finnland)
+#3104
+26.02.2024, 03:00 29.02.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 5.Stufe € 28,50 € 60,87
+(Finnland)
+#9147
+28.02.2024, 03:00 29.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 1,05 € 32,37
+(Lettland)
+#2062
+26.02.2024, 03:00 28.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 29.Stufe € 0,16 € 31,32
+(Lettland)
+#2062
+26.02.2024, 03:00 28.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 22.Stufe € 0,87 € 31,16
+(Lettland)
+#2062
+26.02.2024, 03:00 28.02.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 29.Stufe € 10,41 € 30,29
+(Lettland)
+#2062
+26.02.2024, 03:00 28.02.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 22.Stufe € 10,41 € 19,88
+(Lettland)
+#90165650
+28.02.2024, 03:00 28.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 3.Stufe € 0,19 € 9,47
+(Finnland)
+#35919683
+Überbrückung
+26.02.2024, 03:00 26.02.2024, 05:00 Zins Genehmigt skredit - € 0,72 € 9,28
+4.Stufe
+(Estland)
+#35919683
+Überbrückung
+26.02.2024, 03:00 26.02.2024, 05:00 Zins Genehmigt skredit - € 0,72 € 8,56
+2.Stufe
+(Estland)
+#0588
+18.02.2024, 03:00 20.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 0,64 € 7,84
+(Finnland)
+#8391
+17.02.2024, 00:37 17.02.2024, 00:37 Investition Genehmigt Entwicklungskredit - 17.Stufe (€ -75,00) € 7,20
+(Litauen)
+#2062
+15.02.2024, 03:00 16.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 29.Stufe € 0,20 € 82,20
+(Lettland)
+#2062
+15.02.2024, 03:00 16.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 22.Stufe € 1,33 € 82,00
+(Lettland)
+#2062
+15.02.2024, 03:00 16.02.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 29.Stufe € 16,77 € 80,67
+(Lettland)
+#2062
+15.02.2024, 03:00 16.02.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 22.Stufe € 16,77 € 63,90
+(Lettland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 22
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#5483
+12.02.2024, 03:00 14.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,04 € 47,13
+(Litauen)
+#5483
+12.02.2024, 03:00 14.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 0,05 € 47,09
+(Litauen)
+#5483
+12.02.2024, 03:00 14.02.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 2,08 € 47,04
+(Litauen)
+#5483
+12.02.2024, 03:00 14.02.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 2,08 € 44,96
+(Litauen)
+#2315
+21.12.2023, 00:00 13.02.2024, 05:00 Entschädigung Genehmigt Entwicklungskredit - 2.Stufe € 0,01 € 42,88
+(Litauen)
+#27157720
+22.01.2024, 03:00 13.02.2024, 05:00 Zins Genehmigt Geschäftskredit - 5.Stufe € 0,70 € 42,87
+(Estland)
+#27157720
+22.01.2024, 03:00 13.02.2024, 05:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 0,70 € 42,17
+(Estland)
+#33414354
+22.01.2024, 03:00 13.02.2024, 05:00 Zins Genehmigt Geschäftskredit - 1.Stufe € 0,66 € 41,47
+(Estland)
+#4467
+28.01.2024, 03:00 13.02.2024, 05:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,03 € 40,81
+(Estland)
+#2062
+07.02.2024, 03:00 09.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 29.Stufe € 0,10 € 40,78
+(Lettland)
+#2062
+07.02.2024, 03:00 09.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 22.Stufe € 0,83 € 40,68
+(Lettland)
+#2062
+07.02.2024, 03:00 09.02.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 29.Stufe € 10,87 € 39,85
+(Lettland)
+#2062
+07.02.2024, 03:00 09.02.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 22.Stufe € 10,87 € 28,98
+(Lettland)
+#5483
+05.02.2024, 03:00 07.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,07 € 18,11
+(Litauen)
+#5483
+05.02.2024, 03:00 07.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 0,08 € 18,04
+(Litauen)
+#5483
+05.02.2024, 03:00 07.02.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 3,92 € 17,96
+(Litauen)
+#5483
+05.02.2024, 03:00 07.02.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 3,92 € 14,04
+(Litauen)
+#67615117
+07.02.2024, 04:38 07.02.2024, 04:38 Investition Genehmigt Geschäftskredit - 2.Stufe (€ -75,00) € 10,12
+(Lettland)
+#6333
+05.02.2024, 03:00 06.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 39.Stufe € 0,02 € 85,12
+(Litauen)
+#6333
+05.02.2024, 03:00 06.02.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 39.Stufe € 2,88 € 85,10
+(Litauen)
+#6687
+Überbrückung
+06.02.2024, 03:00 06.02.2024, 05:00 Zins Genehmigt skredit - € 0,72 € 82,22
+33.Stufe
+(Finnland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 23
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#6687
+Überbrückung
+06.02.2024, 03:00 06.02.2024, 05:00 Zins Genehmigt skredit - € 0,72 € 81,50
+30.Stufe
+(Finnland)
+#3104
+28.01.2024, 03:00 06.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 5.Stufe € 0,22 € 80,78
+(Finnland)
+#6687
+Überbrückung
+06.02.2024, 03:00 06.02.2024, 05:00 Zins Genehmigt skredit - € 0,66 € 80,56
+13.Stufe
+(Finnland)
+#3598
+02.02.2024, 03:00 05.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,02 € 79,90
+(Litauen)
+#6333
+03.02.2024, 03:00 05.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 39.Stufe € 0,04 € 79,88
+(Litauen)
+#6333
+03.02.2024, 03:00 05.02.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 39.Stufe € 5,35 € 79,84
+(Litauen)
+#3598
+02.02.2024, 03:00 05.02.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 1,77 € 74,49
+(Litauen)
+05.02.2024, 00:27 05.02.2024, 00:27 Vermögensverwaltungsgebühr Genehmigt (€ -0,20) € 72,72
+#2062
+31.01.2024, 03:00 03.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 29.Stufe € 0,02 € 72,92
+(Lettland)
+#2062
+31.01.2024, 03:00 03.02.2024, 05:00 Zins Genehmigt Entwicklungskredit - 22.Stufe € 0,24 € 72,90
+(Lettland)
+#2062
+31.01.2024, 03:00 03.02.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 29.Stufe € 3,26 € 72,66
+(Lettland)
+#2062
+31.01.2024, 03:00 03.02.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 22.Stufe € 3,26 € 69,40
+(Lettland)
+#1231
+Überbrückung
+29.01.2024, 03:00 01.02.2024, 05:00 Zins Genehmigt skredit - € 0,06 € 66,14
+17.Stufe
+(Litauen)
+#1231
+Überbrückung
+29.01.2024, 03:00 01.02.2024, 05:00 Zins Genehmigt skredit - € 0,05 € 66,08
+16.Stufe
+(Litauen)
+#1231
+Überbrückung
+29.01.2024, 03:00 01.02.2024, 05:00 Hauptbetrag Genehmigt skredit - € 10,74 € 66,03
+17.Stufe
+(Litauen)
+#1231
+Überbrückung
+29.01.2024, 03:00 01.02.2024, 05:00 Hauptbetrag Genehmigt skredit - € 10,74 € 55,29
+16.Stufe
+(Litauen)
+#90165650
+28.01.2024, 03:00 29.01.2024, 05:00 Zins Genehmigt Entwicklungskredit - 3.Stufe € 0,19 € 44,55
+(Finnland)
+#35919683
+Überbrückung
+26.01.2024, 03:00 27.01.2024, 05:00 Zins Genehmigt skredit - € 0,72 € 44,36
+4.Stufe
+(Estland)
+#35919683
+Überbrückung
+26.01.2024, 03:00 27.01.2024, 05:00 Zins Genehmigt skredit - € 0,72 € 43,64
+2.Stufe
+(Estland)
+#5483
+19.01.2024, 03:00 23.01.2024, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,05 € 42,92
+(Litauen)
+#5483
+19.01.2024, 03:00 23.01.2024, 05:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 0,06 € 42,87
+(Litauen)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 24
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#5483
+19.01.2024, 03:00 23.01.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 3,91 € 42,81
+(Litauen)
+#5483
+19.01.2024, 03:00 23.01.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 3,91 € 38,90
+(Litauen)
+#0588
+22.01.2024, 00:00 23.01.2024, 05:00 Entschädigung Genehmigt Entwicklungskredit - 2.Stufe € 0,01 € 34,99
+(Finnland)
+#33414354
+22.01.2024, 03:00 23.01.2024, 05:00 Zins Genehmigt Geschäftskredit - 3.Stufe € 0,66 € 34,98
+(Estland)
+#5483
+06.01.2024, 03:00 23.01.2024, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 1,15 € 34,32
+(Litauen)
+#3239
+Überbrückung
+17.01.2024, 02:00 22.01.2024, 05:00 Zins Genehmigt skredit - € 2,06 € 33,17
+3.Stufe
+(Lettland)
+#0588
+18.01.2024, 03:00 22.01.2024, 05:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 3,75 € 31,11
+(Finnland)
+#2062
+17.01.2024, 03:00 17.01.2024, 05:00 Zins Genehmigt Entwicklungskredit - 29.Stufe € 0,01 € 27,36
+(Lettland)
+#2062
+17.01.2024, 03:00 17.01.2024, 05:00 Zins Genehmigt Entwicklungskredit - 22.Stufe € 0,40 € 27,35
+(Lettland)
+#2062
+17.01.2024, 03:00 17.01.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 29.Stufe € 5,83 € 26,95
+(Lettland)
+#2062
+17.01.2024, 03:00 17.01.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 22.Stufe € 5,83 € 21,12
+(Lettland)
+#6333
+13.01.2024, 03:00 15.01.2024, 05:00 Zins Genehmigt Entwicklungskredit - 39.Stufe € 1,34 € 15,29
+(Litauen)
+#2062
+12.01.2024, 03:00 12.01.2024, 05:00 Zins Genehmigt Entwicklungskredit - 29.Stufe € 4,59 € 13,95
+(Lettland)
+#1231
+Überbrückung
+12.01.2024, 03:00 12.01.2024, 05:00 Zins Genehmigt skredit - € 1,44 € 9,36
+17.Stufe
+(Litauen)
+#1231
+Überbrückung
+12.01.2024, 03:00 12.01.2024, 05:00 Zins Genehmigt skredit - € 1,33 € 7,92
+16.Stufe
+(Litauen)
+#93822699
+10.01.2024, 03:00 12.01.2024, 05:00 Zins Genehmigt Entwicklungskredit - 3.Stufe € 2,11 € 6,59
+(Estland)
+#02205604
+Überbrückung
+10.01.2024, 14:40 10.01.2024, 14:40 Investition Genehmigt skredit - (€ -75,00) € 4,48
+1.Stufe
+(Litauen)
+#6013
+Überbrückung
+09.01.2024, 03:00 09.01.2024, 05:00 Zins Genehmigt skredit - € 0,97 € 79,48
+4.Stufe
+(Estland)
+#1231
+Überbrückung
+05.01.2024, 03:00 08.01.2024, 05:00 Zins Genehmigt skredit - € 0,21 € 78,51
+17.Stufe
+(Litauen)
+#1231
+Überbrückung
+05.01.2024, 03:00 08.01.2024, 05:00 Zins Genehmigt skredit - € 0,19 € 78,30
+16.Stufe
+(Litauen)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 25
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#1231
+Überbrückung
+05.01.2024, 03:00 08.01.2024, 05:00 Hauptbetrag Genehmigt skredit - € 8,05 € 78,11
+17.Stufe
+(Litauen)
+#1231
+Überbrückung
+05.01.2024, 03:00 08.01.2024, 05:00 Hauptbetrag Genehmigt skredit - € 8,05 € 70,06
+16.Stufe
+(Litauen)
+#3598
+05.01.2024, 03:00 08.01.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 3,22 € 62,01
+(Litauen)
+#6687
+Überbrückung
+06.01.2024, 03:00 08.01.2024, 05:00 Zins Genehmigt skredit - € 0,72 € 58,79
+33.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.01.2024, 03:00 08.01.2024, 05:00 Zins Genehmigt skredit - € 0,72 € 58,07
+30.Stufe
+(Finnland)
+#3598
+06.01.2024, 03:00 08.01.2024, 05:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 3,34 € 57,35
+(Litauen)
+#6687
+Überbrückung
+06.01.2024, 03:00 08.01.2024, 05:00 Zins Genehmigt skredit - € 0,66 € 54,01
+13.Stufe
+(Finnland)
+#2288
+Überbrückung
+05.01.2024, 20:38 05.01.2024, 20:38 Investition Genehmigt skredit - (€ -75,00) € 53,35
+7.Stufe
+(Litauen)
+#90165650
+05.01.2024, 03:00 05.01.2024, 05:00 Zins Genehmigt Entwicklungskredit - 3.Stufe € 0,11 € 128,35
+(Finnland)
+#90165650
+05.01.2024, 03:00 05.01.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 3.Stufe € 53,17 € 128,24
+(Finnland)
+#90165650
+28.12.2023, 03:00 05.01.2024, 05:00 Zins Genehmigt Entwicklungskredit - 3.Stufe € 0,63 € 75,07
+(Finnland)
+#3104
+28.12.2023, 03:00 05.01.2024, 05:00 Zins Genehmigt Entwicklungskredit - 5.Stufe € 0,22 € 74,44
+(Finnland)
+05.01.2024, 00:24 05.01.2024, 00:24 Vermögensverwaltungsgebühr Genehmigt (€ -0,19) € 74,22
+#2062
+03.01.2024, 03:00 04.01.2024, 05:00 Zins Genehmigt Entwicklungskredit - 29.Stufe € 0,11 € 74,41
+(Lettland)
+#2062
+03.01.2024, 03:00 04.01.2024, 05:00 Zins Genehmigt Entwicklungskredit - 22.Stufe € 0,12 € 74,30
+(Lettland)
+#2062
+03.01.2024, 03:00 04.01.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 29.Stufe € 1,82 € 74,18
+(Lettland)
+#2062
+03.01.2024, 03:00 04.01.2024, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 22.Stufe € 1,82 € 72,36
+(Lettland)
+#9757
+12.12.2023, 00:00 04.01.2024, 05:00 Entschädigung Genehmigt Geschäftskredit - 8.Stufe € 0,01 € 70,54
+(Litauen)
+#4467
+28.12.2023, 03:00 04.01.2024, 05:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,03 € 70,53
+(Estland)
+#5096
+25.12.2023, 03:00 27.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 20.Stufe € 0,31 € 70,50
+(Lettland)
+#35919683
+Überbrückung
+26.12.2023, 03:00 27.12.2023, 05:00 Zins Genehmigt skredit - € 0,72 € 70,19
+4.Stufe
+(Estland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 26
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#33414354
+22.12.2023, 03:00 27.12.2023, 05:00 Zins Genehmigt Geschäftskredit - 3.Stufe € 0,66 € 69,47
+(Estland)
+#35919683
+Überbrückung
+26.12.2023, 03:00 27.12.2023, 05:00 Zins Genehmigt skredit - € 0,72 € 68,81
+2.Stufe
+(Estland)
+#33414354
+22.12.2023, 03:00 27.12.2023, 05:00 Zins Genehmigt Geschäftskredit - 1.Stufe € 0,66 € 68,09
+(Estland)
+#5096
+05.01.2024, 03:00 27.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 20.Stufe € 6,59 € 67,43
+(Lettland)
+#27157720
+22.12.2023, 03:00 22.12.2023, 05:00 Zins Genehmigt Geschäftskredit - 5.Stufe € 0,76 € 60,84
+(Estland)
+#27157720
+22.12.2023, 03:00 22.12.2023, 05:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 0,70 € 60,08
+(Estland)
+#5483
+20.12.2023, 03:00 21.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,19 € 59,38
+(Litauen)
+#5483
+20.12.2023, 03:00 21.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 0,03 € 59,19
+(Litauen)
+#5483
+20.12.2023, 03:00 21.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 7,52 € 59,16
+(Litauen)
+#5483
+20.12.2023, 03:00 21.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 7,52 € 51,64
+(Litauen)
+#2315
+09.12.2023, 03:00 21.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 1,88 € 44,12
+(Litauen)
+#5483
+19.12.2023, 03:00 20.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,10 € 42,24
+(Litauen)
+#5483
+19.12.2023, 03:00 20.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 0,02 € 42,14
+(Litauen)
+#5483
+19.12.2023, 03:00 20.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 4,10 € 42,12
+(Litauen)
+#5483
+19.12.2023, 03:00 20.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 4,10 € 38,02
+(Litauen)
+#8616
+20.12.2023, 02:39 20.12.2023, 02:39 Investition Genehmigt Entwicklungskredit - 6.Stufe (€ -75,00) € 33,92
+(Litauen)
+#5483
+15.12.2023, 03:00 18.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,04 € 108,92
+(Litauen)
+#5483
+15.12.2023, 03:00 18.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 1,69 € 108,88
+(Litauen)
+#5483
+15.12.2023, 03:00 18.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 1,69 € 107,19
+(Litauen)
+#3104
+12.12.2023, 03:00 15.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 5.Stufe € 0,24 € 105,50
+(Finnland)
+#3104
+12.12.2023, 03:00 15.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 5.Stufe € 35,45 € 105,26
+(Finnland)
+#5483
+13.12.2023, 03:00 14.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,07 € 69,81
+(Litauen)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 27
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#5483
+13.12.2023, 03:00 14.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 0,01 € 69,74
+(Litauen)
+#5483
+13.12.2023, 03:00 14.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 3,03 € 69,73
+(Litauen)
+#5483
+13.12.2023, 03:00 14.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 3,03 € 66,70
+(Litauen)
+#9757
+07.12.2023, 03:00 12.12.2023, 05:00 Zins Genehmigt Geschäftskredit - 8.Stufe € 2,06 € 63,67
+(Litauen)
+#5483
+07.12.2023, 03:00 08.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,05 € 61,61
+(Litauen)
+#5483
+07.12.2023, 03:00 08.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 2,46 € 61,56
+(Litauen)
+#5483
+07.12.2023, 03:00 08.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 2,46 € 59,10
+(Litauen)
+#4467
+28.11.2023, 03:00 08.12.2023, 05:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,03 € 56,64
+(Estland)
+#27371712
+07.12.2023, 14:41 07.12.2023, 14:41 Investition Genehmigt Entwicklungskredit - 2.Stufe (€ -75,00) € 56,61
+(Estland)
+#7785
+06.12.2023, 03:00 07.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 1,82 € 131,61
+(Lettland)
+#8053
+06.12.2023, 03:00 07.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 2.Stufe € 30,84 € 129,79
+(Litauen)
+#8053
+07.12.2023, 03:00 07.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 1,97 € 98,95
+(Litauen)
+#5483
+07.12.2023, 03:00 07.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 1,72 € 96,98
+(Litauen)
+#7785
+28.02.2024, 03:00 07.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 6.Stufe € 71,00 € 95,26
+(Lettland)
+#3598
+05.12.2023, 03:00 06.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,12 € 24,26
+(Litauen)
+#3598
+05.12.2023, 03:00 06.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 2,34 € 24,14
+(Litauen)
+#6687
+Überbrückung
+06.12.2023, 03:00 06.12.2023, 05:00 Zins Genehmigt skredit - € 0,72 € 21,80
+33.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.12.2023, 03:00 06.12.2023, 05:00 Zins Genehmigt skredit - € 0,72 € 21,08
+30.Stufe
+(Finnland)
+#3610
+06.12.2023, 03:00 06.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 2,06 € 20,36
+(Litauen)
+#6687
+Überbrückung
+06.12.2023, 03:00 06.12.2023, 05:00 Zins Genehmigt skredit - € 0,66 € 18,30
+13.Stufe
+(Finnland)
+#5483
+04.12.2023, 03:00 05.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,01 € 17,64
+(Litauen)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 28
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#5483
+04.12.2023, 03:00 05.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 0,02 € 17,63
+(Litauen)
+#5483
+04.11.2023, 03:00 05.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 0,72 € 17,61
+(Litauen)
+#5483
+04.11.2023, 03:00 05.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 0,72 € 16,89
+(Litauen)
+#3104
+28.11.2023, 03:00 05.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 5.Stufe € 0,49 € 16,17
+(Finnland)
+#5483
+30.11.2023, 03:00 01.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,03 € 15,68
+(Litauen)
+#5483
+30.11.2023, 03:00 01.12.2023, 05:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 0,05 € 15,65
+(Litauen)
+#5483
+30.11.2023, 03:00 01.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 1,71 € 15,60
+(Litauen)
+#5483
+30.11.2023, 03:00 01.12.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 1,71 € 13,89
+(Litauen)
+#5483
+27.11.2023, 03:00 29.11.2023, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,08 € 12,18
+(Litauen)
+#5483
+27.11.2023, 03:00 29.11.2023, 05:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 0,13 € 12,10
+(Litauen)
+#5483
+27.11.2023, 03:00 29.11.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 4,67 € 11,97
+(Litauen)
+#5483
+27.11.2023, 03:00 29.11.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 4,67 € 7,30
+(Litauen)
+#90165650
+28.11.2023, 22:40 28.11.2023, 22:40 Investition Genehmigt Entwicklungskredit - 3.Stufe (€ -75,00) € 2,63
+(Finnland)
+#27371712
+28.11.2023, 08:37 28.11.2023, 08:37 Investition Genehmigt Entwicklungskredit - 1.Stufe (€ -75,00) € 77,63
+(Estland)
+#3598
+27.11.2023, 03:00 28.11.2023, 05:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,04 € 152,63
+(Litauen)
+#3598
+27.11.2023, 03:00 28.11.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 0,90 € 152,59
+(Litauen)
+#1954
+27.11.2023, 03:00 28.11.2023, 05:00 Zins Genehmigt Entwicklungskredit - 3.Stufe € 1,10 € 151,69
+(Litauen)
+#27157720
+22.11.2023, 03:00 28.11.2023, 05:00 Zins Genehmigt Geschäftskredit - 2.Stufe € 0,55 € 150,59
+(Estland)
+#1954
+05.07.2024, 03:00 28.11.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 3.Stufe € 75,00 € 150,04
+(Litauen)
+#5483
+24.11.2023, 03:00 27.11.2023, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,03 € 75,04
+(Litauen)
+#5483
+24.11.2023, 03:00 27.11.2023, 05:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 0,04 € 75,01
+(Litauen)
+#5483
+24.11.2023, 03:00 27.11.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 1,55 € 74,97
+(Litauen)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 29
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#5483
+24.11.2023, 03:00 27.11.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 1,55 € 73,42
+(Litauen)
+#35919683
+Überbrückung
+26.11.2023, 03:00 27.11.2023, 05:00 Zins Genehmigt skredit - € 0,72 € 71,87
+4.Stufe
+(Estland)
+#35919683
+Überbrückung
+26.11.2023, 03:00 27.11.2023, 05:00 Zins Genehmigt skredit - € 0,72 € 71,15
+2.Stufe
+(Estland)
+#33414354
+22.11.2023, 03:00 24.11.2023, 05:00 Zins Genehmigt Geschäftskredit - 3.Stufe € 0,66 € 70,43
+(Estland)
+#33414354
+22.11.2023, 03:00 24.11.2023, 05:00 Zins Genehmigt Geschäftskredit - 1.Stufe € 0,66 € 69,77
+(Estland)
+#5483
+21.11.2023, 03:00 23.11.2023, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,09 € 69,11
+(Litauen)
+#5483
+21.11.2023, 03:00 23.11.2023, 05:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 0,14 € 69,02
+(Litauen)
+#5483
+21.11.2023, 03:00 23.11.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 5,58 € 68,88
+(Litauen)
+#5483
+21.11.2023, 03:00 23.11.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 5,58 € 63,30
+(Litauen)
+#4467
+20.11.2023, 03:00 23.11.2023, 05:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,05 € 57,72
+(Estland)
+#4467
+20.11.2023, 03:00 23.11.2023, 05:00 Hauptbetrag Genehmigt Geschäftskredit - 6.Stufe € 6,14 € 57,67
+(Estland)
+#5483
+16.11.2023, 03:00 17.11.2023, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,03 € 51,53
+(Litauen)
+#5483
+16.11.2023, 03:00 17.11.2023, 05:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 0,05 € 51,50
+(Litauen)
+#5096
+17.11.2023, 03:00 17.11.2023, 05:00 Zins Genehmigt Entwicklungskredit - 20.Stufe € 0,36 € 51,45
+(Lettland)
+#5096
+17.11.2023, 03:00 17.11.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 20.Stufe € 9,97 € 51,09
+(Lettland)
+#5483
+16.11.2023, 03:00 17.11.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 2,15 € 41,12
+(Litauen)
+#5483
+16.11.2023, 03:00 17.11.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 2,15 € 38,97
+(Litauen)
+#27157720
+16.11.2023, 00:45 16.11.2023, 00:45 Investition Genehmigt Geschäftskredit - 5.Stufe (€ -75,00) € 36,82
+(Estland)
+#9147
+13.11.2023, 03:00 15.11.2023, 05:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 0,65 € 111,82
+(Lettland)
+#9147
+13.11.2023, 03:00 15.11.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 6.Stufe € 33,05 € 111,17
+(Lettland)
+#4467
+14.11.2023, 03:00 15.11.2023, 05:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,07 € 78,12
+(Estland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 30
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#4467
+14.11.2023, 03:00 15.11.2023, 05:00 Hauptbetrag Genehmigt Geschäftskredit - 6.Stufe € 12,25 € 78,05
+(Estland)
+#5483
+13.11.2023, 03:00 14.11.2023, 05:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 0,03 € 65,80
+(Litauen)
+#5483
+13.11.2023, 03:00 14.11.2023, 05:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 0,06 € 65,77
+(Litauen)
+#5483
+13.11.2023, 03:00 14.11.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 36.Stufe € 2,46 € 65,71
+(Litauen)
+#5483
+13.11.2023, 03:00 14.11.2023, 05:00 Hauptbetrag Genehmigt Entwicklungskredit - 25.Stufe € 2,46 € 63,25
+(Litauen)
+#7101
+Überbrückung
+09.11.2023, 00:00 10.11.2023, 05:00 Entschädigung Genehmigt skredit - € 0,01 € 60,79
+7.Stufe
+(Estland)
+#7101
+Überbrückung
+30.10.2023, 03:00 09.11.2023, 05:00 Zins Genehmigt skredit - € 2,75 € 60,78
+7.Stufe
+(Estland)
+#4467
+03.11.2023, 03:00 06.11.2023, 05:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,09 € 58,03
+(Estland)
+#4467
+03.11.2023, 03:00 06.11.2023, 05:00 Hauptbetrag Genehmigt Geschäftskredit - 6.Stufe € 53,96 € 57,94
+(Estland)
+#6687
+Überbrückung
+06.11.2023, 03:00 06.11.2023, 05:00 Zins Genehmigt skredit - € 0,19 € 3,98
+33.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.11.2023, 03:00 06.11.2023, 05:00 Zins Genehmigt skredit - € 0,72 € 3,79
+30.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.11.2023, 03:00 06.11.2023, 05:00 Zins Genehmigt skredit - € 0,66 € 3,07
+13.Stufe
+(Finnland)
+#4467
+28.10.2023, 03:00 03.11.2023, 05:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,75 € 2,41
+(Estland)
+#3104
+28.10.2023, 03:00 03.11.2023, 05:00 Zins Genehmigt Entwicklungskredit - 5.Stufe € 0,49 € 1,66
+(Finnland)
+#6687
+Überbrückung
+26.10.2023, 22:41 26.10.2023, 22:41 Investition Genehmigt skredit - (€ -75,00) € 1,17
+33.Stufe
+(Finnland)
+#35919683
+Überbrückung
+26.10.2023, 03:00 26.10.2023, 06:00 Zins Genehmigt skredit - € 0,72 € 76,17
+4.Stufe
+(Estland)
+#35919683
+Überbrückung
+26.10.2023, 03:00 26.10.2023, 06:00 Zins Genehmigt skredit - € 0,72 € 75,45
+2.Stufe
+(Estland)
+#6333
+24.10.2023, 03:00 25.10.2023, 06:00 Zins Genehmigt Entwicklungskredit - 39.Stufe € 0,04 € 74,73
+(Litauen)
+#6333
+24.10.2023, 03:00 25.10.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 39.Stufe € 11,62 € 74,69
+(Litauen)
+#7680
+Überbrückung
+23.10.2023, 03:00 25.10.2023, 06:00 Zins Genehmigt skredit - € 0,28 € 63,07
+36.Stufe
+(Lettland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 31
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#33414354
+22.10.2023, 03:00 25.10.2023, 06:00 Zins Genehmigt Geschäftskredit - 3.Stufe € 0,66 € 62,79
+(Estland)
+#33414354
+22.10.2023, 03:00 25.10.2023, 06:00 Zins Genehmigt Geschäftskredit - 1.Stufe € 0,66 € 62,13
+(Estland)
+#7680
+Überbrückung
+08.03.2024, 03:00 25.10.2023, 06:00 Hauptbetrag Genehmigt skredit - € 21,54 € 61,47
+36.Stufe
+(Lettland)
+#5096
+24.10.2023, 03:00 24.10.2023, 06:00 Zins Genehmigt Entwicklungskredit - 20.Stufe € 0,25 € 39,93
+(Lettland)
+#5096
+24.10.2023, 03:00 24.10.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 20.Stufe € 8,23 € 39,68
+(Lettland)
+#6333
+23.10.2023, 00:00 24.10.2023, 06:00 Entschädigung Genehmigt Entwicklungskredit - 39.Stufe € 0,01 € 31,45
+(Litauen)
+#6333
+13.10.2023, 03:00 23.10.2023, 06:00 Zins Genehmigt Entwicklungskredit - 39.Stufe € 1,66 € 31,44
+(Litauen)
+#0005
+18.10.2023, 00:00 19.10.2023, 06:00 Entschädigung Genehmigt Entwicklungskredit - 10.Stufe € 0,01 € 29,78
+(Estland)
+#27157720
+19.10.2023, 02:39 19.10.2023, 02:39 Investition Genehmigt Geschäftskredit - 2.Stufe (€ -75,00) € 29,77
+(Estland)
+#0005
+17.10.2023, 03:00 18.10.2023, 06:00 Zins Genehmigt Entwicklungskredit - 10.Stufe € 0,16 € 104,77
+(Estland)
+#0005
+29.06.2024, 03:00 18.10.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 10.Stufe € 29,96 € 104,61
+(Estland)
+#0005
+29.09.2023, 03:00 18.10.2023, 06:00 Zins Genehmigt Entwicklungskredit - 10.Stufe € 0,79 € 74,65
+(Estland)
+#3239
+Überbrückung
+29.05.2023, 00:00 18.10.2023, 06:00 Entschädigung Genehmigt skredit - € 0,02 € 73,86
+3.Stufe
+(Lettland)
+#3239
+Überbrückung
+17.10.2023, 03:00 18.10.2023, 06:00 Zins Genehmigt skredit - € 2,06 € 73,84
+3.Stufe
+(Lettland)
+#1954
+11.10.2023, 00:00 17.10.2023, 06:00 Entschädigung Genehmigt Entwicklungskredit - 3.Stufe € 0,01 € 71,78
+(Litauen)
+#3598
+13.10.2023, 03:00 16.10.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 3,23 € 71,77
+(Litauen)
+#3598
+13.10.2023, 03:00 16.10.2023, 06:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,11 € 68,54
+(Litauen)
+#1231
+Überbrückung
+16.10.2023, 03:00 16.10.2023, 06:00 Zins Genehmigt skredit - € 0,01 € 68,43
+17.Stufe
+(Litauen)
+#1231
+Überbrückung
+16.10.2023, 03:00 16.10.2023, 06:00 Zins Genehmigt skredit - € 0,01 € 68,42
+16.Stufe
+(Litauen)
+#1231
+Überbrückung
+16.10.2023, 03:00 16.10.2023, 06:00 Hauptbetrag Genehmigt skredit - € 4,99 € 68,41
+17.Stufe
+(Litauen)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 32
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#1231
+Überbrückung
+16.10.2023, 03:00 16.10.2023, 06:00 Hauptbetrag Genehmigt skredit - € 4,99 € 63,42
+16.Stufe
+(Litauen)
+#5483
+11.10.2023, 00:00 12.10.2023, 06:00 Entschädigung Genehmigt Entwicklungskredit - 36.Stufe € 0,01 € 58,43
+(Litauen)
+#5483
+11.10.2023, 00:00 12.10.2023, 06:00 Entschädigung Genehmigt Entwicklungskredit - 25.Stufe € 0,02 € 58,42
+(Litauen)
+#1231
+Überbrückung
+12.10.2023, 03:00 12.10.2023, 06:00 Zins Genehmigt skredit - € 1,80 € 58,40
+17.Stufe
+(Litauen)
+#1231
+Überbrückung
+12.10.2023, 03:00 12.10.2023, 06:00 Zins Genehmigt skredit - € 1,65 € 56,60
+16.Stufe
+(Litauen)
+#93822699
+10.10.2023, 03:00 12.10.2023, 06:00 Zins Genehmigt Entwicklungskredit - 3.Stufe € 2,11 € 54,95
+(Estland)
+#5483
+06.10.2023, 03:00 11.10.2023, 06:00 Zins Genehmigt Entwicklungskredit - 36.Stufe € 2,25 € 52,84
+(Litauen)
+#1954
+05.10.2023, 03:00 11.10.2023, 06:00 Zins Genehmigt Entwicklungskredit - 3.Stufe € 1,88 € 50,59
+(Litauen)
+#5483
+07.09.2023, 03:00 11.10.2023, 06:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 2,25 € 48,71
+(Litauen)
+#6013
+Überbrückung
+09.10.2023, 03:00 10.10.2023, 06:00 Zins Genehmigt skredit - € 0,98 € 46,46
+4.Stufe
+(Estland)
+#6687
+Überbrückung
+06.10.2023, 03:00 09.10.2023, 06:00 Zins Genehmigt skredit - € 0,54 € 45,48
+30.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.10.2023, 03:00 06.10.2023, 06:00 Zins Genehmigt skredit - € 0,66 € 44,94
+13.Stufe
+(Finnland)
+#4467
+28.09.2023, 03:00 04.10.2023, 06:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,75 € 44,28
+(Estland)
+#3598
+29.09.2023, 03:00 02.10.2023, 06:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,02 € 43,53
+(Litauen)
+#3598
+29.09.2023, 03:00 02.10.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 0,68 € 43,51
+(Litauen)
+#3104
+28.09.2023, 03:00 29.09.2023, 06:00 Zins Genehmigt Entwicklungskredit - 5.Stufe € 0,49 € 42,83
+(Finnland)
+#1231
+Überbrückung
+26.09.2023, 03:00 27.09.2023, 06:00 Zins Genehmigt skredit - € 0,22 € 42,34
+17.Stufe
+(Litauen)
+#1231
+Überbrückung
+26.09.2023, 03:00 27.09.2023, 06:00 Zins Genehmigt skredit - € 0,20 € 42,12
+16.Stufe
+(Litauen)
+#1231
+Überbrückung
+26.09.2023, 03:00 27.09.2023, 06:00 Hauptbetrag Genehmigt skredit - € 9,52 € 41,92
+17.Stufe
+(Litauen)
+#1231
+Überbrückung
+26.09.2023, 03:00 27.09.2023, 06:00 Hauptbetrag Genehmigt skredit - € 9,52 € 32,40
+16.Stufe
+(Litauen)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 33
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#3598
+25.09.2023, 03:00 26.09.2023, 06:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,06 € 22,88
+(Litauen)
+#3598
+25.09.2023, 03:00 26.09.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 2,27 € 22,82
+(Litauen)
+#35919683
+Überbrückung
+26.09.2023, 03:00 26.09.2023, 06:00 Zins Genehmigt skredit - € 0,78 € 20,55
+4.Stufe
+(Estland)
+#35919683
+Überbrückung
+26.09.2023, 03:00 26.09.2023, 06:00 Zins Genehmigt skredit - € 0,72 € 19,77
+2.Stufe
+(Estland)
+#33414354
+22.09.2023, 03:00 25.09.2023, 06:00 Zins Genehmigt Geschäftskredit - 3.Stufe € 0,66 € 19,05
+(Estland)
+#33414354
+22.09.2023, 03:00 25.09.2023, 06:00 Zins Genehmigt Geschäftskredit - 1.Stufe € 0,66 € 18,39
+(Estland)
+#0588
+18.09.2023, 03:00 21.09.2023, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 3,75 € 17,73
+(Finnland)
+#3598
+18.09.2023, 03:00 19.09.2023, 06:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,15 € 13,98
+(Litauen)
+#3598
+18.09.2023, 03:00 19.09.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 6,34 € 13,83
+(Litauen)
+#2315
+09.09.2023, 03:00 14.09.2023, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 1,88 € 7,49
+(Litauen)
+#1606
+11.09.2023, 18:38 11.09.2023, 18:38 Investition Genehmigt Entwicklungskredit - 14.Stufe (€ -75,00) € 5,61
+(Lettland)
+#6333
+08.09.2023, 03:00 11.09.2023, 06:00 Zins Genehmigt Entwicklungskredit - 39.Stufe € 0,06 € 80,61
+(Litauen)
+#6333
+08.09.2023, 03:00 11.09.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 39.Stufe € 3,35 € 80,55
+(Litauen)
+#4467
+28.08.2023, 03:00 08.09.2023, 06:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,75 € 77,20
+(Estland)
+#7680
+Überbrückung
+08.09.2023, 03:00 08.09.2023, 06:00 Zins Genehmigt skredit - € 0,57 € 76,45
+36.Stufe
+(Lettland)
+#8053
+07.09.2023, 03:00 08.09.2023, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 1,97 € 75,88
+(Litauen)
+#6687
+Überbrückung
+07.09.2023, 12:42 07.09.2023, 12:42 Investition Genehmigt skredit - (€ -75,00) € 73,91
+30.Stufe
+(Finnland)
+#3610
+06.09.2023, 03:00 07.09.2023, 06:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 2,06 € 148,91
+(Litauen)
+#9757
+07.09.2023, 03:00 07.09.2023, 06:00 Zins Genehmigt Geschäftskredit - 8.Stufe € 2,06 € 146,85
+(Litauen)
+#0633
+Überbrückung
+05.09.2023, 03:00 06.09.2023, 06:00 Entschädigung Genehmigt skredit - € 0,01 € 144,79
+2.Stufe
+(Finnland)
+#0633
+Überbrückung
+05.09.2023, 03:00 06.09.2023, 06:00 Strafe Genehmigt skredit - € 0,21 € 144,78
+2.Stufe
+(Finnland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 34
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#0633
+Überbrückung
+05.09.2023, 03:00 06.09.2023, 06:00 Zins Genehmigt skredit - € 3,09 € 144,57
+2.Stufe
+(Finnland)
+#0633
+Überbrückung
+05.09.2023, 03:00 06.09.2023, 06:00 Hauptbetrag Genehmigt skredit - € 75,00 € 141,48
+2.Stufe
+(Finnland)
+#6687
+Überbrückung
+06.09.2023, 03:00 06.09.2023, 06:00 Zins Genehmigt skredit - € 0,66 € 66,48
+13.Stufe
+(Finnland)
+#1606
+29.08.2023, 14:25 29.08.2023, 14:25 Investition Genehmigt Entwicklungskredit - 12.Stufe (€ -75,00) € 65,82
+(Lettland)
+#79032256
+Überbrückung
+28.08.2023, 03:00 29.08.2023, 06:00 Zins Genehmigt skredit - € 1,71 € 140,82
+1.Stufe
+(Litauen)
+#79032256
+Überbrückung
+14.03.2024, 03:00 29.08.2023, 06:00 Hauptbetrag Genehmigt skredit - € 75,00 € 139,11
+1.Stufe
+(Litauen)
+#3104
+28.08.2023, 03:00 29.08.2023, 06:00 Zins Genehmigt Entwicklungskredit - 5.Stufe € 0,49 € 64,11
+(Finnland)
+#35919683
+Überbrückung
+26.08.2023, 03:00 28.08.2023, 06:00 Zins Genehmigt skredit - € 0,97 € 63,62
+2.Stufe
+(Estland)
+#7785
+28.08.2023, 03:00 28.08.2023, 06:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 3,37 € 62,65
+(Lettland)
+#9147
+28.08.2023, 03:00 28.08.2023, 06:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 2,61 € 59,28
+(Lettland)
+#33414354
+22.08.2023, 03:00 25.08.2023, 06:00 Zins Genehmigt Geschäftskredit - 3.Stufe € 0,73 € 56,67
+(Estland)
+#33414354
+22.08.2023, 03:00 25.08.2023, 06:00 Zins Genehmigt Geschäftskredit - 1.Stufe € 0,95 € 55,94
+(Estland)
+#3463
+23.08.2023, 03:00 24.08.2023, 06:00 Zins Genehmigt Entwicklungskredit - 40.Stufe € 0,10 € 54,99
+(Estland)
+#3463
+23.08.2023, 03:00 24.08.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 40.Stufe € 6,07 € 54,89
+(Estland)
+#6333
+17.08.2023, 03:00 18.08.2023, 06:00 Zins Genehmigt Entwicklungskredit - 39.Stufe € 0,06 € 48,82
+(Litauen)
+#6333
+17.08.2023, 03:00 18.08.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 39.Stufe € 5,30 € 48,76
+(Litauen)
+#3463
+17.08.2023, 03:00 18.08.2023, 06:00 Zins Genehmigt Entwicklungskredit - 40.Stufe € 0,08 € 43,46
+(Estland)
+#3463
+17.08.2023, 03:00 18.08.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 40.Stufe € 5,65 € 43,38
+(Estland)
+#35919683
+Überbrückung
+17.08.2023, 22:47 17.08.2023, 22:47 Investition Genehmigt skredit - (€ -75,00) € 37,73
+4.Stufe
+(Estland)
+#3772
+16.08.2023, 03:00 17.08.2023, 06:00 Zins Genehmigt Entwicklungskredit - 19.Stufe € 0,85 € 112,73
+(Estland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 35
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#3772
+04.01.2024, 03:00 17.08.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 19.Stufe € 75,00 € 111,88
+(Estland)
+#7682
+24.07.2023, 00:00 15.08.2023, 06:00 Entschädigung Genehmigt Entwicklungskredit - 2.Stufe € 0,02 € 36,88
+(Lettland)
+#6687
+Überbrückung
+06.08.2023, 03:00 07.08.2023, 06:00 Zins Genehmigt skredit - € 0,66 € 36,86
+13.Stufe
+(Finnland)
+#1606
+04.08.2023, 00:38 04.08.2023, 00:38 Investition Genehmigt Entwicklungskredit - 8.Stufe (€ -75,00) € 36,20
+(Lettland)
+#0005
+02.08.2023, 03:00 03.08.2023, 06:00 Zins Genehmigt Entwicklungskredit - 10.Stufe € 0,44 € 111,20
+(Estland)
+#0005
+02.08.2023, 03:00 03.08.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 10.Stufe € 45,04 € 110,76
+(Estland)
+#3104
+28.07.2023, 03:00 03.08.2023, 06:00 Zins Genehmigt Entwicklungskredit - 5.Stufe € 0,49 € 65,72
+(Finnland)
+#4467
+28.07.2023, 03:00 28.07.2023, 06:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,75 € 65,23
+(Estland)
+#3104
+25.07.2023, 03:00 26.07.2023, 06:00 Zins Genehmigt Entwicklungskredit - 5.Stufe € 0,08 € 64,48
+(Finnland)
+#3104
+25.07.2023, 03:00 26.07.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 5.Stufe € 11,05 € 64,40
+(Finnland)
+#4467
+21.07.2023, 00:00 26.07.2023, 06:00 Entschädigung Genehmigt Geschäftskredit - 6.Stufe € 0,01 € 53,35
+(Estland)
+#5096
+24.07.2023, 03:00 25.07.2023, 06:00 Zins Genehmigt Entwicklungskredit - 20.Stufe € 0,03 € 53,34
+(Lettland)
+#5096
+24.07.2023, 03:00 25.07.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 20.Stufe € 7,12 € 53,31
+(Lettland)
+#6333
+21.07.2023, 03:00 24.07.2023, 06:00 Zins Genehmigt Entwicklungskredit - 39.Stufe € 0,01 € 46,19
+(Litauen)
+#6333
+21.07.2023, 03:00 24.07.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 39.Stufe € 5,96 € 46,18
+(Litauen)
+#7682
+05.07.2023, 03:00 24.07.2023, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 3,94 € 40,22
+(Lettland)
+#5096
+20.07.2023, 03:00 21.07.2023, 06:00 Zins Genehmigt Entwicklungskredit - 20.Stufe € 0,05 € 36,28
+(Lettland)
+#3598
+20.07.2023, 03:00 21.07.2023, 06:00 Zins Genehmigt Entwicklungskredit - 38.Stufe € 0,02 € 36,23
+(Litauen)
+#5096
+20.07.2023, 03:00 21.07.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 20.Stufe € 13,02 € 36,21
+(Lettland)
+#3598
+20.07.2023, 03:00 21.07.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 38.Stufe € 4,00 € 23,19
+(Litauen)
+#4467
+28.06.2023, 03:00 21.07.2023, 06:00 Zins Genehmigt Geschäftskredit - 6.Stufe € 0,91 € 19,19
+(Estland)
+#3463
+18.07.2023, 03:00 19.07.2023, 06:00 Zins Genehmigt Entwicklungskredit - 40.Stufe € 0,03 € 18,28
+(Estland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 36
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#3463
+18.07.2023, 03:00 19.07.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 40.Stufe € 6,44 € 18,25
+(Estland)
+#3239
+Überbrückung
+17.07.2023, 03:00 18.07.2023, 06:00 Zins Genehmigt skredit - € 2,06 € 11,81
+3.Stufe
+(Lettland)
+#33414354
+18.07.2023, 00:39 18.07.2023, 00:39 Investition Genehmigt Geschäftskredit - 3.Stufe (€ -75,00) € 9,75
+(Estland)
+#5096
+17.07.2023, 03:00 17.07.2023, 06:00 Zins Genehmigt Entwicklungskredit - 20.Stufe € 0,04 € 84,75
+(Lettland)
+#5096
+17.07.2023, 03:00 17.07.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 20.Stufe € 12,56 € 84,71
+(Lettland)
+#6013
+Überbrückung
+11.07.2023, 03:00 12.07.2023, 06:00 Hauptbetrag Genehmigt skredit - € 36,01 € 72,15
+4.Stufe
+(Estland)
+#85332175
+10.07.2023, 16:58 10.07.2023, 16:58 Investition Genehmigt Entwicklungskredit - 1.Stufe (€ -75,00) € 36,14
+(Estland)
+#70087513
+10.07.2023, 15:57 10.07.2023, 15:57 Investition Aufgehoben Entwicklungskredit - 7.Stufe € 75,00 € 111,14
+(Finnland)
+#6013
+Überbrückung
+09.07.2023, 03:00 10.07.2023, 06:00 Zins Genehmigt skredit - € 1,88 € 36,14
+4.Stufe
+(Estland)
+#2062
+05.07.2023, 03:00 07.07.2023, 06:00 Zins Genehmigt Entwicklungskredit - 22.Stufe € 4,88 € 34,26
+(Lettland)
+#6687
+Überbrückung
+06.07.2023, 03:00 06.07.2023, 06:00 Zins Genehmigt skredit - € 0,66 € 29,38
+13.Stufe
+(Finnland)
+#93822699
+05.07.2023, 14:38 05.07.2023, 14:38 Investition Genehmigt Entwicklungskredit - 3.Stufe (€ -75,00) € 28,72
+(Estland)
+#1231
+Überbrückung
+05.07.2023, 12:37 05.07.2023, 12:37 Investition Genehmigt skredit - (€ -75,00) € 103,72
+17.Stufe
+(Litauen)
+#7869
+05.07.2023, 11:37 05.07.2023, 11:37 Investition Genehmigt Entwicklungskredit - 2.Stufe (€ -75,00) € 178,72
+(Estland)
+#5096
+05.07.2023, 03:00 05.07.2023, 06:00 Zins Genehmigt Entwicklungskredit - 20.Stufe € 2,87 € 253,72
+(Lettland)
+#2315
+30.06.2023, 00:00 05.07.2023, 06:00 Entschädigung Genehmigt Entwicklungskredit - 2.Stufe € 0,01 € 250,85
+(Litauen)
+#35919683
+Überbrückung
+04.07.2023, 16:37 04.07.2023, 16:37 Investition Genehmigt skredit - (€ -75,00) € 250,84
+2.Stufe
+(Estland)
+#3598
+04.07.2023, 13:45 04.07.2023, 13:45 Investition Genehmigt Entwicklungskredit - 38.Stufe (€ -75,00) € 325,84
+(Litauen)
+#5483
+04.07.2023, 12:33 04.07.2023, 12:33 Investition Genehmigt Entwicklungskredit - 36.Stufe (€ -75,00) € 400,84
+(Litauen)
+#1954
+04.07.2023, 11:33 04.07.2023, 11:33 Investition Genehmigt Entwicklungskredit - 3.Stufe (€ -75,00) € 475,84
+(Litauen)
+#2062
+04.07.2023, 10:44 04.07.2023, 10:44 Investition Genehmigt Entwicklungskredit - 29.Stufe (€ -75,00) € 550,84
+(Lettland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 37
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#3463
+04.07.2023, 10:44 04.07.2023, 10:44 Investition Genehmigt Entwicklungskredit - 40.Stufe (€ -75,00) € 625,84
+(Estland)
+#6333
+04.07.2023, 10:42 04.07.2023, 10:42 Investition Genehmigt Entwicklungskredit - 39.Stufe (€ -75,00) € 700,84
+(Litauen)
+#1231
+Überbrückung
+04.07.2023, 10:41 04.07.2023, 10:41 Investition Genehmigt skredit - (€ -75,00) € 775,84
+16.Stufe
+(Litauen)
+#33414354
+04.07.2023, 10:40 04.07.2023, 10:40 Investition Genehmigt Geschäftskredit - 1.Stufe (€ -75,00) € 850,84
+(Estland)
+#70087513
+04.07.2023, 10:39 04.07.2023, 10:39 Investition Abgebrochen Entwicklungskredit - 7.Stufe (€ -75,00) € 925,84
+(Finnland)
+#10530334
+Überbrückung
+04.07.2023, 10:38 04.07.2023, 10:38 Investition Genehmigt skredit - (€ -75,00) € 1.000,84
+4.Stufe
+(Estland)
+04.07.2023, 09:08 04.07.2023, 09:08 Einzahlung Genehmigt € 1.000,00 € 1.075,84
+#5096
+03.07.2023, 03:00 04.07.2023, 06:00 Zins Genehmigt Entwicklungskredit - 20.Stufe € 0,60 € 75,84
+(Lettland)
+#5096
+03.07.2023, 03:00 04.07.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 20.Stufe € 12,15 € 75,24
+(Lettland)
+#3104
+28.06.2023, 03:00 04.07.2023, 06:00 Zins Genehmigt Entwicklungskredit - 5.Stufe € 0,62 € 63,09
+(Finnland)
+#3772
+04.07.2023, 03:00 04.07.2023, 06:00 Zins Genehmigt Entwicklungskredit - 19.Stufe € 1,88 € 62,47
+(Estland)
+#2315
+09.06.2023, 03:00 30.06.2023, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 1,88 € 60,59
+(Litauen)
+#0005
+26.06.2023, 10:34 26.06.2023, 10:34 Investition Genehmigt Entwicklungskredit - 10.Stufe (€ -75,00) € 58,71
+(Estland)
+#95146436
+Überbrückung
+22.06.2023, 03:00 22.06.2023, 06:00 Zins Genehmigt skredit - € 0,20 € 133,71
+1.Stufe
+(Litauen)
+#95146436
+Überbrückung
+14.03.2024, 03:00 22.06.2023, 06:00 Hauptbetrag Genehmigt skredit - € 75,00 € 133,51
+1.Stufe
+(Litauen)
+#4108
+Überbrückung
+21.06.2023, 10:36 21.06.2023, 10:36 Investition Genehmigt skredit - (€ -75,00) € 58,51
+29.Stufe
+(Lettland)
+#4843
+19.06.2023, 03:00 21.06.2023, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 1,48 € 133,51
+(Litauen)
+#4843
+10.01.2024, 03:00 21.06.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 2.Stufe € 75,00 € 132,03
+(Litauen)
+#79032256
+Überbrückung
+14.06.2023, 03:00 16.06.2023, 06:00 Zins Genehmigt skredit - € 2,06 € 57,03
+1.Stufe
+(Litauen)
+#95146436
+Überbrückung
+14.06.2023, 03:00 16.06.2023, 06:00 Zins Genehmigt skredit - € 2,06 € 54,97
+1.Stufe
+(Litauen)
+#9757
+14.06.2023, 00:00 15.06.2023, 06:00 Entschädigung Genehmigt Geschäftskredit - 8.Stufe € 0,01 € 52,91
+(Litauen)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 38
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#9757
+07.06.2023, 03:00 13.06.2023, 06:00 Zins Genehmigt Geschäftskredit - 8.Stufe € 2,06 € 52,90
+(Litauen)
+#8053
+07.06.2023, 03:00 08.06.2023, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 1,97 € 50,84
+(Litauen)
+#5483
+07.06.2023, 03:00 08.06.2023, 06:00 Zins Genehmigt Entwicklungskredit - 25.Stufe € 2,25 € 48,87
+(Litauen)
+#3610
+06.06.2023, 03:00 07.06.2023, 06:00 Zins Genehmigt Entwicklungskredit - 6.Stufe € 2,06 € 46,62
+(Litauen)
+#7680
+Überbrückung
+08.06.2023, 03:00 07.06.2023, 06:00 Zins Genehmigt skredit - € 0,57 € 44,56
+36.Stufe
+(Lettland)
+#6687
+Überbrückung
+06.06.2023, 03:00 06.06.2023, 06:00 Zins Genehmigt skredit - € 0,66 € 43,99
+13.Stufe
+(Finnland)
+#3104
+28.05.2023, 03:00 31.05.2023, 06:00 Zins Genehmigt Entwicklungskredit - 5.Stufe € 0,62 € 43,33
+(Finnland)
+#3239
+Überbrückung
+17.04.2023, 03:00 29.05.2023, 06:00 Zins Genehmigt skredit - € 2,06 € 42,71
+3.Stufe
+(Lettland)
+#4467
+10.05.2023, 12:41 10.05.2023, 12:41 Investition Genehmigt Geschäftskredit - 6.Stufe (€ -75,00) € 40,65
+(Estland)
+#9081
+Überbrückung
+09.05.2023, 03:00 10.05.2023, 06:00 Zins Genehmigt skredit - € 0,49 € 115,65
+1.Stufe
+(Litauen)
+#9081
+Überbrückung
+16.01.2024, 03:00 10.05.2023, 06:00 Hauptbetrag Genehmigt skredit - € 75,00 € 115,16
+1.Stufe
+(Litauen)
+#6687
+Überbrückung
+06.05.2023, 03:00 08.05.2023, 06:00 Zins Genehmigt skredit - € 0,66 € 40,16
+13.Stufe
+(Finnland)
+#3104
+28.04.2023, 03:00 03.05.2023, 06:00 Zins Genehmigt Entwicklungskredit - 5.Stufe € 1,05 € 39,50
+(Finnland)
+#7680
+Überbrückung
+26.04.2023, 03:00 27.04.2023, 06:00 Zins Genehmigt skredit - € 0,35 € 38,45
+36.Stufe
+(Lettland)
+#7680
+Überbrückung
+26.04.2023, 03:00 27.04.2023, 06:00 Hauptbetrag Genehmigt skredit - € 25,08 € 38,10
+36.Stufe
+(Lettland)
+#5096
+25.04.2023, 03:00 25.04.2023, 06:00 Zins Genehmigt Entwicklungskredit - 20.Stufe € 0,16 € 13,02
+(Lettland)
+#5096
+25.04.2023, 03:00 25.04.2023, 06:00 Hauptbetrag Genehmigt Entwicklungskredit - 20.Stufe € 5,36 € 12,86
+(Lettland)
+#9081
+Überbrückung
+16.04.2023, 03:00 17.04.2023, 06:00 Zins Genehmigt skredit - € 2,06 € 7,50
+1.Stufe
+(Litauen)
+#4843
+10.04.2023, 03:00 11.04.2023, 06:00 Zins Genehmigt Entwicklungskredit - 2.Stufe € 1,97 € 5,44
+(Litauen)
+#6013
+Überbrückung
+09.04.2023, 03:00 10.04.2023, 06:00 Zins Genehmigt skredit - € 1,88 € 3,47
+4.Stufe
+(Estland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 39
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#6687
+Überbrückung
+06.04.2023, 03:00 06.04.2023, 06:00 Zins Genehmigt skredit - € 0,66 € 1,59
+13.Stufe
+(Finnland)
+#7101
+Überbrückung
+05.04.2023, 11:16 05.04.2023, 11:16 Investition Genehmigt skredit - (€ -50,00) € 0,93
+7.Stufe
+(Estland)
+#3772
+04.04.2023, 03:00 04.04.2023, 06:00 Zins Genehmigt Entwicklungskredit - 19.Stufe € 1,88 € 50,93
+(Estland)
+#0633
+Überbrückung
+28.03.2023, 03:00 31.03.2023, 06:00 Zins Genehmigt skredit - € 0,62 € 49,05
+2.Stufe
+(Finnland)
+#7680
+Überbrückung
+29.03.2023, 03:00 30.03.2023, 06:00 Zins Genehmigt skredit - € 0,17 € 48,43
+36.Stufe
+(Lettland)
+#7680
+Überbrückung
+29.03.2023, 03:00 30.03.2023, 06:00 Hauptbetrag Genehmigt skredit - € 28,38 € 48,26
+36.Stufe
+(Lettland)
+#79032256
+Überbrückung
+14.03.2023, 03:00 14.03.2023, 03:00 Cashback Genehmigt skredit - € 0,38 € 19,88
+1.Stufe
+(Litauen)
+#95146436
+Überbrückung
+14.03.2023, 03:00 14.03.2023, 03:00 Cashback Genehmigt skredit - € 0,38 € 19,50
+1.Stufe
+(Litauen)
+#79032256
+Überbrückung
+09.03.2023, 08:42 09.03.2023, 08:42 Investition Genehmigt skredit - (€ -75,00) € 19,12
+1.Stufe
+(Litauen)
+#2315
+09.03.2023, 03:00 09.03.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 2.Stufe € 0,38 € 94,12
+(Litauen)
+#3104
+09.03.2023, 03:00 09.03.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 5.Stufe € 0,38 € 93,74
+(Finnland)
+#3167
+08.03.2023, 16:01 08.03.2023, 16:01 Investition Aufgehoben Entwicklungskredit - 3.Stufe € 75,00 € 93,36
+(Litauen)
+#7680
+Überbrückung
+08.03.2023, 03:00 08.03.2023, 03:00 Cashback Genehmigt skredit - € 0,38 € 18,36
+36.Stufe
+(Lettland)
+#6687
+Überbrückung
+06.03.2023, 03:00 07.03.2023, 05:00 Zins Genehmigt skredit - € 0,66 € 17,98
+13.Stufe
+(Finnland)
+#9757
+07.03.2023, 03:00 07.03.2023, 03:00 Cashback Genehmigt Geschäftskredit - 8.Stufe € 0,38 € 17,32
+(Litauen)
+#8053
+07.03.2023, 03:00 07.03.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 2.Stufe € 0,38 € 16,94
+(Litauen)
+#5483
+07.03.2023, 03:00 07.03.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 25.Stufe € 0,38 € 16,56
+(Litauen)
+#1782
+07.03.2023, 03:00 07.03.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 2.Stufe € 0,38 € 16,18
+(Estland)
+#3610
+06.03.2023, 03:00 06.03.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 6.Stufe € 0,38 € 15,80
+(Litauen)
+#4108
+Überbrückung
+03.03.2023, 11:10 03.03.2023, 11:10 Investition Genehmigt skredit - (€ -75,00) € 15,42
+19.Stufe
+(Lettland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 40
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#7680
+Überbrückung
+02.03.2023, 18:09 02.03.2023, 18:09 Investition Genehmigt skredit - (€ -75,00) € 90,42
+36.Stufe
+(Lettland)
+#8053
+02.03.2023, 16:20 02.03.2023, 16:20 Investition Genehmigt Entwicklungskredit - 2.Stufe (€ -75,00) € 165,42
+(Litauen)
+#9757
+02.03.2023, 15:06 02.03.2023, 15:06 Investition Genehmigt Geschäftskredit - 8.Stufe (€ -75,00) € 240,42
+(Litauen)
+#3104
+02.03.2023, 14:41 02.03.2023, 14:41 Investition Genehmigt Entwicklungskredit - 5.Stufe (€ -75,00) € 315,42
+(Finnland)
+#7785
+02.03.2023, 14:14 02.03.2023, 14:14 Investition Genehmigt Entwicklungskredit - 6.Stufe (€ -71,00) € 390,42
+(Lettland)
+#9147
+02.03.2023, 13:10 02.03.2023, 13:10 Investition Genehmigt Entwicklungskredit - 6.Stufe (€ -55,00) € 461,42
+(Lettland)
+#3610
+02.03.2023, 12:46 02.03.2023, 12:46 Investition Genehmigt Entwicklungskredit - 6.Stufe (€ -75,00) € 516,42
+(Litauen)
+#2315
+02.03.2023, 12:46 02.03.2023, 12:46 Investition Genehmigt Entwicklungskredit - 2.Stufe (€ -75,00) € 591,42
+(Litauen)
+#95146436
+Überbrückung
+02.03.2023, 12:45 02.03.2023, 12:45 Investition Genehmigt skredit - (€ -75,00) € 666,42
+1.Stufe
+(Litauen)
+#1782
+02.03.2023, 12:44 02.03.2023, 12:44 Investition Genehmigt Entwicklungskredit - 2.Stufe (€ -75,00) € 741,42
+(Estland)
+#5483
+02.03.2023, 12:43 02.03.2023, 12:43 Investition Genehmigt Entwicklungskredit - 25.Stufe (€ -75,00) € 816,42
+(Litauen)
+#3167
+02.03.2023, 12:42 02.03.2023, 12:42 Investition Abgebrochen Entwicklungskredit - 3.Stufe (€ -75,00) € 891,42
+(Litauen)
+#3080
+02.03.2023, 12:41 02.03.2023, 12:41 Investition Genehmigt Entwicklungskredit - 2.Stufe (€ -75,00) € 966,42
+(Estland)
+02.03.2023, 11:10 02.03.2023, 11:10 Einzahlung Genehmigt € 1.000,00 € 1.041,42
+#0633
+Überbrückung
+28.02.2023, 03:00 02.03.2023, 05:00 Zins Genehmigt skredit - € 1,13 € 41,42
+2.Stufe
+(Finnland)
+#3080
+28.02.2023, 03:00 28.02.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 2.Stufe € 0,38 € 40,29
+(Estland)
+#7785
+28.02.2023, 03:00 28.02.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 6.Stufe € 0,35 € 39,91
+(Lettland)
+#9147
+28.02.2023, 03:00 28.02.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 6.Stufe € 0,28 € 39,56
+(Lettland)
+#6687
+Überbrückung
+06.02.2023, 03:00 06.02.2023, 05:00 Zins Genehmigt skredit - € 0,39 € 39,28
+13.Stufe
+(Finnland)
+#3239
+Überbrückung
+31.01.2023, 03:00 31.01.2023, 03:00 Cashback Genehmigt skredit - € 0,38 € 38,89
+3.Stufe
+(Lettland)
+#6687
+Überbrückung
+20.01.2023, 03:00 20.01.2023, 03:00 Cashback Genehmigt skredit - € 0,38 € 38,51
+13.Stufe
+(Finnland)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 41
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#0588
+18.01.2023, 03:00 18.01.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 2.Stufe € 0,38 € 38,13
+(Finnland)
+#9081
+Überbrückung
+16.01.2023, 03:00 16.01.2023, 03:00 Cashback Genehmigt skredit - € 0,38 € 37,75
+1.Stufe
+(Litauen)
+#8826
+10.01.2023, 03:00 10.01.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 17.Stufe € 0,38 € 37,37
+(Finnland)
+#4843
+10.01.2023, 03:00 10.01.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 2.Stufe € 0,38 € 36,99
+(Litauen)
+#6013
+Überbrückung20
+09.01.2023, 03:00 09.01.2023, 03:00 Cashback Genehmigt skredit - € 0,38 € 36,61
+4.Stufe
+(Estland)
+#5096
+05.01.2023, 03:00 05.01.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 20.Stufe € 0,38 € 36,23
+(Lettland)
+#7682
+05.01.2023, 03:00 05.01.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 2.Stufe € 0,38 € 35,85
+(Lettland)
+#0633
+Überbrückung
+05.01.2023, 03:00 05.01.2023, 03:00 Cashback Genehmigt skredit - € 0,38 € 35,47
+2.Stufe
+(Finnland)
+#2062
+05.01.2023, 03:00 05.01.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 22.Stufe € 0,38 € 35,09
+(Lettland)
+#6013
+Überbrückung
+04.01.2023, 11:14 04.01.2023, 11:14 Investition Genehmigt skredit - (€ -75,00) € 34,71
+4.Stufe
+(Estland)
+#6164
+04.01.2023, 03:00 04.01.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 12.Stufe € 0,33 € 109,71
+(Lettland)
+#3772
+04.01.2023, 03:00 04.01.2023, 03:00 Cashback Genehmigt Entwicklungskredit - 19.Stufe € 0,38 € 109,38
+(Estland)
+#7682
+03.01.2023, 21:07 03.01.2023, 21:07 Investition Genehmigt Entwicklungskredit - 2.Stufe (€ -75,00) € 109,00
+(Lettland)
+#2062
+03.01.2023, 18:14 03.01.2023, 18:14 Investition Genehmigt Entwicklungskredit - 22.Stufe (€ -75,00) € 184,00
+(Lettland)
+#0633
+Überbrückung
+03.01.2023, 17:10 03.01.2023, 17:10 Investition Genehmigt skredit - (€ -75,00) € 259,00
+2.Stufe
+(Finnland)
+#3772
+03.01.2023, 16:11 03.01.2023, 16:11 Investition Genehmigt Entwicklungskredit - 19.Stufe (€ -75,00) € 334,00
+(Estland)
+#6164
+03.01.2023, 15:08 03.01.2023, 15:08 Investition Genehmigt Entwicklungskredit - 12.Stufe (€ -66,00) € 409,00
+(Lettland)
+#9081
+Überbrückung
+03.01.2023, 14:08 03.01.2023, 14:08 Investition Genehmigt skredit - (€ -75,00) € 475,00
+1.Stufe
+(Litauen)
+#0588
+03.01.2023, 12:41 03.01.2023, 12:41 Investition Genehmigt Entwicklungskredit - 2.Stufe (€ -75,00) € 550,00
+(Finnland)
+#4843
+03.01.2023, 12:40 03.01.2023, 12:40 Investition Genehmigt Entwicklungskredit - 2.Stufe (€ -75,00) € 625,00
+(Litauen)
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 42
+Zahlungsdatum Bestätigungsdatum Cashflow-Typ Cashflow-Status Projektname Betrag Saldo
+#6687
+Überbrückung
+03.01.2023, 12:40 03.01.2023, 12:40 Investition Genehmigt skredit - (€ -75,00) € 700,00
+13.Stufe
+(Finnland)
+#3239
+Überbrückung
+03.01.2023, 12:40 03.01.2023, 12:40 Investition Genehmigt skredit - (€ -75,00) € 775,00
+3.Stufe
+(Lettland)
+#5096
+03.01.2023, 12:39 03.01.2023, 12:39 Investition Genehmigt Entwicklungskredit - 20.Stufe (€ -75,00) € 850,00
+(Lettland)
+#8826
+03.01.2023, 12:38 03.01.2023, 12:38 Investition Genehmigt Entwicklungskredit - 17.Stufe (€ -75,00) € 925,00
+(Finnland)
+03.01.2023, 09:09 03.01.2023, 09:09 Einzahlung Genehmigt € 1.000,00 € 1.000,00
+Estateguru OÜ, Tartu mnt 10/Pääsukese 2, Tallinn, 10145, Estland, info@estateguru.co 43

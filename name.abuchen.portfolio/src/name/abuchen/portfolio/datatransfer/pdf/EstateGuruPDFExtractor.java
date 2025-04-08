@@ -30,57 +30,47 @@ public class EstateGuruPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("(Transaktionsbericht|Transactions Report)");
+        final var type = new DocumentType("(Transaktionsbericht|Transactions Report)");
         this.addDocumentTyp(type);
 
-        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} " //
-                        + "(Einzahlung"
-                        + "|Deposit" //
-                        + "|Principal" //
-                        + "|Secondary Market" //
-                        + "|Hauptbetrag" //
-                        + "|Zweitmarkt).*$");
+        // @formatter:off
+        // 25.07.2023, 09:10 25.07.2023, 09:10 Einzahlung Genehmigt € 300,00 € 364,11
+        // 03.10.2023, 09:10 03.10.2023, 09:10 Deposit Approved € 30.00 € 79.94
+        // 11.09.2024, 03:00 12.09.2024, 06:00 Principal Approved skredit - € 5.41 € 263.66
+        // 02.12.2023, 12:57 02.12.2023, 12:57 Secondary Market Approved Entwicklungskredit - 3.Stufe € 13.54 € 276.09
+        // 01.10.2024, 03:00 03.10.2024, 06:00 Hauptbetrag Genehmigt skredit - € 50,00 € 369,20
+        // 02.12.2023, 12:57 02.12.2023, 12:57 Zweitmarkt Genehmigt Entwicklungskredit - 3.Stufe € 13,54 € 276,09
+        // 23.08.2024, 09:30 23.08.2024, 09:30 Investition Aufgehoben Geschäftskredi € 64,00 € 131,77
+        // 14.03.2023, 03:00 14.03.2023, 03:00 Cashback Genehmigt skredit - € 0,38 € 19,88
+        // @formatter:on
+        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} " //
+                        + "(Einzahlung Genehmigt" //
+                        + "|Deposit Approved" //
+                        + "|Principal Approved" //
+                        + "|Secondary Market Approved" //
+                        + "|Hauptbetrag Genehmigt" //
+                        + "|Zweitmarkt Genehmigt" //
+                        + "|Investition Aufgehoben" //
+                        + "|Cashback Genehmigt).*$");
         type.addBlock(depositBlock);
         depositBlock.setMaxSize(1);
         depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
 
-                        .oneOf( //
-                                        // @formatter:off
-                                        // 25.07.2023, 09:10 25.07.2023, 09:10 Einzahlung Genehmigt € 300,00 € 364,11
-                                        // 03.10.2023, 09:10 03.10.2023, 09:10 Deposit Approved € 30.00 € 79.94
-                                        // 01.10.2024, 03:00 03.10.2024, 06:00 Hauptbetrag Genehmigt skredit - € 50,00 € 369,20
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date", "currency", "amount") //
-                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), [\\d]{2}:[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} .*" //
-                                                                        + "(?<currency>\\p{Sc}) (?<amount>[\\.,\\d]+) " //
-                                                                        + "\\p{Sc} [\\.,\\d]+$") //
-                                                        .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                        }),
-                                        // @formatter:off
-                                        // 11.09.2024, 03:00 12.09.2024, 06:00 Principal Approved skredit - € 5.41 € 263.66
-                                        // 02.12.2023, 12:57 02.12.2023, 12:57 Secondary Market Approved Entwicklungskredit - 3.Stufe € 13.54 € 276.09         
-                                        // 02.12.2023, 12:57 02.12.2023, 12:57 Zweitmarkt Genehmigt Entwicklungskredit - 3.Stufe € 13,54 € 276,09
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("date", "currency", "amount") //
-                                                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), [\\d]{2}:[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} .*" //
-                                                                        + "(?<currency>\\p{Sc}) (?<amount>[\\.,\\d]+) " //
-                                                                        + "\\p{Sc} [\\.,\\d]+$") //
-                                                        .assign((t, v) -> {
-                                                            t.setDateTime(asDate(v.get("date")));
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                        }))
+                        .section("date", "currency", "amount") //
+                        .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), [\\d]{2}:[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} .*" //
+                                        + "(?<currency>\\p{Sc}) (?<amount>[\\.,\\d]+) " //
+                                        + "\\p{Sc} [\\.,\\d]+$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
 
                         .wrap(TransactionItem::new));
 
@@ -89,18 +79,23 @@ public class EstateGuruPDFExtractor extends AbstractPDFExtractor
         // 20.12.2023, 16:54 20.12.2023, 16:54 Investment Approved skredit - (€ -50.00) € 17.95
         // 04.12.2023, 15:16 04.12.2023, 15:16 Withdrawal Approved (€ -273.30) € 1.38
         // 20.12.2023, 16:54 20.12.2023, 16:54 Investition Genehmigt skredit - (€ -50,00) € 17,95
+        // 10.12.2024, 16:21 10.12.2024, 16:21 Investition Ausstehend Entwicklungskredit - 10.Stufe (€ -53,00) € 0,70
+        // 25.07.2024, 18:39 25.07.2024, 18:39 Investition Abgebrochen Geschäftskredi (€ -64,00) € 1,04
         // @formatter:on
-        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} " //
-                        + "(Auszahlung" //
-                        + "|Investment" //
-                        + "|Withdrawal" //
-                        + "|Investition).*$");
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} " //
+                        + "(Auszahlung Genehmigt" //
+                        + "|Investment Approved" //
+                        + "|Withdrawal Approved" //
+                        + "|Investition Approved" //
+                        + "|Investition Genehmigt" //
+                        + "|Investition Ausstehend" //
+                        + "|Investition Abgebrochen).*$");
         type.addBlock(removalBlock);
         removalBlock.setMaxSize(1);
         removalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.REMOVAL);
                             return accountTransaction;
                         })
@@ -125,26 +120,26 @@ public class EstateGuruPDFExtractor extends AbstractPDFExtractor
         // 28.09.2024, 03:00 30.09.2024, 06:00 Interest Approved Entwicklungskredit - 3.Stufe € 0.42 € 267.63
         // 01.11.2023, 00:00 29.11.2023, 05:00 Indemnity Approved Entwicklungskredit - 3.Stufe € 0.01 € 242.49
         // 20.09.2023, 19:23 20.09.2023, 19:23 Secondary Market Profit Approved Entwicklungskredit - 22.Stufe € 0.27 € 74.60
+        // 20.09.2023, 19:23 20.09.2023, 19:23 Gewinn auf dem Zweitmarkt Genehmigt Entwicklungskredit - 22.Stufe € 0,27 € 74,60
         // 10.02.2023, 03:00 06.03.2023, 05:00 Penalty Approved Entwicklungskredit - 1.Stufe € 0.36 € 21.01
         // 01.11.2023, 00:00 29.11.2023, 05:00 Entschädigung Genehmigt Entwicklungskredit - 3.Stufe € 0,01 € 242,49
-        // 20.09.2023, 19:23 20.09.2023, 19:23 Gewinn auf dem Zweitmarkt Genehmigt Entwicklungskredit - 22.Stufe € 0,27 € 74,60
         // @formatter:on
-        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} " //
-                        + "(Zins" //
-                        + "|Strafe" //
-                        + "|Entsch.digung" //
-                        + "|Interest" //
-                        + "|Indemnity" //
-                        + "|Secondary Market Profit" //
-                        + "|Gewinn auf dem Zweitmarkt" //
-                        + "|Penalty" //
-                        + "|Entsch.digung).*$");
+        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} " //
+                        + "(Zins Genehmigt" //
+                        + "|Strafe Genehmigt" //
+                        + "|Entsch.digung Genehmigt" //
+                        + "|Interest Approved" //
+                        + "|Indemnity Approved" //
+                        + "|Secondary Market Profit Approved" //
+                        + "|Gewinn auf dem Zweitmarkt Genehmigt" //
+                        + "|Penalty Approved" //
+                        + "|Entsch.digung Genehmigt).*$");
         type.addBlock(interestBlock);
         interestBlock.setMaxSize(1);
         interestBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
@@ -179,19 +174,19 @@ public class EstateGuruPDFExtractor extends AbstractPDFExtractor
         // 04.12.2023, 15:16 04.12.2023, 00:00 Abhebegebühr Genehmigt (€ -1,00) € 274,68
         // 02.12.2023, 12:57 02.12.2023, 12:57 Verkaufsgebühr Genehmigt Entwicklungskredit - 3.Stufe (€ -0,41) € 275,68
         // @formatter:on
-        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} " //
-                        + "(Verm.gensverwaltungsgeb.hr" //
-                        + "|AUM" //
-                        + "|Withdraw fee" //
-                        + "|Sale fee" //
-                        + "|Abhebegeb.hr" //
-                        + "|Verkaufsgeb.hr).*$");
+        var feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}, [\\d]{2}:[\\d]{2} " //
+                        + "(Verm.gensverwaltungsgeb.hr Genehmigt" //
+                        + "|AUM fee Approved" //
+                        + "|Withdraw fee Approved" //
+                        + "|Sale fee Approved" //
+                        + "|Abhebegeb.hr Genehmigt" //
+                        + "|Verkaufsgeb.hr Genehmigt).*$");
         type.addBlock(feesBlock);
         feesBlock.setMaxSize(1);
         feesBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES);
                             return accountTransaction;
                         })
@@ -219,11 +214,11 @@ public class EstateGuruPDFExtractor extends AbstractPDFExtractor
     @Override
     protected long asAmount(String value)
     {
-        String language = "de";
-        String country = "DE";
+        var language = "de";
+        var country = "DE";
 
-        int lastDot = value.lastIndexOf(".");
-        int lastComma = value.lastIndexOf(",");
+        var lastDot = value.lastIndexOf(".");
+        var lastComma = value.lastIndexOf(",");
 
         // returns the greater of two int values
         if (Math.max(lastDot, lastComma) == lastDot)
