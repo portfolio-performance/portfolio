@@ -1,0 +1,39 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+   
+Am Marktplatz 10 · 97762 Hammelburg
+Depotnummer
+ 92958109
+ Kundennummer 554049556
+hBoqvO uPvjD mvBzcto
+ Auftragsnummer 166647/10.00
+MQBsDn kCZsN FGQqqoy Datum 09.05.2023
+jMubQTLVp. 7 Ihr Berater Herr vmm gNXIGeqZoCd
+99777 gDmSQNXS Telefon +49 951 302896-13
+Rechnungsnummer W06175-0359454460/23
+Umsatzsteuer-ID DE198159260   
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 600 XTR.(IE) - MSCI WORLD              IE00BJ0KDQ92 (A1XB5U)
+REGISTERED SHARES 1C O.N.          
+Handels-/Ausführungsplatz Quotrix (Best Execution)
+Börsensegment DUSD
+Limit-Order
+Limit 79,66 EUR 
+Schlusstag/-Zeit 09.05.2023 09:26:37 Auftraggeber jvDDiy QfmZL LloZHJy
+Ausführungskurs 79,644 EUR Auftragserteilung/ -ort Online-Banking
+Wertpapierrechnung Lagerland Irland
+Kurswert 47.786,40- EUR
+Provision 25,00- EUR
+Übertragungs-/Liefergebühr 0,06- EUR
+Ausmachender Betrag 47.811,46- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 11.05.2023 zu Lasten des Kontos 1192107 (IBAN DE65 7013 0800 0001 5415 77),
+BLZ 70130800 (BIC GENODEF1M06).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6175.05091724.0000045OR07

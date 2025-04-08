@@ -1,0 +1,83 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Erträgnisgutschrift aus Wertpapieren
+DEPOTNUMMER=711/0703/001
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=0000
+ADRESSZEILE1=Frau
+Ausschüttung für
+ADRESSZEILE2=sqfHPMJZ sqfHPMJZ
+01.03.2017 - 31.12.2017
+ADRESSZEILE3=sqfHPMJZ 12b
+Depot-Nr. Abrechnungs-Nr.
+Frau ADRESSZEILE4=12345 yhOMlsnB
+ADRESSZEILE5=
+oflWifpHx wlKxmxhB
+711/0703/001 13753098
+ADRESSZEILE6=
+sqfHPMJZ 12b
+BELEGNUMMER=13947
+12345 sqfHPMJZ
+SEITENNUMMER=1
+STEUERERSTATTUNG=N
+Depotinhaber
+GAYbcuGZj TMJhDmBo
+Ertragsthesaurierung
+Wiesbaden, 13.01.2018
+Gattungsbezeichnung ISIN
+Deka DAXplus Maximum Div.U.ETF Inhaber-Anteile DE000ETFL235
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 165,000 02.01.2018 15.01.2018 EUR 0,005680
+Wert Betrag zu Ihren Gunsten
+15.01.2018 EUR 4,69
+Ertrag für 2017 EUR 0,94
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zinsanteil (Thesaurierung) EUR 0,94
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+Steuerliquidität EUR 4,95
+zu versteuern EUR 0,94
+einbehaltene Kapitalertragsteuer EUR 0,23
+einbehaltener Solidaritätszuschlag EUR 0,01
+einbehaltene Kirchensteuer EUR 0,02
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 2.119,01
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 116,54
+im laufenden Jahr einbehaltene Kirchensteuer EUR 190,71
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Wiesbaden, Steuernummer 402/200/0073.
+Es folgt Seite 2
+3.20/ABREEREIERTR/GDBERTRG/013947/130118/032659
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Depot-Nr. Abrechnungs-Nr. Seite-Nr.
+DEPOTNUMMER=711/0703/001
+711/0703/001 13753098 2
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=0000
+ADRESSZEILE1=Frau
+ADRESSZEILE2=sqfHPMJZ sqfHPMJZ
+ADRESSZEILE3=sqfHPMJZ 12b
+Steuerlicher Stichtag 31.12.2017
+ADRESSZEILE4=12345 sqfHPMJZ
+Die Kapitalverwaltungsgesellschaft (KVG) entnimmt KESt, SolZ und ggf. KiSt dem Sondervermögen und stellt den
+ADRESSZEILE5=
+auszahlenden Stellen diesen Betrag in Form der Steuerliquidität zur Verfügung. Abhängig von der tatsächlich
+ADRESSZEILE6=
+abzuführenden Steuer wird ein möglicher Differenzbetrag dem Kundenkonto erstattet.
+BELEGNUMMER=13947
+Jahressteuerbescheinigung folgt
+SEITENNUMMER=2
+Verwahrart: Girosammelverwahrung
+STEUERERSTATTUNG=N
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/ABREEREIERTR/GDBERTRG/013947/130118/032659

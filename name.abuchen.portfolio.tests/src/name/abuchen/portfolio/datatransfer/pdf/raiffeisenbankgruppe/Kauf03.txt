@@ -1,0 +1,50 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+ da
+ 
+  
+RB Timelkam-Lenzing-Puchkirchen eGen (BLZ: 34669)   
+Bankstelle Timelkam-Lenzing-Puchkirchen  
+Pollheimerstraße 1    b
+4850 Timelkam  
+ 
+ 
+a
+a  
+Abrechnung a  
+12345678 - 12.01.2022 a  
+Depotnummer: 00.000.000  
+Herrn Vorname Nachname
+meine Depotbezeichnung
+Meine Adresse 000/42
+Meine PLZ/Ort Bst. Timelkam
+Wir haben für Sie am 12.01.2022 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Kauf Auftrags-Nr.: 12345678 - 12.01.2022
+Auftragseingang: 12.01.2022 - 08:12:46
+Zugang: 6 Stk   
+Titel: IE00B6YX5C33 SPDR S&P 500 UCITS ETF
+Registered Shares USD o.N.
+Fondsgesellschaft: SSgA SPDR ETFs EUROPE I PLC
+Kurs: 413 EUR
+Handelsplatz: XETR Deutsche Börse - Frankfurt Xetra
+Handelszeit: 12.01.2022 16:42:58
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt am Main
+Kurswert: -2.478,00 EUR 
+Handelsortentgelt inkl. Fremdspesen: -4,00 EUR 
+Gebühren: -25,00 EUR 
+Orderleitgebühr: -3,00 EUR 
+Zu Lasten IBAN AT00 0000 0000 0000 0000 -2.510,00 EUR 
+Valuta 14.01.2022
+Schlusstag: 12.01.2022
+Kassatag: 14.01.2022
+Warnung: Aufgrund fehlender Daten konnte keine vollständige Zielmarktprüfung durchgeführt werden.
+Bestand nach Buchung:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 6 Stk
+steuerlicher Anschaffungswert: 2.478,00 EUR
+Steuerl. Behandlung vorbehaltlich Beurteilung durch BMF
+12.01.2022 1 / 1
+BIC: RZOOAT2L669, Landesgericht Wels, FN 95196w, UID: ATU23469208
+Dieser Beleg wurde durch die Raiffeisenlandesbank Oberösterreich erstellt.
+Ohne Unterschrift. Bitte geben Sie Unstimmigkeiten sofort bekannt.

@@ -1,0 +1,52 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Umsatzabrechnung-Nr. 64
+Depot-Nr. xxx
+Seite 1 von 7
+Herrn
+Mustermann
+Musterstr.
+12345 Musterstadt
+15.06.2021
+Umsatzabrechnung für Ihr ebase Depot
+für den Zeitraum vom 01.06.2022 bis 30.06.2022
+
+Fondsertrag (Ausschüttung) mit Bestandsdatum 14.06.2022 in Depotposition xxxx.xx
+iShare.NASDAQ-100 UCITS ETF DE Inhaber-Anteile
+Ref. Nr. xxxx/xxxx, Buchungsdatum 17.06.2022
+ISIN Anteilsbestand Betrag je Anteil Betrag
+DE000A0F5UF5 27,707360 0,202830000 USD 5,62 USD
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer Devisenkurs abzgl. Steuern
+0,93 EUR 0,05 EUR 0,00 EUR 1,051200 1,03 USD
+Zahlungsbetrag in Fremdwährung 4,59 USD
+Zahlungsbetrag nach Währungskonvertierung mit Devisenkurs 1,051200 EUR/USD 4,37 EUR
+Wiederanlage des Zahlungsbetrags erfolgt in Depotposition xxxx.xx mit Ref. Nr. xxxx/xxxx
+
+Bitte beachten Sie folgende Hinweise:
+Einwendungen
+Wir bitten Sie, diesen Depotauszug auf seine Richtigkeit und Vollständigkeit zu überprüfen. Einwendungen wegen Unrichtigkeit
+oder Unvollständigkeit erheben Sie bitte unverzüglich, nach Erhalt dieses Depotauszugs, gegenüber der ebase unter Nennung der
+Depotnummer und des Datums des Depotauszugs.
+Das Unterlassen der rechtzeitigen Einwendung(en) gilt als Genehmigung der Abrechnung(en)/des Depotauszugs, gemäß Punkt
+"Prüfungen und Einwendungen bei Mitteilungen der ebase" der Allgemeinen Geschäftsbedingungen der European Bank for
+Financial Services GmbH für Privatanleger.
+Bitte denken Sie daran, uns frühzeitig über Änderungen Ihrer persönlichen Daten zu informieren.
+Hinweis Ihrer Verwaltungsgesellschaft zum Widerrufsrecht bei dem Kauf/Verkauf von Investmentanteilen/Organismen für gemein-
+same Anlagen in Wertpapieren (OGAW)/Alternative Investmentfonds (AIF)
+Wenn der Kauf von Anteilen aufgrund mündlicher Verhandlungen außerhalb der ständigen Geschäftsräume desjenigen, der die
+Anteile verkauft oder den Verkauf der Anteile vermittelt hat, zustande kommt, so ist der Käufer nach § 305 KAGB berechtigt, ohne
+Angabe von Gründen, seine Kauferklärung zu widerrufen (Widerrufsrecht). Dies gilt auch dann, wenn derjenige, der die Anteile
+verkauft oder den Verkauf vermittelt, keine ständigen Geschäftsräume hat. Der Widerruf hat innerhalb einer Frist von zwei Wochen
+gegenüber der Verwaltungsgesellschaft oder ihrem Repräsentanten im Sinne von § 319 KAGB in Textform zu erfolgen.
+Zur Wahrung der Frist genügt die rechtzeitige Absendung der Widerrufserklärung. Die vorstehenden Ausführungen gelten ent-
+sprechend beim Verkauf von Anteilen durch den Anleger. Die detaillierten Hinweise zum Widerrufsrecht bei dem Kauf/Verkauf von
+Investmentanteilen/OGAW/AIF finden sie unter Punkt 13 der Bedingungen für das Investmentdepot für Privatanleger bei der European
+Bank for Financial Services GmbH. Genaue Angaben zur Verwaltungsgesellschaft oder zu ihrem Repräsentanten entnehmen Sie den
+Verkaufsunterlagen. Die European Bank for Financial Services GmbH ist lediglich depotführende Stelle.
+Diese Mitteilung wird nicht unterschrieben.
+finvesto - Amtsgericht München HRB 141 740 Geschäftsführung: Telefon: +49 89 45460-380
+eine Marke der European Bank for USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller Telefax: +49 89 45460-161
+Financial Services GmbH (ebase®) Gläubiger-ID: Aufsichtsratsvorsitzender: E-Mail: info@finvesto.de
+80218 München DE68ZZZ00000025032 Frank Strauß Web: www.finvesto.de

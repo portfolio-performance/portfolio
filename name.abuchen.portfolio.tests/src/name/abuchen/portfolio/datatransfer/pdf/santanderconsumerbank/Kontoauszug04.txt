@@ -1,0 +1,72 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.5.qualifier
+-----------------------------------------
+Kontoinhaber Max Muster
+Auszug-Nr. 001 Blatt-Nr. 1 Auszug-Datum 02.01.2018 Limit 0,00
+Buchungstag Wert Umsatz Buchungstext
+Ihre IBAN: DE93 3101 0833 2264 0131 20 BIC: CCBADE31 Konto-Nr. 2264013120 EUR
+SALDENMITTEILUNG:
+WIR BITTEN SIE, DIE RICHTIGKEIT DES SALDOS ZU PRÜFEN
+UND UNSTIMMIGKEITEN DER REVISIONSABTEILUNG, POSTFACH
+10 12 14, 41052 MÖNCHENGLADBACH, UMGEHEND MITZUTEILEN.
+DER SALDO GILT ALS ANERKANNT, WENN SIE NICHT INNERHALB
+VON SECHS WOCHEN SEIT ZUGANG DER SALDOMITTEILUNG
+WIDERSPRECHEN. DIE ANERKENNUNG DES SALDOS UMFASST AUCH
+EINE GENEHMIGUNG DER DARIN ENTHALTENEN BELASTUNGEN
+AUFGRUND VON EINZUGSERMÄCHTIGUNGSLASTSCHRIFTEN UND/ODER
+SEPA BASISLASTSCHRIFTEN.
+DIESER KONTOAUSZUG UMFASST DIE UMSÄTZE VOM
+03.01.2017 BIS 02.01.2018
+24,12 ALTER SALDO GEM. KONTOAUSZUG VOM 02.01.2017
+31.01. 30.01. 0,01 Habenzinsen 0,01
+31.03. 31.03. 5,87 ÜBERWEISUNG VON MAX MUSTER 32930011633BBDBMFG IBAN
+DE30120300000018886254 BIC BYLADEM1001
+EREF+NOTPROVIDED SVWZ+Einzahlung 01/17
+30,00 ZWISCHENSALDO
+Stand: 06.2015
+Kontoauszug
+Kontoinhaber Max Muster
+Auszug-Nr. 001 Blatt-Nr. 2 Auszug-Datum 02.01.2018 Limit 0,00
+Buchungstag Wert Umsatz Buchungstext
+Ihre IBAN: DE93 3101 0833 2264 0131 20 BIC: CCBADE31 Konto-Nr. 2264013120 EUR
+30,00 ÜBERTRAG GELD-MANAGEMENT-KONTO
+28.04. 28.04. 10,00 ÜBERWEISUNG VON MAX MUSTER 32930011633BBDCPTX IBAN
+DE30120300000018886254 BIC BYLADEM1001
+EREF+NOTPROVIDED SVWZ+Einzahlung 02/17
+03.07. 30.06. 0,01 Habenzinsen 0,01
+31.07. 30.07. 0,01 Habenzinsen 0,01
+31.08. 30.08. 0,01 Habenzinsen 0,01
+40,03 NEUER SALDO
+Stand: 06.2015
+Kontoauszug
+Kontoinhaber Max Muster
+Auszug-Nr. 001 Blatt-Nr. Auszug-Datum 02.01.2018 Limit 0,00
+Buchungstag Wert Umsatz Buchungstext
+Ihre IBAN: DE93 3101 0833 2264 0131 20 BIC: CCBADE31 Konto-Nr. 2264013120 EUR
+Wichtige Hinweise
+Wir bitten Sie, die Buchungen zu prüfen und uns evtl. Unstimmigkeiten sofort mitzuteilen.
+Die Gutschrift von Schecks, Wechseln und sonstigen Einzugspapieren erfolgt unter „Eingang
+vorbehalten“. Der angegebene Kontostand berücksichtigt nicht die Wertstellung der
+Buchungen und kann daher auch noch nicht wertgestellte Beträge enthalten, über die bis zur
+Wertstellung nicht ohne Belastung mit Sollzinsen verfügt werden kann. Eine Lastschrift sowie
+Schecks sind eingelöst, wenn die Belastung nicht spätestens am zweiten Bankarbeitstag nach
+Ihrer Vornahme rückgängig gemacht wird. Enthält der Kontoauszug eine als
+Rechnungsabschluss gekennzeichnete Buchung, gilt der Abschlusssaldo als genehmigt, wenn
+nicht innerhalb von 6 Wochen seit Zugang Einwendungen an unseren Bereich Revision,
+Santander-Platz 1, 41061 Mönchengladbach abgesandt werden.
+Dieser Kontoauszug stellt keine Steuerbescheinigung dar. USt-Id. DE 120492390
+Finanzdienstleistungen sind umsatzsteuerbefreit.
+Wir, als Finanzdienstleister, sind gesetzlich verpflichtet, anfallende Kirchensteuern direkt an
+das zuständige Finanzamt abzuführen. Dazu wird regelmäßig eine automatische Abfrage
+Ihres Kirchensteuerabzugsmerkmals beim Bundeszentralamt für Steuern durchgeführt. Sie
+haben die Möglichkeit, der Übermittlung des Merkmals vom Bundeszentralamt für Steuern
+an Finanzinstitute bis zum 30. Juni eines Jahres direkt beim Bundeszentralamt für Steuern
+unter http://www.bzst.de zu widersprechen.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes
+entschädigungsfähig. Nähere Informationen können Sie dem „Informationsbogen für den
+Einleger“ unter www.santander.de oder www.santanderbank.de entnehmen.
+Stand: 06.2015
+Kontoauszug
+
+```

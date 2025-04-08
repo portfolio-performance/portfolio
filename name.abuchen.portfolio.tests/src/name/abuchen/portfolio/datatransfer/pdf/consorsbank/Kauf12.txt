@@ -1,0 +1,37 @@
+PDF Autor: 'Consorsbank'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer:
+Vermerk der Bank: 1000
+2
+i i i
+. Datum: 15.12.2020
+l Seite: 1 von 1
+Ordernummer 184007672.001
+Orderdatum 15.12.2020
+ORDERABRECHNUNG
+KAUF AM 15.12.2020 UM 09:30:34 SPARPLAN NR. 184007672.001
+Bezeichnung WKN ISIN
+ALLIANZ SE NA O.N. 840400 DE0008404005
+Einheit Umsatz
+ST 0,12804
+Preis pro Anteil 192,360000 EUR
+Kurswert 24,63 EUR
+Provision 0,37 EUR
+zulasten Konto-Nr. 12345678 25,00 EUR
+Bestand zugunsten Girosammelverwahrung
+CBF 2126
+Die Order wurde an folgender Börse gehandelt: SPARPLAN TRADEGATE
+Sparplanname: Sparplan Allianz
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+PrØsident du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur GØnØral (Generaldirektor): Jean-Laurent BonnafØ

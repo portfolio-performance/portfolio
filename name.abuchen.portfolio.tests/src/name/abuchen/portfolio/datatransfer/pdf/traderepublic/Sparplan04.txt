@@ -1,0 +1,33 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Max Mustermann SEITE 1 von 1
+Musterstraße 1A DATUM 18.01.2021
+12345 Musterstadt AUSFÜHRUNG 3609-6874
+SPARPLAN 98a0-1d15
+DEPOT 0123456789
+WERTPAPIERABRECHNUNG SPARPLAN
+ÜBERSICHT
+Sparplanausführung am 18.01.2021 an der Lang & Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL DURCHSCHNITTSKURS BETRAG
+LVMH Moët Henn. L. Vuitton SE 2,0028 Stk. 499,30 EUR 1.000,00 EUR
+Actions Port. (C.R.) EO 0,3
+ISIN: FR0000121014
+GESAMT 1.000,00 EUR
+ABRECHNUNG
+POSITION BETRAG
+Frz. Finanztransaktionssteuer -3,00 EUR
+GESAMT -1.003,00 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE511111111111111111111 20.01.2021 -1.003,00 EUR
+LVMH Moët Henn. L. Vuitton SE Actions Port. (C.R.) EO 0,3 in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 18.01.2021 / 15368109 / d646-4434

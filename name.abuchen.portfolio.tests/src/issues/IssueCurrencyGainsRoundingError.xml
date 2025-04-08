@@ -1,5 +1,5 @@
 <client>
-  <version>29</version>
+  <version>51</version>
   <baseCurrency>EUR</baseCurrency>
   <securities>
     <security>
@@ -15,6 +15,7 @@
       </attributes>
       <events/>
       <isRetired>false</isRetired>
+      <updatedAt>2021-08-06T18:50:22.601327Z</updatedAt>
     </security>
     <security>
       <uuid>f87dfcf1-6139-444c-a4d5-5b0c116743fa</uuid>
@@ -30,6 +31,7 @@
       </attributes>
       <events/>
       <isRetired>false</isRetired>
+      <updatedAt>2021-08-06T18:50:22.601334Z</updatedAt>
     </security>
     <security>
       <uuid>04a05ce4-cead-48bd-92bc-ce1b74f707eb</uuid>
@@ -45,6 +47,7 @@
       </attributes>
       <events/>
       <isRetired>false</isRetired>
+      <updatedAt>2021-08-06T18:50:22.601335Z</updatedAt>
     </security>
   </securities>
   <watchlists/>
@@ -57,14 +60,17 @@
       <isRetired>false</isRetired>
       <transactions>
         <account-transaction>
-          <date>2011-07-12</date>
+          <uuid>1f615521-0d0b-477e-944e-36cf09306299</uuid>
+          <date>2011-07-12T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1553121</amount>
           <shares>0</shares>
+          <updatedAt>2021-08-06T18:50:22.600646Z</updatedAt>
           <type>DEPOSIT</type>
         </account-transaction>
         <account-transaction>
-          <date>2011-07-13</date>
+          <uuid>1218e72f-6cf4-43bb-a7a5-b93f2d1f1e98</uuid>
+          <date>2011-07-13T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>131423</amount>
           <security reference="../../../../../securities/security"/>
@@ -76,21 +82,24 @@
               <referenceAccount reference="../../../../.."/>
               <transactions>
                 <portfolio-transaction>
+                  <uuid>e617239a-6089-472b-bf6d-4a8d30f96642</uuid>
                   <date reference="../../../../../date"/>
                   <currencyCode>EUR</currencyCode>
                   <amount>131423</amount>
                   <security reference="../../../../../../../../../securities/security"/>
                   <crossEntry class="buysell" reference="../../../.."/>
-                  <shares>17000000</shares>
+                  <shares>1700000000</shares>
                   <units>
                     <unit type="FEE">
                       <amount currency="EUR" amount="999"/>
                     </unit>
                   </units>
+                  <updatedAt>2021-08-06T18:50:22.601209Z</updatedAt>
                   <type>BUY</type>
                 </portfolio-transaction>
                 <portfolio-transaction>
-                  <date>2011-07-28</date>
+                  <uuid>4d37064f-ef14-424f-999d-a67495af0e83</uuid>
+                  <date>2011-07-28T00:00</date>
                   <currencyCode>EUR</currencyCode>
                   <amount>118596</amount>
                   <security reference="../../../../../../../../../securities/security"/>
@@ -99,25 +108,29 @@
                     <portfolioTransaction reference="../.."/>
                     <account reference="../../../../../../../.."/>
                     <accountTransaction>
+                      <uuid>462faab2-e962-4aee-b853-a71638defacc</uuid>
                       <date reference="../../../date"/>
                       <currencyCode>EUR</currencyCode>
                       <amount>118596</amount>
                       <security reference="../../../../../../../../../../../securities/security"/>
                       <crossEntry class="buysell" reference="../.."/>
                       <shares>0</shares>
+                      <updatedAt>2021-08-06T18:50:22.600772Z</updatedAt>
                       <type>SELL</type>
                     </accountTransaction>
                   </crossEntry>
-                  <shares>17000000</shares>
+                  <shares>1700000000</shares>
                   <units>
                     <unit type="FEE">
                       <amount currency="EUR" amount="999"/>
                     </unit>
                   </units>
+                  <updatedAt>2021-08-06T18:50:22.601233Z</updatedAt>
                   <type>SELL</type>
                 </portfolio-transaction>
                 <portfolio-transaction>
-                  <date>2014-12-01</date>
+                  <uuid>a6904b98-b9ca-43a7-a3a0-069d9e57e628</uuid>
+                  <date>2014-12-01T00:00</date>
                   <currencyCode>USD</currencyCode>
                   <amount>421944</amount>
                   <security reference="../../../../../../../../../securities/security[2]"/>
@@ -131,11 +144,12 @@
                       <isRetired>false</isRetired>
                       <transactions>
                         <account-transaction>
-                          <date>2011-08-24</date>
+                          <uuid>45f7381c-7b71-49fb-b3f2-036e5f5947d2</uuid>
+                          <date>2011-08-24T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>585</amount>
                           <security reference="../../../../../../../../../../../../../securities/security"/>
-                          <shares>17000000</shares>
+                          <shares>1700000000</shares>
                           <units>
                             <unit type="GROSS_VALUE">
                               <amount currency="USD" amount="585"/>
@@ -143,15 +157,18 @@
                               <exchangeRate>1.4433</exchangeRate>
                             </unit>
                           </units>
+                          <updatedAt>2021-08-06T18:50:22.600884Z</updatedAt>
                           <type>DIVIDENDS</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2014-12-01</date>
+                          <uuid>90104486-151f-4b61-996b-12c0b606351a</uuid>
+                          <date>2014-12-01T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>422994</amount>
                           <crossEntry class="account-transfer">
                             <accountFrom reference="../../../../../../../../../../../.."/>
                             <transactionFrom>
+                              <uuid>b4d02159-d3e7-4c85-a608-d7d6e2dd8705</uuid>
                               <date reference="../../../date"/>
                               <currencyCode>EUR</currencyCode>
                               <amount>340027</amount>
@@ -161,68 +178,80 @@
                                 <unit type="GROSS_VALUE">
                                   <amount currency="EUR" amount="340027"/>
                                   <forex currency="USD" amount="422994"/>
-                                  <exchangeRate>1.244</exchangeRate>
+                                  <exchangeRate>0.8038585209</exchangeRate>
                                 </unit>
                               </units>
+                              <updatedAt>2021-08-06T18:52:49.330844Z</updatedAt>
                               <type>TRANSFER_OUT</type>
                             </transactionFrom>
                             <accountTo reference="../../../.."/>
                             <transactionTo reference="../.."/>
                           </crossEntry>
                           <shares>0</shares>
+                          <updatedAt>2021-08-06T18:52:49.330658Z</updatedAt>
                           <type>TRANSFER_IN</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2014-12-01</date>
+                          <uuid>07ae1031-424d-49e6-84dc-abca11ec9c99</uuid>
+                          <date>2014-12-01T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>1050</amount>
                           <shares>0</shares>
                           <note>Konvertierung</note>
+                          <updatedAt>2021-08-06T18:50:22.600915Z</updatedAt>
                           <type>FEES</type>
                         </account-transaction>
                         <account-transaction>
+                          <uuid>2e756e4d-5de3-4886-b3ed-ef6ae404541e</uuid>
                           <date reference="../../../../../date"/>
                           <currencyCode>USD</currencyCode>
                           <amount>421944</amount>
                           <security reference="../../../../../../../../../../../../../securities/security[2]"/>
                           <crossEntry class="buysell" reference="../../../.."/>
                           <shares>0</shares>
+                          <updatedAt>2021-08-06T18:50:22.600938Z</updatedAt>
                           <type>BUY</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2014-12-03</date>
+                          <uuid>f62d4aae-e1f9-4018-9f9e-0dc2deef77c3</uuid>
+                          <date>2014-12-03T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>404358</amount>
                           <security reference="../../../../../../../../../../../../../securities/security[2]"/>
                           <crossEntry class="buysell">
                             <portfolio reference="../../../../../../../.."/>
                             <portfolioTransaction>
+                              <uuid>c216ae58-107e-4898-b36b-f1c3ac159d81</uuid>
                               <date reference="../../../date"/>
                               <currencyCode>USD</currencyCode>
                               <amount>404358</amount>
                               <security reference="../../../../../../../../../../../../../../../securities/security[2]"/>
                               <crossEntry class="buysell" reference="../.."/>
-                              <shares>38000000</shares>
+                              <shares>3800000000</shares>
                               <units>
                                 <unit type="FEE">
                                   <amount currency="USD" amount="2090"/>
                                 </unit>
                               </units>
+                              <updatedAt>2021-08-06T18:50:22.601275Z</updatedAt>
                               <type>SELL</type>
                             </portfolioTransaction>
                             <account reference="../../../.."/>
                             <accountTransaction reference="../.."/>
                           </crossEntry>
                           <shares>0</shares>
+                          <updatedAt>2021-08-06T18:50:22.600960Z</updatedAt>
                           <type>SELL</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2015-03-06</date>
+                          <uuid>d8f72134-d066-44ed-8b25-66f8253ee83b</uuid>
+                          <date>2015-03-06T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>523986</amount>
                           <crossEntry class="account-transfer">
                             <accountFrom reference="../../../../../../../../../../../.."/>
                             <transactionFrom>
+                              <uuid>de5c5474-43f8-47b3-85bf-6fe623e8e5c5</uuid>
                               <date reference="../../../date"/>
                               <currencyCode>EUR</currencyCode>
                               <amount>484902</amount>
@@ -232,62 +261,73 @@
                                 <unit type="GROSS_VALUE">
                                   <amount currency="EUR" amount="484902"/>
                                   <forex currency="USD" amount="523986"/>
-                                  <exchangeRate>1.0806018536</exchangeRate>
+                                  <exchangeRate>0.9254102209</exchangeRate>
                                 </unit>
                               </units>
+                              <updatedAt>2021-08-06T18:52:58.296857Z</updatedAt>
                               <type>TRANSFER_OUT</type>
                             </transactionFrom>
                             <accountTo reference="../../../.."/>
                             <transactionTo reference="../.."/>
                           </crossEntry>
                           <shares>0</shares>
+                          <updatedAt>2021-08-06T18:52:58.296617Z</updatedAt>
                           <type>TRANSFER_IN</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2015-03-06</date>
+                          <uuid>d916f2d3-b3bf-4fa8-9483-bea8b63bebea</uuid>
+                          <date>2015-03-06T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>1302</amount>
                           <shares>0</shares>
                           <note>Konvertierung</note>
+                          <updatedAt>2021-08-06T18:50:22.600989Z</updatedAt>
                           <type>FEES</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2015-03-06</date>
+                          <uuid>b36bfe84-2028-45c8-bf8b-977c7021e28a</uuid>
+                          <date>2015-03-06T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>522684</amount>
                           <security reference="../../../../../../../../../../../../../securities/security[3]"/>
                           <crossEntry class="buysell">
                             <portfolio reference="../../../../../../../.."/>
                             <portfolioTransaction>
+                              <uuid>5aa1370e-300f-43c8-a759-441c8e7cb90d</uuid>
                               <date reference="../../../date"/>
                               <currencyCode>USD</currencyCode>
                               <amount>522684</amount>
                               <security reference="../../../../../../../../../../../../../../../securities/security[3]"/>
                               <crossEntry class="buysell" reference="../.."/>
-                              <shares>58000000</shares>
+                              <shares>5800000000</shares>
                               <units>
                                 <unit type="FEE">
                                   <amount currency="USD" amount="1844"/>
                                 </unit>
                               </units>
+                              <updatedAt>2021-08-06T18:50:22.601298Z</updatedAt>
                               <type>BUY</type>
                             </portfolioTransaction>
                             <account reference="../../../.."/>
                             <accountTransaction reference="../.."/>
                           </crossEntry>
                           <shares>0</shares>
+                          <updatedAt>2021-08-06T18:50:22.601010Z</updatedAt>
                           <type>BUY</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2015-03-27</date>
+                          <uuid>1dcada90-d70a-4030-8649-b3a83a430f01</uuid>
+                          <date>2015-03-27T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>693</amount>
                           <security reference="../../../../../../../../../../../../../securities/security[3]"/>
-                          <shares>58000000</shares>
+                          <shares>5800000000</shares>
+                          <updatedAt>2021-08-06T18:50:22.601031Z</updatedAt>
                           <type>DIVIDENDS</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2015-04-08</date>
+                          <uuid>ff73be5c-3cb1-491c-a6f1-5bc422254fe3</uuid>
+                          <date>2015-04-08T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>404621</amount>
                           <crossEntry class="account-transfer">
@@ -295,11 +335,13 @@
                             <transactionFrom reference="../.."/>
                             <accountTo reference="../../../../../../../../../../../.."/>
                             <transactionTo>
+                              <uuid>c6ffa509-665b-4d12-8e5a-018a56987cdc</uuid>
                               <date reference="../../../date"/>
                               <currencyCode>EUR</currencyCode>
                               <amount>370905</amount>
                               <crossEntry class="account-transfer" reference="../.."/>
                               <shares>0</shares>
+                              <updatedAt>2021-08-06T18:59:11.146765Z</updatedAt>
                               <type>TRANSFER_IN</type>
                             </transactionTo>
                           </crossEntry>
@@ -308,64 +350,76 @@
                             <unit type="GROSS_VALUE">
                               <amount currency="USD" amount="404621"/>
                               <forex currency="EUR" amount="370905"/>
-                              <exchangeRate>0.9166726393</exchangeRate>
+                              <exchangeRate>1.0909019830</exchangeRate>
                             </unit>
                           </units>
+                          <updatedAt>2021-08-06T18:59:11.146984Z</updatedAt>
                           <type>TRANSFER_OUT</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2015-04-08</date>
+                          <uuid>897f4c75-955e-411c-870d-214b5e84577b</uuid>
+                          <date>2015-04-08T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>1015</amount>
                           <shares>0</shares>
                           <note>Konvertierung</note>
+                          <updatedAt>2021-08-06T18:50:22.601081Z</updatedAt>
                           <type>FEES</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2015-05-29</date>
+                          <uuid>79f4f72f-10ff-42a5-aa2b-9517ef4e0ab7</uuid>
+                          <date>2015-05-29T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>867</amount>
                           <security reference="../../../../../../../../../../../../../securities/security[3]"/>
-                          <shares>58000000</shares>
+                          <shares>5800000000</shares>
+                          <updatedAt>2021-08-06T18:50:22.601089Z</updatedAt>
                           <type>DIVIDENDS</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2015-08-21</date>
+                          <uuid>283f0fc8-242c-4969-bc39-b417d12ed19c</uuid>
+                          <date>2015-08-21T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>867</amount>
                           <security reference="../../../../../../../../../../../../../securities/security[3]"/>
-                          <shares>58000000</shares>
+                          <shares>5800000000</shares>
+                          <updatedAt>2021-08-06T18:50:22.601119Z</updatedAt>
                           <type>DIVIDENDS</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2015-08-21</date>
+                          <uuid>6e182352-09f2-42d8-88a7-7919631283bd</uuid>
+                          <date>2015-08-21T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>605941</amount>
                           <security reference="../../../../../../../../../../../../../securities/security[3]"/>
                           <crossEntry class="buysell">
                             <portfolio reference="../../../../../../../.."/>
                             <portfolioTransaction>
+                              <uuid>9d9acd1f-7d1d-4dcd-89b1-64c845886a6c</uuid>
                               <date reference="../../../date"/>
                               <currencyCode>USD</currencyCode>
                               <amount>605941</amount>
                               <security reference="../../../../../../../../../../../../../../../securities/security[3]"/>
                               <crossEntry class="buysell" reference="../.."/>
-                              <shares>58000000</shares>
+                              <shares>5800000000</shares>
                               <units>
                                 <unit type="FEE">
                                   <amount currency="USD" amount="3059"/>
                                 </unit>
                               </units>
+                              <updatedAt>2021-08-06T18:50:22.601305Z</updatedAt>
                               <type>SELL</type>
                             </portfolioTransaction>
                             <account reference="../../../.."/>
                             <accountTransaction reference="../.."/>
                           </crossEntry>
                           <shares>0</shares>
+                          <updatedAt>2021-08-06T18:50:22.601148Z</updatedAt>
                           <type>SELL</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2015-09-18</date>
+                          <uuid>cbb38bd9-8e75-4134-b6c5-4d97e5c1f647</uuid>
+                          <date>2015-09-18T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>606156</amount>
                           <crossEntry class="account-transfer">
@@ -373,11 +427,13 @@
                             <transactionFrom reference="../.."/>
                             <accountTo reference="../../../../../../../../../../../.."/>
                             <transactionTo>
+                              <uuid>0e4eee24-16a5-4502-bfdb-6b87d3d804d9</uuid>
                               <date reference="../../../date"/>
                               <currencyCode>EUR</currencyCode>
                               <amount>530738</amount>
                               <crossEntry class="account-transfer" reference="../.."/>
                               <shares>0</shares>
+                              <updatedAt>2021-08-06T18:59:15.454693Z</updatedAt>
                               <type>TRANSFER_IN</type>
                             </transactionTo>
                           </crossEntry>
@@ -386,41 +442,54 @@
                             <unit type="GROSS_VALUE">
                               <amount currency="USD" amount="606156"/>
                               <forex currency="EUR" amount="530738"/>
-                              <exchangeRate>0.87558</exchangeRate>
+                              <exchangeRate>1.1421000937</exchangeRate>
                             </unit>
                           </units>
+                          <updatedAt>2021-08-06T18:59:15.454934Z</updatedAt>
                           <type>TRANSFER_OUT</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2015-09-18</date>
+                          <uuid>7aed7475-68f1-4162-b649-21eae71265c5</uuid>
+                          <date>2015-09-18T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>1519</amount>
                           <shares>0</shares>
                           <note>Konvertierung</note>
+                          <updatedAt>2021-08-06T18:50:22.601191Z</updatedAt>
                           <type>FEES</type>
                         </account-transaction>
                       </transactions>
+                      <attributes>
+                        <map/>
+                      </attributes>
+                      <updatedAt>2021-08-06T18:50:22.600871Z</updatedAt>
                     </account>
                     <accountTransaction reference="../account/transactions/account-transaction[4]"/>
                   </crossEntry>
-                  <shares>38000000</shares>
+                  <shares>3800000000</shares>
                   <units>
                     <unit type="FEE">
                       <amount currency="USD" amount="2120"/>
                     </unit>
                   </units>
+                  <updatedAt>2021-08-06T18:50:22.601254Z</updatedAt>
                   <type>BUY</type>
                 </portfolio-transaction>
                 <portfolio-transaction reference="../portfolio-transaction[3]/crossEntry/account/transactions/account-transaction[5]/crossEntry/portfolioTransaction"/>
                 <portfolio-transaction reference="../portfolio-transaction[3]/crossEntry/account/transactions/account-transaction[8]/crossEntry/portfolioTransaction"/>
                 <portfolio-transaction reference="../portfolio-transaction[3]/crossEntry/account/transactions/account-transaction[14]/crossEntry/portfolioTransaction"/>
               </transactions>
+              <attributes>
+                <map/>
+              </attributes>
+              <updatedAt>2021-08-06T18:50:22.601201Z</updatedAt>
             </portfolio>
             <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
             <account reference="../../../.."/>
             <accountTransaction reference="../.."/>
           </crossEntry>
           <shares>0</shares>
+          <updatedAt>2021-08-06T18:50:22.600746Z</updatedAt>
           <type>BUY</type>
         </account-transaction>
         <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/accountTransaction"/>
@@ -429,6 +498,10 @@
         <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[3]/crossEntry/account/transactions/account-transaction[10]/crossEntry/transactionTo"/>
         <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[3]/crossEntry/account/transactions/account-transaction[15]/crossEntry/transactionTo"/>
       </transactions>
+      <attributes>
+        <map/>
+      </attributes>
+      <updatedAt>2021-08-06T18:50:22.600636Z</updatedAt>
     </account>
     <account reference="../account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[3]/crossEntry/account"/>
   </accounts>

@@ -1,0 +1,30 @@
+PDF Autor: '3BankenEDV'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Wertpapier-Abrechnu n g                        Dividende
+208143 - 18.01.2021
+Depotnummer Betreuer
+Nachname Vorname 123-456789 123
+Wertpapiernummer Bezeichnung Nominale/Stück
+US56035L1044 Main Street Capital Corp. Stk .               6,00
+Registered Shares DL -,01
+Ertrag 0,205 USD Kurswert USD                1,23Quellensteuer USD               -0,18
+Auslands-KESt USD               -0,16
+Zwischensumme USD                0,89
+15 % QUSt a 1,2205 v. 13.01.2021 EUR                0,73
+Extag 04.01.2021
+Verrechnung
+Verwahrart, Positionsdaten
+Wertpapierrechnung Wert 15.01.2021 EUR                0,73
+München zu Gunsten Konto AT12 3456 7890 1234 5678
+      Seite 1 von 2
+Rechtsform: Aktiengesellschaft, Sitz: Klagenfurt, Firmenbuch-Nr.: FN 91810s/Klagenfurt, DVR 0063703, UID-Nr. ATU 25231503
+Wertpapier-Abrechnung
+208143 - 18.01.2021
+Depotbezeichnung Depotnummer Betreuer
+Nachname Vorname 123-456789 123
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                           6,00 STK
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+---------------------------------------------------------------------------------------------
+Die KESt wird an das Finanzamt Klagenfurt abgeführt.
+Rechtsform: Aktiengesellschaft, Sitz: Klagenfurt, Firmenbuch-Nr.: FN 91810s/Klagenfurt, DVR 0063703, UID-Nr. ATU 25231503       Seite 2 von 2

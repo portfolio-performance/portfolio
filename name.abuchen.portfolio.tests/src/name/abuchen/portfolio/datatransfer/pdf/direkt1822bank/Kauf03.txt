@@ -1,0 +1,35 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postfach · 60255 Frankfurt am Main
+Depotnummer XXXXXXX
+Kundennummer XXXX
+Niklas Mustermann
+Auftragsnummer XXXX/XXX
+Herrn Datum 02.03.2021
+Niklas Mustermann Ihr Berater 1822direkt
+XXXXX Weg 4 Telefon 069 94170-0
+XXXXXXXXnghausen Rechnungsnummer W02158-0000XXXXXX
+Umsatzsteuer-ID DE114104095
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Auftrag vom 27.02.2021 01:22:40 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 0,6646 THREADNEEDLE L-GLOBAL TECHNOL. LU0444971666 (A1CU1W)
+NAMENS-ANTEILE AU USD O.N.
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 01.03.2021 Auftraggeber XXXX, Niklas
+Ausführungskurs 94,6879 USD Auftragserteilung/ -ort sonstige
+Wertpapierrechnung Lagerland Luxemburg
+Devisenkurs (EUR/USD) 1,1987 vom 02.03.2021
+Kurswert 52,50- EUR
+Kundenbonifikation 100 % vom Ausgabeaufschlag 2,50 EUR
+Ausmachender Betrag 50,00- EUR
+Ausgabeaufschlag pro Anteil 5,00 %
+Den Gegenwert buchen wir mit Valuta 04.03.2021 zu Lasten des Kontos XXXXXX
+(IBANXXXXXXXX), BLZ XXXXXX (BIC XXXXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+IHR FONDSSPARPLAN NR. 1
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+2158.03022115.0003459OR07

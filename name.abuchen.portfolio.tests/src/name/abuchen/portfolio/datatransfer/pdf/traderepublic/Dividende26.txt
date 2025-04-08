@@ -1,0 +1,27 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KÖPENICKER STRASSE 40C  10179 BERLIN
+ckxR oYSL PigNfj qHftDB PAGE 1 / 1
+758 Rue Lasson DATE 55/77/8891
+82422 LMqDqVqg COMPTE-TITRES 8068554482
+DISTRIBUTION
+RÉCAPITULATIF
+Distribution à la date du 42/36/5054.
+POSITION QUANTITÉ REVENU MONTANT
+Xtrackers Nikkei 225 1,580925 titre(s) 0,324 EUR 0,51 EUR
+Inhaber-Ant. 2D EURH o.N.
+ISIN : LU1875395870
+TOTAL 0,51 EUR
+RÉSERVATION
+COMPTE-ESPÈCES DATE DE VALEUR MONTANT
+DE13502109007011547146 01/01/2024 0,51 EUR
+Xtrackers Nikkei 225 Inhaber-Ant. 2D EURH o.N. en relevé de transaction en Allemagne.
+Pays d'enregistrement: Irlande
+Ce document est généré automatiquement et n'est donc pas signé.
+Si aucune taxe sur le chiffre d'affaires n'est indiquée, il s'agit d'un service non sujet à la taxe sur le chiffre d'affaires (conformément à la 
+réglementation UStG. § 4 n° 8).
+Trade Republic Bank GmbH www.traderepublic.com Siège de la Société: Berlin Directeur Général
+Köpenicker Straße 40c service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10179 Berlin VAT-ID DE307510626 Gernot Mittendorfer
+ABRE / 07/09/2023 / 61162068 / 24c4-87ff

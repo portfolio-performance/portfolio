@@ -1,0 +1,50 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+ 
+DEPOTNUMMER=[Depotnummer]
+DEPOTUNTERBEZEICHNUNG=
+          
+Wertpapierabrechnung VERSANDARTENSCHLUESSEL=DRUCKADRESSZEILE1=Herr
+ADRESSZEILE2=[Vorname Nachname]
+Kauf ADRESSZEILE3=[Straße und Nummer]ADRESSZEILE4=[PLZ] [Stadt]
+Kommissionsgeschäft ADRESSZEILE5=
+Herr ADRESSZEILE6=
+[Vorname Nachname] Depot-Nr. Abrechnungs-Nr. BELEGNUMMER=2991
+[Straße und Nummer] [Depotnummer] [Belegnummer] / 08.04.2011 SEITENNUMMER=1
+[PLZ] [Ort] STEUERERSTATTUNG=N
+Depotinhaber
+[Vorname] [Nachname]
+ 
+ 
+Wir haben für Sie gekauft München, 08.04.2011
+ 
+ 
+Gattungsbezeichnung ISIN
+Commerzbank AG Inhaber-Aktien o.N. DE0008032004
+Nominal Kurs
+STK 449,749 EUR 5,4900
+ 
+ 
+Handelstag 07.04.2011  Kurswert                    EUR 2.469,12-
+Handelszeit 12:34* Provision                   EUR 10,00-
+Börse Sekunden-Handel Aktien L&S
+Verwahrart Girosammelverwahrung
+ 
+Wert  Konto-Nr. Betrag zu Ihren Lasten  
+11.04.2011 1234567890 EUR 2.479,12
+ 
+ 
+ 
+Wir werden in Ihrem Depot wie angegeben buchen.
+ 
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+DAB bank AG > Landsberger Straße 300 > 80687 München > BLZ 701 204 00 > BIC (SWIFT-Code): DABBDEMMXXX > Tel. 0 89 / 88 95 - 60 00 > Sitz: München > AG München, HRB 118190 
+USt.-Ident.-Nr.: DE 161864563 > Aufsichtsratsvorsitzender: Dr. Theodor Weimer > Vorstand: Markus Gunter, Dr. Markus Walch
+ 
+3.31/ABREABHNHANDKFDI/GAAASAFG/002991/080411/112153

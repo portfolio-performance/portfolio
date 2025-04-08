@@ -1,0 +1,41 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.3
+-----------------------------------------
+TARGOBANK AG
+Postfach 10 02 30
+47002 Duisburg
+TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg www.targobank.de
+HERR
+JERKO SABALIC
+TAIMERHOFSTR. 7
+81927 MUENCHEN
+Depotnummer 101167153000
+........................................................................................................................................................................................................
+Effektenabrechnung (Steuerbeilage) 03.01.2023
+JERKO SABALIC
+Transaktionstyp Verkauf
+Stück 4.000
+Wertpapier UBS AG (London Branch) - FaktS O.End DJIA 34446,1281
+WKN / ISIN UH3GTU / DE000UH3GTU5
+Handelsplatz außerbörs. Echtzeithandel
+Schlusstag / Handelszeit 03.01.2023 / 12:04:02
+Kurs 0,001 EUR
+Verwahrart Girosammelverwahrung
+Kapitalertragsteuer Solidaritätszuschlag
+25,00 % * 5,50 %
+Transaktionsreferenz TR TBK00323B007292O001
+Steuerliche Bemessungsgrundlagen - keine Steuerbescheinigung
+Veräußerungsverlust - 1.311,10 EUR
+Erträge/Verluste - 1.311,10 EUR
+Auf- oder Abbau von steuerlichen Verrechnungsmöglichkeiten
+Verlustverrechnung aus Aktienhandel: 0,00 EUR
+Verlustverrechnung aus sonstigen Geschäften: 0,00 EUR
+* KESt grundsätzlich 25%. Bei Einbehalt von Kirchensteuer ändert sich der KESt-Satz entsprechend Ihres Kirchensteuersatzes.
+Dieses Produkt ist keine Bankeinlage. Es unterliegt nicht der Einlagensicherung. Die vergangene Performance lässt keine Rückschlüsse
+auf die zukünftige Wertentwicklung zu. Der Wert der Anlage kann schwanken. Ein teilweiser oder ganzer Verlust ist möglich. Dieser Beleg
+wurde maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
+TARGOBANK AG | Vorstand: Isabelle Chevelard (Vorsitzende); Christophe Jéhan (stellv. Vorsitzender); Berthold Rüsing; Maria Topaler
+Vorsitzender des Aufsichtsrates:  René Dangel | Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+KH.20230104.083335.5001.0004.15979 X 0 R

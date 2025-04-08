@@ -3,11 +3,6 @@ package name.abuchen.portfolio.ui.wizards.client;
 import java.util.Collections;
 import java.util.List;
 
-import name.abuchen.portfolio.money.CurrencyUnit;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.FormDataFactory;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -17,6 +12,10 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 class BaseCurrencySelectionPage extends AbstractWizardPage
 {
     private ComboViewer combo;
@@ -41,12 +40,13 @@ class BaseCurrencySelectionPage extends AbstractWizardPage
         Label label = new Label(container, SWT.NONE);
         label.setText(Messages.ColumnCurrency);
 
+
         List<CurrencyUnit> currencies = CurrencyUnit.getAvailableCurrencyUnits();
         Collections.sort(currencies);
         combo = new ComboViewer(container);
         combo.setContentProvider(ArrayContentProvider.getInstance());
         combo.setInput(currencies);
-        combo.setSelection(new StructuredSelection(CurrencyUnit.getInstance(CurrencyUnit.EUR)));
+        combo.setSelection(new StructuredSelection(CurrencyUnit.getDefaultInstance()));
 
         Label description = new Label(container, SWT.WRAP);
         description.setText(this.explanationIndividualCurrency);

@@ -1,0 +1,24 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 1649006 - TRADING
+IBAN: CH7418792000164678000
+Herrn Max Mustermann
+Musterstrasse.3
+8972 Musterstadt
+Gland, 19.03.2024
+Kauf Unsere Referenz: 535993271 
+Am 19.03.2024 haben wir folgende Transaktionen auf SQX vorgenommen:
+Anzahl Währung Rate
+0.02 BTC 63'643.9
+Bruttobetrag USD  1'272.88
+Kommission Swissquote Bank AG USD 12.73
+Total USD 1'285.61
+Betrag belastet auf Kontonummer 030521119, Valutadatum 19.03.2024
+Vielen Dank für Ihren Auftrag.
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen, unserem Depotreglement
+und unserem SQX Handelsreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland  Formular ohne Unterschrift | SE&O.
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+CHE-116.310.079 MwSt

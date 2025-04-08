@@ -1,0 +1,24 @@
+PDF author: 'VIAC'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+Email info@viac.ch
+Phone 0800 80 40 40
+Contract x.xxx.xxx.xxx Mr John Doe
+Portfolio x.xxx.xxx.xxx.xx 
+Bahnhofstrasse 1
+8001 Zürich
+Basel, 01.07.2020
+Interest
+On 30.06.2020 we have credited your account:
+Interest rate: 0.10%
+Interest period: June
+Interest credit: CHF 0.05
+Charged amount: CHF 0.05
+S. E. & O.
+Kind regards
+Terzo Pension Foundation
+Display without signature

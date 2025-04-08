@@ -1,0 +1,33 @@
+﻿PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+10919 Berlin
+Depotnummer 501123456
+Kundennummer 4363123456
+Max Mustermann
+Abrechnungsnr. 63736123456
+Herrn Datum 17.05.2019
+Max Mustermann
+Musterstr. 31
+12345 Musterhausen
+Ertragsgutschrift nach § 27 KStG
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 92 DEUTSCHE POST AG DE0005552004 (555200)
+NAMENS-AKTIEN O.N.
+Zahlbarkeitstag 20.05.2019 Ertrag pro Stück 1,15 EUR
+Bestandsstichtag 15.05.2019
+Ex-Tag 16.05.2019
+Geschäftsjahr 01.01.2018 - 31.12.2018
+Dividendengutschrift nach § 27 KStG 105,80+ EUR
+Ausmachender Betrag 105,80+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir mit Wertstellung 20.05.2019 zu Gunsten des Kontos 1053123456 (IBAN DE76 1203 0000 1234
+1234 56), BLZ 120 300 00 (BIC BYLADEM1001).
+Keine Steuerbescheinigung.
+Es handelt sich bei der Ausschüttung um Leistungen aus dem steuerlichen Einlagekonto der Kapitalgesellschaft (§27 Abs.
+1-7 KStG). Dieser Ertrag unterliegt laut Gesetz zum Zeitpunkt des Zuflusses keinem Steuerabzug und ist
+einkommensteuerfrei. Er mindert jedoch im Nachhinein den Kaufkurs der bezogenen Aktie, so dass bei deren Verkauf
+möglicherweise ein entsprechend höherer Kursgewinn zu versteuern ist.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+0883.05123456.0123456ER02

@@ -1,0 +1,477 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+Jahresdepotauszug und Quartalsbericht 
+per 31.12.2019
+Depotübersicht
+Seite: 1
+Depot: 9999999999
+Depotinhaber:
+Max Mustermann
+Daten für den automatischen Kirchensteuerabzug liegen
+für 2020 vor
+Sparer-Pauschbetrag 
+Erteilt 2019: EUR 131,00
+Beansprucht: EUR 86,77
+Herrn
+Max Mustermann
+Strasse 8
+99999 Stadt
+ISIN Unter- Bezeichnung Wert Wertentwicklung
+depot in EUR in EUR 
+per 31.12.2019* für 2019
+DE000DK0ECU8 00 Deka-GlobalChampions CF       956,78 +153,16
+VL-Vertrag: gesperrt bis zum 31.12.2024 
+Vertragsinhaber: Max Mustermann
+LU0348413815 00 DekaLux-PharmaTech TF 4.355,95 +895,40
+DE0005152631 00 Deka-Technologie TF           1.885,17 +540,42
+LU0133666759 00 Deka-ConvergenceAktien TF 1.025,82 +264,83
+LU0052859252 00 DekaLuxTeam-Aktien Asien      4.998,91 +1.003,45
+LU0062624902 00 DekaLux-Deutschland TF A 1.489,18 +292,13
+LU0062625115 00 DekaLux-Europa TF (A)         442,23 +84,26
+DE0009771980 00 Deka-EuropaBond TF 681,94 +43,19
+DE0009786285 00 Deka-EuropaPotential TF       4.064,49 +959,21
+XF0009994050 00 Deka-BonusRente
+DE0005424519 00 - Deka-BR 100                   8.738,94 +1.715,05
+            Garantiertes Kapital zu Beginn der Auszahlungsphase (Beitragszusage):
+5.760,46 EUR
+Dieser Betrag steht Ihnen auf Basis der bisher eingezahlten
+Altersvorsorgebeiträge (einschließlich Zulagen) zu Beginn der
+Auszahlungsphase mindestens zur Verfügung.
+Gesamt in EUR 28.639,41 +5.951,10
+* Beachten Sie hierzu bitte die Erläuterungen unter "Hinweise zu Ihrem DekaBank Depot / Jahresdepotauszug" auf der Folgeseite.
+Depotpreis inkl. 19% Mehrwertsteuer (MwSt): 
+12,50 EUR inkl. 2,00 EUR MwSt wurden für 2019 belastet
+Entgelte werden gemäß Preis- und Leistungsverzeichnis erhoben.
+Wichtiger Hinweis zur Steuerbescheinigung
+Mit Ihrem Jahresdepotauszug erhalten Sie auch Ihre Steuerbescheinigung. Diese finden Sie direkt im Anschluss an Ihre Depotübersicht. Sofern
+Sie mehr als ein Depot in unserem Hause haben, können die Angaben von mehreren Depots in EINER Steuerbescheinigung zusammengefasst
+sein.
+Fortsetzung auf Seite 2
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Jahresdepotauszug und Quartalsbericht 
+per 31.12.2019
+Depotübersicht
+Seite: 2
+Depot: 9999999999
+Depotinhaber:
+Max Mustermann
+Alle auf dieser Depotübersicht aufgeführten Vermögenswerte fallen unter die Regelungen der Richtlinie 2014/65/EU (MiFID II) und deren
+Durchführungsmaßnahmen bzw. der sie umsetzenden nationalen Regelungen.
+Dieser Jahresdepotbericht enthält Informationen gem. Artikel 63 Abs. 1 und 2  der Delegierten Verordnung Nr. 2017/565. Diese
+vierteljährliche Aufstellung Ihrer Vermögenswerte zum 31.12. wird Ihnen, anders als die Quartalsberichte zu den Stichtagen 31.03., 30.06.
+und 30.09. eines Kalenderjahres, nicht gesondert zur Verfügung gestellt.
+Besondere Hinweise zur Deka-BonusRente:
+Das Jahresendereporting zur Deka-BonusRente ggf. mit dem Antrag auf Altersvorsorgezulage oder den Informationen über gespeicherte
+Daten zur Beantragung der Dauerzulage, der Bescheinigung nach § 92 EStG sowie der Jahresinformation nach § 7a
+Altersvorsorgeverträge-Zertifizierungsgesetz (AltZertG) geht Ihnen separat zu. Der Versand startet Ende Februar 2020. Sofern uns Ihre
+Steueridentifikationsnummer und ggf. die Ihres Ehegatten/Lebenspartners, sowie für die Beantragung von Kinderzulage, die Ihrer Kinder
+vorliegt und Sie die DekaBank per Dauerzulageantrag bevollmächtigt haben, die Zulage jedes Jahr für Sie automatisch zu beantragen,
+übernehmen wir dies auf Grundlage der von Ihnen mitgeteilten Daten. Die Zulage wird nach Eingang Ihrem Deka-BonusRente Vertrag
+gutgeschrieben. Zudem übermitteln wir per Datenfernübertragung die von Ihnen gezahlten Beiträge zur Beantragung des
+Sonderausgabenabzugs an die Deutsche Rentenversicherung Bund - Zentrale Zulagenstelle für Altersvermögen (ZfA) zur Weiterleitung an Ihr
+Wohnsitzfinanzamt.
+Hinweise zum Berater:
+Zu allen Themen rund um Ihr DekaBank Depot informiert Sie Ihr Berater der Sparkasse Schweinfurt-Haßberge.
+Vorabankündigung (Pre-Notification)
+Als Beitrag zur Schaffung des einheitlichen Euro-Zahlungsverkehrsraums (Single Euro Payments Area, SEPA) haben wir zum 29.01.2014 auf
+das europaweit einheitliche SEPA-Basis-Lastschriftverfahren umgestellt. Wie Ihnen mit dem Jahresdepotauszug 2013 mitgeteilt, wurden die
+uns von Ihnen bereits erteilte(en) Einzugsermächtigung(en) automatisch umgewandelt und als SEPA-Lastschriftmandat(e) weiter genutzt.
+Entgelte, Kosten, Steuern und Auslagen gemäß AGB und Preis- und Leistungsverzeichnis, werden im Regelfall von der generellen
+Bankverbindung belastet. Bei einer unterjährigen Kündigung Ihres Depots werden anfallende Entgelte frühestens 2 Arbeitstage nach
+Depotlöschung belastet.
+Ein SEPA-Lastschriftmandat wird durch unsere nachfolgend genannte Gläubiger-Identifikationsnummer und Ihre Mandatsreferenz
+gekennzeichnet, die von uns bei allen SEPA-Lastschrifteinzügen anzugeben sind. Sollten Sie nicht Inhaber des (der) nachfolgend angegebenen
+Kontos (Konten) sein, bitten wir Sie, den Kontoinhaber entsprechend zu informieren.
+Unsere Gläubiger-ID: DE02DBD00000081995
+Übersicht Ihrer Mandate und Lastschriften zum Stichtag 31.12.2019:
+Mandatsreferenz: 9999999999001 (generelle Bankverbindung)
+IBAN: DExx xxx5 0101 xxxx xxx0 63
+Lastschrift für Entgelte, Kosten, Steuern und Auslagen
+Belastung gemäß AGB 1.12.4 und Preis- und Leistungsverzeichnis
+Betrag (EUR) Gemäß Preis- und Leistungsverzeichnis
+Rhythmus jährlich
+Ausführungstag 30
+Fälligkeitstag Frühestens 2 Bankarbeitstage nach dem Ausführungstag
+Datum Ausführung 11.2020
+Fortsetzung auf Seite 3
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Jahresdepotauszug und Quartalsbericht 
+per 31.12.2019
+Depotübersicht
+Seite: 3
+Depot: 9999999999
+Depotinhaber:
+Max Mustermann
+Regelmäßige Lastschrift
+XF0009994050 00 Nr. 1
+(Deka-BonusRente)
+Betrag (EUR) 80,00
+Rhythmus jährlich
+Ausführungstag 08
+Fälligkeitstag Frühestens 2 Bankarbeitstage nach dem Ausführungstag
+Datum erste Ausführung
+Datum letzte Ausführung
+Ruhend von - bis
+Nächste Dynamisierung
+  Zeitraum
+  Betrag (EUR)
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Seite 1
+Steuerbescheinigung  
+Bescheinigung für alle Privatdepots
+Verlustbescheinigung im Sinne des § 43 a Abs. 3 Satz 4 EStG  für alle Privatdepots
+Für
+Max Mustermann , 99999 Stadt, Strasse 8
+werden für das Kalenderjahr 2019 folgende Angaben bescheinigt:
+Betrag EUR Anlage KAP der
+Einkommensteuer-
+erklärung
+Höhe der Kapitalerträge nach Berücksichtigung der teilweisen Steuerfreistellung im Sinne des 86,77 KAP: Zeile 7
+§ 20 Abs. 1 Nr. 6 Satz 9 EStG
+Ersatzbemessungsgrundlage im Sinne des § 43a Abs. 2 Satz 7, 10, 13 und 14 EStG nach 0,00 KAP: Zeile 9
+Teilfreistellung und im Sinne des § 56 Abs. 3 Satz 4 InvStG 2018
+Enthalten in den bescheinigten Kapitalerträgen
+Höhe des nicht ausgeglichenen Verlustes ohne Verlust aus der Veräußerung von Aktien 0,00 KAP: Zeile 10
+Höhe des nicht ausgeglichenen Verlustes aus der Veräußerung von Aktien im Sinne des § 20 0,00 KAP: Zeile 11
+Abs. 2 Satz 1 Nr. 1 EStG
+Höhe des in Anspruch genommenen Sparer-Pauschbetrages 86,77 KAP: Zeile 12 oder 13
+Kapitalertragsteuer 0,00 KAP: Zeile 48
+Solidaritätszuschlag 0,00 KAP: Zeile 49
+Kirchensteuer zur Kapitalertragsteuer KAP: Zeile 50
+Bistum Würzburg 0,00
+Summe der angerechneten ausländischen Steuer 0,00 KAP: Zeile 51
+Summe der anrechenbaren noch nicht angerechneten ausländischen Steuer 0,00 KAP: Zeile 52
+Bei Veräußerung/Rückgabe von vor dem 1. Januar 2018 erworbenen Anteilen an 0,00
+ausländschen Investmentsfonds (Alt-Anteile im Sinne des § 56 Abs. 2 Satz 1 InvStG 2018): 
+Summe der als zugeflossen geltenden, noch nicht dem Steuerabzug unterworfenen
+ausschüttungsgleichen Erträge aus Anteilen an ausländischen Investmentfonds im Sinne des  
+§ 7 Abs. 1 Satz 1 Nr. 3 InvStG 2004 in Verbindung mit § 56 Abs. 3 Satz 6 InvStG 2018.
+(Diese Summe ist in der bescheinigten Höhe der Kapitalerträge enthalten und in der Anlage
+KAP von der Höhe der Kapitalerträge abzuziehen.)
+Fortsetzung auf Rück-/Folgeseite(n)
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Seite 2
+Max Mustermann , 99999 Stadt, Strasse 8
+Bestandsgeschützte Alt-Anteile im Sinne des § 56 Abs. 6 InvStG 2018 wurden veräußert
+nur nachrichtlich:
+Höhe der Gewinne im Sinne des § 56 Abs. 6 Satz 1 Nr. 2 InvStG 2018 (nach Teilfreistellung) 0,00
+Höhe der Verluste im Sinne des § 56 Abs. 6 Satz 1 Nr. 2 InvStG 2018 (nach Teilfreistellung) 0,00
+Die ausgewiesenen Gewinne sind nach § 56 Abs. 6 Satz 1 Nr. 2 InvStG 2018 steuerfrei, soweit die insgesamt erzielten Wertveränderungen den
+persönlichen Freibetrag von 100.000 Euro nicht übersteigen. Die Steuerfreiheit kann nur im Rahmen der Einkommensteuerveranlagung geltend gemacht
+werden.
+In der nachrichtlichen Angabe wurden auch Gewinne oder Verluste aufgenommen, bei denen Indizien vorliegen, dass es sich um Anteile an
+Investmentfonds im Sinne des § 21 Abs. 2a InvStG 2004 handeln könnte (Anschaffungsdatum zwischen dem 10. November 2007 und dem 31. Dezember
+2008, Anschaffungskosten betragen mindestens 100.000 Euro). Bei Anteilen an Investmentfonds im Sinne des § 21 Abs. 2a InvStG 2004 sind auch die vor
+2018 eingetretenen Wertveränderungen steuerpflichtig und der persönliche Freibetrag von 100.000 Euro ist nicht anwendbar (§ 56 Abs. 6 Satz 6 InvStG
+2018).
+Bei folgenden Anteilen ist im Rahmen der Veranlagung zu klären, ob es sich um Anteile an Investmentfonds im Sinne des
+§ 21 Abs. 2a InvStG 2004 handelt:
+Bezeichnung ISIN Anzahl der Anteile Gewinn im Sinne des § 56
+Abs. 6 Satz 1 Nr. 2 InvStG
+2018 (nach Teilfreistellung)
+Bezeichnung ISIN Anzahl der Anteile Verlust im Sinne des § 56
+Abs. 6 Satz 1 Nr. 2 InvStG
+2018 (nach Teilfreistellung)
+nur nachrichtlich:
+Alt-Anteile im Sinne des § 56 Abs. 2 Satz 1 InvStG 2018, die keine bestandsgeschützten Alt-Anteile im Sinne des § 56 Abs. 6 InvStG
+2018 sind, wurden veräußert und ein Gewinn/Verlust nach § 56 Abs. 3 Satz 1 InvStG 2018 erzielt (ohne Fälle der
+Ersatzbemessungsgrundlage nach § 56 Abs. 3 Satz 4 InvStG 2018):
+Bezeichnung ISIN Anzahl der Anteile Gewinn nach § 56 Abs. 3
+Satz 1 InvStG 2018
+Bezeichnung ISIN Anzahl der Anteile Verlust nach § 56 Abs. 3
+Satz 1 InvStG 2018
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Seite 3
+Max Mustermann , 99999 Stadt, Strasse 8
+Alt-Anteile im Sinne des § 56 Abs. 2 Satz 1 InvStG 2018, die keine bestandsgeschützten Alt-Anteile im Sinne des § 56 Abs. 6 InvStG
+2018 sind, wurden veräußert und für die Ermittlung des Gewinns nach § 56 Abs. 3 InvStG 2018 ist nach § 56 Abs. 3 Satz 4 InvStG
+2018 folgende Ersatzbemessungsgrundlage anwendbar:
+Bezeichnung ISIN Anzahl der Anteile Ersatzbemessungsgrundlage
+Eine Ersatzbemessungsgrundlage ist anwendbar, wenn der zum Steuerabzug verpflichteten Stelle relevante Informationen, insbesondere zu
+der Höhe der Anschaffungskosten, fehlen. Bei Ansatz einer Ersatzbemessungsgrundlage sind Sie verpflichtet, den tatsächlichen
+Veräußerungsgewinn gegenüber dem Finanzamt durch geeignete Unterlagen (z. B. Beleg über die Anschaffung der Investmentanteile)
+nachzuweisen. Wenn die Ersatzbemessungsgrundlage aufgrund fehlender Informationen über den Rücknahme-, Markt- oder Börsenpreis
+zum 31. Dezember 2017 nicht ermittelt werden konnte, ist in der Spalte "Ersatzbemessungsgrundlage" die Angabe "nicht ermittelbar"
+auszuweisen.
+Gegenüber dem Steuerpflichtigen wurden nach § 44 Abs. 1 EStG die auf Ausschüttungen eines Investmentfonds abgeführte
+Kapitalertragsteuer und der darauf entfallende Solidaritätszuschlag erstattet oder es wurde vom Steuerabzug Abstand genommen. Die
+Erstattung oder die Abstandnahme wurden für folgende Investmentanteile vorgenommen:
+Bezeichnung ISIN Anzahl der Anteile Höhe der nicht steuerbaren
+Ausschüttungen im Sinne
+des § 17 Abs. 3 InvStG 2018
+pro Anteil
+Vermerke des bescheinigenden Institutes:
+Gegebenenfalls zu zahlende Steuern wurden an das Finanzamt Frankfurt am Main V - Höchst, 60305 Frankfurt unter der Steuernummer 1111111111111
+abgeführt. 
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+
+
+Jahresdepotauszug und Quartalsbericht 
+per 31.12.2019
+Umsatz-Jahresübersicht
+Seite 1
+Depot: 9999999999
+Depotinhaber:
+Max Mustermann
+Deka-GlobalChampions CF       
+ISIN: DE000DK0ECU8 Unterdepot: 00
+Verwahrart: GiroSammel
+VL-Vertrag: gesperrt bis zum 31.12.2024, Vertragsinhaber: Max Mustermann
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.12.2018 323,62  163,360000 1,981
+Bewertung mit dem Rücknahmepreis vom 28.12.2018
+Kauf 40,00 175,350000 +0,228 10.01.2019 10.01.2019
+Kauf 40,00 184,960000 +0,216 05.02.2019 05.02.2019
+Ausschüttung / Kauf aus Ertrag 1,46 179,310000 +0,008 15.02.2019 15.02.2019
+Kauf 40,00 189,000000 +0,212 11.03.2019 11.03.2019
+Kauf 40,00 198,430000 +0,202 10.04.2019 10.04.2019
+Kauf 40,00 197,170000 +0,203 09.05.2019 09.05.2019
+Kauf 40,00 195,960000 +0,204 11.06.2019 11.06.2019
+Kauf 40,00 204,340000 +0,196 11.07.2019 11.07.2019
+Kauf 40,00 197,900000 +0,202 12.08.2019 12.08.2019
+Kauf 40,00 204,580000 +0,196 11.09.2019 11.09.2019
+Kauf 40,00 204,160000 +0,196 11.10.2019 11.10.2019
+Kauf 40,00 214,850000 +0,186 11.11.2019 11.11.2019
+Kauf 40,00 217,490000 +0,184 10.12.2019 10.12.2019
+Summe der Betragsbewegungen 480,00
+Bestand am 31.12.2019 956,78 216,760000 4,414
+Bewertung mit dem Rücknahmepreis vom 30.12.2019
+Bitte prüfen Sie den Anteilbestand. Bei etwaigen Unstimmigkeiten wenden Sie sich in Textform an unsere Revisionsabteilung.
+Diese Aufstellung gilt als anerkannt, wenn Sie Ihre Einwendungen nicht innerhalb eines Monats nach Zugang abgesandt haben.
+Fortsetzung auf Seite 2
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Jahresdepotauszug und Quartalsbericht 
+per 31.12.2019
+Umsatz-Jahresübersicht
+Seite 2
+Depot: 9999999999
+Depotinhaber:
+Max Mustermann
+DekaLux-PharmaTech TF         
+ISIN: LU0348413815 Unterdepot: 00
+Verwahrart: GiroSammel
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.12.2018 3.460,55  257,080000 13,461
+Bewertung mit dem Rücknahmepreis vom 28.12.2018
+Ausschüttung / Kauf aus Ertrag 54,52 280,920000 +0,194 16.08.2019 16.08.2019
+Summe der Betragsbewegungen 0,00
+Bestand am 31.12.2019 4.355,95 319,000000 13,655
+Bewertung mit dem Rücknahmepreis vom 30.12.2019
+Deka-Technologie TF           
+ISIN: DE0005152631 Unterdepot: 00
+Verwahrart: GiroSammel
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.12.2018 1.344,75  26,460000 50,822
+Bewertung mit dem Rücknahmepreis vom 28.12.2018
+Ausschüttung / Kauf aus Ertrag 5,08 29,970000 +0,170 22.02.2019 22.02.2019
+Summe der Betragsbewegungen 0,00
+Bestand am 31.12.2019 1.885,17 36,970000 50,992
+Bewertung mit dem Rücknahmepreis vom 30.12.2019
+Fortsetzung auf Seite 3
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Jahresdepotauszug und Quartalsbericht 
+per 31.12.2019
+Umsatz-Jahresübersicht
+Seite 3
+Depot: 9999999999
+Depotinhaber:
+Max Mustermann
+Deka-ConvergenceAktien TF     
+ISIN: LU0133666759 Unterdepot: 00
+Verwahrart: GiroSammel
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.12.2018 760,99  135,940000 5,598
+Bewertung mit dem Rücknahmepreis vom 28.12.2018
+Ausschüttung / Kauf aus Ertrag 20,88 172,700000 +0,121 15.11.2019 15.11.2019
+Summe der Betragsbewegungen 0,00
+Bestand am 31.12.2019 1.025,82 179,370000 5,719
+Bewertung mit dem Rücknahmepreis vom 30.12.2019
+DekaLuxTeam-Aktien Asien      
+ISIN: LU0052859252 Unterdepot: 00
+Verwahrart: GiroSammel
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.12.2018 3.995,46  625,170000 6,391
+Bewertung mit dem Rücknahmepreis vom 28.12.2018
+Ausschüttung / Kauf aus Ertrag 14,44 736,070000 +0,020 15.11.2019 15.11.2019
+Summe der Betragsbewegungen 0,00
+Bestand am 31.12.2019 4.998,91 779,740000 6,411
+Bewertung mit dem Rücknahmepreis vom 30.12.2019
+Fortsetzung auf Seite 4
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Jahresdepotauszug und Quartalsbericht 
+per 31.12.2019
+Umsatz-Jahresübersicht
+Seite 4
+Depot: 9999999999
+Depotinhaber:
+Max Mustermann
+DekaLux-Deutschland TF A      
+ISIN: LU0062624902 Unterdepot: 00
+Verwahrart: GiroSammel
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.12.2018 1.197,05  105,060000 11,394
+Bewertung mit dem Rücknahmepreis vom 28.12.2018
+Ausschüttung / Kauf aus Ertrag 4,44 129,150000 +0,034 15.11.2019 15.11.2019
+Summe der Betragsbewegungen 0,00
+Bestand am 31.12.2019 1.489,18 130,310000 11,428
+Bewertung mit dem Rücknahmepreis vom 30.12.2019
+DekaLux-Europa TF (A)         
+ISIN: LU0062625115 Unterdepot: 00
+Verwahrart: GiroSammel
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.12.2018 357,97  51,940000 6,892
+Bewertung mit dem Rücknahmepreis vom 28.12.2018
+Ausschüttung / Kauf aus Ertrag 2,83 62,240000 +0,045 15.11.2019 15.11.2019
+Summe der Betragsbewegungen 0,00
+Bestand am 31.12.2019 442,23 63,750000 6,937
+Bewertung mit dem Rücknahmepreis vom 30.12.2019
+Fortsetzung auf Seite 5
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Jahresdepotauszug und Quartalsbericht 
+per 31.12.2019
+Umsatz-Jahresübersicht
+Seite 5
+Depot: 9999999999
+Depotinhaber:
+Max Mustermann
+Deka-EuropaBond TF            
+ISIN: DE0009771980 Unterdepot: 00
+Verwahrart: GiroSammel
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.12.2018 638,75  40,540000 15,756
+Bewertung mit dem Rücknahmepreis vom 28.12.2018
+Ausschüttung / Kauf aus Ertrag 6,14 43,850000 +0,140 16.08.2019 16.08.2019
+Summe der Betragsbewegungen 0,00
+Bestand am 31.12.2019 681,94 42,900000 15,896
+Bewertung mit dem Rücknahmepreis vom 30.12.2019
+Deka-EuropaPotential TF       
+ISIN: DE0009786285 Unterdepot: 00
+Verwahrart: GiroSammel
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.12.2018 3.105,28  105,100000 29,546
+Bewertung mit dem Rücknahmepreis vom 28.12.2018
+Ausschüttung / Kauf aus Ertrag 11,52 117,600000 +0,098 22.02.2019 22.02.2019
+Summe der Betragsbewegungen 0,00
+Bestand am 31.12.2019 4.064,49 137,110000 29,644
+Bewertung mit dem Rücknahmepreis vom 30.12.2019
+Dieser Depotauszug besteht aus 5 Seiten.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Jahresdepotauszug und Quartalsbericht 
+per 31.12.2019
+Umsatz-Jahresübersicht Deka-BonusRente
+Seite 1
+Depot: 9999999999
+Depotinhaber:
+Max Mustermann
+Deka-BonusRente
+ISIN: XF0009994050 Unterdepot: 00
+Vertragsnummer: 999999999999940500  Zertifizierungs-Nr.: 003604
+Aktuelle Phase:  Ansparphase Beginn der Auszahlungsphase: 01.05.2049
+Übersicht der angesparten Fonds
+Fondsname ISIN Verwahrart
+Deka-BR 100 DE0005424519 GiroSammel
+Übersicht der erfolgten Zahlungen
+Umsatzart Fondsname Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR EUR Anteile tag nungstag
+31.12.2018 Deka-BR 100 5.648,89 67,300000 83,936
+Gesamtbestand des Vertrages am 31.12.2018 5.648,89
+Bewertung mit dem Rücknahmepreis vom 28.12.2018
+Zulagenzahlung       2018 Deka-BR 100 175,00 79,670000 +2,197 16.05.2019 16.05.2019
+Lastschrifteinzug Deka-BR 100 80,00 79,970000 +1,000 11.06.2019 11.06.2019
+Mandatsreferenz: 9999999999001
+Lastschrifteinzug Deka-BR 100 1,17 78,220000 +0,015 25.06.2019 25.06.2019
+Lastschrifteinzug Deka-BR 100 1.120,00 83,750000 +13,373 21.10.2019 21.10.2019
+Mandatsreferenz: 9999999999001
+Lastschrifteinzug Deka-BR 100 1,61 84,870000 +0,019 10.12.2019 10.12.2019
+Bestand am 31.12.2019 Deka-BR 100 8.738,94 86,920000 100,540
+Gesamtbestand des Vertrages am 31.12.2019 8.738,94
+Bewertung mit dem Rücknahmepreis vom 30.12.2019
+Bitte prüfen Sie den Anteilbestand. Bei etwaigen Unstimmigkeiten wenden Sie sich in Textform an unsere Revisionsabteilung.
+Diese Aufstellung gilt als anerkannt, wenn Sie Ihre Einwendungen nicht innerhalb eines Monats nach Zugang abgesandt haben.
+Dieser Depotauszug besteht aus 1 Seite.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Mitteilung zu Ihrem VL-Vertrag für Max Mustermann
+Für Ihren angegebenen vermögenswirksamen Sparvertrag werden wir folgende Daten an die Finanzverwaltung übermitteln. Bitte beachten
+Sie, dass eine Übermittlung nur möglich ist, wenn alle unten stehenden Felder vollständig/richtig befüllt sind und kein Widerspruch zur
+Datenübermittlung vorliegt.
+Vertragsinhaber Mustermann, Max
+1.  Vertrag 2.  Vertrag
+Straße, Hausnummer Strasse 8   
+Postleitzahl, Wohnort 99999 Stadt
+Postalische Ergänzung
+Vertragsnummer 11111111111111
+Vermögenswirksame Leistungen 480,00
+(auf volle Euro gerundet)
+Steuer-Identifikationsnummer 11111111111
+Geburtsdatum Vertragsinhaber 01.01.1980
+Datenübermittlung Einwilligung liegt vor
+Ende der Sperrfrist 31.12.2024
+Institutsschlüssel 1111111
+Meldejahr 2019
+Anlageinstitut, Unternehmen, Empfänger
+DekaBank
+Deutsche Girozentrale
+60625 Frankfurt am Main
+Informationen zur elektronischen Vermögensbildungsbescheinigung
+Ihre Arbeitnehmer-Sparzulage beantragen Sie weiterhin über Ihre Steuererklärung. Diese Mitteilung ist nicht für die
+Finanzverwaltung, sondern nur für Ihre Unterlagen bestimmt.
+Liegt uns Ihre Einwilligung zur Datenübermittlung nicht vor oder haben Sie diese widerrufen?
+Das erkennen Sie auf Ihrer VL-Mitteilung unter "Datenübermittlung". Liegt uns keine Zustimmung oder ein Widerruf zur
+Datenübermittlung vor, werden wir keine Daten an die Finanzverwaltung übermitteln. Eine nachträgliche Zustimmung ist spätestens
+bis zum Ablauf des zweiten Kalenderjahres, das auf das Kalenderjahr der Anlage der vermögenswirksamen Leistungen folgt, zu
+erteilen. Bitte nutzen Sie hierfür ausschließlich unseren Vordruck "Vermögenswirksamer Sparvertrag in Wertpapieren DekaBank
+Depot". Diesen finden Sie auf unserer Homepage www.deka.de unter dem Menüpunkt "Formulare". Alternativ können Sie sich an
+Ihren Berater bei der Sparkasse/Landesbank wenden.
+Die Daten übermitteln wir ausschließlich elektronisch an die Finanzverwaltung.
+Sofern Ihre Daten unvollständig oder fehlerhaft sind, wenden Sie sich bitte an Ihren Berater bei der Sparkasse/Landesbank, da bei
+Änderung Ihrer persönlichen Daten eine bestätigte Kopie Ihres aktuellen Legitimationsdokumentes erforderlich ist.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068

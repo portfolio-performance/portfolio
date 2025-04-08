@@ -1,0 +1,28 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+NAME SEITE 1 von 1
+Adresse DATUM 01.10.2020
+Adresse DEPOT 12345678
+TILGUNG
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER ANZAHL
+1 Tilgung HSBC Trinkaus & Burkhardt AG 700 Stk.
+TurboC O.End Linde
+DE000TT22GS8
+ABRECHNUNG
+NR. POSITION SUMME
+1 Kurswert 0,70 EUR
+SUMME 0,70 EUR
+2 Kapitalertragssteuer Optimierung 29,24 EUR
+Solidaritätszuschlag Optimierung 1,61 EUR
+Kirchensteuer Optimierung 2,34 EUR
+SUMME 33,19 EUR
+GELDBUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE0000000000000000000 02.10.2020 33,89 EUR
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 2020-10-01 / 0000000

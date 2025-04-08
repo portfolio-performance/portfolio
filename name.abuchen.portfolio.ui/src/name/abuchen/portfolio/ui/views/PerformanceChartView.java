@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.List;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -20,25 +23,34 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
 
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
+import name.abuchen.portfolio.ui.util.format.AxisTickPercentNumberFormat;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 import name.abuchen.portfolio.ui.views.dataseries.PerformanceChartSeriesBuilder;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceChartView extends AbstractHistoricView
@@ -47,6 +59,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private TimelineChart chart;
     private DataSeriesConfigurator picker;
+    private ChartViewConfig chartViewConfig;
 
     private Aggregation.Period aggregationPeriod;
 
@@ -76,6 +89,13 @@ public class PerformanceChartView extends AbstractHistoricView
         }
     }
 
+    @Inject
+    @Optional
+    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) ChartViewConfig config)
+    {
+        this.chartViewConfig = config;
+    }
+
     @Override
     protected void addButtons(ToolBarManager toolBar)
     {
@@ -95,18 +115,26 @@ public class PerformanceChartView extends AbstractHistoricView
         chart = new TimelineChart(composite);
         chart.getTitle().setText(getTitle());
         chart.getTitle().setVisible(false);
-        chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
-        chart.getToolTip().setValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
+        chart.getAxisSet().getYAxis(0).getTick().setFormat(new AxisTickPercentNumberFormat("0.#%")); //$NON-NLS-1$
+        chart.getToolTip().setDefaultValueFormat(new DecimalFormat(Values.Percent2.pattern()));
         chart.getToolTip().reverseLabels(true);
 
         DataSeriesCache cache = make(DataSeriesCache.class);
         seriesBuilder = new PerformanceChartSeriesBuilder(chart, cache);
 
         picker = new DataSeriesConfigurator(this, DataSeries.UseCase.PERFORMANCE);
+        if (chartViewConfig != null)
+        {
+            // do *not* update reporting period as it changes the default for
+            // all other views as well --> unexpected UX
+            picker.activate(chartViewConfig.getUUID());
+        }
+
         picker.addListener(this::updateChart);
         picker.setToolBarManager(getViewToolBarManager());
 
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, picker);
+        legend.addSelectionChangedListener(e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
 
         updateTitle(Messages.LabelPerformanceChart + " (" + picker.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         chart.getTitle().setText(getTitle());
@@ -118,6 +146,17 @@ public class PerformanceChartView extends AbstractHistoricView
         setChartSeries();
 
         return composite;
+    }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(HistoricalPricesPane.class));
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
     }
 
     @Override
@@ -148,7 +187,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
             chart.suspendUpdate(true);
             chart.getTitle().setText(getTitle());
-            for (ISeries s : chart.getSeriesSet().getSeries())
+            for (ISeries<?> s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             setChartSeries();
@@ -189,6 +228,7 @@ public class PerformanceChartView extends AbstractHistoricView
                 public void run()
                 {
                     setLabel(Messages.LabelAggregationDaily);
+                    setToolTip(Messages.LabelAggregationDaily);
                     aggregationPeriod = null;
                     getPart().getPreferenceStore().setValue(KEY_AGGREGATION_PERIOD, ""); //$NON-NLS-1$
                     updateChart();
@@ -205,6 +245,7 @@ public class PerformanceChartView extends AbstractHistoricView
                     public void run()
                     {
                         setLabel(period.toString());
+                        setToolTip(period.toString());
                         aggregationPeriod = period;
                         getPart().getPreferenceStore().setValue(KEY_AGGREGATION_PERIOD, period.name());
                         updateChart();
@@ -234,7 +275,6 @@ public class PerformanceChartView extends AbstractHistoricView
                 {
                     TimelineChartCSVExporter exporter = new TimelineChartCSVExporter(chart);
                     exporter.addDiscontinousSeries(Messages.PerformanceChartLabelCPI);
-                    exporter.setDateFormat(new SimpleDateFormat("yyyy-MM-dd")); //$NON-NLS-1$
                     exporter.setValueFormat(new DecimalFormat("0.##########")); //$NON-NLS-1$
                     exporter.export(getTitle() + ".csv"); //$NON-NLS-1$
                 }

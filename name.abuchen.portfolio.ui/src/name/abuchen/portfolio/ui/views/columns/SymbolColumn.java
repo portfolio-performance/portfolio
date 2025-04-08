@@ -30,7 +30,7 @@ public class SymbolColumn extends Column
             }
         });
 
-        setSorter(ColumnViewerSorter.create(
+        setSorter(ColumnViewerSorter.createIgnoreCase(
                         e -> Adaptor.optionally(Security.class, e).map(Security::getTickerSymbol).orElse(null)));
 
         new StringEditingSupport(Security.class, "tickerSymbol") //$NON-NLS-1$

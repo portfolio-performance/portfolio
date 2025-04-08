@@ -1,0 +1,41 @@
+PDF Autor: 'Unknown'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Wertpapierabrechnung
+Kauf (Zeichnung)
+Referenz-Nr 116283478
+Datum 12.03.2020
+Depot 1234567890
+Herrn Mustermann,Max
+Max Mustermann
+Musterstrasse 1
+12345 Musterstadt Telefon +49 - (0) 69 - 1234567890
+E-Mail max.muller@muller.de
+Seite 1 von 1
+Wertpapierbezeichnung Alger-Alger Amer.Ass.Gwth Fd Bearer Shares A o.N.
+ISIN LU0070176184
+WKN 986333
+Ausführungsplatz FH V-Bank AG/ATX
+Verwahrart Wertpapierrechnung
+Lagerland Luxemburg
+Handelstag / Zeit 10.03.2020 14:21:25
+Nominal / Stück 200,0000 ST
+Kurs USD 80,68
+Kurswert USD - 16.136,00
+Bank-Provision USD - 33,50
+Courtage * USD 0,00
+Spesen * USD 0,00
+Gebühren USD 0,00
+Total USD - 16.169,50
+Devisenkurs EUR/USD 1,116670
+Ausmachender Betrag EUR - 14.480,11
+Der Abrechnungsbetrag wird mit Valuta 13.03.2020 über Ihr Konto 1234567890 EUR gebucht.
+*Fremde Gebühren und Spesen
+Diese Mitteilung wurde maschinell erstellt und wird von der Bank nicht unterschrieben.
+V-Bank AG Telefon +49 (0)89 740 800-0 Aufsichtsratsvorsitzender: Vorstand:
+Arnulfstr. 58 - 80335 München Telefax +49 (0)89 740 800-222 Lars Hille Jens Hagemann
+Postfach 310340 - 80103 München USt-Id. DE 255554184 Stefan Lettmeier
+Gerichtsstand: München BIC VBANDEMMXXX
+Amtsgericht München HRB 167737 BLZ 700 123 00
+www.V-Bank.com
+MetaType: STEX / OrderType: BISS / Timestamp: 20200312 15:10:28

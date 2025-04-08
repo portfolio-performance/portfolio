@@ -32,17 +32,17 @@ public final class NumberColorLabelProvider<N extends Number> extends ColumnLabe
     public Color getForeground(Object element)
     {
         Number value = label.apply(element);
-        if (value == null)
+        if (value == null || value.doubleValue() == 0)
             return null;
 
-        return value.doubleValue() >= 0 ? Colors.DARK_GREEN : Colors.DARK_RED;
+        return value.doubleValue() >= 0 ? Colors.theme().greenForeground() : Colors.theme().redForeground();
     }
 
     @Override
     public Image getImage(Object element)
     {
         Number value = label.apply(element);
-        if (value == null)
+        if (value == null || value.doubleValue() == 0)
             return null;
 
         return value.doubleValue() >= 0 ? Images.GREEN_ARROW.image() : Images.RED_ARROW.image();

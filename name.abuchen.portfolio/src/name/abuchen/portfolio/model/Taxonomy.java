@@ -11,14 +11,14 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 
 public class Taxonomy
 {
-    public static class Visitor
+    public static interface Visitor
     {
-        public void visit(Classification classification)
+        default void visit(Classification classification)
         {
             // to be sub-classed
         }
 
-        public void visit(Classification classification, Assignment assignment)
+        default void visit(Classification classification, Assignment assignment)
         {
             // to be sub-classed
         }
@@ -28,6 +28,7 @@ public class Taxonomy
 
     private String id;
     private String name;
+    private String source;
 
     private List<String> dimensions;
     private Classification root;
@@ -65,7 +66,17 @@ public class Taxonomy
 
     public void setName(String name)
     {
-        propertyChangeSupport.firePropertyChange("name", this.name, this.name = name); //$NON-NLS-1$
+        propertyChangeSupport.firePropertyChange("name", this.name, this.name = name); // NOSONAR //$NON-NLS-1$
+    }
+
+    public void setSource(String source)
+    {
+        this.source = source;
+    }
+
+    public String getSource()
+    {
+        return source;
     }
 
     public List<String> getDimensions()
@@ -198,5 +209,27 @@ public class Taxonomy
     public String toString()
     {
         return name;
+    }
+
+    private static final String USED_FOR_REBALANCING_PREFIX = "rebalancing-included:"; //$NON-NLS-1$
+    private static final boolean USED_FOR_REBALANCING_DEFAULT_VALUE = true;
+
+    private static String getUsedForRebalancingKey(InvestmentVehicle investmentVehicle)
+    {
+        return USED_FOR_REBALANCING_PREFIX + investmentVehicle.getUUID();
+    }
+
+    public boolean isUsedForRebalancing(InvestmentVehicle investmentVehicle)
+    {
+        Object value = root.getData(getUsedForRebalancingKey(investmentVehicle));
+        if (!(value instanceof Boolean))
+            return USED_FOR_REBALANCING_DEFAULT_VALUE;
+        else
+            return (boolean) value;
+    }
+
+    public void setUsedForRebalancing(InvestmentVehicle investmentVehicle, boolean usedForRebalancing)
+    {
+        root.setData(getUsedForRebalancingKey(investmentVehicle), usedForRebalancing);
     }
 }

@@ -1,0 +1,44 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.4
+-----------------------------------------
+ da
+ 
+  
+Bank Direkt   
+der Raiffeisenlandesbank OÖ (BLZ: 34000)  
+Europaplatz 1a    b
+4020 Linz  
+ 
+ 
+a
+a  
+Abrechnung a  
+41502145 - 08.07.2022 a  
+Depotnummer: 22.222.222  
+Herrn zeWVCEU VddriujL
+bimSXjf MxtJTUoF
+BrEZFHiO 993 230/475
+5009 tKIDc Bank Direkt
+Wir haben für Sie am 08.07.2022 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Freier Erhalt
+Zugang: 200 Stk   
+Titel: CH0038863350 Nestlé S.A.
+Namens-Aktien SF -,10
+Lieferpflichtiger: Raiffeisenlandesbank Oberösterreich
+Depotnummer: 11.111.111
+xxxxxxx yyyyyyy
+Verwahrart: WR
+Positionsdaten: Loco: Zuerich
+Zu Gunsten IBAN kF48 5413 0000 6845 9818 0,00 EUR 
+Valuta 08.07.2022
+Schlusstag: 08.07.2022
+Kassatag: 08.07.2022
+Wir haben für Sie folgende Anschaffungsdaten angesetzt:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 200 Stk
+steuerlicher Anschaffungswert: 10.796,00 EUR
+Steuerl. Behandlung vorbehaltlich Beurteilung durch BMF
+08.07.2022 1 / 1
+BIC: RZOOAT2L, Landesgericht Linz, FN 247579m, UID: ATU57834268
+Dieser Beleg wurde durch die Raiffeisenlandesbank Oberösterreich erstellt.
+Ohne Unterschrift. Bitte geben Sie Unstimmigkeiten sofort bekannt.

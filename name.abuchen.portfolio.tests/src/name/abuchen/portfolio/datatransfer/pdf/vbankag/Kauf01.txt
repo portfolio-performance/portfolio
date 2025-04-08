@@ -1,0 +1,39 @@
+PDF Autor: 'Unknown'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Wertpapierabrechnung
+Kauf
+Referenz-Nr 85217617
+Datum 08.05.2019
+Depot 1234567890
+Herrn Mustermann, Max
+Max Mustermann
+Musterstrasse 1
+12345 Musterstadt Telefon +49 - (0) 69 - 1234567890
+E-Mail max.muller@muller.de
+Seite 1 von 1
+Wertpapierbezeichnung Deut. Börse Commodities GmbH Xetra-Gold IHS 2007(09/Und)
+ISIN DE000A0S9GB0
+WKN A0S9GB
+Ausführungsplatz Stuttgart
+Verwahrart Girosammelverwahrung
+Lagerland Deutschland
+Handelstag / Zeit 08.05.2019 09:36:23
+Nominal / Stück 300 ST
+Kurs EUR 36,906
+Kurswert EUR - 11.071,80
+Bank-Provision EUR - 30,00
+Abwicklungsgebühren * EUR - 2,00
+Courtage * EUR - 13,17
+Spesen * EUR 0,00
+Ausmachender Betrag EUR - 11.116,97
+Der Abrechnungsbetrag wird mit Valuta 10.05.2019 über Ihr Konto 1234567890 EUR gebucht.
+*Fremde Gebühren und Spesen
+Diese Mitteilung wurde maschinell erstellt und wird von der Bank nicht unterschrieben.
+V-Bank AG Telefon +49 (0)89 740 800-0 Aufsichtsratsvorsitzender: Vorstand:
+Arnulfstr. 58 - 80335 München Telefax +49 (0)89 740 800-222 Lars Hille Jens Hagemann
+Postfach 310340 - 80103 München USt-Id. DE 255554184 Stefan Lettmeier
+Gerichtsstand: München BIC VBANDEMMXXX
+Amtsgericht München HRB 167737 BLZ 700 123 00
+www.V-Bank.com
+MetaType: STEX / OrderType: B / Timestamp: 20190508 09:40:24

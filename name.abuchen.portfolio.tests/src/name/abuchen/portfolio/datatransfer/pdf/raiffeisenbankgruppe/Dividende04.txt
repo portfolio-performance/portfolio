@@ -1,0 +1,60 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.3
+-----------------------------------------
+VR Bank Südpfalz eG · Waffenstraße 15 · 76829 Landau    Seite 1
+Depotnummer
+ 1234567
+ XXXXXXXXXX
+XXXXXXXXXX Kundennummer 00000000
+XXXXXXXXXX
+XXXXXXXXXX Abrechnungsnr. 80642931040
+XXXXXXXXXX Datum 02.11.2022
+Ihr Berater XXX
+VR-Direkt
+ 
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 400 GENERAL MILLS INC. US3703341046 (853862)
+REGISTERED SHARES DL -,10
+Zahlbarkeitstag 01.11.2022 Dividende pro Stück 0,54 USD
+Bestandsstichtag 05.10.2022 Herkunftsland USA
+Ex-Tag 06.10.2022 Art der Dividende Quartalsdividende
+Geschäftsjahr 01.06.2022 - 31.05.2023
+Devisenkurs EUR / USD  0,9954
+Devisenkursdatum 02.11.2022
+Dividendengutschrift 216,00 USD 217,00+ EUR
+Umrechnung in EUR 217,00 EUR
+Einbehaltene Quellensteuer 30 % auf 216,00 USD 65,10- EUR
+Anrechenbare Quellensteuer 15 % auf 217,00 EUR 32,55 EUR
+Kapitalertragsteuerpflichtige Dividende 217,00 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 32,55 EUR 130,20 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 86,80 EUR
+Kapitalertragsteuer 24,45 % auf 86,80 EUR 21,22- EUR
+Solidaritätszuschlag 5,5 % auf 21,22 EUR 1,17- EUR
+Kirchensteuer 9 % auf 21,22 EUR 1,91- EUR
+Ausmachender Betrag 127,60+ EUR
+15 % rückforderbare Quellensteuer 32,40 USD
+Lagerstelle CBF w/7268 w/DZ Bank (600502 / 72680000)
+Den Betrag buchen wir mit Wertstellung 03.11.2022 zu Gunsten des Kontos 1111 (IBAN DE00 1111 2222 3333 4444 55),
+BLZ 444 222 00 (BIC XXXXXXXXX). 
+Bitte ggf. Rückseite beachten.
+7031.11030103.0000001ER01
+
+Seite 2
+Depotnummer 88888888
+Kundennummer 666666
+Abrechnungsnr. 80642931040
+Datum 02.11.2022
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2022 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 3.865,08
+Ertrag 32,55
+0,00 0,00 0,00 32,55- 86,80
+Nachher 0,00 0,00 0,00 0,00 3.951,88
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7031.11030103.0000002ER01

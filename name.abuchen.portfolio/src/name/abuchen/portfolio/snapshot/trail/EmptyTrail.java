@@ -2,6 +2,7 @@ package name.abuchen.portfolio.snapshot.trail;
 
 import java.time.LocalDate;
 
+import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.Money;
 
 /* package */ final class EmptyTrail implements TrailRecord
@@ -49,7 +50,13 @@ import name.abuchen.portfolio.money.Money;
     }
 
     @Override
-    public TrailRecord substract(TrailRecord trail)
+    public TrailRecord transfer(LocalDate date, TransactionOwner<?> source, TransactionOwner<?> target)
+    {
+        return this;
+    }
+
+    @Override
+    public TrailRecord subtract(TrailRecord trail)
     {
         throw new UnsupportedOperationException();
     }

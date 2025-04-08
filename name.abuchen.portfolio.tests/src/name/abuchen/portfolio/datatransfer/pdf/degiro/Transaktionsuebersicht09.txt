@@ -1,0 +1,22 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Herr 
+K
+A
+00111 H
+Benutzername: abc
+(49673295)
+Transaktionsübersicht von 30-12-2020 bis 07-01-2021
+Datum Uhrzeit Produkt ISIN
+Referen Ausführungso Wert in Wechse Transaktions
+zbörse rt Anzahl Kurs Lokalwährung Wert lkurs kosten Gesamt
+07-01-2021 16:54 WALT DISNEY COMPANY (T US2546871060 NSY CDED -2 178,25 USD 356,50 USD 290,15 EUR 1,2274 -0,51 EUR 289,64 EUR
+07-01-2021 09:00 K&S AG DE000KSAG888 XET XETA 20 9,748 EUR -194,96 EUR -194,96 EUR -2,04 EUR -197,00 EUR
+07-01-2021 09:00 DEUTSCHE TELEKOM AG DE0005557508 XET XETA 15 15,22 EUR -228,30 EUR -228,30 EUR -2,04 EUR -230,34 EUR
+07-01-2021 09:00 K&S AG DE000KSAG888 XET XETA 25 9.748 EUR -1,082.50 EUR -972.53 EUR -0.63 EUR -973.16 EUR
+DEGIRO B.V. DEGIRO B.V. ist als
+Amstelplein 1 E Investmentgesellschaft bei der
+1096 HA Amsterdam kundenservice@degiro.de niederländischen Seite 1 / 1
+I www.degiro.de Finanzaufsichtsbehörde (AFM) Konto 2021-01-30
+registriert.

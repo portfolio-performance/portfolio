@@ -1,0 +1,60 @@
+PDF Autor: ''
+PDFBox Version: 1.1.11
+-----------------------------------------
+Postfach · 10111 Frankfurt am Main Seite 1 von 1
+Depotnummer 1111111111
+Kundennummer 1111
+Some Name
+Auftragsnummer 111111111/11.00
+Herrn Some Name Datum 01.01.1011
+c/o Some Name Ihr Berater 1822direkt
+Street 11111 Telefon 111 1111111-0
+1111111 City Rechnungsnummer W11111-1111111111/11
+Umsatzsteuer-ID DE11111111111111
+Wertpapier Abrechnung Verkauf
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 1 EXXON MOBIL CORP. US10111G1011 (111111)
+REGISTERED SHARES O.N.
+Handels-/Ausführungsplatz Frankfurt (gemäß Weisung)
+Börsensegment FRAB
+Limit-Order
+Limit 11,00 EUR
+Schlusstag/-Zeit 01.01.2021 11:11:11 Auftraggeber Some, Name
+Ausführungskurs 11,101 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 111,11 EUR
+Provision 1,10- EUR
+Eigene Spesen 1,11- EUR
+Transaktionsentgelt Börse 0,11- EUR
+Übertragungs-/Liefergebühr 0,11- EUR
+Handelsentgelt 1,00- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsverlust 110,11- EUR
+Eingebuchte Aktienverluste 110,11 EUR
+Ausmachender Betrag 111,11 EUR
+Den Gegenwert buchen wir mit Valuta 01.01.1011 zu Gunsten des Kontos 11111111111111
+(IBAN DE11 1111 1111 1111 1111 11), BLZ 11111111 (BIC AAAAAAA1111).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+1111111.1111111.1111111AB11
+Seite 1 von 1
+Depotnummer 11111111111
+Kundennummer 11111111
+Auftragsnummer 111/11.11111
+Datum 01.01.1011
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 1011 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 1,10 0,00 110,11 0,10 0,00
+Verkauf 110,11 0,00 0,00 0,00 0,00
+Nachher 111,11 0,00 110,11 0,10 0,00
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös ant. Ergebnis
+Kauf 1111111100 11.01.1011 Stück 1,0000 101,11- 111,11 110,11- (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 110,11-
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+1111.01011111.0001111OR01

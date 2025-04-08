@@ -1,0 +1,58 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.0
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 1925426800
+1112683314/00
+Vermerk der Bank: 2000
+2
+hvhQev Dkvwuj
+Blumennstr. 79 Datum: 08.03.2024
+06709 wXCmbshhM Seite: 1 von 2
+Ertragsgutschrift / Neuabrechnung
+Wertpapierbezeichnung WKN ISIN
+Xtr.(IE) - MSCI World Registered Shares 1D o.N. A1XEY2 IE00BK1PV551
+Bestand
+80,43549 Stück
+Ertragsausschüttung je Anteil 0,5723 USD Schlusstag 20.02.2024
+Brutto in USD 46,03 USD
+Netto in USD 46,03 USD
+Devisenkurs 1,096300 USD / EUR
+Brutto in EUR 41,99 EUR
+Netto zugunsten IBAN HT35 1787 9094 4017 3263 31 41,99 EUR
+Valuta 07.03.2024 BIC CSDBDE71XXX
+Bei ausreichender Deckung wird der gutgeschriebene Ertrag reinvestiert.
+Bitte beachten Sie die weiteren Informationen auf Seite 2.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+1EE45AD1-3AEC-45BC-8D68-425233326D97
+Depotnummer: 8879208747
+1112683314/00
+Vermerk der Bank: 2000
+2
+Datum: 08.03.2024
+Seite: 2 von 2
+Details zur Abrechnung
+Informationen zum Investmentsteuergesetz
+Ausschüttung gem. §2 Abs. 11 InvStG 41,99 EUR
+abzgl. Teilfreistellung 30,00 % von 41,99 EUR 12,60 EUR
+Ertragsausschüttung mit Teilfreistellung 29,39 EUR
+Steuerpflichtiger Gesamtertrag 29,39 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Mit Sparerpauschbetrag verrechnet -29,39 EUR
+Mit Quellensteuer verrechnet 0,00 EUR
+somit verrechnete Quellensteuer 0,00 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 0,00 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf "Allgemein" vor der Abrechnung 0,00 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Verrechnungstopf "Allgemein" nach der Abrechnung 0,00 EUR
+Sparerpauschbetrag vor der Abrechnung 654,01 EUR
+Mit Sparerpauschbetrag verrechnet -29,39 EUR
+Sparerpauschbetrag nach der Abrechnung 624,62 EUR
+Verrechnungstopf "Quellensteuer" vor der Abrechnung 12,16 EUR
+Änderung Verrechnungstopf "Quellensteuer" 0,00 EUR
+Verrechnungstopf "Quellensteuer" nach der Abrechnung 12,16 EUR

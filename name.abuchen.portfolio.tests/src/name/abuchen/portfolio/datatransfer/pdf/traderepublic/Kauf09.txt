@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.6
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH BRUNNENSTRASSE 19-21 10119 BERLIN
+Jürgen AFnWOTV SEITE 1 von 1
+otEWMUOMGk 10 DATUM 27.11.2023
+40269 NYCCLKquI ORDER 39f0-5191
+AUSFÜHRUNG f728-6a96
+DEPOT 83499999
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Limit-Order Kauf am 27.11.2023, um 16:17 Uhr (Europe/Berlin).
+Der Kontrahent der Transaktion ist HSBC Trinkaus & Burkhardt AG.
+POSITION ANZAHL PREIS BETRAG
+HSBC Trinkaus & Burkhardt GmbH 1.000 Stk. 0,94 EUR 940,00 EUR
+X-TUP O.End DAX/XDAX
+ISIN: DE000HS15WQ0
+GESAMT 940,00 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+GESAMT -941,00 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE30501108084756240938 29.11.2023 -941,00 EUR
+HSBC Trinkaus & Burkhardt GmbH X-TUP O.End DAX/XDAX in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
+ABRE / 27.11.2023 / 15421905 / 25ba-3fa9

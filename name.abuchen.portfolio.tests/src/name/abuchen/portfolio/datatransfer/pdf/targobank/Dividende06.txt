@@ -1,0 +1,36 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.0
+-----------------------------------------
+TARGOBANK AG
+Postfach 10 02 30
+47002 Duisburg
+TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg www.targobank.de
+HERR
+MAX MUSTERMANN
+MUSTER LANDSTR. 98
+12345 MUSTERDORF
+Depotnummer 11111111111111
+........................................................................................................................................................................................................
+Ertragsgutschrift 14.12.2022
+Rechnungsnummer: CPS-2022-0223620024-0002215
+MAX MUSTERMANN
+Wir informieren Sie über die folgende Ausschüttung:
+Wertpapier iSh.STOXX Europe 600 U.ETF DE - Inhaber-Anteile
+WKN / ISIN 263530 / DE0002635307
+Stück 1.227
+Ausschüttung pro Stück 0,177415 EUR
+Ex-Tag 15.12.2022
+Zahlbar 15.12.2022
+Ursprungsland Deutschland
+Geschäftsjahr 2022 / 2023
+Geschäftsnummer 34822CG020886O00
+Bruttoertrag 217,69 EUR
+Gutschrift auf Ihrem Konto mit Wertstellung zum 15. Dezember 2022
+Konto-Nr. 1111111111 217,69 EUR
+Dieser Beleg wurde maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
+Seite 1
+TARGOBANK AG | Vorstand: Isabelle Chevelard (Vorsitzende); Christophe Jéhan (stellv. Vorsitzender); Berthold Rüsing; Maria Topaler
+Vorsitzender des Aufsichtsrates:  René Dangel | Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+KH.20221215.020603.5002.0001.18276 X 0 R

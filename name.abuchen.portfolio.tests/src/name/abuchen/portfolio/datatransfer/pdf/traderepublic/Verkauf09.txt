@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.5.qualifier
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Vorname Nachname SEITE 1 von 1
+Straße 1 DATUM 10.06.2024
+12345 Ort ORDER a00a-0000
+AUSFÜHRUNG 000a-aa00
+DEPOT 0000000000
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Market-Order SELL am 10.06.2024, um 12:35 Uhr (Europe/Berlin).
+Der Kontrahent der Transaktion ist Trade Republic Bank GmbH.
+POSITION ANZAHL PREIS BETRAG
+Coca-Cola 0,286887 Stk. 59,50 EUR 17,07 EUR
+ISIN: US1912161007
+GESAMT 17,07 EUR
+ABRECHNUNG
+POSITION BETRAG
+Kapitalertragsteuer -0,07 EUR
+Solidaritätszuschlag 0,00 EUR
+GESAMT 17,00 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE00000000000000000000 2024-06-12 17,00 EUR
+Coca-Cola in Girosammelverwahrung in Deutschland
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
+ABRE / 0aaa-aa0a

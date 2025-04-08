@@ -1,0 +1,193 @@
+Wertpapierabrechnung
+Depot-Tagesauszug
+xxx
+xxx
+xxxx
+xxx
+Depot: xxx
+Depotinhaber:
+xxx
+Bankverbindung generell:
+IBAN:
+xxxx
+xxx
+Kontoinhaber:
+xxxxx
+xxxx
+Auszug: 11 / Seite 1 von 3
+DekaBank
+Deutsche Girozentrale
+Depotservice
+DekaBank Depot
+60625 Frankfurt
+Telefon: (0 69) 71 47 - 6 52
+Telefax: (0 69) 25 46 - 24 83
+www.deka.de
+Handelsregister:
+Amtsgericht
+Frankfurt am Main
+HRA 16068
+USt-Id-Nr.:
+DE 114103563
+Verkäufe wegen Tausch von Wertpapieren
+Käufe aus Tausch von Wertpapieren
+Sehr geehrter Herr Schreckenhöfer,
+folgende Buchungen haben wir für Ihr Depot durchgeführt:
+TAUSCH/KAUF erteilt per Deka.de - Internet
+Auftraggeber: xxxx
+Auftragserteilung: Geschäft ohne Beratung
+zu Lasten
+Bezeichnung: Deka-EuropaPotential TF       
+ISIN: DE0009786285 Unterdepot: 00
+zu Gunsten
+Bezeichnung: Deka-Liquidität: EURO TF
+ISIN: DE0009771824
+Verwahrart: GiroSammel
+Unterdepot: 00 Auftragsnummer: 8102 2598
+Abrechnungstag: 06.06.2018
+Abrechnungsbetrag Betrag in Währung
+des Wertpapiers
+Wertpapierdaten
+je Anteil
+Bestandsdaten
+in Stück
+Abrechnungsbetrag EUR 332,31 EUR 332,31
+Kurs/Kaufpreis
+EUR 65,000000
+Bestand alt: 198,335
+Anteilumsatz: 5,112
+Bestand neu: 203,447
+Depot: 0102162260
+Auszug: 11 / Seite 2 von 3
+DekaBank
+Deutsche Girozentrale
+Depotservice
+DekaBank Depot
+60625 Frankfurt
+Telefon: (0 69) 71 47 - 6 52
+Telefax: (0 69) 25 46 - 24 83
+www.deka.de
+Handelsregister:
+Amtsgericht
+Frankfurt am Main
+HRA 16068
+USt-Id-Nr.:
+DE 114103563
+TAUSCH/KAUF erteilt per Deka.de - Internet
+Auftraggeber: xxxx
+Auftragserteilung: Geschäft ohne Beratung
+zu Lasten
+Bezeichnung: Deka-Europa Nebenwerte TF (A) 
+ISIN: LU0075131606 Unterdepot: 00
+zu Gunsten
+Bezeichnung: Deka-Liquidität: EURO TF
+ISIN: DE0009771824
+Verwahrart: GiroSammel
+Unterdepot: 00 Auftragsnummer: 8102 3321
+Abrechnungstag: 06.06.2018
+Abrechnungsbetrag Betrag in Währung
+des Wertpapiers
+Wertpapierdaten
+je Anteil
+Bestandsdaten
+in Stück
+Abrechnungsbetrag EUR 206,74 EUR 206,74
+Kurs/Kaufpreis
+EUR 65,000000
+Bestand alt: 203,447
+Anteilumsatz: 3,181
+Bestand neu: 206,628
+TAUSCH/VERKAUF erteilt per Deka.de - Internet
+Auftraggeber: xxxx
+Auftragserteilung: Geschäft ohne Beratung
+zu Gunsten
+Bezeichnung: Deka-Liquidität: EURO TF      
+ISIN: DE0009771824 Unterdepot: 00
+zu Lasten
+Bezeichnung: Deka-EuropaPotential TF
+ISIN: DE0009786285
+Verwahrart: GiroSammel
+Unterdepot: 00 Auftragsnummer: 8102 2597
+Abrechnungstag: 06.06.2018
+Abrechnungsbetrag Betrag in Währung
+des Wertpapiers
+Wertpapierdaten
+je Anteil
+Bestandsdaten
+in Stück
+Auszahlungsbetrag EUR 332,31
++ Verrechnete Steuern EUR 1,82
+= Abrechnungsbetrag EUR 334,13
+EUR 334,13
+Kurs
+EUR 128,610000
+Bestand alt: 2,598
+Anteilumsatz: -2,598
+Bestand neu: 0,000
+Kirchensteuer wurde berücksichtigt.
+Depot: 0102162260
+Auszug: 11 / Seite 3 von 3
+DekaBank
+Deutsche Girozentrale
+Depotservice
+DekaBank Depot
+60625 Frankfurt
+Telefon: (0 69) 71 47 - 6 52
+Telefax: (0 69) 25 46 - 24 83
+www.deka.de
+Handelsregister:
+Amtsgericht
+Frankfurt am Main
+HRA 16068
+USt-Id-Nr.:
+DE 114103563
+TAUSCH/VERKAUF erteilt per Deka.de - Internet
+Auftraggeber: xxxx
+Auftragserteilung: Geschäft ohne Beratung
+zu Gunsten
+Bezeichnung: Deka-Liquidität: EURO TF      
+ISIN: DE0009771824 Unterdepot: 00
+zu Lasten
+Bezeichnung: Deka-Europa Nebenwerte TF (A)
+ISIN: LU0075131606
+Verwahrart: GiroSammel
+Unterdepot: 00 Auftragsnummer: 8102 3320
+Abrechnungstag: 06.06.2018
+Abrechnungsbetrag Betrag in Währung
+des Wertpapiers
+Wertpapierdaten
+je Anteil
+Bestandsdaten
+in Stück
+Auszahlungsbetrag EUR 206,74
++ Verrechnete Steuern EUR 1,72
+= Abrechnungsbetrag EUR 208,46
+EUR 208,46
+Kurs
+EUR 80,830000
+Bestand alt: 2,579
+Anteilumsatz: -2,579
+Bestand neu: 0,000
+Kirchensteuer wurde berücksichtigt.
+Ihr erteilter Sparer-Pauschbetrag für xxxx beträgt EUR xxxx
+Aktuelle steuerliche Daten
+Stückzinsen und realisierte Veräußerungsverluste
+(sonstiger Verlusttopf)
+EUR 0,00
+Verfügbarer Sparer-Pauschbetrag EUR 0,00
+Alle steuerlich relevanten Informationen und Daten des aktuellen Jahres werden Ihnen mit der
+Steuerbescheinigung des Jahresdepotauszuges übersandt, den Sie bis Ende Januar des Folgejahres erhalten. Die
+erwirtschafteten Erträge der Vorsorgeprodukte Deka-BonusRente, Deka-BasisRente und Deka-ZukunftsPlan sind
+in der Ansparphase abgeltungsteuerfrei. Die Leistungen werden in der Regel erst in der Auszahlungsphase als
+sog. Sonstige Einkünfte versteuert. Leistungen, die auf geförderten Beiträgen beruhen, werden in der
+Auszahlungsphase voll versteuert (persönlicher Steuersatz).
+Bitte prüfen Sie die vorliegenden Informationen.
+Zu Ihrer persönlichen Anlagestrategie beraten Sie gern die Berater der Sparkasse Schwäbisch Hall-Crailsheim.
+Dort erhalten Sie ebenfalls die aktuellen Verkaufsunterlagen und Dokumentationen mit den Details Ihrer
+Vermögensanlage. Diese Unterlagen können Sie auch bei uns anfordern oder über www.deka.de abrufen.
+Über Chancen, Risiken und Kosten der Anlage informieren Sie die "Wesentlichen Anlegerinformationen" bzw.
+das Produktinformationsblatt. Wünschen Sie weitere aktuelle Informationen zu Ihrer Anlage, können Sie diese
+jederzeit im Internet über www.deka.de aufrufen.
+Mit freundlichen Grüßen
+DekaBank
+Deutsche Girozentrale

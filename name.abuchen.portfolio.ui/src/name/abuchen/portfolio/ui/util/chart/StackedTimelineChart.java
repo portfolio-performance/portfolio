@@ -1,62 +1,67 @@
 package name.abuchen.portfolio.ui.util.chart;
 
-import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.IAxis.Position;
-import org.swtchart.ICustomPaintListener;
-import org.swtchart.ILineSeries;
-import org.swtchart.ILineSeries.PlotSymbolType;
-import org.swtchart.IPlotArea;
-import org.swtchart.ISeries.SeriesType;
-import org.swtchart.LineStyle;
-import org.swtchart.Range;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.IAxis.Position;
+import org.eclipse.swtchart.ICustomPaintListener;
+import org.eclipse.swtchart.ILineSeries;
+import org.eclipse.swtchart.ILineSeries.PlotSymbolType;
+import org.eclipse.swtchart.ISeries.SeriesType;
+import org.eclipse.swtchart.internal.PlotArea;
+import org.eclipse.swtchart.LineStyle;
+import org.eclipse.swtchart.Range;
 
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.util.Dates;
 
-public class StackedTimelineChart extends Chart
+public class StackedTimelineChart extends Chart // NOSONAR
 {
     private TimelineChartToolTip toolTip;
 
     private List<LocalDate> dates;
 
+    private ChartContextMenu contextMenu;
+
+    @SuppressWarnings("restriction")
     public StackedTimelineChart(Composite parent, List<LocalDate> dates)
     {
-        super(parent, SWT.NONE);
+        super(parent, SWT.NONE, null);
 
-        this.dates = dates;
+        // we must use the secondary constructor that is not creating the
+        // PlotArea because the default constructor adds a mouse move listener
+        // that is redrawing the chart on every mouse move. That leads to janky
+        // UI when the tooltip is shown.
+        new PlotArea(this, SWT.NONE);
 
-        setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-        getTitle().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+        setData(UIConstants.CSS.CLASS_NAME, "chart"); //$NON-NLS-1$
+
         getLegend().setVisible(false);
 
         // x axis
         IAxis xAxis = getAxisSet().getXAxis(0);
         xAxis.getTitle().setVisible(false);
+        xAxis.getTitle().setText(Messages.ColumnDate);
         xAxis.getTick().setVisible(false);
         xAxis.getGrid().setStyle(LineStyle.NONE);
-
-        String[] categories = new String[dates.size()];
-        for (int ii = 0; ii < categories.length; ii++)
-            categories[ii] = dates.get(ii).toString();
-        xAxis.setCategorySeries(categories);
-        xAxis.enableCategory(true);
+        setDates(dates);
 
         // y axis
         IAxis yAxis = getAxisSet().getYAxis(0);
         yAxis.getTitle().setVisible(false);
-        yAxis.getTick().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
         yAxis.setPosition(Position.Secondary);
 
-        ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
+        getPlotArea().addCustomPaintListener(new ICustomPaintListener()
         {
             @Override
             public void paintControl(PaintEvent e)
@@ -74,14 +79,30 @@ public class StackedTimelineChart extends Chart
         toolTip = new TimelineChartToolTip(this);
         toolTip.enableCategory(true);
         toolTip.reverseLabels(true);
-        toolTip.setValueFormat(new DecimalFormat("#0.0%")); //$NON-NLS-1$
+        toolTip.setXAxisFormat(obj -> {
+            Integer index = (Integer) obj;
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+            return Values.Date.format(LocalDate.parse(getAxisSet().getXAxis(0).getCategorySeries()[index], formatter));
+        });
 
-        new ChartContextMenu(this);
+        this.contextMenu = new ChartContextMenu(this);
     }
 
-    public ILineSeries addSeries(String label, double[] values, Color color)
+    public void setDates(List<LocalDate> dates)
     {
-        ILineSeries series = (ILineSeries) getSeriesSet().createSeries(SeriesType.LINE, label);
+        this.dates = dates;
+        IAxis xAxis = getAxisSet().getXAxis(0);
+        String[] categories = new String[dates.size()];
+        for (int ii = 0; ii < categories.length; ii++)
+            categories[ii] = dates.get(ii).toString();
+        xAxis.setCategorySeries(categories);
+        xAxis.enableCategory(true);
+    }
+
+    public ILineSeries<?> addSeries(String id, String label, double[] values, Color color)
+    {
+        var series = (ILineSeries<?>) getSeriesSet().createSeries(SeriesType.LINE, id);
+        series.setDescription(label);
         series.setYSeries(values);
 
         series.setLineWidth(2);
@@ -105,26 +126,30 @@ public class StackedTimelineChart extends Chart
         IAxis xAxis = getAxisSet().getXAxis(0);
         Range range = xAxis.getRange();
 
-        final LocalDate start = dates.get(0);
-        final LocalDate end = dates.get(dates.size() - 1);
+        LocalDate start = dates.get(0);
+        LocalDate end = dates.get(dates.size() - 1);
+        int days = Dates.daysBetween(start, end) + 1;
 
-        int totalDays = Dates.daysBetween(start, end) + 1;
-
-        LocalDate current = start.plusYears(1).withDayOfYear(1);
-        while (current.isBefore(end))
-        {
-            int days = Dates.daysBetween(start, current);
-            int y = xAxis.getPixelCoordinate((double) days * range.upper / (double) totalDays);
-            e.gc.drawLine(y, 0, y, e.height);
-            e.gc.drawText(String.valueOf(current.getYear()), y + 5, 5);
-
-            current = current.plusYears(1);
-        }
+        TimeGridHelper.paintTimeGrid(this, e, start, end, cursor -> {
+            int d = Dates.daysBetween(start, cursor);
+            return xAxis.getPixelCoordinate(d * range.upper / days);
+        });
     }
 
     @Override
     public void save(String filename, int format)
     {
         ChartUtil.save(this, filename, format);
+    }
+
+    @Override
+    public boolean setFocus()
+    {
+        return getPlotArea().getControl().setFocus();
+    }
+
+    public void exportMenuAboutToShow(IMenuManager manager, String label)
+    {
+        this.contextMenu.exportMenuAboutToShow(manager, label);
     }
 }

@@ -7,7 +7,7 @@ if [ -z $REPO_PATH ]; then
 fi
 
 BASE=$(pwd)/../../portfolio-product/target/products/
-BASE_GPG=$(pwd)/../../portfolio-product/target/gpg/target/products/
+BASE_GPG=$(pwd)/../../portfolio-product/target/gpg/products/
 
 FILES=${BASE}/PortfolioPerformance-*
 FILES_GPG=${BASE_GPG}/PortfolioPerformance-*

@@ -1,0 +1,81 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=432362432
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Max Mustermann
+ADRESSZEILE2=Maxi Mustermann
+ADRESSZEILE3=Muster Weg 6a
+ADRESSZEILE4=12345 Musterhausen
+Ausschüttung für
+Max Mustermann ADRESSZEILE5=01.05.2021 - 30.04.2022
+Maxi Mustermann ADRESSZEILE6=Depot-Nr. Abrechnungs-Nr.
+Muster Weg 6a BELEGNUMMER=23991
+12345 Musterhausen 432362432 34091609 / 15.09.2021 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max und Maxi Mustermann
+Frankfurt am Main, 15.09.2021
+Erträgnisgutschrift
+Gattungsbezeichnung ISIN
+iSh.STOXX Europe 600 U.ETF DE Inhaber-Anteile DE0002635307
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 549,000 15.09.2021 15.09.2021 EUR 0,257720
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+15.09.2021 432367043 EUR 113,75
+Ertrag für 2021/22 EUR 141,49
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Steuerpflichtiger Ausschüttungsbetrag EUR 99,04
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 1.602,00) EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 99,04
+einbehaltene Kapitalertragsteuer EUR 24,22
+einbehaltener Solidaritätszuschlag EUR 1,34
+einbehaltene Kirchensteuer EUR 1,09
+einbehaltene Kirchensteuer Ehegatte/Lebenspartner EUR 1,09
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 24,22
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 1,34
+im laufenden Jahr einbehaltene Kirchensteuer EUR 1,09
+im laufenden Jahr einbehaltene Kirchensteuer Ehegatte/Lebenspartner EUR 1,09
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Frankfurt am Main V Steuernummer: 047/220/06016.
+Steuerlicher Stichtag: 15.09.2021
+Es folgt Seite 2
+onvist a bank - eine M arke der Com merzbank AG · Wildunger S t raße 6a · 6 0 487 Frankfur t a m M ain
+Kundenservice: +49 ( 0 )69-710 7-53 0 · T: +49 ( 0 )69-710 7- 0 · F: +49 ( 0 )69-710 7-10 0 · E: in fo@onvist a -bank.de · W: w w w.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender),
+Marcus Chromik, Jörg Hessenmüller, Michael Kotzbauer, Bet t ina Orlopp, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
+3.20/ABREEREIERTR/GDBERTRG/023991/150921/004758
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=432362432
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Max Mustermann
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Maxi Mustermann
+432362432 34091609 2 ADRESSZEILE3=Muster Weg 6a
+ADRESSZEILE4=12345 Musterhausen
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=23991
+Fondsart: Aktienfonds (§ 2 Abs. 6 InvStG) SEITENNUMMER=2
+Angewendete Teilfreistellungsquote: 30% STEUERERSTATTUNG=N
+Im Steuerabzugsverfahren werden generell - auch bei betrieblichen Anlegern - die Teilfreistellungsquoten (TFQ) für
+Privatanleger herangezogen.
+Verwahrart: Girosammelverwahrung
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvist a bank - eine M arke der Com merzbank AG · Wildunger S t raße 6a · 6 0 487 Frankfur t a m M ain
+Kundenservice: +49 ( 0 )69-710 7-53 0 · T: +49 ( 0 )69-710 7- 0 · F: +49 ( 0 )69-710 7-10 0 · E: in fo@onvist a -bank.de · W: w w w.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender),
+Marcus Chromik, Jörg Hessenmüller, Michael Kotzbauer, Bet t ina Orlopp, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
+3.20/ABREEREIERTR/GDBERTRG/023991/150921/004758

@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ErroneousImportFilesPage extends AbstractWizardPage
@@ -48,8 +49,7 @@ public class ErroneousImportFilesPage extends AbstractWizardPage
         @Override
         public boolean hasChildren(Object element)
         {
-            return element instanceof File
-                            || (element instanceof Throwable && ((Throwable) element).getCause() != null);
+            return element instanceof File || (element instanceof Throwable t && t.getCause() != null);
         }
 
     }
@@ -76,6 +76,7 @@ public class ErroneousImportFilesPage extends AbstractWizardPage
         container.setLayout(layout);
 
         TreeViewer treeViewer = new TreeViewer(container, SWT.BORDER | SWT.FULL_SELECTION);
+        CopyPasteSupport.enableFor(treeViewer);
         treeViewer.setContentProvider(new ErrorContentProvider());
         treeViewer.getTree().setHeaderVisible(true);
         treeViewer.getTree().setLinesVisible(true);
@@ -94,13 +95,12 @@ public class ErroneousImportFilesPage extends AbstractWizardPage
             @Override
             public String getText(Object element)
             {
-                if (element instanceof File)
+                if (element instanceof File file)
                 {
-                    return ((File) element).getName();
+                    return file.getName();
                 }
-                else if (element instanceof Exception)
+                else if (element instanceof Exception e)
                 {
-                    Exception e = (Exception) element;
                     String text = e.getMessage();
                     return text == null || text.isEmpty() ? e.getClass().getName() : text;
                 }

@@ -7,11 +7,18 @@ if [ -z $PCK_VERSION ]; then
 fi
 
 BASE=$(pwd)/../../portfolio-product/target/repository
+E430BASE=$(pwd)/../../../portfolio-eclipse430/portfolio-product/target/repository
 
-rm -rf updatesite
 mkdir updatesite
+rm updatesite/CNAME
+rm updatesite/index.html
+rm updatesite/index.html-e
+rm -rf updatesite/portfolio
 mkdir updatesite/portfolio
+rm -rf updatesite/portfolio-e430
+mkdir updatesite/portfolio-e430
 cp -R ${BASE}/* updatesite/portfolio
+cp -R ${E430BASE}/* updatesite/portfolio-e430
 cp ${BASE}/index.html updatesite
 sed -i -e 's/css\/styles.css/portfolio\/css\/styles.css/g' updatesite/index.html
 sed -i -e 's/images\/pp_16.gif/portfolio\/images\/pp_16.gif/g' updatesite/index.html
@@ -23,15 +30,9 @@ cat >CNAME <<EOF
 updates.portfolio-performance.info
 EOF
 
-git init
+# git init
 git add -A
 git commit -m "Version ${PCK_VERSION}"
-git branch -m master gh-pages
-git remote add origin https://github.com/buchen/portfolio-updatesite.git
-
-read -p "Force push to Github? " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-   git push --force --set-upstream origin gh-pages
-fi
+# git branch -m main gh-pages
+# git remote add origin https://github.com/portfolio-performance/portfolio-updatesite.git
+# git config http.postBuffer 524288000

@@ -1,0 +1,41 @@
+PDF Autor: 'PostFinance AG'
+PDFBox Version: 1.8.16
+-----------------------------------------
+PostFinance A G 
+Sie w erden b etreut v on 
+Max Mustermann u nd T eam Post  CH  AG 
+Telefon + 41 1 11 1 11 1 11 
+Fax + 41 1 1 1 11 1 1 1 1 P.  P.  CH- 1111  Stadt A- PRIORITY 
+www.postfinance.ch 
+Herr 
+Vorname Nachname 
+Nachname Vorname Strasse 11 
+Stadt 1111 Stadt 
+Privatkonto Seite: 1 / 1 
+Kontoauszug 01.04.2018 - 30.04.2018 Datum: 01.05.2018 
+IBAN CH11 0900 0000 1102 2222 0 CHF 
+Kontonummer  11-2 2222-0  
+BIC  POFICHBEXXX 
+Datum Text Gutschrift Lastschrift Valuta Saldo 
+31.03.18 Kontostand 50 000.00
+09.04.18 ÜBERTRAG AUF KONTO 20 000.00 09.04.18 30 000.00 
+CH6409000000110222220 
+09.04.18 ÜBERTRAG A UF K ONTO 20 000.00 09.04.18 10 000.00 
+CH6409000000110222220 
+10.04.18 ÜBERTRAG AUS KONTO 25 000.00 10.04.18 35 000.00 
+CH1109000000110222221 
+11.04.18 ÜBERTRAG A US K ONTO 25 000.00 11.04.18 60 000.00 
+CH1109000000110222221 
+12.04.18 ÜBERTRAG 40 000.00 12.04.18 20 000.00
+AUF KONTO 11-222222-0
+NACHNAME VORNAME
+STADT
+13.04.18 ÜBERTRAG 10 000.00 13.04.18 30 000.00
+AUS KONTO 22-111111-0
+NACHNAME VORNAME
+STADT
+30.04.18 Kontostand 30 000.00 
+Bitte  überprüfen  Sie  den  Kontoauszug.  Ohne  Ihren  Gegenbericht  innert  30  Tagen  gilt  er  als  genehmigt. 
+Freundliche Grüsse 
+PostFinance AG 
+00656 DE   000010.00 

@@ -1,0 +1,41 @@
+PDF Autor: 'DAB-BNP-Paribas'
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=3333190001
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Kauf Limitauftrag ADRESSZEILE2=XYZ ABCDEF
+Kommissionsgeschäft ADRESSZEILE3=ZUHAUSE. 1
+ADRESSZEILE4=12345 Hierhausen
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+1234567890 1234567 / 05.01.2021 ADRESSZEILE6=
+Herr BELEGNUMMER=8038
+Abc Defghi SEITENNUMMER=1
+Hierstr. 1 STEUERERSTATTUNG=N
+12345 Hierhausen Depotinhaber
+Abc Name
+München, 05.01.2021
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Pinterest Inc. Registered Shares DL-,00001 US72352L1061
+Nominal Kurs
+STK 20,000 USD 68,4000
+Handelstag 05.01.2021 Kurswert USD 1.368,00-
+Handelszeit 16:52* Provision USD 11,02-
+Börse USA/NAY Handelsplatzentgelt USD 25,00-
+Verwahrart Wertpapierrechnung Ausmachender Betrag USD 1.404,02-
+Lagerland USA
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten
+07.01.2021 1234567890 EUR/USD 1,22468 EUR 1.146,44
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDKFDI/GAAASAFG/008038/050121/212220

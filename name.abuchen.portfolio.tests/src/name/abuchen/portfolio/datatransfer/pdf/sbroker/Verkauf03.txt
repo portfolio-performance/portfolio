@@ -1,0 +1,85 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Wertpapierabrechnung
+DEPOTNUMMER=0190999
+DEPOTUNTERBEZEICHNUNG=
+Verkauf
+VERSANDARTENSCHLUESSEL=0000
+Kommissionsgeschäft
+ADRESSZEILE1=Herrn
+ADRESSZEILE2=Voldemort
+ADRESSZEILE3=Geheimversteck
+Depot-Nr. Abrechnungs-Nr.
+Herrn ADRESSZEILE4=Auenland
+ADRESSZEILE5=
+Voldemort
+0190999
+ADRESSZEILE6=
+Geheimversteck
+BELEGNUMMER=4973
+Auenland
+SEITENNUMMER=1
+STEUERERSTATTUNG=N
+Depotinhaber
+Voldemort
+Wiesbaden, 11.05.2021
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+Gaussin S.A. Actions au Port. EO 1 FR0013495298
+Nominal Kurs
+STK 200,000 EUR 8,8360
+Handelstag 11.05.2021 EUR 1.767,20
+Kurswert
+EUR 9,95-
+Handelszeit 18:08
+Orderentgelt
+Handelsplatz Tradegate Exchange
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+13.05.2021 000000 EUR 1.757,25
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsverlust Aktien EUR 280,62
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern (negativ) EUR 280,62
+Steuerausgleich nach § 43a EStG:
+Kapitalertragsteuer EUR 70,16
+Solidaritätszuschlag EUR 3,86
+Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+11.05.2021 000000 00007 EUR 74,02
+Es folgt Seite 2
+3.18/ABREABHNHANDVFDI/POB1618/004973/120521/005629
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Depot-Nr. Abrechnungs-Nr. Seite-Nr.
+DEPOTNUMMER=0190000
+019000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=0000
+ADRESSZEILE1=Herrn
+ADRESSZEILE2=Voldemort
+ADRESSZEILE3=Geheimversteck
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 1.111,11
+ADRESSZEILE4=Auenland
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 9.999,99
+ADRESSZEILE5=
+ADRESSZEILE6=
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+BELEGNUMMER=4973
+Finanzamt Wiesbaden, Steuernummer 000/000/0000.
+SEITENNUMMER=2
+STEUERERSTATTUNG=N
+Jahressteuerbescheinigung folgt
+Wir werden in Ihrem Depot wie angegeben buchen.
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.18/ABREABHNHANDVFDI/POB1618/004973/120521/005629

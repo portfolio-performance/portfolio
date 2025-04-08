@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.editor;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,9 +11,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -40,23 +43,26 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.SaveFlag;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
+import name.abuchen.portfolio.ui.dialogs.PickFileFormatDialog;
 import name.abuchen.portfolio.ui.jobs.AutoSaveJob;
 import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
 import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
+import name.abuchen.portfolio.ui.jobs.UpdateDividendsJob;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.preferences.BackupMode;
 import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
-@SuppressWarnings("restriction")
 public class ClientInput
 {
-    // compatibility: the value used to be stored in the AbstractHistoricView
-    private static final String REPORTING_PERIODS_KEY = "AbstractHistoricView"; //$NON-NLS-1$
+
+    public static final String DEFAULT_RELATIVE_BACKUP_FOLDER = "backups"; //$NON-NLS-1$
 
     private String label;
     private File clientFile;
@@ -66,7 +72,7 @@ public class ClientInput
 
     private PreferenceStore preferenceStore = new PreferenceStore();
     private ExchangeRateProviderFactory exchangeRateProviderFacory;
-    private List<ReportingPeriod> reportingPeriods;
+    private ReportingPeriods reportingPeriods;
 
     private boolean isDirty = false;
     private List<Job> regularJobs = new ArrayList<>();
@@ -94,6 +100,9 @@ public class ClientInput
      */
     public void dispose()
     {
+        // list of listeners might be modified during onDisposed callback
+        new ArrayList<>(this.listeners).forEach(ClientInputListener::onDisposed);
+
         for (Job job : regularJobs)
             job.cancel();
 
@@ -169,9 +178,20 @@ public class ClientInput
         return exchangeRateProviderFacory;
     }
 
+    /**
+     * Returns the preferences store per data file.
+     */
     public PreferenceStore getPreferenceStore()
     {
         return preferenceStore;
+    }
+
+    /**
+     * Returns the eclipse preferences which exist per installation.
+     */
+    public IEclipsePreferences getEclipsePreferences()
+    {
+        return preferences;
     }
 
     public void savePreferences()
@@ -183,7 +203,16 @@ public class ClientInput
     {
         if (clientFile == null)
         {
-            doSaveAs(shell, null, null);
+            PickFileFormatDialog dialog = new PickFileFormatDialog(shell);
+            ContextInjectionFactory.inject(dialog, context);
+
+            if (dialog.open() != Window.OK)
+                return;
+
+            var type = dialog.getSelectedType();
+
+            doSaveAs(shell, type.getExtension(), type.getFlags());
+
             return;
         }
 
@@ -193,7 +222,7 @@ public class ClientInput
                 if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
                     createBackup(clientFile, "backup"); //$NON-NLS-1$
 
-                ClientFactory.save(client, clientFile, null, null);
+                ClientFactory.save(client, clientFile);
                 storePreferences(false);
 
                 broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
@@ -208,14 +237,88 @@ public class ClientInput
         });
     }
 
-    public void doSaveAs(Shell shell, String extension, String encryptionMethod) // NOSONAR
+    public void doSaveAs(Shell shell, String extension, Set<SaveFlag> flags) // NOSONAR
+    {
+        String fileNameProposal = clientFile != null ? clientFile.getName() : getLabel();
+        File localFile = pickFile(shell, extension, fileNameProposal);
+        if (localFile == null)
+            return;
+
+        char[] password = null;
+
+        if (flags.contains(SaveFlag.ENCRYPTED))
+        {
+            PasswordDialog pwdDialog = new PasswordDialog(shell);
+            if (pwdDialog.open() != Window.OK)
+                return;
+            password = pwdDialog.getPassword().toCharArray();
+        }
+
+        clientFile = localFile;
+        label = localFile.getName();
+        char[] pwd = password;
+
+        BusyIndicator.showWhile(shell.getDisplay(), () -> {
+            try
+            {
+                ClientFactory.saveAs(client, clientFile, pwd, flags);
+                storePreferences(true);
+
+                broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
+                setDirty(false, false);
+                listeners.forEach(ClientInputListener::onSaved);
+            }
+            catch (IOException e)
+            {
+                PortfolioPlugin.log(e);
+                ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
+                                new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+            }
+        });
+    }
+
+    /**
+     * Exports the current data into a new file without changing any of the
+     * editor settings.
+     */
+    public void doExportAs(Shell shell, String extension, Set<SaveFlag> flags)
+    {
+        if (flags.contains(SaveFlag.ENCRYPTED))
+            throw new IllegalArgumentException("encrypted not supported"); //$NON-NLS-1$
+
+        String fileNameProposal = clientFile != null ? clientFile.getName() : getLabel();
+        if (!fileNameProposal.endsWith('.' + extension))
+            fileNameProposal += '.' + extension;
+        File localFile = pickFile(shell, extension, fileNameProposal);
+        if (localFile == null)
+            return;
+
+        BusyIndicator.showWhile(shell.getDisplay(), () -> {
+            try
+            {
+                ClientFactory.exportAs(client, localFile, null, flags);
+            }
+            catch (IOException e)
+            {
+                PortfolioPlugin.log(e);
+                ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
+                                new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+            }
+        });
+    }
+
+    private File pickFile(Shell shell, String extension, String fileNameProposal)
     {
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
         dialog.setOverwrite(true);
 
+        // set filter names and extension to make sure the file name keeps the
+        // right extension.
+        dialog.setFilterNames(new String[] { Messages.LabelPortfolioPerformanceFile });
+        dialog.setFilterExtensions(new String[] { "*." + extension }); //$NON-NLS-1$
+
         // if an extension is given, make sure the file name proposal has the
         // right extension in the save as dialog
-        String fileNameProposal = clientFile != null ? clientFile.getName() : getLabel();
         if (extension != null && !fileNameProposal.endsWith('.' + extension))
         {
             int p = fileNameProposal.lastIndexOf('.');
@@ -237,45 +340,14 @@ public class ClientInput
 
         String path = dialog.open();
         if (path == null)
-            return;
+            return null;
 
         // again make sure the extension is correct as the user might have
         // changed it in the save dialog
         if (extension != null && !path.endsWith('.' + extension))
             path += '.' + extension;
 
-        File localFile = new File(path);
-        char[] password = null;
-
-        if (ClientFactory.isEncrypted(localFile))
-        {
-            PasswordDialog pwdDialog = new PasswordDialog(shell);
-            if (pwdDialog.open() != Window.OK)
-                return;
-            password = pwdDialog.getPassword().toCharArray();
-        }
-
-        clientFile = localFile;
-        label = localFile.getName();
-        char[] pwd = password;
-
-        BusyIndicator.showWhile(shell.getDisplay(), () -> {
-            try
-            {
-                ClientFactory.save(client, clientFile, encryptionMethod, pwd);
-                storePreferences(true);
-
-                broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
-                setDirty(false, false);
-                listeners.forEach(ClientInputListener::onSaved);
-            }
-            catch (IOException e)
-            {
-                PortfolioPlugin.log(e);
-                ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
-                                new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
-            }
-        });
+        return new File(path);
     }
 
     /**
@@ -295,7 +367,7 @@ public class ClientInput
 
             try
             {
-                ClientFactory.save(client, autosaveFile, null, null);
+                ClientFactory.save(client, autosaveFile);
             }
             catch (IOException e)
             {
@@ -312,8 +384,7 @@ public class ClientInput
 
     public void createBackupAfterOpen()
     {
-        if (clientFile != null && preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true)
-                        && preferences.getInt(UIConstants.Preferences.AUTO_SAVE_FILE, 0) == 0)
+        if (clientFile != null && preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
             createBackup(clientFile, "backup-after-open"); //$NON-NLS-1$
     }
 
@@ -324,9 +395,9 @@ public class ClientInput
             // keep original extension in order to be able to open the backup
             // file directly from within PP
             String backupName = constructFilename(file, suffix);
-
             Path sourceFile = file.toPath();
-            Path backupFile = sourceFile.resolveSibling(backupName);
+            Path backupFile = getBackupFilePath(sourceFile, backupName);
+
             Files.copy(sourceFile, backupFile, StandardCopyOption.REPLACE_EXISTING);
         }
         catch (IOException e)
@@ -335,6 +406,61 @@ public class ClientInput
             Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(),
                             Messages.LabelError, e.getMessage()));
         }
+    }
+
+    private Path getBackupFilePath(Path sourceFile, String backupName)
+    {
+        BackupMode mode = BackupMode.getDefault();
+
+        try
+        {
+            mode = BackupMode.valueOf(preferences.get(UIConstants.Preferences.BACKUP_MODE, mode.name()));
+        }
+        catch (IllegalArgumentException ignore)
+        {
+            // use the standard backup mode instead
+        }
+
+        if (mode == BackupMode.ABSOLUTE_FOLDER)
+        {
+            String folder = preferences.get(UIConstants.Preferences.BACKUP_FOLDER_ABSOLUTE, null);
+
+            if (folder != null && !folder.isBlank())
+            {
+                Path path = Path.of(folder);
+                if (Files.exists(path) && Files.isDirectory(path))
+                    return path.resolve(backupName);
+            }
+        }
+        else if (mode == BackupMode.RELATIVE_FOLDER)
+        {
+            String folderName = preferences.get(UIConstants.Preferences.BACKUP_FOLDER_RELATIVE,
+                            DEFAULT_RELATIVE_BACKUP_FOLDER);
+
+            Path folder = sourceFile.resolveSibling(folderName).normalize();
+
+            if (Files.exists(folder))
+            {
+                if (Files.isDirectory(folder))
+                    return folder.resolve(backupName);
+            }
+            else
+            {
+                try
+                {
+                    return Files.createDirectories(folder).resolve(backupName);
+                }
+                catch (IOException | SecurityException e)
+                {
+                    PortfolioPlugin.log(e);
+
+                    // in case of error, we continue and write backup as a
+                    // sibling (default mode)
+                }
+            }
+        }
+
+        return sourceFile.resolveSibling(backupName);
     }
 
     private String constructFilename(File file, String suffix)
@@ -348,8 +474,6 @@ public class ClientInput
     {
         if (clientFile == null)
             return;
-
-        storeReportingPeriods();
 
         if (!forceWrite && !preferenceStore.needsSaving())
             return;
@@ -419,54 +543,13 @@ public class ClientInput
         }
     }
 
-    public List<ReportingPeriod> getReportingPeriods()
+    public ReportingPeriods getReportingPeriods()
     {
         if (reportingPeriods != null)
             return reportingPeriods;
 
-        List<ReportingPeriod> answer = new ArrayList<>();
-
-        String config = getPreferenceStore().getString(REPORTING_PERIODS_KEY);
-        if (config != null && config.trim().length() > 0)
-        {
-            String[] codes = config.split(";"); //$NON-NLS-1$
-            for (String c : codes)
-            {
-                try
-                {
-                    answer.add(ReportingPeriod.from(c));
-                }
-                catch (IOException | RuntimeException ignore)
-                {
-                    PortfolioPlugin.log(ignore);
-                }
-            }
-        }
-
-        if (answer.isEmpty())
-        {
-            for (int ii = 1; ii <= 3; ii++)
-                answer.add(new ReportingPeriod.LastX(ii, 0));
-        }
-
-        reportingPeriods = answer;
-
+        reportingPeriods = new ReportingPeriods(this);
         return reportingPeriods;
-    }
-
-    private void storeReportingPeriods()
-    {
-        if (reportingPeriods == null)
-            return;
-
-        StringBuilder buf = new StringBuilder();
-        for (ReportingPeriod p : reportingPeriods)
-        {
-            p.writeTo(buf);
-            buf.append(';');
-        }
-
-        getPreferenceStore().setValue(REPORTING_PERIODS_KEY, buf.toString());
     }
 
     @Inject
@@ -480,11 +563,20 @@ public class ClientInput
         }
     }
 
+    @Inject
+    @Optional
+    public void onDiscreedModeChanged(@UIEventTopic(UIConstants.Event.Global.DISCREET_MODE) Object obj)
+    {
+        listeners.forEach(ClientInputListener::onRecalculationNeeded);
+    }
+
     private void scheduleOnlineUpdateJobs()
     {
         if (preferences.getBoolean(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, true))
         {
-            Job initialQuoteUpdate = new UpdateQuotesJob(client,
+            Predicate<Security> onlyActive = s -> !s.isRetired();
+
+            Job initialQuoteUpdate = new UpdateQuotesJob(client, onlyActive,
                             EnumSet.of(UpdateQuotesJob.Target.LATEST, UpdateQuotesJob.Target.HISTORIC));
             initialQuoteUpdate.schedule(1000);
 
@@ -494,16 +586,19 @@ public class ClientInput
             checkInvestmentPlans.schedule(1100);
 
             int thirtyMinutes = 1000 * 60 * 30;
-            Job job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST)).repeatEvery(thirtyMinutes);
+            Job job = new UpdateQuotesJob(client, onlyActive, EnumSet.of(UpdateQuotesJob.Target.LATEST))
+                            .repeatEvery(thirtyMinutes);
             job.schedule(thirtyMinutes);
             regularJobs.add(job);
 
             int sixHours = 1000 * 60 * 60 * 6;
-            job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.HISTORIC)).repeatEvery(sixHours);
+            job = new UpdateQuotesJob(client, onlyActive, EnumSet.of(UpdateQuotesJob.Target.HISTORIC))
+                            .repeatEvery(sixHours);
             job.schedule(sixHours);
             regularJobs.add(job);
 
-            new SyncOnlineSecuritiesJob(client).schedule(2000);
+            new SyncOnlineSecuritiesJob(client).schedule(5000);
+            new UpdateDividendsJob(getClient(), onlyActive).schedule(7000);
         }
     }
 
@@ -514,11 +609,11 @@ public class ClientInput
             {
                 for (Job j : regularJobs)
                 {
-                    if (j instanceof AutoSaveJob)
+                    if (j instanceof AutoSaveJob job)
                     {
-                        ((AutoSaveJob) j).setDelay(getAutoSavePrefs());
-                        ((AutoSaveJob) j).schedule(getAutoSavePrefs());
-                        ((AutoSaveJob) j).wakeUp(getAutoSavePrefs());
+                        job.setDelay(getAutoSavePrefs());
+                        job.schedule(getAutoSavePrefs());
+                        job.wakeUp(getAutoSavePrefs());
                     }
                 }
             }
@@ -542,7 +637,7 @@ public class ClientInput
     /* package */ void setClient(Client client)
     {
         if (this.client != null)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("client is already set"); //$NON-NLS-1$
 
         this.client = client;
 
@@ -551,10 +646,9 @@ public class ClientInput
         this.exchangeRateProviderFacory = ContextInjectionFactory //
                         .make(ExchangeRateProviderFactory.class, this.context, c2);
 
-        this.navigation = new Navigation(client);
+        this.navigation = ContextInjectionFactory.make(Navigation.class, this.context, c2);
 
-        client.addPropertyChangeListener(event -> {
-
+        PropertyChangeListener listener = event -> {
             boolean recalculate = !"touch".equals(event.getPropertyName()); //$NON-NLS-1$
 
             // convenience: Client#markDirty can be called on any thread, but
@@ -569,9 +663,13 @@ public class ClientInput
             {
                 Display.getDefault().asyncExec(() -> setDirty(true, recalculate));
             }
-        });
+        };
+        client.addPropertyChangeListener(listener);
+        disposeJobs.add(() -> client.removePropertyChangeListener(listener));
 
         loadPreferences();
+
+        upgradePreferences(preferenceStore, client);
 
         scheduleOnlineUpdateJobs();
 
@@ -588,8 +686,17 @@ public class ClientInput
         }
     }
 
+    private static void upgradePreferences(PreferenceStore preferenceStore, Client client)
+    {
+        if (client.shouldDoFilterMigration())
+        {
+            new ClientFilterMigration(preferenceStore, client).migrateClientFilter();
+        }
+    }
+
     /* package */ void notifyListeners(Consumer<ClientInputListener> consumer)
     {
         this.listeners.forEach(consumer::accept);
     }
+
 }

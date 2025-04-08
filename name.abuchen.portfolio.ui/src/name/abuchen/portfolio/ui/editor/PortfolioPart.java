@@ -3,26 +3,30 @@ package name.abuchen.portfolio.ui.editor;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.e4.core.contexts.ContextFunction;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -37,7 +41,6 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
@@ -45,6 +48,7 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.SaveFlag;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Images;
@@ -87,6 +91,9 @@ public class PortfolioPart implements ClientInputListener
     @Inject
     ClientInputFactory clientInputFactory;
 
+    @Inject
+    private IStylingEngine stylingEngine;
+
     @PostConstruct
     public void createComposite(Composite parent)
     {
@@ -107,7 +114,7 @@ public class PortfolioPart implements ClientInputListener
         }
 
         if (clientInput == null)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("missing client info"); //$NON-NLS-1$
 
         if (clientInput.getFile() != null)
             part.getPersistedState().put(UIConstants.PersistedState.FILENAME, clientInput.getFile().getAbsolutePath());
@@ -142,9 +149,11 @@ public class PortfolioPart implements ClientInputListener
 
         Composite sash = new Composite(container, SWT.NONE);
         SashLayout sashLayout = new SashLayout(sash, SWT.HORIZONTAL | SWT.BEGINNING);
+        sashLayout.setTag(UIConstants.Tag.SIDEBAR);
         sash.setLayout(sashLayout);
 
         Composite navigationBar = new Composite(sash, SWT.NONE);
+        navigationBar.setData(UIConstants.CSS.CLASS_NAME, "sidebar"); //$NON-NLS-1$
         GridLayoutFactory.fillDefaults().numColumns(2).spacing(0, 0).margins(0, 0).applyTo(navigationBar);
 
         this.sidebar = new ClientEditorSidebar(this);
@@ -155,7 +164,7 @@ public class PortfolioPart implements ClientInputListener
                         menuManager -> addToNavigationMenu(menuManager, 0, clientInput.getNavigation().getRoots()));
 
         Composite divider = new Composite(navigationBar, SWT.NONE);
-        divider.setBackground(Colors.SIDEBAR_BORDER);
+        divider.setData(UIConstants.CSS.CLASS_NAME, "sidebarBorder"); //$NON-NLS-1$
         GridDataFactory.fillDefaults().span(0, 2).hint(1, SWT.DEFAULT).applyTo(divider);
 
         ClientProgressProvider provider = make(ClientProgressProvider.class, clientInput.getClient(), navigationBar);
@@ -234,7 +243,7 @@ public class PortfolioPart implements ClientInputListener
         ProgressBar bar = null;
 
         container = new Composite(parent, SWT.NONE);
-        container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        container.setBackground(Colors.WHITE);
         container.setLayout(new FormLayout());
 
         Label image = new Label(container, SWT.NONE);
@@ -271,12 +280,13 @@ public class PortfolioPart implements ClientInputListener
 
         Label label = new Label(container, SWT.CENTER | SWT.WRAP);
         label.setBackground(container.getBackground());
-        label.setText(message);
+        if (message != null)
+            label.setText(message);
 
         data = new FormData();
         data.top = new FormAttachment(image, 40);
-        data.left = new FormAttachment(50, -100);
-        data.width = 200;
+        data.left = new FormAttachment(0, 10);
+        data.right = new FormAttachment(100, -10);
         label.setLayoutData(data);
 
         return bar;
@@ -369,7 +379,14 @@ public class PortfolioPart implements ClientInputListener
     public void onRecalculationNeeded()
     {
         if (view != null && view.getControl() != null && !view.getControl().isDisposed())
-            view.notifyModelUpdated();
+            view.onRecalculationNeeded();
+    }
+
+    @Inject
+    public void setQuotePrecision(
+                    @Preference(value = UIConstants.Preferences.FORMAT_CALCULATED_QUOTE_DIGITS) int quotePrecision)
+    {
+        onRecalculationNeeded();
     }
 
     @Focus
@@ -401,9 +418,14 @@ public class PortfolioPart implements ClientInputListener
         this.clientInput.save(shell);
     }
 
-    public void doSaveAs(Shell shell, String extension, String encryptionMethod)
+    public void doSaveAs(Shell shell, String extension, Set<SaveFlag> flags)
     {
-        this.clientInput.doSaveAs(shell, extension, encryptionMethod);
+        this.clientInput.doSaveAs(shell, extension, flags);
+    }
+
+    public void doExportAs(Shell shell, String extension, Set<SaveFlag> flags)
+    {
+        this.clientInput.doExportAs(shell, extension, flags);
     }
 
     public ClientInput getClientInput()
@@ -416,12 +438,23 @@ public class PortfolioPart implements ClientInputListener
         return clientInput.getClient();
     }
 
+    /**
+     * Returns the preferences store per data file.
+     */
     public IPreferenceStore getPreferenceStore()
     {
         return clientInput.getPreferenceStore();
     }
 
-    public List<ReportingPeriod> getReportingPeriods()
+    /**
+     * Returns the eclipse preferences which exist per installation.
+     */
+    public IEclipsePreferences getEclipsePreferences()
+    {
+        return clientInput.getEclipsePreferences();
+    }
+
+    public ReportingPeriods getReportingPeriods()
     {
         return clientInput.getReportingPeriods();
     }
@@ -454,8 +487,8 @@ public class PortfolioPart implements ClientInputListener
 
         if (selectedPeriod == null)
         {
-            List<ReportingPeriod> periods = clientInput.getReportingPeriods();
-            selectedPeriod = periods.isEmpty() ? new ReportingPeriod.LastX(1, 0) : periods.get(0);
+            selectedPeriod = clientInput.getReportingPeriods().stream().findFirst()
+                            .orElseGet(() -> new ReportingPeriod.LastX(1, 0));
         }
 
         return selectedPeriod;
@@ -469,7 +502,8 @@ public class PortfolioPart implements ClientInputListener
 
     /* package */ void markDirty()
     {
-        clientInput.markDirty();
+        if (clientInput != null)
+            clientInput.markDirty();
     }
 
     public void activateView(Class<? extends AbstractFinanceView> view, Object parameter)
@@ -492,7 +526,7 @@ public class PortfolioPart implements ClientInputListener
 
         try
         {
-            createView(item.getViewClass(), parameter);
+            createView(item.getViewClass(), parameter, item.hideInformationPane());
 
             this.selectedItem = item;
 
@@ -501,11 +535,11 @@ public class PortfolioPart implements ClientInputListener
         catch (Exception e)
         {
             PortfolioPlugin.log(e);
-            createView(ExceptionView.class, e);
+            createView(ExceptionView.class, e, true);
         }
     }
 
-    private void createView(Class<? extends AbstractFinanceView> clazz, Object parameter)
+    private void createView(Class<? extends AbstractFinanceView> clazz, Object parameter, boolean hideInformationPane)
     {
         IEclipseContext viewContext = this.context.createChild(clazz.getName());
         viewContext.set(Client.class, this.clientInput.getClient());
@@ -513,6 +547,20 @@ public class PortfolioPart implements ClientInputListener
         viewContext.set(PortfolioPart.class, this);
         viewContext.set(ExchangeRateProviderFactory.class, this.clientInput.getExchangeRateProviderFacory());
         viewContext.set(PartPersistedState.class, new PartPersistedState(part.getPersistedState()));
+
+        ContextFunction lookup = new ContextFunction()
+        {
+            @Override
+            public Object compute(IEclipseContext context, String contextKey)
+            {
+                Object filteredClient = context.get(UIConstants.Context.FILTERED_CLIENT);
+                if (filteredClient != null)
+                    return filteredClient;
+                else
+                    return context.get(Client.class);
+            }
+        };
+        viewContext.set(UIConstants.Context.ACTIVE_CLIENT, lookup);
 
         if (parameter != null)
             viewContext.set(UIConstants.Parameter.VIEW_PARAMETER, parameter);
@@ -522,7 +570,11 @@ public class PortfolioPart implements ClientInputListener
         AbstractFinanceView underConstruction = ContextInjectionFactory.make(clazz, viewContext);
         viewContext.set(AbstractFinanceView.class, underConstruction);
 
-        underConstruction.createViewControl(book);
+        underConstruction.createViewControl(book, hideInformationPane);
+
+        // explicitly style control after creation because on Windows the styles
+        // are not always applied immediately
+        stylingEngine.style(underConstruction.getControl());
 
         view = underConstruction;
         book.showPage(view.getControl());

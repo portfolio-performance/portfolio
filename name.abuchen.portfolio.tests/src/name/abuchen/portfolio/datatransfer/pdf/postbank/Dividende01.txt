@@ -1,0 +1,55 @@
+PDF Autor: 'Deutsche Postbank AG'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postbank Köln · 51222 Köln    Seite 1
+Depotnummer
+ 698965624
+ Kundennummer 1234567899
+Max Mustermann
+ Abrechnungsnr. 12345678999
+Herr Datum 09.03.2021
+Max Mustermann
+Ortsteil
+Musterweg 1
+12345 Musterstadt
+                                                        
+                                                        
+                                                         
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 12 JOHNSON & JOHNSON  SHARES US4781601046 (853260)
+REGISTERED SHARES DL 1
+Zahlbarkeitstag 09.03.2021 Dividende pro Stück 1,01 USD
+Bestandsstichtag 19.02.2021 Herkunftsland USA
+Ex-Tag 22.02.2021 Art der Dividende Quartalsdividende
+Geschäftsjahr 01.01.2021 - 31.12.2021
+Devisenkurs EUR / USD  1,1920
+Devisenkursdatum 09.03.2021
+Dividendengutschrift 12,12 USD 10,17+ EUR
+Umrechnung in EUR 10,17 EUR
+Einbehaltene Quellensteuer 15 % auf 12,12 USD 1,53- EUR
+Anrechenbare Quellensteuer 15 % auf 10,17 EUR 1,53 EUR
+Kapitalertragsteuerpflichtige Dividende 10,17 EUR
+Eingebuchte sonstige negative Kapitalerträge 10,17 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 8,64+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir mit Wertstellung 11.03.2021 zu Gunsten des Kontos 123456789 (IBAN DE11 1111 1111 1111 1111
+11), BLZ 370 110 00 (BIC PBNKDEFFXXX). 
+Keine Steuerbescheinigung. 
+Bitte ggf. Rückseite beachten.
+0860.03100100.0005629ER01
+
+Seite 2
+Depotnummer 123456789
+Kundennummer 1234567899
+Abrechnungsnr. 12345678999
+Datum 09.03.2021
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2021 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien Sonstige
+Pauschbetrag Quellensteuer
+Nachher 0,00 145,28 0,00 1,53 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.03100100.0005630ER01

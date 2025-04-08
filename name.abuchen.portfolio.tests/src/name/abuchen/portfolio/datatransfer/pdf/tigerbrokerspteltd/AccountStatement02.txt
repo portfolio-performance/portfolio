@@ -1,0 +1,138 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.1
+-----------------------------------------
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2022.12.01 - 2022.12.31
+BLA BLA
+Account : 50385408 Base Currency : USD
+Securities&Futures Asset : 29,005.15USD Account Capabilities : Cash
+Address : Some address
+Securities&Futures
+Time Weighted Rate Of Return : -7.13%
+Total Asset : 29,005.15USD
+Prior Overview
+Cash Stock Option Funds in Transit Interest Accruals Dividend Accruals Total
+344.05 30,886.31 0.00 0.00 0.00 0.00 31,230.36
+Cash Report
+Currency: USD
+Total Securities Futures
+Starting Cash 344.05 344.05 0.00
+Dividends 119.90 119.90
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 1/6
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2022.12.01 - 2022.12.31
+Total Securities Futures
+Withholding Tax -35.97 -35.97
+Ending Cash 427.98 427.98 0.00
+Ending Settled Cash 427.98 427.98 0.00
+Open Positions
+Stock Currency: USD
+Symbol Quantity Mult Cost Price Cost Basis Close Price Settle Price Value Unrealized P/L
+QQQ 52 1 334.1696154 17,376.82 266.28000 13,846.56 -3,530.26
+VOO 25 1 391.4812000 9,787.03 351.34000 8,783.50 -1,003.53
+VT 69 1 96.8340580 6,681.55 86.19000 5,947.11 -734.44
+Total 33,845.40 28,577.17 -5,268.23
+Dividends
+Date Description Amount Currency
+2022-12-22 VT Cash Dividend 0.6381 USD per Share (Ordinary Dividend) 44.03 USD
+2022-12-26 VOO Cash Dividend 1.6717 USD per Share (Ordinary Dividend) 41.79 USD
+2022-12-30 QQQ Cash Dividend 0.65541 USD per Share (Ordinary Dividend) 34.08 USD
+Total(In USD) 119.90 USD
+Withholding Tax
+Date Description Amount Currency
+2022-12-22 VT Cash Dividend 0.6381 USD per Share - Tax -13.21 USD
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 2/6
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2022.12.01 - 2022.12.31
+Date Description Amount Currency
+2022-12-26 VOO Cash Dividend 1.6717 USD per Share - Tax -12.54 USD
+2022-12-30 QQQ Cash Dividend 0.65541 USD per Share - Tax -10.22 USD
+Total(In USD) -35.97 USD
+Change in Dividend Accruals
+Currency: USD
+Symbol Date Ex Date Pay Date Quantity Tax GST Fee(include ADR) Gross Rate Gross Amount Net Amount
+QQQ 2022-12-19 2022-12-19T00:00-05:00[US/Eastern] 2022-12-30T00:00-05:00[US/Eastern] 52 10.22 0.00 0.00 34.08 23.86
+VT 2022-12-19 2022-12-19T00:00-05:00[US/Eastern] 2022-12-22T00:00-05:00[US/Eastern] 69 13.21 0.00 0.00 44.03 30.82
+VOO 2022-12-20 2022-12-20T00:00-05:00[US/Eastern] 2022-12-23T00:00-05:00[US/Eastern] 25 12.54 0.00 0.00 41.79 29.25
+Total 35.97 0.00 0.00 119.90 83.93
+Financial Instrument Information
+Stock
+Symbol Issuer Description Multiplier Expiry Strike Right
+QQQ Invesco QQQ Trust 1
+VOO Vanguard S&P 500 ETF 1
+VT VANGUARD INTL EQUITY INDEX FUND INC TOTAL WORLD STK INDEX FUND ETF SHS 1
+Base Currency Exchange Rate
+Date 2022-12-31
+USD 1
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 3/6
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2022.12.01 - 2022.12.31
+Date 2022-12-31
+AUD 0.68050
+CAD 0.73695
+CNH 0.14434
+EUR 1.07265
+GBP 1.20980
+HKD 0.12799
+JPY 0.00763
+NZD 0.63490
+SGD 0.74594
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 4/6
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2022.12.01 - 2022.12.31
+Annotation
+1.Accrued dividends: when the company declares the dividends of shares, this part will calculate the dividends to be paid to the account, and the dividends paid to the account during form checking period will be included into cash.
+2.Accrued interest: interest is charged on a monthly basis, so this part will calculate the total interest earned by the account during the statement period, not including the interest received.
+3.Time-weighted rate of return: the rate of return within the range (except for outgoing and incoming funds)
+4.Net Trades (Sales): Cash from selling securities
+5.Net Trades (Purchase): Cash spent on buying securities
+6.Transaction Fees: Including transaction levy and stamp duty
+7.Other Fees: Including ADR fees, IPO fees, withdraw fees, dividends and other expenses.
+8.Withholding Tax: Hong Kong stocks dividend tax
+9.Segment Transfer: The transfer of funds between securities and futures
+10.Accrued reversing: the interest actually received by the user during the statement checking period.
+11.Multiplier: in an individual stock option or futures transaction, the value of the contract is expressed as the product of a certain monetary amount and the underlying index. The certain monetary amount is fixed by the contract, 
+which is referred to as the contract multiplier. At present, the stock is 1 by default and the individual stock option is 100.
+12.Settle Price: Futures settlement price is not equal to the closing price, futures is based on the settlement price to calculate the profit and loss of position.
+13.Proceeds: Trading amount is trading price multiplied by trading volume
+14.Accrued reversing: the interest actually received by the user during the statement checking period.
+15.Comm/Fee: In the trades module, for trades before December 2021, 'commission' includes commission + platform fee + transaction levy + stamp tax + transaction fee + settlement fee, etc. For trades after December 2021, 
+'commission' only includes commission, and other expenses are shown separately.
+16.Custodian fees: no charge, $0
+17.Exchange rate: You could view U.S. Dollar Currency Index chart to see the exchange rate at the last day for searching. (USD is transaction currency)
+18.Transaction is based on FIFO method
+19.Futures' Starting Cash and Ending Cash represents the starting and ending asset value of futures account, the difference between Starting and Ending Cash includes changes in position value and cash transactions (not showing 
+up on statement)
+20.Funds in Transit includes IPO transit subscription and IPO transit subscription fee
+Notes:
+1. Please examine the details in the monthly statement and promptly report any inaccuracy or discrepancy found to service@tigerbrokers.com.sg within 14 calendar days from the date of the statement. All the above details shall be 
+deemed correct and conclusive if no written notice of objection is received by us within 14 days from the date of the monthly statement.
+2. Tiger Brokers (Singapore) Pte Ltd is a member of Financial Institutions Dispute Resolution Centre (FIDReC), which is an independent and impartial institution specialising in the resolution of disputes between financial institutions 
+and consumers. Unresolved issues can also be brought up to FIDReC at www.fidrec.com.sg for mediation.
+3. Information on our fees can be found at https://www.tigerbrokers.com.sg/commissions/fees
+4. Information regarding your account can be found in the Terms and Conditions at https://www.tigerbrokers.com.sg/info/terms-n-conditions
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 5/6
+Tiger Brokers (Singapore) PTE.LTD.
+Activity Statement : 2022.12.01 - 2022.12.31
+5. Customer money and assets are deposited in trust and held in custody, respectively in accordance with the Securities and Futures (Licensing and Conduct of Business) Regulations, governing the protection of client money and 
+assets.;
+Disclaimer:
+If any of the information stated on this statement is incorrect, please notify Tiger Brokers (Singapore) Pte Ltd (TBSPL) within fourteen (14 ) business days from the date of this statement , otherwise the information stated shall be 
+deemed conclusive and binding. Any and all objections put forth shall not be valid unless accompanied by supporting evidence for such objections. However, if TBSPL realise an error has been made on the said statement, it is entitled 
+at any time to rectify such error. This statement is intended for the named recipient only, if you have received this statement in error, please notify us immediately.;
+Important:
+1.Regulation 33A(2) of the Financial Advisers Regulations through its schedule now provides for a list of “ Listed Excluded Investment Products” are presumed to be generally well understood by investors. As such, Executed Related 
+Advice (ERA) in respect to these Excluded Investment Products is exempted from the application of section 27 FAA. This exemption indicates TBSPL is not obliged to ensure any recommendation or advice in relation to such excluded 
+investment products are suitable for you to invest or transact. As a general summary, this list includes all listed securities approved for listing on a securities exchange available to the public to trade in. As such, under the law TBSPL 
+assume that you are able to and will make your own decisions on whether any excluded investment product is or is not suitable for you , as well as whether ERA in respect of an excluded investment product is or is not suitable to 
+you. You are therefore hereby notified:
+①Any and every ERA that you may receive with respect to any listed excluded investment product does not consider your investment objectives, financial situation and particular needs; and
+②It is your sole responsibility to ensure the suitability of the product recommended to you. Despite the foregoing, Regulation 33A of the Financial Advisers Regulations require the provision of any ERA with respect to any listed 
+excluded investment product must be accompanied by the rationale for trading in such product. You should therefore take specific note (you should ask for it if it is not provided) of the rationale that the relevant representatives 
+provide as the reason(s) for offering the ERA to you so that you may understand the reason for the ERA given.
+2.The valuations provided above are for information purposes only; they are indicative and do not necessarily reflect the realisable values. The prices used for the valuation of your positions may be based on the last available market 
+price or prices provided to us by the relevant counterparties (as applicable) or our approximations thereof, all of which are based on sources which we believe to be reliable but which we have not independently verified. For securities 
+where a market price is not available, the nominal value, the last known market price or offer price (for initial Public Offering) may be used at our discretion. Foreign exchange conversion rates used in the calculation of portfolio value 
+are for reference only.
+3.The monthly statement will be downloaded in your account if there is transaction within that month. Otherwise, statement will be sent to you on quarterly basis.
+Address: 1 Raffles Place, #35-61 One Raffles Place Tower 2, Singapore 048616. 6/6

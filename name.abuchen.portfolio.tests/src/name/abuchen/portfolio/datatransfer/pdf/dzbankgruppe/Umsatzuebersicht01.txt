@@ -1,0 +1,204 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Gern berät Sie:
+Volksbank ABC eG
+Union Investment - Kundenservice
+Telefon: 069 123
+Telefax: 069 123
+Herrn E-Mail: privatfonds@union-investment.de
+Max Mustermann
+Mustermannstrasse 1 UnionDepot: 012345678
+67493 Berlin Depotinhaber:
+Max Mustermann
+18. Juli 2017
+Abrechnung Nr. 1
+Unterdepot-Nr.: 0123456789
+Fonds: PrivatFonds: Kontrolliert pro ISIN: DE000A0RPAN3 Verwaltungsvergütung: 1,55 % p. a.
+Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+Preisdatum aufschlag %
+Vortrag 0,000
+18.07.2017
+17.07.2017 Kauf 2.125,00
+Anlage 2.125,00 0,00 148,75 14,286
+Der Kaufpreis wird regelmäßig mit Ablauf des Bewertungstages fällig und nach Fälligkeit, monatlich, jeweils zum 15., von der hinterlegten Kontoverbindung per SE-
+PA-Basis-Lastschrift eingezogen. Die Mandatsreferenz lautet 0123456789.
+Bestand am 18.07.2017 14,286
+Steuerübersicht per 18.07.2017
+Es liegt kein Freistellungsauftrag vor.
+Verlustverrechnungstopf für Kapitalerträge in EUR: -21,00
+Anrechenbare ausländische Quellensteuer in EUR: 0,00
+gezahlte Kapitalertragsteuer in EUR: 0,00
+gezahlte Kirchensteuer in EUR: 0,00
+gezahlter Solidaritätszuschlag in EUR: 0,00
+Fortsetzung auf Seite 2
+Union Investment Service Bank AG · 60621 Frankfurt am Main
+Tel.: 069 58998-0, Fax: 069 58998-9000 · E-Mail: service@union-investment.de · Internet: www.union-investment.de · Registergericht: Amtsgericht Frankfurt am Main HRB 54979
+Vorstand: Horst Dietzel, Rainer Kobusch, Barbara Resch · Aufsichtsratsvorsitzender: Hans Joachim Reinke · Gläubiger-ID: DE81USB00000002100  
+Einzahlungen: DZ BANK AG Deutsche Zentral-Genossenschaftsbank, Frankfurt am Main, IBAN: DE34 5006 0400 0000 0006 86 (BIC: GENODEFFXXX)
+Seite 2 von 2 Datenschutzfeld
+zum Schreiben vom 18. Juli 2017 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+UnionDepot: 0112345678 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Depotinhaber: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Max Mustermann XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Depotübersicht zum 18.07.2017
+Unterdepot- Fondsname Anteil- Rücknahme- Depotwert/
+Nr. ISIN/Ertragsverwendung bestand preis/Währung Währung
+Verwahrart/Lagerland
+0160708101 Carmignac Patrimoine FCP D EUR 0,000 113,01 EUR 0,00 EUR
+FR0011269588/ausschüttend
+Girosammelverwahrung/CBL - Frankreich (Banque Paribas)
+0160708102 Deutsche Concept SICAV - Kaldemorge 0,000 139,38 EUR 0,00 EUR
+LU0599946976/ausschüttend
+Girosammelverwahrung/Bundesrepublik Deutschland
+0160708103 First Private Wealth B 0,000 72,80 EUR 0,00 EUR
+DE000A0KFTH1/thesaurierend
+Girosammelverwahrung/Bundesrepublik Deutschland
+0160708104 LOYS FCP-Global L/S P 0,000 69,36 EUR 0,00 EUR
+LU0720541993/ausschüttend
+Girosammelverwahrung/Bundesrepublik Deutschland
+0160708105 PrivatFonds: Kontrolliert pro 14,286 148,75 EUR 2.125,04 EUR
+DE000A0RPAN3/ausschüttend
+Girosammelverwahrung/Bundesrepublik Deutschland
+0160708106 Flossbach von Storch SICAV - Multip 0,000 233,18 EUR 0,00 EUR
+LU0323578657/ausschüttend
+Girosammelverwahrung/Bundesrepublik Deutschland
+0160708107 JPMorgan Funds - Global Income Fund 0,000 143,88 EUR 0,00 EUR
+LU0395794307/ausschüttend
+Auslandsabwicklung der Clearstream Banking AG,
+Frankfurt a.M./CBL - Luxemburg
+Gesamt-Depotwert 2.125,04 EUR
+Die Bewertung des Fonds erfolgt zum jeweils letzten verfügbaren Rücknahmepreis.
+Bitte überprüfen Sie, ob wir Ihre Aufträge weisungsgemäß ausgeführt haben. Bei Differenzen informieren Sie uns bitte schriftlich unverzüglich 
+unter Angabe Ihrer jeweiligen 10-stelligen Unterdepot-Nummer und der Abrechnungsnummer, die Sie auf der ersten Seite der Abrechnung 
+finden. Die Verkaufsunterlagen nach § 297 Abs. 5  KAGB und aktuelle Fondsinformationen erhalten Sie kostenlos bei Ihrer Bank oder im 
+Internet unter www.union-investment.de.
+B ei Fragen sind wir gern für Sie da. Rufen Sie uns einfach an! Sie erreichen uns montags bis freitags zwischen 08:00 und 18:00 Uhr.
+Erläuterungen zu Abrechnungen im UnionDepot
+Sämtliche Umsätze in Ihrem UnionDepot dokumentieren wir für Sie in Form von Abrechnungen. Folgende Erläuterungen helfen Ihnen beim Prüfen
+der Abrechungen - bitte bewahren Sie sie sorgfältig auf.
+Wann erhalten Sie eine Abrechnung?
+Für jeden Umsatz erstellen wir eine Abrechnung. Finden an einem Abrechnungstag mehrere Umsätze in Ihrem UnionDepot statt, bündeln wir diese
+auf einer Abrechnung.
+Bei folgenden Transaktionen weisen wir Ihnen die Abrechnungsdaten zunächst im Verwendungszweck auf dem Kontoauszug des Verrechnungs-
+kontos aus. Diese Umsätze werden für die Abrechnung gesammelt:
+regelmäßiger Kauf per Lastschrifteinzug mit periodischem Einzugsrhythmus
+regelmäßiger Verkauf per Auszahlplan aus dem UnionDepot mit periodischem Auszahlungsrhythmus
+einmaliger Verkauf
+Die Abrechnung über die gesammelten Umsätze senden wir Ihnen spätestens mit Ihren Unterlagen zum Jahresende zu. Wenn zwischenzeitlich an-
+dere Transaktionen in Ihrem UnionDepot erfolgen, erhalten Sie sofort eine Abrechnung über alle bis dahin gesammelten Umsätze.
+Gut zu wissen: Alle Abrechnungen sind durchgehend nummeriert. So können Sie diese chronologisch abheften.
+Beispielhafte Abrechnung mit Erklärungen
+Die Abrechnung ist in drei Informationsbereiche gegliedert: die Umsatzaufstellung, die Steuerübersicht und die Depotübersicht.
+Die Umsatzaufstellung weist alle durchgeführten Transaktionen in Ihrem UnionDepot seit Ihrer letzten Abrechnung aus. Dabei werden die Umsätze
+nach Unterdepots sortiert aufgeführt. Es werden nur die Unterdepots ausgewiesen, für die ein Umsatz in dem Zeitraum der Abrechnung stattfand.
+Unterdepot-Nr.: 1234567801
+1
+Fonds: MusterFonds                                                                                             ISIN: DE0000000000                                       Verwaltungsvergütung: 1,25 % p.a
+Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+Preisdatum 4 5 aufschlag % 7 8
+3 6
+2 Vortrag    0,000
+TT.MM.JJJJ
+TT.MM.JJJJ Umschichtung 8.000,00
+jährliche Anpassung der Fondsgewichtung
+Anlage 8.000,00 5,00                                              21,7500                 367,816
+9 Bestand am TT.MM.JJJJ 367,816
+ 1    Kopfzeile
+In der Kopfzeile finden Sie die Nummer des Unterdepots, den Fondsnamen, die zum Drucktermin der Abrechnung aktuelle Verwaltungsvergütung
+und die ISIN-Nummer des Fonds sowie besondere Hinweise. Die ISIN-Nummer (International Securities Identification Number) entspricht der inter-
+nationalen Standardnummerierung von Wertpapieren. Zusätzlich informiert Sie die Kopfzeile über Art und Ort der Fondsanteilverwahrung. Die Ver-
+waltungsvergütung wird regelmäßig direkt aus dem Fondsvermögen entnommen und spiegelt sich somit zeitanteilig im Fondspreis wieder. Eine
+separate Berechnung und somit eine Minderung Ihres Anteilbestands erfolgt nicht.
+Hinweis: Bitte geben Sie bei allen Fragen und Transaktionen zu Ihrem UnionDepot immer Ihre 10-stellige Unterdepot-Nummer an.
+ 2    Vortrag
+Dort finden Sie die Anzahl der Anteile vor der Umsatzabrechnung. Der Vortrag entspricht dem Bestand an Anteilen auf der letzten Abrechnung.
+Bei einer erstmaligen Abrechnung zum jeweiligen Unterdepot beträgt die Anteilsanzahl 0,000.
+ 3    Buchungs-/Preisdatum
+Hier wird der Tag der Buchung im UnionDepot und der preisrelevante Abrechnungstag ausgewiesen.
+ 4    Umsatzart
+Die Umsatzart beschreibt, was für eine Transaktion in Ihrem Unterdepot ausgeführt wurde. 
+ 5    Betrag
+Der Betrag wird in Euro ausgewiesen, sofern in der Spaltenüberschrift keine andere Währung angezeigt wird. Bei einer Ein- oder Auslieferung
+effektiver Stücke oder einem Übertrag von Fondsanteilen bleibt die Spalte leer.
+ 6    Ausgabeaufschlag
+Dies ist der im Ausgabepreis enthaltene prozentuale Aufschlag auf den Anteilwert. Beim Produkt UniProfiRente Select wird ein Ausgabeaufschlag 
+auf Depotebene erhoben, dessen Höhe abhängig von der Restlaufzeit des Vertrages ist.
+ 7    Preis
+In dieser Spalte wird der Preis pro Anteil in der jeweiligen Währung des Wertpapiers ausgewiesen. Beim Kauf eines Fonds finden Sie hier also den
+Preis inklusive des unter Punkt  6   separat ausgewiesenen Ausgabeaufschlags (= Ausgabepreis). Bei einem Verkauf weisen wir Ihnen den Rücknahme-
+preis aus, zu dem der Verkauf abgerechnet wurde. Bitte beachten Sie: Bei einem Fonds ohne Ausgabeaufschlag sind Ausgabe- und Rücknahmepreis
+identisch. 
+ 8    Anteile
+Hier sehen Sie die Anzahl der Anteile und Anteilbruchstücke, die bei dem Umsatz in das Unterdepot ein- oder ausgebucht wurden.
+ 9    Bestand
+Dies ist der neue Anteilbestand im Unterdepot nach allen aufgeführten Umsätzen.
+Die Steuerübersicht informiert Privatanleger über den Steuerstatus im UnionDepot zum Abrechnungstag.
+Steuerübersicht per TT.MM.JJJJ
+1 Freistellungsauftrag gültig bis auf weiteres
+Erteilter Freistellungsauftrag in EUR: 1.000,00
+Verbleibender Freistellungsauftrag in EUR:  856,40
+2 Verlustverrechnungstopf für Kapitalerträge in EUR: 0,00
+3 Anrechenbare ausländische Quellensteuer in EUR: 22,65
+4 Gezahlte Kapitalertragsteuer in EUR: 0,00
+Gezahlte Kirchensteuer in EUR: 0,00
+Gezahlter Solidaritätszuschlag in EUR: 0,00
+ 1    Freistellungsauftrag / Nichtveranlagungsbescheinigung / Freistellungsbescheid
+Haben Sie einen Freistellungsauftrag erteilt, eine NV-Bescheinigung oder einen Freistellungsbescheid eingereicht? Hier sehen Sie die Gültigkeitsdauer
+Ihres Auftrages. Bitte denken Sie daran uns rechtzeitig vor Ablauf einer Bescheinigung einen Folgeauftrag einzureichen. So vermeiden Sie einen Steu-
+erabzug in Ihrem UnionDepot. Bis zur Höhe des verbleibenden Freistellungsauftrags können Sie im laufenden Kalenderjahr noch Kapitaleinkünfte er-
+zielen, ohne dass Kapitalertragsteuer anfällt.
+ 2    Verlustverrechnungstopf für Kapitalerträge
+Positive und negative Kapitaleinkünfte werden direkt in Ihrem UnionDepot verrechnet. Dabei wird eventuell anfallende Kapitalertragsteuer und ggf.
+Kirchensteuer ermittelt und an die Finanzbehörden abgeführt. Der Verlustverrechnungstopf für Kapitalerträge speichert alle negativen Kapitaleinkünfte
+(z. B. Veräußerungsverluste aus dem Verkauf von Fondsanteilen), die noch nicht mit positiven Kapitaleinkünften (z. B. Erträgen aus Ausschüttungen
+oder Veräußerungsgewinnen) verrechnet werden konnten. Bis zu dieser Höhe können Sie noch Kapitaleinkünfte erzielen, ohne dass Kapitalertragsteuer
+anfällt. Ein nicht verbrauchter Verlustverrechnungstopf wird automatisch in das nächste Kalenderjahr vorgetragen und so weiter genutzt. Auf Wunsch 
+bestätigen wir Ihnen auch einen nicht verbrauchten Verlust für Ihre Steuererklärung. Der Verlustverrechnungstopf beginnt dann ab dem kommenden
+Kalenderjahr bei "Null".
+ 3    Anrechenbare ausländische Quellensteuer
+Ausländische Quellensteuer stammt aus der Ertragsausschüttung oder Thesaurierung eines Fonds. Sie wird auf eine zu zahlende Kapitalertragsteuer
+angerechnet. Erzielen Sie in Ihrem UnionDepot Kapitaleinkünfte, auf die eine Kapitalertragsteuer zu zahlen ist, wird diese automatisch um die anrech-
+enbare ausländische Quellensteuer gemindert. 
+  4   Gezahlte Kapitalertragsteuer / Kirchensteuer / Solidaritätszuschlag
+Haben Sie keinen Freistellungsauftrag erteilt oder ist er aufgebraucht, kann es bei einem Verkauf von Fondsanteilen oder bei einer Ausschüttung /
+Thesaurierung eines Fonds zum Abzug von Kapitalertragsteuer und Solidaritätszuschlag kommen. Die Höhe der abgeführten Steuern zum Abrech-
+nungstag erkennen Sie hier.
+Wenn Sie zur Abgabe von Kirchensteuer verpflichtet sind und uns vom Bundeszentralamt für Steuern ein Kirchensteuerabzugsmerkmal für Sie übermittelt 
+wurde, weisen wir Ihnen hier die Höhe der abgeführten Steuer aus.
+Die Depotübersicht informiert Sie über den aktuellen Anteilbestand aller Unterdepots in Ihrem UnionDepot. Der Wert eines Unterdepots wird auf
+Basis des letzten verfügbaren Rücknahmepreises des jeweiligen Fonds berechnet. Bei Fremdwährungsfonds wird der Depotwert jeweils in Fremd-
+währung und in Euro ausgewiesen. Die Umrechnung in Euro erfolgt zum letzten verfügbaren Devisenmittelkurs der EuroFX.
+Betriebliche Anleger
+Anleger, die Ihre Fondsanteile im Betriebsvermögen halten, finden auf den Abrechnungen steuerliche Informationen zum Aktiengewinn und zum Im-
+mobiliengewinn. Beide Angaben dienen dazu, den betrieblichen Fondsanleger im Falle der Bewertung zum Bilanzstichtag und im Falle der Veräußer-
+ung mit dem Direktanleger gleichzustellen.
+Aktiengewinn
+Der Aktiengewinn ist der Teil des Gewinns der Veräußerung oder der Rückgabe von Investmentanteilen, der für den einkommensteuerpflichtigen be-
+trieblichen Anleger (z.B. Personengesellschaften, Einzelunternehmen) zur Hälfte steuerpflichtig und für den körperschaftsteuerpflichtigen betrieblich-
+en Anleger (z. B. Kapitalgesellschaften) zu 95 Prozent steuerfrei ist. Der Rest des Gewinns ist steuerpflichtig. Der Aktiengewinn wird als Prozent-
+satz bezogen auf einen Fondsanteil ausgewiesen. Zur Ermittlung des steuerfrei bleibenden Veräußerungsgewinns muss der Prozentsatz zunächst
+in einen absoluten Euro-Betrag umgerechnet werden, und zwar jeweils für den Tag des Erwerbs und den Tag der Rückgabe bzw. Veräußerung der
+Anteilscheine. Hierzu ist der für den jeweiligen Tag ausgewiesene Prozentsatz mit dem für den jeweiligen Tag ausgewiesenen Anteilwert (Rück-
+nahmepreis) der gekauften bzw. verkauften Anteile zu multiplizieren (besitzanteiliger Aktiengewinn).
+Immobiliengewinn
+Der Immobiliengewinn wird ebenfalls als Prozentsatz bezogen auf einen Fondsanteil ausgewiesen. Er umfasst den Ertragsanteil am Wertzuwachs,
+der aufgrund von Doppelbesteuerungsabkommen (DBA) für den betrieblichen Anleger in Deutschland nicht zu versteuern ist. Auch hier muss der
+besitzanteilige Immobiliengewinn auf die gleiche Art wie beim Aktiengewinn ermittelt werden.

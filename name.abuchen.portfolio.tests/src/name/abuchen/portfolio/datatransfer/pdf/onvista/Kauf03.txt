@@ -1,0 +1,43 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=478593000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=X X
+Kauf ADRESSZEILE3=X
+Kommissionsgeschäft ADRESSZEILE4=23456 X
+Herr ADRESSZEILE5=
+X X ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+X Str 1 BELEGNUMMER=33999
+23456 X 234567000 23456957 / 03.03.2021 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+X X
+Frankfurt am Main, 03.03.2021
+Wir haben für Sie gekauft
+Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+Société Générale Effekten GmbH DISC.Z 13.05.2021 DE000SE8F9E8
+13.05.21 NVIDIA 498
+Nominal Kurs
+STK 4,000 EUR 480,6300
+Handelstag 03.03.2021 Kurswert EUR 1.922,52-
+Handelszeit 15:32 Handelsplatzgebühr EUR 2,00-
+Handelsplatz außerbörslich Société Générale
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+05.03.2021 999999999 EUR 1.924,52
+Wir werden in Ihrem Depot wie angegeben buchen.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+onvista bank - eine Marke der Commerzbank AG Wildunger Straße 6a 60487 Frankfurt am Main
+Kundenservice: +49 (0)69-7107-530 T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 E: info@onvista-bank.de W: www.onvista-bank.de
+Commerzbank AG 60261 Frankfurt am Main AG Frankfurt am Main HRB 32000 Vorstand: Manfred Knof (Vorsitzender),
+Marcus Chromik, Jörg Hessenmüller, Michael Kotzbauer, Bettina Orlopp, Sabine Schmittroth Vorsitzender des Aufsichtsrates: Hans-Jörg Vetter
+3.18/ABREABHNHANDKFDI/GAAASAFG/033672/040321/002841

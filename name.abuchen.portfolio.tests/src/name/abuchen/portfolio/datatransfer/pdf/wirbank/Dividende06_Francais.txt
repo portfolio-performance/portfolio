@@ -1,0 +1,27 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.5
+-----------------------------------------
+Fondation de prévoyance Terzo de la Banque WIR
+Auberg 1
+4002 Bâle
+Internet www.viac.ch
+Courrriel info@viac.ch
+Téléphone 0800 80 40 40
+Contrat 1.234.567.890 Monsieur
+Portefeuille 1.234.567.890.01 Max Mustermann
+Musterweg 12
+1234 Suisse
+Bâle, 06.11.2023
+Avis de dividende
+Nous avons versé le dividende suivant:
+Type de dividende: Dividende ordinaire
+0.027 CSIF Canada
+ISIN: CH0030849613
+Dividende distribué: CAD 1.16
+Montant CAD 0.03
+Taux de conversion CHF/CAD 0.749 CHF 0.02
+Montant crédité: Valeur 24.05.2022 CHF 0.02
+S. E. & O.
+Meilleures salutations
+Fondation de prévoyance Terzo
+Avis sans signature

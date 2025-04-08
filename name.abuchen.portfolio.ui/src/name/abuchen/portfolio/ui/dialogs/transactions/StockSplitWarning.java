@@ -1,9 +1,8 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.Optional;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;

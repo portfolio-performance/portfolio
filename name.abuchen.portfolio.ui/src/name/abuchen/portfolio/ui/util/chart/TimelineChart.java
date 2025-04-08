@@ -1,42 +1,40 @@
 package name.abuchen.portfolio.ui.util.chart;
 
-import java.text.FieldPosition;
-import java.text.Format;
-import java.text.ParsePosition;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.Period;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.IAxis.Position;
-import org.swtchart.IBarSeries;
-import org.swtchart.ICustomPaintListener;
-import org.swtchart.ILineSeries;
-import org.swtchart.ILineSeries.PlotSymbolType;
-import org.swtchart.IPlotArea;
-import org.swtchart.ISeries.SeriesType;
-import org.swtchart.LineStyle;
-import org.swtchart.Range;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.IAxis.Position;
+import org.eclipse.swtchart.IBarSeries;
+import org.eclipse.swtchart.ICustomPaintListener;
+import org.eclipse.swtchart.ILineSeries;
+import org.eclipse.swtchart.ILineSeries.PlotSymbolType;
+import org.eclipse.swtchart.ISeries.SeriesType;
+import org.eclipse.swtchart.LineStyle;
+import org.eclipse.swtchart.Range;
+import org.eclipse.swtchart.internal.PlotArea;
 
-import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.format.AxisTickPercentNumberFormat;
 
 public class TimelineChart extends Chart // NOSONAR
 {
+
     private static class MarkerLine
     {
         private LocalDate date;
@@ -52,9 +50,9 @@ public class TimelineChart extends Chart // NOSONAR
             this.value = value;
         }
 
-        public long getTimeMillis()
+        public long getEpochDay()
         {
-            return Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()).getTime();
+            return date.toEpochDay();
         }
     }
 
@@ -69,45 +67,33 @@ public class TimelineChart extends Chart // NOSONAR
             this.color = color;
         }
 
-        public long getTimeMillis()
+        public long getEpochDay()
         {
-            return Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()).getTime();
-        }
-    }
-
-    public static class ThousandsNumberFormat extends Format
-    {
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos)
-        {
-            if (!(obj instanceof Number))
-                throw new IllegalArgumentException();
-
-            return toAppendTo.append(Values.Thousands.format(((Number) obj).doubleValue()));
-        }
-
-        @Override
-        public Object parseObject(String source, ParsePosition pos)
-        {
-            pos.setErrorIndex(0);
-            return null;
+            return date.toEpochDay();
         }
     }
 
     private List<MarkerLine> markerLines = new ArrayList<>();
     private List<NonTradingDayMarker> nonTradingDayMarkers = new ArrayList<>();
+    private Map<Object, IAxis> addedAxis = new HashMap<>();
 
+    private ChartToolsManager chartTools;
     private TimelineChartToolTip toolTip;
     private ChartContextMenu contextMenu;
 
+    @SuppressWarnings("restriction")
     public TimelineChart(Composite parent)
     {
-        super(parent, SWT.NONE);
+        super(parent, SWT.NONE, null);
 
-        setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-        getTitle().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+        // we must use the secondary constructor that is not creating the
+        // PlotArea because the default constructor adds a mouse move listener
+        // that is redrawing the chart on every mouse move. That leads to janky
+        // UI when the tooltip is shown.
+        new PlotArea(this, SWT.NONE);
+
+        setData(UIConstants.CSS.CLASS_NAME, "chart"); //$NON-NLS-1$
+
         getLegend().setVisible(false);
 
         // x axis
@@ -119,7 +105,6 @@ public class TimelineChart extends Chart // NOSONAR
         // y axis
         IAxis yAxis = getAxisSet().getYAxis(0);
         yAxis.getTitle().setVisible(false);
-        yAxis.getTick().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
         yAxis.setPosition(Position.Secondary);
 
         // 2nd y axis
@@ -130,12 +115,22 @@ public class TimelineChart extends Chart // NOSONAR
         y2Axis.getGrid().setStyle(LineStyle.NONE);
         y2Axis.setPosition(Position.Primary);
 
-        ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
+        // 3rd y axis (percentage)
+        int axisId3rd = getAxisSet().createYAxis();
+        IAxis y3Axis = getAxisSet().getYAxis(axisId3rd);
+        y3Axis.getTitle().setVisible(false);
+        y3Axis.getTick().setVisible(false);
+        y3Axis.getTick().setFormat(new AxisTickPercentNumberFormat("+#.##%;-#.##%")); //$NON-NLS-1$
+        y3Axis.getGrid().setStyle(LineStyle.NONE);
+        y3Axis.setPosition(Position.Primary);
+
+        getPlotArea().addCustomPaintListener(new ICustomPaintListener()
         {
             @Override
             public void paintControl(PaintEvent e)
             {
                 paintTimeGrid(e);
+                paintNonTradingDayMarker(e);
             }
 
             @Override
@@ -145,29 +140,16 @@ public class TimelineChart extends Chart // NOSONAR
             }
         });
 
-        ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
-        {
-            @Override
-            public void paintControl(PaintEvent eventNonTradingDay)
-            {
-                paintNonTradingDayMarker(eventNonTradingDay);
-            }
-
-            @Override
-            public boolean drawBehindSeries()
-            {
-                return true;
-            }
-        });
-
-        getPlotArea().addPaintListener(this::paintMarkerLines);
+        getPlotArea().getControl().addPaintListener(this::paintMarkerLines);
 
         toolTip = new TimelineChartToolTip(this);
+
+        chartTools = new ChartToolsManager(this);
 
         ZoomMouseWheelListener.attachTo(this);
         MovePlotKeyListener.attachTo(this);
         ZoomInAreaListener.attachTo(this);
-        getPlotArea().addTraverseListener(event -> event.doit = true);
+        getPlotArea().getControl().addTraverseListener(event -> event.doit = true);
 
         this.contextMenu = new ChartContextMenu(this);
     }
@@ -204,37 +186,57 @@ public class TimelineChart extends Chart // NOSONAR
         this.nonTradingDayMarkers.clear();
     }
 
-    public ILineSeries addDateSeries(LocalDate[] dates, double[] values, String label)
+    public void addPlotPaintListener(PaintListener listener)
     {
-        return addDateSeries(dates, values, Display.getDefault().getSystemColor(SWT.COLOR_BLACK), false, label);
+        getPlotArea().addCustomPaintListener(new ICustomPaintListener()
+        {
+            @Override
+            public void paintControl(PaintEvent e)
+            {
+                listener.paintControl(e);
+            }
+
+            @Override
+            public boolean drawBehindSeries()
+            {
+                return false;
+            }
+        });
     }
 
-    public ILineSeries addDateSeries(LocalDate[] dates, double[] values, Color color, String label)
+    public ILineSeries<Integer> addDateSeries(String id, LocalDate[] dates, double[] values, String label)
     {
-        return addDateSeries(dates, values, color, false, label);
+        return addDateSeries(id, dates, values, Colors.BLACK, false, label);
     }
 
-    private ILineSeries addDateSeries(LocalDate[] dates, double[] values, Color color, boolean showArea, String label)
+    public ILineSeries<Integer> addDateSeries(String id, LocalDate[] dates, double[] values, Color color, String label)
     {
-        ILineSeries lineSeries = (ILineSeries) getSeriesSet().createSeries(SeriesType.LINE, label);
-        lineSeries.setXDateSeries(toJavaUtilDate(dates));
+        return addDateSeries(id, dates, values, color, false, label);
+    }
+
+    private ILineSeries<Integer> addDateSeries(String id, LocalDate[] dates, double[] values, Color color,
+                    boolean showArea, String label)
+    {
+        @SuppressWarnings("unchecked")
+        var lineSeries = (ILineSeries<Integer>) getSeriesSet().createSeries(SeriesType.LINE, id);
+        lineSeries.setDescription(label);
+        lineSeries.setDataModel(new TimelineSeriesModel(dates, values));
         lineSeries.enableArea(showArea);
         lineSeries.setLineWidth(2);
         lineSeries.setSymbolType(PlotSymbolType.NONE);
-        lineSeries.setYSeries(values);
         lineSeries.setLineColor(color);
         lineSeries.setAntialias(SWT.ON);
         return lineSeries;
     }
 
-    public IBarSeries addDateBarSeries(LocalDate[] dates, double[] values, String label)
+    public IBarSeries<Integer> addDateBarSeries(String id, LocalDate[] dates, double[] values, String label)
     {
-        IBarSeries barSeries = (IBarSeries) getSeriesSet().createSeries(SeriesType.BAR, label);
-        barSeries.setXDateSeries(toJavaUtilDate(dates));
-        barSeries.setYSeries(values);
-        barSeries.setBarColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
+        @SuppressWarnings("unchecked")
+        var barSeries = (IBarSeries<Integer>) getSeriesSet().createSeries(SeriesType.BAR, id);
+        barSeries.setDescription(label);
+        barSeries.setDataModel(new TimelineSeriesModel(dates, values));
+        barSeries.setBarColor(Colors.DARK_GRAY);
         barSeries.setBarPadding(100);
-
         return barSeries;
     }
 
@@ -243,54 +245,20 @@ public class TimelineChart extends Chart // NOSONAR
         return toolTip;
     }
 
+    public ChartToolsManager getChartToolsManager()
+    {
+        return chartTools;
+    }
+
     private void paintTimeGrid(PaintEvent e)
     {
         IAxis xAxis = getAxisSet().getXAxis(0);
         Range range = xAxis.getRange();
 
-        ZoneId zoneId = ZoneId.systemDefault();
-        LocalDate start = Instant.ofEpochMilli((long) range.lower).atZone(zoneId).toLocalDate();
-        LocalDate end = Instant.ofEpochMilli((long) range.upper).atZone(zoneId).toLocalDate();
+        LocalDate start = LocalDate.ofEpochDay((long) range.lower);
+        LocalDate end = LocalDate.ofEpochDay((long) range.upper);
 
-        LocalDate cursor = start.getDayOfMonth() == 1 ? start : start.plusMonths(1).withDayOfMonth(1);
-        Period period;
-        DateTimeFormatter format;
-
-        long days = ChronoUnit.DAYS.between(start, end);
-        if (days < 250)
-        {
-            period = Period.ofMonths(1);
-            format = DateTimeFormatter.ofPattern("MMMM yyyy"); //$NON-NLS-1$
-        }
-        else if (days < 800)
-        {
-            period = Period.ofMonths(3);
-            format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
-            cursor = cursor.plusMonths((12 - cursor.getMonthValue() + 1) % 3);
-        }
-        else if (days < 1200)
-        {
-            period = Period.ofMonths(6);
-            format = DateTimeFormatter.ofPattern("QQQ yyyy"); //$NON-NLS-1$
-            cursor = cursor.plusMonths((12 - cursor.getMonthValue() + 1) % 6);
-        }
-        else
-        {
-            period = Period.ofYears(days > 5000 ? 2 : 1);
-            format = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
-
-            if (cursor.getMonthValue() > 1)
-                cursor = cursor.plusYears(1).withDayOfYear(1);
-        }
-
-        while (cursor.isBefore(end))
-        {
-            int y = xAxis.getPixelCoordinate((double) cursor.atStartOfDay(zoneId).toInstant().toEpochMilli());
-            e.gc.drawLine(y, 0, y, e.height);
-            e.gc.drawText(format.format(cursor), y + 5, 5);
-
-            cursor = cursor.plus(period);
-        }
+        TimeGridHelper.paintTimeGrid(this, e, start, end, cursor -> xAxis.getPixelCoordinate(cursor.toEpochDay()));
     }
 
     private void paintMarkerLines(PaintEvent e) // NOSONAR
@@ -306,19 +274,23 @@ public class TimelineChart extends Chart // NOSONAR
 
         for (MarkerLine marker : markerLines)
         {
-            int x = xAxis.getPixelCoordinate((double) marker.getTimeMillis());
-
-            Point textExtent = e.gc.textExtent(marker.label);
-            boolean flip = x + 5 + textExtent.x > e.width;
-            int textX = flip ? x - 5 - textExtent.x : x + 5;
-            labelStackY = labelExtentX > textX ? labelStackY + textExtent.y : 0;
-            labelExtentX = x + 5 + textExtent.x;
+            int x = xAxis.getPixelCoordinate(marker.getEpochDay());
 
             e.gc.setLineStyle(SWT.LINE_SOLID);
             e.gc.setForeground(marker.color);
             e.gc.setLineWidth(2);
             e.gc.drawLine(x, 0, x, e.height);
-            e.gc.drawText(marker.label, textX, e.height - 20 - labelStackY, true);
+
+            if (marker.label != null)
+            {
+                Point textExtent = e.gc.textExtent(marker.label);
+                boolean flip = x + 5 + textExtent.x > e.width;
+                int textX = flip ? x - 5 - textExtent.x : x + 5;
+                labelStackY = labelExtentX > textX ? labelStackY + textExtent.y : 0;
+                labelExtentX = x + 5 + textExtent.x;
+
+                e.gc.drawText(marker.label, textX, e.height - 20 - labelStackY, true);
+            }
 
             if (marker.value != null)
             {
@@ -334,9 +306,8 @@ public class TimelineChart extends Chart // NOSONAR
             return;
         IAxis xAxis = getAxisSet().getXAxis(0);
         Range range = xAxis.getRange();
-        ZoneId zoneId = ZoneId.systemDefault();
-        LocalDate start = Instant.ofEpochMilli((long) range.lower).atZone(zoneId).toLocalDate();
-        LocalDate end = Instant.ofEpochMilli((long) range.upper).atZone(zoneId).toLocalDate();
+        LocalDate start = LocalDate.ofEpochDay((long) range.lower);
+        LocalDate end = LocalDate.ofEpochDay((long) range.upper);
         long days = ChronoUnit.DAYS.between(start, end);
         double dayWidth = Math.ceil((eventNonTradingDay.width) / (days - 1d));
         int markerWidthXLeft = (int) (dayWidth / 2);
@@ -347,7 +318,7 @@ public class TimelineChart extends Chart // NOSONAR
         }
         for (NonTradingDayMarker marker : nonTradingDayMarkers)
         {
-            int x = xAxis.getPixelCoordinate((double) marker.getTimeMillis());
+            int x = xAxis.getPixelCoordinate(marker.getEpochDay());
             double barWidth = 0;
             for (LocalDate date = marker.date; date.isBefore(end); date = date.plusDays(1))
             {
@@ -376,13 +347,10 @@ public class TimelineChart extends Chart // NOSONAR
         this.contextMenu.exportMenuAboutToShow(manager, label);
     }
 
-    public static Date[] toJavaUtilDate(LocalDate[] dates)
+    public void resetAxes()
     {
-        ZoneId zoneId = ZoneId.systemDefault();
-        Date[] answer = new Date[dates.length];
-        for (int ii = 0; ii < answer.length; ii++)
-            answer[ii] = Date.from(dates[ii].atStartOfDay().atZone(zoneId).toInstant());
-        return answer;
+        for (IAxis axis : getAxisSet().getAxes())
+            axis.setRange(new Range(0, 1));
     }
 
     public void adjustRange()
@@ -392,7 +360,7 @@ public class TimelineChart extends Chart // NOSONAR
             setRedraw(false);
 
             getAxisSet().adjustRange();
-            ChartUtil.addYMargins(this, 0.03);
+            ChartUtil.addYMargins(this, 0.08);
         }
         finally
         {
@@ -404,5 +372,32 @@ public class TimelineChart extends Chart // NOSONAR
     public void save(String filename, int format)
     {
         ChartUtil.save(this, filename, format);
+    }
+
+    @Override
+    public boolean setFocus()
+    {
+        return getPlotArea().getControl().setFocus();
+    }
+
+    public IAxis getOrCreateAxis(Object key, Supplier<IAxis> axisFactory)
+    {
+        return addedAxis.computeIfAbsent(key, x -> {
+            IAxis axis = axisFactory.get();
+
+            // As we are dynamically adding the series, we have to check whether
+            // the updates on the chart are suspended. Otherwise, the layout
+            // information is not available for the axis and then #adjustRange
+            // will fail
+
+            if (isUpdateSuspended())
+            {
+                // resuming updates will trigger #updateLayout
+                suspendUpdate(false);
+                suspendUpdate(true);
+            }
+
+            return axis;
+        });
     }
 }

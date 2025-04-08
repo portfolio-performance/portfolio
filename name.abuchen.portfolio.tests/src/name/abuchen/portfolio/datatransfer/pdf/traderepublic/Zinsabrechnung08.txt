@@ -1,0 +1,38 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+RgYUErt FzxOfQ SEITE 1 von 1
+aipfje-jiojpae-oijajew-MJmllT 838 DATUM 01.01.2025
+05676 pbItkwQNa VERRECHNUNGSKONTO 87346981234
+STEUER-ID 30587119489
+ABRECHNUNG ZINSEN
+zum 31.12.2024
+ÜBERSICHT
+VERMÖGENSWERT EINKOMMENSART RATE DATUM GESAMT
+Cash Zinsen 3,25% 01.12.2024 - 17.12.2024 25,75 EUR
+Cash Zinsen 3,00% 18.12.2024 - 31.12.2024 19,56 EUR
+Geldmarkt Dividende 3,25% 01.12.2024 - 17.12.2024 51,00 EUR
+Geldmarkt Dividende 3,00% 18.12.2024 - 31.12.2024 38,78 EUR
+Gesamt 135,09 EUR
+ABRECHNUNG - ZINSEN
+POSITION BETRAG
+Besteuerungsgrundlage 45,31 EUR
+Kapitalertragssteuer -11,33 EUR
+Solidaritätszuschlag -0,62 EUR
+Gesamt 33,36 EUR
+ABRECHNUNG - DIVIDENDE
+POSITION BETRAG
+Besteuerungsgrundlage 89,78 EUR
+Kapitalertragssteuer -22,45 EUR
+Solidaritätszuschlag -1,23 EUR
+Gesamt 66,10 EUR
+BUCHUNG
+IBAN BUCHUNGSDATUM GUTSCHRIFT NACH STEUERN
+DE47110815515515 01.01.2025 99,46 EUR
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke

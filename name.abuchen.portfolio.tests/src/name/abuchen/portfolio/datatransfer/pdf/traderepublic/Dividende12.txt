@@ -1,0 +1,36 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Max Muster SEITE 1 von 1
+Musterstr 123 DATUM 17.08.2021
+12345 Musterstadt DEPOT 0123456789
+REINVESTIERUNG
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+1 Reinvestierung Vodafone Group PLC 699 Stk.
+Registered Shares DL 0,2095238
+GB00BH4HKS39
+2 Reinvestierung Vodafone Group PLC 22 Stk.
+Registered Shares DL 0,2095238
+GB00BH4HKS39
+ABRECHNUNG
+NR. POSITION BETRAG
+1 Bruttoertrag 26,80 GBP
+GESAMT GBP
+2 Barausgleich 0,37 GBP
+Zwischensumme 0,37 GBP
+Zwischensumme 0,85267 EUR/GBP 0,44 EUR
+GESAMT 0,44 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE40110101001234567890 06.08.2021 0,44 GBP
+Vodafone Group PLC Registered Shares DL 0,2095238 in Wertpapierrechnung in Deutschland.
+Lagerland: Vereinigtes Königreich
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 17.08.2021 / 12345678 / 1826-5070

@@ -4,6 +4,7 @@ import org.eclipse.jface.action.Action;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Money;
@@ -19,9 +20,12 @@ public class RevertDeliveryAction extends Action
         this.client = client;
         this.transaction = transaction;
 
-        if (transaction.getTransaction().getType() != PortfolioTransaction.Type.DELIVERY_INBOUND
-                        && transaction.getTransaction().getType() != PortfolioTransaction.Type.DELIVERY_OUTBOUND)
-            throw new IllegalArgumentException();
+        PortfolioTransaction tx = transaction.getTransaction();
+        Type type = tx.getType();
+        if (type != PortfolioTransaction.Type.DELIVERY_INBOUND
+                        && type != PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+            throw new IllegalArgumentException(
+                            "unsupported transaction type " + type + " for transaction " + tx); //$NON-NLS-1$ //$NON-NLS-2$
 
     }
 
@@ -39,19 +43,20 @@ public class RevertDeliveryAction extends Action
         Money feesAndTaxes = tx.getUnits().filter(u -> u.getType() == Unit.Type.FEE || u.getType() == Unit.Type.TAX) //
                         .map(Unit::getAmount).collect(MoneyCollectors.sum(tx.getCurrencyCode()));
 
-        if (PortfolioTransaction.Type.DELIVERY_INBOUND.equals(tx.getType()))
+        Type type = tx.getType();
+        if (PortfolioTransaction.Type.DELIVERY_INBOUND.equals(type))
         {
             tx.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
             tx.setMonetaryAmount(grossAmount.subtract(feesAndTaxes));
         }
-        else if (PortfolioTransaction.Type.DELIVERY_OUTBOUND.equals(tx.getType()))
+        else if (PortfolioTransaction.Type.DELIVERY_OUTBOUND.equals(type))
         {
             tx.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
             tx.setMonetaryAmount(grossAmount.add(feesAndTaxes));
         }
         else
         {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unsupported transaction type " + type + " for transaction " + tx); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         client.markDirty();

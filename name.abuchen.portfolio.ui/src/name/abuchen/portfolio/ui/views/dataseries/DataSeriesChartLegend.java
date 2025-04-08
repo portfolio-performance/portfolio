@@ -1,50 +1,65 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.IntStream;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
-import org.swtchart.LineStyle;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swtchart.LineStyle;
+import org.eclipse.ui.forms.events.HyperlinkAdapter;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.eclipse.ui.forms.widgets.ImageHyperlink;
 
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.util.TextUtil;
 
 /**
  * A legend for charts to configure data series, e.g. color, area fill, and line
  * type.
  */
-public class DataSeriesChartLegend extends Composite
+public class DataSeriesChartLegend extends Composite implements ISelectionProvider
 {
     private final DataSeriesConfigurator configurator;
     private final LocalResourceManager resources;
 
-    /**
-     * Constructor.
-     * 
-     * @param parent
-     *            the parent composite
-     * @param configurator
-     *            the chart configurator
-     */
+    private final List<ISelectionChangedListener> listeners = new ArrayList<>();
+
     public DataSeriesChartLegend(Composite parent, DataSeriesConfigurator configurator)
     {
         super(parent, SWT.NONE);
@@ -52,16 +67,14 @@ public class DataSeriesChartLegend extends Composite
         this.configurator = configurator;
         this.resources = new LocalResourceManager(JFaceResources.getResources(), parent);
 
-        setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-
-        RowLayout layout = new RowLayout();
-        layout.wrap = true;
-        layout.pack = true;
-        layout.fill = true;
-        setLayout(layout);
+        setLayout(new RowPlusChevronLayout(this));
 
         for (DataSeries series : configurator.getSelectedDataSeries())
-            new PaintItem(this, series);
+        {
+            PaintItem item = new PaintItem(this, series);
+            item.addMouseListener(MouseListener.mouseUpAdapter(e -> listeners.forEach(l -> l
+                            .selectionChanged(new SelectionChangedEvent(this, new StructuredSelection(series))))));
+        }
 
         this.configurator.addListener(this::onUpdate);
     }
@@ -69,18 +82,48 @@ public class DataSeriesChartLegend extends Composite
     private void onUpdate()
     {
         for (Control child : getChildren())
-            child.dispose();
+            if (child instanceof PaintItem)
+                child.dispose();
 
         for (DataSeries series : configurator.getSelectedDataSeries())
-            new PaintItem(this, series);
+        {
+            PaintItem item = new PaintItem(this, series);
+            item.addMouseListener(MouseListener.mouseUpAdapter(e -> listeners.forEach(l -> l
+                            .selectionChanged(new SelectionChangedEvent(this, new StructuredSelection(series))))));
+        }
 
         layout();
         getParent().layout();
     }
 
+    @Override
+    public void addSelectionChangedListener(ISelectionChangedListener listener)
+    {
+        this.listeners.add(listener);
+    }
+
+    @Override
+    public void removeSelectionChangedListener(ISelectionChangedListener listener)
+    {
+        this.listeners.remove(listener);
+    }
+
+    @Override
+    public ISelection getSelection()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setSelection(ISelection selection)
+    {
+        throw new UnsupportedOperationException();
+    }
+
     private static final class PaintItem extends Canvas implements Listener // NOSONAR
     {
         private static final ResourceBundle LABELS = ResourceBundle.getBundle("name.abuchen.portfolio.ui.views.labels"); //$NON-NLS-1$
+        private static final int PADDING = 10;
 
         private final DataSeries series;
 
@@ -90,15 +133,24 @@ public class DataSeriesChartLegend extends Composite
 
             this.series = series;
 
-            setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
-
             addListener(SWT.Paint, this);
             addListener(SWT.Resize, this);
+            addListener(SWT.MouseDoubleClick, this);
 
             MenuManager menuManager = new MenuManager();
             menuManager.setRemoveAllWhenShown(true);
             menuManager.addMenuListener(this::seriesMenuAboutToShow);
             setMenu(menuManager.createContextMenu(this));
+
+            if (series.getInstance() instanceof Security security)
+                setToolTipText(TextUtil.wordwrap(security.toInfoString()));
+            else if (series.getInstance() instanceof Classification classification)
+                setToolTipText(classification.getPathName(true));
+            else if (series.getInstance() instanceof DerivedDataSeries derived
+                            && derived.getBaseDataSeries().getInstance() instanceof Classification classification)
+                setToolTipText(derived.getAspect().getLabel() + ": " + classification.getPathName(true)); //$NON-NLS-1$
+            else
+                setToolTipText(series.getLabel());
         }
 
         @Override
@@ -112,15 +164,19 @@ public class DataSeriesChartLegend extends Composite
                 case SWT.Resize:
                     redraw();
                     break;
+                case SWT.MouseDoubleClick:
+                    series.setVisible(!series.isVisible());
+                    ((DataSeriesChartLegend) getParent()).configurator.fireUpdate();
+                    break;
                 default:
                     break;
             }
         }
 
-        private Color colorFor(RGB color)
+        private Color getColor()
         {
             DataSeriesChartLegend legend = (DataSeriesChartLegend) getParent();
-            return legend.resources.createColor(color);
+            return legend.resources.createColor(series.getColor());
         }
 
         private void paintControl(Event e)
@@ -132,16 +188,19 @@ public class DataSeriesChartLegend extends Composite
             Rectangle r = new Rectangle(0, 0, size.y, size.y);
             GC gc = e.gc;
 
-            gc.setBackground(colorFor(series.getColor()));
+            gc.setBackground(getColor());
             gc.fillRectangle(r.x, r.y, r.width, r.height);
 
-            gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
+            gc.setForeground(getForeground());
             gc.drawRectangle(r.x, r.y, r.width - 1, r.height - 1);
 
             String text = series.getLabel();
 
-            e.gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
+            e.gc.setForeground(getForeground());
             e.gc.drawString(text, size.y + 2, 1, true);
+
+            if (!series.isVisible())
+                e.gc.drawLine(size.y + 2, size.y / 2 + 1, size.x - PADDING, size.y / 2 + 1);
 
             e.gc.setForeground(oldForeground);
             e.gc.setBackground(oldBackground);
@@ -156,7 +215,7 @@ public class DataSeriesChartLegend extends Composite
             Point extentText = gc.stringExtent(text);
             gc.dispose();
 
-            return new Point(extentText.x + extentText.y + 12, extentText.y + 2);
+            return new Point(extentText.x + extentText.y + PADDING + 2, extentText.y + 2);
         }
 
         private void seriesMenuAboutToShow(IMenuManager manager) // NOSONAR
@@ -202,6 +261,19 @@ public class DataSeriesChartLegend extends Composite
                 });
                 actionShowArea.setChecked(series.isShowArea());
                 manager.add(actionShowArea);
+
+                MenuManager lineWidth = new MenuManager(Messages.ChartSeriesPickerLineWidth);
+                IntStream.range(1, 4).forEach(i -> {
+                    Action action = new SimpleAction(i + " px", a -> { //$NON-NLS-1$
+                        series.setLineWidth(i);
+                        configurator.fireUpdate();
+                    });
+                    action.setChecked(i == series.getLineWidth());
+                    lineWidth.add(action);
+
+                });
+                manager.add(lineWidth);
+
             }
 
             if (configurator.getSelectedDataSeries().size() > 1)
@@ -259,7 +331,207 @@ public class DataSeriesChartLegend extends Composite
             }
 
             manager.add(new Separator());
+            manager.add(new SimpleAction(series.isVisible() ? Messages.LabelHide : Messages.LabelUnhide, a -> {
+                series.setVisible(!series.isVisible());
+                configurator.fireUpdate();
+            }));
+
+            manager.add(new Separator());
             manager.add(new SimpleAction(Messages.ChartSeriesPickerRemove, a -> configurator.doDeleteSeries(series)));
+        }
+    }
+
+    /**
+     * Displays at maximum LINES lines of legend items and displays a chevron
+     * menu with the additional hidden items.
+     */
+    private class RowPlusChevronLayout extends Layout
+    {
+        private static final int LINES = 2;
+        private static final int PADDING = 5;
+        private static final int MARGIN = 5;
+
+        private ImageHyperlink chevron;
+        private Menu chevronMenu;
+
+        private List<PaintItem> invisible = new ArrayList<>();
+        private Map<Color, Image> colorRectangles = new HashMap<>();
+
+        private RowPlusChevronLayout(Composite host)
+        {
+            this.chevron = new ImageHyperlink(host, SWT.PUSH);
+            this.chevron.setImage(Images.CHEVRON.image());
+            this.chevron.addHyperlinkListener(new HyperlinkAdapter()
+            {
+                @Override
+                public void linkActivated(HyperlinkEvent e)
+                {
+                    ImageHyperlink item = (ImageHyperlink) e.widget;
+
+                    if (chevronMenu == null)
+                    {
+                        MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+                        menuMgr.setRemoveAllWhenShown(true);
+                        menuMgr.addMenuListener(mgr -> overflowMenuAboutToShow(mgr));
+
+                        chevronMenu = menuMgr.createContextMenu(item.getParent());
+                    }
+
+                    Rectangle rect = item.getBounds();
+                    Point pt = item.getParent().toDisplay(new Point(rect.x, rect.y));
+
+                    chevronMenu.setLocation(pt.x, pt.y + rect.height);
+                    chevronMenu.setVisible(true);
+
+                    item.addDisposeListener(event -> chevronMenu.dispose());
+                }
+            });
+
+            this.chevron.addDisposeListener(e -> colorRectangles.values().stream().forEach(image -> image.dispose()));
+        }
+
+        @Override
+        protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache)
+        {
+            return layout(composite, wHint);
+        }
+
+        @Override
+        protected void layout(Composite composite, boolean flushCache)
+        {
+            Rectangle clientArea = composite.getClientArea();
+            layout(composite, clientArea.width);
+        }
+
+        private Point layout(Composite composite, int wHint)
+        {
+            invisible.clear();
+
+            Point chevronSize = this.chevron.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+            chevron.setVisible(false);
+
+            PaintItem[] children = getChildren(composite);
+            Point[] sizes = new Point[children.length];
+
+            for (int ii = 0; ii < children.length; ii++)
+                sizes[ii] = children[ii].computeSize(SWT.DEFAULT, SWT.DEFAULT);
+
+            int x = MARGIN - PADDING;
+            int y = MARGIN - PADDING;
+
+            int line = 0;
+            int lineHeight = 0;
+
+            int width = 0;
+            int height = 0;
+
+            for (int ii = 0; ii < sizes.length; ii++)
+            {
+                // add the legend item to the line if
+                // a) we anyway only have one line (SWT.DEFAULT), or
+                // b) it fits onto the first full lines (where there is no space
+                // for the chevron needed)
+                // c) it is the last item and it fits, or
+                // d) it is not the last item but the chevron would still fit
+
+                if (wHint == SWT.DEFAULT || //
+                                (line < LINES - 1 && x + PADDING + sizes[ii].x <= wHint - MARGIN) || //
+                                (line == LINES - 1 && x + 1 == children.length
+                                                && x + PADDING + sizes[ii].x <= wHint - MARGIN)
+                                || //
+                                (line == LINES - 1 && x + PADDING + sizes[ii].x + PADDING + chevronSize.x <= wHint
+                                                - MARGIN))
+                {
+                    children[ii].setBounds(x + PADDING, y + PADDING, sizes[ii].x, sizes[ii].y);
+                    children[ii].setVisible(true);
+
+                    x += PADDING + sizes[ii].x;
+                    lineHeight = Math.max(lineHeight, sizes[ii].y);
+
+                    width = Math.max(x, width);
+                    height = Math.max(y + PADDING + sizes[ii].y, height);
+                }
+                else
+                {
+                    if (line < LINES - 1) // new line
+                    {
+                        x = MARGIN - PADDING;
+                        y += PADDING + lineHeight;
+
+                        line++;
+                        lineHeight = 0;
+
+                        children[ii].setBounds(x + PADDING, y + PADDING, sizes[ii].x, sizes[ii].y);
+                        children[ii].setVisible(true);
+
+                        x += PADDING + sizes[ii].x;
+                        lineHeight = Math.max(lineHeight, sizes[ii].y);
+
+                        width = Math.max(x, width);
+                        height = Math.max(y + PADDING + sizes[ii].y, height);
+                    }
+                    else // chevron
+                    {
+                        invisible.add((PaintItem) children[ii]);
+                        children[ii].setVisible(false);
+
+                        chevron.setBounds(x + PADDING, y + PADDING, chevronSize.x, chevronSize.y);
+                        chevron.setVisible(true);
+
+                        x += PADDING + chevronSize.x;
+                        lineHeight = Math.max(lineHeight, sizes[ii].y);
+
+                        width = Math.max(x, width);
+                        height = Math.max(y + PADDING + sizes[ii].y, height);
+
+                        for (int jj = ii + 1; jj < children.length; jj++)
+                        {
+                            invisible.add((PaintItem) children[jj]);
+                            children[jj].setVisible(false);
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            return new Point(width + MARGIN, height + MARGIN);
+        }
+
+        private PaintItem[] getChildren(Composite composite)
+        {
+            Control[] children = composite.getChildren();
+
+            PaintItem[] answer = new PaintItem[children.length - 1];
+
+            int index = 0;
+            for (int ii = 0; ii < children.length; ii++)
+            {
+                if (children[ii] instanceof PaintItem paintItem)
+                    answer[index++] = paintItem;
+            }
+
+            return answer;
+        }
+
+        private void overflowMenuAboutToShow(IMenuManager manager)
+        {
+            for (PaintItem item : invisible)
+            {
+                Image image = colorRectangles.computeIfAbsent(item.getColor(), color -> {
+                    Image i = new Image(null, 16, 16);
+                    GC gc = new GC(i);
+                    gc.setBackground(color);
+                    gc.fillRectangle(0, 0, 16, 16);
+                    gc.dispose();
+                    return i;
+                });
+
+                MenuManager mgr = new MenuManager(item.series.getLabel(), ImageDescriptor.createFromImage(image), null);
+                manager.add(mgr);
+
+                item.seriesMenuAboutToShow(mgr);
+            }
         }
     }
 }

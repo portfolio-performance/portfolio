@@ -1,0 +1,44 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=0000000000
+Gesamtfälligkeit DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=xxxx
+ADRESSZEILE2=xxxxxxxxxxx
+ADRESSZEILE3=xxxxxxxxxxxxx
+ADRESSZEILE4=xxxxxxxxxxxx
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+0000000000 00000000 / 07.12.2021 ADRESSZEILE6=
+xxxx BELEGNUMMER=90
+xxxxxxxxxxx SEITENNUMMER=1
+xxxxxxxxxxxxx STEUERERSTATTUNG=N
+xxxxxxxxxxxx Depotinhaber
+xxxxxxxxxxx
+München, 07.12.2021
+Gutschriftsanzeige
+Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+UniCredit Bank AG HVB TuBull 30.11.2021 DE000HB0NKY1
+O.EndDJIA34745,0898
+Nominal Einlösung zu:
+STK 54,000 EUR 0,0010
+Verwahrart Girosammelverwahrung Kurswert EUR 0,05 
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+07.12.2021 0000000000 EUR 0,05
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsverlust Sonstige EUR 280,89
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 140,77
+Quellensteuertopf EUR 6,52 41,55
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+Automatische Ausübung der Optionsscheine am Laufzeitende
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.18/ABREEREITILG/GDBTILAN/000090/071221/010819

@@ -1,0 +1,40 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 1111 222 333
+1111111111/00
+Vermerk der Bank: 2000
+2
+Max Mustermann
+Musterweg 1
+11111 Musterstadt Datum: 06.12.2021Seite: 1 von 1
+Ordernummer 111111111.001
+Orderdatum 06.12.2021
+ORDERABRECHNUNG
+KAUF AM 06.12.2021 UM 09:02:27 XETRA FRANKFURT NR. 111111111.001
+Bezeichnung WKN ISIN
+STRATEC SE NA O.N. STRA55 DE000STRA555
+Einheit Umsatz
+ST 30,00000
+Preis pro Anteil 131,800000 EUR
+Kurswert 3.954,00 EUR
+Börsenplatzgebühr 1,50 EUR
+Provision 9,89 EUR
+Grundgebühr 4,95 EUR
+Eig. Spesen 1,95 EUR
+zulasten Konto-Nr. 1111111111 3.972,29 EUR
+Valuta 08.12.2021
+Bestand zugunsten Girosammelverwahrung
+CBF 2126
+Eigene Spesen enthalten 1,95 EUR Umschreibegebühr inkl. 19 % MWST
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé

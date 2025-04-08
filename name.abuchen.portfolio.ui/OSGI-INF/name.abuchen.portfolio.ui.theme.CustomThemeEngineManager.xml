@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.3.0" name="name.abuchen.portfolio.ui.theme.CustomThemeEngineManager">
+	<property name="service.ranking" type="Integer" value="100"/>
+  <service>
+    <provide interface="org.eclipse.e4.ui.css.swt.theme.IThemeManager"/>
+  </service>
+  <implementation class="name.abuchen.portfolio.ui.theme.CustomThemeEngineManager"/>
+</scr:component>

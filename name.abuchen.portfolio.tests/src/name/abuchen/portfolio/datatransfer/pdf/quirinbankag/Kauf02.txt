@@ -1,0 +1,39 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+Kauf
+Referenz O:000481758:1
+Herrn
+Vorname Nachname Datum 11.02.2010Depot Konto/Depot-Nr.
+Straße Nachname, Vorname
+PLZ Ort
+Betreuer Betreuer-Nachname, Betreuer-Vorname
+Abteilung Vermögensberater
+ 
+Telefon +49 (0) 911 249 299 10
+ E-Mail Betreuer-Vorname.Betreuer-Nachname@quirinbank.de
+ 
+Nominal/Stück iShares PLC - S&P 500 Index Fd Bearer Shares (Dt. Zert.) o.N.
+ST 515 ISIN DE0002643889
+Abrechnungskonditionen: Abrechnungswerte:
+Kurs  7,7600 EUR Kurswert -3.996,40 EUR
+Ausführungsplatz Xetra Courtage * -0,08 EUR
+Handelstag/-zeit 10.02.2010   17:08:23 Bank-Provision -0,02 EUR
+Verwahrart Girosammel-Verwahrung Spesen * -0,69 EUR
+Lagerland CBL-Deutschland Abwickl.Gebühr * -0,04 EUR
+Zahlungstag 12.02.2010
+Devisenkurs  1,000000
+Poolfaktor  1,000000000
+Ursprüngl. Handelstag 10.02.2010   17:08:23
+* Fremde Gebühren und Kosten
+Den Gesamtbetrag werden wir mit Valuta 12.02.2010 auf Ihrem Ausmachender Betrag -3.997,09 EUR
+Konto Konto/Depot-Nr. EUR buchen.
+Kundenwunsch
+ Die Ausführung der Order erfolgte nach Aufklärung durch die Bank und auf ausdrückliche Weisung des Kunden.
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt
+Postfach 311105 - 10641 Berlin BLZ 10110600 Johannes Eismann
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Klaus-Gerd Kleversaat
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC BEFFDEB1XXX Stefan Spannagl
+Internet www.quirinbank.de
+ABR_WPR_E  0000#6767669580#0000026624  VJ1906403   (10)  V 1.30

@@ -1,0 +1,41 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Umsatzabrechnung-Nr. 84
+Depot-Nr. XXXXXXXXXX
+Seite 1 von 3
+Herrn
+XXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXX
+04.08.2020
+Umsatzabrechnung für Ihr OLB Investmentdepot
+für den Zeitraum vom 28.07.2020 bis 03.08.2020
+Fondsertrag (Ausschüttung) mit Bestandsdatum 15.07.2020 in Depotposition XXXXXXXXXX.10
+iShs III-MSCI Jap.Sm.Cap U.ETF Registered Shares o.N.
+Ref. Nr. XXXXXXXXXX/XXXXXXXXXX, Buchungsdatum 30.07.2020
+ISIN Anteilsbestand Betrag je Anteil Betrag
+IE00B2QWDY88 37,327232 0,373500000 USD 13,94 USD
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer Devisenkurs abzgl. Steuern
+2,97 EUR 0,16 EUR 0,00 EUR 1,177700 3,69 USD
+Zahlungsbetrag 10,25 USD
+Wiederanlage des Zahlungsbetrags erfolgt in Depotposition XXXXXXXXXX.10 mit Ref. Nr. XXXXXXXXXX/XXXXXXXXXX
+Wiederanlage Fondsertrag 10,25 USD mit Kursdatum 31.07.2020 in Depotposition XXXXXXXXXX.10
+iShs III-MSCI Jap.Sm.Cap U.ETF Registered Shares o.N.
+Ref. Nr. XXXXXXXXXX/XXXXXXXXXX, Buchungsdatum 03.08.2020
+Wiederanlage Fondsertrag erfolgt aus Depotposition XXXXXXXXXX.10 mit Ref. Nr. XXXXXXXXXX/XXXXXXXXXX
+ISIN Anteile Abrechnungskurs Betrag
+IE00B2QWDY88 0,278245 36,838000 USD 10,25 USD
+Zahlungsbetrag 10,25 USD
+Bestand der Depotpositionen mit Umsatz nach Verbuchung
+Pos. Fonds Anteile Bewertungskurs zum Datum Devisenkurs Bestand
+10 IE00B2QWDY88 37,605477 36,543700 USD 31.07.2020 1,185000 1.159,70 EUR
+iShs III-MSCI Jap.Sm.Cap U.ETF Registered Shares o.N.
+Verwahrart: Wertpapierrechnung, Lagerland: Großbritannien
+Depotgesamtwert XXXXXXXX EUR
+4Wir haben keinen Freistellungsauftrag für Sie vorgemerkt.
+Für Fragen steht Ihnen die ebase unter der Rufnummer +49 89 45460-979 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: E-Mail: service@ebase.com
+...

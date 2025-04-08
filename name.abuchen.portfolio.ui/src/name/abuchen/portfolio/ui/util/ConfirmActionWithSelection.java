@@ -1,11 +1,11 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.text.MessageFormat;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
-
-import com.ibm.icu.text.MessageFormat;
 
 public class ConfirmActionWithSelection extends Action
 {
@@ -20,10 +20,11 @@ public class ConfirmActionWithSelection extends Action
     private final IStructuredSelection selection;
     private final Runnable runnable;
 
-    public ConfirmActionWithSelection(String title, String singleSelectionMessage, String multiSelectionMessage,
+    public ConfirmActionWithSelection(String singleSelectionTitle, String multiSelectionTitle,
+                    String singleSelectionMessage, String multiSelectionMessage,
                     IStructuredSelection selection, Runnable runnable)
     {
-        super(title);
+        super(selection.size() > 1 ? MessageFormat.format(multiSelectionTitle, selection.size()) : singleSelectionTitle);
         this.singleSelectionMessage = singleSelectionMessage;
         this.multiSelectionMessage = multiSelectionMessage;
         this.selection = selection;

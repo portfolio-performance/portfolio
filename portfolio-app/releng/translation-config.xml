@@ -1,16 +1,32 @@
 <translations>
-	<defaultLanguage>en</defaultLanguage>
+	<defaultLanguage identifier="en" poeditor="en" />
 	<languages>
-		<string>de</string>
-		<string>es</string>
-		<string>nl</string>
-		<string>pt</string>
+		<language identifier="cs" poeditor="cs" />
+		<language identifier="da" poeditor="da" />
+		<language identifier="de" poeditor="de" />
+		<language identifier="es" poeditor="es" />
+		<language identifier="fr" poeditor="fr" />
+		<language identifier="it" poeditor="it" />
+		<language identifier="nl" poeditor="nl" />
+		<language identifier="pl" poeditor="pl" />
+		<language identifier="pt" poeditor="pt" />
+		<language identifier="pt_BR" poeditor="pt-br" />
+		<language identifier="ru" poeditor="ru" />
+		<language identifier="sk" poeditor="sk" />
+		<language identifier="tr" poeditor="tr" />
+		<language identifier="zh" poeditor="zh-Hans" />
+		<language identifier="zh_TW" poeditor="zh-TW" />
 	</languages>
 	<artifacts>
 		<artifact>
 			<context>core.messages</context>
 			<path>name.abuchen.portfolio/src/name/abuchen/portfolio</path>
 			<filename>messages</filename>
+		</artifact>
+		<artifact>
+			<context>core.holiday-names</context>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/util</path>
+			<filename>holiday-names</filename>
 		</artifact>
 		<artifact>
 			<context>core.labels</context>
@@ -21,6 +37,9 @@
 			<context>core.exchanges</context>
 			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/online/impl</path>
 			<filename>exchange-labels</filename>
+			<excludes>
+				<string>leeway.*</string>
+			</excludes>
 		</artifact>
 		<artifact>
 			<context>core.hicp</context>
@@ -38,6 +57,15 @@
 			<filename>messages</filename>
 			<excludes>
 				<string>AboutText</string>
+				<string>AboutTextContributions</string>
+				<string>AboutTextDevelopers</string>
+				<string>AboutTextOtherSoftware</string>
+				<string>AboutTextTranslationDevelopers</string>
+				<string>AboutTextDeveloped</string>
+				<!-- exclude labels starting with Site = language dependent URLs --> 
+				<string>^Site.*</string>
+				<!-- exclude labels starting with Experimental = experimental features with limited translations --> 
+				<string>^Experimental.*</string>
 			</excludes>
 		</artifact>
 		<artifact>
@@ -56,6 +84,11 @@
 			<filename>labels</filename>
 		</artifact>
 		<artifact>
+			<context>ui.bundle</context>
+			<path>name.abuchen.portfolio.ui/OSGI-INF/l10n</path>
+			<filename>bundle</filename>
+		</artifact>
+		<artifact>
 			<context>ui.bootstrap</context>
 			<path>name.abuchen.portfolio.bootstrap/src/name/abuchen/portfolio/bootstrap</path>
 			<filename>messages</filename>
@@ -64,54 +97,70 @@
 			<context>ui.menu</context>
 			<path>name.abuchen.portfolio.bootstrap/OSGI-INF/l10n</path>
 			<filename>bundle</filename>
+			<excludes>
+				<string>Bundle-Vendor</string>
+				<string>Bundle-Name</string>
+			</excludes>
 		</artifact>
 		<artifact>
 			<context>taxonomy.security-type</context>
-			<path>name.abuchen.portfolio/META-INF/taxonomy</path>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates</path>
 			<filename>security-type</filename>
 			<excludes>
 				<string>colors</string>
 				<string>.*color</string>
 				<string>.*children</string>
 				<string>.*weight</string>
+				<string>comment</string>
+				<string>source</string>
+				<string>.*data</string>
 			</excludes>
 		</artifact>
 		<artifact>
 			<context>taxonomy.kommer</context>
-			<path>name.abuchen.portfolio/META-INF/taxonomy</path>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates</path>
 			<filename>kommer</filename>
 			<excludes>
 				<string>colors</string>
 				<string>.*color</string>
 				<string>.*children</string>
 				<string>.*weight</string>
+				<string>comment</string>
+				<string>source</string>
+				<string>.*data</string>
 			</excludes>
 		</artifact>
 		<artifact>
 			<context>taxonomy.asset-classes</context>
-			<path>name.abuchen.portfolio/META-INF/taxonomy</path>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates</path>
 			<filename>assetclasses</filename>
 			<excludes>
 				<string>colors</string>
 				<string>.*color</string>
 				<string>.*children</string>
 				<string>.*weight</string>
+				<string>comment</string>
+				<string>source</string>
+				<string>.*data</string>
 			</excludes>
 		</artifact>
 		<artifact>
 			<context>taxonomy.regions</context>
-			<path>name.abuchen.portfolio/META-INF/taxonomy</path>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates</path>
 			<filename>regions</filename>
 			<excludes>
 				<string>colors</string>
 				<string>.*color</string>
 				<string>.*children</string>
 				<string>.*weight</string>
+				<string>comment</string>
+				<string>source</string>
+				<string>.*data</string>
 			</excludes>
 		</artifact>
 		<artifact>
 			<context>taxonomy.regions-msci</context>
-			<path>name.abuchen.portfolio/META-INF/taxonomy</path>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/model/taxonomy_templates</path>
 			<filename>regions-msci</filename>
 			<excludes>
 				<string>colors</string>
@@ -119,6 +168,8 @@
 				<string>.*children</string>
 				<string>.*weight</string>
 				<string>comment</string>
+				<string>source</string>
+				<string>.*data</string>
 			</excludes>
 		</artifact>
 	</artifacts>

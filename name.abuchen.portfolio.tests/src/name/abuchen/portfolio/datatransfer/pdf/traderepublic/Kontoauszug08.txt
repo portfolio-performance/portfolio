@@ -1,0 +1,107 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+VORNAME NACHNAME DATUM 01 Dez. 2023 - 31 Jan. 2024
+Straße 1, 12345 IBAN DE00000000000000000000
+Ort, DE BIC DEUTDEFFVAC
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Depotkonto 4.227,30 € 15.548,82 € 7.801,00 € 11.975,12 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+02 Okt. 
+2023 Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf DE00000000000000000000 1.200,00 € 5.427,30 €
+02 Okt. 
+2023 Zinszahlung Your interest payment 3,81 € 5.431,11 €
+02 Okt. Erträge Ereignisausführung Ertrag US1912161007 COCA-COLA CO. DL-,25 2023 0000000000000000 77,57 € 5.508,68 €
+16 Okt. Handel Ausführung Handel Direktkauf Kauf DE0006047004 HEIDELBERG MATERIALS O.N. 2023 0000000000000000 KW 200,00 € 5.308,68 €
+16 Okt. Handel Ausführung Handel Direktkauf Kauf IE00BQN1K786 ISHSIV-E.MSCI EO M.F.EO A 2023 0000000000000000 KW 200,00 € 5.108,68 €
+16 Okt. Handel Ausführung Handel Direktkauf Kauf DE0008404005 ALLIANZ SE NA O.N. 2023 0000000000000000 KW 200,00 € 4.908,68 €
+16 Okt. Handel Ausführung Handel Direktkauf Kauf IE00B0M62Q58 ISHS-MSCI WORLD DL D 2023 0000000000000000 KW 200,00 € 4.708,68 €
+16 Okt. Handel Ausführung Handel Direktkauf Kauf IE00B3WJKG14 ISHSV-S+500INF.T.SECT.DLA 2023 0000000000000000 KW 200,00 € 4.508,68 €
+16 Okt. Handel Ausführung Handel Direktkauf Kauf US1912161007 COCA-COLA CO. DL-,25 2023 0000000000000000 KW 200,00 € 4.308,68 €
+25 Okt. 
+2023 Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf DE00000000000000000000 1.800,00 € 6.108,68 €
+30 Okt. 
+2023 Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf DE00000000000000000000 1.000,00 € 7.108,68 €
+30 Okt. 
+2023 Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf DE00000000000000000000 1.200,00 € 8.308,68 €
+01 Nov. 
+2023 Zinszahlung Your interest payment 13,68 € 8.322,36 €
+16 Nov. Handel Ausführung Handel Direktkauf Kauf IE00BQN1K786 ISHSIV-E.MSCI EO M.F.EO A 2023 0000000000000000 KW 200,00 € 8.122,36 €
+Seite 1 von 4
+Erstellt am 03 Mai 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+16 Nov. Ausführung Handel Direktkauf Kauf DE0006047004 HEIDELBERG MATERIALS O.N. 
+2023 Handel 0000000000000000 KW 200,00 € 7.922,36 €
+16 Nov. 
+2023 Handel
+Ausführung Handel Direktkauf Kauf DE0008404005 ALLIANZ SE NA O.N. 
+0000000000000000 KW 200,00 € 7.722,36 €
+16 Nov. Handel Ausführung Handel Direktkauf Kauf IE00B0M62Q58 ISHS-MSCI WORLD DL D 2023 0000000000000000 KW 200,00 € 7.522,36 €
+16 Nov. Handel Ausführung Handel Direktkauf Kauf IE00B3WJKG14 ISHSV-S+500INF.T.SECT.DLA 2023 0000000000000000 KW 200,00 € 7.322,36 €
+16 Nov. Handel Ausführung Handel Direktkauf Kauf US1912161007 COCA-COLA CO. DL-,25 2023 0000000000000000 KW 200,00 € 7.122,36 €
+29 Nov. 
+2023 Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf DE00000000000000000000 1.500,00 € 8.622,36 €
+30 Nov. 
+2023 Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf DE00000000000000000000 1.200,00 € 9.822,36 €
+01 Dez. 
+2023 Zinszahlung Your interest payment 19,29 € 9.841,65 €
+01 Dez. 
+2023 Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf DE00000000000000000000 1.000,00 € 10.841,65 €
+14 Dez. 
+2023 Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf DE00000000000000000000 1.000,00 € 11.841,65 €
+14 Dez. Erträge Ereignisausführung Ertrag US5949181045 MICROSOFT DL-,00000625 2023 0000000000000000 8,80 € 11.850,45 €
+15 Dez. Erträge Ereignisausführung Ertrag US1912161007 COCA-COLA CO. DL-,25 2023 0000000000000000 79,20 € 11.929,65 €
+18 Dez. Handel Ausführung Handel Direktkauf Kauf IE00BQN1K786 ISHSIV-E.MSCI EO M.F.EO A 2023 0000000000000000 KW 200,00 € 11.729,65 €
+18 Dez. 
+2023 Handel
+Ausführung Handel Direktkauf Kauf DE0006047004 HEIDELBERG MATERIALS O.N. 
+0000000000000000 KW 200,00 € 11.529,65 €
+18 Dez. Handel Ausführung Handel Direktkauf Kauf DE0008404005 ALLIANZ SE NA O.N. 2023 0000000000000000 KW 200,00 € 11.329,65 €
+18 Dez. Handel Ausführung Handel Direktkauf Kauf IE00B3WJKG14 ISHSV-S+500INF.T.SECT.DLA 2023 0000000000000000 KW 200,00 € 11.129,65 €
+18 Dez. Handel Ausführung Handel Direktkauf Kauf IE00B0M62Q58 ISHS-MSCI WORLD DL D 2023 0000000000000000 KW 200,00 € 10.929,65 €
+18 Dez. Handel Ausführung Handel Direktkauf Kauf US1912161007 COCA-COLA CO. DL-,25 2023 0000000000000000 KW 200,00 € 10.729,65 €
+27 Dez. 
+2023 Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf DE00000000000000000000 3.000,00 € 13.729,65 €
+29 Dez. 
+2023 Zinszahlung Your interest payment 25,50 € 13.755,15 €
+Seite 2 von 4
+Erstellt am 03 Mai 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+29 Dez. Erträge Ereignisausführung Ertrag IE00B0M62Q58 ISHS-MSCI WORLD DL D 2023 0000000000000000 20,97 € 13.776,12 €
+02 Jan. 
+2024 Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf DE00000000000000000000 1.200,00 € 14.976,12 €
+16 Jan. Handel Ausführung Handel Direktkauf Kauf IE00B0M62Q58 ISHS-MSCI WORLD DL D 2024 0000000000000000 KW 200,00 € 14.776,12 €
+16 Jan. 
+2024 Handel
+Ausführung Handel Direktkauf Kauf DE0006047004 HEIDELBERG MATERIALS O.N. 
+0000000000000000 KW 200,00 € 14.576,12 €
+16 Jan. Handel Ausführung Handel Direktkauf Kauf IE00B3WJKG14 ISHSV-S+500INF.T.SECT.DLA 2024 0000000000000000 KW 200,00 € 14.376,12 €
+16 Jan. Handel Ausführung Handel Direktkauf Kauf IE00BQN1K786 ISHSIV-E.MSCI EO M.F.EO A 2024 0000000000000000 KW 200,00 € 14.176,12 €
+16 Jan. Handel Ausführung Handel Direktkauf Kauf DE0008404005 ALLIANZ SE NA O.N. 2024 0000000000000000 KW 200,00 € 13.976,12 €
+17 Jan. Ausführung Handel Direktkauf Kauf US1912161007 COCA-COLA CO. DL-,25 
+2024 Handel 0000000000000000 KW 200,00 € 13.776,12 €
+30 Jan. 
+2024 Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf DE00000000000000000000 1.200,00 € 14.976,12 €
+31 Jan. Handel Ausführung Handel Direktkauf Kauf DE000XYZ0000 AG 2024 0000000000000000 3.001,00 € 11.975,12 €
+Seite 3 von 4
+Erstellt am 03 Mai 2024
+Trade Republic Bank GmbH
+HAFTUNGSAUSSCHLUSS
+Sehr geehrte Kundin, sehr geehrter Kunde
+Bitte überprüfe unbedingt deine Buchungen, Berechnungen und den Schlusssaldo auf dem Kontoauszug, der gleichzeitig deinen Rechnungsabschluss 
+darstellt. Der Rechnungsabschluss gilt als anerkannt, wenn du innerhalb von sechs Wochen nach Zugang keine Einwendungen erhebst. Einwendungen 
+gegen Kontoauszüge sind schriftlich an uns zu richten. Guthaben sind einlagefähig im Sinne des Einlagensicherungsgesetzes (EinSiG). Weitere 
+Informationen entnehme bitte dem Merkblatt für den Einleger, das zusammen mit unseren Allgemeinen Geschäftsbedingungen eingesehen werden kann.
+Trade Republic Bank GmbH Kontakt Sitz der Gesellschaft: Berlin
+Brunnenstraße 19-21 www.traderepublic.com AG Charlottenburg HRB 244347 B
+10119 Berlin service@traderepublic.com Umsatzsteuer-ID DE307510626
+Seite 4 von 4
+Erstellt am 03 Mai 2024
+Trade Republic Bank GmbH
+
+```

@@ -1,0 +1,49 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.3
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: XXX
+Herrn Direkt-Depot Nr.: 8xxxxxxxx0
+XXX Datum: 16.11.2022
+STRASSE NUMMER Seite: 1 von 2
+xxxxx Musterstadt
+Wertpapierabrechnung Kauf
+Ordernummer 274272365.001
+ISIN (WKN) XS2263517364 (A27DLG)
+Wertpapierbezeichnung 0,01 % Landwirtschaftliche Rentenbank
+Med.T.Nts.v.20(40)
+Zinstermin 26. NOVEMBER
+Fälligkeit 26.11.2040
+Nominale EUR 1.000,00
+Kurs 60,905 %
+Handelsplatz Direkthandel
+Ausführungstag / -zeit 16.11.2022 um 14:40:15 Uhr
+Kurswert EUR 609,05
+Stückzinsen EUR 0,10 (Zinsvaluta 17.11.2022 357 Tage)
+Provision EUR 6,42
+Endbetrag zu Ihren Lasten EUR 615,57
+Abrechnungs-IBAN DE48 5001 0517 0665 2856 65
+Valuta 18.11.2022
+Wertpapiere zugunsten Wertpapierrechnung Luxemburg.
+Diese Order wurde mit folgendem Limit / -typ erteilt: 62,10 %
+Weiter geht es auf Seite 2.
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzende des Aufsichtsrates: Susanne Klöß-Braekler · Vorstand: Nick Jue (Vorsitzender),
+Michael Clijdesdale, Eddy Henning, Sigrid Kozmiensky, Daniel Llano Manibardo, Dr. Ralph Müller, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main · HRB 7727
+Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+34WAAD8021306890_T
+Depotinhaber: XXX
+Direkt-Depot Nr.: 8xxxxxxxx0
+Datum: 16.11.2022
+Seite: 2 von 2
+Ordernummer 274272365.001
+ISIN (WKN) XS2263517364 (A27DLG)
+Mit Verrechnungstopf Allgemein verrechnet 0,10 EUR
+Gezahlte Stückzinsen 0,10 EUR
+Verrechnungstopf Aktien vor Geschäft 47,07 EUR
+Verrechnungstopf Aktien nach Geschäft 47,07 EUR
+Verrechnungstopf Allgemein vor Geschäft 3.329,35 EUR
+Verrechnungstopf Allgemein nach Geschäft 3.329,45 EUR
+Verrechnungstopf ausländ. Quellensteuer vor Geschäft 0,00 EUR
+Verrechnungstopf ausländ. Quellensteuer nach Geschäft 0,00 EUR
+Bei Fragen besuchen Sie uns einfach unter www.ing.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing.de .

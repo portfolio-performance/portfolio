@@ -21,6 +21,7 @@ import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -53,7 +54,7 @@ public class ExchangeRateWidget extends WidgetDelegate<Object>
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
         indicator = new Label(container, SWT.NONE);
-        indicator.setFont(resources.getKpiFont());
+        indicator.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.KPI);
         indicator.setBackground(container.getBackground());
         indicator.setText(""); //$NON-NLS-1$
         GridDataFactory.fillDefaults().grab(true, false).applyTo(indicator);
@@ -62,8 +63,10 @@ public class ExchangeRateWidget extends WidgetDelegate<Object>
             ReportingPeriod period = get(ReportingPeriodConfig.class).getReportingPeriod();
             ExchangeRateTimeSeries series = get(ExchangeRateSeriesConfig.class).getSeries();
             Optional<ExchangeRate> rate = series.lookupRate(period.toInterval(LocalDate.now()).getEnd());
-            return rate.isPresent() ? MessageFormat.format(Messages.TooltipDateOfExchangeRate,
-                            formatter.format(rate.get().getTime())) : ""; //$NON-NLS-1$
+            return rate.isPresent()
+                            ? MessageFormat.format(Messages.TooltipDateOfExchangeRate,
+                                            formatter.format(rate.get().getTime()))
+                            : ""; //$NON-NLS-1$
         });
 
         update(null);

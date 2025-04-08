@@ -21,16 +21,18 @@ public class ClientFilterConfig implements WidgetConfig
         this.menu = new ClientFilterMenu(delegate.getClient(), delegate.getDashboardData().getPreferences(),
                         f -> filterSelected());
 
-        String uuid = delegate.getWidget().getConfiguration().get(Dashboard.Config.CLIENT_FILTER.name());
+        String storedIdent = delegate.getWidget().getConfiguration().get(Dashboard.Config.CLIENT_FILTER.name());
 
-        this.menu.getAllItems().filter(item -> item.getUUIDs().equals(uuid)).findAny()
+        // select stored/saved filter
+        this.menu.getAllItems().filter(item -> item.getId().equals(storedIdent)).findAny()
                         .ifPresent(item -> this.menu.select(item));
     }
 
     private void filterSelected()
     {
+        // store/save selected filter
         delegate.getWidget().getConfiguration().put(Dashboard.Config.CLIENT_FILTER.name(),
-                        menu.getSelectedItem().getUUIDs());
+                        menu.getSelectedItem().getId());
 
         delegate.update();
         delegate.getClient().touch();
@@ -56,6 +58,11 @@ public class ClientFilterConfig implements WidgetConfig
     public ClientFilter getSelectedFilter()
     {
         return menu.getSelectedFilter();
+    }
+
+    public ClientFilterMenu.Item getSelectedItem()
+    {
+        return menu.getSelectedItem();
     }
 
 }

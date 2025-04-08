@@ -1,0 +1,22 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Keytrade Bank Luxembourg S.A. T +352 45 04 39
+62, Rue Charles Martel F +352 45 04 49
+L-2134 - Luxembourg info@keytradebank.lu
+Grand Duché de Luxembourg www.keytradebank.lu
+RCS B69935 Skype keytradebank.lu
+Wertschriftenkonto 260745
+Belegnummer 1857542
+Kauf 310 HOME24 SE  INH O.N. (DE000A14KEB5) für 15,9324 EUR
+Instrument: Aktien
+Auftragserstellung : 19/10/2020 11:53:02 CET
+Auftragstyp : Limit (16 EUR)
+Gültigkeit : GTC
+Ausführungsdatum und -zeit : 19/10/2020 11:53:03 CET 
+Ausführungsort : Internalized by ctp
+Bruttobetrag 4.939,04 EUR
+Transaktionskosten 24,95 EUR
+4.963,99 EUR
+Lastschrift 4.963,99 EUR Valutadatum 21/10/2020
+DUPLICATE

@@ -1,0 +1,45 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+   
+Am Marktplatz 10 · 97762 Hammelburg Seite 1 von 2
+Depotnummer
+ 97545260
+ Kundennummer 664797185
+KmMJsS MoJKA dygSGaw
+ Auftragsnummer 749922/41.00
+SYZzsN CwFkb WTtvZde Datum 25.03.2024
+tBpFxJnFU. 7 Ihr Berater Herr IBl NSupqHWijGs
+90402 Nürnberg Telefon +49 951 980297-99
+Rechnungsnummer t22653-0000036053/24
+Umsatzsteuer-ID DE198159260   
+ 
+Wertpapier Abrechnung Verkauf 
+Auftrag vom 22.03.2024 20:15:37 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 3.260 XTR.(IE)-MSCI WORLD ESG            IE00BZ02LR44 (A2AQST)
+REGISTERED SHARES 1C O.N.          
+Handels-/Ausführungsplatz Quotrix (Best Execution)
+Börsensegment DUSD
+Trailing-Stop-Order
+Trailing-Stoplimit 36,70 EUR Trailing-Abstand 2,50 %
+Schlusstag/-Zeit 22.03.2024 20:15:51 Auftraggeber uHatXF KrnLd zTIwZpW
+Ausführungskurs 36,64 EUR Auftragserteilung/ -ort Online-Banking
+Wertpapierrechnung Lagerland Irland
+Kurswert 119.446,40 EUR
+Provision 25,00- EUR
+Übertragungs-/Liefergebühr 0,06- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn (nach Teilfreistellung) 12.960,18 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 12.960,18 EUR
+ 
+Steuerberechnung
+Kapitalertragsteuer 25,00% auf 12.960,18 EUR 3.240,05- EUR
+Solidaritätszuschlag 5,50% auf 3.240,05 EUR 178,20- EUR
+Ausmachender Betrag 116.003,09 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 26.03.2024 zu Gunsten des Kontos 2727799 (IBAN DE65 7013 0800 9999 9999 99),
+BLZ 70130800 (BIC GENODEF1M06).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+6176.03251799.0000099OR07

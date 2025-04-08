@@ -1,0 +1,59 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Scalable Capital GmbH 
+Seitzstrasse 8e
+80538 Munich
+service@scalable.capital
+Page 1/2
+Mr. Munich
+2022-03-16
+John Doe
+Neue Straße 1 John Doe
+12345 Neue Stadt Client ID: 1208374    Portfolio: 1
+Sec. Account No.: 1209625007
+Transaction No.: 204751222
+Reference No.: 339366528
+Fund Distribution
+Ex-Date: 2022-03-15 Declare-Date: 2022-02-25
+Quantity ISIN: DE000A0H0744 WKN: A0H074 Distribution
+Units 1.225 iSh.DJ Asia Pa.S.D.50 U.ETF DE EUR 0.052461 p. Unit
+Payment Period: 2021-05-01 - 2022-04-30 
+Payday: 2022-03-15
+Gross Amount EUR 0.06
+Amount credited to account 1209625007 Value: 2022-03-15 EUR 0.06
+Please ensure your compliance with the German foreign trade reporting regulations to the German Bundesbank (AWV-Meldung).
+Please note that the income from capital assets are fully subject to income tax in Germany.
+This document has been generated electronically and will not be signed.
+Scalable Capital GmbH • Managing Directors: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz • HRB 217778, District Court Munich • VAT No. 
+DE300434774 • www.scalable.capital
+ 
+Publisher and responsible for the content is Baader Bank Aktiengesellschaft • Weihenstephaner Strasse 4 • 85716 Unterschleissheim • Germany
+Management Board: Nico Baader (CEO), Dietmar von Blücher, Oliver Riedel • Chairman of the Supervisory Board: Dr. Horst Schiessl • Commercial Register 
+HRB 121537 • Principal Office: Unterschleissheim • TaxNo: 143/107/04009 • VAT ID: DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de DCUP-054.048
+* Toll-free from (inter-) national landline networks. Charges may apply from other networks.
+ 
+Fund Distribution
+Continued: Page 2/2
+Basis for Tax Calculation:
+Taxes paid / Tax Funds Before Increase/Reduction Afterwards
+Distribution net Equity Funds
+Freistellungsauftrag EUR 800.70 EUR 0.04 - EUR 800.66
+Distribution net Equity Funds
+Ausnutzung FSA EUR 0.30 - EUR 0.04 - EUR 0.34 -
+Assessment Bases Gross Tax Obligation Net Tax Obligation
+Distribution gross Equity Funds EUR 0.06 EUR 0.06
+Distribution net Equity Funds EUR 0.04 EUR 0.00
+Capital Gains Tax on general Profits EUR 0.04 EUR 0.00
+Please ensure your compliance with the German foreign trade reporting regulations to the German Bundesbank (AWV-Meldung).
+Please note that the income from capital assets are fully subject to income tax in Germany.
+Please note that some German tax specific terms are not translated into English.
+This document has been generated electronically and will not be signed.
+Scalable Capital GmbH • Managing Directors: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz • HRB 217778, District Court Munich • VAT No. 
+DE300434774 • www.scalable.capital
+ 
+Publisher and responsible for the content is Baader Bank Aktiengesellschaft • Weihenstephaner Strasse 4 • 85716 Unterschleissheim • Germany
+Management Board: Nico Baader (CEO), Dietmar von Blücher, Oliver Riedel • Chairman of the Supervisory Board: Dr. Horst Schiessl • Commercial Register 
+HRB 121537 • Principal Office: Unterschleissheim • TaxNo: 143/107/04009 • VAT ID: DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de DCUP-054.048
+* Toll-free from (inter-) national landline networks. Charges may apply from other networks.

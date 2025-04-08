@@ -2,7 +2,7 @@ package name.abuchen.portfolio.snapshot;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,11 +12,11 @@ import java.util.List;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.Test;
 
-import name.abuchen.portfolio.AccountBuilder;
-import name.abuchen.portfolio.PortfolioBuilder;
-import name.abuchen.portfolio.SecurityBuilder;
-import name.abuchen.portfolio.TaxonomyBuilder;
-import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.junit.AccountBuilder;
+import name.abuchen.portfolio.junit.PortfolioBuilder;
+import name.abuchen.portfolio.junit.SecurityBuilder;
+import name.abuchen.portfolio.junit.TaxonomyBuilder;
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -49,9 +49,9 @@ public class ClassificationIndexTest
                         .addTo(client);
 
         Security security = new SecurityBuilder() //
-                        .addPrice("2011-12-31", 100 * Values.Quote.factor()) //
-                        .addPrice("2012-01-03", 106 * Values.Quote.factor()) //
-                        .addPrice("2012-01-08", 112 * Values.Quote.factor()) //
+                        .addPrice("2011-12-31", Values.Quote.factorize(100)) //
+                        .addPrice("2012-01-03", Values.Quote.factorize(106)) //
+                        .addPrice("2012-01-08", Values.Quote.factorize(112)) //
                         .assign(taxonomy, "one", weight) //
                         .addTo(client);
 
@@ -74,10 +74,10 @@ public class ClassificationIndexTest
                         .addTo(client);
 
         new PortfolioBuilder(account) //
-                        .buy(security, "2012-01-01", 50 * Values.Share.factor(), 50 * 101 * Values.Amount.factor()) //
-                        .inbound_delivery(security, "2012-01-01", 100 * Values.Share.factor(),
-                                        100 * 100 * Values.Amount.factor()) //
-                        .sell(security, "2012-01-05", 50 * Values.Share.factor(), 50 * 105 * Values.Amount.factor()) //
+                        .buy(security, "2012-01-01", Values.Share.factorize(50), Values.Amount.factorize(50 * 101)) //
+                        .inbound_delivery(security, "2012-01-01", Values.Share.factorize(100),
+                                        Values.Amount.factorize(100 * 100)) //
+                        .sell(security, "2012-01-05", Values.Share.factorize(50), Values.Amount.factorize(50 * 105)) //
                         .addTo(client);
 
         return client;
@@ -90,7 +90,7 @@ public class ClassificationIndexTest
 
         Classification classification = client.getTaxonomies().get(0).getClassificationById("one");
 
-        List<Exception> warnings = new ArrayList<Exception>();
+        List<Exception> warnings = new ArrayList<>();
 
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex iClient = PerformanceIndex.forClient(client, converter, period, warnings);
@@ -116,7 +116,7 @@ public class ClassificationIndexTest
         // remove account assignment
         classification.getAssignments().remove(1);
 
-        List<Exception> warnings = new ArrayList<Exception>();
+        List<Exception> warnings = new ArrayList<>();
 
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex iClient = PerformanceIndex.forClient(client, converter, period, warnings);
@@ -138,7 +138,7 @@ public class ClassificationIndexTest
 
         Classification classification = client.getTaxonomies().get(0).getClassificationById("one");
 
-        List<Exception> warnings = new ArrayList<Exception>();
+        List<Exception> warnings = new ArrayList<>();
 
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex iClient = PerformanceIndex.forClient(client, converter, period, warnings);
@@ -148,17 +148,17 @@ public class ClassificationIndexTest
         assertThat(warnings.isEmpty(), is(true));
 
         assertThat(iClient.getDates(), is(iClassification.getDates()));
-        assertThat(iClient.getAccumulatedPercentage(), is(iClassification.getAccumulatedPercentage()));
-        assertThat(iClient.getDeltaPercentage(), is(iClassification.getDeltaPercentage()));
         assertThat(half(iClient.getTotals()), is(iClassification.getTotals()));
         assertThat(half(iClient.getTransferals()), is(iClassification.getTransferals()));
+        assertThat(iClient.getAccumulatedPercentage(), is(iClassification.getAccumulatedPercentage()));
+        assertThat(iClient.getDeltaPercentage(), is(iClassification.getDeltaPercentage()));
     }
 
     private long[] half(long[] transferals)
     {
         long[] answer = new long[transferals.length];
         for (int ii = 0; ii < transferals.length; ii++)
-            answer[ii] = transferals[ii] / 2;
+            answer[ii] = Math.round(transferals[ii] / 2.0);
         return answer;
     }
 
@@ -207,7 +207,7 @@ public class ClassificationIndexTest
         Classification classification = new Classification(null, null);
         classification.addAssignment(new Assignment(security));
 
-        List<Exception> warnings = new ArrayList<Exception>();
+        List<Exception> warnings = new ArrayList<>();
 
         PerformanceIndex index = PerformanceIndex.forClassification(client, new TestCurrencyConverter(), classification,
                         Interval.of(LocalDate.parse("2015-01-01"), LocalDate.parse("2017-01-01")), warnings);
@@ -226,5 +226,41 @@ public class ClassificationIndexTest
 
         // dividend payment 15% * quote change 10%
         assertThat(index.getFinalAccumulatedPercentage(), IsCloseTo.closeTo((1.15 * 1.1) - 1, 0.000000001d));
+    }
+
+    @Test
+    public void testTaxesInInterestTransactions()
+    {
+        Client client = new Client();
+
+        Taxonomy taxonomy = new TaxonomyBuilder() //
+                        .addClassification("test")
+                        .addTo(client);
+
+        new AccountBuilder() //
+                        .deposit_("2022-01-01", 1000_00)
+                        .interest("2022-12-24", 10_00)
+                        .interest("2022-12-25", 32_50, 7_50)
+                        .assign(taxonomy, "test", Classification.ONE_HUNDRED_PERCENT / 5)
+                        .addTo(client);
+
+        Classification testClassification = taxonomy.getClassificationById("test");
+        Interval repInterval = Interval.of(LocalDate.parse("2021-12-31"), LocalDate.parse("2022-12-31"));
+        PerformanceIndex index = PerformanceIndex.forClassification(client, new TestCurrencyConverter(),
+                        testClassification, repInterval, new ArrayList<>());
+
+        long totals[] = index.getTotals();
+        assertThat(totals[totals.length - 9], is(200_00L));
+        assertThat(totals[totals.length - 8], is(202_00L));
+        assertThat(totals[totals.length - 7], is(208_50L));
+        assertThat(totals[totals.length - 1], is(208_50L));
+
+        long interest[] = index.getInterest();
+        assertThat(interest[interest.length - 8], is(2_00L));
+        assertThat(interest[interest.length - 7], is(8_00L));
+
+        long taxes[] = index.getTaxes();
+        assertThat(taxes[taxes.length - 8], is(0L));
+        assertThat(taxes[taxes.length - 7], is(0L));
     }
 }

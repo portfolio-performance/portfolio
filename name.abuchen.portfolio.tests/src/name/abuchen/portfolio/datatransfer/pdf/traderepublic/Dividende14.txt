@@ -1,0 +1,34 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KÖPENICKER STRASSE 40C  10179 BERLIN
+Max Mustermann SEITE 1 von 1
+Musterstraße 1 DATUM 28.04.2023
+01234 Musterort DEPOT 013456789
+DIVIDENDE
+ÜBERSICHT
+Dividende mit dem Ex-Tag 29.12.2022.
+POSITION ANZAHL Ertrag BETRAG
+Samsung SDI Co. Ltd. 6,214744 Stk. 0,197757 USD 1,23 USD
+Reg.Shs(Sp.GDRs 144A)/4 SW5000
+ISIN: US7960542030
+GESAMT 1,23 USD
+ABRECHNUNG
+POSITION BETRAG
+Fremde Spesen -0,12 USD
+Quellensteuer -0,27 USD
+Zwischensumme 0,84 USD
+Zwischensumme 1,0985 EUR/USD 0,76 EUR
+GESAMT 0,76 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+Kontonummer 21.04.2023 0,76 EUR
+Samsung SDI Co. Ltd. Reg.Shs(Sp.GDRs 144A)/4 SW5000 in Wertpapierrechnung in Deutschland.
+Lagerland: Vereinigte Staaten
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Köpenicker Straße 40c service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10179 Berlin USt-ID DE307510626 Gernot Mittendorfer
+ABRE / 28.04.2023 / 00000000 / 0000-0000

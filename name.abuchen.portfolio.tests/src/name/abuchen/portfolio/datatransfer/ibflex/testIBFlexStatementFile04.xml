@@ -1,0 +1,10 @@
+<FlexQueryResponse queryName="all" type="AF">
+   <FlexStatements count="1">
+      <FlexStatement accountId="U2222222" fromDate="20220103" toDate="20220225" period="YearToDate" whenGenerated="20220226;030359">
+         <AccountInformation accountId="U2222222" acctAlias="" model="Independent" currency="CHF" accountType="Individual" customerType="Individual" accountCapabilities="Margin" tradingPermissions="Stocks,Warrants,Forex,Mutual Funds" accountRepName="" accountRepPhone="" dateOpened="20200101" dateFunded="20200101" />
+         <Trades>
+            <Trade accountId="U2222222" acctAlias="" model="Independent" currency="USD" fxRateToBase="0.91816" assetCategory="STK" symbol="AVDE" description="AVANTIS INTERNATIONAL EQUITY" conid="385086964" securityID="US0250727031" securityIDType="ISIN" cusip="025072703" isin="US0250727031" listingExchange="ARCA" underlyingConid="" underlyingSymbol="" underlyingSecurityID="" underlyingListingExchange="" issuer="" multiplier="1" strike="" expiry="" tradeID="1111111111" putCall="" reportDate="20220125" principalAdjustFactor="" dateTime="20220125;105910" tradeDate="20220125" settleDateTarget="20220127" transactionType="ExchTrade" exchange="ARCA" quantity="14" tradePrice="60.33" tradeMoney="844.62" proceeds="-844.62" taxes="0" ibCommission="-0.32505725" ibCommissionCurrency="USD" netCash="-844.94505725" closePrice="60.82" openCloseIndicator="" notes="" cost="844.94505725" fifoPnlRealized="0" fxPnl="0" mtmPnl="6.86" origTradePrice="0" origTradeDate="" origTradeID="" origOrderID="0" clearingFirmID="" buySell="BUY" ibOrderID="2222222222" orderReference="" volatilityOrderLink="" exchOrderId="N/A" orderTime="20220125;105614" openDateTime="" holdingPeriodDateTime="" whenRealized="" whenReopened="" levelOfDetail="EXECUTION" changeInPrice="0" changeInQuantity="0" orderType="LMT" traderID="" isAPIOrder="N" accruedInt="0" />
+         </Trades>
+      </FlexStatement>
+   </FlexStatements>
+</FlexQueryResponse>

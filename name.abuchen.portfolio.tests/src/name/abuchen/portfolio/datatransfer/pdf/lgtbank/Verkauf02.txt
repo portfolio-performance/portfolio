@@ -1,0 +1,62 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.2
+-----------------------------------------
+LGT Bank (Schweiz) AG
+Glärnischstrasse 36, Postfach, CH-8027 Zürich
+Tel. +41 44 250 81 81
+lgt.ch@lgt.com, www.lgt.ch, BIC BLFLCHBB
+CHE-109.346.830 MWST
+Securities dealer no. 647613
+____________________
+P__.P__.
+Post CH AG
+_C_H__-_8_0_2_7_ _Z_ü_r_ic_h_  PF 1909 A -PRIORITY_________________________________________________
+Liberty Freizügigkeitsstiftung 
+bei Liberty Vorsorge AG 
+Postfach 733 
+6431 Schwyz
+1 / 2
+Zürich, 4. Juli 2023
+ 
+Abrechnung Verkauf Portfolio: 1236457.000
+Auftragsnummer: 123295456 Kundenportfolio
+Kunde: Liberty Freizügigkeitsstiftung XX - 1.1001.1234-01
+Titel iShares ETF (CH) - iShares SLI(R) ETF (CH)
+Inhaber-Anteile -A-
+Verwaltungsgesellschaft / AIFM BlackRock Asset Management Schweiz AG
+ISIN CH0031768937
+Valorennummer 3176893
+Wertpapierkennnummer A0MW4N
+Auftragserteilung 04.07.2023 17:09:20 
+Abschlussdatum 04.07.2023
+Ausführungsplatz SIX Swiss Exchange, börslich
+Auftragstyp Bestens
+Anzahl 260 Stück
+Kurs CHF 187.065
+Kurswert CHF 48'636.90
+Eidg. Umsatzabgabe  CHF -36.48
+SIX Börsengebühr  CHF -8.80
+SIX Meldegebühr  CHF -0.20
+Gutschrift CHF Freizügigkeitskonto 2026457.031 CHF 48'591.42
+Valuta 06.07.2023
+Wir entnehmen die Titel Ihrem oben genannten Depot.
+Die Gutschrift auf oben erwähntem Konto erfolgt vorbehaltlich des effektiven Zahlungseinganges.
+2026457 00A T ZH I TRD1001 39509429 18:10 04.07.2023 %Media:XML-A4H
+____
+____
+LGT Bank (Schweiz) AG
+Glärnischstrasse 36, Postfach, CH-8027 Zürich
+Tel. +41 44 250 81 81
+lgt.ch@lgt.com, www.lgt.ch, BIC BLFLCHBB
+CHE-109.346.830 MWST
+Securities dealer no. 647613
+2 / 2
+Abrechnung Verkauf Kundenportfolio
+Auftragsnummer: 211295144 Portfolio: 2026457.000
+Kunde: Liberty Freizügigkeitsstiftung MP - 1.1001.4097-01
+Ausführungsdetails
+Whg. Anzahl Ausführungszeit Markt Kurs
+CHF 63 04.07.2023 17:10:48 SIX Swiss Exchange 187.080000
+CHF 2 04.07.2023 17:10:49 SIX Swiss Exchange 187.080000
+CHF 195 04.07.2023 17:10:53 SIX Swiss Exchange 187.060000
+2026457 00A T ZH I TRD1001 39509429 18:10 04.07.2023 %Media:XML-A4H

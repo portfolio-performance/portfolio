@@ -11,12 +11,10 @@ import java.util.List;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.resource.FontDescriptor;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -34,6 +32,7 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -41,25 +40,15 @@ public class SecurityDetailsViewer
 {
     private abstract static class SecurityFacet
     {
-        private Font boldFont;
-        private Color color;
-
-        SecurityFacet(Font boldFont, Color color)
-        {
-            this.boldFont = boldFont;
-            this.color = color;
-        }
-
-        abstract Control createViewControl(Composite parent, Client client);
+        abstract Control createViewControl(Composite parent);
 
         abstract void setInput(Security security);
 
         protected Label createHeading(Composite parent, String text)
         {
             Label heading = new Label(parent, SWT.NONE);
+            heading.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING2);
             heading.setText(text);
-            heading.setFont(boldFont);
-            heading.setForeground(color);
             return heading;
         }
 
@@ -89,22 +78,19 @@ public class SecurityDetailsViewer
         private Label valueName;
         private Label valueISIN;
         private Label valueTickerSymbol;
-
-        public MasterDataFacet(Font boldFont, Color color)
-        {
-            super(boldFont, color);
-        }
+        private Label valueWKN;
 
         @Override
-        Control createViewControl(Composite parent, Client client)
+        Control createViewControl(Composite parent)
         {
             Composite composite = new Composite(parent, SWT.NONE);
 
-            Label heading = createHeading(composite, Messages.ClientEditorLabelClientMasterData);
+            Label heading = createHeading(composite, Messages.ColumnSecurity);
 
             valueName = new Label(composite, SWT.NONE);
             valueISIN = new Label(composite, SWT.NONE);
             valueTickerSymbol = new Label(composite, SWT.NONE);
+            valueWKN = new Label(composite, SWT.NONE);
 
             // layout
 
@@ -125,6 +111,7 @@ public class SecurityDetailsViewer
 
             below(valueName, valueISIN);
             below(valueISIN, valueTickerSymbol);
+            below(valueTickerSymbol, valueWKN);
 
             return composite;
         }
@@ -134,13 +121,14 @@ public class SecurityDetailsViewer
         {
             if (security == null)
             {
-                clearLabel(valueName, valueISIN, valueTickerSymbol);
+                clearLabel(valueName, valueISIN, valueTickerSymbol, valueWKN);
             }
             else
             {
-                valueName.setText(security.getName());
+                valueName.setText(TextUtil.tooltip(security.getName()));
                 valueISIN.setText(nonNullString(security.getIsin()));
                 valueTickerSymbol.setText(nonNullString(security.getTickerSymbol()));
+                valueWKN.setText(nonNullString(security.getWkn()));
             }
         }
     }
@@ -149,13 +137,8 @@ public class SecurityDetailsViewer
     {
         private Label valueNote;
 
-        public NoteFacet(Font boldFont, Color color)
-        {
-            super(boldFont, color);
-        }
-
         @Override
-        Control createViewControl(Composite parent, Client client)
+        Control createViewControl(Composite parent)
         {
             Composite composite = new Composite(parent, SWT.NONE);
 
@@ -201,13 +184,8 @@ public class SecurityDetailsViewer
         private Label valueDaysLow;
         private Label valueVolume;
 
-        public LatestQuoteFacet(Font boldFont, Color color)
-        {
-            super(boldFont, color);
-        }
-
         @Override
-        public Control createViewControl(Composite parent, Client client)
+        public Control createViewControl(Composite parent)
         {
             Composite composite = new Composite(parent, SWT.NONE);
 
@@ -300,14 +278,13 @@ public class SecurityDetailsViewer
         private Label heading;
         private List<Label> labels = new ArrayList<>();
 
-        public TaxonomyFacet(Taxonomy taxonomy, Font boldFont, Color color)
+        public TaxonomyFacet(Taxonomy taxonomy)
         {
-            super(boldFont, color);
             this.taxonomy = taxonomy;
         }
 
         @Override
-        Control createViewControl(Composite parent, Client client)
+        Control createViewControl(Composite parent)
         {
             Composite composite = new Composite(parent, SWT.NONE);
             FormLayout layout = new FormLayout();
@@ -383,7 +360,7 @@ public class SecurityDetailsViewer
         }
     }
 
-    private Composite container;
+    private ScrolledComposite container;
 
     private List<SecurityFacet> children = new ArrayList<>();
 
@@ -394,34 +371,38 @@ public class SecurityDetailsViewer
 
     public SecurityDetailsViewer(Composite parent, int style, Client client, boolean showMasterData)
     {
-        container = new Composite(parent, style);
-        container.setBackground(Colors.WHITE);
-        container.setBackgroundMode(SWT.INHERIT_FORCE);
+        container = new ScrolledComposite(parent, SWT.V_SCROLL);
 
-        // fonts
-
-        LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), container);
-        Font boldFont = resources.createFont(FontDescriptor.createFrom(container.getFont()).setStyle(SWT.BOLD));
+        Composite container1 = new Composite(container, style);
+        container.setContent(container1);
+        container.setExpandHorizontal(true);
+        container.setExpandVertical(true);
+        // Needed to avoid artifact (at least on Linux) when scrollbar appears
+        // and covers right edge (last digits of quotes, etc.) of the content
+        // pane. With setAlwaysShowScrollBars(true) that issue doesn't happen.
+        container.setAlwaysShowScrollBars(true);
+        container1.setBackground(Colors.WHITE);
+        container1.setBackgroundMode(SWT.INHERIT_FORCE);
 
         // facets
 
-        GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
+        GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container1);
 
         if (showMasterData)
-            children.add(new MasterDataFacet(boldFont, Colors.HEADINGS));
+            children.add(new MasterDataFacet());
 
-        children.add(new LatestQuoteFacet(boldFont, Colors.HEADINGS));
+        children.add(new LatestQuoteFacet());
 
         for (Taxonomy taxonomy : client.getTaxonomies())
-            children.add(new TaxonomyFacet(taxonomy, boldFont, Colors.HEADINGS));
+            children.add(new TaxonomyFacet(taxonomy));
 
-        children.add(new NoteFacet(boldFont, Colors.HEADINGS));
+        children.add(new NoteFacet());
 
         for (SecurityFacet child : children)
         {
             try
             {
-                Control control = child.createViewControl(container, client);
+                Control control = child.createViewControl(container1);
                 GridDataFactory.fillDefaults().grab(true, false).applyTo(control);
             }
             catch (Exception e)
@@ -429,6 +410,21 @@ public class SecurityDetailsViewer
                 PortfolioPlugin.log(e);
             }
         }
+
+        container.addControlListener(new ControlAdapter()
+        {
+            @Override
+            public void controlResized(ControlEvent e)
+            {
+                container.setMinSize(container1.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+            }
+        });
+
+        // After adding all children, explicitly calculate size and layout
+        // ScrolledComposite's content container. This is again to avoid
+        // artifact when scrollbar covers this container's right edge.
+        container1.setSize(container1.computeSize(SWT.DEFAULT, SWT.DEFAULT, true));
+        container1.layout();
     }
 
     public Control getControl()

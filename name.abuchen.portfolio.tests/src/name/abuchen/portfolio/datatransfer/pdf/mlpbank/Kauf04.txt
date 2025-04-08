@@ -1,0 +1,31 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+MLP Banking AG · Alte Heerstraße 40 · 69168 Wiesloch
+Depotnummer 9876543210
+Kundennummer 7654321
+Max Mustermann
+Auftragsnummer 466085/94.00
+Max Mustermann Datum 21.03.2018
+Leipziger Str. 65 Rechnungsnummer W00866-0000638592/18
+11111 Musterstadt Umsatzsteuer-ID DE98765432
+Vermögensdepot
+0016
+Wertpapier Abrechnung Kauf
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 5,563 DWS TOP DIVIDENDE DE0009848119 (984811)
+INHABER-ANTEILE LD
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 20.03.2018
+Ausführungskurs 118,35 EUR
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 658,38- EUR
+Ausmachender Betrag 658,38- EUR
+Ausgabeaufschlag pro Anteil 5,00 %
+Den Gegenwert buchen wir mit Valuta 22.03.2018 zu Lasten des Kontos 0987654321
+(IBAN DE11 2222 3333 4444 5555 55), BLZ 67230000 (BIC MLPBDE61XXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Ihr Ausgabeaufschlag betraegt:
+31,37 EUR (5,000 Prozent)
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0866.03212102.0001936OR07

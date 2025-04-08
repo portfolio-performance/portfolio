@@ -1,0 +1,48 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=350698000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=Jürgen Cgnwl
+Kauf Sparplan ADRESSZEILE3=Am UtbeqIzLNdYh 56
+Kommissionsgeschäft ADRESSZEILE4=83527 GNXr In BqiBwSBCXl
+Herr ADRESSZEILE5=
+LIUJBo soMSx ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Am TqdsIZDxcDgl 56 BELEGNUMMER=44757
+85588 DyJD In ThOLGDqQZq 350698000 63759300 / 15.10.2018 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+viIGNB zbvfU
+Frankfurt am Main, 15.10.2018
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N. IE00B4L5Y983
+Nominal Kurs
+STK 2,1524 EUR 46,4580
+Handelstag 15.10.2018 Kurswert EUR 100,00-
+Handelszeit 10:10
+Handelsplatz Börse Xetra/EDE
+Verwahrart Wertpapierrechnung
+Lagerland Irland
+Wert Konto-Nr. Betrag zu Ihren Lasten
+17.10.2018 350698041 EUR 100,00
+Die jährlich zu zahlende Verwaltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den
+Vertragsbedingungen zu entnehmen.
+Sparplan mit ID 350698002
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+3.18/ABREABHNHANDKF/GAAASAFG/044757/161018/011407
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Michael Mandel

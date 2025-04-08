@@ -1,0 +1,57 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+ 
+DEPOTNUMMER=1234567890
+DEPOTUNTERBEZEICHNUNG=
+          
+Erträgnisgutschrift VERSANDARTENSCHLUESSEL=DRUCKADRESSZEILE1=Herr
+aus Wertpapieren ADRESSZEILE2=Vorname Nachname
+ADRESSZEILE3=Straße 123
+Dividende für ADRESSZEILE4=12345 Stadt
+ADRESSZEILE5=
+Herr 0 1.01.2013 - 31.12.2013 ADRESSZEILE6=
+Vorname Nachname Depot-Nr. Abrechnungs-Nr. BELEGNUMMER=19680
+Straße 123
+gen 1234567890 12345678 / 14.12.2013
+SEITENNUMMER=1
+12345 Stadt STEUERERSTATTUNG=N
+Depotinhaber
+Vorname Nachname
+ 
+Dividendengutschrift
+ 
+NV-Bescheinigung gemäß § 44a Abs. 1 Nr. 2 und Abs. 2
+Nr. 2 EStG München, 14.12.2013
+ 
+ 
+Gattungsbezeichnung ISIN
+McDonald's Corp. Registered Shares DL-,01 US5801351017
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 20,000 27.11.2013 16.12.2013 USD 0,810000
+ 
+Wert  Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten  
+16.12.2013 1234567890 EUR/USD 1,3841 EUR 9,95
+ 
+ 
+Hinweise zur steuerlichen Verrechnung:
+ausländische Dividende EUR            11,704     
+US-Quellensteuer 15% USD             2,43     
+davon anrechenbare US-Quellensteuer  15% USD             2,430     
+zu versteuern  EUR              0,00     
+ 
+Zahlungstag 16.12.2013
+ 
+Jahressteuerbescheinigung folgt
+ 
+ 
+ 
+Verwahrart: Girosammelverwahrung
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+DAB Bank AG > Landsberger Straße 300 > 80687 München > BLZ 701 204 00 > BIC (SWIFT-Code): DABBDEMMXXX > Tel. 0 89 / 88 95 - 60 00 > Sitz: München > AG München, HRB 118190 
+USt.-Ident.-Nr.: DE 161864563 > Aufsichtsratsvorsitzender: Dr. Theodor Weimer > Vorstand: Ernst Huber (Sprecher des Vorstands), Dr. Niklas Dieterich, Dr. Josef Zellner
+ 
+3.31/ABREEREIERTR/GDBERTRG/019680/141213/040344

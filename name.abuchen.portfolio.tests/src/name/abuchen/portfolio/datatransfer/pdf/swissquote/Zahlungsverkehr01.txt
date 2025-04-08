@@ -1,0 +1,26 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.2
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 1234567
+IBAN: CH3308781000123456700
+Herrn Max Mustermann
+Muster Str. 1
+DE-12345 Musterstadt
+Gland, 27.10.2022
+Zahlungsverkehr - Gutschrift Unsere Referenz: 312345678 
+Wir haben Ihrem Konto den folgenden Betrag gutgeschrieben:
+Kontonummer 123456702
+Valutadatum 27.10.2022
+Eingehende Überweisung EUR 1'000.00
+Total EUR 1'000.00
+Im Auftrag von Max Mustermann
+Muster Str. 1
+12345 Musterstadt
+DE
+Mitteilung Betreff der Überweisung
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen für Yuh Accounts und
+jeglichen Vereinbarungen, die Sie mit Swissquote Bank AG in Bezug auf Ihren Yuh Account abgeschlossen haben.
+Die Bankdienstleistungen für Yuh werden von Swissquote Bank AG erbracht, einer Bank,  Formular ohne Unterschrift | SE&O.
+die von der Eidgenössischen Finanzmarktaufsicht (FINMA) reguliert wird.
+Swissquote Bank AG, chemin de la Crétaux 33, CH-1196 Gland | Customer Care: +41 44 825 87 89

@@ -1,0 +1,39 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.0
+-----------------------------------------
+Abrechnung Handel
+easybank Service Center 36170227-25.7.2022
+BAWAG P.S.K. AG Depot-Nr.: 12345678912
+Wiedner Gürtel 11 Max Mustermann               
+1100 Wien 35/9835
+BAWAG P.S.K. AG                    
+An
+Max Mustermann
+Straße 74
+1234 Ort                                                                                                                                                                                         
+Wir haben für Sie am 25.7.2022 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Kauf
+Auftrags-Nr.: 36978407-25.7.2022
+Auftragseingang: 23.7.2022-13:15:13
+Zugang: 80 Stk
+Titel: DE0005557508  D E U T S C H E  T E LEKOM AG                
+NAMENS-AKTIEN O.N.                 
+Kurs: 18,08 EUR 
+Handelsplatz: XETR     Deutsche Börse - Frankfurt Xetra
+Handelszeit: 25.7.2022 um 09:00:07 Uhr
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt                          
+Kurswert: -1.446,40 EUR 
+Fremde Spesen: -2,86 EUR 
+Eigene Spesen: -25,31 EUR 
+Grundgebühr: -7,95 EUR 
+Zu Lasten IBAN AT12 1234 1234 1234 1234 -1.482,52 EUR 
+Valuta 27.7.2022
+Kunden UID: ATU12312123    
+Es wurde keine Umsatzsteuer verrechnet.
+Schlusstag: 25.7.2022
+Kassatag: 27.7.2022
+31.7.2022 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten!
+17984 Doknr.: ON00-036-0000000001

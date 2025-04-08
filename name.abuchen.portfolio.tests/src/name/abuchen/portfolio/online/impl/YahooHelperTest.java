@@ -1,12 +1,16 @@
 package name.abuchen.portfolio.online.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 import org.junit.Test;
+
+import name.abuchen.portfolio.model.LatestSecurityPrice;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class YahooHelperTest
@@ -19,7 +23,7 @@ public class YahooHelperTest
 
         long result = YahooHelper.asPrice(priceFromYahoo);
 
-        assertEquals(result, -1L);
+        assertEquals(LatestSecurityPrice.NOT_AVAILABLE, result);
     }
 
     @Test
@@ -29,7 +33,17 @@ public class YahooHelperTest
 
         long result = YahooHelper.asPrice(priceFromYahoo);
 
-        assertEquals(result, -1L);
+        assertEquals(LatestSecurityPrice.NOT_AVAILABLE, result);
+    }
+
+    @Test
+    public void asPriceNaNTest() throws ParseException
+    {
+        String priceFromYahoo = "NaN";
+
+        long result = YahooHelper.asPrice(priceFromYahoo);
+
+        assertEquals(LatestSecurityPrice.NOT_AVAILABLE, result);
     }
 
     @Test
@@ -39,7 +53,7 @@ public class YahooHelperTest
 
         long result = YahooHelper.asPrice(priceFromYahoo);
 
-        assertEquals(result, 2775300L);
+        assertEquals(Values.Quote.factorize(277.53), result);
     }
 
     @Test
@@ -49,7 +63,7 @@ public class YahooHelperTest
 
         long result = YahooHelper.asPrice(priceFromYahoo);
 
-        assertEquals(result, 2770000L);
+        assertEquals(Values.Quote.factorize(277), result);
     }
 
     @Test(expected = ParseException.class)
@@ -68,7 +82,7 @@ public class YahooHelperTest
 
         int result = YahooHelper.asNumber(priceFromYahoo);
 
-        assertEquals(result, -1);
+        assertEquals(-1, result);
     }
 
     @Test
@@ -78,7 +92,7 @@ public class YahooHelperTest
 
         int result = YahooHelper.asNumber(priceFromYahoo);
 
-        assertEquals(result, -1);
+        assertEquals(-1, result);
     }
 
     @Test
@@ -88,7 +102,7 @@ public class YahooHelperTest
 
         int result = YahooHelper.asNumber(priceFromYahoo);
 
-        assertEquals(result, 277);
+        assertEquals(277, result);
     }
 
     @Test
@@ -98,7 +112,7 @@ public class YahooHelperTest
 
         int result = YahooHelper.asNumber(priceFromYahoo);
 
-        assertEquals(result, 277);
+        assertEquals(277, result);
     }
 
     @Test(expected = ParseException.class)
@@ -117,7 +131,7 @@ public class YahooHelperTest
 
         LocalDate result = YahooHelper.asDate(dateFromYahoo);
 
-        assertEquals(result, null);
+        assertNull(result);
     }
 
     @Test
@@ -127,7 +141,7 @@ public class YahooHelperTest
 
         LocalDate result = YahooHelper.asDate(dateFromYahoo);
 
-        assertEquals(result, LocalDate.of(2020, 4, 20));
+        assertEquals(LocalDate.of(2020, 4, 20), result);
     }
 
     @Test(expected = DateTimeParseException.class)
@@ -146,7 +160,7 @@ public class YahooHelperTest
 
         LocalDate result = YahooHelper.fromISODate(isoDateFromYahoo);
 
-        assertEquals(result, null);
+        assertNull(result);
     }
 
     @Test
@@ -156,7 +170,7 @@ public class YahooHelperTest
 
         LocalDate result = YahooHelper.fromISODate(isoDateFromYahoo);
 
-        assertEquals(result, null);
+        assertNull(result);
     }
 
     @Test
@@ -166,7 +180,7 @@ public class YahooHelperTest
 
         LocalDate result = YahooHelper.fromISODate(isoDateFromYahoo);
 
-        assertEquals(result, null);
+        assertNull(result);
     }
 
     @Test
@@ -176,7 +190,7 @@ public class YahooHelperTest
 
         LocalDate result = YahooHelper.fromISODate(isoDateFromYahoo);
 
-        assertEquals(result, LocalDate.of(2020, 4, 19));
+        assertEquals(LocalDate.of(2020, 4, 19), result);
     }
 
     @Test(expected = DateTimeParseException.class)

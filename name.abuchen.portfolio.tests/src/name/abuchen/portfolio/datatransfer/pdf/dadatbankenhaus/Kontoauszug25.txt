@@ -1,0 +1,43 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.6
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+Schelhammer Capital Bank AG vom 23.11.2023
+58287
+Kundennummer
+Alter Saldo per 20.11.2023 999.432,08
+Summe der Gutschriften 4.850,38
+Summe der Lastschriften 0,00
+Schelhammer, PF 1000, A-5021 Salzburg
+Neuer Saldo zu Ihren Gunsten
+DI IMWEfP Tiftrog EUR 999.282,46
+FjHheInmmr 52/05
+8353 OwRR
+Konto-Nr.: 79392714506 Bankleitzahl: 19190
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+23.11 Verkauf                          Depot    5918883102/20231123-14860266 27.11 2.956,65
+ISIN US00206R1023 AT + T INC.          DL 1             200,00000 STK
+Kurs                     14,825000  Kurswert              2.965,00 EUR
+DADAT Handelsspesen      -8,35 EUR
+23.11 Verkauf                          Depot    5279346261/20231123-33398267 27.11 513,92
+ISIN US7672921050 RIOT PLATFORMS    DL-,001              50,00000 STK
+Kurs                     10,372000  Kurswert                518,60 EUR
+DADAT Handelsspesen      -4,68 EUR
+23.11 Verkauf                          Depot    4983739396/20231123-58126687 27.11 463,11
+ISIN US9344231041 WB DISCOVERY SER.A DL-,01              48,00000 STK
+Kurs                      9,744000  Kurswert                467,71 EUR
+DADAT Handelsspesen      -4,60 EUR
+23.11 KESt-Verlustausgleich            Depot    8607012549/20231123-42573067 27.11 461,29
+ISIN US7672921050 RIOT PLATFORMS    DL-,001
+Kapitalertragsteuer     461,29 EUR
+23.11 KESt-Verlustausgleich            Depot    4792614121/20231123-24844866 27.11 258,64
+ISIN US00206R1023 AT + T INC.          DL 1
+Kapitalertragsteuer     258,64 EUR
+23.11 KESt-Verlustausgleich            Depot    1375641157/20231123-14881168 27.11 196,77
+ISIN US9344231041 WB DISCOVERY SER.A DL-,01
+Kapitalertragsteuer     196,77 EUR
+Neuer Saldo zu Ihren Gunsten 999.282,46
+AT21 1919 1099 9056 4592 BSSWATWW 01 0050 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+C4879 41893 Doknr.: EK00-257-3848870016

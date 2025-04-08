@@ -1,0 +1,45 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Herrn
+MUSTERMANN
+MUSTERSTR
+MUSTERSTADT
+Es schreibt Ihnen:
+Fidelity Kundenbetreuung
+Kronberg im Taunus, 09. Juli 2021
+Fondsabrechnung
+ FFB FondsdepotPlus Auszug  15 Blatt 1
+Depotinhaber MUSTERMANN
+Depotnummer 1234567 (Privatvermögen)
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. WKN / ISIN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Kauf Amundi Aktien Rohstoffe 464,00 EUR 116,0000 EUR 4,000
+2568216341 977988 / DE0009779884 09.07.2021 3,821
+Amundi Deutschland GmbH 0,0000 EUR 7,821
+Girosammelverwahrung, Deutschland 116,0000 EUR
+Abrechnungsbetrag 464,00 EUR
+Ausgabeaufschlag / Provision (0,00 %) 0,00 EUR
+Bei als unentgeltlich zu behandelnden Überträgen mit Gläubigerwechsel ist die Bank verpflichtet, die in dem Auftrag enthaltenen Daten an das 
+Betriebsstättenfinanzamt zu melden.
+Anlagen in Investmentfonds können erst nach Kenntnisnahme der wesentlichen Anlegerinformationen, der Vorab-Kosteninformation und der 
+Basisinformationen erfolgen. Diese Unterlagen haben Sie direkt von der Bank erhalten. Sofern Sie keine elektronischen Orderwege nutzen, 
+verwenden Sie bitte für Investmentfonds-Aufträge ausschließlich die Serviceformulare der Bank, die Sie online erhalten.
+ 
+Steuerliche Informationen
+Es wurde kein Freistellungsauftrag erteilt. Verlustverrechnungstopf neu 0,00 EUR
+Quellensteuertopf neu 0,00 EUR
+Hinweise:
+Auslandszahlungen, die 12.500 EUR übersteigen, sind gemäß der Außenwirtschaftsverordnung (AWV) durch Sie meldepflichtig. Weitergehende Informationen zur 
+Meldepflicht nach AWV erhalten Sie direkt von der Deutschen Bundesbank, unter www.bundesbank.de oder unter der Rufnummer 0800 1234 111.
+Einwendungen gegen diese Fondsabrechnung wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte schriftlich spätestens einen Monat nach Zugang an:
+FIL Fondsbank GmbH, Revision, Postfach 11 06 63, 60041 Frankfurt am Main, Telefax (069) 7 70 60 - 444.
+Bitte beachten Sie unter www.fidelity.de/bgh2021 die Informationen zum BGH-Urteil vom 27. April 2021.
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Peter Nonner Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Ferdinand-Alexander Leisten Oliver Schulte Königstein HRB 8336
+info@fidelity-direkt.de Telefon 06173 509-1923 Umsatzsteuer-ID Nr.
+https://www.fidelity.de Telefax 06173 509-4199 DE213709602
+ABGST_V1.0

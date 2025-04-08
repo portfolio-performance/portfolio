@@ -13,7 +13,7 @@ public class OpenViewHandler
     boolean isVisible(MMenuItem menuItem)
     {
         Object data = menuItem.getTransientData().get(Navigation.Item.class.getName());
-        return data instanceof Navigation.Item && ((Navigation.Item) data).getViewClass() != null;
+        return data instanceof Navigation.Item item && item.getViewClass() != null;
     }
 
     @Execute

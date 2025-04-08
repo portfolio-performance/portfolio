@@ -1,0 +1,25 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+Client: MR XXXX XXXX
+Account no.: O-XXXXXX.001
+Transaction no.: 781327840 | Publication date: 24.05.2022
+STOCK EXCHANGE
+SUBSCRIPTION
+Purchase 24'728.000 PIMCO GIS-GL.LO.DUR.R/R INS.USD-ACC at USD 11.97
+IN portfolio O-XXXXXX.001 ADDITIONAL INFORMATION
+PIMCO GIS-GL.LO.DUR.R/R INS.USD-ACC 24'728.000 GeneralTrade date 23.05.2022
+ISIN: IE00BHZKQ946    Telekurs ID: 23335253          Value date 25.05.2022Booking date 24.05.2022
+Instruction
+Order date 20.05.2022 at 05:06:32 pm
+CASH EFFECT Order type At Marketin portfolio O-XXXXXX.001 Execution
+Gross amount USD -295'994.16 Operation type PurchaseMarket place Over the counter
+Swiss stamp duty USD -443.99 Execution date 24.05.2022 at 09:51:27 amExecuted quantity 24'728.000
+Brokerage USD -160.03 Execution price USD 11.97Gross amount USD -295'994.16
+Net amount USD -296'598.18 OtherCustodian STATE STREET FUND SERVICES
+Current account O-XXXXXX.001.00.USD/Ordinary IBAN CH0111111011111111111 PIMCO GIS LTD
+Yours faithfully
+Banque Pictet & Cie SA
+E. & O. E. Advice without signature
+0A01 Banque Pictet & Cie SA / Route des Acacias 60 / 1211 Genève 73 / Switzerland 1/1  
+Tel. +41 58 323 23 23 / Fax +41 58 323 23 24 / group.pictet

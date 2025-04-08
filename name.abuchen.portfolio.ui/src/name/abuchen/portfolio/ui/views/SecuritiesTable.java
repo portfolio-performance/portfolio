@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -43,8 +45,13 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
+import com.google.common.collect.Streams;
+
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -73,23 +80,34 @@ import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmActionWithSelection;
+import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.LogoManager;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.DistanceFromAllTimeHighColumn;
+import name.abuchen.portfolio.ui.views.columns.DistanceFromMovingAverageColumn;
+import name.abuchen.portfolio.ui.views.columns.DividendPaymentColumns;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.QuoteRangeColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
+import name.abuchen.portfolio.ui.wizards.events.CustomEventWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
+import name.abuchen.portfolio.ui.wizards.security.FindQuoteProviderDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.Pair;
@@ -179,6 +197,7 @@ public final class SecuritiesTable implements ModificationListener
 
         ColumnEditingSupport.prepare(securities);
         ColumnViewerToolTipSupport.enableFor(securities, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(securities);
 
         support = new ShowHideColumnHelper(SecuritiesTable.class.getName(), getClient(), view.getPreferenceStore(),
                         securities, layout);
@@ -186,9 +205,15 @@ public final class SecuritiesTable implements ModificationListener
         addMasterDataColumns();
         addColumnLatestPrice();
         addDeltaColumn();
+        addDeltaAmountColumn();
         addColumnDateOfLatestPrice();
         addColumnDateOfLatestHistoricalPrice();
         addQuoteDeltaColumn();
+        support.addColumn(new DistanceFromMovingAverageColumn(LocalDate::now));
+        support.addColumn(new DistanceFromAllTimeHighColumn(LocalDate::now,
+                        view.getPart().getReportingPeriods().stream().collect(toMutableList())));
+        support.addColumn(new QuoteRangeColumn(LocalDate::now,
+                        view.getPart().getReportingPeriods().stream().collect(toMutableList())));
 
         for (Taxonomy taxonomy : getClient().getTaxonomies())
         {
@@ -198,10 +223,11 @@ public final class SecuritiesTable implements ModificationListener
         }
 
         addAttributeColumns();
+        addDividendColumns();
         addQuoteFeedColumns();
         addDataQualityColumns();
 
-        support.createColumns();
+        support.createColumns(true);
 
         securities.getTable().setHeaderVisible(true);
         securities.getTable().setLinesVisible(true);
@@ -219,6 +245,11 @@ public final class SecuritiesTable implements ModificationListener
         hookContextMenu();
     }
 
+    private void addDividendColumns()
+    {
+        DividendPaymentColumns.createFor(getClient()).forEach(support::addColumn);
+    }
+
     private void addMasterDataColumns()
     {
         Column column = new Column("0", Messages.ColumnName, SWT.LEFT, 400); //$NON-NLS-1$
@@ -233,10 +264,10 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public Image getImage(Object e)
             {
-                return ((Security) e).isRetired() ? Images.SECURITY_RETIRED.image() : Images.SECURITY.image();
+                return LogoManager.instance().getDefaultColumnImage(e, getClient().getSettings());
             }
         });
-        ColumnViewerSorter.create(Security.class, "name").attachTo(column, SWT.DOWN); //$NON-NLS-1$
+        ColumnViewerSorter.create(Security.class, "name").attachTo(column, SWT.UP); //$NON-NLS-1$
         new StringEditingSupport(Security.class, "name").setMandatory(true).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
@@ -265,7 +296,7 @@ public final class SecuritiesTable implements ModificationListener
                 return ((Security) element).getCurrencyCode();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(element -> ((Security) element).getCurrencyCode()));
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(element -> ((Security) element).getCurrencyCode()));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -279,7 +310,7 @@ public final class SecuritiesTable implements ModificationListener
                 return ((Security) element).getTargetCurrencyCode();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(element -> ((Security) element).getTargetCurrencyCode()));
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(element -> ((Security) element).getTargetCurrencyCode()));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -342,14 +373,14 @@ public final class SecuritiesTable implements ModificationListener
     private void addDeltaColumn() // NOSONAR
     {
         Column column;
-        column = new Column("5", Messages.ColumnChangeOnPrevious, SWT.RIGHT, 60); //$NON-NLS-1$
+        column = new Column("5", Messages.ColumnChangeOnPrevious, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabel);
         column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, element -> {
             Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((Security) element).getLatestTwoSecurityPrices();
             if (previous.isPresent())
             {
-                double latestQuote = previous.get().getLeft().getValue() / Values.Quote.divider();
-                double previousQuote = previous.get().getRight().getValue() / Values.Quote.divider();
+                double latestQuote = previous.get().getLeft().getValue();
+                double previousQuote = previous.get().getRight().getValue();
                 return (latestQuote - previousQuote) / previousQuote;
             }
             else
@@ -387,13 +418,74 @@ public final class SecuritiesTable implements ModificationListener
             if (previous1.isPresent() && !previous2.isPresent())
                 return 1;
 
-            double latestQuote1 = previous1.get().getLeft().getValue() / Values.Quote.divider();
-            double previousQuote1 = previous1.get().getRight().getValue() / Values.Quote.divider();
-            double v1 = (latestQuote1 - previousQuote1) / previousQuote1 * 100;
+            double latestQuote1 = previous1.get().getLeft().getValue();
+            double previousQuote1 = previous1.get().getRight().getValue();
+            double v1 = (latestQuote1 - previousQuote1) / previousQuote1;
 
-            double latestQuote2 = previous2.get().getLeft().getValue() / Values.Quote.divider();
-            double previousQuote2 = previous2.get().getRight().getValue() / Values.Quote.divider();
-            double v2 = (latestQuote2 - previousQuote2) / previousQuote2 * 100;
+            double latestQuote2 = previous2.get().getLeft().getValue();
+            double previousQuote2 = previous2.get().getRight().getValue();
+            double v2 = (latestQuote2 - previousQuote2) / previousQuote2;
+
+            return Double.compare(v1, v2);
+        }));
+        support.addColumn(column);
+    }
+
+    private void addDeltaAmountColumn() // NOSONAR
+    {
+        Column column;
+        column = new Column("changeonpreviousamount", Messages.ColumnChangeOnPreviousAmount, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabelAmount);
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.CalculatedQuote, element -> {
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((Security) element).getLatestTwoSecurityPrices();
+            if (previous.isPresent())
+            {
+                double latestQuote = previous.get().getLeft().getValue();
+                double previousQuote = previous.get().getRight().getValue();
+                return (long) (latestQuote - previousQuote);
+            }
+            else
+            {
+                return null;
+            }
+        }, element -> {
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((Security) element).getLatestTwoSecurityPrices();
+            if (previous.isPresent())
+            {
+                return Messages.ColumnLatestPrice + ": " //$NON-NLS-1$
+                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
+                                                Values.Quote.format(previous.get().getLeft().getValue()),
+                                                Values.Date.format(previous.get().getLeft().getDate()))
+                                + "\n" // //$NON-NLS-1$
+                                + Messages.ColumnPreviousPrice + ": " //$NON-NLS-1$
+                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
+                                                Values.Quote.format(previous.get().getRight().getValue()),
+                                                Values.Date.format(previous.get().getRight().getDate()));
+            }
+            else
+            {
+                return null;
+            }
+        }));
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> { // NOSONAR
+
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous1 = ((Security) o1).getLatestTwoSecurityPrices();
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous2 = ((Security) o2).getLatestTwoSecurityPrices();
+
+            if (!previous1.isPresent() && !previous2.isPresent())
+                return 0;
+            if (!previous1.isPresent() && previous2.isPresent())
+                return -1;
+            if (previous1.isPresent() && !previous2.isPresent())
+                return 1;
+
+            double latestQuote1 = previous1.get().getLeft().getValue();
+            double previousQuote1 = previous1.get().getRight().getValue();
+            double v1 = latestQuote1 - previousQuote1;
+
+            double latestQuote2 = previous2.get().getLeft().getValue();
+            double previousQuote2 = previous2.get().getRight().getValue();
+            double v2 = latestQuote2 - previousQuote2;
 
             return Double.compare(v1, v2);
         }));
@@ -405,15 +497,14 @@ public final class SecuritiesTable implements ModificationListener
         Column column;
         column = new Column("9", Messages.ColumnLatestDate, SWT.LEFT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnLatestDate_MenuLabel);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                SecurityPrice latest = ((Security) element).getSecurityPrice(LocalDate.now());
-                return latest != null ? Values.Date.format(latest.getDate()) : null;
-            }
 
+        Function<Object, LocalDate> dataProvider = element -> {
+            SecurityPrice latest = ((Security) element).getSecurityPrice(LocalDate.now());
+            return latest != null ? latest.getDate() : null;
+        };
+
+        column.setLabelProvider(new DateLabelProvider(dataProvider)
+        {
             @Override
             public Color getBackground(Object element)
             {
@@ -427,20 +518,10 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
 
                 LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
-                return latest.getDate().isBefore(sevenDaysAgo) ? Colors.WARNING : null;
+                return latest.getDate().isBefore(sevenDaysAgo) ? Colors.theme().warningBackground() : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
-            SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
-            SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
-
-            if (p1 == null)
-                return p2 == null ? 0 : -1;
-            if (p2 == null)
-                return 1;
-
-            return p1.getDate().compareTo(p2.getDate());
-        }));
+        column.setSorter(ColumnViewerSorter.create(dataProvider::apply));
         support.addColumn(column);
     }
 
@@ -449,19 +530,18 @@ public final class SecuritiesTable implements ModificationListener
         Column column = new Column("10", Messages.ColumnLatestHistoricalDate, SWT.LEFT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnLatestHistoricalDate_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelDataQuality);
-        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
+
+        Function<Object, LocalDate> dataProvider = element -> {
+            List<SecurityPrice> prices = ((Security) element).getPrices();
+            if (prices.isEmpty())
+                return null;
+
+            SecurityPrice latest = prices.get(prices.size() - 1);
+            return latest != null ? latest.getDate() : null;
+        };
+
+        column.setLabelProvider(new DateLabelProvider(dataProvider)
         {
-            @Override
-            public String getText(Object element)
-            {
-                List<SecurityPrice> prices = ((Security) element).getPrices();
-                if (prices.isEmpty())
-                    return null;
-
-                SecurityPrice latest = prices.get(prices.size() - 1);
-                return latest != null ? Values.Date.format(latest.getDate()) : null;
-            }
-
             @Override
             public Color getBackground(Object element)
             {
@@ -475,24 +555,12 @@ public final class SecuritiesTable implements ModificationListener
 
                 SecurityPrice latest = prices.get(prices.size() - 1);
                 if (!((Security) element).isRetired() && latest.getDate().isBefore(LocalDate.now().minusDays(7)))
-                    return Colors.WARNING;
+                    return Colors.theme().warningBackground();
                 else
                     return null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
-            List<SecurityPrice> prices1 = ((Security) o1).getPrices();
-            SecurityPrice p1 = prices1.isEmpty() ? null : prices1.get(prices1.size() - 1);
-            List<SecurityPrice> prices2 = ((Security) o2).getPrices();
-            SecurityPrice p2 = prices2.isEmpty() ? null : prices2.get(prices2.size() - 1);
-
-            if (p1 == null)
-                return p2 == null ? 0 : -1;
-            if (p2 == null)
-                return 1;
-
-            return p1.getDate().compareTo(p2.getDate());
-        }));
+        column.setSorter(ColumnViewerSorter.create(dataProvider::apply));
         support.addColumn(column);
     }
 
@@ -500,7 +568,7 @@ public final class SecuritiesTable implements ModificationListener
     {
         // create a modifiable copy as all menus share the same list of
         // reporting periods
-        List<ReportingPeriod> options = new ArrayList<>(view.getPart().getReportingPeriods());
+        List<ReportingPeriod> options = view.getPart().getReportingPeriods().stream().collect(toMutableList());
 
         BiFunction<Object, ReportingPeriod, Double> valueProvider = (element, option) -> {
 
@@ -577,7 +645,7 @@ public final class SecuritiesTable implements ModificationListener
                 return quoteFeed.apply(e);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(quoteFeed::apply));
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(quoteFeed::apply));
         support.addColumn(column);
 
         Function<Object, String> latestQuoteFeed = e -> {
@@ -601,7 +669,7 @@ public final class SecuritiesTable implements ModificationListener
                 return latestQuoteFeed.apply(e);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(latestQuoteFeed::apply));
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(latestQuoteFeed::apply));
         support.addColumn(column);
 
         column = new Column("url-history", Messages.ColumnFeedURLHistoric, SWT.LEFT, 200); //$NON-NLS-1$
@@ -616,7 +684,7 @@ public final class SecuritiesTable implements ModificationListener
                 return security.getFeedURL();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "feedURL")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(s -> ((Security) s).getFeedURL()));
         support.addColumn(column);
 
         column = new Column("url-latest", Messages.ColumnFeedURLLatest, SWT.LEFT, 200); //$NON-NLS-1$
@@ -631,7 +699,7 @@ public final class SecuritiesTable implements ModificationListener
                 return security.getLatestFeedURL();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "latestFeedURL")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(s -> ((Security) s).getLatestFeedURL()));
         support.addColumn(column);
     }
 
@@ -641,19 +709,14 @@ public final class SecuritiesTable implements ModificationListener
         Column column = new Column("q-date-first-historic", Messages.ColumnDateFirstHistoricalQuote, SWT.LEFT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnDateFirstHistoricalQuote_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelDataQuality);
-        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
-        {
-            @Override
-            public String getText(Object element)
-            {
-                List<SecurityPrice> prices = ((Security) element).getPrices();
-                return prices.isEmpty() ? null : Values.Date.format(prices.get(0).getDate());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(element -> {
+
+        Function<Object, LocalDate> dataProvider = element -> {
             List<SecurityPrice> prices = ((Security) element).getPrices();
             return prices.isEmpty() ? null : prices.get(0).getDate();
-        }));
+        };
+
+        column.setLabelProvider(new DateLabelProvider(dataProvider));
+        column.setSorter(ColumnViewerSorter.create(dataProvider::apply));
         support.addColumn(column);
 
         column = new Column("qqm-completeness", Messages.ColumnMetricCompleteness, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -825,6 +888,7 @@ public final class SecuritiesTable implements ModificationListener
 
         Menu contextMenu = menuMgr.createContextMenu(securities.getTable());
         securities.getTable().setMenu(contextMenu);
+        securities.getTable().setData(ContextMenu.DEFAULT_MENU, contextMenu);
 
         securities.getTable().addDisposeListener(e -> {
             if (contextMenu != null)
@@ -832,6 +896,7 @@ public final class SecuritiesTable implements ModificationListener
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void fillContextMenu(IMenuManager manager)
     {
         IStructuredSelection selection = (IStructuredSelection) securities.getSelection();
@@ -851,21 +916,109 @@ public final class SecuritiesTable implements ModificationListener
 
             manager.add(new Separator());
             new QuotesContextMenu(this.view).menuAboutToShow(manager, security);
+        }
 
-            manager.add(new Separator());
-            manager.add(new BookmarkMenu(view.getPart(), security));
+        manager.add(new Separator());
 
+        manager.add(new BookmarkMenu(view.getPart(), selection.toList()));
+
+        if (selection.size() == 1)
+        {
+            Security security = (Security) selection.getFirstElement();
             if (security.getOnlineId() == null)
             {
                 manager.add(new Separator());
                 manager.add(new LinkToPortfolioReport(security));
             }
+
+            manager.add(new Separator());
+
+            if (LogoManager.instance().hasCustomLogo(security, getClient().getSettings()))
+            {
+                manager.add(new SimpleAction(Messages.LabelRemoveLogo, a -> {
+                    LogoManager.instance().clearCustomLogo(security, getClient().getSettings());
+                    markDirty();
+                }));
+            }
         }
 
         manager.add(new Separator());
+        // update quotes for multiple securities
+        if (selection.size() > 1)
+        {
+            manager.add(new SimpleAction(
+                            MessageFormat.format(Messages.SecurityMenuUpdateQuotesMultipleSecurities, selection.size()),
+                            a -> new UpdateQuotesJob(getClient(),
+                                            selection.toList().stream().map(Security.class::cast).toList())
+                                                            .schedule()));
+
+            manager.add(new SimpleAction(Messages.LabelSearchForQuoteFeeds + "...", //$NON-NLS-1$
+                            a -> Display.getDefault().asyncExec(() -> {
+                                FindQuoteProviderDialog dialog = new FindQuoteProviderDialog(getShell(), getClient(),
+                                                selection.toList().stream().map(Security.class::cast).toList());
+                                dialog.open();
+                            })));
+
+        }
+
+        // if any retired security in selection, add "unretire/activate all"
+        // option
+        if (Streams.stream((Iterable<?>) selection).anyMatch(s -> ((Security) s).isRetired()))
+        {
+            manager.add(new ConfirmActionWithSelection(Messages.SecurityMenuSetSingleSecurityActive,
+                            Messages.SecurityMenuSetMultipleSecurityActive,
+                            MessageFormat.format(Messages.SecurityMenuSetSingleSecurityActiveConfirm,
+                                            selection.getFirstElement()),
+                            Messages.SecurityMenuSetMultipleSecurityActiveConfirm, selection,
+                            (s, a) -> setRetireStatus(selection, false)));
+        }
+
+        // if any active (non-retired) security in selection, add "retire all"
+        // option
+        if (Streams.stream((Iterable<?>) selection).anyMatch(s -> !((Security) s).isRetired()))
+        {
+            manager.add(new ConfirmActionWithSelection(Messages.SecurityMenuSetSingleSecurityInactive,
+                            Messages.SecurityMenuSetMultipleSecurityInactive,
+                            MessageFormat.format(Messages.SecurityMenuSetSingleSecurityInactiveConfirm,
+                                            selection.getFirstElement()),
+                            Messages.SecurityMenuSetMultipleSecurityInactiveConfirm, selection,
+                            (s, a) -> setRetireStatus(selection, true)));
+        }
+
         if (watchlist == null)
         {
-            manager.add(new ConfirmActionWithSelection(Messages.SecurityMenuDeleteSecurity,
+            if (selection.size() == 1)
+                manager.add(new SimpleAction(Messages.LabelDuplicateSecurity, a -> {
+                    Security source = (Security) selection.getFirstElement();
+                    Security target = source.deepCopy();
+
+                    // add security
+                    getClient().addSecurity(target);
+
+                    // copy attributes
+                    target.setAttributes(source.getAttributes().copy());
+
+                    // copy taxonomy assignments
+                    getClient().getTaxonomies().stream().forEach(taxonomy -> taxonomy.foreach(new Taxonomy.Visitor()
+                    {
+                        @Override
+                        public void visit(Classification classification, Assignment assignment)
+                        {
+                            if (assignment.getInvestmentVehicle() == source)
+                            {
+                                Assignment newAssignment = assignment.copyWith(target);
+                                List<Assignment> children = classification.getAssignments();
+                                newAssignment.setRank(children.get(children.size() - 1).getRank() + 1);
+                                classification.addAssignment(newAssignment);
+                            }
+                        }
+                    }));
+
+                    markDirty();
+                }));
+
+            manager.add(new ConfirmActionWithSelection(Messages.SecurityMenuDeleteSingleSecurity,
+                            Messages.SecurityMenuDeleteMultipleSecurity,
                             MessageFormat.format(Messages.SecurityMenuDeleteSingleSecurityConfirm,
                                             selection.getFirstElement()),
                             Messages.SecurityMenuDeleteMultipleSecurityConfirm, selection,
@@ -919,7 +1072,17 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             Dialog createDialog(Security security)
             {
-                StockSplitWizard wizard = new StockSplitWizard(getClient(), security);
+                StockSplitWizard wizard = new StockSplitWizard(view.getStylingEngine(), getClient(), security);
+                return new WizardDialog(getShell(), wizard);
+            }
+        });
+
+        manager.add(new AbstractDialogAction(Messages.SecurityMenuAddEvent)
+        {
+            @Override
+            Dialog createDialog(Security security)
+            {
+                CustomEventWizard wizard = new CustomEventWizard(view.getStylingEngine(), getClient(), security);
                 return new WizardDialog(getShell(), wizard);
             }
         });
@@ -949,11 +1112,21 @@ public final class SecuritiesTable implements ModificationListener
 
         new OpenDialogAction(view, Messages.InvestmentPlanMenuCreate) //
                         .type(InvestmentPlanDialog.class) //
-                        .parameters(PortfolioTransaction.class) //
+                        .parameters(InvestmentPlan.Type.PURCHASE_OR_DELIVERY) //
                         .with(security) //
                         .addTo(manager);
 
         manager.add(new Separator());
+    }
+
+    private void setRetireStatus(IStructuredSelection selection, boolean isRetired)
+    {
+        for (Object obj : selection)
+        {
+            Security security = (Security) obj;
+            security.setRetired(isRetired);
+        }
+        securities.refresh();
     }
 
     private void deleteSecurity(IStructuredSelection selection)
@@ -1089,9 +1262,9 @@ public final class SecuritiesTable implements ModificationListener
                 return null;
 
             if (value.doubleValue() < 0)
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+                return Colors.theme().redForeground();
             else if (value.doubleValue() > 0)
-                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+                return Colors.theme().greenForeground();
             else
                 return null;
         }

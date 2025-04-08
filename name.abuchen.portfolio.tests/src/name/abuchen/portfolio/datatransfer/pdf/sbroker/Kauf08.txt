@@ -1,0 +1,39 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Stadtsparkasse München · 80791 München  
+Depotnummer
+ XXXXXXX
+ Kundennummer XXXXXXXX
+ XXXXXX XXXXXXXAuftragsnummer XXXXXX/XX.XX
+Herrn Datum 14.10.2021
+XXXXXX XXXXXXX Ihr Berater Direkt-Beratungs-Center
+XXXXXstr. X Telefon 089 XXXX-X
+8XXXX München Telefax 089 XXXX-XXXXXX
+Rechnungsnummer XXXXXX-XXXXXXXXXX/XX
+Umsatzsteuer-ID DEXXXXXXXXX
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 20 TEAMVIEWER AG DE000A2YN900 (A2YN90)
+INHABER-AKTIEN O.N. 
+Handels-/Ausführungsplatz XETRA (gemäß Weisung)
+Börsensegment XETA
+Market-Order
+Limit billigst
+Schlusstag/-Zeit 14.10.2021 09:00:12 Auftraggeber XXXXXX XXXXXXX
+Ausführungskurs 14,12 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 282,40- EUR
+Provision 15,00- EUR
+Transaktionsentgelt Börse 0,60- EUR
+Übertragungs-/Liefergebühr 0,12- EUR
+Ausmachender Betrag 298,12- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 18.10.2021 zu Lasten des Kontos XXXXXXXX (IBAN DEXX XXXX XXXX XXXX XXXX XX),
+BLZ 70150000 (BIC SSKMDEMMXXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+XXXX.XXXXXXXX.XXXXXXXXXXX

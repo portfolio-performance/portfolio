@@ -1,0 +1,29 @@
+<FlexQueryResponse queryName="XYZ" type="AF">
+<AccountInformation accountId="XXXXXXXX" currency="EUR" />
+<FlexStatements count="1">
+<FlexStatement accountId="XXXXXUSD" fromDate="20200102" toDate="20200131" period="LastMonth" whenGenerated="20200217;054932">
+<Trades>
+<Trade assetCategory="STK" buySell="BUY" dateTime="20200115;153201" tradeDate="20200115" currency="CAD" cost="1234" quantity="400" multiplier="1" ibCommission="-4" ibCommissionCurrency="CAD" taxes="0" description="XXXXXCAD" fxRateToBase="0.68772" exchange="TSE" symbol="XXXXXCAD" isin="XXXXXCAD" cusip="" conid="XXXXXCAD" />
+<Trade assetCategory="STK" buySell="BUY" dateTime="20200102;093001" tradeDate="20200102" currency="USD" cost="5814" quantity="200" multiplier="1" ibCommission="-2" ibCommissionCurrency="USD" taxes="0" description="XXXXXUSD" fxRateToBase="0.89507" exchange="ISLAND" symbol="XXXXXUSD" isin="" cusip="XXXXXUSD" conid="XXXXXUSD" />
+<Trade assetCategory="STK" buySell="BUY" dateTime="20200108;155916" tradeDate="20200108" currency="USD" cost="4545.5" quantity="35" multiplier="1" ibCommission="-2" ibCommissionCurrency="USD" taxes="0" description="XXXXXUSD" fxRateToBase="0.9005" exchange="NYSE" symbol="XXXXXUSD" isin="" cusip="XXXXXUSD" conid="XXXXXUSD" />
+<Trade assetCategory="STK" buySell="BUY" dateTime="20200115;141705" tradeDate="20200115" currency="USD" cost="1504.5" quantity="50" multiplier="1" ibCommission="-2" ibCommissionCurrency="USD" taxes="0" description="XXXXXUSD" fxRateToBase="0.89687" exchange="DRCTEDGE" symbol="XXXXXUSD" isin="XXXXXUSD" cusip="XXXXXUSD" conid="XXXXXUSD" />
+</Trades><CorporateActions>
+</CorporateActions><CashTransactions>
+<CashTransaction dateTime="20191231;202000" amount="-6.9" currency="CAD" type="Withholding Tax" symbol="XXXXXCAD" description="XXXXXCAD" fxRateToBase="0.68942" assetCategory="STK" isin="XXXXXCAD" cusip="" conid="XXXXXCAD" />
+<CashTransaction dateTime="20200115;202000" amount="-9" currency="CAD" type="Withholding Tax" symbol="XXXXXCAD" description="XXXXXCAD" fxRateToBase="0.68862" assetCategory="STK" isin="XXXXXCAD" cusip="" conid="XXXXXCAD" />
+<CashTransaction dateTime="20190131;202000" amount="1.99" currency="USD" type="Withholding Tax" symbol="XXXXXUSD" description="XXXXXUSD" fxRateToBase="0.90822" assetCategory="STK" isin="XXXXXUSD" cusip="XXXXXUSD" conid="XXXXXUSD" />
+<CashTransaction dateTime="20190131;202000" amount="-0.54" currency="USD" type="Withholding Tax" symbol="XXXXXUSD" description="XXXXXUSD" fxRateToBase="0.90822" assetCategory="STK" isin="XXXXXUSD" cusip="XXXXXUSD" conid="XXXXXUSD" />
+<CashTransaction dateTime="20200102;202000" amount="-8.58" currency="USD" type="Withholding Tax" symbol="XXXXXUSD" description="XXXXXUSD" fxRateToBase="0.89507" assetCategory="STK" isin="" cusip="XXXXXUSD" conid="XXXXXUSD" />
+<CashTransaction dateTime="20200102;202000" amount="-3.97" currency="USD" type="Withholding Tax" symbol="XXXXXUSD" description="XXXXXUSD" fxRateToBase="0.89507" assetCategory="STK" isin="" cusip="XXXXXUSD" conid="XXXXXUSD" />
+<CashTransaction dateTime="20191231;202000" amount="46" currency="CAD" type="Dividends" symbol="XXXXXCAD" description="XXXXXCAD)" fxRateToBase="0.68942" assetCategory="STK" isin="XXXXXCAD" cusip="" conid="XXXXXCAD" />
+<CashTransaction dateTime="20200115;202000" amount="42.75" currency="CAD" type="Dividends" symbol="XXXXXCAD" description="XXXXXCAD" fxRateToBase="0.68862" assetCategory="STK" isin="XXXXXCAD" cusip="" conid="XXXXXCAD" />
+<CashTransaction dateTime="20200102;202000" amount="57.19" currency="USD" type="Dividends" symbol="XXXXXUSD" description="XXXXXUSD" fxRateToBase="0.89507" assetCategory="STK" isin="" cusip="XXXXXUSD" conid="XXXXXUSD" />
+<CashTransaction dateTime="20200102;202000" amount="26.5" currency="USD" type="Dividends" symbol="XXXXXUSD" description="XXXXXUSD" fxRateToBase="0.89507" assetCategory="STK" isin="" cusip="XXXXXUSD" conid="XXXXXUSD" />
+<CashTransaction dateTime="20200103;175942" amount="-1.34" currency="EUR" type="Other Fees" symbol="" description="XXXXXUSD" fxRateToBase="1" assetCategory="" isin="" cusip="" conid="" />
+<CashTransaction dateTime="20200103;175942" amount="-1.34" currency="EUR" type="Other Fees" symbol="" description="XXXXXUSD" fxRateToBase="1" assetCategory="" isin="" cusip="" conid="" />
+<CashTransaction dateTime="20200120" amount="999" currency="EUR" type="Deposits/Withdrawals" symbol="" description="CASH RECEIPTS / ELECTRONIC FUND TRANSFERS" fxRateToBase="1" assetCategory="" isin="" cusip="" conid="" />
+<CashTransaction dateTime="20200106" amount="-9.99" currency="USD" type="Broker Interest Paid" symbol="" description="USD DEBIT INT FOR DEC-2019" fxRateToBase="0.89306" assetCategory="" isin="" cusip="" conid="" />
+</CashTransactions>
+</FlexStatement>
+</FlexStatements>
+</FlexQueryResponse>

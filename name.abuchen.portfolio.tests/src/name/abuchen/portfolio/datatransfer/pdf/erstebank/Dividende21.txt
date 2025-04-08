@@ -1,0 +1,30 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+Ab. BLZ: 12345
+Abcd Abcdefghijk Referenz Nr: 12-12345
+Ab. 12 Kunden Nr.: 12345
+1234 Abcdefghi Depot Nr.: 12345-01 
+Austria
+Wien,  20. August 2009
+ 
+WERTPAPIERGUTSCHRIFT
+LIQUIDATIONSZAHLUNG
+ 
+Wertpapier : OESTERREICHISCHE POST AG Liquidationsbetrag : EUR 75,94
+WP-Kenn-Nr. : AT0000APOST4
+WP-Bestand : 90,000 Liquidation Netto : EUR 75,94
+Betrag : EUR 0,843786
+Ex-Tag : 20. August 2009
+Zahltag : 20. August 2009
+Lagerort : WIEN
+Verwahrart : SV
+Abrechnung:
+Wir erkennen Ihr EUR Konto Nummer 12345 mit Valuta 21. August 2009.
+Die Buchung wurde "Eingang vorbehalten" ausgeführt.
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung keine
+Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+ecetra  Central European e-Finance AG | Mariahilferstraße 121B | A-1060 Wien 
+e-mail: support@ecetra.com | Fax: +43-1-53689-13550 | www.ecetra.com
+Sitz Wien  |  Handelsgericht Wien  |  FB-Nr. 193944m  |  DVR 1052322  |  UID ATU49227901
+Ein Unternehmen der ERSTE BANK GRUPPE

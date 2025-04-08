@@ -1,0 +1,38 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.66.2
+-----------------------------------------
+FIDELITY NATIONAL INFORMATION
+SERVICES
+PARTICIPANT NO.
+U98299884
+90035485
+      NIK HEMMERYCKX
+      XjlaqpRajgteel 88 FIDELITY STOCK PLAN SERVICES, LLC
+      ANTWERPEN P.O. BOX 770001
+      BELGIUM 2000 CINCINNATI, OH  45277-0003
+TELEPHONE NUMBER:(800) 544-0275
+REF # 23342-0D6SVL
+CUSTOMER NO.   PARTICIPANT ID. TYPE REG.REP. TRADE DATE SETTLEMENT DATE TRANS NO. CUSIP NO. ORIG.
+U98299884 1 000 12-08-23 12-12-23 0D6SVL 31620M106
+Confirmation of purchase made through your
+FIS ESPP on DEC/08/2023. PURCHASE INFORMATION
+Offering period: JAN/01/2023 - DEC/31/2023 Market Value at Purchase¹        $442.83
+Accumulated Contributions*        $442.83
+YOU PURCHASED 7.5146 AT $58.9290 PURCHASE PRICE Gain²          $0.00
+SECURITY DESCRIPTION SYMBOL: FIS EXPLANATION OF PROCEEDS
+FIDELITY NATL
+The shares you have acquired are subject to a "Restriction Period" in accordance with Total Gain          $0.00
+your company's stock plan rules. Please see your plan documents for more
+information. Provided below are the dates for when the restriction on these shares will
+be removed. Share Proceeds**           7.5146
+Sale Availability:                    06/05/2024
+Transfer Availability:                06/05/2024
+PLEASE RETAIN THIS STATEMENT FOR YOUR RECORDS
+*  Accumulated Contributions are the amount of money contributed to your Plan that is
+used toward the purchase of company stock.
+** Shares will be held by Fidelity Stock Plan Services on your behalf in the SPS
+Participant Trust.
+¹  Market Value is determined under your Plan rules.
+²  Please consult your tax advisor regarding tax treatment in your jurisdiction.
+PAGE 1 OF 1 Recordkeeping and administrative services for your company's equity compensation plans are
+provided by your company and its service providers.

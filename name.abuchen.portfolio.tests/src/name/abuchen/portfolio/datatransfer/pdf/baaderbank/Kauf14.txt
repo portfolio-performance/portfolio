@@ -1,0 +1,46 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.4
+-----------------------------------------
+Scalable Capital GmbH
+Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/1
+Herrn München
+Max Mustermann 28.01.2022
+Musterstraße 11Max Mustermann
+85240 München Stamm-Nr.: 1231232    Portfolio: 1Depot-Nr.: 1231232001
+Vorgangs-Nr.: 12350123
+Referenz-Nr.: 123202123
+Wertpapierabrechnung: Kauf
+Auftragsdatum: 27.01.2022 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 16:25:23:83
+Nominale ISIN: US0378331005 WKN: 865985 Kurs 
+STK 6 Apple Inc. EUR 146,34
+Registered Shares o.N.
+Auftraggeber: Depotinhaber
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 878,04
+Zu Lasten Konto 1231232009 Valuta: 31.01.2022 EUR 878,04
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung: Handels- Handels- 
+Nominale Kurs Ausführungsplatz datum uhrzeit
+STK   6 EUR 146,34 GETTEX - MM Munich 27.01.2022 16:25:24:39
+Verwahrart: Girosammelverwahrung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 100 MIC des Ausführungsplatzes: MUNC
+Lagerland: Deutschland
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und Vollständigkeit. Etwaige 
+Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden. 
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz • HRB 217778, Amtsgericht München • USt-IdNr. DE300434774 • 
+www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Dr. Horst Schiessl • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. WPABRECHNUNG-058.112

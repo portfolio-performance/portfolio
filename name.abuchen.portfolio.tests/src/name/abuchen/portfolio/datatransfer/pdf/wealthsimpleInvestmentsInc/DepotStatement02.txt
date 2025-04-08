@@ -1,0 +1,168 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Wealthsimple Prepared for: Jon Doe, 123 Main Street, Toronto ON M4W2G4 CA Page 1 of 8
+June 2020 Performance Report NotesThis report details how the investments in your account have
+$10,995.55 performed from June 01, 2020 to June 30, 2020. Bycomparing the actual performance of your investments, it can
+help you to evaluate your progress toward meeting your
+investment goals.
+Portfolio Start datebalance 1 Deposits Withdrawals
+Change in End date
+market value 2 balance 3
+TFSA $10,777.52 $100.00 – $118.03 $10,995.55
+Account Number
+Totals $10,777.52 $100.00 – $118.03 $10,995.55
+Summary of Earnings and Fees MTD Total YTD Total
+Interest – –
+CAD Dividends $28.24 $37.51
+Foreign Dividends $27.95 $27.95
+Non-registered account fees and taxes 9
+Wealthsimple Inc. 400 - 80 Spadina Avenue, Toronto Ontario M5V 2J4 Canada Conversion rate $1.00 USD = $1.35750 CAD
+Wealthsimple Prepared for: Jon Doe, 123 Main Street, Toronto ON M4W2G4 CA Page 2 of 8June 2020 Performance Report
+TFSA - Account Number
+Portfolio Performance Report — TFSA Contributions this year Withdrawals
+$10,995.55 $10,200.00 –
+Account performance Return rates
+$12.5k Time-weighted returns 12
+1 month 1.1%
+$10k
+1 year* –
+$7.5k Year to date* 8.1%
+Since inception* 8.1%
+$5k
+Money-weighted returns 11
+$2.5k 1 year* –
+Year to date* 8.1%
+06/01/19 12/15/19 06/30/20 Since inception* 8.1%
+ 
+ Account Value  Net Contributions
+Change in market value 2
+Summary of Earnings MTD Total YTD Total 1 month $118.03
+Interest – – Since inception $795.55
+CAD Dividends $28.24 $37.51
+Foreign Dividends $27.95 $27.95
+Unrealized Capital Gains/Losses – $662.76
+The securities in your account are held in the name of Canadian ShareOwner Investments Inc., the custodian. Because the custodian is a member of the Canadian Investor Protection Fund,
+the securities in your account are covered by that fund. The money-weighted returns table shows the total percentage return of your account for the period(s) ending June 30, 2020. Your total
+percentage return means the cumulative realized and unrealized capital gains and losses of an investment, plus income from the investment, over a specified period of time, expressed as a
+percentage. Returns are calculated after costs have been deducted, including transaction charges and account-related fees, but not income tax.
+Wealthsimple Inc. 400 - 80 Spadina Avenue, Toronto Ontario M5V 2J4 Canada *Calculated returns are annualized. Conversion rate $1.00 USD = $1.35750 CAD
+Wealthsimple Prepared for: Jon Doe, 123 Main Street, Toronto ON M4W2G4 CA Page 3 of 8June 2020 Performance Report
+TFSA - Account Number
+TFSA holdings
+$10,995.55
+Qty Market value 4 Book cost 5 Unrealized gain orloss 6
+Equity $4,974.06 $4,474.06 $500.00 11.2%
+ACWV BTC iShares Edge MSCI Min Vol Global ETF 8.361 $994.03  ($118.89/share) $944.40  ($112.95/share) $49.63 5.3%
+EEMV BTC iShares Edge MSCI Min Vol Emerging Markets ETF 20.8583 $1,472.38  ($70.59/share) $1,377.66  ($66.05/share) $94.72 6.9%
+VTI Vanguard Group, Inc. - Vanguard Total Stock Market ETF 4.7706 $1,013.70  ($212.49/share) $849.86  ($178.15/share) $163.84 19.3%
+XEF BlackRock Canada iShares Core MSCI EAFE IMI Index ETF 34.2631 $988.83  ($28.86/share) $874.72  ($25.53/share) $114.11 13.0%
+XIC BlackRock iShares Core S&P/TSX Capped Composite Index 20.4999 $505.12  ($24.64/share) $427.42  ($20.85/share) $77.70 18.2%
+ETF
+Fixed Income $4,962.63 $4,799.87 $162.76 3.4%
+QTIP Mackenzie US TIPS Index ETF CAD-Hedged Ser E 14.0853 $1,488.96  ($105.71/share) $1,461.63  ($103.77/share) $27.33 1.9%
+ZAG BMO Aggregate Bond Index ETF 88.9806 $1,491.31  ($16.76/share) $1,419.37  ($15.95/share) $71.94 5.1%
+ZFL BMO Long Federal Bond Index ETF 95.0317 $1,982.36  ($20.86/share) $1,918.87  ($20.19/share) $63.49 3.3%
+Other $1,058.86 $1,058.86 – –
+CAD CAD $1,058.86 $1,058.86 – –
+Wealthsimple Inc. 400 - 80 Spadina Avenue, Toronto Ontario M5V 2J4 Canada Conversion rate $1.00 USD = $1.35750 CAD
+Wealthsimple Prepared for: Jon Doe, 123 Main Street, Toronto ON M4W2G4 CA Page 4 of 8June 2020 Performance Report
+TFSA - Account Number
+TFSA activity
+Description Qty Price persecurity Total
+Contributions and Deposits
+Jun 01 Electronic Funds Transfer In: $100.00 CAD – – $100.00
+Total - Contributions and Deposits $100.00
+Trades
+Jun 29 settled Jul 01 Sold 1.7993 of EEMV - iShares MSCI Emerg Min Vol ETF for 128.87 CAD -1.7993 $71.62 -$128.87
+Jun 29 settled Jul 01 Sold 0.4814 of ACWV - iShares Edge MSCI Min Vol Global ETF for 57.32 CAD -0.4814 $119.07 -$57.32
+Jun 29 settled Jul 01 Sold 0.8204 of VTI - Vanguard Total Stock Market ETF for 172.91 CAD -0.8204 $210.76 -$172.91
+Jun 29 settled Jul 02 Sold 3.3852 of XIC - iShares Core S&P/TSX Capped Composite Index ETF for 82.43 CAD -3.3852 $24.35 -$82.43
+Jun 29 settled Jul 02 Sold 4.7504 of XEF - iShares Core MSCI EAFE IMI Index ETF for 138.26 CAD -4.7504 $29.10 -$138.26
+Jun 29 settled Jul 02 Sold 9.2542 of ZAG - BMO AGGREGATE BOND INDEX ETF for 154.73 CAD -9.2542 $16.72 -$154.73
+Jun 29 settled Jul 02 Sold 0.3119 of QTIP - Mackenzie Financial Corp for 33.0 CAD -0.3119 $105.80 -$33.00
+Jun 29 settled Jul 02 Sold 10.9669 of ZFL - BMO Long Federal Bond ETF for 228.77 CAD -10.9669 $20.86 -$228.77
+Jun 26 settled Jun 30 Bought 1.72 of ZAG - BMO AGGREGATE BOND INDEX ETF for 28.75 CAD 1.72 $16.72 $28.75
+Jun 01 settled Jun 03 Bought 0.9932 of ZAG - BMO AGGREGATE BOND INDEX ETF for 16.39 CAD 0.9932 $16.50 $16.39
+Wealthsimple Inc. 400 - 80 Spadina Avenue, Toronto Ontario M5V 2J4 Canada Conversion rate $1.00 USD = $1.35750 CAD
+Wealthsimple Prepared for: Jon Doe, 123 Main Street, Toronto ON M4W2G4 CA Page 5 of 8June 2020 Performance Report
+TFSA - Account Number
+TFSA activity
+Price
+Description Qty per Total
+security
+Jun 01 settled Jun 03 Bought 4.1164 of ZFL - BMO Long Federal Bond ETF for 84.16 CAD 4.1164 $20.44 $84.16
+Canadian and Foreign Dividends
+Jun 30 XEF - IShares Core MSCI EAFE ETF Un: 25-JUN-20 (record date) 39.0135 shares – – $13.93
+Jun 30 XIC-S&P/TSX Capped Composite Index ETF: 25-JUN-20 (record date) 23.8851 shares – – $5.23
+Jun 23 ACWV-iShares Edge MSCI Min Vol Global ETF: 16-JUN-20 (record date) 8.8424 shares, gross 8.14 USD, convert to – – $11.02
+CAD @ 1.3535
+Jun 23 EEMV-iShares MSCI Emerg Min Vol ETF: 16-JUN-20 (record date) 22.6576 shares, gross 12.51 USD, convert to CAD – – $16.93
+@ 1.3535
+Jun 09 Mackenzie US TIPS Index ETF (CAD-Hedged): 02-JUN-20 (record date) 14.3972 shares – – $0.88
+Jun 02 ZFL-BMO Long Federal Bond ETF: 28-MAY-20 (record date) 101.8822 shares – – $4.38
+Jun 02 ZAG-BMO AGG Bond Index ETF: 28-MAY-20 (record date) 95.5216 shares – – $3.82
+Total - Canadian and Foreign Dividends $56.19
+Tax
+Jun 23 ACWV-iShares Edge MSCI Min Vol Global ETF: Non-resident tax withheld at source (1.22 USD, convert to CAD @ – $1.00 -$1.65
+1.3535)
+Jun 23 EEMV-iShares MSCI Emerg Min Vol ETF: Non-resident tax withheld at source (1.88 USD, convert to CAD @ 1.3535) – $1.00 -$2.54
+Total - Tax -$4.19
+Wealthsimple Inc. 400 - 80 Spadina Avenue, Toronto Ontario M5V 2J4 Canada Conversion rate $1.00 USD = $1.35750 CAD
+Wealthsimple Prepared for: Jon Doe, 123 Main Street, Toronto ON M4W2G4 CA Page 6 of 8June 2020 Performance Report
+TFSA - Account Number
+TFSA activity
+Description Qty Price persecurity Total
+Management Fees 7
+Jun 30 Gross management fee to Wealthsimple – – -$4.46
+Jun 30 Promotions and discounts applied to Wealthsimple fee – – $0.49
+Jun 30 Sales tax on management fee to Wealthsimple – – -$0.20
+Total - Management Fees 7 -$4.17
+Wealthsimple Inc. 400 - 80 Spadina Avenue, Toronto Ontario M5V 2J4 Canada Conversion rate $1.00 USD = $1.35750 CAD
+Wealthsimple Prepared for: Jon Doe, 123 Main Street, Toronto ON M4W2G4 CA Page 7 of 8
+Glossary
+Start date balance 1 Net proceeds represent the amount you receive after deducting fees and expenses from selling
+asset(s) at their market value.
+Your account's balance at June 01, 2020. If your account was funded after June 01, 2020,
+the balance is -. Non-registered account fees and taxes 9
+Change in market value2 Management fees charged on non-registered investment accounts (Personal, Joint, and
+Corporate) can be claimed as a deduction on your income taxes.
+The Change in Market Value is calculated as follows: The market value of all cash and
+investments in the account as at the end of the period of time covered by the performance DSC/LL/LSC 10
+report, minus the market value of all cash and investments in the account at the beginning of
+that period, minus the market value of all deposits and transfers of cash and investments into This investment may be subject to a deferred sales charge upon redemption. For mutual funds,
+the account in that period, plus the market value of all withdrawals and transfers of cash and the sales charge is usually based on the net asset value of your units/shares at the time that
+investments out of the account in that period. The difference calculated is the Change in you redeem, and is deducted from the amount you receive for the units/shares. Deferred sales
+Market Value. charges decline to zero after a specific number of years.
+End date balance 3 Money-weighted returns 11
+Your account's balance at June 30, 2020. Money-weighted returns is a net of fees calculation for your portfolio performance including
+the timing of deposits and withdrawals.
+Market value 4 As an example, if you contribute $100 into your portfolio, this contribution is included in the
+Market value is the current value of an asset. It is displayed in Canadian Dollars (CAD) unless calculation for your money-weighted return. Read more how returns are calculated here.
+otherwise labelled. Sample calculation
+Book cost 5 You decide to fund your Wealthsimple account with $1,000 on January 1st. The first 364
+days of the year are great and your portfolio earns $100. You decide to add another
+Book cost reflects the total of what you paid to purchase an asset including all transaction $100,000 on December 31st and over that one day your portfolio loses a total of $101.
+charges and reinvested distributions. It is displayed in CAD unless otherwise labelled. Book What are your returns?
+values marked by † indicate that a part of this information comes from your prior dealer or
+adviser and may not be completely accurate. To calculate your MWR
+Unrealized gain and loss6 $100,999 = ($1,000 * (1+(MWR))) + ($100,000 * (1+(MWR))^(1/365))
+Calculated profit or loss based on the differential between an asset’s market value and its MWR = -0.07865%
+book cost. Gains or losses are unrealized because the asset has not been sold. It is displayed Time-weighted returns 12in CAD unless otherwise labelled.
+Management Fees7 Time-weighted returns is the performance of an account over a period of time excludingdeposits and withdrawals.
+We charge a percentage of your portfolio value as investment management fees. For more
+details on your fees, refer to your Investor Policy Statement in My Documents. Adjusted cost base
+13
+Trailer fees are charged for your Smart Savings account(s) outside of the interest rate you An adjusted calculation of book cost used for determining the cost of an investment
+receive. Here's an example: Your account shows you're receiving 1.50% interest and the specifically for tax purposes. Adjusted cost base is used by the Canada Revenue Agency to
+trailer fee is 0.50%, you'll still be receiving 1.50% in interest with this trailer fee deducted. determine capital gains or losses for income tax purposes. This calculation is based on the
+securities you hold with us. If you hold the same securities with another adviser or dealer, you
+Net proceeds8 will need to recalculate your adjusted cost base for that security.
+Wealthsimple Inc. 400 - 80 Spadina Avenue, Toronto Ontario M5V 2J4 Canada Conversion rate $1.00 USD = $1.35750 CAD
+Wealthsimple Prepared for: Jon Doe, 123 Main Street, Toronto ON M4W2G4 CA Page 8 of 8
+Glossary
+Realized gain and loss14
+Actual profit or loss of an asset that has been sold. This number doesn't include fees and
+expenses deducted during the sale of asset(s). It is displayed in CAD unless otherwise
+labelled. Realized returns marked by ‡ indicate incomplete history required to calculate your
+adjusted cost base. Please contact support@wealthsimple.
+Wealthsimple Inc. 400 - 80 Spadina Avenue, Toronto Ontario M5V 2J4 Canada Conversion rate $1.00 USD = $1.35750 CAD

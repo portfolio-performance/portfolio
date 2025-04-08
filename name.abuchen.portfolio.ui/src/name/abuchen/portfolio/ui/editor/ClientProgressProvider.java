@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.ui.editor;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
@@ -12,11 +12,9 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
 
 public class ClientProgressProvider extends ProgressProvider
@@ -106,8 +104,6 @@ public class ClientProgressProvider extends ProgressProvider
     public void createComposite(Composite parent)
     {
         label = new Label(parent, SWT.LEFT);
-        label.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
-        label.setBackground(Colors.getColor(249, 250, 250));
         label.setText(""); //$NON-NLS-1$
 
         parent.addDisposeListener(e -> disposed());

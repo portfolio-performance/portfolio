@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
-import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
@@ -17,23 +15,23 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 
+import name.abuchen.portfolio.money.DiscreetMode;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.FormatHelper;
 
 public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
 {
-    private static final char POINT = new DecimalFormatSymbols().getDecimalSeparator();
-
-    private final NumberFormat format = new DecimalFormat("#,##0.###"); //$NON-NLS-1$
+    private static final String POINT = String.valueOf(new DecimalFormatSymbols().getDecimalSeparator());
 
     private ColumnViewer viewer;
     private TextLayout cachedTextLayout;
 
-    public Color getForeground(Object element)
+    public Color getForeground(Object element) // NOSONAR
     {
         return null;
     }
 
-    public Color getBackground(Object element)
+    public Color getBackground(Object element) // NOSONAR
     {
         return null;
     }
@@ -67,25 +65,30 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
 
     private Rectangle getSize(Event event, String text)
     {
-        String s = text;
-        int p = s.indexOf(POINT);
+        StringBuilder builder = new StringBuilder(text);
+        int p = builder.indexOf(POINT);
         if (p >= 0)
-            s = s.substring(0, p);
+            builder.delete(p, builder.length());
+
+        builder.append(',');
+        builder.append(FormatHelper.getSharesDecimalPartPlaceholder());
+        builder.append(' ');
 
         TextLayout textLayout = getSharedTextLayout(event.display);
-        textLayout.setText(s + ",000 "); //$NON-NLS-1$
+        textLayout.setText(builder.toString());
+        textLayout.setFont(event.gc.getFont());
 
         return textLayout.getBounds();
     }
 
     private Rectangle getBounds(Widget widget, int index)
     {
-        if (widget instanceof TableItem)
-            return ((TableItem) widget).getBounds(index);
-        else if (widget instanceof TreeItem)
-            return ((TreeItem) widget).getBounds(index);
+        if (widget instanceof TableItem tableItem)
+            return tableItem.getBounds(index);
+        else if (widget instanceof TreeItem treeItem)
+            return treeItem.getBounds(index);
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unsupported item type " + widget); //$NON-NLS-1$
     }
 
     @Override
@@ -94,7 +97,7 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
         Long value = getValue(element);
         if (value != null)
         {
-            String text = format.format(value / Values.Share.divider());
+            String text = FormatHelper.getSharesFormat().format(value / Values.Share.divider());
             Rectangle size = getSize(event, text);
             event.setBounds(new Rectangle(event.x, event.y, size.width, event.height));
         }
@@ -109,6 +112,9 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
         if (!isSelected)
             fillBackground(event, element, tableItem);
 
+        if (element == null)
+            return;
+
         Long value = getValue(element);
         if (value == null)
             return;
@@ -121,7 +127,8 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
             event.gc.setForeground(newForeground);
         }
 
-        String text = format.format(value / Values.Share.divider());
+        String text = DiscreetMode.isActive() ? DiscreetMode.HIDDEN_AMOUNT
+                        : FormatHelper.getSharesFormat().format(value / Values.Share.divider());
         Rectangle size = getSize(event, text);
 
         TextLayout textLayout = getSharedTextLayout(event.display);

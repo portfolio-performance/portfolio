@@ -1,0 +1,84 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+StarMoney 29.04.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 16 1 von 3
+Buch.-Tag Wert Verwendungszweck/Erläuterungen Umsatz (EUR)
+Startsaldo am 26.08.2015 in EUR 229,38
+31.08 31.08.15 Kartenzahlung -54,69
+ZEHNER ENERGIE
+SVWZ+2015-08-30T20.35.54 Ka rte5 2016-12
+ABWA+ZEHNER ENERGIE GMBH//B AD KOENIGSHOFEN/DE
+01.09 01.09.15 Entgeltabrechnung -6,20
+Entgeltabrechnung siehe Anlage
+01.09 01.09.15 Basis-Lastschrift -29,50
+IGM Schweinfurt
+EREF+33000393 MREF+1199999999
+CRED+DE71ZZZ00000053593 SVWZ+BEITRAG BIS 08/15 MAND
+ATSREF 1199999999 GLAEUBIGE R-ID DE71ZZZ00000053593 NAE
+CHSTER BEITRAGSEINZUG IN BE KANNTER HOEHE UND VEREINBAR
+TEM TURNUS
+01.09 01.09.15 Zahlungseingang 200,00
+WINFRIED Mustermann
+KREF+b2d9ac38ae-1673719-958 4639-20150901
+SVWZ+Rueckzahlung Rest 5600
+Endsaldo am 01.09.2015 in EUR 667,50
+StarMoney 29.04.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 16 2 von 3
+Anlage Rechnungsabschluss:
+Abrechnung 31.08.2015
+Information zur Abrechnung
+Entgelte vom 01.08.2015 bis 31.08.2015                               6,20-
+Entgelte / Auslagen                                    6,20-
+--------------
+Abrechnung 31.08.2015                                                6,20-
+Rechnungsnummer: 20150901-BY036-00001066326
+SPARKASSE OSTUNTERFRANKEN UST ID: DE133906625
+GENEHMIGUNGSFIKTION:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug.
+Eventuelle Rückfragen besprechen Sie bitte mit Ihrem Kundenberater.
+Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere
+Revisionsabteilung. Unsere Anschrift(en) entnehmen Sie bitte unserem Preis-
+und Leistungsverzeichnis.
+Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzel-
+nen Buchungen. Dies bedeutet, dass der genannte Betrag nicht dem für die
+Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen
+möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder gedul-
+deten Kontoüberziehung anfallen können.
+Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs
+Wochen nach Zugang keine Einwendungen erheben. Einwendungen gegen Rechnungs-
+abschlüsse müssen der Sparkasse schriftlich oder, wenn im Rahmen der Ge-
+schäftsbeziehung der elektronische Kommunikationsweg vereinbart wurde (z.B.
+Online-Banking), auf diesem Wege zugehen. Zur Fristwahrung genügt die recht-
+zeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+Gutschriften aus eingereichten Schecks, Lastschriften und anderen
+Einzugspapieren erfolgen unter dem Vorbehalt der Einlösung.
+Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht
+bis zum Ablauf des übernächsten Bankarbeitstages storniert oder korrigiert
+werden. Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren
+Einlösungswillen schon vorher Dritten gegenüber erkennbar bekundet hat (z.B.
+durch Bezahltmeldung). Für Lastschriften gelten die Einlösungsregeln in
+den hierfür vereinbarten besonderen Bedingungen.
+Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen
+laut angegebener Kontonummer als Rechnung im Sinne des UStG.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes
+entschädigungsfähig. Nähere Informationen können dem Informationsbogen
+für den Einleger entnommen werden.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäfts-
+bedingungen und besonderen Bedingungen stellen wir Ihnen auf Wunsch gern
+zur Verfügung.
+StarMoney 29.04.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 16 3 von 3
+Mit freundlichen Grüßen
+Ihre Sparkasse

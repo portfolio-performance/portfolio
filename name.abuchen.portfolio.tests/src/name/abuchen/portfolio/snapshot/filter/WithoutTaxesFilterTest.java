@@ -1,20 +1,21 @@
 package name.abuchen.portfolio.snapshot.filter;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import name.abuchen.portfolio.AccountBuilder;
-import name.abuchen.portfolio.PortfolioBuilder;
-import name.abuchen.portfolio.SecurityBuilder;
-import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.junit.AccountBuilder;
+import name.abuchen.portfolio.junit.PortfolioBuilder;
+import name.abuchen.portfolio.junit.SecurityBuilder;
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -23,10 +24,14 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
+import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
 public class WithoutTaxesFilterTest
@@ -49,6 +54,7 @@ public class WithoutTaxesFilterTest
                             .deposit_("2016-01-01", Values.Amount.factorize(100))
                             .tax_____("2016-01-02", Values.Amount.factorize(5))
                             .taxrefnd("2016-02-02", Values.Amount.factorize(5))
+                            .interest("2016-02-15", Values.Amount.factorize(6), Values.Amount.factorize(1))
                             .dividend("2016-03-01", Values.Amount.factorize(10), Values.Amount.factorize(1), security1) //
                             .addTo(client);
             a.setName(index);
@@ -79,8 +85,8 @@ public class WithoutTaxesFilterTest
 
         Account account = result.getAccounts().get(0);
 
-        // 6 regular transactions + 3 corrections for buy, sell, and dividend tx
-        assertThat(account.getTransactions().size(), is(9));
+        // 7 regular transactions + 4 corrections for buy, sell, interest, and dividend tx
+        assertThat(account.getTransactions().size(), is(11));
 
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS)
@@ -93,10 +99,10 @@ public class WithoutTaxesFilterTest
         assertThat(account.getTransactions().stream().filter(t -> t.getType() == AccountTransaction.Type.TAXES)
                         .findAny().isPresent(), is(false));
 
-        // expect 3 removals: for the tax transaction + part of buy + sell +
+        // expect 5 removals: for the tax transaction + part of buy + sell + interest +
         // dividend
         assertThat(account.getTransactions().stream().filter(t -> t.getType() == AccountTransaction.Type.REMOVAL)
-                        .count(), is(4L));
+                        .count(), is(5L));
 
         // tax refund converted to deposit
         assertThat(account.getTransactions().stream().filter(t -> t.getType() == AccountTransaction.Type.TAX_REFUND)
@@ -105,7 +111,7 @@ public class WithoutTaxesFilterTest
                         .count(), is(2L));
 
         assertThat(AccountSnapshot.create(account, new TestCurrencyConverter(), LocalDate.parse("2016-09-03"))
-                        .getFunds(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10 + 250))));
+                        .getFunds(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10 + 250 + 6))));
 
         Portfolio portfolio = result.getPortfolios().get(0);
         assertThat(portfolio.getTransactions().size(), is(4));
@@ -207,6 +213,36 @@ public class WithoutTaxesFilterTest
                         .getCrossEntry();
         assertThat(copy.getSourceAccount().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(copy.getTargetAccount().getCurrencyCode(), is(CurrencyUnit.USD));
+    }
+
+    @Test
+    public void comparePerformanceSnapshots()
+    {
+        Client filtered = new WithoutTaxesFilter().filter(client);
+
+        Interval period = Interval.of(LocalDate.of(2015, Month.DECEMBER, 31), //
+                        LocalDate.of(2016, Month.MARCH, 31));
+        CurrencyConverter converter = new TestCurrencyConverter();
+
+        ClientPerformanceSnapshot originalP = new ClientPerformanceSnapshot(client, converter, period);
+        ClientPerformanceSnapshot filteredP = new ClientPerformanceSnapshot(filtered, converter, period);
+
+        // taxes should be 0 with the filter applied, even though they were originally not
+        assertThat(filteredP.getValue(CategoryType.TAXES).isZero(), is(true));
+        assertThat(originalP.getValue(CategoryType.TAXES).isZero(), is(false));
+
+        // tax payments are treated as withdrawals, so transfers should be lower accordingly
+        assertThat(filteredP.getValue(CategoryType.TRANSFERS),
+                is(originalP.getValue(CategoryType.TRANSFERS).subtract(originalP.getValue(CategoryType.TAXES))));
+
+        // other categories should be the same with and without taxes
+        assertThat(filteredP.getValue(CategoryType.INITIAL_VALUE), is(originalP.getValue(CategoryType.INITIAL_VALUE)));
+        assertThat(filteredP.getValue(CategoryType.CAPITAL_GAINS), is(originalP.getValue(CategoryType.CAPITAL_GAINS)));
+        assertThat(filteredP.getValue(CategoryType.REALIZED_CAPITAL_GAINS), is(originalP.getValue(CategoryType.REALIZED_CAPITAL_GAINS)));
+        assertThat(filteredP.getValue(CategoryType.EARNINGS), is(originalP.getValue(CategoryType.EARNINGS)));
+        assertThat(filteredP.getValue(CategoryType.FEES), is(originalP.getValue(CategoryType.FEES)));
+        assertThat(filteredP.getValue(CategoryType.CURRENCY_GAINS), is(originalP.getValue(CategoryType.CURRENCY_GAINS)));
+        assertThat(filteredP.getValue(CategoryType.FINAL_VALUE), is(originalP.getValue(CategoryType.FINAL_VALUE)));
     }
 
 }

@@ -1,0 +1,105 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.5
+-----------------------------------------
+T  00800 00 586336*
+F  +49 89 5150 2442
+service@baaderbank.de
+Seite 1/2
+Unterschleißheim
+Max Mustermann
+31.10.2023
+Teststr. 1
+12345 Teststadt Max Mustermann
+Stamm-Nr.: 12345    Portfolio: 1
+Konto-Nr.: 123456789
+IBAN: DE12 3456 7891 2345 6789 12
+BIC: BDWBDEMM
+Vorgangs-Nr.: 12345678
+Referenz-Nr.: 12346578912
+Rechnungsabschluss: EUR KOPIE
+Konto: DE12 3456 7891 2345 6789 12
+Sehr geehrte Damen und Herren,
+für den Zeitraum 30.09.2023 bis 31.10.2023 ergeben sich für das Konto DE12 3456 7891 2345 6789 12 
+folgende Abschlussbuchungen:
+Abschlussbuchung vom 31.10.2023
+Zinsberechnung: Betrag in EUR
+Habenzinsen (HZ) (brutto) 2,00
+Kapitalertragsteuer 0,49 -
+Kirchensteuer 0,03 -
+Solidaritätszuschlag 0,02 -
+Habenzinsen (netto) 1,46
+Gesamtsumme: 1,46
+Die Buchung erfolgt über Konto DE12 3456 7891 2345 6789 12 mit Valuta 31.10.2023.
+Die detaillierte Zinsberechnung entnehmen Sie bitte der beigefügten Zinsstaffel.
+Bei Fragen wenden Sie sich bitte an Ihren Finanzdienstleister. 
+Mit freundlichen Grüßen 
+Baader Bank AG
+Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537
+Weihenstephaner Straße 4 F +49 89 5150 2442 Oliver Riedel (stv. Vorsitzender) Sitz der Gesellschaft: Unterschleißheim
+85716 Unterschleißheim service@baaderbank.de Vorsitzender des Aufsichtsrates: StNr. 143/107/04009
+Deutschland www.baaderbank.de Helmut Schreyer USt-IdNr. DE114123893
+LEI: 529900JFOPPEDUR61H13
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. XXXX123-456.789
+Rechnungsabschluss: EUR KOPIE
+Konto: DE12 3456 7891 2345 6789 12
+Fortsetzung: Seite 2/2
+Maßgebliche Umsätze und Salden für diesen Zeitraum entnehmen Sie bitte dem gesonderten Perioden-Kontoauszug.
+Bitte prüfen Sie unseren Rechnungsabschluss. Rechnungsabschlüsse gelten als von Ihnen genehmigt, sofern Sie 
+innerhalb von 6 Wochen nach deren Zugang keine Einwendungen erheben. Wir verweisen auf unsere Allgemeinen 
+Geschäftsbedingungen.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537
+Weihenstephaner Straße 4 F +49 89 5150 2442 Oliver Riedel (stv. Vorsitzender) Sitz der Gesellschaft: Unterschleißheim
+85716 Unterschleißheim service@baaderbank.de Vorsitzender des Aufsichtsrates: StNr. 143/107/04009
+Deutschland www.baaderbank.de Helmut Schreyer USt-IdNr. DE114123893
+LEI: 529900JFOPPEDUR61H13
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. XXXX123-456.789
+T  00800 00 586336*
+F  +49 89 5150 2442
+service@baaderbank.de
+Seite 1/1
+Unterschleißheim
+DJE Kapital AG
+31.10.2023
+Teststr. 1
+12345 Teststadt Max Mustermann
+Stamm-Nr.: 12345    Portfolio: 1
+Konto-Nr.: 123456789
+IBAN: DE12 3456 7891 2345 6789 12
+BIC: BDWBDEMM
+Vorgangs-Nr.: 12345678
+Referenz-Nr.: 12346578912
+Zinsstaffel: EUR KOPIE
+Konto: DE12 3456 7891 2345 6789 12
+Für den Zeitraum vom 30.09.2023 bis 31.10.2023 ergab sich für Ihr Konto DE12 3456 7891 2345 6789 12 
+folgende Zinsberechnung:
+Valuta Zinstage Limit Saldo in EUR Zinssatz % Zinsbetrag in EUR
+30.09.2023 1 1.179,81 1,5000 0,05 HZ
+01.10.2023 1 1.179,81 1,5000 0,05 HZ
+02.10.2023 1 1.420,94 1,5000 0,06 HZ
+03.10.2023 3 1.431,07 1,5000 0,18 HZ
+06.10.2023 4 1.432,83 1,5000 0,24 HZ
+10.10.2023 2 1.420,06 1,5000 0,12 HZ
+12.10.2023 1 1.420,97 1,5000 0,06 HZ
+13.10.2023 3 1.423,54 1,5000 0,18 HZ
+16.10.2023 1 1.426,86 1,5000 0,06 HZ
+17.10.2023 2 1.404,08 1,5000 0,12 HZ
+19.10.2023 1 1.527,58 1,5000 0,06 HZ
+20.10.2023 3 1.660,10 1,5000 0,21 HZ
+23.10.2023 1 1.660,19 1,5000 0,07 HZ
+24.10.2023 1 1.758,42 1,5000 0,07 HZ
+25.10.2023 1 1.644,12 1,5000 0,07 HZ
+26.10.2023 4 1.896,42 1,5000 0,32 HZ
+30.10.2023 1 1.990,86 1,5000 0,08 HZ
+Bitte prüfen Sie diese Mitteilung. Etwaige Einwendungen bitten wir unverzüglich zu erheben.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537
+Weihenstephaner Straße 4 F +49 89 5150 2442 Oliver Riedel (stv. Vorsitzender) Sitz der Gesellschaft: Unterschleißheim
+85716 Unterschleißheim service@baaderbank.de Vorsitzender des Aufsichtsrates: StNr. 143/107/04009
+Deutschland www.baaderbank.de Helmut Schreyer USt-IdNr. DE114123893
+LEI: 529900JFOPPEDUR61H13
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. XXXX123-456.789

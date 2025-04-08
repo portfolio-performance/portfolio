@@ -1,0 +1,28 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH KASTANIENALLEE 32 10435 BERLIN
+SEITE 1 von 1
+AUSFÜHRUNG fc69-6fc3
+SPARPLAN af97-c4b1
+DEPOT 0183396801
+WERTPAPIERABRECHNUNG SPARPLAN
+ÜBERSICHT
+Sparplanausführung am 19.04.2022 an der Lang & Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL DURCHSCHNITTSKURS BETRAG
+ASML Holding N.V. 0,0358 Stk. 557,50 EUR 19,96 EUR
+Aandelen op naam EO -,09
+ISIN: NL0010273215
+GESAMT 19,96 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE74110101008889621052 21.04.2022 -19,96 EUR
+ASML Holding N.V. Aandelen op naam EO -,09 in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Torner
+10435 Berlin USt-ID DE307510626 Andreas Willius
+Gernot Mittendorfer
+ABRE / 19.04.2022 / 34659208 / bcf1-cfb3

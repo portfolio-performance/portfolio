@@ -1,37 +1,26 @@
 package name.abuchen.portfolio.snapshot.security;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
-import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
-import name.abuchen.portfolio.snapshot.SecurityPosition;
+import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.util.Interval;
 
 public class SecurityPerformanceSnapshot
 {
-    public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Interval interval)
+    @SafeVarargs
+    public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Interval interval,
+                    Class<? extends SecurityPerformanceIndicator>... indicators)
     {
-        Map<Security, SecurityPerformanceRecord> transactions = initRecords(client);
+        var records = new SecurityPerformanceSnapshotBuilder<SecurityPerformanceRecord>(client, converter, interval)
+                        .create(SecurityPerformanceRecord.class);
 
-        for (Account account : client.getAccounts())
-            extractSecurityRelatedAccountTransactions(account, interval, transactions);
-        for (Portfolio portfolio : client.getPortfolios())
-        {
-            extractSecurityRelatedPortfolioTransactions(portfolio, interval, transactions);
-            addPseudoValuationTansactions(portfolio, converter, interval, transactions);
-        }
-
-        return doCreateSnapshot(client, converter, transactions, interval);
+        return doCreateSnapshot(records, indicators);
     }
 
     public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Portfolio portfolio,
@@ -40,103 +29,22 @@ public class SecurityPerformanceSnapshot
         return create(new PortfolioClientFilter(portfolio).filter(client), converter, interval);
     }
 
-    private static Map<Security, SecurityPerformanceRecord> initRecords(Client client)
+    @SafeVarargs
+    public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Interval interval,
+                    ClientSnapshot valuationAtStart, ClientSnapshot valuationAtEnd,
+                    Class<? extends SecurityPerformanceIndicator>... indicators)
     {
-        Map<Security, SecurityPerformanceRecord> records = new HashMap<>();
-
-        for (Security s : client.getSecurities())
-            records.put(s, new SecurityPerformanceRecord(client, s));
-        return records;
+        var records = new SecurityPerformanceSnapshotBuilder<SecurityPerformanceRecord>(client, converter, interval)
+                        .create(SecurityPerformanceRecord.class, valuationAtStart, valuationAtEnd);
+        return doCreateSnapshot(records, indicators);
     }
 
-    private static SecurityPerformanceSnapshot doCreateSnapshot(Client client, CurrencyConverter converter,
-                    Map<Security, SecurityPerformanceRecord> records, Interval interval)
+    @SafeVarargs
+    private static SecurityPerformanceSnapshot doCreateSnapshot(List<SecurityPerformanceRecord> records,
+                    Class<? extends SecurityPerformanceIndicator>... indicators)
     {
-        List<SecurityPerformanceRecord> list = new ArrayList<>(records.values());
-
-        for (Iterator<SecurityPerformanceRecord> iter = list.iterator(); iter.hasNext();)
-        {
-            SecurityPerformanceRecord record = iter.next();
-            if (record.getTransactions().isEmpty())
-            {
-                // remove records that have no transactions
-                // during the reporting period
-                iter.remove();
-            }
-            else
-            {
-                // calculate values for each security
-                record.calculate(client, converter, interval);
-            }
-        }
-
-        return new SecurityPerformanceSnapshot(list);
-    }
-
-    private static void extractSecurityRelatedAccountTransactions(Account account, Interval interval,
-                    Map<Security, SecurityPerformanceRecord> records)
-    {
-        for (AccountTransaction t : account.getTransactions())
-        {
-            if (t.getSecurity() == null)
-                continue;
-
-            if (!interval.contains(t.getDateTime()))
-                continue;
-
-            switch (t.getType())
-            {
-                case DIVIDENDS:
-                case INTEREST:
-                    DividendTransaction dt = DividendTransaction.from(t);
-                    dt.setAccount(account);
-                    records.get(t.getSecurity()).addTransaction(dt);
-                    break;
-                case TAXES:
-                case TAX_REFUND:
-                case FEES:
-                case FEES_REFUND:
-                    records.get(t.getSecurity()).addTransaction(t);
-                    break;
-                case BUY:
-                case SELL:
-                    break;
-                case DEPOSIT:
-                case REMOVAL:
-                case TRANSFER_IN:
-                case TRANSFER_OUT:
-                case INTEREST_CHARGE:
-                default:
-                    throw new IllegalArgumentException(t.toString());
-            }
-        }
-    }
-
-    private static void extractSecurityRelatedPortfolioTransactions(Portfolio portfolio, Interval interval,
-                    Map<Security, SecurityPerformanceRecord> records)
-    {
-        portfolio.getTransactions().stream() //
-                        .filter(t -> interval.contains(t.getDateTime())) //
-                        .forEach(t -> records.get(t.getSecurity()).addTransaction(t));
-    }
-
-    private static void addPseudoValuationTansactions(Portfolio portfolio, CurrencyConverter converter,
-                    Interval interval, Map<Security, SecurityPerformanceRecord> records)
-    {
-        PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, converter, interval.getStart());
-        for (SecurityPosition position : snapshot.getPositions())
-        {
-            records.get(position.getSecurity())
-                            .addTransaction(new DividendInitialTransaction(position,
-                                            interval.getStart().atStartOfDay()));
-        }
-
-        snapshot = PortfolioSnapshot.create(portfolio, converter, interval.getEnd());
-        for (SecurityPosition position : snapshot.getPositions())
-        {
-            records.get(position.getSecurity())
-                            .addTransaction(new DividendFinalTransaction(position, interval.getEnd().atStartOfDay()));
-        }
+        records.forEach(r -> r.calculate(indicators));
+        return new SecurityPerformanceSnapshot(records);
     }
 
     private List<SecurityPerformanceRecord> records;
@@ -149,5 +57,10 @@ public class SecurityPerformanceSnapshot
     public List<SecurityPerformanceRecord> getRecords()
     {
         return records;
+    }
+
+    public Optional<SecurityPerformanceRecord> getRecord(Security security)
+    {
+        return records.stream().filter(r -> security.equals(r.getSecurity())).findAny();
     }
 }

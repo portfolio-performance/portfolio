@@ -1,0 +1,291 @@
+﻿PDF author: 'Windows XP/2000/NT/9x User'
+PDFBox Version: 1.8.16
+-----------------------------------------
+München, den 12.10.2019
+Stammnummer: 0000000
+Konto/Depotnummer: 000000000000
+Vermögensstatus
+Mustermann Max
+Erstellungsdatum: 11.10.2019
+Seite 1 von 8
+Raisin GmbH
+Immanuelkirchstr. 14a
+10405 Berlin
+Vermögensstatus und Rechnungsabschluss zum 30. September 2019
+Depot und Geldkonto
+in EUR
+Investmentfonds 23.063,04
+Depotwert gesamt 23.063,04
+Geldkonten -0,01
+Kontosalden gesamt -0,01
+Gesamtvermögen 23.063,03
+Gebührenübersicht seit letztem Reporting Wert in EUR
+angefallene Transaktionsgebühren 0,00
+Depotgebühren 0,00
+Verwaltungsvergütung 0,00
+gezahlte Ausgabeaufschläge 0,00
+Die Beträge für Depotgebühren und Verwaltungsgebühren enthalten 19% Umsatzsteuer.
+KESt-Information zum 30.09.19
+Konto-/Depotzuordnung Privatvermögen
+Freistellungsform KEST-pflichtig
+beantragter Freibetrag in EUR 0,00
+davon ausgeschöpft in EUR 0,00
+verbleibender Freibetrag in EUR 0,00
+Aktienverlusttopf in EUR 0,00
+Allgemeiner Verlusttopf in EUR 0,00
+Quellensteuertopf in EUR 0,00
+freigeschaltet für Finanztermingeschäfte
+keine
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+München, den 12.10.2019
+Stammnummer: 0000000
+Konto/Depotnummer: 000000000000
+Vermögensstatus
+Mustermann Max
+Erstellungsdatum: 11.10.2019
+Seite 2 von 8
+Depotübersicht zum 30. September 2019
+Depot 000000000000
+Investmentfonds EUR
+Bezeichnung Stück/Nominal Einstandskurs Tageskurs Gewinn Wert in
+WKN/ISIN Währg. Deviseneinstand Devisenkurs Verlust EUR
+VANG.FTSE D.A.P.X.J.DLD 50,647 22,5539 22,0200 -27,04 1.115,24
+A1T8FT/IE00B9F5YL18 EUR 1,000000 1,000000
+VANG.FTSE DEV.EU.UETF EOD 146,909 30,5741 30,7850 30,99 4.522,59
+A1T8FS/IE00B945VV12 EUR 1,000000 1,000000
+VANG.FTSE N.AME.U.ETF DLD 133,165 65,6443 67,2900 219,14 8.960,65
+A12CXY/IE00BKX55R35 EUR 1,000000 1,000000
+VANGUARD FTSE EMU.ETF DLD 88,340 51,4895 50,4200 -94,48 4.454,12
+A1JX51/IE00B3VVMM84 EUR 1,000000 1,000000
+VANGUARD FTSE JP.UETF DLD 61,685 25,8733 27,3250 89,55 1.685,55
+A1T8FU/IE00B95PGT31 EUR 1,000000 1,000000
+VAN.INVT-GL SC IDX INS.EO 10,571 215,6884 219,9334 44,87 2.324,89
+A1J8CD/IE00B42W4L06 EUR 1,000000 1,000000
+Gesamtwert EUR-Investmentfonds in EUR 263,03 23.063,04
+Gesamtwert Investmentfonds in EUR 263,03 23.063,04
+Depotwerte gesamt 000000000000 in EUR 263,03 23.063,04
+Total Depotwerte in EUR 263,03 23.063,04
+Kontoübersicht vom 05.07.2019 bis 30.09.2019
+Letzte Kontoübersicht vom 05.07.2019
+IBAN DE50 7012 0400 5606 3930 06
+Verrechnungskonto 0000000000 nach Buchungsdatum EUR
+Transaktion Instrument/Bezeichnung WKN Valuta Soll Haben
+Verwendungszweck
+Saldovortrag per 04.07.19 0,00
+Kursangaben ohne Gewähr
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+München, den 12.10.2019
+Stammnummer: 0000000
+Konto/Depotnummer: 000000000000
+Vermögensstatus
+Mustermann Max
+Erstellungsdatum: 11.10.2019
+Seite 3 von 8
+Kontoübersicht vom 05.07.2019 bis 30.09.2019
+Letzte Kontoübersicht vom 05.07.2019
+IBAN DE50 7012 0400 5606 3930 06
+Verrechnungskonto 0000000000 nach Buchungsdatum EUR
+Transaktion Instrument/Bezeichnung WKN Valuta Soll Haben
+Verwendungszweck
+SEPA-Gutschrift Max Mustermann 05.07.19 15.000,00
+SEPA-Überweisung
+Einzahlung IOO111462383450 35280593
+7
+SEPA EndToEndId: CLX/B352987906
+Kontostand per 05.07.19 15.000,00
+Kauf VANG.FTSE N.AME.U.ETF DLD A12CXY 10.07.19 5.751,00
+Kauf VANGUARD FTSE EMU.ETF DLD A1JX51 10.07.19 2.992,50
+Kauf VANG.FTSE DEV.EU.UETF EOD A1T8FS 10.07.19 2.955,00
+Kauf VANGUARD FTSE JP.UETF DLD A1T8FU 10.07.19 1.050,00
+Kauf VANG.FTSE D.A.P.X.J.DLD A1T8FT 10.07.19 751,50
+Kontostand per 08.07.19 1.500,00
+Kauf VAN.INVT-GL SC IDX INS.EO A1J8CD 11.07.19 1.500,02
+Kontostand per 10.07.19 0,02
+SEPA-Lastschrift Max Mustermann 15.07.19 300,00
+SEPA-Lastschrift
+WeltInvest Sparplan 000000000
+SEPA EndToEndId: 000000000
+Gläubiger-ID: DE27ZZZ00000024315
+Mandatsref.: SPWELTINVEST0000000000
+Kauf VANG.FTSE D.A.P.X.J.DLD A1T8FT 17.07.19 15,03
+Kauf VANG.FTSE DEV.EU.UETF EOD A1T8FS 17.07.19 59,10
+Kauf VANGUARD FTSE JP.UETF DLD A1T8FU 17.07.19 21,00
+Kauf VANG.FTSE N.AME.U.ETF DLD A12CXY 17.07.19 115,01
+Kauf VANGUARD FTSE EMU.ETF DLD A1JX51 17.07.19 59,85
+Kontostand per 15.07.19 29,99
+Kursangaben ohne Gewähr
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+München, den 12.10.2019
+Stammnummer: 0000000
+Konto/Depotnummer: 000000000000
+Vermögensstatus
+Mustermann Max
+Erstellungsdatum: 11.10.2019
+Seite 4 von 8
+Kontoübersicht vom 05.07.2019 bis 30.09.2019
+Letzte Kontoübersicht vom 05.07.2019
+IBAN DE50 7012 0400 5606 3930 06
+Verrechnungskonto 0000000000 nach Buchungsdatum EUR
+Transaktion Instrument/Bezeichnung WKN Valuta Soll Haben
+Verwendungszweck
+SEPA-Gutschrift Max Mustermann 17.07.19 5.000,00
+SEPA-Überweisung
+Einzahlung IOO111462383450 35567753
+1
+SEPA EndToEndId: CLX/B355677534
+SEPA-Gutschrift Max Mustermann 17.07.19 1.900,00
+SEPA-Überweisung
+Einzahlung IOO111462383450 35309292
+8
+SEPA EndToEndId: CLX/B355641819
+Kauf VAN.INVT-GL SC IDX INS.EO A1J8CD 18.07.19 30,00
+Kauf VANGUARD FTSE JP.UETF DLD A1T8FU 19.07.19 483,00
+Kauf VANGUARD FTSE EMU.ETF DLD A1JX51 19.07.19 1.376,55
+Kauf VANG.FTSE DEV.EU.UETF EOD A1T8FS 19.07.19 1.359,30
+Kauf VANG.FTSE D.A.P.X.J.DLD A1T8FT 19.07.19 345,69
+Kauf VANG.FTSE N.AME.U.ETF DLD A12CXY 19.07.19 2.645,46
+Kontostand per 17.07.19 689,99
+Kauf VAN.INVT-GL SC IDX INS.EO A1J8CD 22.07.19 690,00
+Kontostand per 19.07.19 0,01
+SEPA-Lastschrift Max Mustermann 13.08.19 300,00
+SEPA-Lastschrift
+WeltInvest Sparplan 358989575
+SEPA EndToEndId: 358989575
+Gläubiger-ID: DE27ZZZ00000024315
+Mandatsref.: SPWELTINVEST5606393999
+Kauf VANGUARD FTSE EMU.ETF DLD A1JX51 15.08.19 59,85
+Kursangaben ohne Gewähr
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+München, den 12.10.2019
+Stammnummer: 0000000
+Konto/Depotnummer: 000000000000
+Vermögensstatus
+Mustermann Max
+Erstellungsdatum: 11.10.2019
+Seite 5 von 8
+Kontoübersicht vom 05.07.2019 bis 30.09.2019
+Letzte Kontoübersicht vom 05.07.2019
+IBAN DE50 7012 0400 5606 3930 06
+Verrechnungskonto 0000000000 nach Buchungsdatum EUR
+Transaktion Instrument/Bezeichnung WKN Valuta Soll Haben
+Verwendungszweck
+Kauf VANG.FTSE D.A.P.X.J.DLD A1T8FT 15.08.19 15,03
+Kauf VANG.FTSE DEV.EU.UETF EOD A1T8FS 15.08.19 59,10
+Kauf VANGUARD FTSE JP.UETF DLD A1T8FU 15.08.19 21,00
+Kauf VANG.FTSE N.AME.U.ETF DLD A12CXY 15.08.19 115,02
+Kontostand per 13.08.19 29,99
+Kauf VAN.INVT-GL SC IDX INS.EO A1J8CD 16.08.19 30,00
+Kontostand per 15.08.19 0,01
+SEPA-Lastschrift Max Mustermann 13.09.19 300,00
+SEPA-Lastschrift
+WeltInvest Sparplan 366216140
+SEPA EndToEndId: 366216140
+Gläubiger-ID: DE27ZZZ00000024315
+Mandatsref.: SPWELTINVEST5606393999
+Kauf VANGUARD FTSE JP.UETF DLD A1T8FU 17.09.19 21,00
+Kauf VANG.FTSE D.A.P.X.J.DLD A1T8FT 17.09.19 15,03
+Kauf VANG.FTSE N.AME.U.ETF DLD A12CXY 17.09.19 115,02
+Kauf VANGUARD FTSE EMU.ETF DLD A1JX51 17.09.19 59,85
+Kauf VANG.FTSE DEV.EU.UETF EOD A1T8FS 17.09.19 59,10
+Kontostand per 13.09.19 29,99
+Kauf VAN.INVT-GL SC IDX INS.EO A1J8CD 18.09.19 30,00
+Kontostand per 17.09.19 0,01
+Kontostand per 30.09.19 0,01
+Geldkonto nach Valutadatum 30.09.19
+Kontonummer Produkt Währg. Betrag Devisenkurs Wert in EUR
+0000000000 Verrechnungskonto EUR -0,01 1,000000 -0,01
+Kursangaben ohne Gewähr
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+München, den 12.10.2019
+Stammnummer: 0000000
+Konto/Depotnummer: 000000000000
+Vermögensstatus
+Mustermann Max
+Erstellungsdatum: 11.10.2019
+Seite 6 von 8
+Kontoübersicht vom 05.07.2019 bis 30.09.2019
+Letzte Kontoübersicht vom 05.07.2019
+Geldkonto nach Valutadatum 30.09.19
+Kontonummer Produkt Währg. Betrag Devisenkurs Wert in EUR
+Gesamtwert Geldkonten -0,01
+Anhang
+Eigenkapitalinstrumente:
+Bei folgenden Wertpapieren handelt es sich um Eigenkapitalinstrumente:
+Bezeichnung ISIN / WKN
+VANG.FTSE N.AME.U.ETF DLD IE00BKX55R35 / A12CXY
+VANGUARD FTSE EMU.ETF DLD IE00B3VVMM84 / A1JX51
+VANG.FTSE D.A.P.X.J.DLD IE00B9F5YL18 / A1T8FT
+VANG.FTSE DEV.EU.UETF EOD IE00B945VV12 / A1T8FS
+VANGUARD FTSE JP.UETF DLD IE00B95PGT31 / A1T8FU
+Unterschiedliche Salden der Geldkonten innerhalb einer Währung entstehen durch die Differenz von
+Buchungsdatum und Valutadatum. Der Saldo kann auch noch nicht wertgestellte Beträge enthalten, über
+die bis zur Wertstellung noch nicht ohne Abzug von Sollzinsen verfügt werden kann.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig.
+Nähere Informationen können dem „Informationsbogen für den Einleger“ entnommen werden.
+Kursangaben ohne Gewähr
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+München, den 12.10.2019
+Stammnummer: 0000000
+Konto/Depotnummer: 000000000000
+Vermögensstatus
+Mustermann Max
+Erstellungsdatum: 11.10.2019
+Seite 7 von 8
+RECHNUNGSABSCHLUSS / SALDOMITTEILUNG
+Wichtiger Hinweis:
+Genehmigung des Rechnungsabschlusses
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit des Rechnungsabschlusses müssen Sie bis spätestens vor Ablauf von sechs
+Wochen nach dessen Zugang erheben. Sofern Sie Ihre Einwendungen schriftlich geltend machen, genügt die Absendung innerhalb der
+Sechs-Wochen-Frist. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung des Rechnungsabschlusses.
+Genehmigung von Belastungen aus Lastschriften
+Haben Sie eine Belastungsbuchung aus einer Lastschrift, für die Sie dem Gläubiger eine Einzugsermächtigung erteilt haben, nicht schon
+genehmigt, so müssen Sie Einwendungen gegen die im Saldo dieses Rechnungsabschlusses enthaltene Belastungsbuchung spätestens vor
+Ablauf von sechs Wochen nach Zugang des Rechnungsabschlusses erheben. Sofern Sie Ihre Einwendungen schriftlich geltend machen,
+genügt die Absendung innerhalb der Sechs-Wochen-Frist. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung der
+Belastungsbuchung.
+Ihre Einwendungen richten Sie bitte an den DAB Kundenservice, Landsberger Str. 300, 80687 München
+Gewinn- und Verlustrechnungen sowie Kursangaben dienen, soweit angegeben, lediglich Ihrer Information; sie können unrichtig oder
+unvollständig sein.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+München, den 12.10.2019
+Stammnummer: 0000000
+Konto/Depotnummer: 000000000000
+Vermögensstatus
+Mustermann Max
+Erstellungsdatum: 11.10.2019
+Seite 8 von 8
+Einführung „DAB SecurePlus“ für noch mehr Sicherheit beim Login und der Freigabe Ihrer Zahlungen
+Am 14. September 2019 trat die Zweite EU-Zahlungsdiensterichtlinie (PSD2) in Kraft und wir hatten in
+diesem Zusammenhang das Autorisierungsverfahren für unsere Kunden auf das mobileTAN-Verfahren
+umgestellt. In den nächsten Monaten werden wir die Sicherheit noch weiter erhöhen und werden eine
+App-Lösung bereitstellen, die das bisher eingesetze mobileTAN Verfahren ablösen wird. Die
+„DAB SecurePlus App“ können Sie als zweiten Sicherheitsfaktor beim Login und zur Freigabe Ihrer
+Aufträge verwenden und Ihre Bankgeschäfte wie gewohnt abwickeln, z.B. an Ihrem PC. Damit ist Ihr 
+Onlinezugang in Zukunft noch besser geschützt und Sie erhalten eine komfortable Lösung, die auch
+funktioniert, wenn Ihr Mobiltelefon gerade kein Netz hat.
+Die SecurePlus-Technologie der Firma Kobil hat noch weitere Vorteile:
+Die DAB SecurePlus-App bietet noch mehr Sicherheit als das mobileTAN Verfahren. SIM-Karten Betrug
+ist damit nicht mehr möglich, da die SecurePlus App nicht an die Handynummer sondern an das Gerät 
+geknüpft ist. Der Zugang zur SecurePlus App ist zusätzlich mit einer separaten PIN geschützt und die
+Kommunikation mit der SecurePlus App wird verschlüsselte übermittelt. Selbstverständlich ist die App
+komplett kostenlos für Sie.
+Sobald die App zum Download verfügbar ist, werden wir alle Kunden mit Online-Zugängen gezielt 
+informieren. Aktuell müssen Sie nichts tun. Weitere Informationen zu PSD2 finden Sie hier:
+https://b2b.dab-bank.de/Tradingcenter/Service-Infos/PSD2
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé

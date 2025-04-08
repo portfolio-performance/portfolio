@@ -1,0 +1,43 @@
+PDF Autor: 'Computershare Communication Services GmbH'
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+Split DEPOTUNTERBEZEICHNUNG=
+Durchführungsanzeige VERSANDARTENSCHLUESSEL=DRUCKADRESSZEILE1=Herr
+ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Musterstr. 1
+ADRESSZEILE4=99999 Musterstadt
+Depot-Nr. Ausführungs-Nr. ADRESSZEILE5=
+123456789 12345678 / 03.12.2018 ADRESSZEILE6=
+Herr BELEGNUMMER=715
+Max Mustermann SEITENNUMMER=1
+Musterstr. 1 STEUERERSTATTUNG=N
+99999 Musterstadt Depotinhaber
+Max Muster
+München, 04.12.2018
+Ihr Depotbestand:
+Gattungsbezeichnung ISIN
+BNP P.Easy-MSCI Pac.x.Jap.x.CW Nam.-Ant.UCITS ETF CAP EUR LU1291106356
+o.N
+Nominal Ex-Tag
+STK 0,0722 04.12.2018
+Verwahrart
+Girosammelverwahrung
+Wir haben Ihrem Depot im Verhältnis 1 : 22 folgende Stücke zugebucht (hinzugefügt):
+Gattungsbezeichnung ISIN
+BNP P.Easy-MSCI Pac.x.Jap.x.CW Nam.-Ant.UCITS ETF CAP EUR LU1291106356
+o.N
+Nominal
+STK 1,5884
+Verwahrart
+Girosammelverwahrung
+Information zu steuerrelevanten Kennzahlen pro Anteil:
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/DUANDEREEREIKAPMSPLT/GDBVKAPU/000725/041318/235345

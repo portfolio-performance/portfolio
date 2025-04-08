@@ -19,12 +19,18 @@ public class BuySellEntry implements CrossEntry, Annotated
 
     public BuySellEntry(Portfolio portfolio, Account account)
     {
+        this(portfolio, new PortfolioTransaction(), account, new AccountTransaction());
+    }
+
+    /* protobuf only */ BuySellEntry(Portfolio portfolio, PortfolioTransaction portfolioTx, Account account,
+                    AccountTransaction accountTx)
+    {
         this.portfolio = portfolio;
-        this.portfolioTransaction = new PortfolioTransaction();
+        this.portfolioTransaction = portfolioTx;
         this.portfolioTransaction.setCrossEntry(this);
 
         this.account = account;
-        this.accountTransaction = new AccountTransaction();
+        this.accountTransaction = accountTx;
         this.accountTransaction.setCrossEntry(this);
     }
 
@@ -103,6 +109,19 @@ public class BuySellEntry implements CrossEntry, Annotated
     }
 
     @Override
+    public String getSource()
+    {
+        return this.portfolioTransaction.getSource();
+    }
+
+    @Override
+    public void setSource(String source)
+    {
+        this.portfolioTransaction.setSource(source);
+        this.accountTransaction.setSource(source);
+    }
+
+    @Override
     public void insert()
     {
         portfolio.addTransaction(portfolioTransaction);
@@ -126,7 +145,7 @@ public class BuySellEntry implements CrossEntry, Annotated
         }
         else
         {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("transaction can't be used for update: " + t); //$NON-NLS-1$
         }
     }
 
@@ -138,19 +157,19 @@ public class BuySellEntry implements CrossEntry, Annotated
         else if (t.equals(accountTransaction))
             return account;
         else
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("unable to get owner for transcation " + t); //$NON-NLS-1$
 
     }
 
     @Override
     public void setOwner(Transaction t, TransactionOwner<? extends Transaction> owner)
     {
-        if (t.equals(portfolioTransaction) && owner instanceof Portfolio)
-            portfolio = (Portfolio) owner;
-        else if (t.equals(accountTransaction) && owner instanceof Account)
-            account = (Account) owner;
+        if (t.equals(portfolioTransaction) && owner instanceof Portfolio p)
+            portfolio = p;
+        else if (t.equals(accountTransaction) && owner instanceof Account a)
+            account = a;
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unable to set owner for transcation " + t); //$NON-NLS-1$
     }
 
     @Override
@@ -161,7 +180,7 @@ public class BuySellEntry implements CrossEntry, Annotated
         else if (t.equals(accountTransaction))
             return portfolioTransaction;
         else
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("unable to get cross transaction for transcation " + t); //$NON-NLS-1$
     }
 
     @Override
@@ -172,7 +191,7 @@ public class BuySellEntry implements CrossEntry, Annotated
         else if (t.equals(accountTransaction))
             return portfolio;
         else
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("unable to get cross owner for transcation " + t); //$NON-NLS-1$
     }
 
     public PortfolioTransaction getPortfolioTransaction()

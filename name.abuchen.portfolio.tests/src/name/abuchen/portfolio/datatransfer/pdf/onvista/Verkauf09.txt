@@ -1,0 +1,140 @@
+PDF Author: ''
+PDFBox Version: 1.8.13
+
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Person
+ADRESSZEILE2=VORNAME NACHNAME
+Kauf ADRESSZEILE3=STRASSESTRASSE
+Kommissionsgeschäft ADRESSZEILE4=77777 WoAuchImmerDorf
+Person ADRESSZEILE5=
+VORNAME NACHNAME ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+STRASSESTRASSE BELEGNUMMER=11421
+77777 WoAuchImmerDorf 123456789 98765432 / 08.08.2018 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+VORNAME NACHNAME
+Frankfurt am Main, 08.08.2018
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Zalando SE Inhaber-Aktien o.N. DE000ZAL1111
+Nominal Kurs
+STK 100,000 EUR 43,5450
+Handelstag 08.08.2018 Kurswert EUR 4.354,50-
+Handelszeit 15:00 Orderprovision EUR 5,00-
+Handelsplatz außerbörslich Baader Bank Handelsplatzgebühr EUR 1,50-
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+10.08.2018 330247043 EUR 4.361,00
+Wir werden in Ihrem Depot wie angegeben buchen.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+3.18/ABREABHNHANDKFDI/GAAASAFG/011421/090818/002343
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Person
+ADRESSZEILE2=VORNAME NACHNAME
+Verkauf ADRESSZEILE3=STRASSESTRASSE
+Kommissionsgeschäft ADRESSZEILE4=77777 WoAuchImmerDorf
+Person ADRESSZEILE5=
+VORNAME NACHNAME ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+STRASSESTRASSE BELEGNUMMER=11422
+77777 WoAuchImmerDorf 123456789 68411850 / 08.08.2018 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+VORNAME NACHNAME
+Frankfurt am Main, 08.08.2018
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+Zalando SE Inhaber-Aktien o.N. DE000ZAL1111
+Nominal Kurs
+STK 100,000 EUR 43,0010
+Handelstag 08.08.2018 Kurswert EUR 4.300,10
+Handelszeit 17:27 Orderprovision EUR 5,00-
+Handelsplatz außerbörslich Lang & Schwarz Handelsplatzgebühr EUR 1,50-
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+10.08.2018 330247043 EUR 4.293,60
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsverlust Aktien EUR 67,40
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern (negativ) EUR 67,40
+Steuerausgleich nach § 43a EStG:
+Kapitalertragsteuer EUR 16,85
+Solidaritätszuschlag EUR 0,93
+Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+08.08.2018 330247043 80817950 EUR 17,78
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 4.762,62
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 261,94
+Es folgt Seite 2
+3.18/ABREABHNHANDVFDI/GAAASAFG/011422/090818/002343
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Person
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=VORNAME NACHNAME
+123456789 68411850 2 ADRESSZEILE3=STRASSESTRASSE
+ADRESSZEILE4=77777 WoAuchImmerDorf
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=11422
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem SEITENNUMMER=2
+Finanzamt Itzehoe, Steuernummer 18/297/13562. STEUERERSTATTUNG=N
+Jahressteuerbescheinigung folgt
+Wir werden in Ihrem Depot wie angegeben buchen.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+3.18/ABREABHNHANDVFDI/GAAASAFG/011422/090818/002343
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Person
+ADRESSZEILE2=VORNAME NACHNAME
+Kauf ADRESSZEILE3=STRASSESTRASSE
+Kommissionsgeschäft ADRESSZEILE4=77777 WoAuchImmerDorf
+Person ADRESSZEILE5=
+VORNAME NACHNAME ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+STRASSESTRASSE BELEGNUMMER=11423
+77777 WoAuchImmerDorf 123456789 80926283 / 08.08.2018 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+VORNAME NACHNAME
+Frankfurt am Main, 08.08.2018
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+MorphoSys AG Inhaber-Aktien o.N. DE0006632003
+Nominal Kurs
+STK 40,000 EUR 105,6900
+Handelstag 08.08.2018 Kurswert EUR 4.227,60-
+Handelszeit 17:28 Orderprovision EUR 5,00-
+Handelsplatz außerbörslich Lang & Schwarz Handelsplatzgebühr EUR 1,50-
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+10.08.2018 330247043 EUR 4.234,10
+Wir werden in Ihrem Depot wie angegeben buchen.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+3.18/ABREABHNHANDKFDI/GAAASAFG/011423/090818/002343

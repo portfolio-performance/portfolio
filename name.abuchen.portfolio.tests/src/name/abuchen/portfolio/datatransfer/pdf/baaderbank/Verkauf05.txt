@@ -1,0 +1,81 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/3
+München
+30.10.2020
+DonauCapital Wertpapier GmbH
+GRATISBROKER GmbH 
+wg. GRATISBROKER GmbH service@gratisbroker.de
+Passauer Str. 5
+Max Mustermann
+94161 Ruderting Stamm-Nr.: 1163118    Portfolio: 1
+Depot-Nr.: 1111111111
+Vorgangs-Nr.: 22222222
+Referenz-Nr.: 22222221
+Wertpapierabrechnung: Verkauf KOPIE
+Auftragsdatum: 30.10.2020 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 16:34:32:55
+Nominale ISIN: US30212P3038 WKN: A1JRLJ Kurs 
+STK 20    Expedia Group Inc. EUR 80,04
+Registered Shares DL-,0001
+Auftraggeber: Depotinhaber
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 1.600,80
+Kapitalertragsteuer EUR 127,73 -
+Kirchensteuer EUR 11,49 -
+Solidaritätszuschlag EUR 7,02 -
+Zu Gunsten Konto 1111111111 Valuta: 03.11.2020 EUR 1.454,56
+Die Wertpapiere buchen wir zu Lasten Ihres Depots.
+Details zur Ausführung:
+Handels- Handels- 
+Nominale Kurs Ausführungsplatz datum uhrzeit
+STK   20    EUR 80,04 GETTEX - MM Munich 30.10.2020 16:34:43:86
+Verwahrart: Girosammelverwahrung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 100 MIC des Ausführungsplatzes: MUNC
+Lagerland: Deutschland
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und 
+Vollständigkeit. Etwaige Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der 
+Baader Bank AG erhoben werden.
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank 
+erbracht.
+GRATISBROKER GmbH | Geschäftsführer: Malte Rubruck, Stefan Mross, Philipp Röben | HRB 242583 Amtsgericht München | USt-IdNr. DE319411410
+GRATISBROKER GmbH erbringt Anlagevermittlung als vertraglich gebundener Vermittler der DonauCapital Wertpapier GmbH
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. WPABRECHNUNG-054.108
+Wertpapierabrechnung: Verkauf KOPIE
+Fortsetzung: Seite 2/3
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+GRATISBROKER GmbH | Geschäftsführer: Malte Rubruck, Stefan Mross, Philipp Röben | HRB 242583 Amtsgericht München | USt-IdNr. DE319411410
+GRATISBROKER GmbH erbringt Anlagevermittlung als vertraglich gebundener Vermittler der DonauCapital Wertpapier GmbH
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. WPABRECHNUNG-054.108
+Wertpapierabrechnung: Verkauf KOPIE
+Fortsetzung: Seite 3/3
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+bezahlte Kapitalertragsteuer EUR 8,80 EUR 127,73 EUR 136,53
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+KESt./AbgSt. Aktiengewinne/Verluste EUR 522,40 EUR 522,40
+Kapitalertragsteuer auf Aktiengewinne bei 9% Kirchensteuer EUR 522,40 EUR 522,40
+Kapitalertragsteuer auf Aktiengewinne bei 9% Kirchensteuer
+Kapitalertragsteuer 24,45 % EUR 127,73 - EUR 127,73 -
+Kirchensteuer 9,00 % EUR 11,49 - EUR 11,49 -
+Solidaritätszuschlag 5,50 % EUR 7,02 - EUR 7,02 -
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP Kauf 14141414 07.04.2020 STK 20,00 1.078,40 1.600,80 522,40
+GRATISBROKER GmbH | Geschäftsführer: Malte Rubruck, Stefan Mross, Philipp Röben | HRB 242583 Amtsgericht München | USt-IdNr. DE319411410
+GRATISBROKER GmbH erbringt Anlagevermittlung als vertraglich gebundener Vermittler der DonauCapital Wertpapier GmbH
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. WPABRECHNUNG-054.108

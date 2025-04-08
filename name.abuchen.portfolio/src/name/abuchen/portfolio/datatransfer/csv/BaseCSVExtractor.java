@@ -1,6 +1,9 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -21,6 +24,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
@@ -73,14 +77,16 @@ import name.abuchen.portfolio.money.Money;
         int lineNo = 1 + skipLines; // +1 because of end user
         for (String[] strings : rawValues)
         {
+            String[] trimmed = trim(strings);
+
             try
             {
-                extract(result, strings, field2column);
+                extract(result, trimmed, field2column);
             }
             catch (ParseException | UnsupportedOperationException | IllegalArgumentException e)
             {
                 errors.add(new IOException(MessageFormat.format(Messages.CSVLineXwithMsgY, lineNo, e.getMessage(),
-                                Arrays.toString(strings)), e));
+                                Arrays.toString(trimmed)), e));
             }
             lineNo++;
         }
@@ -111,8 +117,7 @@ import name.abuchen.portfolio.money.Money;
         {
             name = constructName(isin, tickerSymbol, wkn, name);
             security = securityCache.lookup(isin, tickerSymbol, wkn, name, () -> {
-                Security s = new Security();
-                s.setCurrencyCode(client.getBaseCurrency());
+                Security s = new Security(null, client.getBaseCurrency());
 
                 onSecurityCreated.accept(s);
 
@@ -173,5 +178,33 @@ import name.abuchen.portfolio.money.Money;
             date = LocalDate.now().atStartOfDay();
 
         return Optional.of(new SecurityPrice(date.toLocalDate(), Math.abs(amount)));
+    }
+
+    protected Optional<Unit> extractGrossAmount(String[] rawValues, Map<String, Column> field2column, Money amount)
+                    throws ParseException
+    {
+        Long grossAmount = getAmount(Messages.CSVColumn_GrossAmount, rawValues, field2column);
+        String currencyCode = getCurrencyCode(Messages.CSVColumn_CurrencyGrossAmount, rawValues, field2column);
+        BigDecimal exchangeRate = getBigDecimal(Messages.CSVColumn_ExchangeRate, rawValues, field2column);
+
+        // if no currency code is given, let's assume the gross amount is in the
+        // same currency as the transaction itself. Either way, if the gross
+        // amount currency equals the transaction currency, no unit is created
+        if (currencyCode == null || amount.getCurrencyCode().equals(currencyCode))
+            return Optional.empty();
+
+        // if no gross amount is given at all, no unit
+        if (grossAmount == null || grossAmount.longValue() == 0)
+            return Optional.empty();
+
+        // if no exchange rate is available, not unit to create
+        if (exchangeRate == null || exchangeRate.compareTo(BigDecimal.ZERO) == 0)
+            return Optional.empty();
+
+        Money forex = Money.of(currencyCode, Math.abs(grossAmount.longValue()));
+        BigDecimal grossAmountConverted = exchangeRate.multiply(BigDecimal.valueOf(grossAmount));
+        Money converted = Money.of(amount.getCurrencyCode(), Math.round(grossAmountConverted.doubleValue()));
+
+        return Optional.of(new Unit(Unit.Type.GROSS_VALUE, converted, forex, exchangeRate));
     }
 }

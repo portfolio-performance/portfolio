@@ -1,0 +1,51 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Signor NAME SURNAME
+ADDRESS
+ZIP CITY
+Italy
+Nome Utente: *********rri
+(ACCOUNT NUMBER)
+Estratto conto da 01-01-2021 a 29-11-2021
+Data Ora Data Valore Prodotto ISIN Descrizione Borsa Variazioni Saldo
+02-11-2021 12:34 01-11-2021 Trasferisci dal tuo conto deposito presso flatexDEGIRO EUR 215,21
+Bank: 0,56 EUR
+02-11-2021 12:34 01-11-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 0,56 EUR 215,77
+01-11-2021 14:26 31-10-2021 DEGIRO Costi di connessione 2021 (Xetra - XET) EUR -0,56 EUR 215,21
+28-10-2021 08:50 28-10-2021 Deposito flatex EUR 200,00 EUR 215,77
+06-10-2021 11:47 05-10-2021 Trasferisci dal tuo conto deposito presso flatexDEGIRO EUR 15,77
+Bank: 192,46 EUR
+06-10-2021 11:47 05-10-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 192,46 EUR 208,23
+04-10-2021 09:04 04-10-2021 VANGUARD FTSE ALL-WORLD UCITS ETF - (... IE00BK5BQT80 Acquisto 2 Vanguard FTSE All-World UCITS ETF - (USD) EUR -191,22 EUR 15,77
+Accumulating@95,61 EUR (IE00BK5BQT80)
+02-10-2021 10:46 30-09-2021 DEGIRO Costi di connessione 2021 (Xetra - XET) EUR -1,24 EUR 206,99
+02-10-2021 05:50 30-09-2021 Flatex Interest EUR -0,03 EUR 208,23
+29-09-2021 08:50 29-09-2021 Deposito flatex EUR 200,00 EUR 208,26
+27-09-2021 10:16 24-09-2021 Trasferisci dal tuo conto deposito presso flatexDEGIRO EUR 8,26
+Bank: 291,75 EUR
+27-09-2021 10:16 24-09-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 291,75 EUR 300,01
+24-09-2021 09:04 24-09-2021 VANGUARD FTSE ALL-WORLD UCITS ETF - (... IE00BK5BQT80 Acquisto 3 Vanguard FTSE All-World UCITS ETF - (USD) EUR -291,75 EUR 8,26
+Accumulating@97,25 EUR (IE00BK5BQT80)
+20-09-2021 08:50 20-09-2021 Deposito flatex EUR 300,00 EUR 300,01
+02-09-2021 11:46 01-09-2021 Trasferisci sul tuo conto deposito presso flatexDEGIRO EUR 0,01
+Bank: 0,01 EUR
+02-09-2021 11:46 01-09-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -0,01 EUR 0,00
+flatex DEGIRO Bank flatex DEGIRO Bank Dutch Branch,
+Dutch Branch E clienti@degiro.it che opera come DEGIRO, e' la branca
+Amstelplein 1 I www.degiro.it olandese della flatexDEGIRO Bank Pagina 1 / 2
+1096 HA Amsterdam AG. flatexDEGIRO Bank AG opera Estratto conto 2021-11-29
+innanzi tutto sotto la supervisione
+Signor NAME SURNAME
+ADDRESS
+ZIP CITY
+Italy
+Nome Utente: *********rri
+(ACCOUNT NUMBER)
+Data Ora Data Valore Prodotto ISIN Descrizione Borsa Variazioni Saldo
+01-09-2021 02:44 31-08-2021 Deposito EUR 0,01 EUR 0,01
+02-07-2021 07:41 30-06-2021 Flatex Interest Income EUR 0,00 EUR 0,00
+flatex DEGIRO Bank flatex DEGIRO Bank Dutch Branch,
+Dutch Branch E clienti@degiro.it che opera come DEGIRO, e' la branca
+Amstelplein 1 I www.degiro.it olandese della flatexDEGIRO Bank Pagina 2 / 2
+1096 HA Amsterdam AG. flatexDEGIRO Bank AG opera Estratto conto 2021-11-29
+innanzi tutto sotto la supervisione

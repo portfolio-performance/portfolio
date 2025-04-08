@@ -1,10 +1,11 @@
 package name.abuchen.portfolio.online.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import org.mockito.Mockito;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class AlphavantageQuoteFeedTest
@@ -25,10 +27,12 @@ public class AlphavantageQuoteFeedTest
         security.setTickerSymbol("AAPL");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNoApiKey()
     {
-        new AlphavantageQuoteFeed().getLatestQuote(security);
+        AlphavantageQuoteFeed feed = new AlphavantageQuoteFeed();
+        Optional<LatestSecurityPrice> result = feed.getLatestQuote(security);
+        assertThat(result.isEmpty(), is(true));
     }
 
     @Test
@@ -51,9 +55,9 @@ public class AlphavantageQuoteFeedTest
         LatestSecurityPrice price = feed1.getLatestQuote(security).orElseThrow(IllegalArgumentException::new);
 
         assertThat(price.getDate(), is(LocalDate.of(2020, 4, 20)));
-        assertThat(price.getHigh(), is(2775300L));
-        assertThat(price.getLow(), is(2768550L));
-        assertThat(price.getValue(), is(2768550L));
+        assertThat(price.getHigh(), is(Values.Quote.factorize(277.53)));
+        assertThat(price.getLow(), is(Values.Quote.factorize(276.855)));
+        assertThat(price.getValue(), is(Values.Quote.factorize(276.855)));
         assertThat(price.getVolume(), is(389622L));
     }
 }

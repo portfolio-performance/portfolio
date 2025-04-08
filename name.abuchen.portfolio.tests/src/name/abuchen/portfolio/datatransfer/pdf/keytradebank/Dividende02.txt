@@ -1,0 +1,18 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Keytrade Bank Luxembourg S.A. T +352 45 04 39
+62, Rue Charles Martel F +352 45 04 49
+L-2134 - Luxembourg info@keytradebank.lu
+Grand Duché de Luxembourg www.keytradebank.lu
+RCS B69935 Skype keytradebank.lu
+Montant: 45,65 EUR
+Année d'attribution 2021
+Nature des revenus: Actions etrangères
+CREDIT COUPONS Ex-coupon 01/02/2021
+310 VERBIO VER.BIOENERGIE  ON NR 210201 0,2 EUR
+Montant brut 62,00 EUR
+Impôt à la source 26,38 % 16,35 EUR
+Base taxable si applicable 45,65 EUR
+Net CREDIT 45,65 EUR Date  03/02/2021
+Compte-titres:4/260745 Titre:79137418/DE000A0JL9W6 Nr. Quit.: CPN / 583554

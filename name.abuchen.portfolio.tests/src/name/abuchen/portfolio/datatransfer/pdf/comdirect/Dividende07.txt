@@ -1,0 +1,60 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.2.qualifier
+-----------------------------------------
+           
+25449 Quickborn
+                                                                                                    
+                                                  
+                                                                      
+                                                                      
+                                                                      
+                   
+                        
+       
+11857 010 Depo tnummer:    1111111 11     
+Herrn                                                           
+kWnfwq xzQZ                                               
+                                   
+                             
+Musterstr. 26                                                        
+                             
+93219 whGYMuICMp                                                
+17.08.2006
+G  u t s c h  ri f t fä  ll ig  e r W  e r t p a p i e r -E  r tr ä g e                                                                   
+Ertragsgutschrift bei Freistellungsauftrag                                         
+Depotbestand                          Wertpapier-Bezeichnung               WKN/ISIN
+ pe r   3 1. 0  7.  20 0  6                         F i de l  it y   Fd  s-  Te l e c  o mm u  ni  c.   Fd .           92  1 8 01 
+ S T K             1  51 , 0 0 0                 Re g  .S h  ar e s   A  (G  l o b . Ce  r t.  )  o . N.    L U  0 0 9 9 5 7 5 2 9 1
+                                      Emissionsland: LUXEMBURG                     
+EUR 0,02       Ausschüttung pro Stück für Geschäftsjahr     01.05.05 bis 30.04.06  
+zahlbar ab 15.08.2006                                                              
+    EUR         0,0003694   Zinsabschlagpflichtiger Anteil                         
+                         Ermittlung der Steuerbasisbeträge                         
+Bruttobetrag:                                              EUR               3,02  
+zinsabschlagpflichtiger Anteil / Gesamtbetrag              EUR               0,06  
+Zwischensumme zur Disposition des Freistellungsbetrags     EUR               0,06  
+- berücksichtigter Freibetrag                              EUR               0,06 -
+zinsabschlagpflichtig                                      EUR               0,00  
+                                        gesamt         vergütet      bescheinigt   
+Zinsabschlag        30,000 % EUR             0,02             0,02             0,00
+Solidaritätszuschlag         EUR             0,00             0,00             0,00
+                         Abrechnung Ertragsgutschrift                              
+Bruttobetrag:                                              EUR               3,02  
+Gutschrift auf Konto                    Valuta             Zu Ihren Gunsten        
+6577381 16     EUR                      15.08.2006         EUR               3,02  
+anrechenbare Quellensteuer Privatvermögen/Betriebsvermögen EUR               1,94  
+Wegen der Besteuerung im Einzelfall verweisen wir auf den Rechenschaftsbericht     
+der Gesellschaft bzw. auf eine evtl. Veröffentlichung des Bundesfinanzministeriums.
+Aufgrund des Freistellungsauftrages werden Kapitalerträge - bis zur Höhe des       
+beantragten Freibetrages - vom KEST-Abzug freigestellt.                            
+comdirect bank                                                                     
+Aktiengesellschaft                                                                 
+                                                                                   
+*Diese Abrechnung wird von der Bank nicht unterschrieben                           
+                                                                                   
+                             Keine Steuerbescheinigung                             
+Kapitalerträge sind einkommensteuerpflichtig
+D762S0/11/2001
+
+```

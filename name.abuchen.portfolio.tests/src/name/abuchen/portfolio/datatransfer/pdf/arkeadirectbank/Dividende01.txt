@@ -1,0 +1,28 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.3
+-----------------------------------------
+AVIS D'ENCAISSEMENT COUPON
+M DUPONT PATRICE
+Au 6 décembre 2023
+77 AVENUE DU GENERAL DE GAULLE
+75000 PARIS
+VOTRE COMPTE PEA N° 952209239085 M DUPONT PATRICE
+Objet : Encaissement de dividende
+Monsieur,
+Nous avons le plaisir de vous informer que nous avons procédé à l'encaissement des dividendes suivants pour votre compte :
+Date Opération Détail opération Débit Crédit
+  n       ACTION  ORANGE (FR0000133308)
+Quantité 450
+04/12/2023
+Montant unitaire 0,30 €
+Prélèvement fiscal 0,00 €
+Prélèvements sociaux 0,00 €
+135,00 €
+Montant Net 135,00 €
+Veuillez agréer, Monsieur, l'expression de nos salutations distinguées.
+Le Service OST.
+Duplicata Internet
+Page 1/1
+Fortuneo est une marque commerciale d'Arkéa Direct Bank. Arkéa Direct Bank, Société Anonyme à Directoire et Conseil de Surveillance
+au capital de 89 198 952 euros. RCS Nanterre 384 288 890. Siège social : Tour Ariane - 5, place de la Pyramide 92088 Paris La Défense.
+Courtier en assurance n°ORIAS 07 008 441. Adresse postale : Fortuneo - Service Clients - TSA41707 - 35917 RENNES CEDEX 9.

@@ -11,6 +11,8 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction.Type;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
@@ -77,7 +79,8 @@ public class ClientSecurityFilter implements ClientFilter
     private void addPortfolioTransaction(Function<Portfolio, ReadOnlyPortfolio> getPortfolio,
                     TransactionPair<PortfolioTransaction> pair)
     {
-        switch (pair.getTransaction().getType())
+        Type type = pair.getTransaction().getType();
+        switch (type)
         {
             case BUY:
             case DELIVERY_INBOUND:
@@ -90,11 +93,12 @@ public class ClientSecurityFilter implements ClientFilter
                                 convertToDelivery(pair.getTransaction(), PortfolioTransaction.Type.DELIVERY_OUTBOUND));
                 break;
             case TRANSFER_IN:
+                convertTransfer(getPortfolio, pair);
             case TRANSFER_OUT:
-                // ignore: transfers are internal to the client file
+                // handled via TRANSFER_IN
                 break;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unsupported type " + type); //$NON-NLS-1$
         }
     }
 
@@ -103,29 +107,34 @@ public class ClientSecurityFilter implements ClientFilter
     {
         AccountTransaction t = pair.getTransaction();
 
-        switch (pair.getTransaction().getType())
+        name.abuchen.portfolio.model.AccountTransaction.Type type = pair.getTransaction().getType();
+        switch (type)
         {
             case DIVIDENDS:
                 long taxes = t.getUnitSum(Unit.Type.TAX).getAmount();
                 long amount = t.getAmount();
 
-                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(new AccountTransaction(
-                                t.getDateTime(), t.getCurrencyCode(), amount + taxes, t.getSecurity(), t.getType()));
+                AccountTransaction copy = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), amount + taxes,
+                                t.getSecurity(), t.getType());
+
+                t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(copy::addUnit);
+
+                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(copy);
                 getAccount.apply((Account) pair.getOwner())
                                 .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                                amount + taxes, t.getSecurity(), AccountTransaction.Type.REMOVAL));
+                                                amount + taxes, null, AccountTransaction.Type.REMOVAL));
                 break;
             case FEES:
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(t);
                 getAccount.apply((Account) pair.getOwner())
                                 .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                                t.getAmount(), t.getSecurity(), AccountTransaction.Type.DEPOSIT));
+                                                t.getAmount(), null, AccountTransaction.Type.DEPOSIT));
                 break;
             case FEES_REFUND:
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(t);
                 getAccount.apply((Account) pair.getOwner())
                                 .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                                t.getAmount(), t.getSecurity(), AccountTransaction.Type.REMOVAL));
+                                                t.getAmount(), null, AccountTransaction.Type.REMOVAL));
                 break;
             case TAXES:
             case TAX_REFUND:
@@ -140,7 +149,7 @@ public class ClientSecurityFilter implements ClientFilter
             case INTEREST:
             case INTEREST_CHARGE:
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unsupported type " + type); //$NON-NLS-1$
         }
     }
 
@@ -167,5 +176,16 @@ public class ClientSecurityFilter implements ClientFilter
         t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(pseudo::addUnit);
 
         return pseudo;
+    }
+
+    private void convertTransfer(Function<Portfolio, ReadOnlyPortfolio> getPortfolio,
+                    TransactionPair<PortfolioTransaction> pair)
+    {
+        PortfolioTransferEntry entry = (PortfolioTransferEntry) pair.getTransaction().getCrossEntry();
+
+        ReadOnlyPortfolio source = getPortfolio.apply(entry.getSourcePortfolio());
+        ReadOnlyPortfolio target = getPortfolio.apply(entry.getTargetPortfolio());
+
+        ClientFilterHelper.recreateTransfer(entry, source, target);
     }
 }

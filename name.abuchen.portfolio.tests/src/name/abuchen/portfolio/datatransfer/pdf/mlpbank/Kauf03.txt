@@ -1,0 +1,33 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+MLP Banking AG · Alte Heerstraße 40 · 69168 Wiesloch
+Depotnummer 9876543210
+Kundennummer 7654321
+Max Mustermann
+Auftragsnummer 562083/58.00
+Max Mustermann Datum 06.04.2022
+Musterweg 1 Rechnungsnummer W00866-0001451233/22
+11111 Musterstadt Umsatzsteuer-ID DE143449956
+Vermögensdepot
+0016
+Wertpapier Abrechnung Kauf
+Auftrag vom 01.04.2022 10:32:26 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 0,639 HANSAGOLD DE000A0NEKK1 (A0NEKK)
+INHABER-ANTEILE USD-KLASSE A
+Handels-/Ausführungsplatz Außerbörslich
+Schlusstag 04.04.2022
+Ausführungskurs 85,428 USD
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Devisenkurs (EUR/USD) 1,0918 vom 05.04.2022
+Kurswert 50,00- EUR
+Ausmachender Betrag 50,00- EUR
+Ausgabeaufschlag pro Anteil 4,00 %
+Den Gegenwert buchen wir mit Valuta 06.04.2022 zu Lasten des Kontos 0987654321
+(IBAN DE11 2222 3333 4444 5555 55), BLZ 67230000 (BIC MLPBDE61XXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Ihr Ausgabeaufschlag betraegt:
+0,00 EUR (0,000 Prozent)
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0866.04062041.0006732OR07

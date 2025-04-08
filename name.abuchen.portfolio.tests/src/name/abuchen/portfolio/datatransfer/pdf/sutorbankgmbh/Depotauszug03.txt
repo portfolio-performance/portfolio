@@ -1,0 +1,241 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+SUTOR BANK • Postfach 11 33 37 • 20433 Hamburg Kunden-Service: Tel.: 040 - 82 22 31 63
+Fax: 040 - 80 80 13 19
+Mail: info@sutorbank.de
+Service-Zeiten: Mo-Do 8.30 - 17.00 Uhr
+Fr 8.30 - 16.00 Uhr
+Herrn Max Mustermann Depotnummer: 1234567891
+Musterstraße 12
+12345 Musterstadt IBAN: DE14 1234 5678 9012 3456 78
+Hamburg, im März 2021
+Depotauszug MAX HEINR. SUTOR OHG
+ HERMANNSTRASSE 46
+ 20095 HAMBURG
+Sehr geehrter Herr Mustermann,
+ INFO@SUTORBANK.DE
+Sie erhalten heute von uns den Depotauszug per 31.12.2020 zu nachfolgendem Vertrag: WWW.SUTORBANK.DE
+ 
+Raisin Pension Riester Nr. 1234567890
+ GESCHÄFTSLEITUNG
+Bitte prüfen Sie die Aufstellung der Umsätze sowie die Salden und Bestände. Sie gelten als von Ihnen ROBERT FREITAG
+THOMAS MEIER
+anerkannt, wenn Sie nicht innerhalb von sechs Wochen unsere Revisionsabteilung über etwaige
+Unstimmigkeiten schriftlich benachrichtigen. Die Aufstellung wird von der Bank nicht unterschrieben, sie erfolgt
+automatisch vorbehaltlich Irrtum. MITGLIED IM EINLAGEN-
+ SICHERUNGSFONDS DES
+Im Rahmen unserer gesetzlichen Vorgaben weisen wir darauf hin, dass Guthaben als Einlagen nach Maßgabe BUNDESVERBANDES
+DEUTSCHER BANKEN
+des Einlagensicherungsgesetzes entschädigungsfähig sind. Nähere Informationen entnehmen Sie bitte dem
+beigefügten „Informationsbogen für den Einleger“, der auch auf www.sutorbank.de/agb als PDF hinterlegt ist.
+ UNABHÄNGIG.
+Überprüfen Sie bitte, ob Ihr oben angegebener Name und Ihre Adresse vollständig, korrekt geschrieben und
+aktuell sind. Änderungen Ihres Namens sowie Ihrer Wohnsitz- und Postadresse teilen Sie uns bitte kurzfristig mit,
+PRODUKTNEUTRAL.
+anderenfalls gehen wir von einer Bestätigung der uns bekannten Daten aus.
+ 
+Wir freuen uns auf eine weiterhin erfolgreiche Zusammenarbeit und bedanken uns für Ihr Vertrauen. INHABERGEFÜHRT.
+ 
+Mit freundlichen Grüßen
+FINANZAMT HAMBURG
+Ihre SUTOR BANK
+ STNR. 2761000074
+ 
+ 
+Anlagen AMTSGERICHT HAMBURG
+HRA25379
+weiss auf weiss
+BANKLEITZAHL 202 308 00
+BIC MHSBDEHBXXX
+Seite 0 von 6
+Dies ist ein notwendiges Übel,
+  aber sonst klappt der Seitenumbruch nicht sauber!
+DIE PRIVATBANK FÜR ALLE.
+Übersicht mit Bewertung zum 31.12.2020
+Max Mustermann
+"Altersvorsorge-Portfolio" Nr. 1234567890 / IBAN: DE14 1234 5678 9012 3456 78
+Investment ISIN Lagerstelle Verwahrart Anlagequote Bestand  Einheit Kurs Währung Kurswert
+Fonds
+Xtrackers MSCI World Min Vol ETF IE00BL25JN58 Vereinigtes Königreich Wertpapierrechnung 1,80 % 8,1616  Anteile 35,9111 US$* 238,85 EUR
+Xtr II iBoxx Euroz Gov Bd 1-3 ETF LU0925589839 Deutschland Girosammelverwahrung 0,00 % 0,0000  Anteile 0,0000 EUR 0,00 EUR
+Xtr II iBoxx Euroz Gov Bd 25+ ETF LU0290357846 Deutschland Girosammelverwahrung 97,00 % 26,3430  Anteile 487,4000 EUR 12.839,58 EUR
+iShares Edge MSCI EM Min Vol ETF IE00B8KGV557 Irland Wertpapierrechnung 0,30 % 1,5171  Anteile 32,6746 US$* 40,40 EUR
+Amundi Solution MSCI Europe Min Vol LU1681041627 Deutschland Girosammelverwahrung 0,90 % 1,1412  Anteile 106,6500 EUR 121,71 EUR
+* Währungskurs: 1,2271 US$
+Kurswert Gesamt 13.240,54 EUR
+Geldsaldo 0,00 EUR
+Erstellt im März 2021 Seite 1 von 6
+Umsätze vom 01.10.2020 bis 31.12.2020 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+01.10.2020 01.10.2020 Einzahlung automatischer Lastschrifteinzug - 5,00
+-
+01.10.2020 01.10.2020 Kauf Kauf Xtr II iBoxx Euroz Gov Bd 1-3 ETF 0,0405 -5,83
+14:14 OTC LU0925589839 144,1174 EUR
+01.10.2020 01.10.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 0,0014 -0,14
+14:19 OTC LU1681041627 102,0665 EUR
+01.10.2020 01.10.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 0,0012 1,1752 -0,03
+14:24 OTC IE00B8KGV557 29,2213 US$
+01.10.2020 01.10.2020 Verkauf Verkauf Xtrackers MSCI World Min Vol ETF -0,0347 1,1752 1,01
+14:29 OTC IE00BL25JN58 34,2512 US$
+02.11.2020 02.11.2020 Einzahlung automatischer Lastschrifteinzug - 5,00
+-
+02.11.2020 02.11.2020 Verkauf Verkauf Xtr II iBoxx Euroz Gov Bd 1-3 ETF -0,0272 3,92
+15:50 OTC LU0925589839 144,3594 EUR
+02.11.2020 02.11.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 0,0490 -4,82
+15:53 OTC LU1681041627 98,2740 EUR
+02.11.2020 02.11.2020 Verkauf Verkauf iShares Edge MSCI EM Min Vol ETF -0,0076 1,1652 0,19
+15:56 OTC IE00B8KGV557 29,1941 US$
+02.11.2020 02.11.2020 Kauf Kauf Xtrackers MSCI World Min Vol ETF 0,1492 1,1652 -4,29
+15:58 OTC IE00BL25JN58 33,5082 US$
+04.11.2020 04.11.2020 Gebühr Verwaltungsgebühr/Vertriebskosten 1. Hj.2020 - -34,57
+-
+04.11.2020 04.11.2020 Verkauf Verkauf Xtr II iBoxx Euroz Gov Bd 1-3 ETF -0,1962 28,33
+13:30 OTC LU0925589839 144,3973 EUR
+04.11.2020 04.11.2020 Verkauf Verkauf Amundi Solution MSCI Europe Min Vol -0,0281 2,84
+13:34 OTC LU1681041627 100,9101 EUR
+04.11.2020 04.11.2020 Verkauf Verkauf iShares Edge MSCI EM Min Vol ETF -0,0122 1,1721 0,31
+13:36 OTC IE00B8KGV557 29,7215 US$
+04.11.2020 04.11.2020 Verkauf Verkauf Xtrackers MSCI World Min Vol ETF -0,1058 1,1721 3,09
+13:42 OTC IE00BL25JN58 34,2429 US$
+10.11.2020 10.11.2020 Verkauf Verkauf Xtr II iBoxx Euroz Gov Bd 1-3 ETF -29,2219 4.217,89
+16:54 OTC LU0925589839 144,3400 EUR
+10.11.2020 10.11.2020 Kauf Kauf Xtr II iBoxx Euroz Gov Bd 25+ ETF 2,7701 -1.308,16
+17:05 OTC LU0290357846 472,2500 EUR
+10.11.2020 10.11.2020 Verkauf Verkauf Amundi Solution MSCI Europe Min Vol -0,0437 4,58
+17:10 OTC LU1681041627 104,8000 EUR
+10.11.2020 10.11.2020 Verkauf Verkauf iShares Edge MSCI EM Min Vol ETF -0,0470 1,1808 1,22
+17:16 OTC IE00B8KGV557 30,6772 US$
+10.11.2020 10.11.2020 Verkauf Verkauf Xtrackers MSCI World Min Vol ETF -0,1881 1,1808 5,61
+17:20 OTC IE00BL25JN58 35,2115 US$
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 2 von 6
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag
+Umsätze vom 01.10.2020 bis 31.12.2020 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+11.11.2020 11.11.2020 Verkauf Verkauf Xtr II iBoxx Euroz Gov Bd 1-3 ETF -29,2750 4.227,89
+12:50 OTC LU0925589839 144,4200 EUR
+11.11.2020 11.11.2020 Kauf Kauf Xtr II iBoxx Euroz Gov Bd 25+ ETF 2,7541 -1.308,59
+13:01 OTC LU0290357846 475,1416 EUR
+11.11.2020 11.11.2020 Verkauf Verkauf Amundi Solution MSCI Europe Min Vol -0,0133 1,41
+13:08 OTC LU1681041627 105,8200 EUR
+11.11.2020 11.11.2020 Verkauf Verkauf iShares Edge MSCI EM Min Vol ETF -0,0076 1,1766 0,20
+13:12 OTC IE00B8KGV557 30,8093 US$
+11.11.2020 11.11.2020 Verkauf Verkauf Xtrackers MSCI World Min Vol ETF -0,0999 1,1766 3,02
+13:17 OTC IE00BL25JN58 35,5569 US$
+12.11.2020 12.11.2020 Verkauf Verkauf Xtr II iBoxx Euroz Gov Bd 1-3 ETF -29,2993 4.231,40
+16:43 OTC LU0925589839 144,4200 EUR
+12.11.2020 12.11.2020 Kauf Kauf Xtr II iBoxx Euroz Gov Bd 25+ ETF 4,9197 -2.360,50
+16:53 OTC LU0290357846 479,8083 EUR
+12.11.2020 12.11.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 0,0001 -0,01
+16:56 OTC LU1681041627 105,5400 EUR
+12.11.2020 12.11.2020 Verkauf Verkauf iShares Edge MSCI EM Min Vol ETF -0,0023 1,1791 0,06
+16:59 OTC IE00B8KGV557 30,9608 US$
+12.11.2020 12.11.2020 Kauf Kauf Xtrackers MSCI World Min Vol ETF 0,0090 1,1791 -0,27
+17:01 OTC IE00BL25JN58 35,3596 US$
+13.11.2020 13.11.2020 Kauf Kauf Xtr II iBoxx Euroz Gov Bd 25+ ETF 4,8888 -2.363,26
+13:35 OTC LU0290357846 483,4000 EUR
+13.11.2020 13.11.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 0,0021 -0,22
+13:44 OTC LU1681041627 105,1746 EUR
+13.11.2020 13.11.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 0,0023 1,1815 -0,06
+13:46 OTC IE00B8KGV557 30,9435 US$
+13.11.2020 13.11.2020 Kauf Kauf Xtrackers MSCI World Min Vol ETF 0,0184 1,1815 -0,55
+13:54 OTC IE00BL25JN58 35,4096 US$
+16.11.2020 16.11.2020 Kauf Kauf Xtr II iBoxx Euroz Gov Bd 25+ ETF 4,9354 -2.372,02
+13:43 OTC LU0290357846 480,6168 EUR
+16.11.2020 16.11.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 0,0023 -0,24
+13:50 OTC LU1681041627 105,8267 EUR
+16.11.2020 16.11.2020 Verkauf Verkauf iShares Edge MSCI EM Min Vol ETF -0,0026 1,1830 0,07
+13:56 OTC IE00B8KGV557 31,2963 US$
+16.11.2020 16.11.2020 Verkauf Verkauf Xtrackers MSCI World Min Vol ETF -0,0007 1,1830 0,02
+14:08 OTC IE00BL25JN58 35,9395 US$
+17.11.2020 17.11.2020 Kauf Kauf Xtr II iBoxx Euroz Gov Bd 25+ ETF 4,8809 -2.372,62
+14:47 OTC LU0290357846 486,1000 EUR
+17.11.2020 17.11.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 0,0054 -0,57
+14:53 OTC LU1681041627 105,0600 EUR
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 3 von 6
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag
+Umsätze vom 01.10.2020 bis 31.12.2020 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+17.11.2020 17.11.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 0,0088 1,1882 -0,23
+14:55 OTC IE00B8KGV557 31,1278 US$
+17.11.2020 17.11.2020 Kauf Kauf Xtrackers MSCI World Min Vol ETF 0,0420 1,1882 -1,26
+14:59 OTC IE00BL25JN58 35,6846 US$
+19.11.2020 18.11.2020 Kauf Kauf Xtr II iBoxx Euroz Gov Bd 25+ ETF 1,2364 -602,49
+12:55 OTC LU0290357846 487,3000 EUR
+19.11.2020 18.11.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 0,0015 1,1868 -0,04
+12:58 OTC IE00B8KGV557 31,3315 US$
+19.11.2020 18.11.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 0,0044 -0,47
+13:06 OTC LU1681041627 105,7710 EUR
+19.11.2020 18.11.2020 Kauf Kauf Xtrackers MSCI World Min Vol ETF 0,0601 1,1868 -1,81
+13:11 OTC IE00BL25JN58 35,7627 US$
+25.11.2020 04.11.2020 Storno Storno Verwaltungsgebühr/Vertriebskosten 1. H - 34,57
+-
+26.11.2020 26.11.2020 Kauf Kauf Xtr II iBoxx Euroz Gov Bd 25+ ETF 0,0633 -30,87
+13:34 OTC LU0290357846 487,2990 EUR
+26.11.2020 26.11.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 0,0092 -0,96
+13:44 OTC LU1681041627 104,8495 EUR
+26.11.2020 26.11.2020 Kauf Kauf Xtrackers MSCI World Min Vol ETF 0,0922 1,1900 -2,74
+13:53 OTC IE00BL25JN58 35,3751 US$
+01.12.2020 01.12.2020 Einzahlung automatischer Lastschrifteinzug - 5,00
+-
+01.12.2020 01.12.2020 Kauf Kauf Xtr II iBoxx Euroz Gov Bd 25+ ETF 0,0137 -6,62
+15:07 OTC LU0290357846 482,0842 EUR
+01.12.2020 01.12.2020 Verkauf Verkauf Amundi Solution MSCI Europe Min Vol -0,0087 0,91
+15:20 OTC LU1681041627 104,7000 EUR
+01.12.2020 01.12.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 0,0027 1,1968 -0,07
+15:24 OTC IE00B8KGV557 31,3538 US$
+01.12.2020 01.12.2020 Verkauf Verkauf Xtrackers MSCI World Min Vol ETF -0,0264 1,1968 0,78
+15:30 OTC IE00BL25JN58 35,4253 US$
+03.12.2020 03.12.2020 Gebühr Verwaltungsgebühr/Vertriebskosten 1. Hj.2020 - -34,39
+-
+04.12.2020 04.12.2020 Kauf Kauf Amundi Solution MSCI Europe Min Vol 0,0132 -1,37
+13:41 OTC LU1681041627 103,9000 EUR
+04.12.2020 04.12.2020 Verkauf Verkauf iShares Edge MSCI EM Min Vol ETF -0,0004 1,2159 0,01
+13:49 OTC IE00B8KGV557 31,7958 US$
+04.12.2020 04.12.2020 Kauf Kauf Xtrackers MSCI World Min Vol ETF 0,1367 1,2159 -3,99
+13:55 OTC IE00BL25JN58 35,4800 US$
+04.12.2020 04.12.2020 Verkauf Verkauf Xtr II iBoxx Euroz Gov Bd 25+ ETF -0,0819 39,74
+14:04 OTC LU0290357846 485,0000 EUR
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 4 von 6
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag
+Umsätze vom 01.10.2020 bis 31.12.2020 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+16.12.2020 16.12.2020 Gebühren Kontoführungs-u.Depotgebühren 2. Hj. 2020 - -18,00
+-
+16.12.2020 16.12.2020 Kauf Kauf iShares Edge MSCI EM Min Vol ETF 0,0061 1,2189 -0,16
+13:21 OTC IE00B8KGV557 32,0266 US$
+16.12.2020 16.12.2020 Verkauf Verkauf Xtr II iBoxx Euroz Gov Bd 25+ ETF -0,0375 18,25
+13:29 OTC LU0290357846 487,1000 EUR
+16.12.2020 16.12.2020 Verkauf Verkauf Amundi Solution MSCI Europe Min Vol -0,0030 0,31
+13:33 OTC LU1681041627 104,8600 EUR
+16.12.2020 16.12.2020 Kauf Kauf Xtrackers MSCI World Min Vol ETF 0,0136 1,2189 -0,40
+13:36 OTC IE00BL25JN58 35,7747 US$
+Verwendete Abkürzungen: MK = Mischkurs KESt = Kapitalertragssteuer KiSt = Kirchensteuer Seite 5 von 6
+W-Kurs = Währungskurs SolZ = Solidaritätszuschlag
+DIE PRIVATBANK FÜR ALLE.
+Zusätzliche Informationen gemäß § 7a AltZertG
+Max Mustermann
+"Altersvorsorge-Portfolio" Nr. 1234567890 / IBAN: DE14 1234 5678 9012 3456 78
+Zusätzliche Information gemäß § 7a AltZertG 1)  in der Fassung des JStG 2)  2010 für 2020
+Einbehaltene anteilige Abschluss- und Vertriebskosten sowie Kosten für die Verwaltung des gebildeten Kapitals (Preise im standardisierten Geschäftsverkehr)
+Abschluss- und Vertriebskosten: 17,66 EUR Verwaltungskosten: 65,66 EUR
+Abschlusskosten: 0,00 EUR Verwaltungsgebühr: 17,66 EUR
+Vertriebskosten: 17,66 EUR Kontoführungs- und Depotgebühr: 48,00 EUR
+Erträge Beispielrechnung
+Erwirtschaftete Erträge: -4.492,58 EUR Die nachfolgende Tabelle zeigt beispielhafte Wertentwicklungen vor Kosten und die daraus errechneten Gesamtleistungen
+Erwirtschaftete Erträge seit Vertragsbeginn: -4.450,69 EUR nach Kosten auf:
+Beispielhafte Wert- Kapital zu Beginn der Monatliche
+entwicklung p.a Auszahlungsphase Altersleistung
+Hinweis
+0,00 % 25.761,23 EUR 85,69 EUR
+Bitte beachten Sie, dass die eingezahlten Altersvorsorgebeiträge sowie die staatlichen Zulagen für die  2,00 % 26.980,36 EUR 89,75 EUR
+garantiert werden. Weitere Informationen zur Verwendung der Beiträge sowie zum entstandenen Kapital gemäß § 7 a 5,00 % 62.269,22 EUR 207,14 EUR
+AltZertG in der Fassung des JStG 2010 befinden sich auf der beigefügten detaillierten Übersicht der Einzelumsätze sowie auf 6,00 % 82.590,65 EUR 274,73 EUR
+den Ihnen mit separater Post zugehenden Bescheinigungen. Die angegebene monatliche Altersleistung versteht sich als voraussichtliche Rente inklusive voll ausgeschütteter Überschüsse
+Im Interesse einer wirtschaftlichen Kapitalanlage verzichtet die Bank bei der Verwendung der Altersvorsorgebeiträge auf eine aktueller Höhe (flexible Bonusrente). Eine dynamische oder teildynamische Überschussverwendung (Mischsystem aus beiden
+Berücksichtigung ethischer, sozialer und ökologischer Belange. Bonusrenten) ergibt eine geringere aber steigende Altersleistung.
+Erstellt im März 2021 1) Gesetz über die Zertifizierung von Altersvorsorge- und Basisrentenverträgen (Altersvorsorgeverträge-Zertifizierungsgesetz)     2) Jahressteuergesetz Seite 6 von 6

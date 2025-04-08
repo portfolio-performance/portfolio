@@ -1,0 +1,44 @@
+PDF Author: 'ING-DiBa' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: Max Mustermann
+Herrn Direkt-Depot Nr.: 1234567890
+Max Mustermann Datum: 20.12.2017
+Musterstr. 11 Seite: 1 von 2
+12345 Musterstadt
+Rückzahlung
+ISIN (WKN) DE000HU89K58 (HU89K5)
+Wertpapierbezeichnung UniCredit Bank AG
+HVB Call 13.12.17 Tesla 300
+Nominale 180,00 Stück
+Fälligkeit 20.12.2017
+Einlösung zum Kurs von 3,30 EUR
+Kurswert EUR 594,00
+Endbetrag EUR 594,00
+Valuta 20.12.2017
+Abrechnungs-IBAN DE01 1234 5678 9012 3456 78
+Wertpapiere zulasten Girosammelverwahrung
+Kapitalerträge sind einkommensteuerpflichtig.
+Weitere steuerliche Informationen entnehmen Sie bitte der Rückseite.
+Wieder investieren? Aktionen zum gebührenfreien Handel finden Sie unter:
+www.ing-diba.de/handeln
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzender des Aufsichtsrates: Dr. Claus Dieter Hoffmann · Vorstand: Nick Jue (Vorsitzender),
+Bernd Geilen (stellv. Vorsitzender), Katharina Herrmann, Zeljko Kaurin, Remco Nieland, Dr. Joachim von Schorlemer · Sitz: Frankfurt am Main · AG Frankfurt am Main HRB 7727,
+Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing-diba.de · E-Mail: info@ing-diba.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+Depotinhaber: Max Mustermann
+Direkt-Depot Nr.: 1234567890
+Datum: 20.12.2017
+Seite: 2 von 2
+ISIN (WKN) DE000HU89K58 (HU89K5)
+Veräußerungsverlust nach Differenzmethode 123,45- EUR
+Mit Verrechnungstopf Allgemein verrechnet 123,45 EUR
+Verrechnungstopf Aktien vor Geschäft 123,45 EUR
+Verrechnungstopf Aktien nach Geschäft 123,45 EUR
+Verrechnungstopf Allgemein vor Geschäft 123,45 EUR
+Verrechnungstopf Allgemein nach Geschäft 123,45 EUR
+Verrechnungstopf ausländ. Quellensteuer vor Geschäft 123,45 EUR
+Verrechnungstopf ausländ. Quellensteuer nach Geschäft 123,45 EUR
+Sparer-Pauschbetrag nach Geschäft 123,45 EUR
+Bei Fragen besuchen Sie uns einfach unter www.ing-diba.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing-diba.de .

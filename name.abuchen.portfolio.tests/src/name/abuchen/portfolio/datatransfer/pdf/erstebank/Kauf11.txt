@@ -1,0 +1,36 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Abcd BIC: ECTRATWW
+Abcd Abcdefghijk Referenz Nr.: 12-12345678
+Nr. 01
+1234  Abcdefghi Kunden Nr.: 12345
+Austria Depot Nr.: 12345-1
+Wien, 21.08.2015
+WERTPAPIERBESTÄTIGUNG
+IHR KAUF
+Ausserbörslich: SE SAV - AT Funds Kurswert: USD 163,60356
+Wertpapier: INVESCO ASIAN INF. A Devisenprovision: USD 0,41
+ACC. Tradinggebühren: EUR 3,80
+WP-Kenn-Nr.: LU0243955886 Gesamtbetrag: USD 167,81356
+Stück: 11,787
+NAV: USD 13,88
+Preis: USD 14,237
+Handelstag: 20.08.2015 Devisenkurs: 1,1229
+Valutatag: 25.08.2015 Gesamtbetrag: EUR 149,87
+Lagerort: Wien
+Verwahrart: WR
+Bemerkungen:
+Abrechnung:
+Wir belasten Ihr EUR IBAN AT123450000000123456 mit Valuta 25.08.2015.
+Wir erkennen Ihr Wertpapierdepot Nummer 12345-1.
+Ausführung:
+Ausführungsdatum: 20.08.2015 Ausführungszeit: 18:00:00
+Vorbehaltlich Eingang bzw. nachträglicher Storni/Umbuchungen seitens Lagerstelle/Partner.
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 2 Monaten nach Erhalt dieser Bestätigung
+keine Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+BROKERJET - der Online Broker der Erste Bank
+Erste Bank der oesterreichischen Sparkassen AG (Erste Bank Oesterreich) | Graben 21 | A-1010 Wien
+Kundenverkehr Brokerjet: Mariahilfer Straße 121b | A-1060 Wien
+E-mail: brokerjet.info@erstebank.at | Fax: +43-1-53689-13550 | www.brokerjet.at
+Sitz Wien | Handelsgericht Wien | FB-Nr. 286283 f | DVR 3002133 | UID ATU63358299

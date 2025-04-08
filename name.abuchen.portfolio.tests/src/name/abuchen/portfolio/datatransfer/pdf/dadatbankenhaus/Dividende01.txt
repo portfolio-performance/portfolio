@@ -1,0 +1,41 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Abrechnung Ereignis
+45970540-23.3.2021
+Depot-Nr.: XXXXXXXXXXX
+VORNAME NACHNAME                  
+01/5020
+DADAT-Bank                         
+Herrn
+VORNAME NACHNAME
+STRASSE
+PLZ ORT                                                                                                                                                                                                        
+Wir haben für Sie am 23.3.2021 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+3 Stk
+Titel: US09247X1019  B L A C K R O C K  I NC.                     
+Reg. Shares Class A DL -,01        
+Dividende: 4,13 USD 
+Verwahrart: WR
+Positionsdaten: Loco: München                            
+ZINSERTRAG: 12,39 USD 
+QUELLENSTEUER: -1,86 USD 
+Auslands-KESt: -1,54 USD 
+8,99 USD 
+Devisenkurs: 1,197 (22.3.2021) 7,51 EUR 
+Zu Gunsten IBAN IBAN-NR 7,51 EUR 
+Valuta 23.3.2021
+Extag: 4.3.2021
+Record-Tag: 5.3.2021
+QUSt pro Stück 15,00 %
+Es wurde Auslands-KESt in der Höhe von +12,5% berücksichtigt.
+Die KESt wird an das Finanzamt Wien 1/23 abgeführt.
+Devisenkurs: 1,197 (22.3.2021)
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 3 Stk
+Ertrag: 10,35 EUR
+23.3.2021 Seite 1
+DVR 0060011 ,HG WIEN ,FN58248i, Irrtum vorbehalten! Dieser Beleg wird von der Bank
+nicht unterschrieben!
+02132 Doknr.: BSG0-045-0000001893

@@ -1,0 +1,34 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+VR Bank Niederbayern-Oberpfalz · 93041 Regensburg    
+Depotnummer 1234567890
+ 
+ Kundennummer 1234567890
+Max Mustermann
+ Abrechnungsnr. 66666666666
+Max Mustermann Datum 11.04.2023
+Musterstr. 22
+11111 Musterstadt
+ 
+Ertragsgutschrift nach § 27 KStG
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 111 DEUTSCHE TELEKOM AG DE0005557508 (555750)
+NAMENS-AKTIEN O.N.
+Zahlbarkeitstag 12.04.2023 Ertrag  pro Stück 0,70 EUR
+Bestandsstichtag 05.04.2023
+Ex-Tag 06.04.2023
+Geschäftsjahr 01.01.2022 - 31.12.2022
+Dividendengutschrift nach § 27 KStG 77,70+ EUR
+Ausmachender Betrag 77,70+ EUR
+Lagerstelle CBF w/7268 w/DZ Bank (600502 / 72680000)
+Den Betrag buchen wir mit Wertstellung 12.04.2023 zu Gunsten des Kontos 1111111111 (IBAN DE11 1111 1111 1111
+1111 11), BLZ 750 909 00 (BIC GENODEF1P18). 
+Keine Steuerbescheinigung. 
+Es handelt sich bei der Ausschüttung um Leistungen aus dem steuerlichen Einlagekonto der Kapitalgesellschaft (§27 Abs.
+1-7 KStG). Dieser Ertrag unterliegt laut Gesetz zum Zeitpunkt des Zuflusses keinem Steuerabzug und ist
+einkommensteuerfrei. Er mindert jedoch im Nachhinein den Kaufkurs der bezogenen Aktie, so dass bei deren Verkauf
+möglicherweise ein entsprechend höherer Kursgewinn zu versteuern ist. 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+6666.00123456.0000833ER01

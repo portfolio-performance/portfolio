@@ -1,0 +1,31 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Herr MAX MUSTERMANN
+Benutzername: ***123
+(12345678)
+Kontoauszug von 29-10-2017 bis 28-11-2021
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+26-11-2021 09:01 25-11-2021 Einzahlung CHF 569.00 CHF 1'754.08
+18-11-2021 10:33 17-11-2021 Überweisung auf Ihr Geldkonto bei der flatex Bank: 2.02 CHF CHF 1'185.08
+18-11-2021 10:33 17-11-2021 FLATEX CHF BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer CHF -2.02 CHF 1'183.06
+17-11-2021 07:38 16-11-2021 Währungswechsel (Einbuchung) CHF 2.02 CHF 1'185.08
+17-11-2021 07:38 16-11-2021 Währungswechsel (Ausbuchung) 1.0760 USD -2.18 USD 0.00
+16-11-2021 11:36 15-11-2021 Überweisung auf Ihr Geldkonto bei der flatex Bank: 1.54 CHF CHF 1'183.06
+16-11-2021 11:36 15-11-2021 FLATEX CHF BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer CHF -1.54 CHF 1'181.52
+16-11-2021 09:52 15-11-2021 ACCENTURE PLC. CLASS A IE00B4BNMY34 Dividende USD 2.91 USD 2.18
+16-11-2021 09:52 15-11-2021 ACCENTURE PLC. CLASS A IE00B4BNMY34 Dividendensteuer USD -0.73 USD -0.73
+13-11-2021 07:45 12-11-2021 Währungswechsel (Einbuchung) CHF 1.54 CHF 1'183.06
+13-11-2021 07:45 12-11-2021 Währungswechsel (Ausbuchung) 1.0866 USD -1.68 USD 0.00
+12-11-2021 07:31 11-11-2021 APPLE INC US0378331005 Dividende USD 1.98 USD 1.68
+12-11-2021 07:31 11-11-2021 APPLE INC US0378331005 Dividendensteuer USD -0.30 USD -0.30
+28-10-2021 10:47 27-10-2021 Überweisung auf Ihr Geldkonto bei der flatex Bank: 569 CHF CHF 1'181.52
+28-10-2021 10:47 27-10-2021 FLATEX CHF BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer CHF -569.00 CHF 612.52
+26-10-2021 09:26 25-10-2021 Einzahlung CHF 569.00 CHF 1'181.52
+07-10-2021 10:16 06-10-2021 Auszahlung von Ihrem Geldkonto bei der flatex Bank: 291.07 CHF 612.52
+CHF
+07-10-2021 10:16 06-10-2021 FLATEX CHF BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer CHF 291.07 CHF 903.59
+flatex DEGIRO Bank flatex DEGIRO Bank Dutch Branch, die
+Dutch Branch E unter dem Namen DEGIRO handelt, ist
+Amstelplein 1 kundenservice@degiro.ch die niederländische Niederlassung der Seite 1 / 46
+1096 HA Amsterdam I www.degiro.ch flatexDEGIRO Bank AG. Die Konto 2021-11-28
+flatexDEGIRO Bank AG wird primär

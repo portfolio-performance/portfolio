@@ -1,0 +1,31 @@
+```
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+ 
+30.01.2025
+SxLm xsCrPa DnuCCBpQY
+nhCgNxTQJpkTacKQ 30
+6717 WkqT
+nRIffyzcUp
+Tagesgeldvertrag SD-ATC-36285392
+Kontoauszug von 01.12.2024 bis 31.12.2024
+IBAN: EE123456789101112131
+Anfangssaldo 01.12.2024 163,98
+Datum Gegenkonto Buchung Name  Betrag in EUR
+31.12.2024  Zinsgutschrift  +99,01
+Endsaldo 31.12.2024 262,99
+Anfangssaldo 01.12.2024 163,98
+Summe Belastungen -0,00
+Summe Gutschriften +99,01
+Endsaldo 31.12.2024 262,99
+Dies ist ein automatisch generierter Kontoauszug.
+BIGBANK AS Telefon 0810 900 629
+Riia 2, Tartu E-mail kundenservice@bigbank.at
+64967 Reg. Nr. 81505659
+www.bigbank.at VAT. Nr. FG349272663
+1 / 1
+Powered by PDF Generator API
+
+```

@@ -1,0 +1,32 @@
+﻿PDFBox Version: 1.8.16
+-----------------------------------------
+ Scalable Capital GmbH
+Seitzstrasse 8e
+80538 Munich 
+service@scalable.capital
+Page 1/5
+Mr. Munich
+2022-06-08
+...
+Periodic Account Statement: EUR Account
+Account Statement No. 222222
+Posting Description Value Date Debit Credit
+Date in EUR in EUR
+Account Balance in EUR on 2022-04-29 5,000.99
+2022-05-03 Ordergebühr 2022-05-03 0.99 -
+ORDERGEBUEHR
+REF:SCAL4Pm2ZTfDF4c
+Case No.: SCAL4Pm2ZTfDF4c
+...
+Account Balance in EUR on 2022-05-31 5,000.00
+Please ensure your compliance with the German foreign trade reporting regulations to the German Bundesbank (AWV-Meldung).
+This document has been generated electronically and will not be signed.
+Scalable Capital GmbH • Managing Directors: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz, Dirk Urmoneit • HRB 217778, District Court Munich • VAT No. 
+DE300434774 • www.scalable.capital
+ 
+Publisher and responsible for the content is Baader Bank Aktiengesellschaft • Weihenstephaner Strasse 4 • 85716 Unterschleissheim • Germany
+Management Board: Nico Baader (CEO), Dietmar von Blücher, Oliver Riedel • Chairman of the Supervisory Board: Dr. Horst Schiessl • Commercial Register HRB 121537 • 
+Principal Office: Unterschleissheim • TaxNo: 143/107/04009 • VAT ID: DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de
+KKTKK801-040.038
+* Toll-free from (inter-) national landline networks. Charges may apply from other networks.

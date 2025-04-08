@@ -1,0 +1,327 @@
+syntax = "proto3";
+
+package name.abuchen.portfolio;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+option java_multiple_files = true;
+option java_package = "name.abuchen.portfolio.model.proto.v1";
+option java_outer_classname = "ClientProtos";
+
+message PDecimalValue {
+  uint32 scale = 1;
+  uint32 precision = 2;
+  bytes value = 3;
+}
+
+message PAnyValue {
+  oneof kind {
+    google.protobuf.NullValue null = 1;
+    string string = 2;
+    int32 int32 = 3;
+    int64 int64 = 4;
+    double double = 5;
+    bool bool = 6;
+    PMap map = 7;
+  }
+}
+
+message PKeyValue {
+  string key = 1;
+  PAnyValue value = 2;
+}
+
+message PMap {
+  repeated PKeyValue entries = 1;
+}
+
+message PHistoricalPrice {
+  int64 date = 1; // epoch day, based on the epoch 1970-01-01
+  int64 close = 2;
+}
+
+message PFullHistoricalPrice {
+  int64 date = 1; // epoch day, based on the epoch 1970-01-01
+  int64 close = 2;
+  int64 high = 3;
+  int64 low = 4;
+  int64 volume = 5;
+}
+
+message PSecurityEvent {
+  enum Type {
+    STOCK_SPLIT = 0;
+    NOTE = 1;
+    DIVIDEND_PAYMENT = 2;
+  }
+  Type type = 1;
+  int64 date = 2; // epoch day
+  string details = 3;
+  repeated PAnyValue data = 4;
+  string source = 5;
+}
+
+message PSecurity {
+  string uuid = 1;
+  optional string onlineId = 2;
+
+  string name = 3;
+  optional string currencyCode = 4;
+  optional string targetCurrencyCode = 5;
+
+  optional string note = 6;
+
+  optional string isin = 7;
+  optional string tickerSymbol = 8;
+  optional string wkn = 9;
+  optional string calendar = 10;
+
+  optional string feed = 11;
+  optional string feedURL = 12;
+  repeated PHistoricalPrice prices = 13;
+
+  optional string latestFeed = 14;
+  optional string latestFeedURL = 15;
+  optional PFullHistoricalPrice latest = 16;
+	
+  repeated PKeyValue attributes = 17;
+	
+  repeated PSecurityEvent events = 18;
+	
+  repeated PKeyValue properties = 19;
+
+  bool isRetired = 20;
+
+  google.protobuf.Timestamp updatedAt = 21;
+}
+
+message PWatchlist {
+  string name = 1;
+  repeated string securities = 2; // uuids
+}
+
+message PAccount {
+  string uuid = 1;
+  string name = 2;
+  string currencyCode = 3;
+  optional string note = 4;
+  bool isRetired = 5;
+	
+  repeated PKeyValue attributes = 6;
+	
+  google.protobuf.Timestamp updatedAt = 7;
+}
+
+message PPortfolio {
+  string uuid = 1;
+  string name = 2;
+  optional string note = 3;
+  bool isRetired = 4;
+	
+  optional string referenceAccount = 5;
+	
+  repeated PKeyValue attributes = 6;
+	
+  google.protobuf.Timestamp updatedAt = 7;
+}
+
+message PTransactionUnit {
+  enum Type {
+    GROSS_VALUE = 0;
+    TAX = 1;
+    FEE = 2;
+  }
+  Type type = 1;
+  int64 amount = 2;
+  string currencyCode = 3;
+  optional int64 fxAmount = 4;
+  optional string fxCurrencyCode = 5;
+  optional PDecimalValue fxRateToBase = 6;
+}
+
+message PTransaction {
+  enum Type {
+    PURCHASE = 0;
+    SALE = 1;
+    INBOUND_DELIVERY = 2;
+    OUTBOUND_DELIVERY = 3;
+    SECURITY_TRANSFER = 4;
+    CASH_TRANSFER = 5;
+    DEPOSIT = 6;
+    REMOVAL = 7;
+    DIVIDEND = 8;
+    INTEREST = 9;
+    INTEREST_CHARGE = 10;
+    TAX = 11;
+    TAX_REFUND = 12;
+    FEE = 13;
+    FEE_REFUND = 14;
+  }
+	
+  string uuid = 1;
+	
+  Type type = 2;
+  optional string account = 3;
+  optional string portfolio = 4;
+  optional string otherAccount = 5;
+  optional string otherPortfolio = 6;
+  
+  optional string otherUuid = 7;
+  optional google.protobuf.Timestamp otherUpdatedAt = 8;
+	
+  google.protobuf.Timestamp date = 9;
+	
+  string currencyCode = 10;
+  int64 amount = 11;
+  optional int64 shares = 12;
+  optional string note = 13;
+  optional string security = 14;
+
+  repeated PTransactionUnit units = 15;
+
+  google.protobuf.Timestamp updatedAt = 16;
+  
+  optional string source = 17;
+}
+
+message PInvestmentPlan {
+  enum Type {
+    PURCHASE_OR_DELIVERY = 0;
+    DEPOSIT = 1;
+    REMOVAL = 2;
+    INTEREST = 3;
+  }
+
+  string name = 1;
+  optional string note = 2;
+  optional string security = 3;
+  optional string portfolio = 4;
+  optional string account = 5;
+	
+  repeated PKeyValue attributes = 6;
+
+  bool autoGenerate = 7;
+  int64 date = 8;
+  int32 interval = 9;
+  int64 amount = 10;
+  int64 fees = 11;
+  repeated string transactions = 12; // uuids
+
+  int64 taxes = 13;
+  Type type = 14;
+}
+
+message PTaxonomy {
+  message Assignment {
+    string investmentVehicle = 1;
+    int32 weight = 2;
+    int32 rank = 3;
+    repeated PKeyValue data = 4;
+  }
+
+  message Classification {
+    string id = 1;
+    optional string parentId = 2;
+	
+    string name = 3;
+    optional string note = 4;
+    string color = 5;
+    int32 weight = 6;
+    int32 rank = 7;
+	
+    repeated PKeyValue data = 8;
+	
+    repeated PTaxonomy.Assignment assignments = 9;
+  }
+
+  string id = 1;
+  string name = 2;
+  optional string source = 3;
+  repeated string dimensions = 4;
+	
+  repeated PTaxonomy.Classification classifications = 5;
+}
+
+message PDashboard {
+  message Widget {
+    string type = 1;
+    string label = 2;
+    map<string, string> configuration = 3;
+  }
+	
+  message Column {
+    int32 weight = 1;
+    repeated Widget widgets = 2;
+  }
+	
+  string name = 1;
+  map<string, string> configuration = 2;
+  repeated Column columns = 3;
+  string id = 4;
+}
+
+message PBookmark {
+  string label = 1;
+  string pattern = 2;
+}
+
+message PAttributeType {
+  string id = 1;
+  string name = 2;
+  string columnLabel = 3;
+  optional string source = 4;
+  string target = 5;
+  string type = 6;
+  string converterClass = 7;
+  PMap properties = 8;
+}
+
+message PConfigurationSet {
+  string key = 1;
+  string uuid = 2;
+  string name = 3;
+  string data = 4;
+}
+
+message PSettings {
+  repeated PBookmark bookmarks = 1;
+  repeated PAttributeType attributeTypes = 2;
+  repeated PConfigurationSet configurationSets = 3;
+}
+
+message PClient {
+  int32 version = 1;
+	
+  repeated PSecurity securities = 2;
+  repeated PAccount accounts = 3;
+  repeated PPortfolio portfolios = 4;
+  repeated PTransaction transactions = 5;
+
+  repeated PInvestmentPlan plans = 6;
+
+  repeated PWatchlist watchlists = 7;    
+  repeated PTaxonomy taxonomies = 8;
+  repeated PDashboard dashboards = 9;
+
+  map<string, string> properties = 10;
+   
+  PSettings settings = 11;
+  string baseCurrency = 12;
+}
+
+message PExchangeRate {
+  int64 date = 1;
+  PDecimalValue value = 2;
+}
+
+message PExchangeRateTimeSeries {
+  string baseCurrency = 1;
+  string termCurrency = 2;
+  repeated PExchangeRate exchangeRates = 3;
+}
+
+message PECBData {
+  int64 lastModified = 1;
+  repeated PExchangeRateTimeSeries series = 2;
+}

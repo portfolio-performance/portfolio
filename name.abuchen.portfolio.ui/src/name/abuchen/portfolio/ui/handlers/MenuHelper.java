@@ -29,21 +29,11 @@ import name.abuchen.portfolio.ui.editor.PortfolioPart;
         // if the part is open, but the Client not yet decrypted, menus still
         // must be deactivated
 
-        return null != part && part.getObject() instanceof PortfolioPart
-                        && ((PortfolioPart) part.getObject()).getClient() != null;
+        return null != part && part.getObject() instanceof PortfolioPart portfolioPart
+                        && portfolioPart.getClient() != null;
     }
 
-    /* package */static Optional<Client> getActiveClient(MPart part)
-    {
-        return getActiveClientInput(part).map(ClientInput::getClient);
-    }
-
-    /* package */static Optional<ClientInput> getActiveClientInput(MPart part)
-    {
-        return getActiveClientInput(part, true);
-    }
-
-    /* package */static Optional<ClientInput> getActiveClientInput(MPart part, boolean showWarning)
+    /* package */static Optional<PortfolioPart> getActivePortfolioPart(MPart part, boolean showWarning)
     {
         if (part == null || !(part.getObject() instanceof PortfolioPart)
                         || ((PortfolioPart) part.getObject()).getClient() == null)
@@ -58,7 +48,27 @@ import name.abuchen.portfolio.ui.editor.PortfolioPart;
             return Optional.empty();
         }
 
-        return Optional.of(((PortfolioPart) part.getObject()).getClientInput());
+        return Optional.of((PortfolioPart) part.getObject());
+    }
+
+    /* package */static Optional<Client> getActiveClient(MPart part)
+    {
+        return getActiveClientInput(part).map(ClientInput::getClient);
+    }
+
+    /* package */static Optional<Client> getActiveClient(MPart part, boolean showWarning)
+    {
+        return getActiveClientInput(part, showWarning).map(ClientInput::getClient);
+    }
+
+    /* package */static Optional<ClientInput> getActiveClientInput(MPart part)
+    {
+        return getActiveClientInput(part, true);
+    }
+
+    /* package */static Optional<ClientInput> getActiveClientInput(MPart part, boolean showWarning)
+    {
+        return getActivePortfolioPart(part, showWarning).map(PortfolioPart::getClientInput);
     }
 
 }

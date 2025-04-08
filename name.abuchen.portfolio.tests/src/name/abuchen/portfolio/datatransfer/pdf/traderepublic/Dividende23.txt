@@ -1,0 +1,31 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+tMciPi KNEECey SEITE 1 von 1
+DjecthdMPb 10 DATUM 27.06.2024
+92934 GwHuTIktg DEPOT 0409548001
+DIVIDENDE
+ÜBERSICHT
+Dividende mit Ex-Datum17.06.2024.
+POSITION ANZAHL ERTRAG BETRAG
+UnitedHealth
+US91324P1021 12.000000 Stücke 2.1 USD
+25.20 USD
+GESAMT 25.20 USD
+ABRECHNUNG
+POSITION BETRAG
+Quellensteuer für US-Emittenten -3.78 USD
+Zwischensumme 21.42 USD
+Zwischensumme 1.073 USD/EUR 19.97 EUR
+GESAMT 19.97 EUR
+BUCHUNG
+VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
+DE30501112345678908907 25.06.2024 19.97 EUR
+US91324P1021 im Girosammelverwahrung in Deutschland
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich um eine umsatzsteuerfreie Leistung gemäß § 4 Nr. 8 UStG
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin DirektorenBrunnenstraße 19-21
+10119 Berlin service@traderepublic.com
+AG Charlottenburg HRB 244347 B Andreas Torner
+Umsatzsteuer-ID DE307510626 Gernot Mittendorfer

@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.handlers;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -15,7 +15,6 @@ import org.osgi.service.prefs.BackingStoreException;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
-@SuppressWarnings("restriction")
 public class ForceClearPersistedStateHandler
 {
     @Execute

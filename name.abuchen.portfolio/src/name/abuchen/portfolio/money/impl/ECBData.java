@@ -11,12 +11,12 @@ import java.util.Map;
  */
 /* package */class ECBData
 {
-    private transient boolean isDirty = false;
+    private transient boolean isDirty = false; // NOSONAR
 
     private long lastModified;
-    private List<ExchangeRateTimeSeriesImpl> timeSeries = new ArrayList<ExchangeRateTimeSeriesImpl>();
+    private List<ExchangeRateTimeSeriesImpl> timeSeries = new ArrayList<>();
 
-    private transient Map<String, ExchangeRateTimeSeriesImpl> currency2series = new HashMap<String, ExchangeRateTimeSeriesImpl>();
+    private transient Map<String, ExchangeRateTimeSeriesImpl> currency2series = new HashMap<>(); // NOSONAR
 
     public long getLastModified()
     {
@@ -69,7 +69,7 @@ import java.util.Map;
 
     public void doPostLoadProcessing(ECBExchangeRateProvider provider)
     {
-        currency2series = new HashMap<String, ExchangeRateTimeSeriesImpl>();
+        currency2series = new HashMap<>();
 
         for (ExchangeRateTimeSeriesImpl series : timeSeries)
         {

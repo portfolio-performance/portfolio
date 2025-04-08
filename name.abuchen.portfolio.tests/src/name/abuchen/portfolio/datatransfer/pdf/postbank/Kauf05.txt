@@ -1,0 +1,39 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.1
+-----------------------------------------
+Postbank
+Beratungsteam
+Vorname Nachname 24/7-Kundenservice (0228) 5500-5500
+Straße. 213
+12345 Stadt
+24. Juli 2023
+Abrechnung: Kauf von Wertpapieren
+Depotinhaber: Vorname Nachname
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+123 4567890 00 DWS ESG TOP ASIEN INHABER-ANTEILE LC 1/1
+WKN 976976 Nominal ST 88
+ISIN DE0009769760 Kurs EUR 196,05
+Verwahrart Girosammeldepot
+Geschäft Festpreisgeschäft
+Belegnummer 1481234555 / 987123 Schlusstag 24.07.2023
+Ausgabeaufschlag 4,00 %
+Auftragsart Festpreisgeschäft
+Abrechnung Währung Betrag
+Kurswert EUR 17.252,30
+Preisnachlass EUR -82,94
+Belastung
+Buchung auf Kontonummer 4567890 00 mit Wertstellung 26.07.2023 EUR 17.169,09
+Das abgerechnete Geschäft haben entweder Sie nach einem mit Ihnen geführten Beratungsgespräch oder Ihr
+Bevollmächtigter nach einem mit ihm geführten Beratungsgespräch getätigt. Zu dem Gespräch wurde ein
+Beratungsprotokoll erstellt, welches dem Gesprächsteilnehmer zur Verfügung gestellt wurde.
+DieWertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen
+und die Sonderbedingungen fürWertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen
+in den Geschäftsräumen der Bank oder schriftlich an Deutsche Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt.
+Die unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert
+ausgewiesen ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat hat und die Bank
+und Finanzdienstleistungen nach dortigem Recht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers. Umsatzsteuer ID
+Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+Postbank - eine Niederlassung der Deutsche Bank AG - Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts - Vorstand: Christian Sewing (Vorsitzender),
+James von Moltke, Karl von Rohr, Fabrizio Campelli, Bernd Leukert, Alexander von zur Mühlen, Claudio de Sanctis, Rebecca Short, Stefan Simon, Olivier Vigneron
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main, Amtsgericht Frankfurt am Main, HRB Nr. 30 000, Umsatzsteuer-Id.-Nr. DE114103379; www.postbank.de
+TR00000001 20230724 718_000_

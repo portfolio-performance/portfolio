@@ -1,0 +1,57 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/2
+München
+18.03.2021
+Scalable Capital Vermögensverw.GmbH
+Scalable Capital 
+Seitzstr. 8 e Vermögensverwaltung GmbH 
+Seitzstraße 8e
+80538 München
+80538 München 
+service@scalable.capital
+Max Mustermann
+Stamm-Nr.: 1234567    Portfolio: 1
+Depot-Nr.: 1311222111
+Vorgangs-Nr.: 5566777
+Referenz-Nr.: 99880011
+Ausschüttung aus REIT KOPIE
+Ex-Tag: 15.03.2021
+Nominale ISIN: DE000A2G9LL1 WKN: A2G9LL Ausschüttung
+STK 62 Deutsche Industrie REIT-AG EUR 0,24 p.STK
+Zahlungszeitraum: 01.10.2019 - 30.09.2020 
+Zahltag: 17.03.2021
+Bruttobetrag EUR 14,88
+Kapitalertragsteuer EUR 3,64 -
+Kirchensteuer EUR 0,32 -
+Solidaritätszuschlag EUR 0,20 -
+Zu Gunsten Konto 5566778833 Valuta: 17.03.2021 EUR 10,72
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz | HRB 217778, Amtsgericht 
+München | USt-IdNr. DE300434774 | www.scalable.capital 
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland
+service@baaderbank.de www.baaderbank.de 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. DCUP-050.041
+Ausschüttung aus REIT KOPIE
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+bezahlte Kapitalertragsteuer EUR 8,36 EUR 3,64 EUR 12,00
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+inl. Div. REIT EUR 14,88 EUR 14,88
+AbgSt inl. Div. Zahlstelle 9% KiSt EUR 14,88 EUR 14,88
+AbgSt inl. Div. Zahlstelle 9% KiSt
+Kapitalertragsteuer 24,45 % EUR 3,64 - EUR 3,64 -
+Kirchensteuer 9,00 % EUR 0,32 - EUR 0,32 -
+Solidaritätszuschlag 5,50 % EUR 0,20 - EUR 0,20 -
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz | HRB 217778, Amtsgericht 
+München | USt-IdNr. DE300434774 | www.scalable.capital 
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland
+service@baaderbank.de www.baaderbank.de 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. DCUP-050.041

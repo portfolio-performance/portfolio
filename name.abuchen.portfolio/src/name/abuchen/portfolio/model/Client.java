@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,10 +23,15 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class Client
 {
-    /* package */static final int MAJOR_VERSION = 1;
+    public interface Properties // NOSONAR
+    {
+        String TAXONOMIES = "taxonomies"; //$NON-NLS-1$
+        String WATCHLISTS = "watchlists"; //$NON-NLS-1$
+    }
 
-    public static final int CURRENT_VERSION = 45;
+    public static final int CURRENT_VERSION = 66;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
+    public static final int VERSION_WITH_UNIQUE_FILTER_KEY = 57;
 
     private transient PropertyChangeSupport propertyChangeSupport; // NOSONAR
 
@@ -48,7 +54,7 @@ public class Client
 
     // keep typo -> xstream deserialization
     @Deprecated
-    private List<ConsumerPriceIndex> consumerPriceIndeces;
+    /* package */ List<ConsumerPriceIndex> consumerPriceIndeces;
 
     private List<Account> accounts = new ArrayList<>();
     private List<Portfolio> portfolios = new ArrayList<>();
@@ -66,6 +72,7 @@ public class Client
     private Category rootCategory;
 
     private transient SecretKey secret; // NOSONAR
+    private transient Set<SaveFlag> saveFlags = EnumSet.noneOf(SaveFlag.class); // NOSONAR
 
     public Client()
     {
@@ -79,9 +86,6 @@ public class Client
 
         if (watchlists == null)
             watchlists = new ArrayList<>();
-
-        if (consumerPriceIndeces == null)
-            consumerPriceIndeces = new ArrayList<>();
 
         if (properties == null)
             properties = new HashMap<>();
@@ -125,6 +129,11 @@ public class Client
         this.fileVersionAfterRead = fileVersionAfterRead;
     }
 
+    public boolean shouldDoFilterMigration()
+    {
+        return getFileVersionAfterRead() < Client.VERSION_WITH_UNIQUE_FILTER_KEY;
+    }
+
     public String getBaseCurrency()
     {
         return baseCurrency;
@@ -155,6 +164,11 @@ public class Client
         return Collections.unmodifiableList(securities);
     }
 
+    public SecurityNameConfig getSecurityNameConfig()
+    {
+        return new ClientProperties(this).getSecurityNameConfig();
+    }
+
     /**
      * Returns a sorted list of active securities, i.e. securities that are not
      * marked as retired.
@@ -164,7 +178,7 @@ public class Client
         return securities.stream() //
                         .filter(s -> s.getCurrencyCode() != null) //
                         .filter(s -> !s.isRetired()) //
-                        .sorted(new Security.ByName()) //
+                        .sorted(new Security.ByName(getSecurityNameConfig())) //
                         .collect(Collectors.toList());
     }
 
@@ -236,13 +250,28 @@ public class Client
 
     public List<Watchlist> getWatchlists()
     {
-        return watchlists;
+        return Collections.unmodifiableList(watchlists);
     }
 
-    @Deprecated
-    /* package */ List<ConsumerPriceIndex> getConsumerPriceIndices() // NOSONAR
+    public void addWatchlist(Watchlist watchlist)
     {
-        return Collections.unmodifiableList(consumerPriceIndeces); // NOSONAR
+        watchlists.add(watchlist);
+        propertyChangeSupport.firePropertyChange(Properties.WATCHLISTS, null, watchlist);
+    }
+
+    public void swapWatchlist(Watchlist first, Watchlist second)
+    {
+        int p1 = watchlists.indexOf(first);
+        int p2 = watchlists.indexOf(second);
+
+        if (p1 >= 0 && p2 >= 0)
+            Collections.swap(watchlists, p1, p2);
+    }
+
+    public void removeWatchlist(Watchlist watchlist)
+    {
+        if (watchlists.remove(watchlist))
+            propertyChangeSupport.firePropertyChange(Properties.WATCHLISTS, watchlist, null);
     }
 
     public void addAccount(Account account)
@@ -341,16 +370,22 @@ public class Client
     public void addTaxonomy(Taxonomy taxonomy)
     {
         taxonomies.add(taxonomy);
+        propertyChangeSupport.firePropertyChange(Properties.TAXONOMIES, null, taxonomy);
     }
 
-    public void addTaxonomy(int index, Taxonomy taxonomy)
+    public void swapTaxonomy(Taxonomy first, Taxonomy second)
     {
-        taxonomies.add(index, taxonomy);
+        int p1 = taxonomies.indexOf(first);
+        int p2 = taxonomies.indexOf(second);
+
+        if (p1 >= 0 && p2 >= 0)
+            Collections.swap(taxonomies, p1, p2);
     }
 
     public void removeTaxonomy(Taxonomy taxonomy)
     {
-        taxonomies.remove(taxonomy);
+        if (taxonomies.remove(taxonomy))
+            propertyChangeSupport.firePropertyChange(Properties.TAXONOMIES, taxonomy, null);
     }
 
     public Taxonomy getTaxonomy(String id)
@@ -387,20 +422,25 @@ public class Client
 
     public void setProperty(String key, String value)
     {
-        String oldValue = properties.put(key, value);
-        propertyChangeSupport.firePropertyChange("properties", oldValue, value); //$NON-NLS-1$
+        properties.put(key, value);
+        touch();
     }
 
     public String removeProperty(String key)
     {
         String oldValue = properties.remove(key);
-        propertyChangeSupport.firePropertyChange("properties", oldValue, null); //$NON-NLS-1$
+        touch();
         return oldValue;
     }
 
     public String getProperty(String key)
     {
         return properties.get(key);
+    }
+
+    public boolean hasProperty(String key)
+    {
+        return properties.containsKey(key);
     }
 
     /**
@@ -419,6 +459,11 @@ public class Client
         {
             return 0;
         }
+    }
+
+    /* package */ Map<String, String> getProperties()
+    {
+        return properties;
     }
 
     /* package */void clearProperties()
@@ -451,16 +496,21 @@ public class Client
         return transactions;
     }
 
-    /* package */
-    SecretKey getSecret()
+    /* package */ SecretKey getSecret()
     {
         return secret;
     }
 
-    /* package */
-    void setSecret(SecretKey secret)
+    /* package */ void setSecret(SecretKey secret)
     {
         this.secret = secret;
+    }
+
+    /* package */ Set<SaveFlag> getSaveFlags()
+    {
+        if (this.saveFlags == null)
+            this.saveFlags = EnumSet.noneOf(SaveFlag.class);
+        return this.saveFlags;
     }
 
     /**
@@ -621,15 +671,14 @@ public class Client
         for (Portfolio portfolio : portfolios)
         {
             answer.append(portfolio.getName()).append('\n');
-            portfolio.getTransactions().stream().sorted(new Transaction.ByDate())
+            portfolio.getTransactions().stream().sorted(Transaction.BY_DATE)
                             .forEach(t -> answer.append(t).append('\n'));
         }
 
         for (Account account : accounts)
         {
             answer.append(account.getName()).append('\n');
-            account.getTransactions().stream().sorted(new Transaction.ByDate())
-                            .forEach(t -> answer.append(t).append('\n'));
+            account.getTransactions().stream().sorted(Transaction.BY_DATE).forEach(t -> answer.append(t).append('\n'));
         }
 
         return answer.toString();

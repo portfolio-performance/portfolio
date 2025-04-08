@@ -1,0 +1,54 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 1234567890
+1110705074/00
+Vermerk der Bank: 2100
+2
+Maxi Mustermax
+Straße 23 Datum: 01.03.2024
+12345 Musterstadt Seite: 1 von 2
+Ertragsgutschrift / Neuabrechnung
+Wertpapierbezeichnung WKN ISIN
+Kinder Morgan Inc. Registered Shares P DL -,01 A1H6GK US49456B1017
+Bestand
+290 Stück
+Ertragsausschüttung je Anteil 0,2119 USD Schlusstag 27.04.2023
+Brutto in USD 61,45 USD
+Netto in USD 61,45 USD
+Devisenkurs 1,090900 USD / EUR
+Brutto in EUR 56,33 EUR
+Netto zugunsten IBAN DE60 7603 0080 0840 1922 64 56,33 EUR
+Valuta 28.02.2024 BIC CSDBDE71XXX
+Return of Capital Neuabrechnung 2
+Bitte beachten Sie die weiteren Informationen auf Seite 2.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+1EE45331-38C6-20E0-141E-E4423403B200
+Depotnummer: 1234567890
+1110705074/00
+Vermerk der Bank: 2100
+2
+Datum: 01.03.2024
+Seite: 2 von 2
+Details zur Abrechnung
+Steuerpflichtiger Gesamtertrag 56,33 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet -56,33 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Mit Quellensteuer verrechnet 0,00 EUR
+somit verrechnete Quellensteuer 0,00 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 0,00 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf "Allgemein" vor der Abrechnung 75,10 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet -56,33 EUR
+Verrechnungstopf "Allgemein" nach der Abrechnung 18,77 EUR
+Sparerpauschbetrag vor der Abrechnung 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Sparerpauschbetrag nach der Abrechnung 0,00 EUR
+Verrechnungstopf "Quellensteuer" vor der Abrechnung -11,27 EUR
+Änderung Verrechnungstopf "Quellensteuer" 0,00 EUR
+Verrechnungstopf "Quellensteuer" nach der Abrechnung -11,27 EUR

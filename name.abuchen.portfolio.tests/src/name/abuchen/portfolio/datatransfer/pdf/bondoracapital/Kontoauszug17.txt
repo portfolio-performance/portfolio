@@ -1,0 +1,16 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Summary
+Opening €1,111.11
+First Last
+Payments in €1,111.11
+Date 2/4/2025 - 2/4/2025 Payments out €1
+Account reference number GG1111111 Closing €1,111.11
+Go & Grow
+Date Payment type In Out Balance
+2/4/2025 SEPA payment €1,111 €1,111.11
+Up to 4%* p.a. returns €1
+Up to 6.75%* p.a. returns €1,111 €1,111.11
+Total €1,111.11

@@ -1,0 +1,70 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.4
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+        Frankfurt, 28.03.2023
+0202462000003103238231
+Herr N der Auftragsdatum      27.03.2023n . asdasd o
+F S Handelstag         27.03.2023rau . 
+Ba casstr 12 Ausführungszeit    17:34 Uhrun . 
+12345 München Valuta             29.03.2023
+Auftragsnummer     230975028/1
+Ausf.platz/-art    gettex
+Wertpapierabrechnung Kauf
+Ihre Depotnummer: 1000000000
+Depotinhaber:     F, I oder L, S
+Nr.230975068/1     Kauf                 FRAPORT AG 20/27 (XS2198879145/A3E444)
+Ausgeführt    :    1.000,000000 EUR     Kurswert      :           1.690,00 EUR
+Kurs          :       92,250000 %       Provision     :               5,90 EUR
+Devisenkurs   :        1,000000         Eigene Spesen :               0,00 EUR
+Faktor        :       1,0000000        *Fremde Spesen :               2,00 EUR
+Verwahrart    : GS-Verwahrung
+Lagerstelle   : Clearstream Nat.        Zinsbetrag    :              6,25 EUR
+Lagerland     :                         Bemessungs-
+Zinsen für    :            263 Tage     grundlage     :               0,00 EUR
+Gewinn/Verlust:            0,00 EUR   **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :          -1704,15 EUR
+*   Enthalten sind folgende Gebühren Courtage         :               0,00 EUR
+                             Tradinggebühr            :               0,00 EUR
+                             Regulierung              :               2,00 EUR
+                             Schlussnoten             :               0,00 EUR
+                             LS-Umlegung              :               0,00 EUR
+                             Finanztransaktionssteuer :               0,00 EUR
+                             Sonstige                 :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  :               0,00 EUR
+                                 Solidaritätszuschlag :               0,00 EUR
+                                 Kirchensteuer        :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1225591278.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 11111111111
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour (stellv. Vorsitzender),
+Dr. Benon Janos, Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang
+2000003103298230 0113202460000102
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour (stellv. Vorsitzender),
+Dr. Benon Janos, Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang
+2000003103298230 0113202460000202

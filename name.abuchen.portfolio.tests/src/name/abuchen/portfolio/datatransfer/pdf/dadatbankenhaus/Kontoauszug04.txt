@@ -1,0 +1,26 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+BH Schelhammer & Schattera AG vom 03.09.2020
+Alter Saldo per 28.08.2020 235,95
+Summe der Gutschriften 1.535,94
+Online Summe der Lastschriften 0,00
+BH Schelhammer, PF 1000, 5021 Salzburg
+Neuer Saldo zu Ihren Gunsten
+Max Musterman EUR 1.771,89
+Straße 10/11
+PLZ Ort
+Konto-Nr.: 00078000000 Bankleitzahl: 19190
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+03.09 Verkauf                          Depot    7800000000/20200903-45260208 04.09 1.535,94
+ISIN US2561631068 DOCUSIGN INC    DL-,0001                7,00000 STK
+Kurs                    282,740000  KURSWERT              1.979,18 USD
+KEST                   -140,27 USD  Handelsspesen            -5,07 USD
+DevKurs        1,187100/3.9.2020    DADAT Handelsspesen      -7,87 EUR
+Clearing Gebühr          -1,00 EUR
+Neuer Saldo zu Ihren Gunsten 1.771,89
+AT40 1919 0000 0000 0000 BSSWATWW 01 0010 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 07718 Doknr.: EK00-045-0247003606

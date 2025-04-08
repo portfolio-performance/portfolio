@@ -6,7 +6,7 @@ import java.util.List;
 public class Watchlist
 {
     private String name;
-    private List<Security> securities = new ArrayList<Security>();
+    private List<Security> securities = new ArrayList<>();
 
     public String getName()
     {
@@ -25,6 +25,7 @@ public class Watchlist
 
     public void addSecurity(Security security)
     {
-        securities.add(security);
+        if (!securities.contains(security))
+            securities.add(security);
     }
 }

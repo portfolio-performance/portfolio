@@ -1,7 +1,13 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -12,22 +18,29 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
-import org.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
 
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart.ThousandsNumberFormat;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
+import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
+import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 import name.abuchen.portfolio.ui.views.dataseries.StatementOfAssetsSeriesBuilder;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.Interval;
 
 public class StatementOfAssetsHistoryView extends AbstractHistoricView
@@ -35,6 +48,22 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     private TimelineChart chart;
     private DataSeriesConfigurator configurator;
     private StatementOfAssetsSeriesBuilder seriesBuilder;
+    private ChartViewConfig chartViewConfig;
+
+    @Inject
+    @Optional
+    public void onDiscreedModeChanged(@UIEventTopic(UIConstants.Event.Global.DISCREET_MODE) Object obj)
+    {
+        if (chart != null)
+            chart.redraw();
+    }
+
+    @Inject
+    @Optional
+    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) ChartViewConfig config)
+    {
+        this.chartViewConfig = config;
+    }
 
     @Override
     protected String getDefaultTitle()
@@ -92,7 +121,9 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
         chart = new TimelineChart(composite);
         chart.getTitle().setVisible(false);
+
         chart.getToolTip().reverseLabels(true);
+        chart.getToolTip().setDefaultValueFormat(new AmountNumberFormat());
 
         chart.getAxisSet().getYAxis(0).getTick().setFormat(new ThousandsNumberFormat());
 
@@ -100,10 +131,18 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         seriesBuilder = new StatementOfAssetsSeriesBuilder(chart, cache);
 
         configurator = new DataSeriesConfigurator(this, DataSeries.UseCase.STATEMENT_OF_ASSETS);
+        if (chartViewConfig != null)
+        {
+            // do *not* update reporting period as it changes the default for
+            // all other views as well --> unexpected UX
+            configurator.activate(chartViewConfig.getUUID());
+        }
+
         configurator.addListener(this::updateChart);
         configurator.setToolBarManager(getViewToolBarManager());
 
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, configurator);
+        legend.addSelectionChangedListener(e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
 
         updateTitle(Messages.LabelStatementOfAssetsHistory + " (" + configurator.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         chart.getTitle().setText(getTitle());
@@ -116,6 +155,17 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         Lists.reverse(configurator.getSelectedDataSeries()).forEach(series -> seriesBuilder.build(series, interval));
 
         return composite;
+    }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(HistoricalPricesPane.class));
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
     }
 
     @Override
@@ -155,7 +205,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
             chart.suspendUpdate(true);
             chart.getTitle().setText(getTitle());
-            for (ISeries s : chart.getSeriesSet().getSeries())
+            for (var s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             Interval interval = getReportingPeriod().toInterval(LocalDate.now());

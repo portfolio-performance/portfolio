@@ -1,0 +1,44 @@
+PDF Autor: 'ING-DiBa'
+PDFBox Version: 1.8.16
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: Max Mustermann
+Herrn Direkt-Depot Nr.: 123456789
+Max Mustermann Datum: 04.03.2021
+Musterstr. 10 Seite: 1 von 2
+10000 Berlin
+Dividendengutschrift
+ISIN (WKN) US92826C8394 (A0NC7B)
+Wertpapierbezeichnung VISA Inc.
+Reg. Shares Class A DL -,0001
+Nominale 11,97545 Stück
+Zins-/Dividendensatz 0,32 USD
+Ex-Tag 11.02.2021
+Zahltag 01.03.2021
+Brutto USD 3,83
+QuSt 15,00 % (EUR 0,47) USD 0,57
+Zwischensumme USD 3,26
+Umg. z. Dev.-Kurs (1,214229) EUR 2,68
+Gesamtbetrag zu Ihren Gunsten EUR 2,68
+Abrechnungs-IBAN DE01 1111 111111111111 11
+Valuta 01.03.2021
+Quellensteuer laut Doppelbesteuerungsabkommen (DBA).
+Jahressteuerbescheinigung folgt.
+Weitere steuerliche Informationen entnehmen Sie bitte der Rückseite.
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzender des Aufsichtsrates: Dr. Claus Dieter Hoffmann · Vorstand: Nick Jue (Vorsitzender),
+Dr. Joachim von Schorlemer (stellv. Vorsitzender), Zeljko Kaurin, Sigrid Kozmiensky, Daniel Llano Manibardo, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main
+HRB 7727, Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+Depotinhaber: Max Mustermann
+Direkt-Depot Nr.: 123456789
+Datum: 04.03.2021
+Seite: 2 von 2
+ISIN (WKN) US92826C8394 (A0NC7B)
+Anrechenbare ausländische Quellensteuer 0,47 EUR
+KapSt-pflichtiger Kapitalertrag 3,15 EUR
+Mit Sparer-Pauschbetrag verrechnet -3,15 EUR
+Sparer-Pauschbetrag vor Ertrag 1.100,65 EUR
+Sparer-Pauschbetrag nach Ertrag 1.097,50 EUR
+Verrechnungstopf ausländ. Quellenst. vor Ertrag 52,53 EUR
+Verrechnungstopf ausländ. Quellenst. nach Ertrag 53,00 EUR
+Bei Fragen besuchen Sie uns einfach unter www.ing.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing.de .

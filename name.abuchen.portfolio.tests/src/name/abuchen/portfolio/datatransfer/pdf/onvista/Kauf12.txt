@@ -1,0 +1,129 @@
+PDF Author: 
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=987654321
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=Vorname Nachname
+Kauf Sparplan ADRESSZEILE3=Straße Hausnummer
+Kommissionsgeschäft ADRESSZEILE4=12345 Stadt
+Herr ADRESSZEILE5=
+Vorname Nachname ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Straße Hausnummer BELEGNUMMER=18522
+12345 Stadt 987654321 77199603 / 03.12.2018 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Vorname Nachname
+Frankfurt am Main, 03.12.2018
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N. IE00B4L5Y983
+Nominal Kurs
+STK 12,483 EUR 48,0650
+Handelstag 03.12.2018 Kurswert EUR 600,00-
+Handelszeit 09:10
+Handelsplatz Börse Xetra/EDE
+Verwahrart Wertpapierrechnung
+Lagerland Irland
+Wert Konto-Nr. Betrag zu Ihren Lasten
+05.12.2018 123456789 EUR 600,00
+Die jährlich zu zahlende Verwaltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den
+Vertragsbedingungen zu entnehmen.
+Sparplan mit ID 248915037
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Michael Mandel
+3.18/ABREABHNHANDKF/GAAASAFG/018522/041218/033410
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=987654321
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=Vorname Nachname
+Kauf Sparplan ADRESSZEILE3=Straße Hausnummer
+Kommissionsgeschäft ADRESSZEILE4=12345 Stadt
+Herr ADRESSZEILE5=
+Vorname Nachname ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Straße Hausnummer BELEGNUMMER=18523
+12345 Stadt 987654321 55390681 / 03.12.2018 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Vorname Nachname
+Frankfurt am Main, 03.12.2018
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+ComStage-SDAX UCITS ETF Inhaber-Anteile I o.N. LU0603942888
+Nominal Kurs
+STK 8,1741 EUR 97,8700
+Handelstag 03.12.2018 Kurswert EUR 800,00-
+Handelszeit 09:06
+Handelsplatz Börse Xetra/EDE
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+05.12.2018 123456789 EUR 800,00
+Die jährlich zu zahlende Verwaltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den
+Vertragsbedingungen zu entnehmen.
+Wir werden in Ihrem Depot wie angegeben buchen.
+Sparplan mit ID 248915040
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Michael Mandel
+3.18/ABREABHNHANDKF/GAAASAFG/018523/041218/033410
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=987654321
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=Vorname Nachname
+Kauf Sparplan ADRESSZEILE3=Straße Hausnummer
+Kommissionsgeschäft ADRESSZEILE4=12345 Stadt
+Herr ADRESSZEILE5=
+Vorname Nachname ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Straße Hausnummer BELEGNUMMER=18524
+12345 Stadt 987654321 13722388 / 03.12.2018 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Vorname Nachname
+Frankfurt am Main, 03.12.2018
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+ComSta.-MSCI Em.Mkts.TRN U.ETF Inhaber-Anteile I o.N. LU0635178014
+Nominal Kurs
+STK 20,2778 EUR 39,4520
+Handelstag 03.12.2018 Kurswert EUR 800,00-
+Handelszeit 09:06
+Handelsplatz Börse Xetra/EDE
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+05.12.2018 123456789 EUR 800,00
+Die jährlich zu zahlende Verwaltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den
+Vertragsbedingungen zu entnehmen.
+Wir werden in Ihrem Depot wie angegeben buchen.
+Sparplan mit ID 248915041
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Michael Mandel
+3.18/ABREABHNHANDKF/GAAASAFG/018524/041218/033410

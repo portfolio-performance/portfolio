@@ -1,0 +1,35 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Max Mustermann SEITE 1 von 1
+Beispielstraße 1 DATUM 03.08.2021
+D 12345 Stadt ORDER 886a-ffff
+AUSFÜHRUNG dcd2-ffff
+DEPOT 123456
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Market-Order Verkauf am 03.08.2021, um 16:49 Uhr (Europe/Berlin) an der Lang & Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL KURS BETRAG
+Novavax Inc. 2 Stk. 151,44 EUR 302,88 EUR
+Registered Shares DL -,01
+ISIN: US6700024010
+GESAMT 302,88 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+Kapitalertragsteuer Optimierung 12,65 EUR
+Solidaritätszuschlag Optimierung 0,69 EUR
+GESAMT 315,22 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+123456789 05.08.2021 315,22 EUR
+Novavax Inc. Registered Shares DL -,01 in Wertpapierrechnung in Deutschland.
+Lagerland: Vereinigte Staaten
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 03.08.2021 / 97588599 / 518d-5348

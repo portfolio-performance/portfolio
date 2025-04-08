@@ -1,0 +1,24 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Max Muster SEITE 1 von 1
+Musterstraße 4 DATUM 27.01.2022
+12345 Musterstadt DEPOT 0123456789
+VERGLEICHSVERFAHREN
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+1 Ausbuchung BHP Group PLC 8 Stk.
+Registered Shares DL -,50
+GB00BH0P3Z91
+2 Einbuchung BHP Group Ltd. 8 Stk.
+Registered Shares DL -,50
+AU000000BHP4
+BHP Group Ltd. Registered Shares DL -,50 in Wertpapierrechnung in Deutschland.
+Lagerland: Vereinigtes Königreich
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+DUAN / 19.01.2022 / 19412314 / e4a6-aaaa

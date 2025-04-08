@@ -18,6 +18,7 @@ public class QuoteQualityMetrics
 
     private Interval checkInterval;
     private List<Interval> missingIntervals = new ArrayList<>();
+    private List<Interval> unexpectedIntervals = new ArrayList<>();
 
     private int expectedNumberOfQuotes;
     private int actualNumberOfQuotes;
@@ -59,6 +60,15 @@ public class QuoteQualityMetrics
         return missingIntervals;
     }
 
+    /**
+     * Returns a list of intervals that describe the days for which quotes are
+     * missing.
+     */
+    public List<Interval> getUnexpectedIntervals()
+    {
+        return unexpectedIntervals;
+    }
+
     public int getExpectedNumberOfQuotes()
     {
         return expectedNumberOfQuotes;
@@ -83,6 +93,7 @@ public class QuoteQualityMetrics
 
         TradeCalendar tradeCalendar = TradeCalendarManager.getInstance(security);
         List<LocalDate> missingDays = new ArrayList<>();
+        List<LocalDate> unexpectedDays = new ArrayList<>();
 
         expectedNumberOfQuotes = 0;
         actualNumberOfQuotes = 0;
@@ -98,6 +109,8 @@ public class QuoteQualityMetrics
                 actualNumberOfQuotes += 1;
                 expectedNumberOfQuotes += 1;
                 index += 1;
+                if (tradeCalendar.isHoliday(currentDay))
+                    unexpectedDays.add(currentDay);
             }
             else if (!tradeCalendar.isHoliday(currentDay))
             {
@@ -108,10 +121,16 @@ public class QuoteQualityMetrics
             currentDay = currentDay.plusDays(1);
         }
 
-        missingIntervals = conflate(missingDays, tradeCalendar);
+        missingIntervals = conflate(missingDays, Optional.of(tradeCalendar));
+        unexpectedIntervals = conflate(unexpectedDays, Optional.empty());
     }
 
-    private List<Interval> conflate(List<LocalDate> dates, TradeCalendar tradeCalendar)
+    /**
+     * @param tradeCalendar
+     *            If present, intervals are also conflated if they are separated
+     *            only by holidays (according to the {@code trade calendar}.
+     */
+    private List<Interval> conflate(List<LocalDate> dates, Optional<TradeCalendar> tradeCalendar)
     {
         List<Interval> answer = new ArrayList<>();
 
@@ -122,7 +141,7 @@ public class QuoteQualityMetrics
             if (interval != null)
             {
                 LocalDate bridgeDate = interval.getEnd().plusDays(1);
-                while (!bridgeDate.equals(date) && tradeCalendar.isHoliday(bridgeDate))
+                while (!bridgeDate.equals(date) && tradeCalendar.isPresent() && tradeCalendar.get().isHoliday(bridgeDate))
                     bridgeDate = bridgeDate.plusDays(1);
                 if (bridgeDate.equals(date))
                     haveBridgeDates = true;

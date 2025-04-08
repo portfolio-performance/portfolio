@@ -1,0 +1,37 @@
+﻿ING-DiBa AG   60628 Frankfurt am Main
+Depotinhaber: Vorname Name
+Herrn Direkt-Depot Nr.: 8000000000
+Vorname Name Datum: 06.11.2015
+Straße Nummer Seite: 1 von 1
+PLZ Stadt
+Wertpapierabrechnung Kauf
+Ordernummer 90000000.001
+ISIN (WKN) XS0138973010 (778998)
+Wertpapierbezeichnung 7,125 % Aareal Bank Capital Fdg Trust
+EO-Trust.Pref.Sec. 01(06/Und.)
+Zinstermin 31. MZ/JN/SE/DE
+Kündigungsrecht des Emittenten ab 31.12.2006
+Nominale Stück 40,00
+Kurs EUR 25,30
+Handelsplatz Frankfurt
+Ausführungstag / -zeit 06.11.2015 um 16:10:26 Uhr
+Kurswert EUR 1.012,00
+Handelsplatzgebühr EUR 2,50
+Provision EUR 9,90
+Handelsentgelt EUR 3,00
+Endbetrag zu Ihren Lasten EUR 1.027,40
+Abrechnungs-IBAN DE00 0000 0000 0000 0000 00
+Valuta 10.11.2015
+Wertpapiere zugunsten Wertpapierrechnung Großbritannien.
+Börsenentgelt inkl. 19,00% MwSt.
+Diese Order wurde mit folgendem Limit / -typ erteilt: 25,33 EUR
+                                                                               
+Über 5.000 Fonds & ETFs gebührenfrei kaufen - ohne Orderprovision, Ausgabeaufschlag oder sonstige Kosten.
+Mehr Infos www.ing-diba.de/handeln
+Bei Fragen besuchen Sie uns einfach unter www.ing-diba.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing-diba.de .
+ING-DiBa AG Vorsitzender des Aufsichtsrates: Ben Tellings Sitz: Frankfurt am Main Internet www.ing-diba.de
+Theodor-Heuss-Allee 2 Vorstand: Roland Boekhout (Vorsitzender), AG Frankfurt am Main HRB 7727 E-Mail info@ing-diba.de
+60486 Frankfurt am Main Bernd Geilen, Katharina Herrmann, Steuernummer 047 220 2800 4 BIC: INGDDEFFXXX / BLZ: 500 105 17
+Zeljko Kaurin, Martin Krebs, Remco Nieland USt-IdNr. DE 114 103 475 Mitglied im Einlagensicherungsfonds
+34WAAD8006486887_T

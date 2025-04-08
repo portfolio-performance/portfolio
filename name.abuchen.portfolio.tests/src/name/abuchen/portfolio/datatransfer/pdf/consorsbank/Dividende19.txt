@@ -1,0 +1,61 @@
+## PDF Author: ‘Consorsbank’
+PDFBox Version: 1.8.13
+
+Consorsbank  90318 Nürnberg
+Depotnummer: 01234567
+1234567890/00
+Vermerk der Bank: 1000
+Tom Cruise 2
+Betzenberg 123 a
+22000 Hamburg Datum: 01.10.2018
+Seite: 1 von 2
+Ertragsgutschrift
+Wertpapierbezeichnung WKN ISIN
+GLADSTONE CAPITAL CORP. Registered Shares o.N. 797937 US3765351008
+Bestand
+1.000 Stück
+Ertragsausschüttung je Anteil 0,07 USD Schlusstag 17.09.2018
+Brutto in USD 70,00 USD
+abzgl. Quellensteuer 15,00 % von 70,00 USD 10,50 USD
+Zwischensumme in USD 59,50 USD
+Devisenkurs 1,163800 USD / EUR
+Brutto in EUR 60,15 EUR
+Quellensteuer in EUR 9,02 EUR
+Zwischensumme in EUR 51,13 EUR
+abzgl. Kapitalertragsteuer 25,00 % von 24,07 EUR 6,02 EUR
+abzgl. Solidaritätszuschlag 5,50 % von 6,02 EUR 0,33 EUR
+Netto zugunsten IBAN DE32 0000 0000 0000 0000 00 44,78 EUR
+Valuta 28.09.2018 BIC CSDBDE71XXX
+Anrechenbare Quellensteuer 0,0105 USD pro Stück 9,02 EUR
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, [info@consorsbank.de](mailto:info@consorsbank.de), [www.consorsbank.de](http://www.consorsbank.de)
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+PrØsident du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur GØnØral (Generaldirektor): Jean-Laurent BonnafØ
+Depotnummer: 0123456780
+1234567890/00
+Vermerk der Bank: 1000
+2
+Datum: 01.10.2018
+Seite: 2 von 2
+Details zur Abrechnung
+Informationen zum Investmentsteuergesetz
+Ausschüttung gem. §2 Abs. 11 InvStG 60,15 EUR
+abzgl. Teilfreistellung 0,00 % von 60,15 EUR 0,00 EUR
+Ertragsausschüttung mit Teilfreistellung 60,15 EUR
+Steuerpflichtiger Gesamtertrag 60,15 EUR
+Mit Verrechnungstopf “Allgemein” verrechnet 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Mit Quellensteuer verrechnet -36,08 EUR
+somit verrechnete Quellensteuer -9,02 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 24,07 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf “Allgemein” vor der Abrechnung 0,00 EUR
+Mit Verrechnungstopf “Allgemein” verrechnet 0,00 EUR
+Verrechnungstopf “Allgemein” nach der Abrechnung 0,00 EUR
+Sparerpauschbetrag vor der Abrechnung 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Sparerpauschbetrag nach der Abrechnung 0,00 EUR
+Verrechnungstopf “Quellensteuer” vor der Abrechnung 0,00 EUR
+Änderung Verrechnungstopf “Quellensteuer” 0,00 EUR
+Verrechnungstopf “Quellensteuer” nach der Abrechnung 0,00 EUR

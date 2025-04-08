@@ -1,0 +1,40 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TARGOBANK AG
+Postfach 10 02 30
+47002 Duisburg
+TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg www.targobank.de
+HERR
+AAAA BBBB
+CCCCCC 1
+11111 DDDDDDD
+Depotnummer 536011111111
+........................................................................................................................................................................................................
+Dividendengutschrift 02.10.2020
+Rechnungsnummer: CPS-2020-0223111111-0001111
+AAAA BBBB
+Wir informieren Sie über die folgende Dividendenzahlung:
+Wertpapier Coca-Cola Co., The - Registered Shares DL -,25
+WKN / ISIN 850663 / US1912161007
+Stück 127
+Dividende pro Stück 0,41 USD
+Ex-Tag 14.09.2020
+Zahlbar 01.10.2020
+Ursprungsland Vereinigte Staaten von Amerika
+Geschäftsjahr 2020
+Geschäftsnummer 27620CG000000000
+Bruttoertrag 52,07 USD
+Devisenkurs zur Handelswährung USD/EUR 1,1741
+Bruttoertrag in EUR 44,35 EUR
+15 % Ausländische Quellensteuer (US) 6,65 EUR
+Gutschrift auf Ihrem Konto mit Wertstellung zum 1. Oktober 2020
+Konto-Nr. 5360111111 37,70 EUR
+Dieser Beleg wurde maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
+Seite 1
+TARGOBANK AG | Vorstand: Pascal Laugel (Vorsitzender); Berthold Rüsing; Maria Topaler
+Vorsitzender des Aufsichtsrates:  René Dangel | Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+GH.20201003.000000.5000.0000.4662 X 0 R

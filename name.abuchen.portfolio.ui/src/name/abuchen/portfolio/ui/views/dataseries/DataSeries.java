@@ -5,10 +5,12 @@ import java.util.function.Function;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
-import org.swtchart.LineStyle;
+import org.eclipse.swtchart.LineStyle;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
@@ -18,7 +20,7 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 /**
  * A data series available to add to charts.
  */
-public final class DataSeries
+public final class DataSeries implements Adaptable
 {
     /**
      * The use case determines the selection of data series available.
@@ -33,9 +35,45 @@ public final class DataSeries
      */
     public enum ClientDataSeries
     {
-        TOTALS, INVESTED_CAPITAL, ABSOLUTE_INVESTED_CAPITAL, TRANSFERALS, TAXES, ABSOLUTE_DELTA, ABSOLUTE_DELTA_ALL_RECORDS, //
-        DIVIDENDS, DIVIDENDS_ACCUMULATED, INTEREST, INTEREST_ACCUMULATED, DELTA_PERCENTAGE, INTEREST_CHARGE, INTEREST_CHARGE_ACCUMULATED, //
-        EARNINGS, EARNINGS_ACCUMULATED;
+        TOTALS(Messages.LabelTotalSum), //
+        TRANSFERALS(Messages.LabelTransferals), //
+        TRANSFERALS_ACCUMULATED(Messages.LabelAccumulatedTransferals), //
+        INVESTED_CAPITAL(Messages.LabelInvestedCapital), //
+        ABSOLUTE_INVESTED_CAPITAL(Messages.LabelAbsoluteInvestedCapital), //
+        ABSOLUTE_DELTA(Messages.LabelDelta), //
+        ABSOLUTE_DELTA_ALL_RECORDS(Messages.LabelAbsoluteDelta), //
+        DIVIDENDS(Messages.LabelDividends), //
+        DIVIDENDS_ACCUMULATED(Messages.LabelAccumulatedDividends), //
+        INTEREST(Messages.LabelInterest), //
+        INTEREST_ACCUMULATED(Messages.LabelAccumulatedInterest), //
+        INTEREST_CHARGE(Messages.LabelInterestCharge), //
+        INTEREST_CHARGE_ACCUMULATED(Messages.LabelAccumulatedInterestCharge), //
+        EARNINGS(Messages.LabelEarnings), //
+        EARNINGS_ACCUMULATED(Messages.LabelAccumulatedEarnings), //
+        FEES(Messages.LabelFees), //
+        FEES_ACCUMULATED(Messages.LabelFeesAccumulated), //
+        TAXES(Messages.ColumnTaxes), //
+        TAXES_ACCUMULATED(Messages.LabelAccumulatedTaxes), //
+
+        DELTA_PERCENTAGE(Messages.LabelAggregationDaily);
+
+        private String label;
+
+        private ClientDataSeries(String label)
+        {
+            this.label = label;
+        }
+
+        public String getLabel()
+        {
+            return label;
+        }
+
+        @Override
+        public String toString()
+        {
+            return label;
+        }
     }
 
     /**
@@ -50,12 +88,13 @@ public final class DataSeries
         ACCOUNT("Account", i -> ((Account) i).getUUID()), //$NON-NLS-1$
         ACCOUNT_PRETAX("Account-PreTax", i -> ((Account) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO("Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
+        DERIVED_DATA_SERIES("Derived-", i -> ((DerivedDataSeries) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO_PRETAX("Portfolio-PreTax", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO_PLUS_ACCOUNT("[+]Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO_PLUS_ACCOUNT_PRETAX("[+]Portfolio-PreTax", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         CLASSIFICATION("Classification", i -> ((Classification) i).getId()), //$NON-NLS-1$
-        CLIENT_FILTER("ClientFilter", i -> ((ClientFilterMenu.Item) i).getUUIDs().replaceAll(",", "")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        CLIENT_FILTER_PRETAX("ClientFilter-PreTax", i -> ((ClientFilterMenu.Item) i).getUUIDs().replaceAll(",", "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        CLIENT_FILTER("ClientFilter", i -> ((ClientFilterMenu.Item) i).getId()), //$NON-NLS-1$ $
+        CLIENT_FILTER_PRETAX("ClientFilter-PreTax", i -> ((ClientFilterMenu.Item) i).getId()); //$NON-NLS-1$
 
         private final String label;
         private final Function<Object, String> uuidProvider;
@@ -78,11 +117,18 @@ public final class DataSeries
     private String label;
     private boolean isLineChart = true;
     private boolean isBenchmark = false;
+    private int lineWidth = 2;
 
     private RGB color;
 
     private boolean showArea;
     private LineStyle lineStyle = LineStyle.SOLID;
+
+    /**
+     * indicates whether the data series is visible or (temporarily) removed
+     * from the chart
+     */
+    private boolean isVisible = true;
 
     /* package */ DataSeries(Type type, Object instance, String label, RGB color)
     {
@@ -115,7 +161,7 @@ public final class DataSeries
 
     public String getLabel()
     {
-        return isBenchmark() ? label + Messages.ChartSeriesBenchmarkSuffix : label;
+        return isBenchmark() ? label + " " + Messages.ChartSeriesBenchmarkSuffix : label; //$NON-NLS-1$
     }
 
     public void setLabel(String label)
@@ -123,22 +169,32 @@ public final class DataSeries
         this.label = label;
     }
 
-    public String getSearchLabel()
+    /**
+     * The label used in the data series picker dialog.
+     */
+    public String getDialogLabel()
     {
         StringBuilder buf = new StringBuilder();
 
-        buf.append(label);
-
-        if (instance instanceof Classification)
+        if (instance instanceof DerivedDataSeries derived)
         {
-            Classification parent = ((Classification) instance).getParent();
-
-            if (parent.getParent() != null)
-                buf.append(" (").append(parent.getPathName(false)).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+            buf.append(derived.getBaseDataSeries().getDialogLabel());
         }
+        else
+        {
+            buf.append(label);
 
-        if (isBenchmark())
-            buf.append(Messages.ChartSeriesBenchmarkSuffix);
+            if (instance instanceof Classification classification)
+            {
+                Classification parent = classification.getParent();
+
+                if (parent.getParent() != null)
+                    buf.append(" (").append(parent.getPathName(false)).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+
+            if (isBenchmark())
+                buf.append(" ").append(Messages.ChartSeriesBenchmarkSuffix); //$NON-NLS-1$
+        }
 
         return buf.toString();
     }
@@ -193,26 +249,30 @@ public final class DataSeries
         this.lineStyle = lineStyle;
     }
 
+    public int getLineWidth()
+    {
+        return lineWidth;
+    }
+
+    public void setLineWidth(int lineWidth)
+    {
+        this.lineWidth = lineWidth;
+    }
+
     public Image getImage()
     {
-        switch (type)
+        switch (instance instanceof DerivedDataSeries derived ? derived.getBaseDataSeries().getType() : type)
         {
-            case SECURITY:
-            case SECURITY_BENCHMARK:
+            case SECURITY, SECURITY_BENCHMARK:
                 return Images.SECURITY.image();
-            case ACCOUNT:
-            case ACCOUNT_PRETAX:
+            case ACCOUNT, ACCOUNT_PRETAX:
                 return Images.ACCOUNT.image();
-            case PORTFOLIO:
-            case PORTFOLIO_PRETAX:
-            case PORTFOLIO_PLUS_ACCOUNT:
-            case PORTFOLIO_PLUS_ACCOUNT_PRETAX:
+            case PORTFOLIO, PORTFOLIO_PRETAX, PORTFOLIO_PLUS_ACCOUNT, PORTFOLIO_PLUS_ACCOUNT_PRETAX:
                 return Images.PORTFOLIO.image();
             case CLASSIFICATION:
                 return Images.CATEGORY.image();
-            case CLIENT_FILTER:
-            case CLIENT_FILTER_PRETAX:
-                return Images.FILTER_OFF.image();
+            case CLIENT_FILTER, CLIENT_FILTER_PRETAX:
+                return Images.GROUPEDACCOUNTS.image();
             default:
                 return null;
         }
@@ -223,9 +283,32 @@ public final class DataSeries
         return this.type.buildUUID(instance);
     }
 
+    public boolean isVisible()
+    {
+        return isVisible;
+    }
+
+    public void setVisible(boolean isVisible)
+    {
+        this.isVisible = isVisible;
+    }
+
+    @Override
+    public <T> T adapt(Class<T> type)
+    {
+        if (type == Named.class && instance instanceof Named)
+            return type.cast(instance);
+        else if (type == Security.class && instance instanceof Security)
+            return type.cast(instance);
+        else if (type == Account.class && instance instanceof Account)
+            return type.cast(instance);
+        else
+            return null;
+    }
+
     @Override
     public String toString()
     {
-        return getSearchLabel() + " [" + getUUID() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+        return getLabel() + " [" + getUUID() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

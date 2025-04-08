@@ -67,8 +67,8 @@ import org.eclipse.swt.widgets.Control;
         if (control.isDisposed())
             return null;
         Object object = control.getData(DND.DROP_TARGET_KEY);
-        if (object instanceof DropTarget)
-            return (DropTarget) object;
+        if (object instanceof DropTarget dropTarget)
+            return dropTarget;
         return null;
     }
 

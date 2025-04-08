@@ -1,0 +1,62 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+biw AG Österreich
+Kundenservice
+Opernring 1 / Top 736
+1010 Wien
+Tel.: +43 - (0)720 518 777
+Mail: info@flatex.at
+biw AG -  Opernring 1 / Top 736 -  A-1010 Wien
+Wien,             03.08.2016
+0202272000000647613920
+Herr Auftragsdatum     01.08.2016n
+xxxxxxx x xx Schlusstag        01.08.2016u er
+xxxxxxxstraße x Ausführungszeit   00:00 Uhr
+xxx xxxxxxx Valuta            04.08.2016
+Österreich Auftragsnummer    79794216/1
+Ausf.platz/-art   KAG/außerbörsl.
+Wertpapierabrechnung Kauf Fonds/Zertifikate
+Ihre Depotnummer  11111111111
+Depotinhaber      xxxxxx, xxxxxx
+Nr.79794216/1  Kauf            COMST.-DAX TR UCITS ETF I (LU0378438732/ETF001)
+Ausgeführt     2,460378 St.
+Kurs           101,610400 EUR          Kurswert       EUR               250,00
+Devisenkurs                            Provision
+Verwahrart     GS-Verwahrung           Eigene Spesen
+Lagerstelle    Clearstream Nat.       *Fremde Spesen
+Lagerland      Deutschland
+Gewinn/Verlust 0,00 EUR              **Einbeh. KESt   EUR                 0,00
+                                    ***Einbeh. SichSt EUR                 0,00
+                                       Endbetrag      EUR              -250,00
+* Enthalten sind folgende Gebühren     Courtage       EUR                 0,00
+                                       Tradinggebühr  EUR                 0,00
+                                       Regulierung    EUR                 0,00
+                                       Schlussnoten   EUR                 0,00
+                                       Sonstige       EUR                 0,00
+**  Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport
+    unter der Transaktion-Nr.: 1071613216
+*** Einbehaltene Sicherungssteuer
+Der Kurswert enthält 0,000% regulären Ausgabeaufschlag (AA).
+Rabattierung   keine                   gezahlter AA   EUR                 0,00
+Kurs           101,6104 EUR            Kurswert       EUR               250,00
+Die Verrechnung des Endbetrags erfolgt über Ihr Konto Nr.: 31006831296
+biw Bank für Investments und Wertpapiere AG Niederlassung Österreich
+Opernring 1 / Top 736 | 1010 Wien | Handelsgericht Wien | FN 334642 x | DVR 4000544 | UID ATU 65140956 | Aktiengesellschaft
+Hauptniederlassung: biw Bank für Investments und Wertpapiere AG | Rotfeder-Ring 7 | 60327 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+2000000647613920 0351202270000102
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem  angegebenen  Valutatag  buchen.  Bitte prüfen Sie  diese  Abrechnung  auf
+Richtigkeit und Vollständigkeit.  Etwaige Einwendungen gegen diese  Abrechnung
+müssen unverzüglich  nach Zugang bei der Bank  erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten  hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese  Mitteilung  ist  maschinell  erstellt  und  wird  nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+biw Bank für Investments und Wertpapiere AG Niederlassung Österreich
+Opernring 1 / Top 736 | 1010 Wien | Handelsgericht Wien | FN 334642 x | DVR 4000544 | UID ATU 65140956 | Aktiengesellschaft
+Hauptniederlassung: biw Bank für Investments und Wertpapiere AG | Rotfeder-Ring 7 | 60327 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+2000000647613920 0351202270000202

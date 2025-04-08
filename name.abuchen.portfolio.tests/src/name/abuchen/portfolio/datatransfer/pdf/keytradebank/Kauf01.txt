@@ -1,0 +1,21 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Keytrade Bank Luxembourg S.A. T +352 45 04 39
+62, Rue Charles Martel F +352 45 04 49
+L-2134 - Luxembourg info@keytradebank.lu
+Grand Duché de Luxembourg www.keytradebank.lu
+RCS B69935 Skype keytradebank.lu
+Wertschriftenkonto 111111
+Belegnummer 1928820
+Kauf 168 LYXOR CORE WORLD (LU1781541179) für 11,7824 EUR
+Instrument: Trackers/ETF
+Auftragserstellung : 15/03/2021 13:31:50 CET
+Auftragstyp : Limit (11,79 EUR)
+Gültigkeit : GTC
+Ausführungsdatum und -zeit : 15/03/2021 12:31:50 CET 
+Ausführungsort : EURONEXT - EURONEXT PARIS
+Bruttobetrag 1.979,44 EUR
+Transaktionskosten 14,95 EUR
+1.994,39 EUR
+Lastschrift 1.994,39 EUR Valutadatum 17/03/2021

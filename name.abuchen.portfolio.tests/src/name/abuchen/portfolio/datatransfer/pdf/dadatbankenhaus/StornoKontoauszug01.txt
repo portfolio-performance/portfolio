@@ -1,0 +1,57 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+BH Schelhammer & Schattera AG vom 23.08.2021
+12345
+Kundennummer
+Alter Saldo per 17.08.2021 1,75
+Summe der Gutschriften 496,44
+Summe der Lastschriften 0,00
+BH Schelhammer, PF 1000, 5021 Salzburg
+Neuer Saldo zu Ihren Gunsten
+Max Mustermann EUR 498,19
+musterstrasse 12
+8010 Graz
+Konto-Nr.: 00012345678 Bankleitzahl: 19190
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+23.08 Kauf aus Dauerauftrag            Depot    1234567891/20210823-45790726 18.08 71,45
+ISIN US00206R1023 AT + T INC.          DL 1               2,91000 STK
+Kurs                     28,130000  KURSWERT                81,86 USD
+DevKurs        1,170900/17.8.2021   DADAT Handelsspesen      0,87 EUR
+STORNO VON 20210817  45747417
+23.08 Kauf aus Dauerauftrag            Depot    1234567891/20210823-45478296 18.08 71,16
+ISIN US7427181091 PROCTER GAMBLE                          0,57000 STK
+Kurs                    144,000000  KURSWERT                 82,08 USD
+DevKurs        1,170900/17.8.2021   DADAT Handelsspesen       0,87 EUR
+STORNO VON 20210817  45537918
+23.08 Kauf aus Dauerauftrag            Depot    1234567891/20210823-45701497 18.08 71,04
+ISIN US5949181045 MICROSOFT    DL-,00000625               0,28000 STK
+Kurs                    293,000000  KURSWERT                 82,04 USD
+DevKurs        1,170900/17.8.2021   DADAT Handelsspesen       0,87 EUR
+STORNO VON 20210817  45529011
+23.08 Kauf aus Dauerauftrag            Depot    1234567891/20210823-45925974 18.08 71,02
+ISIN US1912161007 COCA-COLA CO.      DL-,25               1,43000 STK
+Kurs                     57,200000  KURSWERT                81,80 USD
+DevKurs        1,170900/17.8.2021   DADAT Handelsspesen      0,87 EUR
+STORNO VON 20210817  45981089
+23.08 Kauf aus Dauerauftrag            Depot    1234567891/20210823-45128988 18.08 70,82
+ISIN US0378331005 APPLE INC.                              0,55000 STK
+Kurs                    148,600000  KURSWERT                 81,73 USD
+DevKurs        1,170900/17.8.2021   DADAT Handelsspesen       0,87 EUR
+STORNO VON 20210817  45797003
+23.08 Kauf aus Dauerauftrag            Depot    1234567891/20210823-45424093 18.08 70,52
+ISIN US92826C8394 VISA INC. CL. A DL -,0001               0,35000 STK
+Kurs                    232,210000  KURSWERT                81,27 USD
+DevKurs        1,170900/17.8.2021   DADAT Handelsspesen      0,87 EUR
+STORNO VON 20210817  45213516
+23.08 Kauf aus Dauerauftrag            Depot    1234567891/20210823-45656398 18.08 70,43
+ISIN US4781601046 JOHNSON + JOHNSON    DL 1               0,46000 STK
+Kurs                    176,550000  KURSWERT                 81,21 USD
+DevKurs        1,170900/17.8.2021   DADAT Handelsspesen       0,87 EUR
+STORNO VON 20210817  45070807
+Neuer Saldo zu Ihren Gunsten 498,19
+AT47 1234 1234 1234 1234 BSSWATWW 01 0007 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 10068 Doknr.: EK00-045-0235004914

@@ -1,0 +1,817 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>info.portfolio_performance.PortfolioPerformance</id>
+  <name>Portfolio Performance</name>
+  <summary>Track the performance of an investment portfolio</summary>
+  <summary xml:lang="de">Analysiere die Performance Deines gesamten Anlageportfolios</summary>
+  <url type="homepage">https://www.portfolio-performance.info/en/</url>
+  <icon type="remote">https://www.portfolio-performance.info/images/logo.svg</icon>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>EPL-1.0</project_license>
+  <description>
+    <p>An open source tool to calculate the overall performance of an investment portfolio - across all accounts - using True-Time Weighted Return or Internal Rate of Return.</p>
+    <p xml:lang="de">Ein Open Source Programm zur Berechnung der Performance eines Gesamtportfolios - über verschiedene Depots und Konten hinweg - anhand von True-Time Weighted Rate of Return und internem Zinsfuß.</p>
+    <ul>
+      <li>Record the full history of your transactions: purchases, sales, taxes, fees, ...</li>
+      <li>Calculate performance indicators such as the True-Time Weighted Rate of Return or the Internal Rate of Return (IRR) for your holdings.</li>
+      <li>Update historical quotes from a variety of sources: Yahoo Finance, Finnhub.io, Quandl, or AlphaVantage. Alternatively, scrape quotes from HTML pages or JSON documents.</li>
+      <li>All data is stored in XML for further processing and can be exported as CSV or JSON.</li>
+      <li>Rebalance your investment portfolio based on a freely defined Asset Allocation.</li>
+      <li>Keep foreign currency accounts using the exchange rates published by the European Central Bank (ECB).</li>
+      <li xml:lang="de">Die vollständige Historie aller Buchungen kann erfasst werden: Käufe, Verkäufe, Steuern, Gebühren, ...</li>
+      <li xml:lang="de">Performance-Kennzahlen wie der True-Time Weighted Rate of Return oder der interne Zinsfuß (Internal Rate of Return) werden errechnet.</li>
+      <li xml:lang="de">Historische Kurse werden automatisch von Yahoo Finance geladen oder können aus beliebigen HTML Seiten extrahiert werden.</li>
+      <li xml:lang="de">Durch das offene Dateiformat stehen alle Daten als XML zur Verfügung oder können als CSV exportiert werden.</li>
+      <li xml:lang="de">Unterstützung für Rebalancing anhand von frei definierbaren Asset Allocations.</li>
+      <li xml:lang="de">Mit Hilfe der historischen Wechselkurse der Europäischen Zentralbank (ECB) können Konten und Aktien in Fremdwährung geführt werden.</li>
+    </ul>
+  </description>
+  <categories>
+    <category>Office</category>
+    <category>Finance</category>
+    <category>Java</category>
+  </categories>
+  <keywords>
+    <keyword>finance</keyword>
+    <keyword>portfolio</keyword>
+    <keyword>investment</keyword>
+  </keywords>
+  <releases>
+    <release version="0.74.2" date="2025-03-09">
+      <description>
+        <ul>
+          <li xml:lang="en">Improvement: Instruments in the "Follow-up" widget are now grouped by date and type for better clarity.</li>
+          <li xml:lang="en">Improvement: CSV import now also supports time in ISO format yyyy-MM-dd'T'HH:mm.</li>
+          <li xml:lang="en">Improvement: The "Balance" column is now color-coded depending on whether the balance is positive or negative (instead of whether the transaction increases or decreases the value).</li>
+          <li xml:lang="en">Improvements to the PDF importers for Arkea Direct Bank, Swissquote, DKB, Trade Republic, ING-DiBa, Consorsbank, C24 Bank, ABN AMRO, akf bank, N26, Raiffeisenbank, Audi Bank, Saxo, and PhrozenByte.</li>
+          <li xml:lang="en">Fix: Corrected an issue with trade assignment during multiple portfolio transfers of a position.</li>
+          <li xml:lang="de">Verbesserung: Wertpapiere im Widget "Termin erreicht" werden nun zur besseren Übersicht gruppiert.</li>
+          <li xml:lang="de">Verbesserung: CSV Import unterstützt jetzt auch die Uhrzeit mit dem ISO Format yyyy-MM-dd'T'HH:mm.</li>
+          <li xml:lang="de">Verbesserung: Die Spalte "Saldo" wird nun farblich markiert, abhängig davon, ob der Saldo positiv oder negativ ist (statt ob die Buchung den Wert erhöht oder verringert).</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Arkea Direct Bank, Swissquote, DKB, Trade Republic, ING-DiBa, Consorsbank, C24 Bank, ABN AMRO, akf bank, N26, Raiffeisenbank, Audi Bank, Saxo, PhrozenByte</li>
+          <li xml:lang="de">Fix: Korrigiert ein Problem bei der Zuordnung von Trades bei mehrfachen Depotübertragungen einer Position.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.74.1" date="2025-02-23">
+      <description>
+        <ul>
+          <li>New: Support for the comma as a decimal separator on the Spanish keyboard.</li>
+          <li>Improvements to the PDF importers for Arkea Direct Bank, Targo Bank, FlatEx, C24 Bank, Baader Bank, Bondora Capital, DAB, Trade Republic, Scalable Capital, comdirect, Postfinance, WIR Bank, BigBank.</li>
+          <li>Improvement: Securities events from today are displayed in the "Future Events" period (as the day is not over yet).</li>
+          <li xml:lang="de">Neu: Unterstützung für das Komma als Dezimaltrennzeichen auf der spanischen Tastatur.</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Arkea Direct Bank, Targo Bank, FlatEx, C24 Bank, Baader Bank, Bondora Capital, DAB, Trade Republic, Scalable Capital, comdirect, Postfinance, WIR Bank, BigBank.</li>
+          <li xml:lang="de">Verbesserung: Wertpapier-Ereignisse vom heutigen Tag werden im Zeitraum "Ereignisse in der Zukunft" angezeigt (der heutige Tag ist noch nicht vorbei)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.74.0" date="2025-01-26">
+      <description>
+        <ul>
+          <li>New: Updated to the latest version of the PDFBox library.</li>
+          <li>New: Added a widget for displaying security events.</li>
+          <li>Improved: Temporary option to disable all markers in price charts.</li>
+          <li>Improved: U.S. trading calendar now includes Jimmy Carter Memorial Day (January 9, 2025).</li>
+          <li>Improved: Enhanced debug information for failed uploads to DivvyDiary.</li>
+          <li>Improved: Display of position counts within classifications in the portfolio overview.</li>
+          <li>Improved: PDF importers updated for Solarisbank, Comdirect, BoursoBank, Easybank, Merkus Privat Bank, DKB, FlatEx, Directa SIM, DekaBank, Saxo, Ebase, Trade Republic, and Scalable Capital.</li>
+          <li>Fixed: Resolved an issue with determining the default currency for new files when no country is selected in the locale.</li>
+          <li xml:lang="de">Neu: Aktualisierung auf die neueste Version der PDFBox-Bibliothek.</li>
+          <li xml:lang="de">Neu: Widget zur Anzeige von Wertpapier-Ereignissen hinzugefügt.</li>
+          <li xml:lang="de">Verbesserung: Möglichkeit temporär alle Markierungen in den Kursdiagrammen auszuschalten.</li>
+          <li xml:lang="de">Verbesserung: US-Handelskalender enthält nun den Gedenktag für Jimmy Carter (9. Januar 2025).</li>
+          <li xml:lang="de">Verbesserung: Erweiterte Debug-Informationen bei fehlgeschlagenen Uploads zu DivvyDiary.</li>
+          <li xml:lang="de">Verbesserung: Anzeige der Anzahl von Positionen innerhalb einer Klassifizierung in der Vermögensaufstellung.</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Solarisbank, Comdirect, BoursoBank, Easybank, Merkus Privat Bank, DKB, FlatEx, Directa SIM, DekaBank, Saxo, Ebase, Trade Republic, Scalable Capital.</li>
+          <li xml:lang="de">Fix: Problem bei der Bestimmung der Standardwährung für neue Dateien behoben, wenn in den Locale-Einstellungen kein Land ausgewählt ist.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.73.0" date="2024-12-30">
+      <description>
+        <ul>
+          <li>New: Updated to Eclipse 2024-12</li>
+          <li>New: Additional derived data series in the assets chart (e.g., invested capital for any classifications, not just the total portfolio).</li>
+          <li>New: New column: Indicator for the price range.</li>
+          <li>New: Purchase value/price now displayed both with and without taxes/fees in the assets overview.</li>
+          <li>New: Reference account balance in the list of securities accounts.</li>
+          <li>New: Sorting options for classifications when editing a security.</li>
+          <li>New: Ctrl-D to duplicate a transaction in tables.</li>
+          <li>New: PDF importer for Ginmon VL Sparen.</li>
+          <li>Improvement: Windows version now supports ARM-based devices.</li>
+          <li>Improvement: Default currency is suggested based on the locale (for new files).</li>
+          <li>Fix: Australian trading calendar now correctly shifts "Australia Day" to the next weekday when it falls on a weekend.</li>
+          <li>Fix: Corrected chart legend labels in some languages.</li>
+          <li>Fix: Resolved issue with GBX/GBP rates from Yahoo Finance.</li>
+          <li>Fix: No more white screen flashes in Dark Theme (macOS tables).</li>
+          <li>Improvements to the PDF importers for DKB, Targo Bank, Hypothekarbank, PostFinance, Swissquote, Baader Bank, Commerzbank, Scalable Capital, ING, Sunrise, Consorsbank, and DADAT.</li>          <li xml:lang="de">Neu: Aktualisierung auf Eclipse 2024-12</li>
+          <li xml:lang="de">Neu: Weitere abgeleitete Datenreihen in der Vermögensaufstellung (z.B. investiertes Kapital für beliebige Klassifikationen, nicht nur Gesamtportfolio).</li>
+          <li xml:lang="de">Neu: Neue Spalte: Indikator für die Kursspanne.</li>
+          <li xml:lang="de">Neu: Einstandswert/-preis jetzt mit und ohne Steuern/Gebühren in der Vermögensaufstellung.</li>
+          <li xml:lang="de">Neu: Kontostand des Referenzkontos in der Depotliste.</li>
+          <li xml:lang="de">Neu: Sortieroptionen für Klassifikationen beim Bearbeiten eines Wertpapiers.</li>
+          <li xml:lang="de">Neu: Ctrl-D zum Duplizieren einer Buchung in Tabellen.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Ginmon VL Sparen.</li>
+          <li xml:lang="de">Verbesserung: Windows-Version für ARM-basierte Rechner.</li>
+          <li xml:lang="de">Verbesserung: Standardwährung wird basierend auf der Locale vorgeschlagen (bei neuen Dateien).</li>          
+          <li xml:lang="de">Fix: Australischer Handelskalender verschiebt „Australien-Tag“ korrekt auf Folgetag (bei Wochenenden).</li>
+          <li xml:lang="de">Fix: Korrekte Beschriftung der Diagrammlegenden in einigen Sprachen.</li>
+          <li xml:lang="de">Fix: Problem mit GBX/GBP-Kursen von Yahoo Finance behoben.</li>
+          <li xml:lang="de">Fix: Tabellen flackern nicht mehr im Dark Theme unter macOS.</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für DKB, Targo Bank, Hypothekarbank, PostFinance, Swissquote, Baader Bank, Commerzbank, Scalable Capital, ING, Sunrise, Consorsbank, DADAT</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.72.2" date="2024-11-30">
+      <description>
+        <ul>
+          <li>Fix: Fixes a problem running Portfolio Performance on Intel macOS.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem mit Java unter macOS auf Intel Prozessoren.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.72.1" date="2024-11-30">
+      <description>
+        <ul>
+          <li>Fix: Fixes an infinite loop for weekly investment plans if the execution date is moved due to holidays.</li>
+          <li xml:lang="de">Fix: Behebt eine Endlosschleife wenn das Ausführungsdatum eines wöchentlichen Sparplans auf einen handelsfreien Tag fällt.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.72.0" date="2024-11-30">
+      <description>
+        <ul>
+          <li>New: Update to Eclipse 2024-09 and Java 21</li>
+          <li>New: Weekly and bi-weekly investment plans.</li>
+          <li>New: New color schemes for heatmaps, which are better suited for people with red-green color blindness, among others.</li>
+          <li>New: Configurable prefix for instrument name in selection lists.</li>
+          <li>New: PDF importer for Audi Bank and Saxo Bank</li>
+          <li>Improvement: DivvyDiary upload now includes all positions, including those already sold.</li>
+          <li>Improvement: Account balance history is displayed in the statement of assets when an account is selected.</li>
+          <li>Improvement: Percentages of 0% are now marked in black (instead of green) in tables.</li>
+          <li>Improvement: In the annual bar chart under "Payments," bars are now always correctly colored.</li>
+          <li>Improvement: Tooltip size in charts no longer depends on the help text (and should fit better).</li>
+          <li>Improvements to PDF importers for Tradegate AG, Trade Republic, 1822direct, Oldenburgische Landesbank, FNZ Bank, Hypothekarbank Lenzburg, PostFinance AG, KBC Group NV, sBroker, Consorsbank, MLP, Hello Bank, 3BankenEDV, EstateGuru, WhiteBox, ING Diba, Barclay, Easybank</li>
+          <li>Fix: Column configuration window for CSV import is now larger and more user-friendly.</li>
+          <li>Fix: Filenames are sanitized for the operating system during bulk export of CSV files.</li>
+          <li>Fix: Resolves an issue in the performance calculation view when opening the context menu without a selection.</li>
+          <li xml:lang="de">Neu: Update auf Eclipse 2024-09 und Java 21</li>
+          <li xml:lang="de">Neu: Wöchentliche und zweiwöchentliche Sparpläne.</li>
+          <li xml:lang="de">Neu: Neue Farbschemata für Heatmaps, die unter anderem besser für Personen mit Rot-Grün-Blindheit geeignet sind.</li>
+          <li xml:lang="de">Neu: Konfigurierbare Prefix für Wertpapiername in Auswahllisten.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Audi Bank und Saxo Bank</li>
+          <li xml:lang="de">Verbesserung: Der Upload auf DivvyDiary enthält jetzt alle Positionen, auch die bereits verkauften.</li>
+          <li xml:lang="de">Verbesserung: In der Vermögensaufstellung wird der Kontosaldenverlauf angezeigt, wenn ein Konto ausgewählt ist.</li>
+          <li xml:lang="de">Verbesserung: Prozentzahlen von 0% werden in Tabellen jetzt schwarz (statt grün) markiert.</li>
+          <li xml:lang="de">Verbesserung: Im jährlichen Balkendiagramm unter "Zahlungen" werden die Balken jetzt immer korrekt eingefärbt.</li>
+          <li xml:lang="de">Verbesserung: Tooltip-Größe in Charts hängt nicht mehr vom Hilfetext ab (sollte besser passen).</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Tradegate AG, Trade Republic, 1822direct, Oldenburgische Landesbank, FNZ Bank, Hypothekarbank Lenzburg, PostFinance AG, KBC Group NV, sBroker, Consorsbank, MLP, Hello Bank, 3BankenEDV, EstateGuru, WhiteBox, ING Diba, Barclay, Easybank</li>
+          <li xml:lang="de">Fix: Fenster zur Spaltenkonfiguration beim CSV Import jetzt größer und benutzerfreundlicher.</li>
+          <li xml:lang="de">Fix: Dateinamen werden beim Massenexport von CSV-Dateien für das Betriebssystem bereinigt.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem in der Performance-Berechnungsansicht, wenn das Kontextmenü ohne Auswahl geöffnet wird.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.71.2" date="2024-10-03">
+      <description>
+        <ul>
+          <li>New: PDF importer for Estateguru, Alpac Capital, and WitheBox</li>
+          <li>Improvements to the PDF importers for Trade Republic, Baader Bank, Easybank, 1822direkt, AKF Bank, Tiger Broker, DZ Bank, and KDC Bank NV</li>
+          <li>Fix: Resolves an issue where an error in the price query prevented further price retrieval.</li>
+          <li>Fix: The "Delta % Indicator" in the rebalancing view now only applies the absolute change to all classified instruments (5/25 rule).</li>
+          <li xml:lang="de">Neu: PDF-Importer für Estateguru, Alpac Capital und WitheBox</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Trade Republic, Baader Bank, Easybank, 1822direkt, AKF Bank, Tiger Broker, DZ Bank und KDC Bank NV</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem ein Fehler bei der Kursabfrage die weitere Abfrage der Kurse verhindert.</li>
+          <li xml:lang="de">Fix: Der "Delta %-Indikator" in der Rebalancing-Ansicht bezieht die absolute Veränderung jetzt nur auf alle klassifizierten Instrumente (5/25 Regel).</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.71.1" date="2024-09-23">
+      <description>
+        <ul>
+          <li>Fix: Resolves an issue when the table is sorted by the column "distance from all-time high".</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, wenn die Tabelle nach der Spalte "Abstand zum All-Time High" sortiert ist.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.71.0" date="2024-09-22">
+      <description>
+        <ul>
+          <li>New: Summary row in the Performance -> Securities view</li>
+          <li>New: PDF importer for KFintech</li>
+          <li>New: Price provider India's First Free Mutual Fund API</li>
+          <li>Improvement: The asset and performance chart remembers if data series are hidden.</li>
+          <li>Improvement: A double-click on the legend shows or hides a data series in the asset and performance chart.</li>
+          <li>Improvement: When multiple securities are selected, the prices for all selected securities can be updated.</li>
+          <li>Improvement: TTWROR and IRR are now displayed in the asset overview for categories and the total portfolio as well.</li>
+          <li>Improvement: The column "Distance to All-Time High" now has a tooltip with details.</li>
+          <li>Improvement: In a dividend booking, the number of shares is pre-filled based on the current portfolio.</li>
+          <li>Improvement: Securities that no longer exist in Portfolio Report are automatically unlinked.</li>
+          <li>Improvements to the PDF importers for AKF Bank, OnVista, Trade Republic, N26, Hypothekarbank Lenzburg, Santander Bank, and V-Bank</li>
+          <li>Fix: Fixed an issue when removing the column that the table was sorted by.</li>
+          <li>Fix: Fixed an issue where the value 'Div%/Year' was not displayed under Performance -> Securities.</li>
+          <li>Fix: The tooltip for area charts in the classification now shows with the correct axis labels.</li>
+          <li xml:lang="de">Neu: Summenzeile in der Ansicht Performance -> Wertpapiere</li>
+          <li xml:lang="de">Neu: PDF-Importer für KFintech</li>
+          <li xml:lang="de">Neu: Kurslieferant India's First Free Mutual Fund API</li>
+          <li xml:lang="de">Verbesserung: Das Vermögens- und Performance-Diagramm merkt sich, ob Datenreihen ausgeblendet sind.</li>
+          <li xml:lang="de">Verbesserung: Ein Doppelklick auf die Legende blendet eine Datenreihe im Vermögens- und Performance-Diagramm ein oder aus.</li>
+          <li xml:lang="de">Verbesserung: Wenn mehrere Wertpapiere ausgewählt sind, können die Kurse für alle ausgewählten Wertpapiere aktualisiert werden.</li>
+          <li xml:lang="de">Verbesserung: TTWROR und IZF in der Vermögensaufstellung werden auch für die Kategorien und das Gesamtportfolio angezeigt.</li>
+          <li xml:lang="de">Verbesserung: Die Spalte "Abstand zum All-Time High" hat jetzt einen Tooltip mit den Details.</li>
+          <li xml:lang="de">Verbesserung: Bei einer Dividendenbuchung wird die Anzahl der Stücke basierend auf dem aktuellen Depot vorbelegt.</li>
+          <li xml:lang="de">Verbesserung: Wertpapiere, die nicht mehr auf Portfolio Report existieren, werden automatisch entkoppelt.</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für AKF Bank, OnVista, Trade Republic, N26, Hypothekarbank Lenzburg, Santanderbank und V-Bank</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, wenn man die Spalte einer Tabelle entfernt, nach der die Tabelle sortiert ist.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, dass der Wert 'Div%/Jahr' unter Performance -> Wertpapiere nicht angezeigt wurde.</li>
+          <li xml:lang="de">Fix: Der Tooltip für Flächendiagramme bei der Klassifizierung wird mit der richtigen Achsenbeschriftung angezeigt.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.70.4" date="2024-08-25">
+      <description>
+        <ul>
+          <li>New: PDF importer for ABN AMRO Group</li>
+          <li>New: Use Ctrl-F (Command-F) to focus the search boxes</li>
+          <li>New: Data series with the accumulated movements in the asset diagram (= value that has flowed into or out of the portfolio through deposits/withdrawals or deliveries/shipments)</li>
+          <li>Improvement: Adjusted colors in light and dark mode for charts in the security accounts view</li>
+          <li>Improvements to the PDF importers for Santander Consumer Bank AG, FFB, and C24 Bank GmbH</li>
+          <li xml:lang="de">Neu: PDF-Importer für die ABN AMRO Group</li>
+          <li xml:lang="de">Neu: Nutze Ctrl-F (Command-F) um die Suchfelder zu aktivieren</li>
+          <li xml:lang="de">Neu: Datenreihe mit den akkumulierten Bewegungen im Vermögensdiagramm (= Wert der in oder aus dem Portfolio durch Einlagen/Entnahmen oder Einlieferungen/Auslieferungen geflossen ist)</li>
+          <li xml:lang="de">Verbesserung: Angepasste Farben im Hell- und Dunkelmodus für Diagramme in der Depotansicht</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Santander Consumer Bank AG, FFB und C24 Bank GmBH</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.70.3" date="2024-08-05">
+      <description>
+        <ul>
+          <li>Fix: Resolves - now hopefully all - issues where some XML files could not be opened due to the error message 'invalid reference'.</li>
+          <li>Fix: Fixes a ClassCastException when displaying tooltips</li>
+          <li>Improvements to the PDF importers for Trade Republic</li>
+          <li xml:lang="de">Fix: Behebt - jetzt hoffentlich alle - Probleme bei dem machen XML Dateien mit dem Fehler 'invalid reference' nicht mehr geöffnet werden konnten.</li>
+          <li xml:lang="de">Fix: Behebt eine ClassCastException bei der Anzeige von Tooltips</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Trade Republic</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.70.2" date="2024-08-04">
+      <description>
+        <ul>
+          <li>Fix: Reverts the change to support better scaled images on high-resolution displays as it seems to have side effects</li>
+          <li xml:lang="de">Fix: Macht die Änderung zur Unterstützung besser skalierter Icons auf hochauflösenden Bildschirmen rückgängig, da sie Nebenwirkungen zu haben scheint</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.70.1" date="2024-08-04">
+      <description>
+        <ul>
+          <li>Fix: Resolves an issue where some XML files could not be opened due to the error message 'invalid reference'.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem bei dem machen XML Dateien mit dem Fehler 'invalid reference' nicht mehr geöffnet werden konnten.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.70.0" date="2024-08-04">
+      <description>
+        <ul>
+          <li>New: Drawdown chart for the dashboard</li>
+          <li>New: Dashboard chart with derived metrics of a data series: total sum, taxes, fees, invested capital, delta, etc.</li>
+          <li>New: Filter-based columns in the Performance -> Securities view</li>
+          <li>New: Trading calendar for the Santiago Stock Exchange</li>
+          <li>New: Alternative XML format that uses "id" attributes for references (and is therefore easier to read/manipulate by other programs)</li>
+          <li>Improvements to the PDF importers for Trade Republic, VZ Depotbank, KeyTrade, Deutsche Bank, Postbank, N26, Direkt1822, DKB, Consorsbank, and Raiffeisenbank</li>
+          <li>Improvement: Icons on Windows will be scaled more appropriately on high-resolution displays</li>
+          <li>Improvement: In the securities chart, the labeling of data points can be separately toggled on and off to improve readability</li>
+          <li>Improvement: Support for the decimal separator on the numeric keypad of French keyboards</li>
+          <li>Improvement: CSV import of transfers between two accounts with different currencies</li>
+          <li>Fix: Correction of the max drawdown calculation, which could be off by one day</li>
+          <li>Fix: Resolves an issue when importing prices from JSON, where the date was provided as a Unix timestamp within a string</li>
+          <li xml:lang="de">Neu: Drawdown-Diagramm für das Dashboard</li>
+          <li xml:lang="de">Neu: Dashboard-Chart mit den abgeleiteten Metriken einer Datenreihe: Gesamtsumme, Steuern, Gebühren, investiertes Kapital, Delta, etc.</li>
+          <li xml:lang="de">Neu: Filterbasierte Spalten in der Ansicht Performance -> Wertpapiere</li>
+          <li xml:lang="de">Neu: Handelskalender der chilenischen Börse von Santiago</li>
+          <li xml:lang="de">Neu: Alternatives XML-Format, das "id"-Attribute für Verweise nutzt (und darum von anderen Programmen einfacher zu lesen/manipulieren ist)</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Trade Republic, VZ Depotbank, KeyTrade, Deutsche Bank, Postbank, N26, Direkt1822, DKB, Consorsbank und Raiffeisenbank</li>
+          <li xml:lang="de">Verbesserung: Icons unter Windows werden auf hochauflösenden Displays passender skaliert sein</li>
+          <li xml:lang="de">Verbesserung: Im Wertpapier-Diagramm kann die Beschriftung von Datenpunkten separat ein- und ausgeschaltet werden, um deren Lesbarkeit zu erhöhen</li>
+          <li xml:lang="de">Verbesserung: Unterstützung des Dezimaltrennzeichen auf dem Ziffernblatt von französischen Tastaturen</li>
+          <li xml:lang="de">Verbesserung: CSV Import von Umbuchungen zwischen zwei Konten mit unterschiedlicher Währung</li>
+          <li xml:lang="de">Fix: Korrektur der Max-Drawdown-Berechnung, die einen Tag zu lange sein konnte</li>
+          <li xml:lang="de">Fix: Behebt ein Problem beim Import von Kursen aus JSON, wenn das Datum als Unix Timestamp in einem String vorlag</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.69.1" date="2024-07-07">
+      <description>
+        <ul>
+          <li>New: Performance improvements for 'Statement of Assets' with many columns</li>
+          <li>New: CSV export for stacked diagrams in the taxonomy view</li>
+          <li>New: Introduced a new PDF importer for Bourso Bank</li>
+          <li>Improvements to the PDF importers for Raisin Bank AG, Quirin, Baader Bank, Trade Republic, ING DiBa, JustTrade, Tradegate, Swissquote, FFB, Arkea Direct Bank, sBroker</li>
+          <li xml:lang="de">Verbesserung der Performance von der Vermögensaufstellung mit vielen Spalten</li>
+          <li xml:lang="de">Neu: CSV Export für Stapel-Diagramme in den Klassifizierungen</li>
+          <li xml:lang="de">Neu: Neuer PDF-Importer für Bourso Bank</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Raisin Bank AG, Quirin, Baader Bank, Trade Republic, ING DiBa, JustTrade, Tradegate, Swissquote, FFB, Arkea Direct Bank, sBroker</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.69.0" date="2024-06-12">
+      <description>
+        <ul>
+          <li>New: Portfolio Report with cryptocurrencies and prices in other currencies</li>
+          <li>New: Added charts of holdings and balances to the "Security Accounts" view</li>
+          <li>New: Introduced a new investment plan of type "Interest"</li>
+          <li>New: Added Sharpe Ratio widget to the dashboard</li>
+          <li>New: New dialog to help find differences between recorded and actual balance</li>
+          <li>New: Added an option to list only active instruments in the "All Securities" view</li>
+          <li>New: Added columns to display ex-date and payment date of dividend payments loaded from DivvyDiary</li>
+          <li>New: Added a new trade calendar for the Australian Stock Exchange (ASX)</li>
+          <li>New: Introduced a new PDF importer for C24 Bank, Tradegate, Raisin Bank, and First Trade Securities</li>
+          <li>Improvements to the PDF importers for Liechtenstein, Swissquote, Consorsbank, Trade Republic, FFB, Comdirect, Raiffeisenbank, ING DiBa, Degiro, DADAT, FlatEx, WIR Bank, sBroker, DKB, Erste Bank, Zürcher Kantonalbank, Arkea Direct Bank, Geno Broker, Bondora</li>
+          <li>Improvement: Added configuration to the "Earnings" widget to show collapsed or expanded monthly transactions</li>
+          <li>Improvement: Benchmark series can now be configured for the IRR dashboard widget</li>
+          <li>Improvement: Added options to filter by type of transaction or search transactions in the list of transactions below accounts</li>
+          <li>Improvement: Stopped updating dividend payments from DivvyDiary if the instrument is retired</li>
+          <li>Fix: Fixed a problem where a tooltip was showing actual values even though discreet mode was active</li>
+          <li>Fix: Fixed the missing logo of instruments in the performance calculation if the instrument was not held anymore</li>
+          <li>Fix: Fixed a problem where future historical prices were not stored in the binary format</li>
+          <li xml:lang="de">Neu: Portfolio-Report liefert jetzt Kryptowährungen und Preise in anderen Währungen als EUR</li>
+          <li xml:lang="de">Neu: Diagramme zu Beständen und Salden in die Ansicht "Wertpapierkonten" hinzugefügt</li>
+          <li xml:lang="de">Neu: Neuer Sparplan "Zinsen" eingeführt</li>
+          <li xml:lang="de">Neu: Sharpe Ratio Widget zum Dashboard hinzugefügt</li>
+          <li xml:lang="de">Neu: Neuer Dialog, um Unterschiede zwischen aufgezeichnetem und tatsächlichem Saldo zu finden</li>
+          <li xml:lang="de">Neu: Neue Option, um nur aktive Instrumente in der Ansicht "Alle Wertpapiere" aufzulisten</li>
+          <li xml:lang="de">Neu: Spalten zur Anzeige des Ex-Datums und des Zahlungstermins von Dividendenzahlungen aus DivvyDiary hinzugefügt</li>
+          <li xml:lang="de">Neu: Neuer Handelskalender für die Australian Stock Exchange (ASX) hinzugefügt</li>
+          <li xml:lang="de">Neu: Neuer PDF-Importer für C24 Bank, Tradegate, Raisin Bank und First Trade Securities</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Liechtenstein, Swissquote, Consorsbank, Trade Republic, FFB, Comdirect, Raiffeisenbank, ING DiBa, Degiro, DADAT, FlatEx, WIR Bank, sBroker, DKB, Erste Bank, Zürcher Kantonalbank, Arkea Direct Bank, Geno Broker, Bondora</li>
+          <li xml:lang="de">Verbesserung: Zusätzliche Konfiguration am "Erträge"-Widgets, um monatliche Buchungen standardmässig einzuklappen oder zu erweitern</li>
+          <li xml:lang="de">Verbesserung: Benchmark-Serien können jetzt auch für das IRR-Dashboard-Widget konfiguriert werden</li>
+          <li xml:lang="de">Verbesserung: Optionen zum Filtern nach Buchungsstyp oder zum Suchen in der Liste der Buchungen bei Konten und Depots</li>
+          <li xml:lang="de">Verbesserung: Dividendenzahlungen werden von DivvyDiary nicht aktualisiert, wenn das Wertpapier inaktiv ist</li>
+          <li xml:lang="de">Fehlerbehebung: Behebt ein Problem, bei dem ein Tooltip echte Werte anzeigte, obwohl der diskrete Modus aktiv war</li>
+          <li xml:lang="de">Fehlerbehebung: Behebt ein Problem, bei dem das Logo von Instrumenten in der Performance-Berechnung nicht angezeigt wurde, wenn das Instrument nicht mehr gehalten wurde</li>
+          <li xml:lang="de">Fehlerbehebung: Behebt ein Problem, bei dem historische Preise in der Zukunft nicht im Binärformat gespeichert wurden</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.68.4" date="2024-04-28">
+      <description>
+        <ul>
+          <li>New: Change data series for all widgets in a column at once</li>
+          <li>New: Added a search field in the list of trades</li>
+          <li>New: Introduced a new PDF importer for Bigbank, Arkea Direct Bank, and Radicant Bank AG (BLKB)</li>
+          <li>Improvements to the PDF importers for Consorsbank, Basellandschaftliche Kantonalbank (BLKB), ING DiBa, Bondora, SBroker, Baader Bank, OnVista, Swissquote, Merkur Privatbank, Santander Consumer Bank, Weberbank, Trade Republic, Unicredit, Sutor, Hypothekarbank Lenzburg, Erste Bank, Zürcher Kantonalbank, Simle SA, DAB, LLB, SLM, JustTrade, JTDirektbank, Merkur Privat Bank, UBS, and OLB Bank</li>
+          <li>Improvement: Security logos in the data series selection dialog</li>
+          <li>Improvement: Cache the DivvyDiary server response only when PP has received a valid JSON response</li>
+          <li>Improvement: An optional (paid) CoinGecko API key can be set</li>
+          <li>Fix: Resolves an issue with calculating the 'Fees' data series in the asset chart</li>
+          <li>Fix: Resolves an issue where the tooltip displayed the incorrect label for the aggregation</li>
+          <li>Fix: Resolves an issue with displaying the ampersand (&amp;) on the 'Date Reached' and 'Limit Exceeded' widgets</li>
+          <li xml:lang="de">Neu: Datenreihen für alle Widgets in einer Spalte gleichzeitig ändern</li>
+          <li xml:lang="de">Neu: Suchfeld in der Liste der Trades</li>
+          <li xml:lang="de">Neu: Neuer PDF-Importer für Bigbank, Arkea Direct Bank, und Radicant Bank AG (BLKB) eingeführt</li>
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Consorsbank, Basellandschaftliche Kantonalbank (BLKB), ING DiBa, Bondora, SBroker, Baader Bank, OnVista, Swissquote, Merkur Privatbank, Santander Consumer Bank, Weberbank, Trade Republic, Unicredit, Sutor, Hypothekarbank Lenzburg, Erste Bank, Zürcher Kantonalbank, Simle SA, DAB, LLB, SLM, JustTrade, JTDirektbank, Merkur Privat Bank, UBS, und OLB Bank</li>
+          <li xml:lang="de">Verbesserung: Logos der Wertpapiere im Dialog zur Auswahl von Datenreihen</li>
+          <li xml:lang="de">Verbesserung: Cache der DivvyDiary-Server-Antwort nur, wenn PP eine gültige JSON-Antwort erhalten hat</li>
+          <li xml:lang="de">Verbesserung: Ein optionaler (kostenpflichtiger) CoinGecko-API-Schlüssel kann hinterlegt werden</li>
+          <li xml:lang="de">Fix: Behebt ein Problem bei der Berechnung der 'Gebühren'-Datenreihe im Vermögensdiagramm</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem im Tooltip die falsche Bezeichnung der Aggregation angezeigt wurde</li>
+          <li xml:lang="de">Fix: Behebt ein Problem mit der Darstellung des kaufmännischen Unds (&amp;) auf den Widgets 'Termin erreicht' und 'Limit überschritten'</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.68.3" date="2024-03-24">
+      <description>
+        <ul>
+          <li>Introduced new PDF importer for Sunrise Securities and Advanzia Bank.</li>
+          <li>Enhanced PDF importers for LGT Bank, Trade Republic, KBC Group NV, Merkur Privatbank, OLB, Open Bank, DAB, Raiffeisenbank, AKF Bank, Barclay, Consorsbank, UBS, FlatEx, DKB.</li>
+          <li>Corrected dividend marker positioning in charts.</li>
+          <li>Adjusted stock split dialog layout for better translation support.</li>
+          <li>Improved readability by fixing selected tab color on Windows.</li>
+          <li>Added utility to merge 'source' attribute from an external file into the current file.</li>
+          <li xml:lang="de">Neuer PDF-Importer für Sunrise Securities und Advanzia Bank eingeführt.</li>
+          <li xml:lang="de">Verbesserungen der PDF-Importer für LGT Bank, Trade Republic, KBC Group NV, Merkur Privatbank, OLB, Open Bank, DAB, Raiffeisenbank, AKF Bank, Barclay, Consorsbank, UBS, FlatEx, DKB.</li>
+          <li xml:lang="de">Korrektur der Positionierung von Dividendenmarkern in Diagrammen.</li>
+          <li xml:lang="de">Layoutanpassung des Aktiensplit-Dialogs für bessere Übersetzungsunterstützung.</li>
+          <li xml:lang="de">Verbesserte Lesbarkeit der ausgewählten Registerkarten unter Windows.</li>
+          <li xml:lang="de">Neues Tool zur Übernahme des 'source'-Attributs aus einer externen Datei in die aktuelle Datei.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.68.2" date="2024-03-14">
+      <description>
+        <ul>
+          <li>Fix: Fixes an issue where the 'source' information for purchase transactions was lost in the binary format.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem die Informationen zur 'Quelle' von Kaufbuchungen im binären Format verloren gehen konnten.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.68.1" date="2024-03-09">
+      <description>
+        <ul>
+          <li>Fix: Reverts the color changes in the dark theme back to the previous colors with better contrast.</li>
+          <li>Fix: Consorsbank PDF-Importer</li>
+          <li xml:lang="de">Fix: Macht die Farbänderungen im Dunkelmodus wieder zu den vorherigen Farben mit besserem Kontrast rückgängig.</li>
+          <li xml:lang="de">Fix: Consorsbank PDF-Importer</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.68.0" date="2024-03-07">
+      <description>
+        <ul>
+          <li>New: Stacked area chart with the valuation of individual categories of a taxonomy</li>
+          <li>New: Bank11 PDF Importer</li>
+          <li>Improvement: Simplified definition of the number format in CSV import by simply selecting the decimal separator</li>
+          <li>Improvement: New bookmarks for aktien.guide and aktienfinder.net</li>
+          <li>Improvement of the PDF importers: Postbank, eBase, Trade Republic, AKF Bank, J&amp;T Direktbank, comdirect, Raiffeisenbank, ING DiBa, Renault Bank, Onvista, Merkurbank, Flatex, Bondora Go &amp; Grow, sBroker, DKB, PostFinance</li>
+          <li>Improvement: "Save" and "Save as" with simplified options</li>
+          <li>Fix: Fixes an issue with the display of the MACD when insufficient historical prices are available for calculation</li>
+          <li>Fix: Fixes a problem with the dark theme when the app starts in the operating system's dark mode</li>
+          <li>Fix: Fixes translation issues with terms containing an apostrophe</li>
+          <li>Fix: Fixes a problem with the line break of notes at 80 characters for display in the tooltip</li>
+          <li>Fix: Fixes an issue where transactions without a date were saved in the file</li>
+          <li>Fix: Respects the "Show labels" flag even when using vertical marker lines in the price chart</li>
+          <li>Fix: Improved localization of the Kommer example file</li>
+          <li xml:lang="de">Neu: Gestapeltes Flächendiagramm mit dem Wert der einzelnen Kategorien einer Klassifikation</li>
+          <li xml:lang="de">Neu: Bank11 PDF-Importer</li>
+          <li xml:lang="de">Verbesserung: Vereinfachte Definition des Zahlenformats beim CSV-Import durch einfache Auswahl des Dezimaltrennzeichens</li>
+          <li xml:lang="de">Verbesserung: Neue Bookmarks für aktien.guide und aktienfinder.net</li>
+          <li xml:lang="de">Verbesserung der PDF-Importer: Postbank, eBase, Trade Republic, AKF Bank, J&amp;T Direktbank, comdirect, Raiffeisenbank, ING DiBa, Renault Bank, Onvista, Merkurbank, Flatex, Bondora Go &amp; Grow, sBroker, DKB, PostFinance</li>
+          <li xml:lang="de">Verbesserung: "Speichern" und "Speichern unter" mit vereinfachten Optionen</li>
+          <li xml:lang="de">Fix: Behebt ein Problem bei der Anzeige vom MACD, wenn nicht genügend Kurse zur Berechnung zur Verfügung stehen</li>
+          <li xml:lang="de">Fix: Behebt ein Problem mit dem dunklen Erscheinungsbild, wenn die App im Dunkelmodus des Betriebssystems startet</li>
+          <li xml:lang="de">Fix: Behebt Probleme in der Übersetzung mit Begriffen, die ein Apostroph enthalten</li>
+          <li xml:lang="de">Fix: Behebt ein Problem beim Umbruch von Notizen auf 80 Zeichen zur Darstellung im Tooltip</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem Buchungen ohne Datum in der Datei gespeichert wurden</li>
+          <li xml:lang="de">Fix: Beachtet das Flag "Beschriftungen anzeigen" auch bei der Verwendung von vertikalen Markierungslinien im Kursdiagramm</li>
+          <li xml:lang="de">Fix: Verbesserte Lokalisierung der Kommer-Beispieldatei</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.67.3" date="2024-02-01">
+      <description>
+        <ul>
+          <li>Fix: Adjustment of the Credit Suisse price feed to the new server API for historical prices</li>
+          <li>Improvement: Minor adjustment in determining the font color based on the background to improve readability</li>
+          <li xml:lang="de">Korrektur: Anpassung des Credit Suisse Kurslieferanten an die neue Server-API für historische Kurse</li>
+          <li xml:lang="de">Verbesserung: Geringfügige Anpassung zur Bestimmung der Schriftfarbe basierend auf dem Hintergrund, um die Lesbarkeit zu verbessern</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.67.2" date="2024-01-28">
+      <description>
+        <ul>
+          <li>New: 2 new widgets with the heatmap of monthly taxes or fees</li>
+          <li>New: PDF importer for Computershare, J&amp;T Direktbank, AKF Bank</li>
+          <li>Improvement of the PDF importer: Barclays, Renault Bank, Raiffeisenbank, Gladbacher Bank, Baader Bank, sBroker, Vanguard, eBase, Postbank, ING DiBa, Trade Republic, Directa SIM, DAB, DADAT, JustTrade, Kreissparkasse, Quirin</li>
+          <li>Fix: Fixes a problem with deleting widgets of the type "Description"</li>
+          <li>Fix: Updates the CoinGecko call frequency to avoid hitting the limit of the free plan</li>
+          <li xml:lang="de">Neu: 2 neue Widgets mit der Heatmap der monatlichen Steuern bzw. Gebühren</li>
+          <li xml:lang="de">Neu: PDF-Importer für Computershare, J&amp;T Direktbank, AKF Bank</li>
+          <li xml:lang="de">Verbesserung der PDF-Importers: Barclays, Renault Bank, Raiffeisenbank, Gladbacher Bank, Baader Bank, sBroker, Vanguard, eBase, Postbank, ING DiBa, Trade Republic, Directa SIM, DAB, DADAT, JustTrade, Kreissparkasse, Quirin</li>
+          <li xml:lang="de">Fix: Behebt ein Problem beim Löschen von Widgets vom Typ "Beschreibung"</li>
+          <li xml:lang="de">Fix: Aktualisiert die CoinGecko-Aufrufhäufigkeit, um ein Überschreiten des Limits für die kostenlose Stufe zu vermeiden</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.67.1" date="2024-01-08">
+      <description>
+        <ul>
+          <li>New: PDF Importer for Gladbacher Bank</li>
+          <li>New: PDF Importer for Directa SIM</li>
+          <li>New: PDF Importer for Barclays credit card statements (withdrawals only)</li>
+          <li>New: Update of the security name via Portfolio Report when a security is imported via CSV without a name</li>
+          <li>Improvement of the PDF Importer: Erste Bank, Baader Bank, Consorsbank, ING DiBa, comdirect, OLB, DKB, Trade Republic, FlatEx, Geno Broker, DADAT Bankenhaus</li>
+          <li xml:lang="de">Neu: PDF-Importer für die Gladbacher Bank</li>
+          <li xml:lang="de">Neu: PDF-Importer für Directa SIM</li>
+          <li xml:lang="de">Neu: PDF-Importer für Barclays-Kreditkartenabrechnungen (nur Abbuchungen)</li>
+          <li xml:lang="de">Neu: Aktualisierung des Wertpapiernamens per Portfolio-Report, wenn das Wertpapier per CSV ohne Namen importiert wurde</li>
+          <li xml:lang="de">Verbesserung des PDF-Importers: Erste Bank, Baader Bank, Consorsbank, ING DiBa, comdirect, OLB, DKB, Trade Republic, FlatEx, Geno Broker, DADAT Bankenhaus</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.67.0" date="2023-12-30">
+      <description>
+        <ul>
+            <li>New: Update to Eclipse Version 4.30 (Release 2023-12)</li>
+            <li>New: PDF Importer for AJ Bell Securities Limited</li>
+            <li>New: PDF Importer for Findependent AG</li>
+            <li>New: PDF Importer for Fidelity International</li>
+            <li>New: PDF Importer for Liechtensteinische Landesbank</li>
+            <li>New: PDF Importer for Aviva PLC</li>
+            <li>Improvement: New data series 'Taxes' in the asset chart (in addition to the already existing data series 'accumulated taxes')</li>
+            <li>Improvement of the PDF Importer: DZ Bank, FlatEx, Baader Bank, V Bank, ComDirect, DKB, FNZ Bank, Trade Republic, Deutsche Bank</li>
+            <li>Fix: Fixes an issue if the user deletes the value for dividend per share in the input dialog.</li>
+            <li>Fix: Fixes an issue where the information pane could not be fully collapsed by dragging.</li>
+            <li>Fix: Fixes an issue with the display of special characters in the performance tooltip and in the master data infobox.</li>
+            <li>Fix: Fixes an issue with the display of tooltips under macOS when the Control key is pressed.</li>
+            <li xml:lang="de">Neu: Update auf Eclipse Version 4.30 (Release 2023-12)</li>
+            <li xml:lang="de">Neu: PDF-Importer für AJ Bell Securities Limited</li>
+            <li xml:lang="de">Neu: PDF-Importer für Findependent AG</li>
+            <li xml:lang="de">Neu: PDF-Importer für Fidelity International</li>
+            <li xml:lang="de">Neu: PDF-Importer für die Liechtensteinische Landesbank</li>
+            <li xml:lang="de">Neu: PDF-Importer für Aviva PLC</li>
+            <li xml:lang="de">Verbesserung: Neue Datenreihe 'Steuern' im Vermögensdiagramm (zusätzlich zu der bereits existierenden Datenreihe 'akkumulierte Steuern')</li>
+            <li xml:lang="de">Verbesserung des PDF-Importers: DZ Bank, FlatEx, Baader Bank, V Bank, ComDirect, DKB, FNZ Bank, Trade Republic, Deutsche Bank</li>
+            <li xml:lang="de">Fix: Behebt ein Problem, wenn der Benutzer im Eingabedialog den Wert für die Dividende pro Anteil löscht.</li>
+            <li xml:lang="de">Fix: Behebt ein Problem, bei dem das Informationsfenster nicht vollständig zusammengeschoben werden konnte.</li>
+            <li xml:lang="de">Fix: Behebt ein Problem mit der Anzeige von Sonderzeichen im Performance-Tooltip und in der Stammdaten-Infobox</li>
+            <li xml:lang="de">Fix: Behebt ein Problem bei der Anzeige des Tooltips unter macOS, wenn die Control-Taste gedrückt wird</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.66.2" date="2023-12-13">
+      <description>
+        <ul>
+            <li>Fix: Fixes a problem with displaying previsouly added logos that use the ICO format.</li>
+            <li xml:lang="de">Fix: Behebt ein Problem der Anzeige von zuvor eingefügten Logos im ICO Format.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.66.1" date="2023-12-12">
+      <description>
+        <ul>
+            <li>Fix: Fixes a problem when editing an existing dividend transaction.</li>
+            <li xml:lang="de">Fix: Behebt ein Problem bei der Bearbeitung von Dividenden.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.66.0" date="2023-12-12">
+      <description>
+        <ul>
+            <li>Improvement: In the price chart, the tooltip now displays the last value if there is no other value on that day. This eliminates the need to precisely pinpoint the buying or selling time in the FIFO or inventory data series.</li>
+            <li>Improvement: Icon images under Windows now have improved transparency (no white background).</li>
+            <li>Improvement: The tooltip in the chart legend shows the ISIN, WKN, and ticker symbol of the security.</li>
+            <li>Improvement: Accounts with transactions can no longer be deleted. Transactions are required for calculations.</li>
+            <li>Improvement: In the "Payments" overview, transactions now also include the closing transaction of a trade.</li>
+            <li>PDF Importer Improvement: Trade Republic, OLB, Baader Bank, Comdirect.</li>
+            <li>Fix: Resolves a rounding issue in calculating the average of investments or earnings.</li>
+            <li>Fix: Finnhub has transitioned the API for historical prices to a premium subscription. Currently, at least partially, current prices are still available for free.</li>
+            <li>Fix: Resolves a performance issue in displaying historical security prices.</li>
+            <li xml:lang="de">Verbesserung: Im Kursdiagramm wird im Tooltip der letzte Wert angezeigt, falls es an diesem Tag keinen anderen Wert gibt. Damit muss man bei der FIFO- oder Bestandsdatenreihe nicht genau den Kauf- oder Verkaufszeitpunkt treffen.</li>
+            <li xml:lang="de">Verbesserung: Icon-Bilder unter Windows mit verbesserter Transparenz (kein weißer Hintergrund).</li>
+            <li xml:lang="de">Verbesserung: Der Tooltip in der Legende des Diagramms zeigt ISIN, WKN und Ticker-Symbol des Wertpapiers an.</li>
+            <li xml:lang="de">Verbesserung: Konten mit Buchungen können nicht mehr gelöscht werden. Die Buchungen werden für die Berechnung benötigt.</li>
+            <li xml:lang="de">Verbesserung: In der Übersicht "Zahlungen" enthalten die Buchungen jetzt auch die Schlussbuchung eines Trades.</li>
+            <li xml:lang="de">Verbesserung des PDF-Importers: Trade Republic, OLB, Baader Bank, Comdirect.</li>
+            <li xml:lang="de">Fix: Behebt ein Rundungsproblem bei der Berechnung des Durchschnitts der Investitionen oder Erträge.</li>
+            <li xml:lang="de">Fix: Finnhub hat das API für historische Kurse auf ein Premium-Abo umgestellt. Aktuell sind zumindest teilweise noch die aktuellen Kurse kostenlos.</li>
+            <li xml:lang="de">Fix: Behebt ein Performance-Problem bei der Anzeige der historischen Wertpapierkurse.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.65.6" date="2023-11-11">
+      <description>
+        <ul>
+          <li>New: Display the number of shares held in the historical price chart</li>
+          <li>Improvement of the PDF importer: Baader Bank, WIR, VIAC, Oldenburgische Landesbank</li>
+          <li>Fix: Fixes an problem with IllegalArgumentException errors when displaying investements and dividends</li>
+          <li xml:lang="de">Neu: Im Kursdiagramm die Bestände im zeitlichen Verlauf einblenden</li>
+          <li xml:lang="de">Verbesserung der PDF Importer: Baader Bank, WIR, VIAC, Oldenburgische Landesbank</li>
+          <li xml:lang="de">Fix: Behebt ein Problem mit IllegalArgumentExcepion im Kursdiagramm bei der Darstellung von Markierungslinien</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.65.5" date="2023-11-04">
+      <description>
+        <ul>
+          <li>New: In the "Trading Activity" widget, you can now filter data by transaction type.</li>
+          <li>Improvement: PDF/CSV import: if multiple securities with the same ISIN, ticker symbol, or WKN exist, transactions will still be imported if only one security is active.</li>
+          <li>Improvement: New filter in "All Transactions" to display only inbound deliveries or only outbound deliveries.</li>
+          <li>Improvement: Optimized colors of additional information in the price chart for dark mode.</li>
+          <li>PDF Importer improvements: comdirect, Baader Bank, Trade Republic, Tiger Brokers, Oldenburgische Landesbank, Lime Trading, SBroker, WIR Bank, FlatEx, DKB.</li>
+          <li>Fix: Resolves an issue where tooltips were not displayed depending on the arrangement of multiple monitors.</li>
+          <li>Fix: Resolves an issue with the display of the Return/Volatility chart when the performance of a position is infinite.</li>
+          <li xml:lang="de">Neu: Im Widget "Handelsaktivität" kann nach Buchungstypen selektiert werden</li>
+          <li xml:lang="de">Verbesserung: Wenn beim Import mehrere Wertpapiere mit der selben ISIN, Ticker Symbol oder WKN existieren, werden Buchungen trotzdem importiert wenn genau nur eines Wertpapiere aktiv ist</li>
+          <li xml:lang="de">Verbesserung: Neuer Filter in "Alle Buchungen" um nur Einlieferungen oder nur Auslieferungen anzuzeigen</li>
+          <li xml:lang="de">Verbesserung: Farben der zusätzlichen Informationen im Kursdiagramm für das dark mode optimiert</li>
+          <li xml:lang="de">Verbesserung der PDF Importer: comdirect, Baader Bank, Trade Republic, Tiger Brokers, Oldenburgische Landesbank, Lime Trading, SBroker, WIR Bank, FlatEx, DKB</li>
+          <li xml:lang="de">Fix: Behebt ein Problem bei dem Tooltips je nach Anordnung von mehreren Monitoren nicht angezeigt wurden</li>
+          <li xml:lang="de">Fix: Behebt ein Problem bei der Anzeige des Rendite/Volatilität-Diagramms wenn die Performance einer Position unendlich ist</li>
+        </ul>
+      </description>
+    </release>
+		<release version="0.65.4" date="2023-10-07">
+			<description>
+				<ul>
+				  <li>Improvement: Updated the Eclipse Framework to version 4.29</li>
+				  <li>Improvement: Completely redesigned the Comdirect PDF Importer to support all known document types</li>
+				  <li>Improvement: The last chosen encoding for importing CSV files will be preselected</li>
+				  <li>Improvement: Improved feedback when trying to add securities that already exist</li>
+				  <li>Improvement: PDF Importer improvements for various banks: DKB, Vanguard, ebase, FNZ Bank, Wir Bank, Trade Republic, Oldenburgische Landesbank, Deutsche Bank, Baader Bank, DKB, Lime Trading, FlatEx, Geno</li>
+				  <li>Fix: Resolved an issue with reduced display of performance calculations on the dashboard</li>
+				  <li>Fix: Fixed a NullPointerException issue when classifications do not exist in a file (yet)</li>
+				  <li>Fix: Addressed an issue where not all contra entries for an account were displayed in the search</li>
+					<li xml:lang="de">Verbesserung: Update des Eclipse Framework auf Version 4.29</li>
+					<li xml:lang="de">Verbesserung: Komplette Neuimplementierung des Comdirect PDF Importers um alle bekannten Dokumente abzudecken</li>
+					<li xml:lang="de">Verbesserung: Die zuletzt gewählte Enkodierung von zu importierenden CSV Dateien wird vorbelegt</li>
+					<li xml:lang="de">Verbesserung: Bessere Rückmeldung wenn man Wertpapiere hinzufügen möchte, die schon existieren</li>
+					<li xml:lang="de">Verbesserung der PDF Importer: DKB, Vanguard, ebase, FNZ Bank, Wir Bank, Trade Republic, Oldenburgische Landesbank, Deutsche Bank, Baader Bank, DKB, Lime Trading, FlatEx, Geno</li>
+					<li xml:lang="de">Fix: Behebt ein Problem bei der reduzierten Darstellung der Performance-Berechnung auf dem Dashboard</li>
+					<li xml:lang="de">Fix: Behebt ein Problem mit einer NullPointerException wenn in einer Datei (noch) keine Klassifikationen existieren</li>
+					<li xml:lang="de">Fix: Behebt ein Problem das nicht alle Gegenbuchungen für ein Konto bei der Suche angezeigt wurden</li>
+				</ul>
+			</description>
+		</release>
+		<release version="0.65.3" date="2023-09-04">
+			<description>
+				<ul>
+					<li>Fix: Fixes a problem when saving the file with reporting periods configuration embedded in the file</li>
+					<li xml:lang="de">Fix: Behebt ein Problem beim Speichern der Datei wenn Berichtszeiträume in der Datei gespeichert werden</li>
+				</ul>
+			</description>
+		</release>
+		<release version="0.65.2" date="2023-09-03">
+			<description>
+				<ul>
+					<li>New Translations: Traditional Chinese and Brazilian Portuguese</li>
+					<li>Improvement of PDF Importer: Trade Republic, Tiger Brokers, Geno, JustTrade, OnVista, ING Diba</li>
+					<li>Improvement: New option to skip extracting notes from PDF documents</li>
+					<li>Improvement: Alternative symbols for benchmarks in the yield/volatility chart</li>
+					<li>Fix: Fixes truncated labels in dialogs when a larger font size is selected</li>
+					<li>Fix: Fixes an issue where the crosshair was not correctly placed in the saved chart</li>
+					<li xml:lang="de">Neue Übersetzungen: Traditionelles Chinesisch und Brasilianisches Portugiesisch</li>
+					<li xml:lang="de">Verbesserung der PDF Importer: Trade Republic, Tiger Brokers, Geno, JustTrade, OnVista, ING Diba</li>
+					<li xml:lang="de">Verbesserung: Neue Option um Notizen nicht aus PDF Dokumenten einzulesen</li>
+					<li xml:lang="de">Verbesserung: Alternative Symbole für Benchmarks im Rendite/Volatilitäts-Diagramm</li>
+					<li xml:lang="de">Fix: Behebt abgeschnittene Beschriftungen in Dialogen wenn eine grössere Schrift eingestellt ist</li>
+					<li xml:lang="de">Fix: Behebt ein Problem bei dem das Crosshair in dem gespeicherten Diagramm nicht an der richtigen Stelle eingezeichnet wurde</li>
+				</ul>
+			</description>			
+		</release>
+		<release version="0.65.1" date="2023-08-14">
+			<description>
+				<ul>
+					<li>Fix: Fixes the calculation of partial assignments in earnings by taxonomy chart</li>
+					<li xml:lang="de">Fix: Behebt ein Problem bei der Berechnung von anteiligen Erträgen im Chart 'Erträge nach Klassifikationen'</li>
+				</ul>
+			</description>
+		</release>
+		<release version="0.65.0" date="2023-08-14">
+			<description>
+				<ul>
+					<li>New: Suggestions of providers for historical prices for freshly imported securities from PDF or CSV files</li>
+					<li>New: Newly recognized securities can be assigned to existing securities during PDF import</li>
+					<li>New: Pie chart of earnings (dividends, interest) by taxonomy</li>
+					<li>New: Added support for PDF bank documents from Sberbank Europe and BISON</li>
+					<li>New: Introducing a new "crosshair" tool available in the price charts</li>
+					<li>Improvement: Date format is now automatically pre-filled during CSV import based on the current language setting</li>
+					<li>Improvement: CSV import now supports scientific notation for numbers</li>
+					<li>PDF Importer Enhancement: Expanded support for Raiffeisenbank, eBase, FlatEx, Quirion, Geno Broker, LGT Bank, and PostFinance</li>
+					<li>Fix: Tooltip for calculating price gains is now limited to 50 rows</li>
+					<li>Fix: Filter options are now properly applied when opening the list of all transactions</li>
+					<li xml:lang="de">Neu: Vorschläge zur Kursversorgung von frisch importierte Wertpapiere aus PDF- oder CSV-Dateien</li>
+					<li xml:lang="de">Neu: Neu erkannte Wertpapiere können beim PDF Import bestehenden Wertpapieren zugeordnet werden</li>
+					<li xml:lang="de">Neu: Kuchendiagramm der Erträge (Dividenden, Zinsen) nach Klassifikation</li>
+					<li xml:lang="de">Neu: Unterstützung für PDF-Bankdokumente von Sberbank Europe und BISON hinzugefügt</li>
+					<li xml:lang="de">Neu: Neues Werkzeug "Fadenkreuz" in den Kursdiagrammen verfügbar</li>
+					<li xml:lang="de">Verbesserung: Das Datumsformat wird beim CSV-Import automatisch gemäß der aktuellen Spracheinstellung vorausgefüllt</li>
+					<li xml:lang="de">Verbesserung: Der CSV-Import unterstützt nun auch wissenschaftliche Schreibweisen für Zahlen</li>
+					<li xml:lang="de">Verbesserung der PDF Importer: Raiffeisenbank, eBase, FlatEx, Quirion, Geno Broker, LGT Bank und PostFinance</li>
+					<li xml:lang="de">Fix: Tooltip zur Berechnung der Kursgewinne auf 50 Zeilen limitiert</li>
+					<li xml:lang="de">Fix: Filteroptionen werden nun ordnungsgemäß beim Öffnen der Liste aller Buchungen angewendet</li>
+				</ul>
+			</description>
+		</release>
+    <release version="0.64.5" date="2023-07-23">
+      <description>
+        <ul>
+          <li>Fix: Fixed an issue where new securities were mistakenly added to the watchlist of another file.</li>
+          <li>Fix: New securities are now created in the reporting currency when the provider does not provide currency information.</li>
+          <li>Improved PDF importer for GENO, sBroker, FlatEx, FFB, DKB, Deutsche Bank.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem neue Wertpapiere fälschlicherweise der Watchlist einer anderen Datei hinzugefügt wurden</li>
+          <li xml:lang="de">Fix: Neue Wertpapiere werden in der Berichtswährung erstellt, wenn der Provider keine Währungsinformationen zur Verfügung stellt</li>
+          <li xml:lang="de">Verbesserung der PDF Importer: GENO, sBroker, FlatEx, FFB, DKB, Deutsche Bank</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.64.4" date="2023-07-15">
+      <description>
+        <ul>
+          <li>Fix: Fixes Cannot invoke “name.abuchen.portfolio.model.SecurityProperty.getType()” because “p” is null</li>
+          <li xml:lang="de">Fix: Behebt Cannot invoke “name.abuchen.portfolio.model.SecurityProperty.getType()” because “p” is null</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.64.3" date="2023-07-15">
+      <description>
+        <ul>
+          <li>Fix: Fixes a problem with migration of filter configuration if identical filter exist</li>
+          <li xml:lang="de">Fix: Behebt ein Problem mit der Migration von Filter-Konfigurationen wenn identische Filter existieren</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.64.2" date="2023-07-14">
+      <description>
+        <ul>
+          <li>New: Filter configurations are no longer stored in the settings but in the file itself. This makes it easier to synchronize them between computers and to edit them better</li>
+          <li>New: MACD indicator in the price chart (Moving Average Convergence/Divergence)</li>
+          <li>New: the Measurement Tool is now active for all - it allows to easily measure distances and changes in the charts</li>
+          <li>Improvement of PDF importers: LGT Bank, sBroker, Bondora, FlatEx, Trade Republic, Vanguard</li>
+          <li>Improvement: More possibilities to create new instruments (securities, crypto currencies, etc): via keyboard shortcut Ctrl-N, via the (+) symbol next to "Securities" in the page navigation</li>
+          <li>Improvement: Tables from the tooltips remember the column widths</li>
+          <li>Improvement: tooltip for yields per year now contains all years</li>
+          <li>Improvement: columns with the ticker symbol in the classifications</li>
+          <li>Fix: Update of latest price via Yahoo Finance is fixed</li>
+          <li xml:lang="de">Neu: Filter-Konfigurationen werden jetzt nicht mehr in den Einstellungen sondern in der Datei selber gespeichert. Damit können die einfacher zwischen Rechnern synchronisiert werden und besser editiert werden</li>
+          <li xml:lang="de">Neu: MACD Indikator im Kursdiagramm (Moving Average Convergence/Divergence) (zu Deutsch: Indikator für das Zusammen-/Auseinanderlaufen des gleitenden Durchschnitts)</li>
+          <li xml:lang="de">Neu: das Measurement Tool ist jetzt für alle aktive - damit kann man einfach in den Diagrammen Abstände und Änderungen messen</li>
+          <li xml:lang="de">Verbesserung der PDF Importer: LGT Bank, sBroker, Bondora, FlatEx, Trade Republic, Vanguard</li>
+          <li xml:lang="de">Verbesserung: Weitere Möglichkeiten neue Wertpapiere anzulegen: per Tastaturkürzel Ctrl-N, über das (+) Symbol neben "Wertpapiere" in der Seitennavigation</li>
+          <li xml:lang="de">Verbesserung: Tabellen aus den Tooltips merken sich die Spaltenbreiten</li>
+          <li xml:lang="de">Verbesserung: Tooltip zu den Erträgen pro Jahr enthält jetzt alle Jahre</li>
+          <li xml:lang="de">Verbesserung: Spalten mit dem Ticker Symbol bei den Klassifizierungen</li>
+          <li xml:lang="de">Fix: Aktualisierung des aktuellen Kurses über Yahoo Finance wieder möglich</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.64.1" date="2023-06-25" />
+    <release version="0.64.0" date="2023-06-17" />
+    <release version="0.63.1" date="2023-06-04" />
+    <release version="0.63.0" date="2023-06-04" />
+    <release version="0.62.1" date="2023-05-07" />
+    <release version="0.62.0" date="2023-04-01" />
+    <release version="0.61.4" date="2023-03-14" />
+    <release version="0.61.3" date="2023-02-24" />
+    <release version="0.61.1" date="2023-02-21" />
+    <release version="0.61.0" date="2023-02-05" />
+    <release version="0.60.2" date="2023-01-11" />
+    <release version="0.60.1" date="2022-12-29" />
+    <release version="0.60.0" date="2022-12-18" />
+    <release version="0.59.5" date="2022-12-04" />
+    <release version="0.59.4" date="2022-11-20" />
+    <release version="0.59.3" date="2022-11-06" />
+    <release version="0.59.2" date="2022-10-09" />
+    <release version="0.59.1" date="2022-08-22" />
+    <release version="0.59.0" date="2022-07-17" />
+    <release version="0.58.5" date="2022-06-19" />
+    <release version="0.58.4" date="2022-06-04" />
+    <release version="0.58.3" date="2022-05-31" />
+    <release version="0.58.2" date="2022-05-30" />
+    <release version="0.58.1" date="2022-05-30" />
+    <release version="0.58.0" date="2022-05-29" />
+    <release version="0.57.2" date="2022-04-18" />
+    <release version="0.57.1" date="2022-04-04" />
+    <release version="0.57.0" date="2022-04-03" />
+    <release version="0.56.6" date="2022-03-05" />
+    <release version="0.56.5" date="2022-02-06" />
+    <release version="0.56.4" date="2022-01-23" />
+    <release version="0.56.3" date="2022-01-09" />
+    <release version="0.56.2" date="2021-12-02" />
+    <release version="0.56.1" date="2021-11-22" />
+    <release version="0.56.0" date="2021-11-07" />
+    <release version="0.55.0" date="2021-09-20" />
+    <release version="0.54.3" date="2021-08-15" />
+    <release version="0.54.2" date="2021-07-29" />
+    <release version="0.54.1" date="2021-07-26" />
+    <release version="0.54.0" date="2021-07-18" />
+    <release version="0.53.3" date="2021-06-27" />
+    <release version="0.53.2" date="2021-06-20" />
+    <release version="0.53.1" date="2021-06-16" />
+    <release version="0.53.0" date="2021-06-13" />
+    <release version="0.52.0" date="2021-04-18" />
+    <release version="0.51.3" date="2021-03-28" />
+    <release version="0.51.2" date="2021-03-14" />
+    <release version="0.51.1" date="2021-03-02" />
+    <release version="0.51.0" date="2021-03-01" />
+    <release version="0.50.4" date="2021-02-07" />
+  </releases>
+  <content_rating type="oars-1.0" />
+  <launchable type="desktop-id">info.portfolio_performance.PortfolioPerformance.desktop</launchable>
+  <screenshots>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/flathub/info.portfolio_performance.PortfolioPerformance/HEAD/images/screenshot1@2x.png</image>
+      <caption>Dashboard showing performance trend of portfolio for different years</caption>
+    </screenshot>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/flathub/info.portfolio_performance.PortfolioPerformance/HEAD/images/screenshot2@2x.png</image>
+      <caption>Pie chart of the holdings in the portfolio</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/flathub/info.portfolio_performance.PortfolioPerformance/HEAD/images/screenshot3@2x.png</image>
+      <caption>Historical performance chart of an index</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/flathub/info.portfolio_performance.PortfolioPerformance/HEAD/images/screenshot4@2x.png</image>
+      <caption>Comparison of portfolio performance against an index</caption>
+    </screenshot>
+  </screenshots>
+
+  <developer_name>Andreas Buchen</developer_name>
+
+  <url type="bugtracker">https://github.com/portfolio-performance/portfolio/issues</url>
+
+  <!--FIXME: where to donate to the application-->
+  <!-- <url type="donation">http://www.homepage.com/donation.html</url> -->
+
+  <url type="help">https://forum.portfolio-performance.info/</url>
+  <url type="faq">https://forum.portfolio-performance.info/c/faq</url>
+  <url type="translate">https://poeditor.com/join/project?hash=4lYKLpEWOY</url>
+  <url type="contribute">https://github.com/portfolio-performance/portfolio/blob/HEAD/CONTRIBUTING.md</url>
+  <url type="vcs-browser">https://github.com/portfolio-performance/portfolio</url>
+
+  <update_contact>info@portfolio-performance.info</update_contact>
+</component>

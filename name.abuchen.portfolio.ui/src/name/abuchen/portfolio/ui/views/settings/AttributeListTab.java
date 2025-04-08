@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -26,16 +26,19 @@ import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.InvestmentPlan;
+import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.AbstractTabbedView;
@@ -88,6 +91,9 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
 
     private TableViewer tableViewer;
 
+    @Inject
+    private AbstractFinanceView view;
+
     @Override
     public String getTitle()
     {
@@ -132,16 +138,18 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
     @Override
     public Composite createTab(Composite parent)
     {
+
         Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
+        CopyPasteSupport.enableFor(tableViewer);
 
         ColumnEditingSupport.prepare(tableViewer);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(AttributeListTab.class.getSimpleName(), preferences,
-                        tableViewer, layout);
+        ShowHideColumnHelper support = new ShowHideColumnHelper(AttributeListTab.class.getSimpleName() + "@v2", //$NON-NLS-1$
+                        preferences, tableViewer, layout);
 
         addColumns(support);
 
@@ -153,6 +161,19 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
 
         tableViewer.setInput(client.getSettings().getAttributeTypes().filter(t -> t.getTarget() == mode.getType())
                         .toArray());
+
+        tableViewer.addSelectionChangedListener(event -> {
+            Object selectedElement = event.getStructuredSelection().getFirstElement();
+            view.setInformationPaneInput(selectedElement);
+            // when selected element provides additional information (e.g.
+            // settings) in information pane: display it automatically
+            if (selectedElement instanceof AttributeType attributeType //
+                            && attributeType.getType() == LimitPrice.class //
+                            && view.isPaneHidden())
+            {
+                view.flipPane();
+            }
+        });
 
         new ContextMenu(tableViewer.getTable(), this::fillContextMenu).hook();
 
@@ -201,6 +222,19 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
             }
         });
         support.addColumn(column);
+
+        column = new Column(Messages.ColumnSource, SWT.None, 100);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((AttributeType) element).getSource();
+            }
+        });
+        new StringEditingSupport(AttributeType.class, "source").addListener(this).attachTo(column); //$NON-NLS-1$
+        support.addColumn(column);
+
     }
 
     private void fillContextMenu(IMenuManager manager)
@@ -232,12 +266,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
                     AttributeType above = (AttributeType) tableViewer.getTable().getItem(index - 1).getData();
                     int insertAt = client.getSettings().getAttributeTypeIndexOf(above);
 
-                    ClientSettings settings = client.getSettings();
-                    settings.removeAttributeType(attributeType);
-                    settings.addAttributeType(insertAt, attributeType);
-                    tableViewer.setInput(client.getSettings().getAttributeTypes()
-                                    .filter(t -> t.getTarget() == mode.getType()).toArray());
-                    client.touch();
+                    moveAttribute(attributeType, insertAt);
                 }
             });
         }
@@ -249,18 +278,23 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
                 @Override
                 public void run()
                 {
-                    AttributeType below = (AttributeType) tableViewer.getTable().getItem(index - 1).getData();
+                    AttributeType below = (AttributeType) tableViewer.getTable().getItem(index + 1).getData();
                     int insertAt = client.getSettings().getAttributeTypeIndexOf(below);
 
-                    ClientSettings settings = client.getSettings();
-                    settings.removeAttributeType(attributeType);
-                    settings.addAttributeType(insertAt, attributeType);
-                    tableViewer.setInput(client.getSettings().getAttributeTypes()
-                                    .filter(t -> t.getTarget() == mode.getType()).toArray());
-                    client.touch();
+                    moveAttribute(attributeType, insertAt);
                 }
             });
         }
+    }
+
+    private void moveAttribute(AttributeType attributeType, int insertAt)
+    {
+        ClientSettings settings = client.getSettings();
+        settings.removeAttributeType(attributeType);
+        settings.addAttributeType(insertAt, attributeType);
+        tableViewer.setInput(client.getSettings().getAttributeTypes().filter(t -> t.getTarget() == mode.getType())
+                        .toArray());
+        client.touch();
     }
 
     private void addDeleteActions(IMenuManager manager, IStructuredSelection selection)

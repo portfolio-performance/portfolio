@@ -1,5 +1,9 @@
 package name.abuchen.portfolio.online.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -20,5 +24,27 @@ public class ExchangeLabels
             int p = key.indexOf('.');
             return p >= 0 ? key.substring(p + 1) : key;
         }
+    }
+
+    public static List<String> getAllExchangeKeys(String providerPrefix)
+    {
+        int length = providerPrefix.length();
+
+        List<String> answer = new ArrayList<>();
+
+        Enumeration<String> keys = BUNDLE.getKeys();
+        while (keys.hasMoreElements())
+        {
+            String key = keys.nextElement();
+
+            if (!key.startsWith(providerPrefix))
+                continue;
+
+            answer.add(key.substring(length));
+        }
+
+        Collections.sort(answer);
+
+        return answer;
     }
 }

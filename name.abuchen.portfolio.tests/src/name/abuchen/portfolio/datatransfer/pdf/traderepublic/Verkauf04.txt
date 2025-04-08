@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Max Müller SEITE 1 von 1
+Kastanienallee 1 DATUM 12.09.2020
+D 10115 Berlin ORDER 36de-8883
+AUSFÜHRUNG f439-3735
+DEPOT 111111112
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Market-Order Verkauf am 12.09.2020, um 12:19 Uhr an der Lang & Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL KURS BETRAG
+iShs-MSCI World UCITS ETF 0,0068 Stk. 42,96 EUR 0,292 EUR
+Registered Shares USD (Dist)oN
+ISIN: IE00B0M62Q58
+GESAMT 0,292 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE3511111111111111111 14.09.2020 0,29 EUR
+iShs-MSCI World UCITS ETF Registered Shares USD (Dist)oN in Wertpapierrechnung.
+Lagerland: Grossbritannien
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 2020-09-12 / 53949699 / 96b9-7259

@@ -1,0 +1,37 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.0
+System: linux | x86_64 | 21.0.6+2 | Flathub
+-----------------------------------------
+Kontomitteilung 
+Vorabpauschale 
+Depotinhaber 
+EOsfzA bUzIhNE ftMFmB pPtJDq OlSJBvW jsjUiv 
+nzYqxpYhypOt. 9 
+85629 DXDvDDGXC Depotnummer 
+Deutschland 761727168 
+Es wurde eine Steuervorauszahlung geleistet Berlin, 03.02.2025 
+Wertpapierbezeichnung Vanguard FTSE N.America U.ETF Registered Shares USD Dis.oN 
+ISIN IE00BKX55R35 
+Tag des steuerpflichtigen Zuflusses 02.01.2025 
+Höhe der Vorabpauschale pro Anteil 0,33 EUR 
+Bestand 257,84 Stück 
+Vorabpauschale gem. §18 InvStG (besitzanteilig) 72,97 EUR 
+abzgl. Teilfreistellung 30,00 % von 72,97 EUR -21,89 EUR 
+Steuerlicher Gesamtbetrag 51,08 EUR 
+Verrechnung mit Sparerpauschbetrag 0,00 EUR 
+Verrechnung mit Verlusttopf "Aktien" 0,00 EUR 
+Verrechnung mit Verlusttopf "Sonstige" 0,00 EUR 
+Verrechnung mit gezahlter Quellensteuer 0,00 EUR 
+Bemessungsgrundlage für Kapitalertragsteuer 51,08 EUR 
+Kapitalertragsteuer -12,77 EUR 
+Solidaritätszuschlag -0,70 EUR 
+Betrag zu Ihren Lasten -13,47 EUR 
+Mit freundlichen Grüßen 
+Raisin Bank 
+Dokument ID: 2B872G39-X017-1587-197O-25Ekj9aZ1321
+© Raisin Bank AG
+Raisin Bank AG Niedenau 61-63 60325 Frankfurt am Main
+Sitz der Gesellschaft/Registered Office: Frankfurt am Main
+Registergericht/Commercial Register: Amtsgericht Frankfurt am Main, HRB 13305
+Vorstand/Member of the Board of Directors: Marco Lindgens, Mirko Siepmann, Dr. Andreas Wolf
+Vorsitzender des Aufsichtsrats/Chairman of the Supervisory Board: Dr. Frank Freund

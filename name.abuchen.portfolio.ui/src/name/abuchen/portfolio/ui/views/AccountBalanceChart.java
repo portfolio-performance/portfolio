@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
-import org.swtchart.ISeries;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -19,7 +18,7 @@ import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 
-public class AccountBalanceChart extends TimelineChart
+public class AccountBalanceChart extends TimelineChart // NOSONAR
 {
 
     public AccountBalanceChart(Composite parent)
@@ -34,11 +33,12 @@ public class AccountBalanceChart extends TimelineChart
         {
             suspendUpdate(true);
 
-            for (ISeries s : getSeriesSet().getSeries())
+            for (var s : getSeriesSet().getSeries())
                 getSeriesSet().deleteSeries(s.getId());
 
             if (account == null)
                 return;
+            getTitle().setText(account.getName());
 
             List<AccountTransaction> tx = account.getTransactions();
 
@@ -51,7 +51,7 @@ public class AccountBalanceChart extends TimelineChart
 
             CurrencyConverter converter = new CurrencyConverterImpl(exchangeRateProviderFactory,
                             account.getCurrencyCode());
-            Collections.sort(tx, new Transaction.ByDate());
+            Collections.sort(tx, Transaction.BY_DATE);
 
             if (now.isAfter(end))
                 end = now;
@@ -74,7 +74,7 @@ public class AccountBalanceChart extends TimelineChart
                 start = start.plusDays(1);
             }
 
-            addDateSeries(dates, values, Colors.CASH, account.getName());
+            addDateSeries(account.getUUID(), dates, values, Colors.CASH, account.getName());
         }
         finally
         {

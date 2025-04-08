@@ -1,0 +1,69 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.4
+-----------------------------------------
+Erträgnisabrechnung
+Referenz-Nr 12345858
+Datum 28.07.2023
+Depot 1234567800
+Muster, Hans
+Frau
+Hans Muster
+Straße 2
+12345 Berlin
+Seite 1 von 2
+Für aus Ihrem Depot fällig gewordene Erträgnisse erteilen wir nachstehende Abrechnung:
+Wertpapierbezeichnung iShsIII-MSCI EM Sm.Cap U.ETF Registered Shares o.N.
+ISIN IE00B3F81G20
+WKN A0RGER
+Verwahrart Wertpapierrechnung
+Lagerland Irland
+Nominal/Stück 1,9983 ST
+Währung USD
+Zahlungszeitraum 01.07.2023 - 30.06.2024
+Ausschüttung USD 0,7849 pro Anteil
+Ex-Tag 13.07.2023
+Zahlungstag 26.07.2023
+Betrag USD 1,57
+Kapitalertragsteuer USD 0,00
+Solidaritätszuschlag USD 0,00
+Kirchensteuer USD 0,00
+Ausmachender Betrag USD 1,57
+Devisenkurs EUR/USD 1,110890
+Ausmachender Betrag EUR 1,41
+Der Abrechnungsbetrag wird mit Valuta 26.07.2023 über Ihr Konto 1234567800 EUR gebucht.
+Gebietsansässigen Empfängern von Erträgen aus ausländischen Wertpapieren obliegt eine Meldepflicht nach §§ 67
+ff. AWV (Außenwirtschaftsverordnung), wenn die Gutschrift EUR 12.500,00 übersteigt.
+Keine Steuerbescheinigung!
+Für weitere Fragen wenden Sie sich bitte an Ihren Kundenberater.
+Diese Mitteilung wurde maschinell erstellt und wird von der Bank nicht unterschrieben.
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+SECTRX2 / 62243624 / 20230728 14:36:14
+Erträgnisabrechnung
+Referenz-Nr 12345858
+Seite 2 von 2
+Steuerliche Informationen
+Steuerlicher Devisenumrechnungskurs: EUR/USD 1,110890
+Ausschüttungsbetrag: EUR 1,41
+Steuerpflichtiger Betrag nach Teilfreistellung im Privatvermögen: EUR 1,41
+Kapitalertragsteuerpflichtiger Betrag: EUR 1,41
+Stand allg. Verlustverrechnungstopf vor Veränderung: EUR 0,00
+Veränderung allg. Verlustverrechnungstopf: EUR 0,00
+Stand allg. Verlustverrechnungstopf nach Veränderung: EUR 0,00
+Stand Freistellungsauftrag vor Veränderung: EUR 16,52
+Veränderung Freistellungsauftrag: EUR -1,41
+Stand Freistellungsauftrag nach Veränderung: EUR 15,11
+Bemessungsgrundlage für Kapitalertragsteuer: EUR 0,00
+Kapitalertragsteuer: EUR 0,00
+Solidaritätszuschlag: EUR 0,00
+Kirchensteuer: EUR 0,00
+Steuerliche Information für Veranlagungszwecke
+Steuerpfl. Betrag nach Teilfreistellung im Betriebsvermögen (EStG): EUR 1,41
+Steuerpfl. Betrag nach Teilfreistellung im Betriebsvermögen (KStG): EUR 1,41
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+SECTRX2 / 62243624 / 20230728 14:36:14

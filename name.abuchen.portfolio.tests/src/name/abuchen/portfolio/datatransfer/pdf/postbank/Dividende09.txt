@@ -1,0 +1,56 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.2
+-----------------------------------------
+Postbank Köln · 51222 Köln    Seite 1
+Depotnummer
+ 442225555
+ Kundennummer 112223333
+NNN MMMM LLLL KKKKK
+ Abrechnungsnr. 77122332030
+Herrn und Frau Datum 28.09.2022
+LLLL KKKKK und
+NNN MMMM
+Vorort1
+Am Wiesengrund 2
+76189 Karlsruhe
+                                                        
+                                                        
+                                                         
+Zinsgutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+EUR 15.000,00 ENEL FINANCE INTL N.V. XS0177089298 (908043)
+EO-MEDIUM-TERM NOTES 2003(23)
+Zahlbarkeitstag 29.09.2022 Zinssatz p. a. 5,25 %
+Bestandsstichtag 28.09.2022 Laufzeit Zinsschein 365 Tag(e)     
+Kupon per 29.09.2022 Herkunftsland Niederlande
+Zinstermin Monat(e) September           
+Zinsertrag 787,50+ EUR
+Kapitalertragsteuerpflichtiger Ertrag 787,50 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 787,50 EUR
+Anteilige Berechnungsgrundlage für NNN MMMM (50,00 %) entspricht 393,75 EUR
+Kapitalertragsteuer 25 % auf 393,75 EUR 98,44- EUR
+Solidaritätszuschlag 5,5 % auf 98,44 EUR 5,41- EUR
+Anteilige Berechnungsgrundlage für LLLL KKKKK (50,00 %) entspricht 393,75 EUR
+Kapitalertragsteuer 25 % auf 393,75 EUR 98,44- EUR
+Solidaritätszuschlag 5,5 % auf 98,44 EUR 5,41- EUR
+Ausmachender Betrag 579,80+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir mit Wertstellung 29.09.2022 zu Gunsten des Kontos 112223333 (IBAN DE12 2222 3333 4444 5555 
+11), BLZ 370 110 00 (BIC PBNKDEFFXXX). 
+Keine Steuerbescheinigung. 
+Bitte ggf. Rückseite beachten.
+0860.09290100.0000146ER02
+
+Seite 2
+Depotnummer 442225555
+Kundennummer 112223333
+Abrechnungsnr. 77122332030
+Datum 28.09.2022
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2022 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien Sonstige
+Pauschbetrag Quellensteuer
+Nachher 13,45 0,00 0,00 0,00 0,00 36.693,26
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.09290100.0000147ER02

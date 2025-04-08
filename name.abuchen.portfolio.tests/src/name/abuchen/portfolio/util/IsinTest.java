@@ -51,4 +51,10 @@ public class IsinTest
         String invalidCharIsin = "ÜE0244767585";
         assertFalse(Isin.isValid(invalidCharIsin));
     }
+
+    @Test
+    public void testInternalIsinNumber()
+    {
+        assertTrue(Isin.isValid("QS0000003562"));
+    }
 }

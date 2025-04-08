@@ -1,0 +1,138 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+Kontoauszug
+Konto-Nr 6017439400 EUR
+IBAN DE24101106006017439400
+Nachname, Vorname
+Kontokorrentkonto
+Datum 31.03.2014
+Herrn Auszug-Nr  3
+Vorname Nachname Blatt-Nr  1 von  2
+Straße
+PLZ Ort Betreuer Stangl, Richard
+Abteilung Honorarberater
+Telefon +49 (0) 911 249 299 10
+ 
+E-Mail richard.stangl@quirinbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Honorar, Ref:  KA-0383911958 03.03.2014 03.03.2014 -100,00 EUR
+Honorar:Feb/2014 BMG:64.569,82 Brutto: 100,00 Netto: 95,21 
+MWSt: 4,79
+6017439400
+K-0013300467
+Steuerbuchung Abgeltungsteuer, Ref:  H-0383929197 03.03.2014 03.03.2014 13,91 EUR
+Steuern auf Kontoabschluss
+KEST: -12,26 SOLI: -0,67
+KIST: -0,98
+K-0013300467
+ 
+Überweisungsgutschrift, Ref: EU-0384051229  03.03.2014 03.03.2014 75,00 EUR
+ 
+von: Nachname Vorname 
+ 
+Kto-Nr: Konto    BLZ: DE 76069611  
+ NOTPROVIDED  
+SPARPLAN LUKAS              
+B:0000044518  
+ 
+Wertpapiere, Ref:  AB-0385544471 07.03.2014 1 0.03.2014 -75,00 EUR
+FR0010135103 CARMIGN.PATRIMOI. AEO ACC  
+O:002831939:1 Nom:.1318 Whg:EUR  
+ 
+Ansparplan
+ 
+ 
+Steuerbuchung Abgeltungsteuer, Ref:  H-0385544516 07.03.2014 10.03.2014 0,05EUR
+ 
+FR0010135103 CARMIGN.PATRIMOI. AEO ACC
+ 
+KEST: -0,04 SOLI: 0,0  
+KIST: -0,01  
+O:002831939:1  
+ 
+Wertpapiere, Ref:  AB-0385635258  07.03.2014 07.03.2014 -50,00 EUR
+LU0397221945 DB X-TR.PTF.TOT.R ET.1C
+O:002832132:1 Nom:.30385 Whg: EUR
+Ansparplan  
+ 
+Überweisungsauftrag, R ef: UI-0385701357 10.03.2014 09.03.2014 -1.198,98 EUR
+für: Vorname Nachname
+ DE57700202700780026943     HYVEDEMMXXX
+ 6017439400EURUI-0385701357
+Optionale Sondertilgung zum
+30.03.2014
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt, Johannes 
+Postfach 311105 - 10641 Berlin BLZ 10110600 Eismann, Klaus-Gerd Kleversaat, Dr.
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Marcel Morschbach, Stefan Spannagl
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC QUBKDEBBXXX
+Internet www.quirinbank.de
+O10KTO_AUSZ  816767668049#0000026624  VJ8530089   (10)  7.1.4.0.0                                   
+Kontoauszug
+Konto-Nr 6017439400 EUR
+IBAN DE24101106006017439400
+Nachname, Vorname
+Kontokorrentkonto
+Datum 31.03.2014
+Herrn Auszug-Nr  3
+Vorname Nachname Blatt-Nr  2 von  2
+Straße
+PLZ Ort Betreuer Stangl, Richard
+Abteilung Honorarberater
+Telefon +49 (0) 911 249 299 10
+ 
+E-Mail richard.stangl@quirinbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Zins-/Dividendenzahlung, Ref: DZ-0387701526 17.03.2014 17.03.2014 51,53 EUR
+DE0002635307 ISH.STOX.EUROPE 600 U.ETF
+DZ:1415291
+Erträgniszahlung
+Steuerbuchung Abgeltungsteuer, Ref:  H-0387701642 17.03.2014 17.03.2014 -12,13 EUR
+DE0002635307 ISH.STOX.EUROPE 600 U.ETF
+KEST: 10,68 SOLI: 0,59
+KIST: 0,86
+DZ:1415291
+ 
+Zins-/Dividendenzahlung, Ref: DZ-0388398221 19.03.2014 19.03.2014 39,29 EUR
+ 
+DE0002643889 ISHS-S+P 500 DZ
+ 
+DZ:1418411
+ 
+Erträgniszahlung  
+ 
+Steuerbuchung Abgeltungsteuer, Ref:  H-0388398949 19.03.2014 19.03.2014 -4,21 EUR
+DE0002643889 ISHS-S+P 500 DZ  
+KEST: 3,72 SOLI: 0,2  
+KIST: 0,29  
+DZ:1418411  
+ 
+Zins-/Dividendenzahlung, Ref:  DZ-0388408995 19.0 3.2014 19.03.2014 9,98EUR
+DE000A0HGZT7 ISHS-MSCI EM UCITS ETF DZ  
+ 
+DZ:1419048
+ 
+Erträgniszahlung
+ 
+ 
+Steuerbuchung Abgeltungsteuer, Ref:  H-0388411586 19.03.2014 19.03.2014 -1,81 EUR
+ 
+DE000A0HGZT7 ISHS-MSCI EM UCITS ETF D Z
+KEST: 1,59 SOLI: 0,09  
+KIST: 0,13  
+DZ:1419048  
+ 
+ 
+ 
+letzter Auszug: 28.02.2014 alter Saldo:  2.225,17EUR
+ 
+Umsatz: -1.252,37 EUR
+Limit:  0,00 Saldo:  972,80 EUR
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt, Johannes 
+Postfach 311105 - 10641 Berlin BLZ 10110600 Eismann, Klaus-Gerd Kleversaat, Dr.
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Marcel Morschbach, Stefan Spannagl
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC QUBKDEBBXXX
+Internet www.quirinbank.de
+O10KTO_AUSZ  816767668049#0000026624  VJ8530089   (10)  7.1.4.0.0

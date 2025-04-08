@@ -1,0 +1,34 @@
+PDF Autor: 'Consorsbank'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 1234567890
+1234567890/00
+Vermerk der Bank: 1000
+2
+Vorname Nachname
+Strasse 11 Datum: 01.01.2020
+12345 Stadt Seite: 1 von 2
+Ertragsgutschrift
+Wertpapierbezeichnung WKN ISIN
+iShs-MSCI World UCITS ETF Registered Shares USD (Dist)oN A0HGV0 IE00B0M62Q58
+Bestand
+20 Stück
+Ertragsausschüttung je Anteil 0,5000 USD Schlusstag 01.01.2020
+Brutto in USD 10,00 USD
+Zwischensumme in USD 10,00 USD
+Devisenkurs 1,12000 USD / EUR
+Brutto in EUR 8,93 EUR
+Zwischensumme in EUR 8,93 EUR
+abzgl. Kapitalertragsteuer 24,45 % von 8,39 EUR 2,23 EUR
+abzgl. Solidaritätszuschlag 5,50 % von 2,23 EUR 0,12 EUR
+abzgl. Kirchensteuer 9,00 % von 8,93 EUR 0,80 EUR
+Netto in EUR 5,77 EUR
+Netto in USD zugunsten IBAN DE12 3456 3456 3456 3456 78 6,46 USD
+Valuta 01.01.2020 BIC AAAAAA11XXX
+Bitte beachten Sie die weiteren Informationen auf Seite 2.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+PrØsident du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur GØnØral (Generaldirektor): Jean-Laurent BonnafØ

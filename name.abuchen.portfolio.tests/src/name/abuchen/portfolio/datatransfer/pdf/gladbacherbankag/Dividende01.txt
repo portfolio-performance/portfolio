@@ -1,0 +1,61 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+Gladbacher Bank AG von 1922 · Postfach 10 06 59 · 41006 Mönchengladbach    Seite 1
+Depotnummer
+ 12345678
+ Kundennummer 12345
+Max Musxtermann
+ Abrechnungsnr. 86148344230
+Max Mustermann Datum 28.12.2023
+Kärntner Str. 99 Ihre Beraterin Frau XXXX XXXXXXX
+41063 Mönchengladbach Telefon 02161-249-147       
+Telefax 02161-123-139            
+ 
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 52 AMETEK INC. US0311001004 (908668)
+REGISTERED SHARES DL -,01
+Zahlbarkeitstag 22.12.2023 Dividende pro Stück 0,25 USD
+Bestandsstichtag 06.12.2023 Herkunftsland USA
+Ex-Tag 07.12.2023 Art der Dividende Quartalsdividende
+Geschäftsjahr 01.01.2023 - 31.12.2023
+Devisenkurs EUR / USD  1,1109
+Devisenkursdatum 27.12.2023
+Dividendengutschrift 13,00 USD 11,70+ EUR
+Umrechnung in EUR 11,70 EUR
+Einbehaltene Quellensteuer 15 % auf 13,00 USD 1,76- EUR
+Anrechenbare Quellensteuer 15 % auf 11,70 EUR 1,76 EUR
+Kapitalertragsteuerpflichtige Dividende 11,70 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 1,76 EUR 7,04 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 4,66 EUR
+Kapitalertragsteuer 25 % auf 4,66 EUR 1,17- EUR
+Solidaritätszuschlag 5,5 % auf 1,17 EUR 0,06- EUR
+Ausmachender Betrag 8,71+ EUR
+Lagerstelle CBF w/7268 w/DZ Bank (600502 / 72680000)
+Den Betrag buchen wir mit Wertstellung 28.12.2023 zu Gunsten des Kontos 123456789 (IBAN DE65 3106 0181 2345 6789
+08), BLZ 310 601 81 (BIC GENODED1GBM). 
+Keine Steuerbescheinigung. 
+Bitte ggf. Rückseite beachten.
+7512.12290103.0000023ER01
+
+Seite 2
+Depotnummer 12345678
+Kundennummer 12345
+Abrechnungsnr. 86148344230
+Datum 28.12.2023
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2023 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 1.449,75 0,00 0,00 0,00 286,65
+Ertrag 1,76
+0,00 0,00 0,00 1,76- 4,66
+Nachher 1.449,75 0,00 0,00 0,00 291,31
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7512.12290103.0000024ER01
+
+```

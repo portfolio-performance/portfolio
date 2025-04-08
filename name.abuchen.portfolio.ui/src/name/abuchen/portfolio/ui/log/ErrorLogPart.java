@@ -4,8 +4,8 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -29,6 +29,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.DisplayTextDialog;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 
 public class ErrorLogPart
 {
@@ -90,6 +91,8 @@ public class ErrorLogPart
 
         logViewer = new TreeViewer(container, SWT.FULL_SELECTION);
 
+        CopyPasteSupport.enableFor(logViewer);
+
         TreeViewerColumn column = new TreeViewerColumn(logViewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnDate);
         layout.setColumnData(column.getColumn(), new ColumnPixelData(140));
@@ -142,6 +145,7 @@ public class ErrorLogPart
         logViewer.addDoubleClickListener(event -> {
             LogEntry entry = (LogEntry) ((IStructuredSelection) event.getSelection()).getFirstElement();
             DisplayTextDialog dialog = new DisplayTextDialog(Display.getCurrent().getActiveShell(), entry.getText());
+            dialog.setDialogTitle(Messages.LabelErrorProtocolDetails);
             dialog.open();
         });
     }

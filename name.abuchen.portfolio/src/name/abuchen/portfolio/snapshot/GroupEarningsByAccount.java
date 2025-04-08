@@ -7,6 +7,8 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Adaptable;
+import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CrossEntry;
@@ -17,7 +19,7 @@ import name.abuchen.portfolio.money.MutableMoney;
 
 public class GroupEarningsByAccount
 {
-    public static class Item
+    public static class Item implements Adaptable
     {
         private final Account account;
         private final Money dividends;
@@ -64,6 +66,12 @@ public class GroupEarningsByAccount
         public Money getTaxes()
         {
             return taxes;
+        }
+
+        @Override
+        public <T> T adapt(Class<T> type)
+        {
+            return Adaptor.adapt(type, account);
         }
     }
 
@@ -122,9 +130,9 @@ public class GroupEarningsByAccount
                         case BUY:
                         case SELL:
                             CrossEntry crossEntry = at.getCrossEntry();
-                            if (crossEntry instanceof BuySellEntry)
+                            if (crossEntry instanceof BuySellEntry entry)
                             {
-                                PortfolioTransaction pt = ((BuySellEntry) crossEntry).getPortfolioTransaction();
+                                PortfolioTransaction pt = entry.getPortfolioTransaction();
                                 taxes.add(pt.getUnitSum(Unit.Type.TAX));
                                 fees.add(pt.getUnitSum(Unit.Type.FEE));
                             }

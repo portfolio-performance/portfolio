@@ -1,0 +1,41 @@
+PDF Autor: 'DAB-BNP-Paribas'
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Kauf Limitauftrag ADRESSZEILE2=Vorname Nachname
+Kommissionsgeschäft ADRESSZEILE3=Straße Hausnummer
+ADRESSZEILE4=12345 Wohnort
+Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+123456789 987654321 / 18.11.2020 ADRESSZEILE6=
+Herr BELEGNUMMER=1234
+Vorname Nachname SEITENNUMMER=1
+Straße Hausnummer STEUERERSTATTUNG=N
+12345 Wohnort Depotinhaber
+Vorname Nachname
+München, 18.11.2020
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Deutsche Börse AG Namens-Aktien o.N. DE0005810055
+Nominal Kurs
+STK 10,000 EUR 138,1000
+Handelstag 18.11.2020 Kurswert EUR 1.381,00-
+Handelszeit 14:15* Registrierungsspesen EUR 0,58-
+Börse Gettex/GDM
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+20.11.2020 123456789 EUR 1.381,58
+Wir werden in Ihrem Depot wie angegeben buchen.
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE 
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du 
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDKFDI/GAAASAFG/004368/181120/154205

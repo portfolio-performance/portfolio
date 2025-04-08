@@ -1,0 +1,35 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+CREDIT SUISSE (Schweiz) AG
+CH-8070 Zürich Telefon +41 44 333 99 99
+credit-suisse.com
+BIC CRESCHZZ80A
+Depot-Nr. 0000- 000000-00
+Ihre Beraterin Herr Muster Herr A
+Telefon 044 222 22 22 Moritz Kunde
+Strasse 5b
+8001 Zürich
+12.04.2021
+Ertragsabrechnung Seite 1/1
+Aufgrund Ihres Depotbestandes per 09.04.2021 rechnen wir Ihnen ab:
+USD 200,000 6.25 % FIXED RATE NOTES NORDDEUTSCHE
+LANDESBANK GIROZENTRALE 2014-10.4.24 REG-S
+SUBORD.
+Valor 24160639, NDKH, ISIN XS1055787680
+Semesterzinsen
+Coupon-Verfall 10.04.2021
+Bei: Euroclear (DST: 0164)
+Bruttoertrag USD 6,250.00
+Nettoertrag
+Valuta 12.04.2021
+Konto 0000- 000000-00
+IBAN CH66 0000 0000 0000 0000 0
+Kontokorrent Bonviva
+Sparen USD 6,250.00
+Gutschrift USD 6,250.00
+Eingang vorbehalten
+FFrreeuunnddlliicchhee  GGrrüüssssee
+CCRREEDDIITT  SSUUIISSSSEE  ((SScchhwweeiizz))  AAGG
+Formular ohne Unterschrift Auftrags-Nr. F033-20210402-00-00000
+WI01

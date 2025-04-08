@@ -3,15 +3,15 @@ package name.abuchen.portfolio.ui.wizards.security;
 import java.text.MessageFormat;
 import java.util.Objects;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -28,7 +28,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -40,6 +39,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 
 public class EditSecurityDialog extends Dialog
@@ -96,8 +96,8 @@ public class EditSecurityDialog extends Dialog
         Point preferredSize = getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
 
         // create dialog with a minimum size
-        preferredSize.x = Math.max(preferredSize.x, 700);
-        preferredSize.y = Math.max(preferredSize.y, 500);
+        preferredSize.x = Math.min(Math.max(preferredSize.x, 700), 1000);
+        preferredSize.y = Math.min(Math.max(preferredSize.y, 500), 700);
         return preferredSize;
     }
 
@@ -141,7 +141,7 @@ public class EditSecurityDialog extends Dialog
         name.setBackground(header.getBackground());
 
         errorMessage = new Label(header, SWT.NONE);
-        errorMessage.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED));
+        errorMessage.setForeground(Colors.theme().redForeground());
         errorMessage.setBackground(header.getBackground());
 
         Label imageLabel = new Label(header, SWT.NONE);
@@ -162,10 +162,8 @@ public class EditSecurityDialog extends Dialog
 
         // bind to model
 
-        @SuppressWarnings("unchecked")
         IObservableValue<String> targetName = WidgetProperties.text(SWT.Modify).observe(name);
-        @SuppressWarnings("unchecked")
-        IObservableValue<String> observable = BeanProperties.value("name").observe(model); //$NON-NLS-1$
+        IObservableValue<String> observable = BeanProperties.value("name", String.class).observe(model); //$NON-NLS-1$
         bindings.getBindingContext().bindValue(targetName, observable,
                         new UpdateValueStrategy<String, String>().setAfterConvertValidator(
                                         v -> v != null && v.trim().length() > 0 ? ValidationStatus.ok()

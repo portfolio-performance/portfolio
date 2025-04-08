@@ -1,0 +1,64 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 0368742127
+1126528362/00
+Vermerk der Bank: 2000
+2
+lXohgP LhcjvX
+VlpVigWWu Str. 32 Datum: 04.03.2024
+97366 GTWueTRTa Seite: 1 von 2
+Ertragsgutschrift / Neuabrechnung
+Wertpapierbezeichnung WKN ISIN
+FS KKR Capital Corp. Registered Shares DL -,001 A2P6TH US3026352068
+Bestand
+42,27894 Stück
+Ertragsausschüttung je Anteil 0,05 USD Schlusstag 12.02.2024
+Brutto in USD 2,11 USD
+abzgl. Quellensteuer 15,00 % von 2,11 USD 0,32 USD
+Zwischensumme in USD 1,79 USD
+Devisenkurs 1,086500 USD / EUR
+Brutto in EUR 1,94 EUR
+Quellensteuer in EUR 0,29 EUR
+Zwischensumme in EUR 1,65 EUR
+abzgl. Kapitalertragsteuer 24,45 % von 0,78 EUR 0,19 EUR
+abzgl. Solidaritätszuschlag 5,50 % von 0,19 EUR 0,01 EUR
+abzgl. Kirchensteuer 9,00 % von 0,19 EUR 0,01 EUR
+Netto zugunsten IBAN DE92 7603 0080 0360 7421 25 1,44 EUR
+Valuta 28.02.2024 BIC CSDBDE71XXX
+Anrechenbare Quellensteuer 0,0075 USD pro Stück 0,29 EUR
+Bitte beachten Sie die weiteren Informationen auf Seite 2.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+1EE2C651-38EC-7856-864A-4325756A86E3
+Depotnummer: 0368742127
+1126528362/00
+Vermerk der Bank: 2000
+2
+Datum: 04.03.2024
+Seite: 2 von 2
+Details zur Abrechnung
+Informationen zum Investmentsteuergesetz
+Ausschüttung gem. §2 Abs. 11 InvStG 1,94 EUR
+abzgl. Teilfreistellung 0,00 % von 1,94 EUR 0,00 EUR
+Ertragsausschüttung mit Teilfreistellung 1,94 EUR
+Steuerpflichtiger Gesamtertrag 1,94 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Mit Quellensteuer verrechnet -1,16 EUR
+somit verrechnete Quellensteuer -0,29 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 0,78 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf "Allgemein" vor der Abrechnung 0,00 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Verrechnungstopf "Allgemein" nach der Abrechnung 0,00 EUR
+Sparerpauschbetrag vor der Abrechnung 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Sparerpauschbetrag nach der Abrechnung 0,00 EUR
+Verrechnungstopf "Quellensteuer" vor der Abrechnung 0,00 EUR
+Änderung Verrechnungstopf "Quellensteuer" 0,00 EUR
+Verrechnungstopf "Quellensteuer" nach der Abrechnung 0,00 EUR

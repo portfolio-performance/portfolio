@@ -1,0 +1,54 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postbank Köln · 51222 Köln    Seite 1
+Depotnummer
+ 111111111
+ Kundennummer 2222222222
+Dipl.-Ing. nnnnnnn xxxx yyyyy
+ ccccccccc
+Herrn und Frau Abrechnungsnr. 11111111111
+Dipl.-Ing. nnnnnnn
+ccccccccc
+ttttttttt 99b
+nnnnn rrrrrrrr
+                                                        
+                                                        
+                                                        
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 120 AMERICAN TOWER CORP. US03027X1000 (A1JRLA)
+REGISTERED SHARES DL -,01
+Zahlbarkeitstag 14.01.2022 Ausschüttung pro St. 1,390000000 USD
+Bestandsstichtag 22.12.2021 Herkunftsland USA
+Ex-Tag 23.12.2021
+Geschäftsjahr 01.01.2021 - 31.12.2021
+Devisenkurs EUR / USD  1,1432
+Devisenkursdatum 17.01.2022
+Ausschüttung 166,80 USD 145,91+ EUR
+Einbehaltene Quellensteuer 15 % auf 166,80 USD 21,89- EUR
+Anrechenbare Quellensteuer pro Stück 0,2085 USD 25,02 USD
+Kapitalertragsteuerpflichtiger Ertrag 166,80 USD
+Umrechnung in EUR 145,91 EUR
+Verrechneter Sparer-Pauschbetrag 145,91 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 124,02+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir mit Wertstellung 18.01.2022 zu Gunsten des Kontos 777777777 (IBAN DE77 6666 1111 4444 6666
+10), BLZ 370 110 00 (BIC PBNKDEFFXXX). 
+Keine Steuerbescheinigung. 
+Bitte ggf. Rückseite beachten.
+0860.01180100.0001111ER09
+
+Seite 2
+Depotnummer 666666666
+Kundennummer 5555555555
+Abrechnungsnr. 11111111111
+Datum 17.01.2022
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2022 ohne Vorjahressaldo Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien Sonstige
+Pauschbetrag Quellensteuer
+Nachher 0,00 0,00 999,99 21,89 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.01180100.0001111ER09

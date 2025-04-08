@@ -57,10 +57,10 @@ public class DatePicker
 
     public void setSelection(LocalDate date)
     {
-        if (control instanceof CDateTime)
+        if (control instanceof CDateTime cdatetime)
         {
             Date d = Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-            ((CDateTime) control).setSelection(d);
+            cdatetime.setSelection(d);
         }
         else
         {
@@ -71,9 +71,9 @@ public class DatePicker
 
     public LocalDate getSelection()
     {
-        if (control instanceof CDateTime)
+        if (control instanceof CDateTime cdatetime)
         {
-            Date d = ((CDateTime) control).getSelection();
+            Date d = cdatetime.getSelection();
 
             if (d == null)
             {

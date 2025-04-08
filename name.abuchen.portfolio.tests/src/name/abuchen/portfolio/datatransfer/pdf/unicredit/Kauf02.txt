@@ -1,0 +1,43 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+UniCredit Bank AG
+W e r t p a p i e r - A b r e c h n u n g   K a u f
+- Geschäftsbestätigung vor steuerlicher Behandlung - Kommission außerbörslich
+Depotnummer Abrechnungstag Blatt
+473   123456789     21.04.2021  1
+Depotart Filiale   
+Depot Filiale Stuttgart   
+Kontonummer 0711 2051-1234
+0473 857 473   388704918     Herr Bankmann
+Herrn    R e c h n u n g s n u m m e r    
+Max Mustermann Ordernummer    Abrechnungsnr. Urspr. Abrechnungsnr.    
+Musterstrasse 11 9-WPK- 1234567   123456    
+70173 Stuttgart     Depotinhaber
+Max Mustermann
+Nennbetrag Wertpapierbezeichnung    Wertpapierkennnummer/ISIN 
+ST 25 FIRST EAGLE AMUNDI-INTERNATIO.    A1JQVV   ACTIONS NOM. AE-C O.N. LU0565135745
+Zum Kurs von Ausführungstag/Zeit Ausführungsort Verwahrart
+EUR 192,14 20.04.2021  03.53.15 WP-Rechnung GS
+Abrechnung
+Kurswert EUR 4.803,50  
+Wertpapierprovision* EUR 159,96  
+----------------------- 
+Belastung (vor Steuern) EUR 4.963,46  
+Valuta 23.04.2021 ----------------------- 
+Lagerland: Luxemburg
+* Die Wertpapierprovision setzt sich aus der Ausführungspauschale
+und dem Transaktionsentgelt zusammen.
+Umsatzreferenz: 20210421WAB1799275492
+Diese Abrechnung erfolgt ohne Berücksichtigung der Kapitalertragsteuer.
+Eine eventuell anfallende Kapitalertragsteuer oder Kapitalertragsteuer-Gutschrift    
+wird separat auf Ihrem Kontoauszug ausgewiesen.
+Kontrahent ist die UniCredit Bank AG oder ein Konzernunternehmen.
+Die Höhe des von der Kapitalanlagegesellschaft festgelegten Ausgabeaufschlages/
+Rücknahmeabschlages können Sie dem Verkaufsprospekt entnehmen.
+Die Leistung ist umsatzsteuerbefreit nach § 4 Nr. 8 UStG.
+Unsere Umsatzsteuer-Identifikationsnummer: DE 129 273 380.
+Bitte Rückseite beachten.     
+Bitte bewahren Sie diese Geschäftsbestätigung sowie einen eventuell gesondert erstellten Steuer-Informationsbeleg auf.
+BV0081/VK0081/03.2008
+Eingestellt am: 20210422 03:23:350 -F1 03 300 G1L4M4PN 161862071    00000388704918 000000009034  

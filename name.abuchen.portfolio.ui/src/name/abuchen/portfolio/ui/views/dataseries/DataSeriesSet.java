@@ -1,9 +1,8 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
@@ -19,6 +18,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.ClientDataSeries;
+import name.abuchen.portfolio.util.ColorConversion;
 
 /**
  * The set of available data series for a given presentation use case.
@@ -27,6 +27,7 @@ public class DataSeriesSet
 {
     private DataSeries.UseCase useCase;
     private final List<DataSeries> availableSeries = new ArrayList<>();
+    private final List<DataSeries> availableDerivedSeries = new ArrayList<>();
 
     public DataSeriesSet(Client client, IPreferenceStore preferences, DataSeries.UseCase useCase)
     {
@@ -49,6 +50,12 @@ public class DataSeriesSet
         }
 
         buildCommonDataSeries(client, preferences, wheel);
+
+        if (useCase == DataSeries.UseCase.STATEMENT_OF_ASSETS)
+        {
+            // created the derived data series based
+            buildStatementOfAssetsDerivedDataSeries(wheel);
+        }
     }
 
     public DataSeries.UseCase getUseCase()
@@ -61,12 +68,77 @@ public class DataSeriesSet
         return availableSeries;
     }
 
+    public List<DataSeries> getAvailableDerivedSeries()
+    {
+        return availableDerivedSeries;
+    }
+
     /**
      * Returns DataSeries matching the given UUID.
      */
     public DataSeries lookup(String uuid)
     {
         return availableSeries.stream().filter(d -> d.getUUID().equals(uuid)).findAny().orElse(null);
+    }
+
+    private void buildStatementOfAssetsDerivedDataSeries(ColorWheel wheel)
+    {
+        var typesForInterestPayments = EnumSet.of(ClientDataSeries.INTEREST, //
+                        ClientDataSeries.INTEREST_ACCUMULATED, //
+                        ClientDataSeries.INTEREST_CHARGE, //
+                        ClientDataSeries.INTEREST_CHARGE_ACCUMULATED);
+
+        var typesWithBarChart = EnumSet.of(ClientDataSeries.DIVIDENDS, //
+                        ClientDataSeries.EARNINGS, //
+                        ClientDataSeries.FEES, //
+                        ClientDataSeries.INTEREST, //
+                        ClientDataSeries.INTEREST_CHARGE, //
+                        ClientDataSeries.TAXES, //
+                        ClientDataSeries.TRANSFERALS);
+
+        var typesWithArea = EnumSet.of(ClientDataSeries.ABSOLUTE_INVESTED_CAPITAL, //
+                        ClientDataSeries.INVESTED_CAPITAL, //
+                        ClientDataSeries.TRANSFERALS_ACCUMULATED);
+
+        for (var baseDataSeries : availableSeries)
+        {
+            // skip client - the client already defines all derived data series
+            // (but only for the total client)
+            if (baseDataSeries.getType() == DataSeries.Type.CLIENT)
+                continue;
+
+            for (var type : DataSeries.ClientDataSeries.values())
+            {
+                // skip totals - that is already covered by the base data series
+                // itself
+                if (type == ClientDataSeries.TOTALS)
+                    continue;
+                // skip delta percentage - that is applicable only for
+                // performance data series
+                if (type == ClientDataSeries.DELTA_PERCENTAGE)
+                    continue; // NOSONAR
+
+                // skip interest and interest charge for portfolios and
+                // securities - not supported
+                if ((baseDataSeries.getType() == DataSeries.Type.SECURITY
+                                || baseDataSeries.getType() == DataSeries.Type.PORTFOLIO)
+                                && typesForInterestPayments.contains(type))
+                    continue;
+
+                var label = type.getLabel() + ": " + baseDataSeries.getLabel(); //$NON-NLS-1$
+
+                var dataSeries = new DataSeries(DataSeries.Type.DERIVED_DATA_SERIES, baseDataSeries.getGroup(),
+                                new DerivedDataSeries(baseDataSeries, type), label, wheel.next());
+
+                if (typesWithBarChart.contains(type))
+                    dataSeries.setLineChart(false);
+
+                if (typesWithArea.contains(type))
+                    dataSeries.setShowArea(true);
+
+                availableDerivedSeries.add(dataSeries);
+            }
+        }
     }
 
     private void buildStatementOfAssetsDataSeries()
@@ -77,6 +149,12 @@ public class DataSeriesSet
         DataSeries series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TRANSFERALS,
                         Messages.LabelTransferals, Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY).getRGB());
         series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TRANSFERALS_ACCUMULATED,
+                        Messages.LabelAccumulatedTransferals,
+                        Display.getDefault().getSystemColor(SWT.COLOR_YELLOW).getRGB());
+        series.setShowArea(true);
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INVESTED_CAPITAL,
@@ -98,8 +176,13 @@ public class DataSeriesSet
                         Messages.LabelAbsoluteDelta, Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
         availableSeries.add(series);
 
-        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TAXES, Messages.LabelAccumulatedTaxes,
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TAXES, Messages.ColumnTaxes,
                         Display.getDefault().getSystemColor(SWT.COLOR_RED).getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TAXES_ACCUMULATED,
+                        Messages.LabelAccumulatedTaxes, Display.getDefault().getSystemColor(SWT.COLOR_RED).getRGB());
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DIVIDENDS, Messages.LabelDividends,
@@ -139,6 +222,14 @@ public class DataSeriesSet
                         Messages.LabelAccumulatedEarnings, Colors.DARK_GREEN.getRGB());
         availableSeries.add(series);
 
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.FEES, Messages.LabelFees,
+                        Colors.GRAY.getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.FEES_ACCUMULATED,
+                        Messages.LabelFeesAccumulated, Colors.GRAY.getRGB());
+        availableSeries.add(series);
     }
 
     private void buildPerformanceDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
@@ -187,21 +278,22 @@ public class DataSeriesSet
     private void buildPreTaxDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
     {
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT_PRETAX, ClientDataSeries.TOTALS,
-                        Messages.PerformanceChartLabelEntirePortfolio + Messages.LabelSuffix_PreTax, wheel.next()));
+                        Messages.PerformanceChartLabelEntirePortfolio + " " + Messages.LabelSuffix_PreTax, //$NON-NLS-1$
+                        wheel.next()));
 
         for (Portfolio portfolio : client.getPortfolios())
             availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO_PRETAX, portfolio,
-                            portfolio.getName() + Messages.LabelSuffix_PreTax, wheel.next()));
+                            portfolio.getName() + " " + Messages.LabelSuffix_PreTax, wheel.next())); //$NON-NLS-1$
 
         for (Portfolio portfolio : client.getPortfolios())
             availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT_PRETAX, portfolio,
                             portfolio.getName() + " + " + portfolio.getReferenceAccount().getName() //$NON-NLS-1$
-                                            + Messages.LabelSuffix_PreTax,
+                                            + " " + Messages.LabelSuffix_PreTax, //$NON-NLS-1$
                             wheel.next()));
 
         for (Account account : client.getAccounts())
             availableSeries.add(new DataSeries(DataSeries.Type.ACCOUNT_PRETAX, account,
-                            account.getName() + Messages.LabelSuffix_PreTax, wheel.next()));
+                            account.getName() + " " + Messages.LabelSuffix_PreTax, wheel.next())); //$NON-NLS-1$
 
         addCustomClientFilters(client, preferences, true, wheel);
     }
@@ -211,18 +303,13 @@ public class DataSeriesSet
         // custom client filters
         ClientFilterMenu menu = new ClientFilterMenu(client, preferences);
 
-        // quick fix: users can create duplicate client filters that end up to
-        // have the same UUID. Avoid adding both violates the precondition that
-        // every data series must have a unique id
-        Set<String> addedSeries = new HashSet<>();
         for (ClientFilterMenu.Item item : menu.getCustomItems())
         {
             DataSeries series = new DataSeries(
                             isPreTax ? DataSeries.Type.CLIENT_FILTER_PRETAX : DataSeries.Type.CLIENT_FILTER, item,
-                            isPreTax ? item.getLabel() + Messages.LabelSuffix_PreTax : item.getLabel(), wheel.next());
-
-            if (addedSeries.add(series.getUUID()))
-                availableSeries.add(series);
+                            isPreTax ? item.getLabel() + " " + Messages.LabelSuffix_PreTax : item.getLabel(), //$NON-NLS-1$
+                            wheel.next());
+            availableSeries.add(series);
         }
     }
 
@@ -268,7 +355,7 @@ public class DataSeriesSet
                         return;
 
                     availableSeries.add(new DataSeries(DataSeries.Type.CLASSIFICATION, taxonomy, classification,
-                                    classification.getName(), Colors.toRGB(classification.getColor())));
+                                    classification.getName(), ColorConversion.hex2RGB(classification.getColor())));
                 }
             });
         }

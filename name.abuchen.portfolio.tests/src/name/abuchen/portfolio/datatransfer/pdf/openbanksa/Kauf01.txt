@@ -1,0 +1,27 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+                                     INVESTMENTGESELLSCH.
+           
+TRANSAKTIONSABRECHNUNG
+                                                                            A N G E G E B EN  IN :      EUR
+ D A T U M :    15-09-2022    ISHARES EURO GOVT INF I'EUR                         W E C H S E LK U R S :        1,00
+ I SI N :      IE00BD0NC144
+       INHABER        XXXXNAME  XXNAME                                            ID      XXXXXXXXX
+IBAN
+       V  E  R   T R A  G  S N  U   M M  E  R   :         0 0  7  3   0  1 00 821 0000000 MIT DER TRANSAKTION                           V  E R K N Ü  P T E S         ESXX XXXX XXXX XXXX XXXX XXXX
+     T R A  N S A K T I O N S N U  M M E R  :   0  0  0  0 5  0  0  0 0  0    PERSÖNLICHES KONTO
+Sehr geehrter Anteilseigner: Gemäß Ihren Anweisungen haben wir folgende Transaktion durchgeführt:
+    TRANSAKTION                ZEICHNUNG
+    DATUM NETTOINVENTARWERT    13.09.2022
+    BETEILIGUNGEN                       1,0000000
+    NETTOINVENTARWERT                    10,00000 EUR
+    BETRAG                                  10,00 EUR
+    GESAMTKOSTEN                                  EUR
+    GESAMTANREIZE                                 EUR
+    NETTOBETRAG                             10,00 EUR
+       Verwaltungsgesellsc : ALLFUNDS BANK S.A. CL/ NURIA Nº 57 ,28034 MADRID,MADRID,ESPAÑA
+       VERTRIEBSGESELLSCH. : OPEN BANK, S.A. AV DE CANTABRIA S/N 28660 - BOADILLA DEL MONTE MADRID
+       H A NDELSREG. ST STEUERIDENA28021079 EINGETRAGEN IN DAS SPEZIALREGISTER DER C.N.M.V, D0033
+       G E SELLSCHAFT : STEUERIDEN V99999999 EINGETRAGEN IN DAS SPEZIALREGISTER DER C.N.M.V, F1505GRÜNDUNGSDATUM 25.05.2017
+  

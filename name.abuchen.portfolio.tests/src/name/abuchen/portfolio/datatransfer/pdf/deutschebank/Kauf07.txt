@@ -1,0 +1,44 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+Deutsche Bank AG
+Zentrale Frankfurt
+60262 Frankfurt
+bGVR tTNOY
+IoOCuyRPiXTfS 1 Torsten Sarbok
+Telefon 030 627266-11
+76060 ilISEv
+24/7-Kundenservice (069) 910-10000
+23. Juli 2024
+Abrechnung: Kauf von Wertpapieren
+Depotinhaber: TVbk xqSgV
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+747 8002773 57 XTRACKERS II GBP OVER.RATE SW.INH.ANT.1D ON 1/1
+WKN DBX0A1 Nominal ST 17
+ISIN LU0321464652 Kurs EUR 219,33
+Verwahrart Girosammel / Zwischenverwahrung Euroclear
+Geschäft Kommissionsgeschäft außerbörslich vs. Baader Bank AG
+Belegnummer 1039975477 / 91752537 Schlusstag/-zeit MEZ 23.07.2024 18:20
+Auftragsart sonstiger Auftrag
+Abrechnung Währung Betrag
+Kurswert EUR 3.728,61
+Provision EUR 9,32
+Provisions-Rabatt EUR -4,66
+Belastung
+Buchung auf Kontonummer 5113813 88 mit Wertstellung 25.07.2024 EUR 3.733,27
+Summe der in der Abrechnung enthaltenen Provisionen und Auslagen EUR 4,66
+Zu dem abgerechneten Geschäft haben wir keine Empfehlung gegeben. Daher liegt keine entsprechende
+Beratungsdokumentation vor.
+DieWertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen
+und die Sonderbedingungen fürWertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen
+in den Geschäftsräumen der Bank oder schriftlich an Deutsche Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt.
+Die unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert
+ausgewiesen ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat hat und die Bank
+und Finanzdienstleistungen nach dortigem Recht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers. Umsatzsteuer ID
+Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts
+Vorstand: Christian Sewing (Vorsitzender), James von Moltke, Fabrizio Campelli, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, Claudio de Sanctis,
+Rebecca Short, Stefan Simon, Olivier Vigneron
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main; Amtsgericht Frankfurt am Main, HRB Nr. 30 000; Umsatzsteuer-Id.-Nr. DE114103379;
+www.db.com/de, www.deutsche-bank.de
+TR00000001 20240723 251_000_

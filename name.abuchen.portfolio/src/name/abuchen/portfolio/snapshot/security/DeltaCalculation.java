@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.snapshot.security;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
@@ -20,29 +21,30 @@ import name.abuchen.portfolio.money.MutableMoney;
     }
 
     @Override
-    public void visit(CurrencyConverter converter, DividendInitialTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtStart t)
     {
-        Money amount = t.getMonetaryAmount().with(converter.at(t.getDateTime()));
+        Money amount = t.getValue().with(converter.at(t.getDateTime()));
         delta.subtract(amount);
         cost.add(amount);
     }
 
     @Override
-    public void visit(CurrencyConverter converter, DividendFinalTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtEnd t)
     {
-        delta.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
+        delta.add(t.getValue().with(converter.at(t.getDateTime())));
     }
 
     @Override
-    public void visit(CurrencyConverter converter, DividendTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.DividendPayment t)
     {
-        delta.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
+        delta.add(t.getValue().with(converter.at(t.getDateTime())));
     }
 
     @Override
-    public void visit(CurrencyConverter converter, AccountTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem item, AccountTransaction t)
     {
-        switch(t.getType())
+        Type type = t.getType();
+        switch (type)
         {
             case TAXES:
             case FEES:
@@ -53,15 +55,16 @@ import name.abuchen.portfolio.money.MutableMoney;
                 delta.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                 break;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unsupported type " + type); //$NON-NLS-1$
         }
-        
+
     }
 
     @Override
-    public void visit(CurrencyConverter converter, PortfolioTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem item, PortfolioTransaction t)
     {
-        switch (t.getType())
+        name.abuchen.portfolio.model.PortfolioTransaction.Type type = t.getType();
+        switch (type)
         {
             case BUY:
             case DELIVERY_INBOUND:
@@ -78,7 +81,7 @@ import name.abuchen.portfolio.money.MutableMoney;
                 // transferals do not contribute to the delta
                 break;
             default:
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("unsupported type " + type); //$NON-NLS-1$
         }
     }
 

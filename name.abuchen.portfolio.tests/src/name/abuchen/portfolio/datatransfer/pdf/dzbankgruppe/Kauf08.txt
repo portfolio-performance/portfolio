@@ -1,0 +1,39 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+   
+VR-Bank Musterort eG · Musterstr. 23 · 12345 Musterort
+Depotnummer 99999999
+ 
+ Kundennummer 99999999
+Max Mustermann
+ Auftragsnummer 999999/99.99
+Max Mustermann Datum 15.06.2022
+Musterweg 42 Ihr Berater Max Mustermann
+12345 Musterort Telefon 01234/567890
+Rechnungsnummer X99999-9999999999/99
+Umsatzsteuer-ID DE999999999   
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 47 XTR.(IE) - MSCI WORLD              IE00BK1PV551 (A1XEY2)
+REGISTERED SHARES 1D O.N.          
+Handels-/Ausführungsplatz Stuttgart (gemäß Weisung)
+Börsensegment STUB
+Limit-Order
+Limit 66,00 EUR 
+Schlusstag/-Zeit 15.06.2022 14:18:35 Auftraggeber Max Mustermann
+Ausführungskurs 65,504 EUR Auftragserteilung/ -ort Online-Banking
+Wertpapierrechnung Lagerland Irland
+Kurswert 3.078,69- EUR
+Provision 19,90- EUR
+Eigene Spesen 10,00- EUR
+Transaktionsentgelt Börse 3,67- EUR
+Ausmachender Betrag 3.112,26- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 17.06.2022 zu Lasten des Kontos 999999 (IBAN DE99 9999 9999 9999 9999 99),
+BLZ 99999999 (BIC XYXYZYX9XYZ).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+9999.99999999.99999999X99

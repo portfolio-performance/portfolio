@@ -1,0 +1,78 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1.qualifier
+-----------------------------------------
+Wertpapierabrechnung
+Depot-Tagesauszug
+Depot: 0111111111
+Depotinhaber:
+Herrn Richard Mustermann
+Richard Mustermann Bankverbindung generell:
+Musterstraße 9 Konto: 0000111111
+11111  Stadt BLZ: 793 517 30
+Spk Ostunterfranken
+Kontoinhaber:
+Richard Mustermann
+Vollmachten:
+Vollmacht Leben/Tod Karl Mustermann
+14. Dezember 2010
+Käufe von Fondsanteilen Auszug: 4 / Seite 1 von 2
+ 
+Sehr geehrter Herr Mustermann,
+folgende Buchungen haben wir für Ihr Depot durchgeführt:
+KAUF 
+Fondsbezeichnung: AriDeka CF 
+ISIN: DE0008474511 Unterkonto: 00 Auftragsnummer: 7103 3775
+Verwahrart: GiroSammel Abrechnungstag: 1  4.12.2010
+Ausgabeaufschlag: 5,260%
+Bei dieser Buchung handelt es sich um die Sparzulage vom Finanzamt
+Abrechnungsbetrag Abrechnungsbetrag Fondsdaten je Anteil  B estandsdaten
+in Fondswährung in Fondswährung in Stück
+ Preis Bestand alt: 32,012
+Abrechnungsbetrag EUR 72,00 EUR 72,00 EUR 53,780000 Anteilumsatz: 1,339
+Bestand neu: 33,351
+KAUF 
+Fondsbezeichnung: AriDeka CF 
+ISIN: DE0008474511 Unterkonto: 00 Auftragsnummer: 7104 1292
+Verwahrart: GiroSammel Abrechnungstag: 1  4.12.2010
+Ausgabeaufschlag: 5,260%
+Bei dieser Buchung handelt es sich um die Sparzulage vom Finanzamt
+Abrechnungsbetrag Abrechnungsbetrag Fondsdaten je Anteil B  estandsdaten
+in Fondswährung in Fondswährung in Stück
+ Preis Bestand alt: 33,351
+Abrechnungsbetrag EUR 25,00 EUR 25,00 EUR 53,780000 Anteilumsatz: 0,465
+Bestand neu: 33,816
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Depot: 0111111111
+Auszug: 4 / Seite 2 von 2
+Ihr erteilter Sparer-Pauschbetrag für Richard Mustermann beträgt EUR 600,00.
+Aktuelle steuerliche Daten
+Gezahlter Zwischengewinn und realisierte E  UR 0,00
+Veräußerungsverluste (sonstiger Verlusttopf)
+Verfügbarer Sparer-Pauschbetrag EUR 461,57
+Anrechenbare ausländische Quellensteuer EUR 6,54
+Alle steuerlich relevanten Informationen und Daten des aktuellen Jahres werden Ihnen mit der Jahres-
+Steuerbescheinigung des Jahresdepotauszuges übersandt, den Sie bis spätestens Ende Januar des Folgejahres
+erhalten. Die erwirtschafteten Erträge der Vorsorgeprodukte Deka-BonusRente, Deka-BasisRente und
+Deka-ZukunftsPlan sind in der Ansparphase abgeltungsteuerfrei. Diese werden erst in der Auszahlphase
+steuerlich berücksichtigt!   
+Bitte prüfen Sie die vorliegenden Informationen.
+ 
+Zu Ihrer persönlichen Anlagestrategie mit Deka Investmentfonds und den Fonds unserer Kooperationspartner
+beraten Sie gern die Berater der Sparkasse Ostunterfranken.
+ 
+Dort erhalten Sie ebenfalls den aktuellen Rechenschaftsbericht und Verkaufsprospekt mit den Details Ihrer
+Fondsanlage. Diese Unterlagen können Sie auch bei uns anfordern oder über www.deka.de abrufen.
+ 
+Über Chancen, Risiken und Kosten der Anlage informiert Sie das Fondsporträt des jeweiligen Fonds.
+Wünschen Sie aktuelle Informationen zu unseren Fonds, können Sie diese jederzeit im Internet über
+www.deka.de aufrufen.
+Mit freundlichen Grüßen
+DekaBank
+Deutsche Girozentrale
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068

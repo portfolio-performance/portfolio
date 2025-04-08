@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.model;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,6 +19,16 @@ import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class InvestmentPlan implements Named, Adaptable, Attributable
 {
+    public enum Type
+    {
+        PURCHASE_OR_DELIVERY, DEPOSIT, REMOVAL, INTEREST
+    }
+
+    /**
+     * The magic number to distinguish between monthly and weekly intervals.
+     */
+    public static final int WEEKS_THRESHOLD = 100;
+
     private String name;
     private String note;
     private Security security;
@@ -33,10 +44,26 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     private boolean autoGenerate = false;
 
     private LocalDateTime start;
+
+    /**
+     * The interval in months or weeks.
+     * <ul>
+     * <li>Values > 0 and < 100 represent monthly intervals.</li>
+     * <li>Values > 100 and < 200 represent weekly intervals (interval - 100 =
+     * weeks).</li>
+     * </ul>
+     * <p/>
+     * For monthly intervals, the day of the month is determined by the start
+     * date. For weekly intervals, the day of the week is determined by the
+     * start date.
+     */
     private int interval = 1;
 
     private long amount;
     private long fees;
+    private long taxes;
+
+    private Type type;
 
     private List<Transaction> transactions = new ArrayList<>();
 
@@ -50,14 +77,14 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         this.name = name;
     }
 
-    public Class<? extends Transaction> getPlanType()
+    public Type getPlanType()
     {
-        if (portfolio != null && security != null)
-            return PortfolioTransaction.class;
-        else if (portfolio == null && account != null && security == null)
-            return AccountTransaction.class;
-        else
-            throw new IllegalArgumentException();
+        return type;
+    }
+
+    public void setType(Type type)
+    {
+        this.type = type;
     }
 
     @Override
@@ -169,6 +196,16 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         this.fees = fees;
     }
 
+    public long getTaxes()
+    {
+        return taxes;
+    }
+
+    public void setTaxes(long taxes)
+    {
+        this.taxes = taxes;
+    }
+
     @Override
     public Attributes getAttributes()
     {
@@ -199,11 +236,10 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
 
         for (Transaction t : transactions)
         {
-            if (t instanceof AccountTransaction)
-                answer.add(new TransactionPair<AccountTransaction>(lookupOwner(client, (AccountTransaction) t),
-                                (AccountTransaction) t));
+            if (t instanceof AccountTransaction at)
+                answer.add(new TransactionPair<>(lookupOwner(client, at), at));
             else
-                answer.add(new TransactionPair<PortfolioTransaction>(lookupOwner(client, (PortfolioTransaction) t),
+                answer.add(new TransactionPair<>(lookupOwner(client, (PortfolioTransaction) t),
                                 (PortfolioTransaction) t));
         }
 
@@ -289,37 +325,53 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     private LocalDate next(LocalDate transactionDate)
     {
         LocalDate previousDate = transactionDate;
-
-        // the transaction date might be edited (or moved to the next months b/c
-        // of public holidays) -> determine the "normalized" date by comparing
-        // the three months around the current transactionDate
-
-        if (transactionDate.getDayOfMonth() != start.getDayOfMonth())
+        LocalDate next;
+        if (interval < WEEKS_THRESHOLD) // monthly invervals
         {
-            int daysBetween = Integer.MAX_VALUE;
+            // the transaction date might be edited (or moved to the next months
+            // b/c of public holidays) -> determine the "normalized" date by
+            // comparing the three months around the current transactionDate
 
-            LocalDate testDate = transactionDate.minusMonths(1);
-            testDate = testDate.withDayOfMonth(Math.min(testDate.lengthOfMonth(), start.getDayOfMonth()));
-
-            for (int ii = 0; ii < 3; ii++)
+            if (transactionDate.getDayOfMonth() != start.getDayOfMonth())
             {
-                int d = Dates.daysBetween(transactionDate, testDate);
-                if (d < daysBetween)
-                {
-                    daysBetween = d;
-                    previousDate = testDate;
-                }
+                int daysBetween = Integer.MAX_VALUE;
 
-                testDate = testDate.plusMonths(1);
+                LocalDate testDate = transactionDate.minusMonths(1);
                 testDate = testDate.withDayOfMonth(Math.min(testDate.lengthOfMonth(), start.getDayOfMonth()));
+
+                for (int ii = 0; ii < 3; ii++)
+                {
+                    int d = Dates.daysBetween(transactionDate, testDate);
+                    if (d < daysBetween)
+                    {
+                        daysBetween = d;
+                        previousDate = testDate;
+                    }
+
+                    testDate = testDate.plusMonths(1);
+                    testDate = testDate.withDayOfMonth(Math.min(testDate.lengthOfMonth(), start.getDayOfMonth()));
+                }
             }
+
+            next = previousDate.plusMonths(interval);
+            // correct day of month (say the transactions are to be generated on
+            // the 31st, but the month has only 30 days)
+            next = next.withDayOfMonth(Math.min(next.lengthOfMonth(), start.getDayOfMonth()));
         }
+        else // weekly or bi weekly intervals
+        {
+            // the transaction date might be edited (or moved because of public
+            // holidays). Revert back to the day of the week.
 
-        LocalDate next = previousDate.plusMonths(interval);
+            if (transactionDate.getDayOfWeek() != start.getDayOfWeek())
+            {
+                int offset = transactionDate.getDayOfWeek().getValue() - start.getDayOfWeek().getValue();
+                offset = offset > 0 ? offset : offset + 7;
+                previousDate = transactionDate.minusDays(offset);
+            }
 
-        // correct day of month (say the transactions are to be generated on the
-        // 31st, but the month has only 30 days)
-        next = next.withDayOfMonth(Math.min(next.lengthOfMonth(), start.getDayOfMonth()));
+            next = previousDate.plusWeeks((long) interval - WEEKS_THRESHOLD);
+        }
 
         if (next.isBefore(start.toLocalDate()))
         {
@@ -358,7 +410,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         }
     }
 
-    public List<TransactionPair<?>> generateTransactions(CurrencyConverter converter)
+    public List<TransactionPair<?>> generateTransactions(CurrencyConverter converter) throws IOException
     {
         LocalDate transactionDate = getDateOfNextTransactionToBeGenerated();
         List<TransactionPair<?>> newlyCreated = new ArrayList<>();
@@ -378,25 +430,31 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         return newlyCreated;
     }
 
-    private TransactionPair<?> createTransaction(CurrencyConverter converter, LocalDate tDate)
+    private TransactionPair<?> createTransaction(CurrencyConverter converter, LocalDate tDate) throws IOException
     {
-        Class<? extends Transaction> planType = getPlanType();
+        Type planType = getPlanType();
 
-        if (planType == PortfolioTransaction.class)
+        if (planType == Type.PURCHASE_OR_DELIVERY)
             return createSecurityTx(converter, tDate);
-        else if (planType == AccountTransaction.class)
-            return createDepositTx(converter, tDate);
+        else if (planType == Type.DEPOSIT || planType == Type.REMOVAL || planType == Type.INTEREST)
+            return createAccountTx(converter, tDate);
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unsupported plan type " + planType.name()); //$NON-NLS-1$
     }
 
-    private TransactionPair<?> createSecurityTx(CurrencyConverter converter, LocalDate tDate)
+    private TransactionPair<?> createSecurityTx(CurrencyConverter converter, LocalDate tDate) throws IOException
     {
         String targetCurrencyCode = getCurrencyCode();
         boolean needsCurrencyConversion = !targetCurrencyCode.equals(security.getCurrencyCode());
 
         Transaction.Unit forex = null;
         long price = getSecurity().getSecurityPrice(tDate).getValue();
+
+        if (price == 0L)
+            throw new IOException(MessageFormat.format(
+                            Messages.MsgErrorInvestmentPlanMissingSecurityPricesToGenerateTransaction,
+                            getSecurity().getName()));
+
         long availableAmount = amount - fees;
 
         if (needsCurrencyConversion)
@@ -411,7 +469,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         }
 
         long shares = Math
-                        .round(availableAmount * Values.Share.factor() * Values.Quote.factorToMoney() / (double) price);
+                        .round((double) availableAmount * Values.Share.factor() * Values.Quote.factorToMoney() / price);
 
         if (account != null)
         {
@@ -460,23 +518,50 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
         }
     }
 
-    private TransactionPair<?> createDepositTx(CurrencyConverter converter, LocalDate tDate)
+    private TransactionPair<?> createAccountTx(CurrencyConverter converter, LocalDate tDate)
     {
-        Money deposit = Money.of(getCurrencyCode(), amount);
+        AccountTransaction.Type transactionType;
+
+        switch (type)
+        {
+            case DEPOSIT:
+                transactionType = AccountTransaction.Type.DEPOSIT;
+                break;
+            case REMOVAL:
+                transactionType = AccountTransaction.Type.REMOVAL;
+                break;
+            case INTEREST:
+                transactionType = AccountTransaction.Type.INTEREST;
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+
+        Money monetaryAmount = Money.of(getCurrencyCode(), amount);
 
         boolean needsCurrencyConversion = !getCurrencyCode().equals(account.getCurrencyCode());
         if (needsCurrencyConversion)
-            deposit = converter.with(account.getCurrencyCode()).at(tDate).apply(deposit);
+            monetaryAmount = converter.with(account.getCurrencyCode()).at(tDate).apply(monetaryAmount);
 
         // create deposit transaction
         AccountTransaction transaction = new AccountTransaction();
         transaction.setDateTime(tDate.atStartOfDay());
-        transaction.setType(AccountTransaction.Type.DEPOSIT);
-        transaction.setMonetaryAmount(deposit);
+        transaction.setType(transactionType);
+        transaction.setMonetaryAmount(monetaryAmount);
         transaction.setNote(MessageFormat.format(Messages.InvestmentPlanAutoNoteLabel,
                         Values.DateTime.format(LocalDateTime.now()), name));
 
+        if (taxes != 0)
+            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX,
+                            Money.of(account.getCurrencyCode(), taxes)));
+
         account.addTransaction(transaction);
         return new TransactionPair<>(account, transaction);
+    }
+
+    @Override
+    public String toString()
+    {
+        return name;
     }
 }

@@ -1,0 +1,51 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Kundennr. /BLZ Bezeichnung
+22 3797 2 Max Mustermann
+850 400 00 Muster Str. 501111 City
+abweichend wirtschaftlich Berechtigter
+----
+000 83022
+Herrn Datum: 17.02.2021
+Max Mustermann Depotnummer: 1111111 00
+Muster Str. 5
+01111 City Referenz-Nummer: 0W7U3RJX11111111
+Steuerliche Behandlung: Verkauf Investmentfonds Nr. 71007708 vom 17.02.2021
+Stk. -10,195 VERMOEGENSMA.BALANCE A EO , WKN / ISIN: A0M16S / LU0321021155
+Zu Ihren Gunsten vor Steuern: EUR 1 . 4 3 9 , 1 3
+Steuerbemessungsgrundlage (1) EUR 1 0 3 , 5 2
+Kapitalertragsteuer EUR - 2 5 , 8 8
+Solidaritätszuschlag EUR - 1 , 4 3
+Kirchensteuer EUR 0 , 0 0
+abgeführte Steuern EUR - 2 7 , 3 1
+Zu Ihren Gunsten nach Steuern: EUR 1 . 4 1 1 , 8 2
+Die Gutschrift erfolgt mit Valuta 19.02.2021 auf Konto EUR mit der IBAN DE11 1111 0000 0111 1111 00
+(1) siehe "Hinweise zur Ermittlung der Steuerbemessungsgrundlage" auf der Rückseite
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2021 einbehaltene einbehaltener einbehaltene angerechneteKapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung 53,58 2,94 0,00 0,00
+nach Ermittlung 79,46 4,37 0,00 0,00
+Verrechnungssalden in EUR (4)
+in 2021 Gewinne / Verluste sonstige anrechenbare verfügbareraus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung 0,00 314,32 0,00 0,00
+nach Ermittlung 0,00 417,84 0,00 0,00
+Hinweise zur Ermittlung der Steuerbemessungsgrundlage:
+Veräußerungserlös EUR 1 . 4 3 9 , 1 3
+abzüglich Anschaffungskosten EUR - 1 . 3 3 5 , 6 1
+abzüglich besitzzeitanteilige akkumulierte Vorabpauschale EUR 0 , 0 0
+Veräußerungsergebnis EUR 1 0 3 , 5 2
+Teilfreistellung (0%) EUR 0 , 0 0
+fiktives Veräußerungsergebnis aus Merkposten (nach Teilfreistellung) EUR 0 , 0 0
+erhaltene Zwischengewinne (ggf. Ersatzwert) EUR 0 , 0 0
+noch nicht dem Steuerabzug unterworfene akkumulierte thesaurierte
+Erträge/Mehrbetrag/Schätzwert EUR 0 , 0 0
+fiktives Veräußerungsergebnis aus Übergangsregelung EUR 0 , 0 0
+Summe Merkposten 31.12.2017 EUR 0 , 0 0
+Steuerbemessungsgrundlage vor Verlustverrechnung (10) EUR 1 0 3 , 5 2
+Commerzbank AG
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.
+(10) Die Summe besteht aus mehr als einem Anschaffungsvorgang.
+KEINE STEUERBESCHEINIGUNG

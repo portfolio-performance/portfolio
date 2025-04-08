@@ -7,16 +7,17 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
 import java.time.LocalDateTime;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.e4.ui.services.IStylingEngine;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -32,6 +33,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferModel.Properties;
 import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.SecurityNameLabelProvider;
 
 public class SecurityTransferDialog extends AbstractTransactionDialog
 {
@@ -56,6 +58,9 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
                             : ValidationStatus.error(Messages.MsgPortfolioMustBeDifferent);
         }
     }
+
+    @Inject
+    private IStylingEngine stylingEngine;
 
     private Client client;
 
@@ -87,6 +92,7 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
 
         ComboInput securities = new ComboInput(editArea, Messages.ColumnSecurity);
         securities.value.setInput(including(client.getActiveSecurities(), model().getSecurity()));
+        securities.value.setLabelProvider(new SecurityNameLabelProvider(client));
         securities.bindValue(Properties.security.name(), Messages.MsgMissingSecurity);
         securities.bindCurrency(Properties.securityCurrencyCode.name());
 
@@ -96,7 +102,6 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         source.value.setInput(including(client.getActivePortfolios(), model().getSourcePortfolio()));
         IObservableValue<?> sourceObservable = source.bindValue(Properties.sourcePortfolio.name(),
                         Messages.MsgPortfolioFromMissing);
-        source.bindCurrency(Properties.sourcePortfolioLabel.name());
 
         // target portfolio
 
@@ -104,7 +109,6 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         target.value.setInput(including(client.getActivePortfolios(), model().getTargetPortfolio()));
         IObservableValue<?> targetObservable = target.bindValue(Properties.targetPortfolio.name(),
                         Messages.MsgPortfolioToMissing);
-        target.bindCurrency(Properties.targetPortfolioLabel.name());
 
         MultiValidator validator = new PortfoliosMustBeDifferentValidator(sourceObservable, targetObservable);
         context.addValidationStatusProvider(validator);
@@ -135,7 +139,6 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         lblNote.setText(Messages.ColumnNote);
         Text valueNote = new Text(editArea, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
         IObservableValue<?> targetNote = WidgetProperties.text(SWT.Modify).observe(valueNote);
-        @SuppressWarnings("unchecked")
         IObservableValue<?> noteObservable = BeanProperties.value(Properties.note.name()).observe(model);
         context.bindValue(targetNote, noteObservable);
 
@@ -160,6 +163,9 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
 
         startingWith(shares.value).thenBelow(valueNote).height(SWTHelper.lineHeight(valueNote) * 3)
                         .left(securities.value.getControl()).right(amount.value).label(lblNote);
+
+        // measuring the width requires that the font has been applied before
+        stylingEngine.style(editArea);
 
         int widest = widest(securities.label, source.label, target.label, dateTime.label, shares.label, lblNote);
         startingWith(securities.label).width(widest);
@@ -188,5 +194,10 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
     public void setEntry(PortfolioTransferEntry entry)
     {
         model().setSource(entry);
+    }
+
+    public void presetEntry(PortfolioTransferEntry entry)
+    {
+        model().presetFromSource(entry);
     }
 }

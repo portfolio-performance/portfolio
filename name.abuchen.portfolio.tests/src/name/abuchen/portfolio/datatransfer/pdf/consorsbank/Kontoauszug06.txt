@@ -1,0 +1,38 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Kontonummer 0123456789
+Kontotyp Tagesgeldkonto
+Kontoinhaber Max Mustermann
+Max Mustermann
+Musterstr. 123 Vermerk der Bank 1000
+01234 Musterstadt 123456789012/00
+Soll Haben
+Buchungssaldo alt
+0,00+
+Buchungssaldo neu
+192,58+
+Kontostand zum 28.03.24
+0,00+
+Kontoauszug 3 Konto-Nr. 0123456789 Blatt 1 / 1
+Datum 28.03.24 Bankleitzahl 760 300 80 Kontowährung EUR
+BIC CSDBDE71XXX
+IBAN DE99760300800123456789
+Text/Verwendungszweck Datum PNNr Wert Soll Haben
+STEUER 28.03. 8800 31.03. 68,98-
+ABSCHLUSS 28.03. 8800 31.03. 261,56+
+Hinweis für Kontoauszüge
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken). Umsätze und Kontobuchungen, die nach dem Erstellungsdatum anfallen und sich auf den Abrechnungssaldo
+des abgelaufenen Abrechnungszeitraumes auswirken, werden erst mit dem folgenden Kontoauszug ausgewiesen. Korrekturen werden seitens der Bank
+gekennzeichnet.
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem Informationsbogen für den
+Einleger entnommen werden.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé

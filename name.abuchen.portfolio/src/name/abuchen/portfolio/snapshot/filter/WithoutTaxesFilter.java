@@ -133,6 +133,9 @@ public class WithoutTaxesFilter implements ClientFilter
         else
             copy.setAmount(deliveryT.getAmount() + taxes.getAmount());
 
+        // copy units, except for taxes
+        deliveryT.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(u -> copy.addUnit(u));
+
         readOnlyPortfolio.internalAddTransaction(copy);
     }
 
@@ -151,6 +154,7 @@ public class WithoutTaxesFilter implements ClientFilter
                     pseudoAccount.internalAddTransaction(convertTo(t, AccountTransaction.Type.REMOVAL));
                     break;
                 case DIVIDENDS:
+                case INTEREST:
                     stripTaxes(t, pseudoAccount);
                     break;
                 case BUY:
@@ -168,7 +172,6 @@ public class WithoutTaxesFilter implements ClientFilter
                 case FEES:
                 case DEPOSIT:
                 case REMOVAL:
-                case INTEREST:
                 case INTEREST_CHARGE:
                     pseudoAccount.internalAddTransaction(t);
                     break;
@@ -180,7 +183,7 @@ public class WithoutTaxesFilter implements ClientFilter
 
     private void stripTaxes(AccountTransaction t, ReadOnlyAccount readOnlyAccount)
     {
-        if (t.getType() != AccountTransaction.Type.DIVIDENDS)
+        if (t.getType() != AccountTransaction.Type.DIVIDENDS && t.getType() != AccountTransaction.Type.INTEREST)
             throw new UnsupportedOperationException();
 
         Money taxes = t.getUnitSum(Unit.Type.TAX);
@@ -199,6 +202,10 @@ public class WithoutTaxesFilter implements ClientFilter
         copy.setNote(t.getNote());
         copy.setShares(t.getShares());
         copy.setSecurity(t.getSecurity());
+
+        // move fees over to dividend tx
+        t.getUnits().filter(u -> u.getType() != Unit.Type.TAX).forEach(copy::addUnit);
+
         readOnlyAccount.internalAddTransaction(copy);
 
         AccountTransaction removal = new AccountTransaction();

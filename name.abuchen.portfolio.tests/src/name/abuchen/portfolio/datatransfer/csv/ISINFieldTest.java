@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.text.Format;
 import java.text.ParseException;

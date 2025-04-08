@@ -1,0 +1,25 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KÖPENICKER STRASSE 40C  10179 BERLIN
+Max Mustermann SEITE 1 von 1
+Musterstraße 1 DATUM 01.02.2023
+01234 Musterstadt VERRECHNUNGSKONTO 00000000
+STEUER-ID 000000000
+ABRECHNUNG ZINSEN
+zum 31.01.2023
+ÜBERSICHT
+VERMÖGENSWERT EINKOMMENSART ZINSEN GESAMT
+Cash Zinsen 2,00% 2,58 EUR
+ABRECHNUNG
+POSITION BETRAG
+Besteuerungsgrundlage 2,58 EUR
+Kapitalertragssteuer 0,00 EUR
+Solidaritätszuschlag 0,00 EUR
+Gesamt 2,58 EUR
+BUCHUNG
+IBAN BUCHUNGSDATUM GUTSCHRIFT NACH STEUERN
+DE000000000000 01.02.2023 2,58 EUR
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Köpenicker Straße 40c service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10179 Berlin USt-ID DE307510626 Gernot Mittendorfer

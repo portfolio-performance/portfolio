@@ -3,6 +3,9 @@ package name.abuchen.portfolio.ui.views;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.text.MessageFormat;
+import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
@@ -13,6 +16,8 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.IInputValidator;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.window.Window;
@@ -23,9 +28,11 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import name.abuchen.portfolio.datatransfer.csv.CSVExporter;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
@@ -38,6 +45,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.wizards.datatransfer.CSVImportWizard;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
+import name.abuchen.portfolio.ui.wizards.security.FindQuoteProviderDialog;
 import name.abuchen.portfolio.ui.wizards.security.RawResponsesDialog;
 import name.abuchen.portfolio.util.QuoteFromTransactionExtractor;
 import name.abuchen.portfolio.util.TextUtil;
@@ -78,6 +86,8 @@ public class QuotesContextMenu
                         return;
 
                     QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
+                    if (feed == null)
+                        return;
 
                     QuoteFeedData data = feed.getHistoricalQuotes(security, true);
 
@@ -131,6 +141,14 @@ public class QuotesContextMenu
             }
         });
 
+        manager.add(new SimpleAction(Messages.LabelSearchForQuoteFeeds + "...", //$NON-NLS-1$
+                        a -> Display.getDefault().asyncExec(() -> {
+                            FindQuoteProviderDialog dialog = new FindQuoteProviderDialog(
+                                            Display.getDefault().getActiveShell(), owner.getClient(),
+                                            List.of(security));
+                            dialog.open();
+                        })));
+
         manager.add(new Separator());
 
         manager.add(new Action(Messages.SecurityMenuImportCSV)
@@ -141,7 +159,7 @@ public class QuotesContextMenu
                 FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell(), SWT.OPEN);
                 fileDialog.setFilterNames(
                                 new String[] { Messages.CSVImportLabelFileCSV, Messages.CSVImportLabelFileAll });
-                fileDialog.setFilterExtensions(new String[] { "*.csv", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
+                fileDialog.setFilterExtensions(new String[] { "*.csv;*.CSV", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
                 String fileName = fileDialog.open();
 
                 if (fileName == null)
@@ -193,6 +211,38 @@ public class QuotesContextMenu
             }
         });
 
+        manager.add(new Separator());
+
+        manager.add(new Action(Messages.SecurityMenuExportCSV)
+        {
+            @Override
+            public void run()
+            {
+                FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
+                fileDialog.setFilterNames(new String[] { Messages.CSVImportLabelFileCSV });
+                fileDialog.setFilterExtensions(new String[] { "*.csv" }); //$NON-NLS-1$
+
+                fileDialog.setFileName(TextUtil.sanitizeFilename(security.getName() + ".csv")); //$NON-NLS-1$
+                fileDialog.setOverwrite(true);
+                String fileName = fileDialog.open();
+
+                if (fileName == null)
+                    return;
+
+                try
+                {
+                    new CSVExporter().exportSecurityPrices(new File(fileName), security);
+                }
+                catch (IOException e)
+                {
+                    PortfolioPlugin.log(e);
+                    MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
+                }
+            }
+        });
+
+        manager.add(new Separator());
+
         if (security.getCurrencyCode() != null)
         {
             manager.add(new Action(Messages.SecurityMenuCreateQuotesFromTransactions)
@@ -212,31 +262,64 @@ public class QuotesContextMenu
             });
         }
 
-        manager.add(new Separator());
-
-        manager.add(new Action(Messages.SecurityMenuExportCSV)
+        if (security.getLatest() != null)
         {
-            @Override
-            public void run()
-            {
-                FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
-                fileDialog.setFileName(TextUtil.sanitizeFilename(security.getName() + ".csv")); //$NON-NLS-1$
-                fileDialog.setOverwrite(true);
-                String fileName = fileDialog.open();
+            manager.add(new SimpleAction(Messages.SecurityMenuDeleteLatestQuote, a -> {
+                security.setLatest(null);
+                owner.markDirty();
+                owner.notifyModelUpdated();
+            }));
+        }
 
-                if (fileName == null)
-                    return;
+        manager.add(new SimpleAction(Messages.SecurityMenuRoundToXDecimalPlaces, a -> {
 
+            IInputValidator validator = newText -> {
                 try
                 {
-                    new CSVExporter().exportSecurityPrices(new File(fileName), security);
+                    int decimalPlaces = Integer.parseInt(newText);
+
+                    if (decimalPlaces < 0 || decimalPlaces > Values.Quote.precision())
+                        return MessageFormat.format(Messages.SecurityMenuErrorMessageRoundingMustBeBetween0AndX,
+                                        Values.Quote.precision());
+
+                    return null;
                 }
-                catch (IOException e)
+                catch (NumberFormatException e)
                 {
-                    PortfolioPlugin.log(e);
-                    MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
+                    return String.format(Messages.CellEditor_NotANumber, newText);
+                }
+            };
+
+            InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(),
+                            Messages.SecurityMenuRoundToXDecimalPlaces, Messages.SecurityMenuLabelNumberOfDecimalPlaces,
+                            String.valueOf(4), validator);
+
+            if (dialog.open() != Window.OK)
+                return;
+
+            int newPrecision = Integer.parseInt(dialog.getValue());
+
+            boolean isDirty = false;
+
+            for (SecurityPrice price : security.getPrices())
+            {
+                final long oldValue = price.getValue();
+                final long newValue = BigDecimal.valueOf(oldValue).movePointLeft(Values.Quote.precision())
+                                .setScale(newPrecision, Values.MC.getRoundingMode())
+                                .movePointRight(Values.Quote.precision()).longValue();
+
+                if (oldValue != newValue)
+                {
+                    price.setValue(newValue);
+                    isDirty = true;
                 }
             }
-        });
+
+            if (isDirty)
+            {
+                owner.markDirty();
+                owner.notifyModelUpdated();
+            }
+        }));
     }
 }

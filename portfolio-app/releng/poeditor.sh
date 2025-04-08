@@ -18,4 +18,4 @@ if [ -z $project_id ]; then
   exit 1
 fi
 
-java -jar ../../../portfolio-releng/target/portfolio-releng-1.0-SNAPSHOT-jar-with-dependencies.jar $task $api_token $project_id $(pwd)/../.. $(pwd)/translation-config.xml
+java -jar ../../../portfolio-releng/target/portfolio-releng-1.0-SNAPSHOT-jar-with-dependencies.jar poeditor $task $api_token $project_id $(pwd)/../.. $(pwd)/translation-config.xml

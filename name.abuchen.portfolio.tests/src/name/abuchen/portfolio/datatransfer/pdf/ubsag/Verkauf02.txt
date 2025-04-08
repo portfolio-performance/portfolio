@@ -1,0 +1,39 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+UBS UBS Switzerland AGa Postfach, 8098 Zürich
+www.ubs.com
+Für Auskünfte:
+Personnel Financial Affairs
+PFA Services
+Tel. 044-238 27 80
+UBS Wertschriftendepot CHF
+Depot-Nr. 292-123456.S1
+Herr Rubrik DEPOTNAME
+Max Mustermann
+Musterstrasse 3 Kunden-Nr. 123-456789
+1234 Musterhausen
+Auftrags-Nr. 155032892
+Abrechnungs-Nr. F305589.3
+Börsenabrechnung Erstellt am 23. Dezember 2021
+Ihr Verkauf
+Abschlussdatum: 23.12.2021 Abschlussort SIX
+Buchungsdatum: 27.12.2021
+Stückzahl Valor 1203204 ISIN CH0012032048 Kurs
+10 Genussscheine CHF 376.3
+Roche Holding AG (ROG)
+Kurswert in Handelswährung CHF 3 763.00
+Courtage CHF -45.15
+Rabatt e-banking CHF 5.15
+Eidgenössische Stempelabgabe CHF -2.82
+Zugunsten Konto 0292 12345678.40R CHF Valuta 27.12.2021 CHF 3 720.18
+KONTONAME CHF
+Wir werden die Positionen aus obigem Depot ausbuchen.
+Ausführungsdetails
+Abschlussort Stückzahl / Nominal Kurs Trading Capacity FINMA / MIFID Zeit
+SIX SWX 10 CHF 376.3 Agent --- Agent 09:00:54 CET
+Freundliche Grüsse
+UBS Switzerland AG
+Für Produktinformationsdokumente verweisen wir Sie gerne auf ubs.com/produktinformationen. Dokumente für
+Privatplatzierungen und bilateral vereinbarte Derivatkontrakte (OTC-Derivate) sind nur über Ihren Kundenberater erhältlich.
+Seite 1 / 1
+BO816L02 / 022630 / JB9B4SAPR6FGKKZA00001 23.12.2021

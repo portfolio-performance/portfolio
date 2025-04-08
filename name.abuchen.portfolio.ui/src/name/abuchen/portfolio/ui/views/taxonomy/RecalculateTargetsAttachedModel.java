@@ -17,8 +17,13 @@ public class RecalculateTargetsAttachedModel implements TaxonomyModel.AttachedMo
             if (node.isClassification() && !node.isRoot())
             {
                 Money parent = node.getParent().getTarget();
-                Money target = Money.of(parent.getCurrencyCode(), Math.round(
-                                parent.getAmount() * node.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT));
+                Money parentAssignmentDirectChilds = node.getParent().getChildren().stream()
+                                .filter(child -> child.isAssignment())
+                                .map(assignment -> assignment.getActual())
+                                .reduce(Money.of(parent.getCurrencyCode(), 0), Money::add);
+                Money target = Money.of(parent.getCurrencyCode(),
+                                Math.round(parent.subtract(parentAssignmentDirectChilds).getAmount() * node.getWeight()
+                                                / (double) Classification.ONE_HUNDRED_PERCENT));
                 node.setTarget(target);
             }
         });

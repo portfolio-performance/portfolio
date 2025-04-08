@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.66.2
+-----------------------------------------
+PARTICIPANT NO.
+U98299884
+90017770
+      NIK HEMMERYCKX
+      flBJHBJAntgwOx 84
+      ANTWERPEN
+      BELGIUM 2000 FIDELITY STOCK PLAN SERVICES, LLC
+P.O. BOX 770001
+CINCINNATI, OH  45277-0003
+TELEPHONE NUMBER:(800) 544-0275
+REF # 33107-zz91lf
+CUSTOMER NO.   PARTICIPANT ID. TYPE REG.REP. TRADE DATE SETTLEMENT DATE TRANS NO. CUSIP NO. ORIG.
+U98299884 1 WI# 07-19-22 07-21-22 KS51HX 31620M106
+YOU SOLD 30 AT 96.2500
+      EXPLANATION OF PROCEEDS
+SECURITY DESCRIPTION SYMBOL: FIS Sale Proceeds      $2,887.50
+FIDELITY NATL
+DETAILS: Total Fees          $0.07
+Sale Date: JUL/19/2022
+Proceeds Available: JUL/21/2022
+Plan Type: COMPANY STOCK PLAN
+Net Cash Proceeds¹      -$2,887.43
+PLEASE RETAIN THIS STATEMENT FOR YOUR RECORDS
+¹  Your proceeds will be held by Fidelity in your trust. Please contact Fidelity Stock Plan Services to request a distribution.
+PAGE 1 OF 1 Recordkeeping and administrative services for your company's equity compensation plans are
+provided by your company and its service providers.

@@ -1,0 +1,115 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+biw AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+biw AG -  Hausbroicher Str. 222 -  47877 Willich
+               Willich, 02.04.2013
+0101012000000310769590
+Herr 
+Max Mustermann 
+Strasse 9 
+99999 Stadt
+Kontoauszug Nr:    001/2013                              Seite 1 von 3
+Kontonummer :      1009999999  dazugehörige IBAN:  DE49 1013 0800 9999 9999 99
+Kontowährung:      EUR
+Alter Saldo vom    31.12.2012                     in EUR            17.049,47+
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+04.01.     08.01.  Ausführung ORDER Verkauf   DE0005103006           2.105,50+
+                   50414642
+04.01.     08.01.  Gebühren Ordernummer 50414642 Transnr                 5,90-
+                   548853326                                                  
+10.01.     14.01.  Ausführung ORDER Verkauf   DE000A0WMPJ6           2.215,79+
+                   50507080
+11.01.     14.01.  Gebühren Ordernummer 50507080 Transnr                 5,90-
+                   550827282                                                  
+16.01.     18.01.  Ausführung ORDER Verkauf   DE0007235301           2.049,47+
+                   50593881
+16.01.     18.01.  Gebühren Ordernummer 50593881 Transnr                 5,90-
+                   552737247                                                  
+18.01.     22.01.  Ausführung ORDER Kauf   DE0007042301              2.044,00-
+                   50593801
+18.01.     22.01.  Gebühren Ordernummer 50593801 Transnr                 5,90-
+                   553596139                                                  
+24.01.     28.01.  Ausführung ORDER Kauf   US0378331005              2.052,00-
+                   50593854
+24.01.     28.01.  Gebühren Ordernummer 50593854 Transnr                 5,90-
+                   555298291                                                  
+28.01.     28.01.  flatex trader 2.0 Basis                              10,00-
+05.02.     07.02.  Ausführung ORDER Verkauf   DE0007012205           2.120,48+
+                   50879464                                                   
+05.02.     07.02.  Ausführung ORDER Verkauf   DE0007042301           2.144,94+
+                   50879504
+05.02.     07.02.  Gebühren Ordernummer 50879464 Transnr                 5,90-
+                   559340801                                                  
+05.02.     07.02.  Gebühren Ordernummer 50879504 Transnr                 5,90-
+                   559340908
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Michael Heinks, Andreas Wolf
+2000000310769590 0113101010000101
+Kontoauszug Nr:    001/2013                              Seite 2 von 3
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+13.02.     15.02.  Ausführung ORDER Verkauf   DE0006494107           1.534,50+
+                   50993385                                                   
+13.02.     15.02.  Gebühren Ordernummer 50993385 Transnr                 5,90-
+                   562013206
+15.02.     14.02.  Dividendenzahlung US0378331005                        8,89+
+15.02.     14.02.  Gebühr Kapitaltransaktion Ausland                     1,50-
+                   US0378331005
+28.02.     04.03.  Ausführung ORDER Verkauf   DE0005408884           2.414,00+
+                   51080104                                                   
+28.02.     04.03.  Gebühren Ordernummer 51080104 Transnr                 4,65-
+                   567378818
+01.03.     01.03.  flatex trader 2.0 Basis                              10,00-
+04.03.     04.03.  -                                                20.000,00-
+18.03.     20.03.  Ausführung ORDER Kauf   DE0007235301              1.966,25-
+                   51203099                                                   
+18.03.     18.03.  Deltakorrektur wegen Fondsveräußerung                 0,00+
+                   2012
+19.03.     20.03.  Gebühren Ordernummer 51203099 Transnr                 5,90-
+                   573030619                                                  
+25.03.     27.03.  Ausführung ORDER Kauf   DE0008032004              1.989,00-
+                   51418038
+26.03.     27.03.  Gebühren Ordernummer 51418038 Transnr                 5,90-
+                   575523028                                                  
+28.03.     28.03.  flatex trader 2.0 Basis                              10,00-
+31.03.     31.03.  Zinsabschluss   01.01.2013 - 31.03.2013               0,00+
+                   Bitte beachten Sie, dass es sich bei den
+                   Quartalskontoauszügen um einen
+                   offiziellen Rechnungsabschluss handelt.
+                   Den Quartalskontoauszug erkennen Sie an
+                   dem gebuchten Zinsabschluss, der auf
+                   dem Quartalskontoauszug mit angegeben
+                   wird.
+Neuer Saldo 31.03.2013 Nr. 001/2013         Währung EUR              3.496,64+
+Der ausgewiesene Kontosaldo kann durch abweichende Wertstellung (Valuta) vom
+wertmäßigen Kontostand abweichen. Die Wertstellung von Buchungen ist auch
+relevant für die Berechnung von Zinsen.
+Bei Geldeingängen aus dem Ausland beachten Sie bitte eventuelle Meldungen nach
+der Außenwirtschaftsverordnung (AWV). Die Deutsche Bundesbank und ihre
+Filialen erteilen dazu gern die notwendigen Auskünfte.
+Beanstandungen  gegen Rechnungsabschlüsse sind unverzüglich und schriftlich zu
+senden an:
+      biw AG
+      Revision
+      Hausbroicher Str. 222
+      47877 Willich.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Michael Heinks, Andreas Wolf
+Kontoauszug Nr:    001/2013                              Seite 3 von 3
+Der Abschlusssaldo gilt als genehmigt, wenn ihm nicht innerhalb von 6 Wochen
+ab Zugang schriftlich widersprochen  wird. Zur Fristwahrung genügt die
+rechtzeitige Absendung der Einwendung.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Michael Heinks, Andreas Wolf
+
+```

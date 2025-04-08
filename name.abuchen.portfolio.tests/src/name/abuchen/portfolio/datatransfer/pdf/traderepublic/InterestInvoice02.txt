@@ -1,0 +1,20 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+XLvEf QMVFW PAGE 1 from 1
+A. eWOPmG 51 DATE 01.07.2024
+263 01 TSfIqvXd CASH ACCOUNT 9901707353
+TAX ID 7495030331
+INTEREST INVOICE
+as of 30.06.2024
+OVERVIEW
+ASSET INCOME TYPE INTEREST RATE DATE TOTAL
+Cash Interest 4,00% 01.06.2024 - 11.06.2024 7,10 EUR
+Cash Interest 3,75% 12.06.2024 - 30.06.2024 11,56 EUR
+BOOKING
+IBAN BOOKING DATE TOTAL
+DE27564972157013461572 01.07.2024 18,66 EUR
+Trade Republic Bank GmbH www.traderepublic.com Headquarters: Berlin Directors
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin VAT-ID DE307510626 Gernot Mittendorfer

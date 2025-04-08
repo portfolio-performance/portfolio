@@ -1,0 +1,30 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Name SEITE 1 von 1
+Straße DATUM 25.01.2021
+ORT DEPOT 0111111111
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Verkauf am 25.01.2021, um 11:32 Uhr.
+POSITION ANZAHL KURS BETRAG
+Epigenomics AG 16 Stk. 0,02 EUR 0,34 EUR
+Inhaber-Bezugsrechte
+ISIN: DE000A3H23V7
+GESAMT 0,34 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+GESAMT -0,66 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+IBAN 27.01.2021 -0,66 EUR
+Epigenomics AG Inhaber-Bezugsrechte in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 25.01.2021 / 72602880 / a7f9-95f4

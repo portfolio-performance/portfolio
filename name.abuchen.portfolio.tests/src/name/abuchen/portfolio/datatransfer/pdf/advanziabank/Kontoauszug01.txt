@@ -1,0 +1,33 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+Munsbach, 4. Juli 2023
+Kontoauszug Advanziakonto: 4700771885938
+Datum Beschreibung Betrag (EUR)
+01.06.2023 ALTER SALDO 0,00
+14.06.2023 EINZAHLUNG 100,00
+15.06.2023 AUSZAHLUNG -100,00
+16.06.2023 EINZAHLUNG 5.000,00
+20.06.2023 EINZAHLUNG 9.200,00
+30.06.2023 EINZAHLUNG 3.000,00
+30.06.2023 ZINSERTRAG 47,11
+30.06.2023 NEUER SALDO 17.247,11
+Der aktuelle Zinssatz auf Ihrem Advanziakonto beträgt 3,25 % p.a. effektiv (3,2030 % nom.).
+Überweisen Sie bitte unter folgenden Angaben:
+Begünstigter: Ihr Vor- und Nachname
+Kreditinstitut: Advanzia Bank S.A.
+IBAN: LU123456789456132157 – BIC: ADVZLULL
+Verwendungszweck: 8250479811952
+Im Allgemeinen sind alle Einleger durch das Luxemburger Einlagensicherungssystem abgesichert. Für bestimmte
+Einlagen gelten Ausnahmen, die auf der Webseite des Fonds de garantie des dépôts (FGDL) aufgeführt sind. Auf
+Anfrage teilt die Advanzia Bank S.A. Ihnen ebenfalls mit, ob bestimmte Produkte unter die Sicherung fallen oder
+nicht.
+Unser Serviceteam steht Ihnen montags bis freitags von 9:00 bis 17:00 Uhr unter der Rufnummer +352 26 38 75
+675 zur Verfügung.
+Advanzia Bank S.A.
+Gesetzliche Vertreter: Nishant Fafalia, Kaj Larsen, Patrick Thilges 9, rue Gabriel Lippmann L-5365 Munsbach
+Luxembourg
+Telefon: +352 26 38 75 75 RCS Lux: B 109 476 VAT: LU 20992462 advanziakonto.com
+
+```

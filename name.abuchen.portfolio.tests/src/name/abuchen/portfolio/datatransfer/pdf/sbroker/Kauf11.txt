@@ -1,0 +1,35 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.4
+-----------------------------------------
+~$~|OR07|117940||||||||ORDER.D211105.AFP||||20211105||45645|0000|||||~$~
+S Broker AG & Co. KG ´ Postfach 17 29 ´ 65007 Wiesbaden
+Depotnummer 0000000000
+Fritz Fox und Fritzi Foxy
+Auftragsnummer 332793/44.00
+Datum 05.11.2021
+Herrn Rechnungsnummer W05500-0000053323/21
+Dr. Fritz Fox und Umsatzsteuer-ID DE213898425
+Frau Fritzi Foxy
+Fuchsweg 1
+88888 Fuchshausen
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 0,6798 ISH.DJ U.S.SELECT DIV.U.ETF DE DE000A0D8Q49 (A0D8Q4)
+INHABER-ANTEILE
+Handels-/Ausführungsplatz Auûerbörslich (gemäû Weisung)
+Schlusstag 05.11.2021
+Ausführungskurs 73,63 EUR
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 50,05- EUR
+Provision 2,5000 % vom Kurswert 1,25- EUR
+Ausmachender Betrag 51,30- EUR
+maximal möglicher Rücknahmeabschlag 1,00 %
+Ausgabeaufschlag pro Anteil 0,00 %
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Ausführungsplatz gemäû Ausführungsgrundsätzen (Best Execution): Börse Tradegate
+ABR. OHNE AUSGABEAUFSCHLAG
+Ihr ETF-Sparplan Nr. 2
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+5500.11052055.0050574OR07
+SBRO_OR07_v2.7P.ORDER.D211105.AFP_45645

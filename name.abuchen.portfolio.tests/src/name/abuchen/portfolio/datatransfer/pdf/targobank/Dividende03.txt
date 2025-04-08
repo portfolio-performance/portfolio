@@ -1,0 +1,38 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TARGOBANK AG
+Postfach 10 02 30
+47002 Duisburg
+TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg www.targobank.de
+HERR
+VORNAME NAME
+ADRESSE1
+ADRESSE2
+Depotnummer NUMMER
+........................................................................................................................................................................................................
+Ertragsgutschrift 30.04.2020
+Rechnungsnummer: CPS-2020-0223620168-0001148
+VORNAME NAME
+Wir informieren Sie über die folgende Ausschüttung:
+Wertpapier Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N.
+WKN / ISIN DBX0NK / LU0875160326
+Stück 1.700
+Ausschüttung pro Stück 0,1793 USD
+Ex-Tag 22.04.2020
+Zahlbar 27.04.2020
+Ursprungsland Luxemburg
+Geschäftsjahr 2019
+Geschäftsnummer 12120CG000130O00
+Bruttoertrag 304,81 USD
+Devisenkurs zur Handelswährung USD/EUR 1,09
+Bruttoertrag in EUR 279,64 EUR
+Gutschrift auf Ihrem Konto mit Wertstellung zum 27. April 2020
+Konto-Nr. NUMMER 279,64 EUR
+Dieser Beleg wurde maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
+Seite 1
+TARGOBANK AG | Vorstand: Pascal Laugel (Vorsitzender); Berthold Rüsing; Maria Topaler
+Vorsitzender des Aufsichtsrates:  René Dangel | Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+GH.20200501.024528.5014.0014.5661 X 0 R

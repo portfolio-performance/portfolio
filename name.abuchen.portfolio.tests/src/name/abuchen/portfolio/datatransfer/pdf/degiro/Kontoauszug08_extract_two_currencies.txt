@@ -1,0 +1,30 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Herr +.
++.
++.
+Germany
++.
++.
+Kontoauszug von 31-05-2018 bis 06-09-2019
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+
+03-08-2019 06:55 02-08-2019 Währungswechsel (Einbuchung) EUR 3,45 EUR 1.552,27
+03-08-2019 06:55 02-08-2019 Währungswechsel (Ausbuchung) 1,1120 USD -3,84 USD -0,00
+03-08-2019 06:55 02-08-2019 Währungswechsel (Einbuchung) EUR 4,08 EUR 1.548,82
+03-08-2019 06:55 02-08-2019 Währungswechsel (Ausbuchung) 0,9142 GBP -3,73 GBP 0,00
+03-08-2019 06:09 02-08-2019 FOOT LOCKER INC. US3448491049 Dividende USD 1,52 USD 3,84
+03-08-2019 06:09 02-08-2019 FOOT LOCKER INC. US3448491049 Dividendensteuer USD -0,23 USD 2,32
+02-08-2019 07:38 02-08-2019 VODAFONE GROUP PLC GB00BH4HKS39 Dividende GBP 3,73 GBP 3,73
+DEGIRO B.V. T +49 69 365 065 457 DEGIRO B.V. ist als
+Amstelplein 1 E Investmentgesellschaft bei der
+1096 HA Amsterdam kundenservice@degiro.de niederländischen Seite 10 / 59
+I www.degiro.de Finanzaufsichtsbehörde (AFM) Kontoauszug 2019-09-06
+registriert.
+Herr +.
++.
++.
+Germany
++.
++.

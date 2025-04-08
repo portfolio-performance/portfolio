@@ -110,7 +110,7 @@ public class EnumBasedConfig<E extends Enum<E>> implements WidgetConfig
                         this.values.add(value);
                     break;
                 default:
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("unsupported policy " + policy); //$NON-NLS-1$
             }
 
             delegate.getWidget().getConfiguration().put(configurationKey.name(),
@@ -132,7 +132,7 @@ public class EnumBasedConfig<E extends Enum<E>> implements WidgetConfig
     public E getValue()
     {
         if (policy != Policy.EXACTLY_ONE)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("policy must be EXACTLY_ONE but is " + policy); //$NON-NLS-1$
         return values.iterator().next();
     }
 

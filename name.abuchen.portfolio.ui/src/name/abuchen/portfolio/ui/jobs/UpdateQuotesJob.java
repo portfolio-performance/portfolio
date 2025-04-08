@@ -1,14 +1,16 @@
 package name.abuchen.portfolio.ui.jobs;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -27,6 +29,7 @@ import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.util.RateLimitExceededException;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public final class UpdateQuotesJob extends AbstractClientJob
 {
@@ -37,12 +40,12 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
     /**
      * Keeps dirty state of parallel jobs and marks the client file dirty after
-     * 5th dirty result. Background: marking the client dirty after every job
+     * 20 dirty result. Background: marking the client dirty after every job
      * sends too many update events to the GUI.
      */
     private static class Dirtyable
     {
-        private static final int THRESHOLD = 5;
+        private static final int THRESHOLD = 20;
 
         private final Client client;
         private AtomicInteger counter;
@@ -88,7 +91,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
         @Override
         public boolean isConflicting(ISchedulingRule rule)
         {
-            return rule instanceof HostSchedulingRule && ((HostSchedulingRule) rule).host.equals(this.host);
+            return rule instanceof HostSchedulingRule hostSchedulingRule && hostSchedulingRule.host.equals(this.host);
         }
 
         public static ISchedulingRule createFor(String url)
@@ -109,25 +112,30 @@ public final class UpdateQuotesJob extends AbstractClientJob
     }
 
     private final Set<Target> target;
-    private final List<Security> securities;
+    private Predicate<Security> filter;
     private long repeatPeriod;
 
     public UpdateQuotesJob(Client client, Set<Target> target)
     {
-        this(client, client.getSecurities(), target);
+        this(client, s -> true, target);
     }
 
     public UpdateQuotesJob(Client client, Security security)
     {
-        this(client, Arrays.asList(security), EnumSet.allOf(Target.class));
+        this(client, s -> s.equals(security), EnumSet.allOf(Target.class));
     }
 
-    public UpdateQuotesJob(Client client, List<Security> securities, Set<Target> target)
+    public UpdateQuotesJob(Client client, List<Security> securities)
+    {
+        this(client, securities::contains, EnumSet.allOf(Target.class));
+    }
+
+    public UpdateQuotesJob(Client client, Predicate<Security> filter, Set<Target> target)
     {
         super(client, Messages.JobLabelUpdateQuotes);
 
         this.target = target;
-        this.securities = new ArrayList<>(securities);
+        this.filter = filter;
     }
 
     public UpdateQuotesJob repeatEvery(long milliseconds)
@@ -141,16 +149,18 @@ public final class UpdateQuotesJob extends AbstractClientJob
     {
         monitor.beginTask(Messages.JobLabelUpdating, IProgressMonitor.UNKNOWN);
 
+        List<Security> securities = getClient().getSecurities().stream().filter(filter).collect(toMutableList());
+
         Dirtyable dirtyable = new Dirtyable(getClient());
         List<Job> jobs = new ArrayList<>();
 
         // include historical quotes
         if (target.contains(Target.HISTORIC))
-            addHistoricalQuotesJobs(dirtyable, jobs);
+            addHistoricalQuotesJobs(securities, dirtyable, jobs);
 
         // include latest quotes
         if (target.contains(Target.LATEST))
-            addLatestQuotesJobs(dirtyable, jobs);
+            addLatestQuotesJobs(securities, dirtyable, jobs);
 
         if (monitor.isCanceled())
             return Status.CANCEL_STATUS;
@@ -186,7 +196,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
         }
     }
 
-    private void addLatestQuotesJobs(Dirtyable dirtyable, List<Job> jobs)
+    private void addLatestQuotesJobs(List<Security> securities, Dirtyable dirtyable, List<Job> jobs)
     {
         for (Security s : securities)
         {
@@ -198,6 +208,13 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
             QuoteFeed feed = Factory.getQuoteFeedProvider(feedId);
             if (feed == null)
+                continue;
+            if (QuoteFeed.MANUAL.equals(feed.getId()))
+                continue;
+
+            // skip download if the latest quotes are downloaded as part of the
+            // download of the historic quotes
+            if (feed.mergeDownloadRequests() && target.contains(Target.HISTORIC))
                 continue;
 
             Job job = createLatestQuoteJob(dirtyable, feed, s);
@@ -220,7 +237,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
     private Job createLatestQuoteJob(Dirtyable dirtyable, QuoteFeed feed, Security security)
     {
-        return new Job(feed.getName())
+        return new Job(feed.getName() + ": " + security.getName() + " " + Messages.EditWizardLatestQuoteFeedTitle) //$NON-NLS-1$ //$NON-NLS-2$
         {
             @Override
             protected IStatus run(IProgressMonitor monitor)
@@ -243,7 +260,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
         };
     }
 
-    private void addHistoricalQuotesJobs(Dirtyable dirtyable, List<Job> jobs)
+    private void addHistoricalQuotesJobs(List<Security> securities, Dirtyable dirtyable, List<Job> jobs)
     {
         // randomize list in case LRU cache size of HTMLTableQuote feed is too
         // small; otherwise entries would be evicted in order
@@ -251,17 +268,19 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
         for (Security security : securities)
         {
-            Job job = new Job(security.getName())
+            QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
+            if (feed == null)
+                continue;
+            if (QuoteFeed.MANUAL.equals(feed.getId()))
+                continue;
+
+            Job job = new Job(feed.getName() + ": " + security.getName()) //$NON-NLS-1$
             {
                 @Override
                 protected IStatus run(IProgressMonitor monitor)
                 {
                     try
                     {
-                        QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
-                        if (feed == null)
-                            return Status.OK_STATUS;
-
                         QuoteFeedData data = feed.getHistoricalQuotes(security, false);
 
                         if (security.addAllPrices(data.getPrices()))
@@ -269,6 +288,17 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
                         if (!data.getErrors().isEmpty())
                             PortfolioPlugin.log(createErrorStatus(security.getName(), data.getErrors()));
+
+                        // download latest quotes if the download should be done
+                        // together (and the job includes the download of latest
+                        // quotes)
+                        if (feed.mergeDownloadRequests() && target.contains(Target.LATEST))
+                        {
+                            feed.getLatestQuote(security).ifPresent(p -> {
+                                if (security.setLatest(p))
+                                    dirtyable.markDirty();
+                            });
+                        }
 
                         return Status.OK_STATUS;
                     }
@@ -291,7 +321,9 @@ public final class UpdateQuotesJob extends AbstractClientJob
     {
         MultiStatus status = new MultiStatus(PortfolioPlugin.PLUGIN_ID, IStatus.ERROR, label, null);
         for (Exception exception : exceptions)
-            status.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, exception.getMessage(), exception));
+            status.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, exception.getMessage(),
+                            exception instanceof WebAccessException ? null : exception));
+
         return status;
     }
 

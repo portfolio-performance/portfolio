@@ -126,18 +126,18 @@ public class TransactionTypeEditingSupport extends ColumnEditingSupport
 
         Transaction t = getTransaction(element);
 
-        if (t instanceof AccountTransaction)
-            return new TransactionPair<>(lookupOwner((AccountTransaction) t), (AccountTransaction) t);
-        else if (t instanceof PortfolioTransaction)
-            return new TransactionPair<>(lookupOwner((PortfolioTransaction) t), (PortfolioTransaction) t);
+        if (t instanceof AccountTransaction at)
+            return new TransactionPair<>(lookupOwner(at), at);
+        else if (t instanceof PortfolioTransaction pt)
+            return new TransactionPair<>(lookupOwner(pt), pt);
         else
             throw new UnsupportedOperationException();
     }
 
     private Transaction getTransaction(Object element)
     {
-        if (element instanceof Transaction)
-            return (Transaction) element;
+        if (element instanceof Transaction tx)
+            return tx;
         else if (element instanceof TransactionPair<?>)
             return ((TransactionPair<?>) element).getTransaction();
         else
@@ -146,12 +146,12 @@ public class TransactionTypeEditingSupport extends ColumnEditingSupport
 
     private Enum<?> getTypeValue(Transaction t)
     {
-        if (t instanceof AccountTransaction)
-            return ((AccountTransaction) t).getType();
-        else if (t instanceof PortfolioTransaction)
-            return ((PortfolioTransaction) t).getType();
+        if (t instanceof AccountTransaction at)
+            return at.getType();
+        else if (t instanceof PortfolioTransaction pt)
+            return pt.getType();
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unsupported transaction type " + t); //$NON-NLS-1$
     }
 
     @Override
@@ -238,6 +238,6 @@ public class TransactionTypeEditingSupport extends ColumnEditingSupport
                 return (Class<?>[]) TRANSITIONS[ii + 2];
         }
 
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("transition from " + fromValue + " to " + toValue + " not found"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 }

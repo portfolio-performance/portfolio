@@ -1,0 +1,29 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Income statement
+For the period of 2025-03-12 - 2025-03-27 GMT
+lWvClARO fLlQiGl
+Income summary
+Amount
+Total Vault Net Income €133.55
+Total Bond Net Income €0.00
+Total €133.55
+Vault Income
+ID: vault_8Y7JSds4WM0mOG8DgZM34jV7ry
+Date Source Amount
+2025-03-13 21:39:01 Vault revenue share €12.56
+2025-03-14 07:00:00 Vault signup bonus €1.42
+1
+Income statement
+For the period of 2025-03-12 - 2025-03-27 GMT
+lWvClARO fLlQiGl
+Date Source Amount
+2025-03-21 21:59:09 Vault campaign bonus €50.00
+2025-03-22 07:00:02 Vault signup bonus €1.48
+2025-03-22 09:00:04 Vault revenue share €1.23
+Bond Interest Income
+Date Source Amount
+There is no income for the selected period
+2

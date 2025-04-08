@@ -1,0 +1,29 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+10919 Berlin
+Depotnummer yy
+Kundennummer xx
+.....
+Halbjahresabrechnung Sparplan
+Wertpapierbezeichnung ISIN (WKN)
+AMUNDI IND.SOL.-A.IN.MSCI E.M. LU1737652583 (A2H9Q0)
+ACT.NOM.UCITS ETF DR D ON
+Im Rahmen Ihres bestehenden Sparplans haben wir vereinbarungsgemäß nachstehende Käufe außerbörslich für Sie
+durchgeführt.
+Die Gegenwerte haben wir Ihnen belastet und die erworbenen Stücke Ihrem Depotkonto gutgeschrieben.
+(Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -)
+Umsatzart Sparrate in Ordernummer Preis je Stück Devise Anteilsumsatz Schlusstag Valuta Zwischengewinn Steuerausgleich
+EUR in EUR in Stück in EUR in EUR
+Kauf 200,00 256485/46.00 51,1040 1,0000 3,9136 20.02.2020 24.02.2020 0,00 0,00
++ Provision 0,49 Summe 200,49
+Kauf 200,00 342983/71.00 41,4880 1,0000 4,8207 20.04.2020 22.04.2020 0,00 0,00
++ Provision 0,49 Summe 200,49
+Kauf 200,00 414802/35.00 45,0200 1,0000 4,4425 22.06.2020 24.06.2020 0,00 0,00
++ Provision 0,49 Summe 200,49
+Im Abrechnungszeitraum angelegter Betrag EUR 600,00
+Im Abrechnungszeitraum erworbene Anteile Stück 13,1768
+Durchschnittspreis der erworbenen Anteile EUR 45,53
+Evtl. anfallende Erträge werden Ihnen mit separater Abrechnung vergütet. Für evtl. Bestandsveränderungen aus
+zusätzlichen Käufen oder Verkäufen haben Sie separate Abrechnungen erhalten.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.

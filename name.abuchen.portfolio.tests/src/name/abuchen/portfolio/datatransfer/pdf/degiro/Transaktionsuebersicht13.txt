@@ -1,0 +1,31 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Herr Tobias Brandt
+Gazertstraße 58 A
+21073 Hamburg
+Germany
+Benutzername: ********mbe
+(31009436)
+Transaktionsübersicht von 01-03-2018 bis 16-03-2018
+Datum Uhrzeit Produkt ISIN
+Referen Ausführungso Anzahl Kurs Wert in Wert Wechse Transaktionszbörse rt Lokalwährung lkurs kosten Gesamt
+16-03-2018 20:45 IROBOT CORPORATION - C US4627261005 NDQ XNAS 9 69,80 USD -628,20 USD -511,29 EUR 1,2274 -0,53 EUR -511,82 EUR
+16-03-2018 10:40 BAUMOT GROUP AG DE000A2G8Y89 XET XETR -161 3,1105 EUR 500,79 EUR 500,79 EUR -0,04 EUR 500,75 EUR
+16-03-2018 10:40 BAUMOT GROUP AG DE000A2G8Y89 XET XETR -14 3,135 EUR 43,89 EUR 43,89 EUR -2,00 EUR 41,89 EUR
+13-03-2018 00:00 BAUMOT GROUP AG O.N DE000A2DAM11 XET -350 1,84 EUR 644,00 EUR 644,00 EUR 644,00 EUR
+13-03-2018 00:00 BAUMOT GROUP AG DE000A2G8Y89 XET 175 3,68 EUR -644,00 EUR -644,00 EUR -644,00 EUR
+02-03-2018 00:00 NORAM VENTURES INC CA65542J1066 FRA -2500 0,029 EUR 72,50 EUR 72,50 EUR 72,50 EUR
+02-03-2018 00:00 NORAM VENTURES INC. CA65542J2056 FRA 250 0,29 EUR -72,50 EUR -72,50 EUR -72,50 EUR
+01-03-2018 11:26 BAUMOT GROUP AG O.N DE000A2DAM11 XET XETR 350 2,35 EUR -822,50 EUR -822,50 EUR -2,07 EUR -824,57 EUR
+01-03-2018 11:23 EVOTEC SE DE0005664809 XET XETR -56 14,375 EUR 805,00 EUR 805,00 EUR -2,06 EUR 802,94 EUR
+DEGIRO B.V. DEGIRO B.V. ist als
+Amstelplein 1 E Investmentgesellschaft bei der
+1096 HA Amsterdam kundenservice@degiro.de niederländischen Seite 1 / 1
+I www.degiro.de Finanzaufsichtsbehörde (AFM) Konto 2021-03-15
+registriert.
+DEGIRO B.V. DEGIRO B.V. ist als
+Amstelplein 1 E Investmentgesellschaft bei der
+1096 HA Amsterdam kundenservice@degiro.de niederländischen Seite 1 / 1
+I www.degiro.de Finanzaufsichtsbehörde (AFM) Konto 2021-03-15
+registriert.

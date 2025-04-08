@@ -1,0 +1,41 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TARGOBANK AG
+Postfach 10 02 30
+47002 Duisburg
+TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg www.targobank.de
+HERR
+MAX MUSTERMANN
+MUSTERSTRAßE 1
+12345 MUSTERSTADT
+Depotnummer NUMMER
+........................................................................................................................................................................................................
+Effektenabrechnung 21.09.2020
+Rechnungsnummer: NUMMER
+MAX MUSTERMANN
+Transaktionstyp Kauf
+Stück 1.710
+Wertpapier Muster AG
+WKN / ISIN ABC123 / DE0000ABC123
+Handelsplatz außerbörs. Echtzeithandel
+Handelspartner LANG UND SCHWARZ
+Schlusstag / Handelszeit 21.09.2020 / 19:27:00
+Kurs 0,1234 EUR
+Verwahrart Girosammelverwahrung
+Neuer Bestand 3.500
+Geschäftsnummer NUMMER
+Referenznummer NUMMER
+Kurswert 1.187,94 EUR
+Belastung Ihres Kontos mit Wertstellung zum 23. September 2020
+Konto-Nr. NUMMER 1.187,94 EUR
+Kommissionsgeschäft
+Dieses Produkt ist keine Bankeinlage. Es unterliegt nicht der Einlagensicherung. Die vergangene Performance lässt
+keine Rückschlüsse auf die zukünftige Wertentwicklung zu. Der Wert der Anlage kann schwanken. Ein teilweiser oder
+ganzer Verlust ist möglich. Dieser Beleg wurde maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
+Seite 1
+TARGOBANK AG | Vorstand: Pascal Laugel (Vorsitzender); Berthold Rüsing; Maria Topaler
+Vorsitzender des Aufsichtsrates:  René Dangel | Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+GH.20200922.020750.5014.0013.6760 X 0 R

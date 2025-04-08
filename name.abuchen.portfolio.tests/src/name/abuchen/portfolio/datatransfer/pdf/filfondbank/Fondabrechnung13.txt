@@ -1,0 +1,108 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Depotführung: Ihr der FFB benannte Vermittler:
+FIL Finance Services GmbH
+Postfach 110111
+60036 Frankfurt am Main
+Tel.: 0800 / 000 65 66
+Frau Fax: 0800 / 000 65 69
+Max Mustermann per Mail: info@fidelity-direkt.de
+Musterstr. 32a
+01234 FFB-City
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 05. Januar 2016
+Fondsabrechnung
+Auszug  1 Blatt 1
+Depotinhaber Max Mustermann
+Depotnummer 1111111111 (Privatvermögen)
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. ISIN / WKN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Splittkauf Betrag BGF World Mining Fund A2 USD 20,00 EUR 20,8690 USD 1,026
+2490116288 LU0075056555 / 986932 1,070478 USD 04.01.2016 6,463
+BlackRock Investment Management (UK) Ltd. 21,41 USD 0,0000 EUR 7,489
+Wertpapierrechnung, Luxemburg 20,3600 USD
+Abrechnungsbetrag 20,00 EUR
+Ausgabeaufschlag / Provision (2,50 %) 0,49 EUR
+Splittkauf Betrag hausInvest 20,00 EUR 42,2300 EUR 0,474
+2490116288 DE0009807016 / 980701 04.01.2016 3,818
+Commerz Grundbesitz-Investmentgesellschaft 0,0800 EUR 4,292
+mbH
+Girosammelverwahrung, Deutschland 41,2000 EUR
+Abrechnungsbetrag 20,00 EUR
+Ausgabeaufschlag / Provision (2,50 %) 0,47 EUR
+Splittkauf Betrag Fidelity F.- Europ.Growth F. A 20,00 EUR 13,8031 EUR 1,449
+2490116288 LU0048578792 / 973270 04.01.2016 10,910
+FIL (Luxemburg) S.A. 0,0000 EUR 12,359
+Wertpapierrechnung, Luxemburg 13,4500 EUR
+Abrechnungsbetrag 20,00 EUR
+Ausgabeaufschlag / Provision (2,63 %) 0,51 EUR
+Splittkauf Betrag Templeton Growth (Euro) Fund 20,00 EUR 15,7238 EUR 1,272
+2490116288 LU0114760746 / 941034 04.01.2016 9,576
+Franklin Templeton Investment 0,0000 EUR 10,848
+Wertpapierrechnung, Luxemburg 15,3000 EUR
+Abrechnungsbetrag 20,00 EUR
+Ausgabeaufschlag / Provision (2,77 %) 0,54 EUR
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Peter Nonner Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Jon Skillman Gerhard Oehne Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Dr. Andreas Prechtel Umsatzsteuer-ID-Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 DE213709602
+ABGST_V1.0
+Depotführung: Ihr der FFB benannte Vermittler:
+FIL Finance Services GmbH
+Postfach 110111
+60036 Frankfurt am Main
+Tel.: 0800 / 000 65 66
+Frau Fax: 0800 / 000 65 69
+Max Mustermann per Mail: info@fidelity-direkt.de
+Musterstr. 32a
+01234 FFB-City
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 05. Januar 2016
+Fondsabrechnung
+Auszug  1 Blatt 2
+Depotinhaber Max Mustermann
+Depotnummer 1111111111 (Privatvermögen)
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. ISIN / WKN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Splittkauf Betrag Fid Fd - Euro Blue Chip Fd A 20,00 EUR 22,2491 EUR 0,899
+2490116288 LU0088814487 / 988525 04.01.2016 6,855
+FIL (Luxemburg) S.A. 0,0000 EUR 7,754
+Wertpapierrechnung, Luxemburg 21,6800 EUR
+Abrechnungsbetrag 20,00 EUR
+Ausgabeaufschlag / Provision (2,63 %) 0,51 EUR
+Entgeltbelastung Templeton Growth (Euro) Fund 25,00 EUR 15,3000 EUR -1,634
+2490658604 LU0114760746 / 941034 04.01.2016 10,848
+Franklin Templeton Investment 0,0000 EUR 9,214
+Wertpapierrechnung, Luxemburg 15,3000 EUR
+Abgeführte Steuern* 0,00 EUR
+Auszahlungsbetrag 0,00 EUR
+Depotführungsentgelt 25,00 EUR
+darin enthalten 19 % gesetzl. MwSt 3,99 EUR
+Anlagen in Investmentfonds können erst nach Kenntnisnahme der gesetzlichen Verkaufsunterlagen (aktueller Verkaufsprospekt, wesentliche 
+Anlegerinformationen, Halb-/Jahresbericht) erfolgen. Diese Unterlagen haben Sie direkt von Ihrem Vermittler erhalten. Sofern Sie keine 
+elektronischen Orderwege nutzen, verwenden Sie bitte für Investmentfonds-Aufträge ausschließlich die Serviceformulare der FFB, die Sie 
+online oder über Ihren Vermittler erhalten.
+Steuerliche Informationen
+Erteilter Freistellungsauftrag 250,00 EUR gültig bis: unbefristet Verlustverrechnungstopf neu 3,98 EUR
+davon noch verfügbar 250,00 EUR Quellensteuertopf neu 0,00 EUR
+Hinweise:
+Auslandzahlungen, die 12.500 EUR übersteigen, sind gemäß der Außenwirtschaftsverordnung (AWV) durch Sie meldepflichtig. Weitergehende Informationen zur 
+Meldepflicht nach AWV erhalten Sie direkt von der Deutschen Bundesbank, unter www.bundesbank.de oder unter der Rufnummer 0800 1234 111.
+Einwendungen gegen diese Fondsabrechnung wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte schriftlich spätestens einen Monat nach Zugang an:
+FIL Fondsbank GmbH, Revision, Postfach 11 06 63, 60041 Frankfurt am Main, Telefax (069) 7 70 60 - 444.
+* Aufgrund der Regelungen des Einkommensteuergesetzes (EStG) sowie des Investmentsteuergesetzes (InvStG) sind wir verpflichtet, im Rahmen der von Ihnen getätigten Transaktion 
+Steuern (Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer) an das Finanzamt abzuführen.
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Peter Nonner Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Jon Skillman Gerhard Oehne Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Dr. Andreas Prechtel Umsatzsteuer-ID-Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 DE213709602
+ABGST_V1.0

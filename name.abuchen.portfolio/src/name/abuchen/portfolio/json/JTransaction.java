@@ -216,7 +216,8 @@ public class JTransaction
     {
         jtx.account = tx.getOwner().toString();
 
-        switch (tx.getTransaction().getType())
+        name.abuchen.portfolio.model.AccountTransaction.Type tType = tx.getTransaction().getType();
+        switch (tType)
         {
             case DEPOSIT:
                 jtx.type = JTransaction.Type.DEPOSIT;
@@ -267,7 +268,8 @@ public class JTransaction
                                 jtx);
                 break;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(
+                                "unsupported transaction type '" + tType + "' for transaction " + jtx.toJson()); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -308,7 +310,8 @@ public class JTransaction
                 jtx.type = JTransaction.Type.OUTBOUND_DELIVERY;
                 break;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(
+                                "unsupported transaction type '" + type + "' for transaction " + transaction); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 }

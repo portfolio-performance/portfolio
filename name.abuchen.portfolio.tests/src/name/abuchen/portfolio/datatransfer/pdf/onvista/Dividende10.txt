@@ -1,0 +1,58 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=AAAA BBBBBB
+ADRESSZEILE3=CCCCCCC 12
+ADRESSZEILE4=12345 DDDDDDDDDDDDDDD
+Dividende für
+Herr ADRESSZEILE5=01.04.2020 - 31.03.2021
+AAAA BBBBBB ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+CCCCCCCC 12 BELEGNUMMER=1234
+12345 DDDDDDDDDDDDD 123456789 11223344 / 25.11.2020 SEITENNUMMER=1STEUERERSTATTUNG=N
+ERSTATTUNGSFÄHIGE
+Depotinhaber
+AAAA BBBBBB
+Frankfurt am Main, 25.11.2020
+Dividendengutschrift
+Gattungsbezeichnung ISIN
+NTT DOCOMO INC. Registered Shares o.N. JP3165650007
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 46,000 29.09.2020 25.11.2020 JPY 60,00
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+25.11.2020 123456789 EUR/JPY 121,06 EUR 16,91
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+ausländische Dividende EUR 22,80
+ausländische Quellensteuer 15,315% JPY 423
+anrechenbare Quellensteuer 15% JPY 414
+erstattungsfähige Quellensteuer 0,315% JPY 9
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 0,00) EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 9,12
+einbehaltene Kapitalertragsteuer EUR 2,28
+einbehaltener Solidaritätszuschlag EUR 0,12
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 123,12
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 12,12
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Itzehoe, Steuernummer 18/297/13562.
+Steuerlicher Stichtag: 25.11.2020
+Jahressteuerbescheinigung folgt
+Verwahrart: Wertpapierrechnung Lagerland: Japan
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.20/ABREEREIERTR/GDBERTRG/002516/170620/014633

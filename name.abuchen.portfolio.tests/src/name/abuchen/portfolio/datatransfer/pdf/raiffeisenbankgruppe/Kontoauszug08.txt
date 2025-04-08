@@ -1,0 +1,95 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+Raiffeisenbank im Hochtaunus eG
+Werner-Reimers-Str. 2-4, 61352 Bad Homburg
+Telefon: 06172-99550                                      www.meinebank.de
+OnlineOnly-Konto
+EUR-Konto Kontonummer 40 0716059
+Raiffeisenbank im Hochtaunus eG
+Postfach 2119, 61291 Bad Homburg v. d. Höhe Kontoauszug Nr.  4/2024
+erstellt am 30.04.2024 22:17 Blatt  1 von 4
+IBAN: DE92 5006 1741 0400 7160 59 BIC: GENODE51OBU
+Herrn
+Max Muster
+Musterstr. 2
+54321 Musterhausen
+Bu-Tag Wert Vorgang
+alter Kontostand vom 28.03.2024  24,31 H
+23.04. 22.04. Mol*Baumarkt Xxx G PN:4444 63,39 S
+ DEU 495522500131 EUR 63,39
+ Umsatz vom 21.04.2024 MC Hauptkarte
+25.04. 24.04. Ihr MastercardCashback PN:4444 5,00 H
+ DEU Cashback EUR 5,00
+ Umsatz vom 23.04.2024 MC Hauptkarte
+25.04. 24.04. Mol*Heinrich Dittmar G PN:4444 5,52 H
+ DEU 495522500131 EUR 5,52
+ Umsatz vom 23.04.2024 MC Hauptkarte
+29.04. 26.04. Ihr MastercardCashback PN:4444 0,55 H
+ DEU Cashback EUR 0,55
+ Umsatz vom 25.04.2024 MC Hauptkarte
+ Übertrag auf Blatt 4 213,19 H
+0636
+000
+K00011825 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Raiffeisenbank im Hochtaunus eG
+Werner-Reimers-Str. 2-4, 61352 Bad Homburg
+Telefon: 06172-99550                                      www.meinebank.de
+OnlineOnly-Konto
+EUR-Konto Kontonummer 40 0716059
+Max Muster
+Kontoauszug Nr.  4/2024
+erstellt am 30.04.2024 22:17 Blatt  4 von 4
+Bu-Tag Wert Vorgang
+ Übertrag von Blatt 3 213,19 H
+30.04. 30.04. Abschluss lt. Anlage 1 PN:905 0,11 S
+30.04. 29.04. Xxxx X xxxx Hof PN:4444 36,00 S
+ DEU Frankfurt am EUR 36,00
+ Umsatz vom 26.04.2024 MC Hauptkarte
+ neuer Kontostand vom 30.04.2024 64,12 S
+Anlage 1
+Buchungstag: 30.04.2024
+Wert: 30.04.2024
+Kontoabschluss vom 01.04.2024 bis 30.04.2024 für Konto 40 0716059
+ 9,45000% Sollzins bis 30.04. 0,11 S
+Rechnung Nr. 0400716059.20240430.002
+USt. IdNr. - DE 114104564
+USt.-befreite Finanzdienstleistung
+ Summe Abschlussposten in EUR 0,11 S
+0636
+000
+K00011825 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Sehr geehrte Kundin, sehr geehrter Kunde,
+Sie haben eine Bankmitteilung erhalten, z. B. einen Kontoauszug, einen Sparkontoauszug oder eine Dividendenabrechnung. Bitte 
+prüfen Sie diese genau: Ist alles korrekt? Falls nicht, sprechen Sie uns bitte an. Damit Sie immer gut informiert sind und wissen, wie 
+Sie Ihre Bankmitteilung "richtig lesen", haben wir diese nützlichen Hinweise für Sie zusammengestellt:
+Falls in diesem Dokument Bankdienstleistungen aufgeführt sind, sind diese umsatzsteuerfrei - sofern nichts Abweichendes angegeben
+ist. Der im Kontoauszug ausgewiesene Betrag muss nicht dem tatsächlichen Kontoguthaben entsprechen, weil z. B. die Wertstellung
+einzelner Buchungen nicht berücksichtigt wurde oder noch Zinsen für eine Kontoüberziehung bei einer Verfügung anfallen können.
+Rechnungsabschlüsse
+Ihr Kontoauszug ist mit dem Hinweis "Rechnungsabschluss" versehen?
+Dann haben wir für Ihr Konto einen Rechnungsabschluss durchgeführt, einschließlich Zinsen und Entgelte. Alle weiteren, nach dem
+Erstellungsdatum dieser Mitteilung anfallenden Umsätze und Kontoauszüge werden erst in der folgenden Abrechnung
+berücksichtigt - auch wenn sie sich auf den Abrechnungssaldo des abgelaufenen Abrechnungszeitraumes auswirken.
+Korrekturen werden gekennzeichnet. Den Rechnungsabschluss können Sie beim Finanzamt vorlegen.
+Einwendungen
+Sie haben Einwendungen gegen den Rechnungsabschluss Ihres Kontokorrentkontos oder den Inhalt des Sparkontoauszugs? Dann
+haben Sie nach Erhalt sechs Wochen Zeit, uns zu informieren. Sonst gilt der Rechnungsabschluss zum Kontokorrentkonto oder der
+Sparkontoauszug als genehmigt. Wenn Sie ihre Einwendungen in Textform geltend machen, z. B. per E-Mail oder Brief, so genügt die
+Absendung innerhalb von sechs Wochen nach Erhalt.
+Einzugsaufträge
+Einzugspapiere wie z. B. Schecks und Lastschriften werden unter dem Vorbehalt des Eingangs gutgeschrieben, und zwar auch
+dann, wenn diese Papiere bei uns selbst zahlbar sind. 
+Schecks und Lastschriften sind erst eingelöst, wenn die Belastungsbuchung nicht spätestens am zweiten Bankarbeitstag - bei 
+Lastschriften im SEPA-Firmen-Lastschriftverfahren nicht spätestens am dritten Bankarbeitstag - nach ihrer Vornahme rückgängig
+gemacht wird. Barschecks sind bereits mit Zahlung an den Scheckvorleger eingelöst. Schecks sind auch schon dann eingelöst,
+wenn wir im Einzelfall eine Bezahltmeldung absenden.
+Guthaben
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem
+"Informationsbogen für den Einleger" entnommen werden.
+Sie haben noch Fragen? Dann kontaktieren Sie uns bitte. Wir sind gern für Sie da.
+Mit freundlichen Grüßen
+Ihre Bank
+
+```

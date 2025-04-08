@@ -1,0 +1,74 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=266999999
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Gesamtfälligkeit ADRESSZEILE1=Herr
+ADRESSZEILE2=Vorname Nachname
+ADRESSZEILE3=Str 1
+ADRESSZEILE4=99999 Ort
+Herr ADRESSZEILE5=
+Vorname Nachname ADRESSZEILE6=Depot-Nr. Abrechnungs-Nr.
+Str 1 BELEGNUMMER=57
+99999 Ort 266999999 42189222 / 14.12.2021 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Vorname Nachname
+Frankfurt am Main, 14.12.2021
+Gutschriftsanzeige
+Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+UBS AG (London Branch) TurboP O.End VW 07.12.2021 DE000UH42Q17
+Vz 171,844309
+Nominal Einlösung zu:
+STK 250,000 EUR 0,0010
+Verwahrart Girosammelverwahrung Kurswert EUR 0,25
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+14.12.2021 266999999 EUR 0,25
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsverlust Sonstige EUR 164,25
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 801,00) EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern (negativ) EUR 164,25
+Steuerausgleich nach § 43a EStG:
+Kapitalertragsteuer EUR 41,06
+Solidaritätszuschlag EUR 2,26
+Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+14.12.2021 266999999 54606022 EUR 43,32
+Es folgt Seite 2
+onvist a bank - eine M arke der Com merzbank AG · Solmsst raße 83 · 6 0 486 Frankfur t a m M ain
+Kundenservice: +49 ( 0 )69-710 7-53 0 · T: +49 ( 0 )69-710 7- 0 · F: +49 ( 0 )69-710 7-10 0 · E: in fo@onvist a -bank.de · W: w w w.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender),
+Marcus Chromik, Michael Kotzbauer, Bet t ina Orlopp, Thomas Schaufler, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
+3.20/ABREEREITILG/GDBTILAN/000057/141221/011809
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=266948000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Vorname Nachname
+266999999 42189222 2 ADRESSZEILE3=Str 1
+ADRESSZEILE4=99999 Ort
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=57
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 14.072,66 SEITENNUMMER=2
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 773,99 STEUERERSTATTUNG=N
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Frankfurt am Main V Steuernummer: 047/220/06016.
+Automatische Ausübung der Optionsscheine am Laufzeitende
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvist a bank - eine M arke der Com merzbank AG · Solmsst raße 83 · 6 0 486 Frankfur t a m M ain
+Kundenservice: +49 ( 0 )69-710 7-53 0 · T: +49 ( 0 )69-710 7- 0 · F: +49 ( 0 )69-710 7-10 0 · E: in fo@onvist a -bank.de · W: w w w.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender),
+Marcus Chromik, Michael Kotzbauer, Bet t ina Orlopp, Thomas Schaufler, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
+3.20/ABREEREITILG/GDBTILAN/000057/141221/011809

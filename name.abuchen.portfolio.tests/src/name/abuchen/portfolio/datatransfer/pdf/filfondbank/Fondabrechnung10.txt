@@ -1,0 +1,83 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Depotführung: Ihr der FFB benannte Vermittler:
+xy GmbH
+Vorname Name
+Herrn
+Vorname Name
+Strasse
+90409 Nürnberg , Mittelfr
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 07. September 2018
+Fondsabrechnung
+ FFB FondsdepotPlus Auszug  15 Blatt 1
+Depotinhaber Vorname Name
+Depotnummer 11111111 (Privatvermögen) minderjährig
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. WKN / ISIN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Verkauf Nordea Stable Return BP EUR 883,62 EUR 16,4300 EUR -53,781
+2525653390 A0HF3W / LU0227384020 07.09.2018 53,781
+Nordea 1, SICAV 0,0000 EUR 0,000
+Wertpapierrechnung, Luxemburg 16,4300 EUR
+Auszahlungsbetrag 883,62 EUR
+abgeführte Kapitalertragsteuer 0,00 EUR
+abgeführter Solidaritätszuschlag 0,00 EUR
+Verkauf JPM-HIGHB.US ST. A DIST EO 776,84 EUR 17,9300 EUR -43,326
+2525653392 A0M5KA / LU0325074333 07.09.2018 43,326
+JP Morgan Asset Management 0,0000 EUR 0,000
+Wertpapierrechnung, Luxemburg 17,9300 EUR
+Auszahlungsbetrag 776,84 EUR
+abgeführte Kapitalertragsteuer 0,00 EUR
+abgeführter Solidaritätszuschlag 0,00 EUR
+Verkauf JPM-Europe Eq Plus A dist-EUR 694,58 EUR 14,0500 EUR -49,436
+2525653393 A0MNZ3 / LU0289228842 07.09.2018 49,436
+JP Morgan Asset Management 0,0000 EUR 0,000
+Wertpapierrechnung, Luxemburg 14,0500 EUR
+Auszahlungsbetrag 694,58 EUR
+abgeführte Kapitalertragsteuer 0,00 EUR
+abgeführter Solidaritätszuschlag 0,00 EUR
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Gerhard Oehne (Sprecher) Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Jon Skillman Peter Nonner Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Dr. Andreas Prechtel Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 Gerald Rink DE213709602
+ABGST_V1.0
+Depotführung: Ihr der FFB benannte Vermittler:
+epotführung: Ihr der FFB benannte Vermittler:
+xy GmbH
+Vorname Name
+Herrn
+Vorname Name
+Strasse
+90409 Nürnberg , Mittelfr
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 16. Januar 2019
+Fondsabrechnung
+ FFB FondsdepotPlus Auszug  2 Blatt 1
+Depotinhaber Vorname Name
+Depotnummer 11111111 (Privatvermögen) minderjährig
+Anlagen in Investmentfonds können erst nach Kenntnisnahme der gesetzlichen Verkaufsunterlagen (aktueller Verkaufsprospekt, wesentliche 
+Anlegerinformationen, Halb-/Jahresbericht) erfolgen. Diese Unterlagen haben Sie direkt von Ihrem Vermittler erhalten. Sofern Sie keine 
+elektronischen Orderwege nutzen, verwenden Sie bitte für Investmentfonds-Aufträge ausschließlich die Serviceformulare der FFB, die Sie 
+online oder über Ihren Vermittler erhalten.
+Steuerliche Informationen
+Erteilter Freistellungsauftrag 300,00 EUR gültig bis: unbefristet Verlustverrechnungstopf neu 0,00 EUR
+davon noch verfügbar 142,55 EUR Quellensteuertopf neu 0,00 EUR
+Hinweise:
+Auslandzahlungen, die 12.500 EUR übersteigen, sind gemäß der Außenwirtschaftsverordnung (AWV) durch Sie meldepflichtig. Weitergehende Informationen zur 
+Meldepflicht nach AWV erhalten Sie direkt von der Deutschen Bundesbank, unter www.bundesbank.de oder unter der Rufnummer 0800 1234 111.
+Einwendungen gegen diese Fondsabrechnung wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte schriftlich spätestens einen Monat nach Zugang an:
+FIL Fondsbank GmbH, Revision, Postfach 11 06 63, 60041 Frankfurt am Main, Telefax (069) 7 70 60 - 444.
+Aufgrund der Regelungen des Einkommensteuergesetzes (EStG) sowie des Investmentsteuergesetzes (InvStG) sind wir verpflichtet, im Rahmen der von Ihnen getätigten Transaktion
+Steuern an das Finanzamt abzuführen.
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Gerhard Oehne (Sprecher) Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Jon Skillman Peter Nonner Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Dr. Andreas Prechtel Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 Gerald Rink DE213709602
+ABGST_V1.0

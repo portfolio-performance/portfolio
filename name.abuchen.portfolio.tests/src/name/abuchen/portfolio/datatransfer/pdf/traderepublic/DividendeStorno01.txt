@@ -1,0 +1,37 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+My Name SEITE 1 von 1
+My Str. 2 DATUM 26.02.2019
+D 12345 Berlin DEPOT XXXXXXXXX
+STORNO DIVIDENDE
+ÜBERSICHT
+Storno der Dividende mit dem Ex-Tag 29.11.2019.
+POSITION ANZAHL KURS BETRAG
+Realty Income Corp. 200 Stk. 0,227 USD 45,40 USD
+Registered Shares DL 1
+ISIN: US7561091049
+GESAMT 45,40 USD
+ABRECHNUNG
+POSITION BETRAG
+Quellensteuer DE für US-Emittent 6,81 USD
+Zwischensumme -38,59 USD
+Zwischensumme 1,1105 EUR/USD -34,75 EUR
+Kapitalertragssteuer 4,09 EUR
+Solidaritätszuschlag 0,220 EUR
+Kapitalertragssteuer Optimierung -0,090 EUR
+Kirchensteuer Optimierung 0,360 EUR
+GESAMT -30,17 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DEXXXXXXXXXXXXXXXXXXX 26.02.2020 -30,17 EUR
+Realty Income Corp. Registered Shares DL 1 in Wertpapierrechnung.
+Lagerland: USA
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Ingo Hillen
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 2020-02-26 / 363XXXXX / XXXX-XXXX

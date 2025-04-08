@@ -1,0 +1,54 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/2
+München
+27.06.2020
+DonauCapital Wertpapier GmbH
+GRATISBROKER GmbH 
+wg. GRATISBROKER GmbH service@gratisbroker.de
+Passauer Str. 5
+xxxxx yyyyyyy
+94161 Ruderting Stamm-Nr.: 333333    Portfolio: 1
+Depot-Nr.: 11111
+Vorgangs-Nr.: 222222
+Referenz-Nr.: 3333333
+Dividendenabrechnung gemäß § 27 KStG KOPIE
+Ex-Tag: 22.06.2020
+Nominale ISIN: DE0005557508 WKN: 555750 Ausschüttung
+STK 77 Deutsche Telekom AG EUR 0,60 p.STK
+Zahlungszeitraum: 01.01.2019 - 31.12.2019 
+Zahltag: 24.06.2020
+Bruttobetrag EUR 46,20
+Zu Gunsten Konto 33333333 Valuta: 24.06.2020 EUR 46,20
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+GRATISBROKER GmbH | Geschäftsführer: Malte Rubruck, Stefan Mross, Philipp Röben | HRB 242583 Amtsgericht München | USt-IdNr. DE319411410
+GRATISBROKER GmbH erbringt Anlagevermittlung als vertraglich gebundener Vermittler der DonauCapital Wertpapier GmbH
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. EK27-032.041
+Dividendenabrechnung gemäß § 27 KStG KOPIE
+Fortsetzung: Seite 2/2
+Ausbuchung
+Stück 77,00 Deutsche Telekom AG
+ISIN: DE0005557508
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP Kauf 111111 01.01.2020 STK 1,00 550,86 0,00 0,00
+WP Kauf 222222 01.03.2020 STK 1,00 516,00 0,00 0,00
+Einbuchung
+Stück 2,00 Deutsche Telekom AG
+ISIN: DE0005557508
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten
+WP Kauf 2988868 01.01.2020 STK 1,00 528,66
+WP Kauf 2988868 11.03.2020 STK 1,00 492,00
+GRATISBROKER GmbH | Geschäftsführer: Malte Rubruck, Stefan Mross, Philipp Röben | HRB 242583 Amtsgericht München | USt-IdNr. DE319411410
+GRATISBROKER GmbH erbringt Anlagevermittlung als vertraglich gebundener Vermittler der DonauCapital Wertpapier GmbH
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. EK27-032.041

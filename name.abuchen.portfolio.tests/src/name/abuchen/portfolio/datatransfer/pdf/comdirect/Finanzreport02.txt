@@ -1,0 +1,136 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Telefon: 04106 - 708 25 00
+Herrn 102 00 000 Ihre Kontonummer: 0000000
+Max Mustermann Bankleitzahl: 200 411 33
+Straße 1
+12345 Ort
+Finanzreport Nr. 1 per 02.12.2013
+Sehr geehrte Herrn Mustermann,
+NEU! Erstklassige Altersvorsorge - mit unserem Kooperationspartner CosmosDirekt. Erhalten Sie auch im Alter Ihren
+Lebensstandard mit leistungsstarken Versicherungen zu attraktiven Konditionen. Jetzt informieren:
+www.comdirect.de/vorsorge
+Freistellungsauftrag: Bis zum 30.12.2013 können Sie online einen Freistellungsauftrag erteilen oder ändern. Nähere
+Informationen erhalten Sie in der Rubrik Steuerthemen unter www.comdirect.de/wissen
+Kostenloses Online-Seminar: Order-Funktionalitäten! Der Einsatz von Order-Funktionalitäten hilft eine Wertpapier-Order
+besser abzusichern und zu kontrollieren. Doch welche Order-Funktionalitäten gibt es? Gelten diese für Kauf sowie Verkauf?
+Diese und weitere Fragen werden Ihnen praxisnah in unserem kostenlosen Online-Seminar am 11.12.2013 beantwortet. Jetzt
+kostenlos anmelden unter www.comdirect.de/online-seminare
+Ihre comdirect wünscht Ihnen frohe Weihnachten und ein gutes neues Jahr.
+Kontoübersicht
+Ihre aktuellen Salden Saldo in
+IBAN EUR
+Girokonto DE75 2004 1133 0000 0000 00                      +500,00
+Tagesgeld PLUS DE37 2004 1133 0000 0000 01                      0,00
+Visa Prepaid-Karte 0588 +527,69
+Gesamtsaldo +1.027,69
+USt-ID: DE 812 279 461
+comdirect bank AG • 25449 Quickborn • E-Mail: info@comdirect.de • Internet: www.comdirect.de • Telefax: 04106 - 708 25 85
+Finanzreport Nr. 1 per 02.12.2013 - Seite 2
+Kontonummer 3830965 / BLZ 20041133
+Ihre individuellen Vergünstigungen
+Informieren Sie sich jetzt über unser attraktives Preismodell und profitieren Sie von vielen individuellen Vergünstigungen.
+Details finden Sie unter www.comdirect.de/konditionen. Es gilt das aktuelle Preis- und Leistungsverzeichnis.
+Girokonto Dispositionskredit girocard Tages-/WochenlimitEUR 0,- EUR 1.000,-/EUR 2.000,-
+Buchungstag Vorgang Auftraggeber / Empfänger Buchungstext Ausgang
+Valuta Referenz Kto. / IBAN BLZ / BIC Eingang
+Alter Saldo   16.10.2013 0,00
+05.11.2013 Übertrag/Überweisung Max Mustermann Betreff +30,00
+05.11.2013 HX21330964822567/9546
+18.11.2013 Übertrag/Überweisung Max Mustermann 4263540900340588 -20,00
+18.11.2013 HV513321F0339608/2 DE44200411110931368520 UEBERWEISUNG AUF V
+COBADEHDXXX ISA-KARTE
+End-to-End-Ref.:
+00818690348
+09.12.2013 Gebühren/Spesen Gebuehr Ersatzgeheimzahl -5,90
+08.12.2013 5ZF00003J3020000/25 girocard
+ZUORDN. 000 0000000 00
+102383096500EUR  NONREF
+26.11.2013 Übertrag/Überweisung Max Mustermann Betreff +810,00
+26.11.2013 ID21333064309660/12623
+27.11.2013 Übertrag/Überweisung Max Mustermann Betreff +200,00
+27.11.2013 H221333164008670/6510
+28.11.2013 Übertrag/Überweisung Max Mustermann 4263540900340588 -20,00
+28.11.2013 GX513331K5128846/2 DE44200411110931368520 UEBERWEISUNG AUF V
+COBADEHDXXX ISA-KARTE
+End-to-End-Ref.:
+00824513842
+02.12.2013 Übertrag/Überweisung Max Mustermann 4263540900340588 -500,00
+02.12.2013 HV513334E1757949/2 DE44200411110931368520 UEBERWEISUNG AUF V
+COBADEHDXXX ISA-KARTE
+End-to-End-Ref.:
+00826818163
+Neuer Saldo 02.12.2013 +500,00
+Tagesgeld PLUS
+Buchungstag Vorgang Auftraggeber / Empfänger Buchungstext Ausgang
+Valuta Referenz Kto. / IBAN BLZ / BIC Eingang
+Alter Saldo   16.10.2013 0,00
+Neuer Saldo 02.12.2013 0,00
+USt-ID: DE 812 279 461
+comdirect bank AG • 25449 Quickborn • E-Mail: info@comdirect.de • Internet: www.comdirect.de • Telefax: 04106 - 708 25 85
+Finanzreport Nr. 1 per 02.12.2013 - Seite 3
+Kontonummer 3830965 / BLZ 20041133
+Visa Prepaid-Karte 0588 Verfügungslimit am GeldautomatEUR 600,-/Tag
+Buchungstag Vorgang Buchungstext Ausgang
+Umsatztag Referenz Eingang
+Alter Saldo   16.10.2013 0,00
+18.11.2013 Guthabenübertrag UEBERTRAG AUF VISA-KARTE +20,00
+18.11.2013 113111850082401
+28.11.2013 Guthabenübertrag UEBERTRAG AUF VISA-KARTE +20,00
+28.11.2013 113112832060101
+02.12.2013 Visa-Umsatz Shop 600000 -12,31
+30.11.2013 113120254069401 ORT  018
+02.12.2013 Guthabenübertrag UEBERTRAG AUF VISA-KARTE +500,00
+02.12.2013 113120254969001
+Neuer Saldo 02.12.2013 +527,69
+Steuerübersicht¹
+Steuerliche Daten EUR
+Gewinne/Verluste aus Aktien (Verrechnungssaldo) 0,00
+Gewinne/Verluste Sonstige (Verrechnungssaldo) 0,00
+Eingereichter Freibetrag 0,00
+In Anspruch genommener Freibetrag 0,00
+Verbleibender Freibetrag 0,00
+Anrechenbare ausländische Quellensteuer 0,00
+Abgeführte Kapitalertragsteuer 0,00
+Abgeführter Solidaritätszuschlag 0,00
+Abgeführte Kirchensteuer 0,00
+Angerechnete ausländische Quellensteuer 0,00
+¹ Dies ist keine Steuerbescheinigung.
+USt-ID: DE 812 279 461
+comdirect bank AG • 25449 Quickborn • E-Mail: info@comdirect.de • Internet: www.comdirect.de • Telefax: 04106 - 708 25 85
+Finanzreport Nr. 1 per 02.12.2013 - Seite 4
+Kontonummer 3830965 / BLZ 20041133
+Zinsübersicht
+Girokonto
+Zinssatz für die Inanspruchnahme des Dispositionskredits: 9,15% p.a. (gültig ab: 22.11.2013)
+Zinssatz für geduldete Überziehungen: 13,65% p.a. (gültig ab: 22.11.2013)
+Verrechnungskonto / Tagesgeld PLUS / O&F-Konto
+Zinssatz für geduldete Überziehungen: 13,65% p.a. (gültig ab: 22.11.2013)
+Zinsgleitklausel für variable Sollzinssätze:
+Die Bank wird variable Sollzinssätze entsprechend den Änderungen des Hauptrefinanzierungszinssatzes der Europäischen Zentralbank (nachfolgend
+EZB-Zinssatz) nach folgender Maßgabe anpassen: Sofern am letzten Bankarbeitstag vor dem 15. eines Kalendermonats von der Bank eine Erhöhung des
+EZB-Zinssatzes um mindestens 0,25 Prozentpunkte gegenüber dem EZB-Zinssatz im Monat der letzten Zinsanpassung festgestellt wird, erhöht die Bank den
+variablen Sollzinssatz entsprechend. Die Bank verpflichtet sich dagegen zur Senkung des variablen Sollzinssatzes um die Veränderung des EZB-Zinssatzes,
+wenn der EZB-Zinssatz um mindestens 0,25 Prozentpunkte gesunken ist. Die Zinsanpassungen werden 5 Bankarbeitstage nach dem 15. eines Kalendermonats
+ohne gesonderte Erklärung gegenüber dem Kontoinhaber bei der comdirect bank AG wirksam. Die comdirect bank AG wird den Kontoinhaber in regelmäßigen
+Zeitabständen im Finanzreport unterrichten. Der Kontoinhaber kann die Höhe des EZB-Zinssatzes jederzeit auf der Webseite der comdirect bank AG bzw. in
+anderen öffentlich zugänglichen Medien (insbes. www.bundesbank.de) einsehen.
+Am Ende des Finanzreports noch wichtige Hinweise:
+1.Einwendungen zu Konto- und Depotbuchungen
+Sollten Sie Fragen oder Einwendungen zu den Konto- und Depotbuchungen haben, bitten wir Sie, uns dies innerhalb
+sechs Wochen nach Erhalt des Finanzreports unter Angabe der Konto-/Depotnummer mitzuteilen. Ihre schriftliche
+Einwendung richten Sie bitte an die comdirect bank AG, Innenrevision, 25449 Quickborn. 
+2.Hinweis zu Ihrer Kontodisposition
+Der Kontostand berücksichtigt nicht die Valuta (Wertstellung) der einzelnen Buchungen. Das bedeutet, dass der
+angezeigte Kontostand nicht dem tatsächlichen Kontoguthaben entsprechen muss und bei Verfügungen möglicherweise
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können. Bitte
+berücksichtigen Sie bei Ihrer Disposition daher ggf. die Wertstellungen der Kontoumsätze der letzten Tage.
+3.Übersicht Ihrer Kontodaten
+Für Ihre Überweisungen zugunsten Ihrer comdirect-Konten verwenden Sie bitte folgende Kontonummern:
+Bankleitzahl: 200 411 33
+BIC/SWIFT-Code: COBADEHD001
+- Girokonto: Konto 383096500 IBAN DE75 2004 1133 0000 0000 00
+- Tagesgeld PLUS: Konto 383096505 IBAN DE37 2004 1133 0000 0000 01
+USt-ID: DE 812 279 461
+comdirect bank AG • 25449 Quickborn • E-Mail: info@comdirect.de • Internet: www.comdirect.de • Telefax: 04106 - 708 25 85

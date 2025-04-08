@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -19,12 +20,16 @@ import org.eclipse.swt.graphics.Image;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ImageManager;
 import name.abuchen.portfolio.model.LimitPrice;
+import name.abuchen.portfolio.model.LimitPriceSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -34,6 +39,8 @@ import name.abuchen.portfolio.ui.util.viewers.BooleanAttributeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.CellItemImageClickedListener;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.ImageAttributeEditingSupport;
+import name.abuchen.portfolio.util.Pair;
 
 public class AttributeColumn extends Column
 {
@@ -89,6 +96,33 @@ public class AttributeColumn extends Column
         }
     }
 
+    private static final class ImageLabelProvider extends ColumnLabelProvider
+    {
+        private final AttributeType attribute;
+
+        private ImageLabelProvider(AttributeType attribute)
+        {
+            this.attribute = attribute;
+        }
+
+        @Override
+        public String getText(Object element)
+        {
+            return ""; //$NON-NLS-1$
+        }
+
+        @Override
+        public Image getImage(Object element)
+        {
+            if (attribute.getConverter() instanceof ImageConverter)
+            {
+                Attributable attributable = Adaptor.adapt(Attributable.class, element);
+                return ImageManager.instance().getImage(attributable, attribute);
+            }
+            return null;
+        }
+    }
+
     private static final class BooleanLabelProvider extends ColumnLabelProvider
     {
         private final AttributeType attribute;
@@ -122,13 +156,83 @@ public class AttributeColumn extends Column
         }
     }
 
+    public static final class LimitPriceComparator implements Comparator<Object>
+    {
+        private final AttributeType attribute;
+
+        private LimitPriceComparator(AttributeType attribute)
+        {
+            this.attribute = attribute;
+        }
+
+        @Override
+        public int compare(Object o1, Object o2)
+        {
+            Pair<String, Supplier<Double>> pair1 = getCompareValues(o1);
+            Pair<String, Supplier<Double>> pair2 = getCompareValues(o2);
+
+            if (pair1 == null && pair2 == null)
+                return 0;
+            else if (pair1 == null)
+                return -1;
+            else if (pair2 == null)
+                return 1;
+
+            // order by comparator...
+            int operatorCompare = pair1.getLeft().compareTo(pair2.getLeft());
+            if(operatorCompare != 0)
+                return operatorCompare;
+
+            // operators are the same, now calculate the normalized distance
+            Double distance1 = pair1.getRight().get();
+            Double distance2 = pair2.getRight().get();
+
+            // checks in case one or both distance(s) not available
+            if (distance1 == null && distance2 == null)
+                return 0;
+            else if (distance1 == null)
+                return -1;
+            else if (distance2 == null)
+                return 1;
+
+            // ...then by distance
+            return Double.compare(distance1, distance2);
+        }
+
+        private Pair<String, Supplier<Double>> getCompareValues(Object o)
+        {
+            Security s = Adaptor.adapt(Security.class, o);
+            if (s == null)
+                return null;
+
+            LimitPrice l = Adaptor.adapt(LimitPrice.class, s.getAttributes().get(attribute));
+            if (l == null)
+                return null;
+
+            SecurityPrice p = s.getSecurityPrice(LocalDate.now());
+            if (p == null)
+                return new Pair<>(l.getRelationalOperator().getOperatorString(), () -> null); // no price, no distance
+
+            return new Pair<>(l.getRelationalOperator().getOperatorString(), () -> calculateNormalizedDistance(l, p));
+        }
+
+        public static Double calculateNormalizedDistance(LimitPrice limit, SecurityPrice latest)
+        {
+            // "normalized relative distance": relative distance, but if exceeded then as positive value, otherwise as negative value
+            double relativeDistanceAbs = Math.abs(limit.calculateRelativeDistance(latest.getValue()));
+            return  limit.isExceeded(latest) ? relativeDistanceAbs : -relativeDistanceAbs;
+        }
+    }
+
     private static final class LimitPriceLabelProvider extends ColumnLabelProvider
     {
         private final AttributeType attribute;
+        private final LimitPriceSettings settings;
 
         private LimitPriceLabelProvider(AttributeType attribute)
         {
             this.attribute = attribute;
+            this.settings = new LimitPriceSettings(attribute.getProperties());
         }
 
         @Override
@@ -142,8 +246,20 @@ public class AttributeColumn extends Column
             if (attributes == null)
                 return null;
 
-            Object value = attributes.get(attribute);
-            return attribute.getConverter().toString(value);
+            LimitPrice limit = (LimitPrice) attributes.get(attribute);
+            if (limit == null)
+                return null;
+
+            // add relative/absolute difference to latest price if configured
+            if (settings.getShowAbsoluteDiff() || settings.getShowRelativeDiff())
+            {
+                SecurityPrice latestSecurityPrice = security.getSecurityPrice(LocalDate.now());
+                return settings.getFullLabel(limit, latestSecurityPrice);
+            }
+            else
+            {
+                return limit.toString();
+            }
         }
 
         @Override
@@ -162,19 +278,35 @@ public class AttributeColumn extends Column
             if (latestSecurityPrice == null)
                 return null;
 
+            return getColor(limit, latestSecurityPrice);
+        }
+
+        private Color getColor(LimitPrice limit, SecurityPrice latestSecurityPrice)
+        {
+            if (!limit.isExceeded(latestSecurityPrice))
+                return null;
+
             switch (limit.getRelationalOperator())
             {
                 case GREATER_OR_EQUAL:
-                    return latestSecurityPrice.getValue() >= limit.getValue() ? Colors.GREEN : null;
-                case SMALLER_OR_EQUAL:
-                    return latestSecurityPrice.getValue() <= limit.getValue() ? Colors.RED : null;
                 case GREATER:
-                    return latestSecurityPrice.getValue() > limit.getValue() ? Colors.GREEN : null;
+                    return settings.getLimitExceededPositivelyColor(Colors.theme().greenBackground());
+                case SMALLER_OR_EQUAL:
                 case SMALLER:
-                    return latestSecurityPrice.getValue() < limit.getValue() ? Colors.RED : null;
+                    return settings.getLimitExceededNegativelyColor(Colors.theme().redBackground());
                 default:
                     return null;
             }
+        }
+
+        @Override
+        public Color getForeground(Object element)
+        {
+            Color background = getBackground(element);
+            if (background == null)
+                return null;
+
+            return Colors.getTextColor(background);
         }
     }
 
@@ -243,12 +375,22 @@ public class AttributeColumn extends Column
         {
             setStyle(SWT.RIGHT);
             setLabelProvider(new LimitPriceLabelProvider(attribute));
+            setComparator(new LimitPriceComparator(attribute));
             new AttributeEditingSupport(attribute).attachTo(this);
         }
         else if (attribute.getType() == Bookmark.class)
         {
-            setLabelProvider(new BookmarkLabelProvider(attribute));
+            // the bookmark label provider is a StyledCellLabelProvider that
+            // cannot be used for more than one column. Always create a new
+            // instance.
+
+            setLabelProvider(() -> new BookmarkLabelProvider(attribute));
             new AttributeEditingSupport(attribute).attachTo(this);
+        }
+        else if (attribute.getConverter() instanceof ImageConverter)
+        {
+            setLabelProvider(new ImageLabelProvider(attribute));
+            new ImageAttributeEditingSupport(attribute).attachTo(this);
         }
         else
         {
@@ -304,6 +446,17 @@ public class AttributeColumn extends Column
 
                 LocalDate value = (LocalDate) attributable.getAttributes().get(attribute);
                 return value == null ? null : String.valueOf(ChronoUnit.DAYS.between(value, LocalDate.now()));
+            }
+
+            @Override
+            public String getToolTipText(Object element)
+            {
+                Attributable attributable = Adaptor.adapt(Attributable.class, element);
+                if (attributable == null)
+                    return null;
+
+                LocalDate value = (LocalDate) attributable.getAttributes().get(attribute);
+                return value == null ? null : Values.Date.format(value);
             }
         });
 

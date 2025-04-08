@@ -3,19 +3,16 @@ package name.abuchen.portfolio.ui.util.chart;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.ILineSeries;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.ILineSeries;
+import org.eclipse.swtchart.ISeries;
 
-import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.util.TextUtil;
+import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 
 public class ScatterChartToolTip extends AbstractChartToolTip
 {
@@ -29,11 +26,11 @@ public class ScatterChartToolTip extends AbstractChartToolTip
     protected Object getFocusObjectAt(Event event)
     {
         // find closest scatter series
-        ISeries[] series = getChart().getSeriesSet().getSeries();
+        var series = getChart().getSeriesSet().getSeries();
 
-        ISeries closest = null;
+        ISeries<?> closest = null;
         double minDist = Double.MAX_VALUE;
-        for (ISeries serie : series)
+        for (var serie : series)
         {
             Point point = serie.getPixelCoordinates(0);
 
@@ -57,42 +54,32 @@ public class ScatterChartToolTip extends AbstractChartToolTip
         container.setBackgroundMode(SWT.INHERIT_FORCE);
         GridLayoutFactory.swtDefaults().numColumns(3).applyTo(container);
 
-        Color foregroundColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
-        container.setForeground(foregroundColor);
-        container.setBackground(Colors.INFO_TOOLTIP_BACKGROUND);
-
         IAxis xAxis = getChart().getAxisSet().getXAxis(0);
         IAxis yAxis = getChart().getAxisSet().getYAxis(0);
-        ILineSeries closest = (ILineSeries) getFocusedObject();
+        var closest = (ILineSeries<?>) getFocusedObject();
 
         // header
 
         Label left = new Label(container, SWT.NONE);
-        left.setForeground(foregroundColor);
         left.setText(""); //$NON-NLS-1$
 
         Label middle = new Label(container, SWT.NONE);
-        middle.setForeground(foregroundColor);
         middle.setText(xAxis.getTitle().getText());
 
         Label right = new Label(container, SWT.NONE);
-        right.setForeground(foregroundColor);
         right.setText(yAxis.getTitle().getText());
 
         // values
 
-        left = new Label(container, SWT.NONE);
-        left.setBackground(closest.getSymbolColor());
-        left.setForeground(Colors.getTextColor(closest.getSymbolColor()));
-        left.setText(TextUtil.pad(TextUtil.tooltip(closest.getId())));
+        ColoredLabel cl = new ColoredLabel(container, SWT.NONE);
+        cl.setBackdropColor(closest.getSymbolColor());
+        cl.setText(closest.getDescription());
 
         middle = new Label(container, SWT.RIGHT);
-        middle.setForeground(foregroundColor);
         middle.setText(xAxis.getTick().getFormat().format(closest.getXSeries()[0]));
         GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(middle);
 
         right = new Label(container, SWT.RIGHT);
-        right.setForeground(foregroundColor);
         right.setText(yAxis.getTick().getFormat().format(closest.getYSeries()[0]));
         GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(right);
     }

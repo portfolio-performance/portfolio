@@ -1,0 +1,40 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+   
+Am Marktplatz 10 · 97762 Hammelburg
+Depotnummer 99999999
+ 
+ Kundennummer 999999999
+Max Mustermann
+ Auftragsnummer 284722/61.00
+Max Mustermann Datum 02.05.2023
+Musterstrasse 7 Ihr Berater Herr Max Mustermann
+90402 Nürnberg Telefon +49 951 302896-13
+Rechnungsnummer W06175-0000099999/23
+Umsatzsteuer-ID DE198159260   
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 125,3258 XTR.(IE) - MSCI WORLD              IE00BJ0KDQ92 (A1XB5U)
+REGISTERED SHARES 1C O.N.          
+Handels-/Ausführungsplatz Außerbörslich
+Schlusstag/-Zeit 02.05.2023 09:34:40 Auftraggeber Max Mustermann
+Ausführungskurs 79,792 EUR Auftragserteilung/ -ort sonstige
+Wertpapierrechnung Lagerland Irland
+Kurswert 10.000,00- EUR
+Provision 2,50- EUR
+Ausmachender Betrag 10.002,50- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 04.05.2023 zu Lasten des Kontos 9999999 (IBAN DE65 7013 0800 0001 9999 99),
+BLZ 70130800 (BIC GENODEF1M06).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Ausf. erfolgte über Quotrix
+Ihr ETF-Sparplan Nr.      1
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Die Order wurde im Internet aufgegeben.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6175.05021799.00000999R07

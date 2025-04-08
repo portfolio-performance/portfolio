@@ -1,0 +1,39 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Umsatzabrechnung-Nr. 20
+Depot-Nr. 99999999999
+Seite 1 von 3
+Herrn
+XXX XXX
+XXXXXXXXXXX 123 
+12345 XXXXX
+12.04.2021
+Umsatzabrechnung für Ihr VL-FondsDepot bei ebase
+für den Zeitraum vom 02.04.2021 bis 09.04.2021
+Entgeltbelastung Verkauf 3,00 EUR mit Kursdatum 06.04.2021 aus Depotposition 99999999999.01
+iSh.STOXX Europe 600 U.ETF DE Inhaber-Anteile
+Ref. Nr. 000000000/000000000, Buchungsdatum 06.04.2021
+Belastung der offenen Forderung(en) aus Ref. Nr. 000000000/000000000
+ISIN Anteile Abrechnungskurs Betrag
+DE0002635307 -9,999999 99,999999 EUR 3,00 EUR
+Belastete Entgelte abzgl. Entgelte
+Summe 3,00 EUR
+Zahlungsbetrag 0,00 EUR
+Entgelte Betrag offene Forderung belasteter Betrag
+Depotführungsentgelt inkl. 19 %
+USt 3,00 EUR 0,00 EUR 3,00 EUR
+zum 31.03.2021
+Summe der belasteten Entgelte 3,00 EUR
+Bestand der Depotpositionen mit Umsatz nach Verbuchung
+Pos. Fonds Anteile Bewertungskurs zum Datum Bestand
+01 DE0002635307 99,999999 99,999999 EUR 08.04.2021 9.999,99 EUR
+iSh.STOXX Europe 600 U.ETF DE Inhaber-Anteile
+vermögenswirksame Leistungen
+Bis 01.01.2026 sind 99,999999 Anteile gemäß Vermögensbildungsgesetz gesperrt.
+Depotgesamtwert 9.999,99 EUR
+Ihre Depotbestände werden in der Girosammelverwahrung geführt - es sei denn, es ist ein besonderer Verwahrart-Hinweis in der
+Aufstellung vermerkt.
+4Ihr Freistellungsauftrag in Höhe von 999,99 EUR ist vorgemerkt.
+4Sie haben einen verbleibenden Freistellungsbetrag in Höhe von 999,99 EUR.

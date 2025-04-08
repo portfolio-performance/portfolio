@@ -1,0 +1,29 @@
+PDF author: 'Registered to: SWISQUOT'
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 1234567 - TRADING
+IBAN: CH431213484123183435
+Herrn Max Mustermann
+Musterstraße 1
+DE-12345 Musterstadt
+Gland, 31.03.2021
+Dividende Unsere Referenz: 222443221 
+Im Hinblick auf folgenden Titel:
+Titel
+Bezeichnung Anzahl
+Vanguard All World ETF Dist ISIN: IE00B3RBWM25NKN: 18575459 40
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben: 
+Kontonummer 123456701
+Ausführungsdatum 18.03.2021
+Valutadatum 31.03.2021
+Anzahl 40
+Dividende 0.33801 USD
+Betrag USD 13.52
+Total USD 13.52
+Wechselkurs USD / CHF : 0.94242
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.310.079

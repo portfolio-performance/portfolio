@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.datatransfer.actions;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -21,6 +21,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -32,12 +33,15 @@ public class DetectDuplicatesActionTest
     @Test
     public void testDuplicateDetection4AccountTransaction() throws IntrospectionException, ReflectiveOperationException
     {
-        DetectDuplicatesAction action = new DetectDuplicatesAction();
+        DetectDuplicatesAction action = new DetectDuplicatesAction(new Client());
 
-        new PropertyChecker<AccountTransaction>(AccountTransaction.class, "note", "forex", "monetaryAmount").before(
-                        (name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(), is(Code.WARNING)))
-                        .after((name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(), is(Code.OK)))
-                        .run();
+        new PropertyChecker<AccountTransaction>(
+                        AccountTransaction.class, "note", "source", "forex", "monetaryAmount", "updatedAt")
+                                        .before((name, o, c) -> assertThat(name,
+                                                        action.process(o, account(c)).getCode(), is(Code.WARNING)))
+                                        .after((name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(),
+                                                        is(Code.OK)))
+                                        .run();
     }
 
     @SuppressWarnings("nls")
@@ -45,10 +49,10 @@ public class DetectDuplicatesActionTest
     public void testDuplicateDetection4PortfolioTransaction()
                     throws IntrospectionException, ReflectiveOperationException
     {
-        DetectDuplicatesAction action = new DetectDuplicatesAction();
+        DetectDuplicatesAction action = new DetectDuplicatesAction(new Client());
 
-        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "fees", "taxes", "note", "forex",
-                        "monetaryAmount") //
+        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "fees", "taxes", "note", "source",
+                        "forex", "monetaryAmount", "updatedAt") //
                                         .before((name, o, c) -> assertThat(name,
                                                         action.process(o, portfolio(c)).getCode(), is(Code.WARNING)))
                                         .after((name, o, c) -> assertThat(name,
@@ -61,10 +65,10 @@ public class DetectDuplicatesActionTest
     public void testDuplicateDetectionWithPurchaseAndDeliveryPairs()
                     throws IntrospectionException, ReflectiveOperationException
     {
-        DetectDuplicatesAction action = new DetectDuplicatesAction();
+        DetectDuplicatesAction action = new DetectDuplicatesAction(new Client());
 
-        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "type", "fees", "taxes", "note", "forex",
-                        "monetaryAmount") //
+        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "type", "fees", "taxes", "note", "source",
+                        "forex", "monetaryAmount", "updatedAt") //
                                         .before((name, o, c) -> {
                                             o.setType(PortfolioTransaction.Type.BUY);
                                             c.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
@@ -75,8 +79,8 @@ public class DetectDuplicatesActionTest
                                                         action.process(o, portfolio(c)).getCode(), is(Code.OK)))
                                         .run();
 
-        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "type", "fees", "taxes", "note", "forex",
-                        "monetaryAmount") //
+        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "type", "fees", "taxes", "note", "source",
+                        "forex", "monetaryAmount", "updatedAt") //
                                         .before((name, o, c) -> {
                                             o.setType(PortfolioTransaction.Type.SELL);
                                             c.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);

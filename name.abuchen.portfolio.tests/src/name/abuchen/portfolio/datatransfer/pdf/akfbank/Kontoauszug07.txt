@@ -1,0 +1,58 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.2.qualifier
+-----------------------------------------
+akf bank 
+GmbH & Co KG
+Servicecenter
+Postfach 1242 
+85312 Freising
+Herrn Kunde Max Muster Tel. 018 03-22 42 52*
+Max Muster Fax 018 03-639296*
+Musterstr. 2
+Datum 30.11.2012 service@akf24.de
+04668 Musterhausen www.akf24.de
+Auszug Nr. 11
+Blatt 1 von 1 *9 Ct./Min. aus dem 
+Festnetz der Deutschen 
+Kontonummer 10016175 Telekom; max. 42 Ct./
+alter Saldo zum 31.10.2012 Min. aus Mobilfunk-
+netzen
+in EUR 1.513,18
+Kontoauszug
+Nr. Valuta / Buchungstag Buchungstext EUR
+01 14.11.2012 / 14.11.2012 Einzelüberweisung -5,00
+Gebühren für Nachbe-
+stellung PIN/TAN-Liste
+02 30.11.2012 / 30.11.2012 Kontoabschluß 2,71
+Habenzinsen
+v. 31.10.2012 b. 30.11.2012
+Zinsen zu 2,150
+neuer Saldo zum 30.11.2012
+in EUR 1.510,89
+Bitte beachten Sie die folgenden Hinweise:
+Kontoauszug ohne Rechnungsabschluss (Kontoübersicht)
+Wir bitten Sie, den Kontoauszug gemäß Ziffer 11. Absatz 4 unserer chend unserer Allgmeinen Geschäftsbedingungen, als von Ihnen
+Allgemeinen Geschäftsbedingungen auf Vollständigkeit und Richtig- anerkannt.
+keit zu prüfen und Einwendungen der Revision unserer Bank Genehmigung von Belastungen aus Lastschriften
+unverzüglich schriftlich mitzuteilen. Haben Sie eine Belastungsbuchung aus einer Lastschrift, für die
+Sie dem Gläubiger eine Einzugsermächtigung erteilt haben, nicht
+akf bank GmbH & Co KG, Abteilung Revision, schon genehmigt, so haben Sie Einwendungen gegen die im Saldo
+Friedrichstraße 51, 42105 Wuppertal bzw. in den Salden dieses Rechnungsabschlusses enthaltene Be-
+Rechnungsabschluss inkl. Saldenmitteilung lastungsbuchung spätestens vor Ablauf von sechs Wochen nach
+Wir bitten Sie, den Saldo Ihres Kontos bzw. die Salden Ihrer Zugang des Rechnungsabschlusses zu erheben. Sofern Sie Ihre
+Konten zu prüfen und Einwendungen der Revision unserer Bank Einwendungen schriftlich geltend machen, genügt die Absendung
+unverzüglich, spätestens innerhalb von sechs Wochen nach innerhalb der Sechs-Wochen-Frist. Das unterlassen rechtzeitiger
+Zugang, schriftlich mitzuteilen. Einwendungen gilt als Genehmigung der Belastungsbuchung.
+Werden innerhalb der Frist keine Einwendungen vorgebracht, so
+gilt der Saldo bzw. gelten die Salden wie oben aufgeführt, entspre- Ihre
+akf bank GmbH & Co KG
+akf bank 
+GmbH & Co KG 
+Sitz:
+Hauptverwaltung 
+Friedrichstr. 51
+Blatt 1 von 1 42105 Wuppertal
+ELG_KA_12_10
+
+```

@@ -1,12 +1,10 @@
 package name.abuchen.portfolio.model;
 
-import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 
 public class AccountTransaction extends Transaction
@@ -47,38 +45,16 @@ public class AccountTransaction extends Transaction
         }
     }
 
-    /**
-     * Comparator to sort by date, amount, type, and hash code in order to have
-     * a stable enough sort order to calculate the balance per transaction.
-     */
-    public static final class ByDateAmountTypeAndHashCode implements Comparator<AccountTransaction>, Serializable
-    {
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public int compare(AccountTransaction t1, AccountTransaction t2)
-        {
-            int compare = t1.getDateTime().compareTo(t2.getDateTime());
-            if (compare != 0)
-                return compare;
-
-            compare = Long.compare(t1.getAmount(), t2.getAmount());
-            if (compare != 0)
-                return compare;
-
-            compare = t1.getType().compareTo(t2.getType());
-            if (compare != 0)
-                return compare;
-
-            return Integer.compare(t1.hashCode(), t2.hashCode());
-        }
-    }
-
     private Type type;
 
     public AccountTransaction()
     {
         // needed for xstream de-serialization
+    }
+
+    /* protobuf only */ AccountTransaction(String uuid)
+    {
+        super(uuid);
     }
 
     public AccountTransaction(LocalDateTime date, String currencyCode, long amount, Security security, Type type)
@@ -95,6 +71,7 @@ public class AccountTransaction extends Transaction
     public void setType(Type type)
     {
         this.type = type;
+        setUpdatedAt(Instant.now());
     }
 
     /**
@@ -103,16 +80,15 @@ public class AccountTransaction extends Transaction
      */
     public long getGrossValueAmount()
     {
-        long taxes = getUnits().filter(u -> u.getType() == Unit.Type.TAX)
-                        .collect(MoneyCollectors.sum(getCurrencyCode(), Unit::getAmount)).getAmount();
-
-        return getAmount() + (type.isCredit() ? taxes : -taxes);
+        long taxAndFees = getUnitSum(Unit.Type.FEE, Unit.Type.TAX).getAmount();
+        return getAmount() + (type.isCredit() ? taxAndFees : -taxAndFees);
     }
 
     /**
      * Returns the gross value, i.e. the value before taxes are applied. At the
      * moment, only dividend transactions are supported.
      */
+    @Override
     public Money getGrossValue()
     {
         return Money.of(getCurrencyCode(), getGrossValueAmount());

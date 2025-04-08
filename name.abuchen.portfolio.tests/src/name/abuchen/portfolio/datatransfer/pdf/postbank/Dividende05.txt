@@ -1,0 +1,46 @@
+PDF Autor: 'Deutsche Postbank AG'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postbank Köln · 51222 Köln    
+Depotnummer
+ 123456789
+ Kundennummer 987654321
+VN NN VN NN
+ Abrechnungsnr. 55626672580
+Frau und Herrn Datum 25.02.2021
+VN NN und
+VN NN
+Strasse. Hs#
+PLZ Ort
+                                                        
+                                                        
+                                                        
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 81 ISHSII-DEV.MKTS PROP.YLD U.ETF IE00B1FZS350 (A0LEW8)
+REGISTERED SHS USD (DIST) O.N.
+Zahlbarkeitstag 24.02.2021 Ausschüttung pro St. 0,146100000 USD
+Bestandsstichtag 10.02.2021 Herkunftsland Irland
+Ex-Tag 11.02.2021
+Geschäftsjahr 01.11.2020 - 31.10.2021
+Devisenkurs EUR / USD  1,2262
+Devisenkursdatum 25.02.2021
+Ausschüttung 11,83 USD 9,65+ EUR
+Kapitalertragsteuerpflichtiger Ertrag 11,83 USD
+Umrechnung in EUR 9,65 EUR
+Verrechneter Sparer-Pauschbetrag 9,65 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 9,65+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Den Betrag buchen wir mit Wertstellung 26.02.2021 zu Gunsten des Kontos 123456789 (IBAN DExx xxxx xxxx xxxx xxxx
+xx), BLZ xxx xxx xx (BIC PBNKDEFFXXX). 
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2021 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien Sonstige
+Pauschbetrag Quellensteuer
+Nachher xx,xx 0,00 x.xxx,xx 0,00 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+0860.02260100.0000668ER03

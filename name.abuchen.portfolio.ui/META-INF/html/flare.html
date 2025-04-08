@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<link rel="stylesheet" type="text/css" href="${/META-INF/css/pp.css}">
-<style>
-path {
-  stroke: #fff;
-  fill-rule: evenodd;
-}
-
-text {
-  cursor: default;
-}
-</style>
+<link rel="stylesheet" type="text/css" href="${/META-INF/css/THEME.css}">
 <body>
 <script src="${/META-INF/js/d3.min.js}"></script>
 <script src="${/META-INF/js/pp.js}"></script>
@@ -113,6 +103,10 @@ var flare = {
 	    return;
 
     node = d;
+
+    if (typeof onItemSelected === 'function') {
+      onItemSelected(d.uuid);
+    }
 
     flare.path.transition()
       .duration(1000)

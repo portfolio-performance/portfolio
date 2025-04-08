@@ -2,12 +2,12 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -16,19 +16,17 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.IAxis.Position;
-import org.swtchart.IBarSeries;
-import org.swtchart.ICustomPaintListener;
-import org.swtchart.IPlotArea;
-import org.swtchart.ISeries;
-import org.swtchart.ISeries.SeriesType;
-import org.swtchart.LineStyle;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.IAxis.Position;
+import org.eclipse.swtchart.IBarSeries;
+import org.eclipse.swtchart.ICustomPaintListener;
+import org.eclipse.swtchart.ISeries.SeriesType;
+import org.eclipse.swtchart.LineStyle;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
@@ -38,9 +36,13 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.CacheKey;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.chart.PlainChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
+import name.abuchen.portfolio.ui.util.format.AmountNumberFormat;
+import name.abuchen.portfolio.ui.util.format.ThousandsNumberFormat;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
@@ -49,7 +51,10 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
 {
     public enum ChartType
     {
-        COUNT(Messages.ColumnCount), SUM(Messages.ColumnSum);
+        COUNT(Messages.ColumnCount), //
+        SUM(Messages.ColumnSum), //
+        COUNT_BY_YEAR(Messages.ColumnCountByYear), //
+        SUM_BY_YEAR(Messages.ColumnSumByYear);
 
         private String label;
 
@@ -73,6 +78,37 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         }
     }
 
+    public enum TransactionFilter
+    {
+        ALL_TRANSACTIONS(Messages.LabelAllTransactions), //
+        BUYS_ONLY(Messages.LabelPurchaseTransactionsOnly), //
+        SELLS_ONLY(Messages.LabelSaleTransactionsOnly), //
+        ALL_INBOUND(Messages.LabelAllInboundTransactions), //
+        ALL_OUTBOUND(Messages.LabelAllOutboundTransactions);
+
+        private String label;
+
+        private TransactionFilter(String label)
+        {
+            this.label = label;
+        }
+
+        @Override
+        public String toString()
+        {
+            return label;
+        }
+    }
+
+    static class TransactionFilterConfig extends EnumBasedConfig<TransactionFilter>
+    {
+        public TransactionFilterConfig(WidgetDelegate<?> delegate)
+        {
+            super(delegate, Messages.LabelTransactionFilter, TransactionFilter.class,
+                            Dashboard.Config.TRANSACTION_FILTER, Policy.EXACTLY_ONE);
+        }
+    }
+
     public static class TimeGridPaintListener implements ICustomPaintListener
     {
         private static final int INDENT = 5;
@@ -87,13 +123,21 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         @Override
         public void paintControl(PaintEvent e)
         {
+            if (chart.getData() instanceof List && !((List<?>) chart.getData()).isEmpty()
+                            && (((List<?>) chart.getData()).get(0) instanceof Year))
+            {
+                // in case that the chart is grouped by year we do not draw the
+                // markers per year
+                return;
+            }
+
             @SuppressWarnings("unchecked")
             List<YearMonth> yearMonths = (List<YearMonth>) chart.getData();
             if (yearMonths == null || yearMonths.isEmpty())
                 return;
-            
+
             // collect years
-            
+
             IAxis xAxis = chart.getAxisSet().getXAxis(0);
 
             List<Pair<Integer, Integer>> years = new ArrayList<>();
@@ -158,9 +202,12 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
     {
         super(widget, data);
 
+        addConfig(new ChartShowYAxisConfig(this, true));
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new ClientFilterConfig(this));
         addConfig(new ChartTypeConfig(this));
+        addConfig(new TransactionFilterConfig(this));
+        addConfig(new ChartHeightConfig(this));
 
         this.converter = data.getCurrencyConverter();
     }
@@ -169,15 +216,21 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
     public Composite createControl(Composite parent, DashboardResources resources)
     {
         Composite container = new Composite(parent, SWT.NONE);
+        container.setData(UIConstants.CSS.CLASS_NAME, this.getContainerCssClassNames());
         GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
         container.setBackground(parent.getBackground());
 
         title = new Label(container, SWT.NONE);
         title.setBackground(container.getBackground());
+        title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.TITLE);
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
-        chart = new Chart(container, SWT.NONE);
+        chart = new PlainChart(container, SWT.NONE);
+        chart.setData(UIConstants.CSS.CLASS_NAME, "chart"); //$NON-NLS-1$
+        getDashboardData().getStylingEngine().style(chart);
+
+        chart.setBackground(container.getBackground());
         chart.getTitle().setVisible(false);
         chart.getTitle().setText(title.getText());
 
@@ -186,26 +239,21 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         toolTip = new TimelineChartToolTip(chart);
         toolTip.enableCategory(true);
         toolTip.reverseLabels(true);
-        toolTip.setValueFormat(new DecimalFormat("#")); //$NON-NLS-1$
+        toolTip.setDefaultValueFormat(new DecimalFormat("#")); //$NON-NLS-1$
         toolTip.setXAxisFormat(obj -> {
             Integer index = (Integer) obj;
-            @SuppressWarnings("unchecked")
-            List<YearMonth> yearMonths = (List<YearMonth>) chart.getData();
-            return yearMonths.get(index).toString();
+            List<?> yearsOrYearMonths = (List<?>) chart.getData();
+
+            return yearsOrYearMonths.get(index).toString();
         });
 
-        GC gc = new GC(container);
-        gc.setFont(resources.getKpiFont());
-        Point stringExtend = gc.stringExtent("X"); //$NON-NLS-1$
-        gc.dispose();
-
-        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, stringExtend.y * 7).grab(true, false).applyTo(chart);
+        int yHint = get(ChartHeightConfig.class).getPixel();
+        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, yHint).grab(true, false).applyTo(chart);
 
         // configure axis
 
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
         xAxis.getTick().setVisible(true);
-        xAxis.getTick().setForeground(Colors.BLACK);
         xAxis.getTitle().setVisible(false);
         xAxis.getTitle().setText(Messages.ColumnMonth);
         xAxis.getGrid().setStyle(LineStyle.NONE);
@@ -213,11 +261,11 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
 
         IAxis yAxis = chart.getAxisSet().getYAxis(0);
         yAxis.getTitle().setVisible(false);
-        yAxis.getTick().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+        yAxis.getTick().setVisible(get(ChartShowYAxisConfig.class).getIsShowYAxis());
         yAxis.setPosition(Position.Secondary);
 
-        chart.getPlotArea().addTraverseListener(event -> event.doit = true);
-        ((IPlotArea) chart.getPlotArea()).addCustomPaintListener(new TimeGridPaintListener(chart));
+        chart.getPlotArea().getControl().addTraverseListener(event -> event.doit = true);
+        chart.getPlotArea().addCustomPaintListener(new TimeGridPaintListener(chart));
 
         container.layout();
 
@@ -241,38 +289,92 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
     {
         try
         {
+            title.setText(TextUtil.tooltip(getWidget().getLabel()));
+
             chart.suspendUpdate(true);
+
+            GridData data = (GridData) chart.getLayoutData();
+
+            int oldHeight = data.heightHint;
+            int newHeight = get(ChartHeightConfig.class).getPixel();
+
+            if (oldHeight != newHeight)
+            {
+                data.heightHint = newHeight;
+                title.getParent().layout(true);
+                title.getParent().getParent().layout(true);
+            }
 
             chart.getTitle().setText(title.getText());
 
-            for (ISeries s : chart.getSeriesSet().getSeries())
+            for (var s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             ChartType chartType = get(ChartTypeConfig.class).getValue();
 
-            toolTip.setValueFormat(new DecimalFormat(chartType == ChartType.COUNT ? "#" : "#,##0.00")); //$NON-NLS-1$ //$NON-NLS-2$
+            toolTip.setDefaultValueFormat(chartType == ChartType.COUNT || chartType == ChartType.COUNT_BY_YEAR
+                            ? new DecimalFormat("#") //$NON-NLS-1$
+                            : new AmountNumberFormat());
 
             IAxis xAxis = chart.getAxisSet().getXAxis(0);
             Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
-            List<YearMonth> yearMonths = interval.getYearMonths();
 
-            chart.setData(yearMonths);
+            chart.getAxisSet().getYAxis(0).getTick()
+                            .setFormat(chartType == ChartType.COUNT || chartType == ChartType.COUNT_BY_YEAR
+                                            ? new DecimalFormat("#") //$NON-NLS-1$
+                                            : new ThousandsNumberFormat());
+            chart.getAxisSet().getYAxis(0).getTick().setVisible(get(ChartShowYAxisConfig.class).getIsShowYAxis());
 
-            xAxis.setCategorySeries(yearMonths.stream().map(ym -> String.valueOf(ym.getMonthValue()))
-                            .collect(Collectors.toList()).toArray(new String[0]));
+            if (this.isAggregateByYear())
+            {
+                List<Year> years = interval.getYears();
+                chart.setData(years);
+                xAxis.setCategorySeries(years.stream().map(year -> String.valueOf(year.getValue())).toList()
+                                .toArray(new String[0]));
+            }
+            else
+            {
+                List<YearMonth> yearMonths = interval.getYearMonths();
+                chart.setData(yearMonths);
+                xAxis.setCategorySeries(yearMonths.stream().map(ym -> String.valueOf(ym.getMonthValue())).toList()
+                                .toArray(new String[0]));
+            }
 
-            createSeries(chartType, interval, transactions, yearMonths, PortfolioTransaction.Type.BUY,
-                            Colors.ICON_BLUE);
+            TransactionFilter filter = get(TransactionFilterConfig.class).getValue();
+            switch (filter)
+            {
+                case ALL_TRANSACTIONS:
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.BUY, Colors.ICON_BLUE);
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_INBOUND,
+                                    Colors.brighter(Colors.ICON_BLUE));
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.SELL, Colors.ICON_ORANGE);
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_OUTBOUND,
+                                    Colors.brighter(Colors.ICON_ORANGE));
+                    break;
 
-            createSeries(chartType, interval, transactions, yearMonths, PortfolioTransaction.Type.DELIVERY_INBOUND,
-                            Colors.brighter(Colors.ICON_BLUE));
+                case ALL_INBOUND:
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.BUY, Colors.ICON_BLUE);
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_INBOUND,
+                                    Colors.brighter(Colors.ICON_BLUE));
+                    break;
 
-            createSeries(chartType, interval, transactions, yearMonths, PortfolioTransaction.Type.SELL,
-                            Colors.ICON_ORANGE);
+                case BUYS_ONLY:
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.BUY, Colors.ICON_BLUE);
+                    break;
 
-            createSeries(chartType, interval, transactions, yearMonths, PortfolioTransaction.Type.DELIVERY_OUTBOUND,
-                            Colors.brighter(Colors.ICON_ORANGE));
+                case ALL_OUTBOUND:
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.SELL, Colors.ICON_ORANGE);
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.DELIVERY_OUTBOUND,
+                                    Colors.brighter(Colors.ICON_ORANGE));
+                    break;
 
+                case SELLS_ONLY:
+                    createSeries(chartType, interval, transactions, PortfolioTransaction.Type.SELL, Colors.ICON_ORANGE);
+                    break;
+
+                default:
+                    throw new UnsupportedOperationException();
+            }
         }
         finally
         {
@@ -295,11 +397,14 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
     }
 
     private void createSeries(ChartType chartType, Interval interval, List<TransactionPair<?>> transactions,
-                    List<YearMonth> yearMonths, PortfolioTransaction.Type type, Color color)
+                    PortfolioTransaction.Type type, Color color)
     {
-        IBarSeries barSeries = (IBarSeries) chart.getSeriesSet().createSeries(SeriesType.BAR, type.toString());
+        var barSeries = (IBarSeries<?>) chart.getSeriesSet().createSeries(SeriesType.BAR, type.toString());
+        barSeries.setDescription(type.toString());
+        List<Year> years = interval.getYears();
+        List<YearMonth> yearMonths = interval.getYearMonths();
 
-        double[] series = new double[yearMonths.size()];
+        double[] series = new double[this.isAggregateByYear() ? years.size() : yearMonths.size()];
 
         for (TransactionPair<?> pair : transactions) // NOSONAR
         {
@@ -314,20 +419,21 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
             if (type != tx.get().getTransaction().getType())
                 continue;
 
-            int indexOf = yearMonths.indexOf(YearMonth.from(tx.get().getTransaction().getDateTime()));
+            int indexOf = this.isAggregateByYear() ? years.indexOf(Year.from(tx.get().getTransaction().getDateTime()))
+                            : yearMonths.indexOf(YearMonth.from(tx.get().getTransaction().getDateTime()));
             if (indexOf >= 0)
             {
                 switch (chartType)
                 {
-                    case COUNT:
+                    case COUNT, COUNT_BY_YEAR:
                         series[indexOf] += 1;
                         break;
-                    case SUM:
+                    case SUM, SUM_BY_YEAR:
                         series[indexOf] += (tx.get().getTransaction().getMonetaryAmount(converter).getAmount()
                                         / Values.Amount.divider());
                         break;
                     default:
-                        throw new IllegalArgumentException();
+                        throw new IllegalArgumentException("unsupported chart type " + chartType); //$NON-NLS-1$
                 }
             }
         }
@@ -344,4 +450,10 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         return title;
     }
 
+    private boolean isAggregateByYear()
+    {
+        ChartType chartType = get(ChartTypeConfig.class).getValue();
+
+        return chartType == ChartType.SUM_BY_YEAR || chartType == ChartType.COUNT_BY_YEAR;
+    }
 }

@@ -1,0 +1,90 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.72.2
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Smartbroker AG
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Ritterstraße 11
+10969 Berlin
+Seite 1/2
+Berlin
+vFwoSZWLD BjEFQARmF 29.11.2024
+Brunnenstr. 6
+vTLWHaMam KLhLHSoLp
+13398 XBhRLjx Stamm-Nr.: 4091975    Portfolio: 1
+Depot-Nr.: 4045038254
+Vorgangs-Nr.: 84618810
+Referenz-Nr.: 032504176
+Buchungsanzeige
+Fusion / Zusammenlegung
+Ausbuchung aus Depot 5140233227 per 22.11.2024
+Nominale ISIN: LU2089238203 WKN: A2PWMK
+STK 26 Amundi Index Solu.-A.PRIME GL.
+Nam.-Ant.UC.ETF DR USD Acc.oN
+Einbuchung in Depot 7271460689 per 22.11.2024
+Nominale ISIN: IE0009DRDY20 WKN: ETF210
+STK 26 Amu.ETF ICAV-PRIME Glbl ETF
+Bear.Shs USD Acc. oN
+Verhältnis: 1 : 1 
+Umrechnungskurs: EUR/USD 1,0412000
+Kapitalertragsteuer USD 34,88 -
+Solidaritätszuschlag USD 1,91 -
+Zu Lasten Konto 6394165637 Valuta: 22.11.2024 USD 36,79
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de UMTA-053.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Fusion / Zusammenlegung
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Allgemeiner Verlusttopf (VVT) EUR 3,52 EUR 64,39 EUR 67,91
+Allgemeiner Verlusttopf (VVT) EUR 67,91 EUR 2,46 EUR 70,37
+Allgemeiner Verlusttopf (VVT) EUR 70,37 EUR 70,37 - EUR 0,00
+Verrechnung FSA mit allg. Erträgen EUR 0,00 EUR 11,01 - EUR 11,01 -
+Kapitalertragsteuer EUR 0,00 EUR 33,50 EUR 33,50
+Freistellungsauftrag (FSA) EUR 11,01 EUR 11,01 - EUR 0,00
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Veräußerungsergebnis vor Teilfreistellung Aktienfonds EUR 214,63 EUR 133,25
+Veräußerungsergebnis Teilfreistellung 30% EUR 64,39 - EUR 0,00
+Abzug besitzanteilige Vorabpauschale vor Teilfreistellung EUR 2,46 - EUR 0,00
+Abzug besitzanteilige Vorabpauschale Teilfreistellung 30% EUR 0,74 EUR 0,74
+Bemessungsgrundlage zur Kapitalertragsteuer EUR 148,52 EUR 133,99
+Bemessungsgrundlage zur Kapitalertragsteuer
+Kapitalertragsteuer 25,00 %
+EUR 33,50 - EUR 33,50 -
+Solidaritätszuschlag 5,50 %
+EUR 1,83 - EUR 1,83 -
+Ausbuchung
+Stück 26 Amundi Index Solu.-A.PRIME GL.
+ISIN: LU2089238203/EUR
+Kurs: USD 33,5388
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP Kauf 25638487 06.10.2023 STK 26 613,47 828,10 214,63
+akk.Vorabpauschale Aktienfonds 2,46 0,00 2,46
+Einbuchung
+Stück 26 Amu.ETF ICAV-PRIME Glbl ETF
+ISIN: IE0009DRDY20/EUR
+Kurs: USD 33,6431
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten
+WP Einbuchung CA 36717900 22.11.2024 STK 26 825,53
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de UMTA-053.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.

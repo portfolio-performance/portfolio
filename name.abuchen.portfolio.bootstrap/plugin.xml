@@ -13,8 +13,8 @@
                value="Portfolio Performance">
          </property>
          <property
-               name="applicationCSS"
-               value="platform:/plugin/name.abuchen.portfolio.bootstrap/default.css">
+               name="cssTheme"
+               value="name.abuchen.portfolio.light">
          </property>
          <property
                name="lifeCycleURI"

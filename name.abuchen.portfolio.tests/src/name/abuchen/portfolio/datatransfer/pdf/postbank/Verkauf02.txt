@@ -1,0 +1,56 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postbank Köln · 51222 Köln    Seite 1 von 2
+Depotnummer
+ 123456789
+ Kundennummer 1234567899
+Dr. Max Mustermann
+ Auftragsnummer 12345678999/50.00
+Herrn Datum 13.12.2016
+Dr. Max Mustermann Rechnungsnummer W00860-0123456789/16
+Musterweg 1 Umsatzsteuer-ID DE123456789   
+12345 Musterstadt
+ 
+Wertpapier Abrechnung Verkauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 10 NETFLIX INC.                       US64110L1061 (552484)
+REGISTERED SHARES DL -,001         
+Börse Tradegate (Best Execution)
+Market-Order
+Limit bestens
+Schlusstag/-Zeit 13.12.2016 10:35:11
+Ausführungskurs 115,15 EUR
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 1.151,50 EUR
+Provision 7,95- EUR
+Übertragungs-/Liefergebühr 0,65- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn 173,20 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 173,20 EUR
+ 
+Steuerberechnung
+Kapitalertragsteuer 24,51% auf 173,20 EUR 42,45- EUR
+Solidaritätszuschlag 5,50% auf 42,45 EUR 2,33- EUR
+Kirchensteuer 8,00% auf 42,45 EUR 3,39- EUR
+Ausmachender Betrag 1.094,73 EUR
+ 
+Den Gegenwert buchen wir mit Valuta  15.12.2016 zu Gunsten des Kontos  123456789, BLZ  37011000. 
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+0800.12130011.0004005OR07                                                             
+Seite 2 von 2
+Depotnummer 123456789
+Kundennummer 1234567899
+Auftragsnummer 123456/50.00
+Datum 13.12.2016
+ 
+Für das Geschäft wurde keine Anlageberatung erbracht.
+ 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2016 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien Sonstige
+Pauschbetrag Quellensteuer
+Nachher 0,00 0,00 0,00 0,00 504,04 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.12131911.0004536OR07                                                             

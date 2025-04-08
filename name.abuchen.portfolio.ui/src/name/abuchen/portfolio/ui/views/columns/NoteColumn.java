@@ -23,12 +23,11 @@ public class NoteColumn extends Column
 
     public NoteColumn(String id)
     {
-        super(id, Messages.ColumnNote, SWT.LEFT, 22);
+        super(id, Messages.ColumnNote, SWT.LEFT, 200);
 
         setLabelProvider(new ColumnLabelProvider()
         {
-            @Override
-            public String getText(Object e)
+            private String getRawText(Object e)
             {
                 Annotated n = Adaptor.adapt(Annotated.class, e);
                 if (n != null)
@@ -39,16 +38,23 @@ public class NoteColumn extends Column
             }
 
             @Override
+            public String getText(Object e)
+            {
+                String note = getRawText(e);
+                return note == null || note.isEmpty() ? null : TextUtil.toSingleLine(note);
+            }
+
+            @Override
             public Image getImage(Object e)
             {
-                String note = getText(e);
+                String note = getRawText(e);
                 return note != null && note.length() > 0 ? Images.NOTE.image() : null;
             }
 
             @Override
             public String getToolTipText(Object e)
             {
-                String note = getText(e);
+                String note = getRawText(e);
                 return note == null || note.isEmpty() ? null : TextUtil.wordwrap(note);
             }
 

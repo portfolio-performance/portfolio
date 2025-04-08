@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.46.4-SNAPSHOT</version>
+		<version>0.74.3-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -31,6 +31,15 @@
 
 		<plugins>
 			<plugin>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>enforce-versions</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-plugin</artifactId>
 				<configuration>
@@ -40,7 +49,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>1.4</version>
+				<version>3.2.1</version>
 				<executions>
 					<execution>
 						<phase>validate</phase>
@@ -61,17 +70,37 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.1.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
+				<version>3.14.0</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>17</source>
+					<target>17</target>
 				</configuration>
 			</plugin>
+	            <plugin>
+	                <groupId>com.github.os72</groupId>
+	                <artifactId>protoc-jar-maven-plugin</artifactId>
+	                <executions>
+	                    <execution>
+	                        <phase>generate-sources</phase>
+	                        <goals>
+	                            <goal>run</goal>
+	                        </goals>
+							<configuration>
+									<protocArtifact>com.google.protobuf:protoc:3.22.2</protocArtifact>
+	                                <addProtoSources>all</addProtoSources>
+	                                <includeMavenTypes>direct</includeMavenTypes>
+	                                <outputDirectory>protos</outputDirectory>
+	                                <inputDirectories>
+	                                        <include>src</include>
+	                                </inputDirectories>
+	                        </configuration>
+	                    </execution>
+	                </executions>
+	            </plugin>
 		</plugins>
 	</build>
 </project>

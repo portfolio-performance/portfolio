@@ -1,0 +1,33 @@
+PDF Autor: 'PostFinance AG'
+PDFBox Version: 1.8.16
+-----------------------------------------
+PostFinance AG 
+Sie werden betreut von 
+Betreuer und Team Post  CH  AG 
+Telefon +41 111 222 333 
+Fax +41 11 222 333 44 P.  P.  CH- 4808  Ort A- PRIORITY 
+www.postfinance.ch 
+Herr 
+Vorname Nachname 
+Nachname Vorname Strasse 123 
+Stadt 1234 Stadt 
+E-Sparkonto Seite: 1 / 1 
+Zinsabschluss 01.01.2019 - 31.12.2019 Datum: 01.01.2020 
+IBAN CH64 0900 0000 1111 2222 1 CHF 
+Kontonummer 11-112222-1 
+BIC POFICHBEXXX 
+Datum Text Gutschrift Lastschrift Saldo 
+31.12.2019 Kontostand 10 000.00 
+Habenzins 
+01.01.2019 – 31.10.2019 0.05% 4.17 
+01.11.2019 – 31.12.2019 0.025% 0.42 
+Bruttozins 4.59 0.00 
+Zins 4.59 
+Zins verrechnungssteuerfrei 4.59 
+Nettozins 4.59 
+31.12.2019 Kontostand nach Zinsabschluss 10 004.59 
+Bitte überprüfen Sie den Zinsabschluss. Ohne Ihren Gegenbericht innert 30 Tagen gilt er als genehmigt. 
+Bitte aufbewahren! Dient als Nachweis für Ihre Steuererklärung. 
+Freundliche Grüsse 
+PostFinance AG 
+00648 DE   000019.00 

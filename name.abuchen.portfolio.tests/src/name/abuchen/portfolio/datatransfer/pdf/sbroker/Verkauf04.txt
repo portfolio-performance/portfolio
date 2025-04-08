@@ -1,0 +1,59 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.4
+-----------------------------------------
+Die Sparkasse Bremen AG · Universitätsallee 14 · 28359 Bremen  Seite 1 von 2
+Depotnummer
+ XXXXXXXX
+ Kundennummer XXXXXXXXXX
+ Max MustermannAuftragsnummer 123456/38.00
+Frau Datum 03.01.2023
+Max Mustermann Ihr Berater XXXXXXXXXX
+c/o XXXXXX XXXXXX Telefon XXXX XXX-XXXX
+XXXXXXXX XXXXX X Rechnungsnummer W12345-000000000/00
+28199 Bremen Umsatzsteuer-ID DE12345678 
+ 
+Wertpapier Abrechnung Verkauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 2 NORWEGIAN CRUISE LINE HOLDINGS BMG667211046 (A1KBL8)
+REGISTERED SHARES O.N. 
+Handels-/Ausführungsplatz Tradegate (Best Execution)
+Börsensegment XGAT
+Market-Order
+Limit bestens
+Schlusstag/-Zeit 03.01.2023 12:15:16 Auftraggeber Max Mustermann
+Ausführungskurs 11,894 EUR Auftragserteilung/ -ort Online-Banking
+Wertpapierrechnung Lagerland USA
+Kurswert 23,79 EUR
+Provision 10,10- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsverlust 14,28- EUR
+Eingebuchte Aktienverluste 14,28 EUR
+Ausmachender Betrag 13,69 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 05.01.2023 zu Gunsten des Kontos 12345678
+(IBAN DE12 1234 1234 1234 1234 12), BLZ XXXXXXXX (BIC XXXXXXXXXXX).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Für das Geschäft wurde keine Anlageberatung erbracht.
+ 
+2159.01032039.0000384OR07  
+Seite 2 von 2
+Depotnummer 12345678
+Kundennummer 12345678
+Auftragsnummer 123456/38.00
+Datum 03.01.2023
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2023 ohne Vorjahressaldo Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 9,50 0,00 0,00 0,00 0,00
+Verkauf 14,28 0,00 0,00 0,00 0,00
+Nachher 23,78 0,00 0,00 0,00 0,00
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös ant. Ergebnis
+Kauf 7497947600 08.09.2022 Stück 2,0000 27,97- 13,69 14,28- (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 14,28-
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+2159.01032039.0000385OR07

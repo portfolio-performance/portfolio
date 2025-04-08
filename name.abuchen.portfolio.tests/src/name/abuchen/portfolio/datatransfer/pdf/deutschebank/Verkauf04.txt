@@ -1,0 +1,55 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Deutsche Bank AG
+Melissa Otto
+Telefon 040 309516-42
+Martin Mustermann
+24/7-Kundenservice (069) 910-10000
+Musterstraße 22
+12345 Ort
+7. Juli 2022
+Abrechnung: Verkauf von Wertpapieren / Zusammenfassung von Teilausführungen
+Depotinhaber: Martin Mustermann
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+789 1145651 02 IVU TRAFFIC TECHNOLOGIES AG INH.AKT. O.N. 1/2
+WKN 744850 Nominal 1.870
+ISIN DE0007448508 Mischkurs (EUR) 14,80
+Börse Frankfurt a.M. - Deutsche Börse - Frankfurter Wertpapierbörse (FWB) - Xetra
+Geschäft Kommissionsgeschäft im Auftragsart Limitauftrag
+XETRA-Handel
+Schlusstag 07.07.2022 Ordernummer 684978
+Verwahrart Girosammeldepot
+Diese Order wurde elektronisch übermittelt.
+Abrechnung Währung Betrag
+Kurswert EUR 27.676,00
+Provision EUR -58,90
+Weitere Provision der Bank bei der börslichen Orderausführung EUR -2,00
+XETRA-Kosten EUR -1,33
+Gesamtbetrag
+EUR 27.613,77
+Summe der in der Abrechnung erhaltenen Provisionen und Auslagen EUR 62,23
+TR00000004 TRSA 20220707 6947_000
+Abrechnung: Verkauf von Wertpapieren / Zusammenfassung von Teilausführungen
+Depotinhaber: Martin Mustermann
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+789 1145651 02 IVU TRAFFIC TECHNOLOGIES AG INH.AKT. O.N. 2/2
+Detaillierte Auflistung der Teilausführungen
+Die Verbuchung erfolgt pro Teilausführung auf Kontonummer 789114565102 mit Wertstellung 11.07.2022
+Handelszeit Beleg Nr. Nominal / Stück Kurs (EUR) Kurswert Ausmachender
+Betrag (EUR)
+09:05 MEZ 1447743358 618 14,80 9.146,40 9.120,93
+09:05 MEZ 1447743359 448 14,80 6.630,40 6.613,67
+09:05 MEZ 1447743360 533 14,80 7.888,40 7.868,56
+09:05 MEZ 1447743361 271 14,80 4.010,80 4.010,61
+Summe 1.870 14,80 27.676,00 27.613,77
+Informationen zum Steuerabzug Währung Betrag
+- keine Steuerbescheinigung -
+Veräußerungsverlust EUR -5.131,70
+Angerechneter Verlusttopf 'Aktien' EUR 5.131,70
+DieWertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen
+und die Sonderbedingungen für Wertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen
+in den Geschäftsräumen der Bank oder schriftlich an Deutsche Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt. Die
+unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert ausgewiesen
+ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat hat und die Bank und
+Finanzdienstleistungen nach dortigemRecht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers. Umsatzsteuer ID Nr.: Deutsche
+Bank AG, 60262 Frankfurt DE114103379

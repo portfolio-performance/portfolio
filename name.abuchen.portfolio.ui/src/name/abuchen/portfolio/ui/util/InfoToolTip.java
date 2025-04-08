@@ -13,49 +13,64 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.ui.UIConstants;
+
 public final class InfoToolTip extends ToolTip
 {
     private Control control;
     private Supplier<String> message;
 
-    private InfoToolTip(Control control, Supplier<String> message)
+    private InfoToolTip(Control control, int style, Supplier<String> message)
     {
-        super(control, ToolTip.NO_RECREATE, false);
+        super(control, style, false);
         this.control = control;
         this.message = message;
     }
 
-    public static void attach(Control control, String message)
+    public static InfoToolTip attach(Control control, String message)
     {
-        attach(control, () -> message);
+        return attach(control, () -> message);
     }
 
-    public static void attach(Control control, Supplier<String> message)
+    public static InfoToolTip attach(Control control, Supplier<String> message)
     {
-        InfoToolTip tooltip = new InfoToolTip(control, message);
-        tooltip.setPopupDelay(0);
+        return attach(control, ToolTip.NO_RECREATE, message);
+    }
+
+    public static InfoToolTip attach(Control control, int style, Supplier<String> message)
+    {
+        InfoToolTip tooltip = new InfoToolTip(control, style, message);
+        tooltip.setPopupDelay(200);
         tooltip.activate();
+
+        return tooltip;
     }
 
     @Override
     protected Composite createToolTipContentArea(Event event, Composite parent)
     {
+        parent.setData(UIConstants.CSS.CLASS_NAME, "tooltip"); //$NON-NLS-1$
+        
+        if (message.get() == null || message.get().equals("")) //$NON-NLS-1$
+            return parent;
+
         Composite result = new Composite(parent, SWT.NONE);
 
-        result.setBackground(Colors.INFO_TOOLTIP_BACKGROUND);
-        result.setLayout(new GridLayout());
+        GridLayout layout = new GridLayout();
+        result.setLayout(layout);
 
         // create tool tip with a reasonable width
-        int width = SWTHelper.stringWidth(result, "ABCDEFGHIJK") * 5; //$NON-NLS-1$
+        int maximumWidth = SWTHelper.stringWidth(result, "ABCDEFGHIJK") * 5; //$NON-NLS-1$
+        int actualWidth = SWTHelper.stringWidth(result, message.get()) + layout.marginWidth * 2;
+        int widthHint = Math.min(maximumWidth, actualWidth);
 
         Text text = new Text(result, SWT.WRAP);
-        text.setBackground(Colors.INFO_TOOLTIP_BACKGROUND);
-        text.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_BLACK));
         text.setText(message.get());
         GridData gridData = new GridData();
-        gridData.widthHint = width;
+        gridData.widthHint = widthHint;
         text.setLayoutData(gridData);
         Dialog.applyDialogFont(result);
+
         return result;
     }
 

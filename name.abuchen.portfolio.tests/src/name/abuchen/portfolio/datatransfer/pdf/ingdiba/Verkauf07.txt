@@ -1,0 +1,36 @@
+PDF Autor: 'ING-DiBa'
+PDFBox Version: 1.8.16
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: XXX
+XXX
+XXX
+und XXX Direkt-Depot Nr.: 4711
+XXX Str. 42 Datum: 23.07.2021
+12345 Berlin Seite: 1 von 2
+Wertpapierabrechnung Verkauf
+Ordernummer 123456789.001
+ISIN (WKN) US09075V1026 (A2PSR2)
+Wertpapierbezeichnung BioNTech SE Nam.-Akt.(sp.ADRs)1/o.N.
+Nominale Stück 25,00
+Kurs EUR 234,10
+Handelsplatz Direkthandel
+Ausführungstag / -zeit 23.07.2021 um 16:47:25 Uhr
+Kurswert EUR 5.852,50
+KapSt anteilig 50,00 % 24,45% EUR 561,24
+Kirchensteuer 9,00 % EUR 50,51
+Solidaritätszuschlag 5,50 % EUR 30,86
+KapSt anteilig 50,00 % 24,45% EUR 561,24
+Kirchensteuer 9,00 % EUR 50,51
+Solidaritätszuschlag 5,50 % EUR 30,86
+Provision EUR 19,53
+Endbetrag zu Ihren Gunsten EUR 4.547,75
+Abrechnungs-IBAN DE12 3456 7890 1234 5678 90
+Valuta 27.07.2021
+Wertpapiere zulasten Girosammelverwahrung.
+Auftraggeber war XXX.
+Jahressteuerbescheinigung folgt.
+Weiter geht es auf Seite 2.
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzender des Aufsichtsrates: Dr. Claus Dieter Hoffmann · Vorstand: Nick Jue (Vorsitzender),
+Dr. Joachim von Schorlemer (stellv. Vorsitzender), Zeljko Kaurin, Sigrid Kozmiensky, Daniel Llano Manibardo, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main
+HRB 7727, Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds

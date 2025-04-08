@@ -13,8 +13,11 @@ public class SecurityProperty
     public enum Type
     {
         /**
-         * Property type to store a market (e.g. exchange) and symbol pair.
+         * Used store a market (e.g. exchange) and symbol pair. It was only used
+         * for Portfolio Report which is now providing the symbols as part of
+         * the MarketInfo class.
          */
+        @Deprecated
         MARKET,
 
         /**

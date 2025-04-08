@@ -1,0 +1,63 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 0000 000 000
+0000000000/00
+Vermerk der Bank: 2000
+2
+Max Mustermann
+Musterweg 1
+11111 Musterdorf Datum: 25.01.2022Seite: 1 von 2
+Ordernummer 111111111.001
+Orderdatum 25.01.2022
+ORDERABRECHNUNG
+VERKAUF AM 25.01.2022 UM 19:24:18 FRANKFURT NR. 111111111.001
+Bezeichnung WKN ISIN
+WACKER NEUSON SE NA O.N. WACK01 DE000WACK012
+Einheit Umsatz
+ST 240,00000
+Preis pro Anteil 21,600000 EUR
+Kurswert 5.184,00 EUR
+abzgl. Börsenplatzgebühr 2,50 EUR
+abzgl. Handelsentgelt 2,61 EUR
+abzgl. Provision 12,96 EUR
+abzgl. Grundgebühr 4,95 EUR
+zugunsten Konto-Nr. 7777777777 5.160,98 EUR
+Valuta 27.01.2022
+Bestand zulasten Girosammelverwahrung
+CBF 2126
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+Depotnummer: 0000 000 000
+0000000000/00
+Vermerk der Bank: 2000
+2
+Datum: 25.01.2022
+Seite: 2 von 2
+Ordernummer 111111111.001
+Orderdatum 25.01.2022
+Informationen bei Verlust Aktien
+Veräusserungsverlust nach Differenzmethode - 828,74 EUR
+in Verrechnungstopf Aktien eingestellt 828,74 EUR
+Bemessungsgrundlage für Kapitalertragsteuer 0,00 EUR
+Stand Ihrer Töpfe und Freibeträge nach dem Geschäft
+Sparerpauschbetrag nach dem Geschäft 801,00 EUR
+Verrechnungstopf Aktien nach dem Geschäft 7.571,91 EUR
+Verrechnungstopf Allg. nach dem Geschäft 0,00 EUR
+Verrechnungstopf QUST nach dem Geschäft 0,00 EUR
+Der Verkaufserlös unterliegt nicht dem Kapitalertragssteuerabzug.
+Es wurde keine Kirchensteuer einbehalten.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé

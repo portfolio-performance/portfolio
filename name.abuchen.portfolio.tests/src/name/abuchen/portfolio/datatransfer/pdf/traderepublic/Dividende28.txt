@@ -1,0 +1,33 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH BRUNNENSTRASSE 19-21 10119 BERLIN
+zbIkork YOFuuKXuP sglDI QGUWZcoTrVHI SEITE 1 von 1
+Rcp FBCtsU OjwYs 86 DATUM 03.10.2024
+95676 oFpSnq DEPOT 8289668757
+DIVIDENDE
+ÜBERSICHT
+Dividende mit Ex-Datum12.09.2024.
+POSITION ANZAHL ERTRAG BETRAG
+NVIDIA 0.32 USD
+32.000000 Stücke 0.01 USD
+US67066G1040
+GESAMT 0.32 USD
+ABRECHNUNG
+POSITION BETRAG
+Quellensteuer für US-Emittenten -0.05 USD
+Zwischensumme 0.27 USD
+Zwischensumme 1.1071 USD/EUR 0.24 EUR
+Kapitalertragssteuer 1.1071 USD/EUR -0.02 EUR
+GESAMT 0.22 EUR
+BUCHUNG
+VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
+DE12345678901234567890 03.10.2024 0.22 EUR
+US67066G1040 im Girosammelverwahrung in Deutschland
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich um eine umsatzsteuerfreie Leistung gemäß § 4 Nr. 8 UStG
+Trade Republic Bank GmbH Sitz der Gesellschaft: Berlin Direktoren
+www.traderepublic.com
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+service@traderepublic.com
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer

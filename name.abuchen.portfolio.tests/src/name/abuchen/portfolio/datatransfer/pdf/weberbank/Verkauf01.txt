@@ -1,0 +1,55 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+ Seite 1 von 2
+Depotnummer
+ XXXXXXXXXX
+ XXXXXXXXXXXXXXXXXXXXXXXX
+ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXX Datum 26.03.2021
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXX Rechnungsnummer W00858-0000172836/21
+XXXXXXXXXXXX Umsatzsteuer-ID DEXXXXXXXXX 
+ 
+Wertpapier Abrechnung Verkauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 193 VIATRIS INC. US92556V1061 (A2QAME)
+REGISTERED SHARES O.N. 
+Handels-/Ausführungsplatz Tradegate (Best Execution)
+Börsensegment XGAT
+Market-Order
+Limit bestens
+Schlusstag/-Zeit 26.03.2021 15:12:58 Auftraggeber XXXXXXXXXXXXX
+Ausführungskurs 12,10 EUR Auftragserteilung/ -ort Persönlich im Institut
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 2.335,30 EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsverlust 149,88- EUR
+Eingebuchte Aktienverluste 149,88 EUR
+Ausmachender Betrag 2.335,30 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 30.03.2021 zu Gunsten des Kontos XXXXXXXXXX
+(IBAN DE69 XXXXXXXXXXXXXXXXXXXXXX), BLZ 10120100 (BIC WELADED1WBB).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+ 
+0858.03262053.0000197OR07  
+Seite 2 von 2
+Depotnummer XXXXXXXXXX
+Kundennummer XXXXXXXXXX
+Auftragsnummer 742198/43.00
+Datum 26.03.2021
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2021 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher XXX.XXX,XX 0,00 0,00 0,00 X.XXX,XX
+Verkauf XXX,XX 0,00 0,00 0,00 0,00
+Nachher XXX.XXX,XX 0,00 0,00 0,00 X.XXX,XX
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0858.03262053.0000198OR07  

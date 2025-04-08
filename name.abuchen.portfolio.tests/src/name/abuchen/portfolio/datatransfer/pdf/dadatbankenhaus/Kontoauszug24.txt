@@ -1,0 +1,31 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.3
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+Schelhammer Capital Bank AG vom 10.11.2022
+102782
+Kundennummer
+Alter Saldo per 30.09.2022 69,66
+Summe der Gutschriften 0,00
+Summe der Lastschriften 2.668,47-
+Schelhammer , PF 1000, 5021 Salzburg
+Neuer Saldo zu Ihren Lasten
+Max Mustermann, EUR 2.598,81-
+Max Musterfrau
+Musterstraße 1
+1010 Musterstadt
+Konto-Nr.: 00000000000 Bankleitzahl: 19190
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+10.11 Steuern ausschüttungsgl. Erträge Depot     639007999/20221109-76196684 09.11 5,18-
+ISIN IE00BYX2JD69 ISHSIV-MSCI WLD.SRI U.EOA              68,80900 STK
+Kurs                      0,000000  KEST                     -3,45 EUR
+Auslands-KESt            -1,73 EUR
+10.11 Steuern ausschüttungsgl. Erträge Depot     639007999/20221109-54795884 09.11 2.663,29-
+ISIN IE00BYX2JD69 ISHSIV-MSCI WLD.SRI U.EOA          35.369,00000 STK
+Kurs                      0,000000  KEST                 -1.771,99 EUR
+Auslands-KESt          -891,30 EUR
+Neuer Saldo zu Ihren Lasten 2.598,81-
+AT00 0000 0000 0000 0000 BSSWATWW 01 0029 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 15066 Doknr.: EK00-045-0314007290

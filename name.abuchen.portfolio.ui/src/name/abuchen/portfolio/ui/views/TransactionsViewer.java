@@ -1,20 +1,15 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -33,45 +28,34 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.AccountTransferEntry;
-import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
-import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
-import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
-import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
-import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
-import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.DateTimeEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateTimeLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
-import name.abuchen.portfolio.ui.views.actions.ConvertBuySellToDeliveryAction;
-import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
@@ -82,10 +66,17 @@ public final class TransactionsViewer implements ModificationListener
     private class TransactionLabelProvider extends ColumnLabelProvider
     {
         private Function<Transaction, String> label;
+        private Function<TransactionPair<?>, Object> img;
 
         public TransactionLabelProvider(Function<Transaction, String> label)
         {
+            this(label, null);
+        }
+
+        public TransactionLabelProvider(Function<Transaction, String> label, Function<TransactionPair<?>, Object> img)
+        {
             this.label = Objects.requireNonNull(label);
+            this.img = img;
         }
 
         public TransactionLabelProvider(ColumnLabelProvider labelProvider)
@@ -107,24 +98,27 @@ public final class TransactionsViewer implements ModificationListener
 
             Transaction tx = ((TransactionPair<?>) element).getTransaction();
 
-            if (tx instanceof PortfolioTransaction)
-            {
-                PortfolioTransaction t = (PortfolioTransaction) tx;
-                return t.getType().isLiquidation() ? Colors.DARK_RED : Colors.DARK_GREEN;
-            }
-            else if (tx instanceof AccountTransaction)
-            {
-                AccountTransaction t = (AccountTransaction) tx;
-                return t.getType().isDebit() ? Colors.DARK_RED : Colors.DARK_GREEN;
-            }
+            if (tx instanceof PortfolioTransaction t)
+                return t.getType().isLiquidation() ? Colors.theme().redForeground() : Colors.theme().greenForeground();
+            else if (tx instanceof AccountTransaction t)
+                return t.getType().isDebit() ? Colors.theme().redForeground() : Colors.theme().greenForeground();
 
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unsupported transaction type " + tx); //$NON-NLS-1$
+        }
+
+        @Override
+        public Image getImage(Object element)
+        {
+            if (img == null)
+                return null;
+            Object subject = img.apply((TransactionPair<?>) element);
+            return LogoManager.instance().getDefaultColumnImage(subject, owner.getClient().getSettings());
         }
 
         @Override
         public Color getBackground(Object element)
         {
-            return marked.contains(element) ? Colors.WARNING : null;
+            return marked.contains(element) ? Colors.theme().warningBackground() : null;
         }
     }
 
@@ -153,14 +147,17 @@ public final class TransactionsViewer implements ModificationListener
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
+        tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(tableViewer);
+        CopyPasteSupport.enableFor(tableViewer);
+
+        tableViewer.setUseHashlookup(true);
 
         support = new ShowHideColumnHelper(identifier, owner.getPreferenceStore(), tableViewer, layout);
 
         addColumns();
-        support.createColumns();
+        support.createColumns(true);
 
         tableViewer.getTable().setHeaderVisible(true);
         tableViewer.getTable().setLinesVisible(true);
@@ -247,28 +244,43 @@ public final class TransactionsViewer implements ModificationListener
 
     private void addColumns()
     {
+        TransactionLabelProvider colors = new TransactionLabelProvider(t -> null);
+
         Column column = new Column("0", Messages.ColumnDate, SWT.None, 80); //$NON-NLS-1$
-        column.setLabelProvider(new TransactionLabelProvider(t -> Values.DateTime.format(t.getDateTime())));
-        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()).attachTo(column,
-                        SWT.UP);
+        column.setLabelProvider(new DateTimeLabelProvider(e -> ((TransactionPair<?>) e).getTransaction().getDateTime())
+        {
+            @Override
+            public Color getForeground(Object element)
+            {
+                return colors.getForeground(element);
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                return colors.getBackground(element);
+            }
+        });
+
+        ColumnViewerSorter.create(TransactionPair.BY_DATE).attachTo(column, SWT.DOWN);
         new DateTimeEditingSupport(Transaction.class, "dateTime").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column("1", Messages.ColumnTransactionType, SWT.None, 80); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(t -> {
-            if (t instanceof PortfolioTransaction)
-                return ((PortfolioTransaction) t).getType().toString();
-            else if (t instanceof AccountTransaction)
-                return ((AccountTransaction) t).getType().toString();
+            if (t instanceof PortfolioTransaction pt)
+                return pt.getType().toString();
+            else if (t instanceof AccountTransaction at)
+                return at.getType().toString();
             else
                 return null;
         }));
-        ColumnViewerSorter.create(e -> {
+        ColumnViewerSorter.createIgnoreCase(e -> {
             Transaction t = ((TransactionPair<?>) e).getTransaction();
-            if (t instanceof PortfolioTransaction)
-                return ((PortfolioTransaction) t).getType().toString();
-            else if (t instanceof AccountTransaction)
-                return ((AccountTransaction) t).getType().toString();
+            if (t instanceof PortfolioTransaction pt)
+                return pt.getType().toString();
+            else if (t instanceof AccountTransaction at)
+                return at.getType().toString();
             else
                 return null;
         }).attachTo(column);
@@ -277,8 +289,9 @@ public final class TransactionsViewer implements ModificationListener
 
         column = new Column("2", Messages.ColumnSecurity, SWT.None, 250); //$NON-NLS-1$
         column.setLabelProvider(
-                        new TransactionLabelProvider(t -> t.getSecurity() != null ? t.getSecurity().getName() : null));
-        ColumnViewerSorter.create(e -> {
+                        new TransactionLabelProvider(t -> t.getSecurity() != null ? t.getSecurity().getName() : null,
+                                        t -> t.getTransaction().getSecurity()));
+        ColumnViewerSorter.createIgnoreCase(e -> {
             Security s = ((TransactionPair<?>) e).getTransaction().getSecurity();
             return s != null ? s.getName() : null;
         }).attachTo(column);
@@ -286,27 +299,25 @@ public final class TransactionsViewer implements ModificationListener
 
         column = new IsinColumn();
         column.setVisible(false);
-        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider()));
+        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider().get()));
         column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
         column = new SymbolColumn();
         column.setVisible(false);
-        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider()));
+        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider().get()));
         column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
         column = new WknColumn();
         column.setVisible(false);
-        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider()));
+        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider().get()));
         column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
         column = new Column("3", Messages.ColumnShares, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {
-            private TransactionLabelProvider colors = new TransactionLabelProvider(t -> null);
-
             @Override
             public Long getValue(Object element)
             {
@@ -338,30 +349,32 @@ public final class TransactionsViewer implements ModificationListener
 
         column = new Column("4", Messages.ColumnQuote, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(t -> {
-            if (t instanceof PortfolioTransaction)
-                return t.getShares() != 0 ? Values.Quote.format(((PortfolioTransaction) t).getGrossPricePerShare(),
-                                owner.getClient().getBaseCurrency()) : null;
+            if (t instanceof PortfolioTransaction pt)
+                return t.getShares() != 0
+                                ? Values.CalculatedQuote.format(pt.getGrossPricePerShare(),
+                                                owner.getClient().getBaseCurrency())
+                                : null;
             else
                 return null;
         }));
         ColumnViewerSorter.create(e -> {
             Transaction tx = ((TransactionPair<?>) e).getTransaction();
-            return tx instanceof PortfolioTransaction ? ((PortfolioTransaction) tx).getGrossPricePerShare() : null;
+            return tx instanceof PortfolioTransaction pt ? pt.getGrossPricePerShare() : null;
         }).attachTo(column);
         support.addColumn(column);
 
         column = new Column("5", Messages.ColumnAmount, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(t -> {
             Money m;
-            if (t instanceof PortfolioTransaction)
-                m = ((PortfolioTransaction) t).getGrossValue();
+            if (t instanceof PortfolioTransaction pt)
+                m = pt.getGrossValue();
             else
                 m = ((AccountTransaction) t).getGrossValue();
             return Values.Money.format(m, owner.getClient().getBaseCurrency());
         }));
         ColumnViewerSorter.create(e -> {
             Transaction tx = ((TransactionPair<?>) e).getTransaction();
-            return tx instanceof PortfolioTransaction ? ((PortfolioTransaction) tx).getGrossValue() : null;
+            return tx instanceof PortfolioTransaction pt ? pt.getGrossValue() : null;
         }).attachTo(column);
         support.addColumn(column);
 
@@ -386,38 +399,28 @@ public final class TransactionsViewer implements ModificationListener
         support.addColumn(column);
 
         column = new Column("account", Messages.ColumnAccount, SWT.None, 120); //$NON-NLS-1$
-        column.setLabelProvider(new TransactionLabelProvider(t -> null) // NOSONAR
+        column.setLabelProvider(new TransactionLabelProvider(t -> null, t -> t.getOwner()) // NOSONAR
         {
             @Override
             public String getText(Object element)
             {
                 return ((TransactionPair<?>) element).getOwner().toString();
             }
-
-            @Override
-            public Image getImage(Object element)
-            {
-                TransactionOwner<?> txo = ((TransactionPair<?>) element).getOwner();
-
-                if (txo instanceof Portfolio)
-                    return Images.PORTFOLIO.image();
-                else if (txo instanceof Account)
-                    return Images.ACCOUNT.image();
-                else
-                    return null;
-            }
         });
         new TransactionOwnerListEditingSupport(owner.getClient(), TransactionOwnerListEditingSupport.EditMode.OWNER)
                         .addListener(this).attachTo(column);
-        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getOwner().toString()).attachTo(column);
+        ColumnViewerSorter.createIgnoreCase(e -> ((TransactionPair<?>) e).getOwner().toString()).attachTo(column);
         support.addColumn(column);
 
         column = new Column("9", Messages.ColumnOffsetAccount, SWT.None, 120); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(
-                        t -> t.getCrossEntry() != null ? t.getCrossEntry().getCrossOwner(t).toString() : null));
+                        t -> t.getCrossEntry() != null ? t.getCrossEntry().getCrossOwner(t).toString() : null,
+                        t -> t.getTransaction().getCrossEntry() != null
+                                        ? t.getTransaction().getCrossEntry().getCrossOwner(t.getTransaction())
+                                        : null));
         new TransactionOwnerListEditingSupport(owner.getClient(),
                         TransactionOwnerListEditingSupport.EditMode.CROSSOWNER).addListener(this).attachTo(column);
-        ColumnViewerSorter.create(e -> {
+        ColumnViewerSorter.createIgnoreCase(e -> {
             Transaction t = ((TransactionPair<?>) e).getTransaction();
             return t.getCrossEntry() != null ? t.getCrossEntry().getCrossOwner(t).toString() : null;
         }).attachTo(column);
@@ -426,22 +429,40 @@ public final class TransactionsViewer implements ModificationListener
         column = new Column("10", Messages.ColumnNote, SWT.None, 200); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(Transaction::getNote) // NOSONAR
         {
+            private String getRawText(Object e)
+            {
+                return ((TransactionPair<?>) e).getTransaction().getNote();
+            }
+
+            @Override
+            public String getText(Object e)
+            {
+                String note = getRawText(e);
+                return note == null || note.isEmpty() ? null : TextUtil.toSingleLine(note);
+            }
+
             @Override
             public Image getImage(Object e)
             {
-                String note = getText(e);
+                String note = getRawText(e);
                 return note != null && !note.isEmpty() ? Images.NOTE.image() : null;
             }
 
             @Override
             public String getToolTipText(Object e)
             {
-                String note = getText(e);
-                return note == null || note.isEmpty() ? null : TextUtil.wordwrap(getText(e));
+                String note = getRawText(e);
+                return note == null || note.isEmpty() ? null : TextUtil.wordwrap(note);
             }
         });
-        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getNote()).attachTo(column); // $NON-NLS-1$
+        ColumnViewerSorter.createIgnoreCase(e -> ((TransactionPair<?>) e).getTransaction().getNote()).attachTo(column); // $NON-NLS-1$
         new StringEditingSupport(Transaction.class, "note").addListener(this).attachTo(column); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column("source", Messages.ColumnSource, SWT.None, 200); //$NON-NLS-1$
+        column.setLabelProvider(new TransactionLabelProvider(Transaction::getSource));
+        ColumnViewerSorter.createIgnoreCase(e -> ((TransactionPair<?>) e).getTransaction().getSource())
+                        .attachTo(column); // $NON-NLS-1$
         support.addColumn(column);
     }
 
@@ -458,6 +479,7 @@ public final class TransactionsViewer implements ModificationListener
 
         contextMenu = menuMgr.createContextMenu(parent.getShell());
         tableViewer.getTable().setMenu(contextMenu);
+        tableViewer.getTable().setData(ContextMenu.DEFAULT_MENU, contextMenu);
 
         tableViewer.getTable().addDisposeListener(e -> TransactionsViewer.this.widgetDisposed());
     }
@@ -469,16 +491,7 @@ public final class TransactionsViewer implements ModificationListener
             @Override
             public void keyPressed(KeyEvent e)
             {
-                if (e.keyCode == 'e' && e.stateMask == SWT.MOD1)
-                {
-                    IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-                    if (selection.isEmpty())
-                        return;
-
-                    TransactionPair<?> tx = (TransactionPair<?>) selection.getFirstElement();
-                    tx.withAccountTransaction().ifPresent(t -> createEditAccountTransactionAction(t).run());
-                    tx.withPortfolioTransaction().ifPresent(t -> createEditPortfolioTransactionAction(t).run());
-                }
+                new TransactionContextMenu(owner).handleEditKey(e, tableViewer.getStructuredSelection());
             }
         });
     }
@@ -493,150 +506,6 @@ public final class TransactionsViewer implements ModificationListener
     {
         IStructuredSelection selection = tableViewer.getStructuredSelection();
 
-        if (selection.isEmpty() && fullContextMenu)
-        {
-            new SecurityContextMenu(owner).menuAboutToShow(manager, null, null);
-        }
-
-        if (selection.size() == 1)
-        {
-            TransactionPair<?> tx = (TransactionPair<?>) selection.getFirstElement();
-
-            tx.withAccountTransaction().ifPresent(t -> fillContextMenuAccountTx(manager, t));
-            tx.withPortfolioTransaction().ifPresent(t -> fillContextMenuPortfolioTx(manager, t));
-
-            manager.add(new Separator());
-        }
-
-        if (!selection.isEmpty())
-        {
-            if (fullContextMenu)
-                fillContextMenuPortfolioTxList(manager, selection);
-
-            manager.add(new SimpleAction(Messages.MenuTransactionDelete, a -> {
-                for (Object tx : selection.toArray())
-                    ((TransactionPair<?>) tx).deleteTransaction(owner.getClient());
-
-                owner.markDirty();
-            }));
-        }
-    }
-
-    private void fillContextMenuPortfolioTxList(IMenuManager manager, IStructuredSelection selection)
-    {
-        Collection<TransactionPair<PortfolioTransaction>> txCollection = new ArrayList<>(selection.size());
-        Iterator<?> it = selection.iterator();
-        while (it.hasNext())
-        {
-            TransactionPair<?> foo = (TransactionPair<?>) it.next();
-            foo.withPortfolioTransaction().ifPresent(txCollection::add);
-        }
-        
-        if (txCollection.isEmpty())
-            return;
-
-        boolean allBuyOrSellType = true;
-        boolean allDelivery = true;
-
-        for (TransactionPair<PortfolioTransaction> tx : txCollection)
-        {
-            PortfolioTransaction ptx = tx.getTransaction();
-
-            allBuyOrSellType &= ptx.getType() == PortfolioTransaction.Type.BUY
-                            || ptx.getType() == PortfolioTransaction.Type.SELL;
-
-            allDelivery &= ptx.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
-                            || ptx.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
-        }
-
-        if (allBuyOrSellType)
-        {
-            manager.add(new ConvertBuySellToDeliveryAction(owner.getClient(), txCollection));
-            manager.add(new Separator());
-        }
-
-        if (allDelivery)
-        {
-            manager.add(new ConvertDeliveryToBuySellAction(owner.getClient(), txCollection));
-            manager.add(new Separator());
-        }
-    }
-
-    private void fillContextMenuAccountTx(IMenuManager manager, TransactionPair<AccountTransaction> tx)
-    {
-        Action action = createEditAccountTransactionAction(tx);
-        action.setAccelerator(SWT.MOD1 | 'E');
-        manager.add(action);
-
-        if (fullContextMenu)
-        {
-            manager.add(new Separator());
-            new AccountContextMenu(owner).menuAboutToShow(manager, (Account) tx.getOwner(),
-                            tx.getTransaction().getSecurity());
-        }
-    }
-
-    private void fillContextMenuPortfolioTx(IMenuManager manager, TransactionPair<PortfolioTransaction> tx)
-    {
-        PortfolioTransaction ptx = tx.getTransaction();
-
-        Action editAction = createEditPortfolioTransactionAction(tx);
-        editAction.setAccelerator(SWT.MOD1 | 'E');
-        manager.add(editAction);
-        manager.add(new Separator());
-
-        if (fullContextMenu)
-            new SecurityContextMenu(owner).menuAboutToShow(manager, ptx.getSecurity(), (Portfolio) tx.getOwner());
-        else
-            manager.add(new BookmarkMenu(owner.getPart(), ptx.getSecurity()));
-    }
-
-    private Action createEditAccountTransactionAction(TransactionPair<AccountTransaction> tx)
-    {
-        // buy / sell
-        if (tx.getTransaction().getCrossEntry() instanceof BuySellEntry)
-        {
-            BuySellEntry entry = (BuySellEntry) tx.getTransaction().getCrossEntry();
-            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction)
-                            .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
-                            .parameters(entry.getPortfolioTransaction().getType());
-        }
-        else if (tx.getTransaction().getCrossEntry() instanceof AccountTransferEntry)
-        {
-            AccountTransferEntry entry = (AccountTransferEntry) tx.getTransaction().getCrossEntry();
-            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction) //
-                            .type(AccountTransferDialog.class, d -> d.setEntry(entry));
-        }
-        else
-        {
-            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction) //
-                            .type(AccountTransactionDialog.class,
-                                            d -> d.setTransaction((Account) tx.getOwner(), tx.getTransaction())) //
-                            .parameters(tx.getTransaction().getType());
-        }
-    }
-
-    private Action createEditPortfolioTransactionAction(TransactionPair<PortfolioTransaction> tx)
-    {
-        // buy / sell
-        if (tx.getTransaction().getCrossEntry() instanceof BuySellEntry)
-        {
-            BuySellEntry entry = (BuySellEntry) tx.getTransaction().getCrossEntry();
-            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction)
-                            .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
-                            .parameters(entry.getPortfolioTransaction().getType());
-        }
-        else if (tx.getTransaction().getCrossEntry() instanceof PortfolioTransferEntry)
-        {
-            PortfolioTransferEntry entry = (PortfolioTransferEntry) tx.getTransaction().getCrossEntry();
-            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction) //
-                            .type(SecurityTransferDialog.class, d -> d.setEntry(entry));
-        }
-        else
-        {
-            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction) //
-                            .type(SecurityTransactionDialog.class, d -> d.setDeliveryTransaction(tx)) //
-                            .parameters(tx.getTransaction().getType());
-        }
+        new TransactionContextMenu(owner).menuAboutToShow(manager, fullContextMenu, selection);
     }
 }

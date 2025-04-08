@@ -1,0 +1,30 @@
+PDF author: 'VIAC'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+Email info@viac.ch
+Phone 0800 80 40 40
+Contract x.xxx.xxx.xxx Mr John Doe
+Portfolio x.xxx.xxx.xxx.xx 
+Bahnhofstrasse 1
+8001 Zürich
+Basel, 27.02.2020
+Dividend Payment
+We have booked the following dividend payment for you:
+Type of dividend: Ordinary dividend
+2.142 Qty iShares US Property Yield
+ISIN: IE00B1FZSF77
+Dividend payment: USD 0.25
+Amount USD 0.54
+Exchange rate CHF/USD 0.9645 CHF 0.52
+Amount credited: Value date 27.02.2020 CHF 0.52
+S. E. & O.
+Note: Whenever possible, our foundation bears the product costs (index funds). In the case of ETFs, product costs are charged within the fund and 
+accrue in favor of the fund provider. Product costs accrue in addition to the administration fee and amount to 0.09 % per year for the currently 
+selected strategy. VIAC does not receive any kind of reimbursements (retrocessions).
+Kind regards
+Terzo Pension Foundation
+Display without signature

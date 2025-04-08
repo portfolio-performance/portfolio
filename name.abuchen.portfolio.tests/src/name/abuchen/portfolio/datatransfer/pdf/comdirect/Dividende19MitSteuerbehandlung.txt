@@ -1,0 +1,54 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+           
+25449 Quickborn
+                                                                                                    
+                                                  
+                                                                      
+                                                                      
+                                                                      
+                   
+                        
+       
+11111 111 Depo tnummer:    1111111 11     
+Frau                                                            
+Vorname Nachname                                               
+und Frau Vorname Nachname                                          
+Straße 11                                                     
+                             
+11111 Stadt                                                     
+15.05.2008
+Gutschrift fälliger Wertpapier-Erträge - Halbeinkünfteverfahren                    
+                                                                                   
+Dividendengutschrift                                                               
+Depotbestand                          Wertpapier-Bezeichnung               WKN/ISIN
+p  e r  1 4 . 0 5 . 2 0 0 8                        K  + S A  k t ie  n ge s  e l l sc  ha f t                  7  1 62  0 0
+ ST  K               8 0 , 00 0                 In h a b e r  -A k t i e n   o . N.               D E 0  0 0 71  6 2 0 00 
+                                      Emissionsland: DEUTSCHLAND                   
+EUR 2,00       Dividende pro Stück für Geschäftsjahr        01.01.07 bis 31.12.07  
+zahlbar ab 15.05.2008                                                              
+                         Ermittlung der Steuerbasisbeträge                         
+Bruttobetrag:                                              EUR             160,00  
+Einnahmen aus Kapitalvermögen i. S. d. Par. 20 EStG        EUR             160,00  
+                                        gesamt         vergütet      bescheinigt   
+Kapitalertragsteuer 20,000 % EUR            32,00             0,00            32,00
+Solidaritätszuschlag         EUR             1,76             0,00             1,76
+                         Abrechnung Dividendengutschrift                           
+Bruttobetrag:                                              EUR             160,00  
+20,000 % Kapitalertragsteuer auf  EUR             160,00   EUR              32,00 -
+ 5,500 % Solidaritätszuschl. auf  EUR              32,00   EUR               1,76 -
+Gutschrift auf Konto                    Valuta             Zu Ihren Gunsten        
+1111111 11     EUR                      15.05.2008         EUR             126,24  
+Die Erträge unterliegen der Besteuerung nach dem Halbeinkünfteverfahren. Die       
+einbehaltene KEST und der einbehaltene Solidaritätszuschlag werden auf die Steuern 
+vom Einkommen angerechnet. Bei beschränkt Steuerpflichtigen ist mit dem Steuerabzug
+die Steuer im Inland grundsätzlich abgegolten. Dies gilt nicht, wenn die Einkünfte 
+Betriebseinnahmen eines inländischen Betriebes sind (Par.50 Abs. 5 EStG).          
+comdirect bank                                                                     
+Aktiengesellschaft                                                                 
+                                                                                   
+*Diese Abrechnung wird von der Bank nicht unterschrieben                           
+                                                                                   
+                             Jahressteuerbescheinigung folgt                       
+Kapitalerträge sind einkommensteuerpflichtig
+D111S0/11/2001

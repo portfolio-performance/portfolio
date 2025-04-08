@@ -1,9 +1,14 @@
 package name.abuchen.portfolio.datatransfer.actions;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.nullValue;
 
+import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.ImportAction;
@@ -55,22 +60,43 @@ public class AssertImportActions
     }
 
     private static final ImportAction[] actions = new ImportAction[] { //
-                    new CheckValidTypesAction(), new CheckSecurityRelatedValuesAction(), new CheckCurrenciesAction() };
+                    new CheckTransactionDateAction(), new CheckValidTypesAction(),
+                    new CheckSecurityRelatedValuesAction(), new CheckCurrenciesAction(),
+                    new CheckForexGrossValueAction() };
 
-    public void check(List<Extractor.Item> items, ImportAction.Context context)
+    public void check(List<Extractor.Item> items, String... currencyCode)
     {
+        var contexts = Arrays.asList(currencyCode).stream()
+                        .collect(Collectors.toMap((c) -> c, (c) -> new TestContext(c)));
+
         for (Extractor.Item item : items)
         {
+            // do not apply further checks if the item is a (permanent) failure
+            // as the transactions most likely has further errors
+            if (item.isFailure())
+                continue;
+
+            // items that have no amount (e.g. a security) are checked against a
+            // pseudo currency for the account to make sure that no attempt is
+            // made to import into an account
+            ImportAction.Context context;
+            if (item.getAmount() == null)
+            {
+                context = new TestContext("XYZ"); //$NON-NLS-1$
+            }
+            else
+            {
+                context = contexts.get(item.getAmount().getCurrencyCode());
+                assertThat(MessageFormat.format("No account available for currency ''{0}''", //$NON-NLS-1$
+                                item.getAmount().getCurrencyCode()), context, is(not(nullValue())));
+            }
+
             for (ImportAction action : actions)
             {
                 ImportAction.Status status = item.apply(action, context);
-                assertThat(status.getMessage(), status.getCode(), is(ImportAction.Status.Code.OK));
+                assertThat(status.getMessage() + "\n" + item, //$NON-NLS-1$
+                                status.getCode(), is(ImportAction.Status.Code.OK));
             }
         }
-    }
-
-    public void check(List<Extractor.Item> items, String currencyCode)
-    {
-        check(items, new TestContext(currencyCode));
     }
 }

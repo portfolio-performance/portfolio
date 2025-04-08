@@ -1,22 +1,23 @@
 package scenarios;
 
 import static org.hamcrest.CoreMatchers.both;
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.hamcrest.number.OrderingComparison.lessThan;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
@@ -24,14 +25,18 @@ import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.snapshot.security.CalculationLineItem;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
@@ -45,8 +50,8 @@ public class SecurityPerformanceTaxRefundTestCase
     @Test
     public void testSecurityPerformanceTaxRefund() throws IOException
     {
-        Client client = ClientFactory.load(SecurityTestCase.class
-                        .getResourceAsStream("security_performance_tax_refund.xml"));
+        Client client = ClientFactory
+                        .load(SecurityTestCase.class.getResourceAsStream("security_performance_tax_refund.xml"));
 
         Security security = client.getSecurities().get(0);
         Portfolio portfolio = client.getPortfolios().get(0);
@@ -54,14 +59,20 @@ public class SecurityPerformanceTaxRefundTestCase
         Interval period = Interval.of(LocalDate.parse("2013-12-06"), LocalDate.parse("2014-12-06"));
         TestCurrencyConverter converter = new TestCurrencyConverter();
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, period);
+        new SecurityPerformanceSnapshotComparator(snapshot,
+                        LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();
+
         SecurityPerformanceRecord record = snapshot.getRecords().get(0);
 
         assertThat(record.getSecurity().getName(), is("Basf SE"));
 
         // no changes in holdings, ttwror must (without taxes and tax refunds):
-        double startValue = delivery.getAmount() - delivery.getUnitSum(Unit.Type.TAX).getAmount();
-        double endValue = delivery.getShares() * security.getSecurityPrice(LocalDate.parse("2014-12-06")).getValue()
-                        / Values.Share.divider() / Values.Quote.dividerToMoney();
+        double startValue = (double) delivery.getAmount() - delivery.getUnitSum(Unit.Type.TAX).getAmount();
+        double endValue = BigDecimal.valueOf(delivery.getShares())
+                        .multiply(BigDecimal.valueOf(
+                                        security.getSecurityPrice(LocalDate.parse("2014-12-06")).getValue()), Values.MC)
+                        .divide(Values.Share.getBigDecimalFactor(), Values.MC)
+                        .divide(Values.Quote.getBigDecimalFactorToMoney(), Values.MC).doubleValue();
         double ttwror = (endValue / startValue) - 1;
         assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo(ttwror, 0.0001));
 
@@ -72,7 +83,9 @@ public class SecurityPerformanceTaxRefundTestCase
         assertThat(record.getFees(), is(Money.of(CurrencyUnit.EUR, 10_00L)));
 
         // make sure that tax refund is included in transactions
-        assertThat(record.getTransactions(), hasItem(isA(AccountTransaction.class)));
+        assertTrue(record.getLineItems().stream() //
+                        .map(CalculationLineItem::getTransaction).filter(Optional<Transaction>::isPresent)
+                        .map(Optional::get).anyMatch(tx -> tx instanceof AccountTransaction));
 
         // ttwror of classification must be identical to ttwror of security
         assertThatTTWROROfClassificationWithSecurityIsIdentical(client, period, ttwror);
@@ -108,8 +121,8 @@ public class SecurityPerformanceTaxRefundTestCase
     @Test
     public void testSecurityPerformanceTaxRefundAllSold() throws IOException
     {
-        Client client = ClientFactory.load(SecurityTestCase.class
-                        .getResourceAsStream("security_performance_tax_refund_all_sold.xml"));
+        Client client = ClientFactory.load(
+                        SecurityTestCase.class.getResourceAsStream("security_performance_tax_refund_all_sold.xml"));
 
         Portfolio portfolio = client.getPortfolios().get(0);
         PortfolioTransaction delivery = portfolio.getTransactions().get(0);
@@ -117,14 +130,17 @@ public class SecurityPerformanceTaxRefundTestCase
         Interval period = Interval.of(LocalDate.parse("2013-12-06"), LocalDate.parse("2014-12-06"));
         TestCurrencyConverter converter = new TestCurrencyConverter();
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, period);
+        new SecurityPerformanceSnapshotComparator(snapshot,
+                        LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();
+
         SecurityPerformanceRecord record = snapshot.getRecords().get(0);
 
         assertThat(record.getSecurity().getName(), is("Basf SE"));
         assertThat(record.getSharesHeld(), is(0L));
 
         // no changes in holdings, ttwror must (without taxes and tax refunds):
-        double startValue = delivery.getAmount() - delivery.getUnitSum(Unit.Type.TAX).getAmount();
-        double endValue = sell.getAmount() + sell.getUnitSum(Unit.Type.TAX).getAmount();
+        double startValue = (double) delivery.getAmount() - delivery.getUnitSum(Unit.Type.TAX).getAmount();
+        double endValue = (double) sell.getAmount() + sell.getUnitSum(Unit.Type.TAX).getAmount();
         double ttwror = (endValue / startValue) - 1;
         assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo(ttwror, 0.0001));
 
@@ -136,7 +152,9 @@ public class SecurityPerformanceTaxRefundTestCase
         assertThat(record.getFees(), is(Money.of(CurrencyUnit.EUR, 20_00L)));
 
         // make sure that tax refund is included in transactions
-        assertThat(record.getTransactions(), hasItem(isA(AccountTransaction.class)));
+        assertTrue(record.getLineItems().stream() //
+                        .map(CalculationLineItem::getTransaction).filter(Optional<Transaction>::isPresent)
+                        .map(Optional::get).anyMatch(tx -> tx instanceof AccountTransaction));
 
         // ttwror of classification must be identical to ttwror of security
         assertThatTTWROROfClassificationWithSecurityIsIdentical(client, period, ttwror);
@@ -151,8 +169,7 @@ public class SecurityPerformanceTaxRefundTestCase
         assertThat(record.getIrr(), closeTo(-0.032248297, 0.0001));
     }
 
-    private void assertThatTTWROROfClassificationWithSecurityIsIdentical(Client client, Interval period,
-                    double ttwror)
+    private void assertThatTTWROROfClassificationWithSecurityIsIdentical(Client client, Interval period, double ttwror)
     {
         // performance of the category of the taxonomy must be identical
         Classification classification = client.getTaxonomy("32ac1de9-b9a7-480a-b464-36abf7984e0a")
@@ -177,8 +194,8 @@ public class SecurityPerformanceTaxRefundTestCase
 
         // the performance of portfolio + account must be identical to the
         // performance of the client
-        PerformanceIndex portfolioPlusPerformance = PerformanceIndex.forPortfolioPlusAccount(client, converter, client
-                        .getPortfolios().get(0), period, warnings);
+        PerformanceIndex portfolioPlusPerformance = PerformanceIndex.forPortfolioPlusAccount(client, converter,
+                        client.getPortfolios().get(0), period, warnings);
         assertThat(warnings, empty());
         assertThat(portfolioPlusPerformance.getFinalAccumulatedPercentage(),
                         is(clientIndex.getFinalAccumulatedPercentage()));

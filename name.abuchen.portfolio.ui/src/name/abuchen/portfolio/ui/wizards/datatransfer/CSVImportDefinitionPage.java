@@ -9,11 +9,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -26,13 +26,15 @@ import java.util.stream.Collectors;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
-import org.eclipse.jface.databinding.viewers.ViewersObservables;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
+import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -92,6 +94,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVConfigManager;
 import name.abuchen.portfolio.datatransfer.csv.CSVExtractor;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AnnotatedParsePosition;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
@@ -109,6 +112,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupportWrapper;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 import name.abuchen.portfolio.util.TextUtil;
@@ -128,13 +132,14 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
     private CSVConfigManager configManager;
     private final boolean onlySecurityPrices;
 
+    private IStylingEngine stylingEngine;
     private TableViewer tableViewer;
     private Menu configurationDropDownMenu;
 
     private DataBindingContext context;
 
     public CSVImportDefinitionPage(Client client, CSVImporter importer, CSVConfigManager configManager,
-                    boolean onlySecurityPrices)
+                    IStylingEngine stylingEngine, boolean onlySecurityPrices)
     {
         super("importdefinition"); //$NON-NLS-1$
         setTitle(Messages.CSVImportWizardTitle);
@@ -143,10 +148,11 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         this.client = client;
         this.importer = importer;
         this.configManager = configManager;
+        this.stylingEngine = stylingEngine;
         this.onlySecurityPrices = onlySecurityPrices;
 
-        importer.setExtractor(
-                        onlySecurityPrices ? importer.getSecurityPriceExtractor() : importer.getExtractors().get(0));
+        if (onlySecurityPrices)
+            importer.setExtractor(importer.getSecurityPriceExtractor());
 
         this.context = new DataBindingContext();
     }
@@ -198,9 +204,8 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         final Spinner skipLines = new Spinner(container, SWT.BORDER);
         skipLines.setMinimum(0);
 
-        IObservableValue<?> spinnerTarget = WidgetProperties.selection().observe(skipLines);
-        @SuppressWarnings("unchecked")
-        IObservableValue<String> spinnerModel = BeanProperties.value("skipLines").observe(importer); //$NON-NLS-1$
+        IObservableValue<Integer> spinnerTarget = WidgetProperties.spinnerSelection().observe(skipLines);
+        IObservableValue<Integer> spinnerModel = BeanProperties.value("skipLines", Integer.class).observe(importer); //$NON-NLS-1$
         context.bindValue(spinnerTarget, spinnerModel);
 
         skipLines.addModifyListener(event -> doProcessFile());
@@ -212,8 +217,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         encoding.setContentProvider(ArrayContentProvider.getInstance());
         encoding.setInput(Charset.availableCharsets().values().toArray());
 
-        IObservableValue<?> encodingTarget = ViewersObservables.observeSingleSelection(encoding);
-        @SuppressWarnings("unchecked")
+        IObservableValue<?> encodingTarget = ViewerProperties.singleSelection().observe(encoding);
         IObservableValue<?> encodingModel = BeanProperties.value("encoding").observe(importer); //$NON-NLS-1$
         context.bindValue(encodingTarget, encodingModel);
         encoding.addSelectionChangedListener(event -> doProcessFile());
@@ -221,8 +225,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         final Button firstLineIsHeader = new Button(container, SWT.CHECK);
         firstLineIsHeader.setText(Messages.CSVImportLabelFirstLineIsHeader);
 
-        IObservableValue<?> targetObservable = WidgetProperties.selection().observe(firstLineIsHeader);
-        @SuppressWarnings("unchecked")
+        IObservableValue<?> targetObservable = WidgetProperties.buttonSelection().observe(firstLineIsHeader);
         IObservableValue<?> modelObservable = BeanProperties.value("firstLineHeader").observe(importer); //$NON-NLS-1$
         context.bindValue(targetObservable, modelObservable);
 
@@ -233,6 +236,9 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         //
         // form layout
         //
+
+        // measuring the width requires that the font has been applied before
+        stylingEngine.style(container);
 
         int width = widest(lblExtractor, lblDelimiter, lblEncoding);
 
@@ -264,6 +270,9 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         compositeTable.setLayout(layout);
 
         tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION);
+
+        CopyPasteSupport.enableFor(tableViewer);
+
         final Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
@@ -313,8 +322,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             }
         });
 
-        IObservableValue<?> targetObservable = ViewersObservables.observeSingleSelection(extractor);
-        @SuppressWarnings("unchecked")
+        IObservableValue<?> targetObservable = ViewerProperties.singleSelection().observe(extractor);
         IObservableValue<?> modelObservable = BeanProperties.value("extractor").observe(importer); //$NON-NLS-1$
         context.bindValue(targetObservable, modelObservable);
         extractor.addSelectionChangedListener(e -> onTargetChanged());
@@ -335,10 +343,10 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         UpdateValueStrategy<Character, Delimiter> modelToTarget = new UpdateValueStrategy<>();
         modelToTarget.setConverter(new Delimiter.CharToDelimiterConverter());
 
-        @SuppressWarnings("unchecked")
-        IObservableValue<Delimiter> delimiterTarget = ViewersObservables.observeSingleSelection(delimiter);
-        @SuppressWarnings("unchecked")
-        IObservableValue<Character> delimiterModel = BeanProperties.value("delimiter").observe(importer); //$NON-NLS-1$
+        IObservableValue<Delimiter> delimiterTarget = ViewerProperties.singleSelection(Delimiter.class)
+                        .observe(delimiter);
+        IObservableValue<Character> delimiterModel = BeanProperties.value("delimiter", Character.class) //$NON-NLS-1$
+                        .observe(importer);
         context.bindValue(delimiterTarget, delimiterModel, targetToModel, modelToTarget);
         delimiter.addSelectionChangedListener(e -> doProcessFile());
         return delimiter;
@@ -361,7 +369,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
 
     private void onColumnSelected(int columnIndex)
     {
-        ColumnConfigDialog dialog = new ColumnConfigDialog(client, getShell(), importer.getExtractor(),
+        ColumnConfigDialog dialog = new ColumnConfigDialog(client, getShell(), importer,
                         importer.getColumns()[columnIndex]);
         dialog.open();
 
@@ -459,6 +467,8 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
     private void onConfigExport()
     {
         FileDialog dialog = new FileDialog(getControl().getShell(), SWT.SAVE);
+        dialog.setFilterNames(new String[] { Messages.CSVConfigCSVImportLabelFileJSON });
+        dialog.setFilterExtensions(new String[] { "*.json" }); //$NON-NLS-1$
 
         String proposal = TextUtil.sanitizeFilename(currentConfigLabel != null ? currentConfigLabel : "csv-config"); //$NON-NLS-1$
         dialog.setFileName(proposal + ".json");//$NON-NLS-1$
@@ -489,7 +499,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         FileDialog fileDialog = new FileDialog(getControl().getShell(), SWT.OPEN);
         fileDialog.setFilterNames(
                         new String[] { Messages.CSVConfigCSVImportLabelFileJSON, Messages.CSVImportLabelFileAll }); // Messages.CSVImportLabelFileCSV
-        fileDialog.setFilterExtensions(new String[] { "*.json", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
+        fileDialog.setFilterExtensions(new String[] { "*.json;*.JSON", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
         String fileName = fileDialog.open();
 
         if (fileName == null)
@@ -545,12 +555,20 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             tableViewer.setInput(input);
             tableViewer.refresh();
             tableViewer.getTable().pack();
-            for (TableColumn column : tableViewer.getTable().getColumns())
+
+            TableColumn[] columns = tableViewer.getTable().getColumns();
+            for (TableColumn column : columns)
                 column.pack();
+
+            // see #1723 and #1536: under Linux, the first column is extended to
+            // the full size of the table. Re-packing it after all other columns
+            // have been packed resolves this.
+            if (Platform.getWS().equals(Platform.WS_GTK) && columns.length > 0)
+                tableViewer.getTable().getColumns()[0].pack();
 
             doUpdateErrorMessages();
         }
-        catch (IOException e)
+        catch (IOException | UncheckedIOException e)
         {
             PortfolioPlugin.log(e);
             ErrorDialog.openError(getShell(), Messages.LabelError, e.getMessage(),
@@ -690,24 +708,27 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             if (column.getField() == null)
                 return null;
 
-            try
+            if (column.getFormat() != null)
             {
-                if (column.getFormat() != null)
+                String text = getColumnText(element, columnIndex);
+                if (text != null && !text.isEmpty())
                 {
-                    String text = getColumnText(element, columnIndex);
-                    if (text != null && !text.isEmpty())
-                    {
-                        column.getFormat().getFormat().parseObject(TextUtil.stripNonNumberCharacters(text));
-                        return GREEN;
-                    }
-                }
+                    var position = new AnnotatedParsePosition(0);
+                    column.getFormat().getFormat().parseObject(text, position);
 
-                return column.getField().isOptional() ? LIGHTGREEN : GREEN;
+                    if (position.getIndex() == 0)
+                    {
+                        return column.getField().isOptional() ? Colors.theme().warningBackground() : ERROR;
+                    }
+                    else
+                    {
+                        return position.isTrimmed() ? Colors.theme().warningBackground() : GREEN;
+                    }
+
+                }
             }
-            catch (ParseException e)
-            {
-                return column.getField().isOptional() ? Colors.WARNING : ERROR;
-            }
+
+            return column.getField().isOptional() ? LIGHTGREEN : GREEN;
         }
     }
 
@@ -715,17 +736,17 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
     {
         private static final Field EMPTY = new Field("#", "---"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        private CSVExtractor definition;
+        private CSVImporter importer;
         private Column column;
         private final Client client;
 
-        protected ColumnConfigDialog(Client client, Shell parentShell, CSVExtractor definition, Column column)
+        protected ColumnConfigDialog(Client client, Shell parentShell, CSVImporter importer, Column column)
         {
             super(parentShell);
-            setShellStyle(getShellStyle() | SWT.SHEET);
+            setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.SHEET);
 
             this.client = client;
-            this.definition = definition;
+            this.importer = importer;
             this.column = column;
         }
 
@@ -756,14 +777,16 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             ComboViewer mappedTo = new ComboViewer(composite, SWT.READ_ONLY);
             mappedTo.setContentProvider(ArrayContentProvider.getInstance());
             List<Field> fields = new ArrayList<>();
-            fields.add(EMPTY);
-            fields.addAll(definition.getFields());
+            fields.addAll(importer.getExtractor().getFields());
+            Collections.sort(fields, (r, l) -> r.getName().compareTo(l.getName()));
+            fields.add(0, EMPTY);
             mappedTo.setInput(fields);
             GridDataFactory.fillDefaults().grab(true, false).applyTo(mappedTo.getControl());
 
             final Composite details = new Composite(composite, SWT.NONE);
             final StackLayout layout = new StackLayout();
             details.setLayout(layout);
+            GridDataFactory.fillDefaults().grab(true, true).applyTo(details);
 
             final Composite emptyArea = new Composite(details, SWT.NONE);
 
@@ -782,7 +805,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             final Composite valueArea = new Composite(details, SWT.NONE);
             glf.applyTo(valueArea);
             label = new Label(valueArea, SWT.NONE);
-            label.setText(Messages.CSVImportLabelFormat);
+            label.setText(Messages.LabelDecimalSeparator);
             final ComboViewer valueFormats = new ComboViewer(valueArea, SWT.READ_ONLY);
             valueFormats.setContentProvider(ArrayContentProvider.getInstance());
             valueFormats.getCombo().select(0);
@@ -792,14 +815,15 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             final Composite keyArea = new Composite(details, SWT.NONE);
             glf.applyTo(keyArea);
             final TableViewer tableViewer = new TableViewer(keyArea, SWT.FULL_SELECTION);
+            CopyPasteSupport.enableFor(tableViewer);
             tableViewer.setContentProvider(new KeyMappingContentProvider());
             tableViewer.getTable().setLinesVisible(true);
             tableViewer.getTable().setHeaderVisible(true);
-            GridDataFactory.fillDefaults().grab(false, true).minSize(SWT.DEFAULT, 100).applyTo(tableViewer.getTable());
+            GridDataFactory.fillDefaults().grab(true, true).minSize(SWT.DEFAULT, 100).applyTo(tableViewer.getTable());
 
             TableViewerColumn col = new TableViewerColumn(tableViewer, SWT.NONE);
             col.getColumn().setText(Messages.CSVImportLabelExpectedValue);
-            col.getColumn().setWidth(100);
+            col.getColumn().setWidth(200);
             col.setLabelProvider(new ColumnLabelProvider()
             {
                 @Override
@@ -811,7 +835,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
 
             col = new TableViewerColumn(tableViewer, SWT.NONE);
             col.getColumn().setText(Messages.CSVImportLabelProvidedValue);
-            col.getColumn().setWidth(100);
+            col.getColumn().setWidth(200);
             col.setLabelProvider(new ColumnLabelProvider()
             {
                 @Override
@@ -844,7 +868,8 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
                         if (column.getFormat() != null)
                             dateFormats.setSelection(new StructuredSelection(column.getFormat()));
                         else
-                            dateFormats.setSelection(new StructuredSelection(dateFormats.getElementAt(0)));
+                            dateFormats.setSelection(new StructuredSelection(
+                                            field.guessFormat(client, importer.getFirstNonEmptyValue(column))));
                     }
                     else if (field instanceof AmountField)
                     {
@@ -853,11 +878,12 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
                         if (column.getFormat() != null)
                             valueFormats.setSelection(new StructuredSelection(column.getFormat()));
                         else
-                            valueFormats.setSelection(new StructuredSelection(valueFormats.getElementAt(0)));
+                            valueFormats.setSelection(new StructuredSelection(
+                                            field.guessFormat(client, importer.getFirstNonEmptyValue(column))));
                     }
                     else if (field instanceof ISINField)
                     {
-                        column.setFormat(field.guessFormat(client, null));
+                        column.setFormat(field.guessFormat(client, importer.getFirstNonEmptyValue(column)));
                     }
                     else if (field instanceof EnumField)
                     {
@@ -888,6 +914,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             else
             {
                 mappedTo.getCombo().select(0);
+                Display.getDefault().timerExec(100, () -> mappedTo.getCombo().setListVisible(true));
             }
 
             return composite;
@@ -953,7 +980,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             for (Enum<?> entry : mapFormat.map().keySet())
                 elements.add(new Entry(mapFormat.map(), entry));
 
-            Collections.sort(elements, (e1, e2) -> e1.key.name().compareToIgnoreCase(e2.key.name()));
+            Collections.sort(elements, (e1, e2) -> TextUtil.compare(e1.key.name(), e2.key.name()));
 
             return elements.toArray();
         }

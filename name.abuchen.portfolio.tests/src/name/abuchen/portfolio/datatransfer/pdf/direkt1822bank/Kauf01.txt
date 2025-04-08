@@ -1,0 +1,53 @@
+PDF Author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+Postfach · 60255 Frankfurt am Main Seite 1 von 2
+Depotnummer 1234567890
+Kundennummer 1234567
+Max Mustermann
+Auftragsnummer 123456/10.00
+Herrn Datum 01.12.2017
+Max Mustermann Ihr Berater 1822direkt
+Musterstr. 123 Telefon 069 94170-0
+12345 Musterstadt Rechnungsnummer A12345-0000012345/17
+Umsatzsteuer-ID DE114104095
+Wertpapier Abrechnung Kauf
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 13 COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
+INHABER-ANTEILE I O.N.
+Börse Tradegate (gemäß Weisung)
+Limit-Order
+Limit 40,99 EUR AN
+Schlusstag/-Zeit 01.12.2017 10:30:52 Auftraggeber Mustermann, Max
+Ausführungskurs 40,968 EUR Auftragserteilung Online-Banking
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 532,58- EUR
+Provision 4,95- EUR
+Eigene Spesen 1,95- EUR
+Ermittlung steuerrelevante Erträge
+Zwischengewinn 0,02- EUR
+Eingebuchte sonstige negative Kapitalerträge 0,02 EUR
+Ausmachender Betrag 539,48- EUR
+Den Gegenwert buchen wir mit Valuta 05.12.2017 zu Lasten des Kontos 1234567890
+(IBAN DE12 1234 5678 1234 5678 90), BLZ 50050201 (BIC HELADEF1822).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Ich/wir habe(n) den Auftrag aus eigener Initiative erteilt.
+Mir/uns wurden Verkaufsunterlagen zur Verfügung gestellt.
+1234.12345678.0001233OR07
+Seite 2 von 2
+Depotnummer 1234567890
+Kundennummer 1234567
+Auftragsnummer 123456/10.00
+Datum 01.12.2017
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2017 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 500,00 0,00 0,00
+Kauf 0,00 0,02 0,00 0,00 0,00
+Nachher 0,00 0,02 500,00 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+1234.12345678.0001234OR07

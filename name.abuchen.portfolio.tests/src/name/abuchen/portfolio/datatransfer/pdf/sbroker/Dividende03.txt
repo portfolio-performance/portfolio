@@ -1,0 +1,58 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Erträgnisgutschrift aus Wertpapieren
+DEPOTNUMMER=0190999
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=0000
+ADRESSZEILE1=Herrn
+Dividende für
+ADRESSZEILE2=Leroy Jenkins
+01.07.2020 - 30.06.2021
+ADRESSZEILE3=Zur Bierstube 2
+Depot-Nr. Abrechnungs-Nr.
+Herrn ADRESSZEILE4=666 Azeroth
+ADRESSZEILE5=
+Leroy Jenkins
+0190999 
+ADRESSZEILE6=
+Zur Bierstube 2
+BELEGNUMMER=9743
+666 Azeroth
+SEITENNUMMER=1
+STEUERERSTATTUNG=N
+Depotinhaber
+Leroy Jenkins
+Wiesbaden, 15.05.2021
+Dividendengutschrift
+Gattungsbezeichnung ISIN
+Procter & Gamble Co., The Registered Shares o.N. US7427181091
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 25,000 22.04.2021 17.05.2021 USD 0,869800
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+17.05.2021 000000 EUR/USD 1,2089 EUR 13,39
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+ausländische Dividende EUR 17,99
+US-Quellensteuer 15% USD 3,26
+davon anrechenbare US-Quellensteuer 15% EUR 2,70
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 7,19
+einbehaltene Kapitalertragsteuer EUR 1,80
+einbehaltener Solidaritätszuschlag EUR 0,10
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 1.111,11
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 9.999,99
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Wiesbaden, Steuernummer 000/000/0000.
+Steuerlicher Stichtag: 17.05.2021
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/ABREEREIERTR/GDBERTRG/009743/150521/004014

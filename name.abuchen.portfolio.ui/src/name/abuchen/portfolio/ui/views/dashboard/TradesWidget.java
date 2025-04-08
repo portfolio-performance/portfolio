@@ -1,8 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.text.MessageFormat;
 import java.util.List;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.trades.Trade;

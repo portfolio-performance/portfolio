@@ -1,0 +1,16 @@
+`PDF Autor: ''
+PDFBox Version: 1.8.16
+
+TRADE REPUBLIC BANK GMBH KASTANIENALLEE 32 10435 BERLIN
+Vorname Nachname SEITE 1 von 5
+Straße Hausnummer DATUM 09.10.2020
+D PLZ ORT DEPOT 1xxxxxxx1
+KONTOAUSZUG
+zum 31.12.2020
+BUCHUNGEN
+Aufstellung über die Buchungen in Deinem Verrechnungskonto DExxxxxxxxxxxxxxxxxxx7.
+BUCHUNGSTAG / BUCHUNGSTEXT BETRAG IN EUR
+WERTSTELLUNG
+01.10.2020 Accepted PayIn:DExxxxxxxxxxxxxxxxx3 to 299,96
+01.10.2020 DExxxxxxxxxxxxxxxxxxx7
+01.10.2020 Accepted`

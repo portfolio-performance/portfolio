@@ -1,0 +1,64 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+Baader Bank AG Weihenstephaner Straße 4 85718 Unterschleißheim
+T 0800 00 586336 F 089 5150 2442 service@baaderbank.de
+Gartenstraße 67 
+76135 Karlsruhe
+www.finanzen.net/zero
+T 089 5455 8188
+Herrn Seite 1/2
+Max Mustermann Karlsruhe02.01.2024
+Musterstraße 0815 Max Mustermann
+12345 Stadt Stammnr.: 1234567
+Vorgangs-Nr.: KRY 000000123456
+Abrechnung über den Kauf von Kryptowerten
+Auftragsdatum 02.01.2024
+Auftragszeit 11:04:16:38
+Nominale Kennung: BTC Kurs
+STK 0,0024 Bitcoin EUR 41.981,240
+Ausführungsplatz: außerbörslich (Baader Bank AG) / B4C Markets BV
+Ausführungsreferenz: eine-id-ist-das-hier
+Auftraggeber: Kontoinhaber
+Kurswert EUR 100,75
+Mindermengenzuschlag Finanzen.net EUR 1,00
+Zu Lasten Konto 1234567890 Valuta: 04.01.2024 EUR 101,75
+Details zur Ausführung:
+Ausführungs- Ausführungs-
+Nominale Kurs Ausführungsplatz datum uhrzeit
+STK 0,0024 EUR 41.981,240 B4C Markets BV 02.01.2024 11:04:16:95
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen 
+gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden. Dieser Auftrag erfolgte ohne Empfehlung 
+der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus der Veräußerung von virtuellen Währungen unterliegen der Einkommensteuer und sind im Rahmen Ihrer
+Einkommensteuererklärung anzugeben. Bei Fragen wenden Sie sich bitte an Ihren steuerlichen Berater.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+finanzen.net zero GmbH, Gartenstraße 67, 76135 Karlsruhe • Impressum unter: www.finanzen.net/zero/impressum
+finanzen.net zero GmbH erbringt Anlagevermittlung als gebundener Vermittler der DonauCapital Wertpapier GmbH
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der Gesellschaft: 
+Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. KYABRECHNUNG-001.001
+Abrechnung über den Kauf von Kryptowerten
+Fortsetzung                   Seite 2/2
+Kryptowerte sind digitale Darstellungen eines Wertes, der von keiner Zentralbank oder öffentlichen Stelle emittiert wurde oder garantiert wird und nicht den 
+gesetzlichen Status einer Währung oder von Geld besitzt, aber von natürlichen oder juristischen Personen aufgrund einer Vereinbarung oder tatsächlichen Übung 
+als Tausch- oder Zahlungsmittel akzeptiert wird oder Anlagezwecken dient und der auf elektronischem Wege übertragen, gespeichert und gehandelt werden kann.
+ 
+B4C Markets BV ist ein von der Niederländischen Zentralbank (DNB) regulierter Kryptowährungs-Dienstleister, mit der Registrierungsnummer R179444. DNB 
+beaufsichtigt B4C Markets BV nur im Hinblick auf bestimmte geldwäscherechtliche und sanktionsrechtliche Vorschriften. B4C + Markets BV ist nicht Gegenstand 
+der vollumfänglichen Bankenaufsicht. Insbesondere werden keine wirtschaftlichen Mindestanforderungen, Geschäftsrisiken oder verbraucherschutzrechtliche 
+Vorschriften geprüft.
+ 
+Die Kryptowerte werden seitens des Kunden in einer zentralen Wallet bei dem Kryptoverwahrer, der Tangany GmbH, verwahrt. Bei der Tangany GmbH handelt es 
+sich um einen unabhängigen Finanzdienstleister, der kein Erfüllungsgehilfe der Baader Bank Aktiengesellschaft ist. Kryptowerte gelten nicht als Wertpapiere im 
+Sinne des Depotgesetzes und können daher nicht in Wertpapierdepots verwahrt werden.
+finanzen.net zero GmbH, Gartenstraße 67, 76135 Karlsruhe • Impressum unter: www.finanzen.net/zero/impressum
+finanzen.net zero GmbH erbringt Anlagevermittlung als gebundener Vermittler der DonauCapital Wertpapier GmbH
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der Gesellschaft: 
+Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. KYABRECHNUNG-001.001

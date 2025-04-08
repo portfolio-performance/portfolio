@@ -1,0 +1,52 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.5
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=347177000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=Max Mustermann
+Kauf Limitauftrag ADRESSZEILE3=Musterstr. 77
+Kommissionsgeschäft ADRESSZEILE4=12345 Musterstadt
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=Depot-Nr. Abrechnungs-Nr.
+Musterstr. 77 BELEGNUMMER=33629
+12345 Musterstadt 666666000 15666666 / 01.12.2022 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 01.12.2022
+Wir haben für Sie gekauft
+Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+11,5% UniCredit Bank AG HVB Aktienanleihe 24.11.2023 24.11.2023 DE000HB4GEE2
+v.22(23)SDF
+Nominal Kurs
+EUR 1.000,000 90,1800 %
+Handelstag 01.12.2022 Kurswert EUR 901,80-
+Handelszeit 18:08 Stückzinsen EUR 82,55-
+Zinstage 262 Orderprovision EUR 5,00-
+Handelsplatz außerbörslich HypoVereinsbank Handelsplatzgebühr EUR 2,00-
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+05.12.2022 666666000 EUR 991,35
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Stückzinsaufwand EUR 82,55
+Aktienverlusttopf EUR 1.066,78 1.066,78
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 995,00) EUR 157,84 240,39
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+Wir werden in Ihrem Depot wie angegeben buchen.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+onvist a bank - eine M arke der Com merzbank AG · Solmsst raße 83 · 6 0 486 Frankfur t a m M ain
+Kundenservice: +49 ( 0 )69-710 7-53 0 · T: +49 ( 0 )69-710 7- 0 · F: +49 ( 0 )69-710 7-10 0 · E: in fo@onvist a -bank.de · W: w w w.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender), Marcus Chromik, Michael Kotzbauer,
+Jörg Oliveri del Castillo-Schulz, Bet t ina Orlopp, Thomas Schaufler, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
+3.18/ABREABHNHANDKFDI/POJ1618/033629/021222/004901

@@ -1,0 +1,36 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.2
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KÖPENICKER STRASSE 40C  10179 BERLIN
+ObYkIGLA pNFXCP LTViL SSJjRhj PAGINA 1 dal 1
+nTr lUHU nrgaLGt 127 DATA 01.06.2023
+73580 wGrIRVNYS CONTO TITOLI 5087647531
+DIVIDENDO
+PANORAMICA
+Dividendo con l'ex-tag 12.05.2023.
+POSIZIONE QUANTITÀ Reddito IMPORTO
+Enbridge Inc. 20,971565 Pz. 0,8875 CAD 18,61 CAD
+Registered Shares o.N.
+ISIN: CA29250N1050
+TOTALE 18,61 CAD
+FATTURAZIONE
+POSIZIONE IMPORTO
+Ritenuta alla fonte -4,65 CAD
+Subtotale 13,96 CAD
+Subtotale 1,46055 EUR/CAD 9,56 EUR
+TOTALE 9,56 EUR
+PRENOTAZIONE
+CONTO DI TRANSITO DATA VALUTA IMPORTO
+DE98XX566XX071XX65XX87 01.06.2023 9,56 EUR
+Enbridge Inc. Registered Shares o.N. in conto titoli in Germania.
+Luogo di custodia: Canada
+Questo regolamento viene creato automaticamente e quindi non è firmato.
+Se non viene mostrata l'IVA, si tratta di un servizio esente da imposte sulle vendite in conformità con la 
+regolamentazione UStG § 4 n. 8.
+Trade Republic Bank GmbH www.traderepublic.com Sede centrale: Berlin Direttore Generale
+Köpenicker Straße 40c service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10179 Berlin PARTITA IVA DE307510626 Gernot Mittendorfer
+ABRE / 01.06.2023 / 93769604 / 2cba-c6b8
+
+```

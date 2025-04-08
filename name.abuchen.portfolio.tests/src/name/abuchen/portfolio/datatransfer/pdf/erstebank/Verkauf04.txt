@@ -1,0 +1,32 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Abcd BLZ: 18700
+Abcd Abcdefghijk Referenz Nr.: 12-12345678
+Nr. 01
+1234  Abcdefghi Kunden Nr.: 12345
+Austria Depot Nr.: 12345-1
+Wien, 10.04.2012
+WERTPAPIERBESTÄTIGUNG
+VERKAUF
+Ausserbörslich: Xetra Frankfurt Kurswert: EUR 1.394,90
+Wertpapier: BEIERSDORF AG O.N. Gesamtbetrag: EUR 1.394,90
+WP-Kenn-Nr.: DE0005200000
+Stück: 29,00
+Preis: EUR 48,10
+Handelstag: 10.04.2012
+Valutatag: 12.04.2012
+Lagerort: Frankfurt
+Verwahrart: WR
+Abrechnung:
+Wir erkennen Ihr EUR Konto 12345 mit Valuta 12.04.2012.
+Wir belasten Ihr Wertpapierdepot Nummer 12345-1.
+Ausführung:
+Ausführungsdatum: 10.04.2012 Ausführungszeit: 09:00:20
+Vorbehaltlich Eingang bzw. nachträglicher Storni/Umbuchungen seitens Lagerstelle/Partner.
+Überprüfen Sie bitte die Richtigkeit dieser Bestätigung. Sollten Sie innerhalb von 6 Wochen nach Erhalt dieser Bestätigung
+keine Einwände gegen die Richtigkeit erheben, so gelten die angeführten Erklärungen und Leistungen als genehmigt.
+ecetra Central European e-Finance AG | Mariahilferstraße 121B | A-1060 Wien
+e-mail: info@brokerjet.at | Fax: +43-1-53689-13550 | www.ecetra.com
+Sitz Wien | Handelsgericht Wien | FB-Nr. 193944m | DVR 1052322 | UID ATU49227901
+Ein Unternehmen der ERSTE BANK GRUPPE

@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeListener;
@@ -21,6 +22,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class DropDown extends ContributionItem
 {
+    private boolean enabled = true;
     private String label;
     private String toolTip;
     private Images image;
@@ -77,6 +79,21 @@ public class DropDown extends ContributionItem
         this.menuListener = menuListener;
     }
 
+    @Override
+    public boolean isEnabled()
+    {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+        if (widget != null && !widget.isDisposed())
+        {
+            widget.setEnabled(enabled);
+        }
+    }
+
     public final String getLabel()
     {
         return label;
@@ -91,7 +108,7 @@ public class DropDown extends ContributionItem
             if (image != null && toolTip == null)
                 widget.setToolTipText(TextUtil.tooltip(label));
 
-            if (image == null || style == SWT.DROP_DOWN)
+            if (image == null || style == SWT.DROP_DOWN || style == SWT.PUSH)
                 widget.setText(TextUtil.tooltip(label));
 
             widget.getParent().getParent().layout();
@@ -157,7 +174,7 @@ public class DropDown extends ContributionItem
             ti.setImage(image.image());
         }
 
-        if (image == null || style == SWT.DROP_DOWN)
+        if (image == null || style == SWT.DROP_DOWN || style == SWT.PUSH)
         {
             ti.setText(TextUtil.tooltip(label));
         }
@@ -165,6 +182,9 @@ public class DropDown extends ContributionItem
         ti.setToolTipText(toolTip != null ? toolTip : label);
 
         ti.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            if (!enabled)
+                return;
+
             if (e.detail == SWT.ARROW || defaultAction == null)
             {
                 ToolItem item = (ToolItem) e.widget;
@@ -188,8 +208,14 @@ public class DropDown extends ContributionItem
         }));
 
         ti.addDisposeListener(e -> disposeListeners.forEach(l -> l.widgetDisposed(e)));
+        ti.setEnabled(enabled);
 
         widget = ti;
+    }
+
+    public void fill(IMenuManager manager)
+    {
+        manager.add(new SimpleAction(getLabel(), getImage(), a -> defaultAction.run()));
     }
 
     @Override

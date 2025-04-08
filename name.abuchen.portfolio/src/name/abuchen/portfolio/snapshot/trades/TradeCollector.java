@@ -1,18 +1,22 @@
 package name.abuchen.portfolio.snapshot.trades;
 
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
@@ -21,6 +25,45 @@ import name.abuchen.portfolio.money.Values;
 
 public class TradeCollector
 {
+    public static final Comparator<TransactionPair<?>> BY_DATE_AND_TYPE = new ByDateAndType();
+
+    /**
+     * Sorts transaction by date and then by type whereas inbound types
+     * (purchase, inbound delivery) are sorted before outbound type (sell,
+     * outbound delivery) to make sure that trades closed on the same day are
+     * matched.
+     */
+    private static final class ByDateAndType implements Comparator<TransactionPair<?>>, Serializable
+    {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public int compare(TransactionPair<?> t1, TransactionPair<?> t2)
+        {
+            int compareTo = t1.getTransaction().getDateTime().compareTo(t2.getTransaction().getDateTime());
+            if (compareTo != 0)
+                return compareTo;
+
+            boolean first = isInbound(t1);
+            boolean second = isInbound(t2);
+
+            if (first ^ second)
+                return first ? -1 : 1;
+            else
+                return 0;
+        }
+
+        private boolean isInbound(TransactionPair<?> pair)
+        {
+            if (pair.getTransaction() instanceof PortfolioTransaction)
+                return ((PortfolioTransaction) pair.getTransaction()).getType().isPurchase();
+            else if (pair.getTransaction() instanceof AccountTransaction)
+                return ((AccountTransaction) pair.getTransaction()).getType().isDebit();
+
+            return false;
+        }
+    }
+
     private Client client;
     private CurrencyConverter converter;
 
@@ -34,8 +77,7 @@ public class TradeCollector
     {
         List<TransactionPair<?>> transactions = security.getTransactions(client);
 
-        Collections.sort(transactions,
-                        (p1, p2) -> p1.getTransaction().getDateTime().compareTo(p2.getTransaction().getDateTime()));
+        Collections.sort(transactions, BY_DATE_AND_TYPE);
 
         List<Trade> trades = new ArrayList<>();
         Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions = new HashMap<>();
@@ -51,7 +93,8 @@ public class TradeCollector
             Portfolio portfolio = (Portfolio) txp.getOwner();
             PortfolioTransaction t = (PortfolioTransaction) txp.getTransaction();
 
-            switch (t.getType())
+            Type type = t.getType();
+            switch (type)
             {
                 case BUY:
                 case DELIVERY_INBOUND:
@@ -72,7 +115,7 @@ public class TradeCollector
                     break;
 
                 default:
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("unsupported type " + type); //$NON-NLS-1$
 
             }
         }
@@ -113,6 +156,9 @@ public class TradeCollector
                             pair.getTransaction().getSecurity(), pair.getOwner(), pair));
 
         long sharesToDistribute = pair.getTransaction().getShares();
+
+        // sort open to get fifo
+        Collections.sort(open, BY_DATE_AND_TYPE);
 
         for (TransactionPair<PortfolioTransaction> candidate : new ArrayList<>(open))
         {
@@ -174,6 +220,9 @@ public class TradeCollector
 
         long sharesToTransfer = pair.getTransaction().getShares();
 
+        // sort positions to get fifo
+        Collections.sort(positions, BY_DATE_AND_TYPE);
+
         for (TransactionPair<PortfolioTransaction> candidate : new ArrayList<>(positions))
         {
             if (sharesToTransfer == 0)
@@ -210,11 +259,10 @@ public class TradeCollector
     private TransactionPair<PortfolioTransaction> split(TransactionPair<PortfolioTransaction> candidate,
                     Portfolio newOwner, double weight)
     {
-        if (candidate.getTransaction().getCrossEntry() instanceof BuySellEntry)
-            return splitBuySell((BuySellEntry) candidate.getTransaction().getCrossEntry(), newOwner, weight);
+        if (candidate.getTransaction().getCrossEntry() instanceof BuySellEntry entry)
+            return splitBuySell(entry, newOwner, weight);
         else if (candidate.getTransaction() instanceof PortfolioTransaction)
-            return splitPortfolioTransaction((Portfolio) candidate.getOwner(),
-                            (PortfolioTransaction) candidate.getTransaction(), weight);
+            return splitPortfolioTransaction((Portfolio) candidate.getOwner(), candidate.getTransaction(), weight);
         else
             throw new UnsupportedOperationException();
     }
@@ -224,7 +272,7 @@ public class TradeCollector
         PortfolioTransaction t = entry.getPortfolioTransaction();
 
         BuySellEntry copy = new BuySellEntry();
-        copy.setPortfolio(portfolio);
+        copy.setPortfolio(entry.getPortfolio());
         copy.setAccount(entry.getAccount());
 
         copy.setDate(t.getDateTime());

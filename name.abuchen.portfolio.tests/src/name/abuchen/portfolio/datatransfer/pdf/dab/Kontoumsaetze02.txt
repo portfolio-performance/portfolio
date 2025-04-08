@@ -1,0 +1,241 @@
+﻿PDF author: 'DAB BNP Paribas'
+PDFBox Version: 1.8.16
+-----------------------------------------
+München, den 20.04.2021
+Stammnummer: 0000000
+Konto/Depotnummer: 000000000000
+Vermögensstatus
+Mustermann Max
+Erstellungsdatum: 19.04.2021
+Seite 1 von 6
+Raisin GmbH
+Immanuelkirchstr. 14a
+10405 Berlin
+Vermögensstatus und Rechnungsabschluss zum 31. März 2021
+Depot und Geldkonto
+in EUR
+Investmentfonds 36.985,18
+Depotwert gesamt 36.985,18
+Geldkonten 87,33
+Kontosalden gesamt 87,33
+Gesamtvermögen 37.072,51
+Gebührenübersicht seit letztem Reporting Wert in EUR
+angefallene Transaktionsgebühren 0,00
+Depotgebühren 0,00
+Verwaltungsvergütung 0,00
+gezahlte Ausgabeaufschläge -0,03
+Verwahrentgelt Geldeinlagen 0,00
+Die Beträge für Depotgebühren und Verwaltungsgebühren enthalten 19% Umsatzsteuer.
+KESt-Information zum 31.03.21
+Konto-/Depotzuordnung Privatvermögen
+Freistellungsform KEST-pflichtig
+beantragter Freibetrag in EUR 0,00
+davon ausgeschöpft in EUR 0,00
+verbleibender Freibetrag in EUR 0,00
+Aktienverlusttopf in EUR 0,00
+Allgemeiner Verlusttopf in EUR 0,00
+Quellensteuertopf in EUR 0,00
+freigeschaltet für Finanztermingeschäfte
+keine
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+München, den 20.04.2021
+Stammnummer: 0000000
+Konto/Depotnummer: 000000000000
+Vermögensstatus
+Mustermann Max
+Erstellungsdatum: 19.04.2021
+Seite 2 von 6
+Depotübersicht zum 31. März 2021
+Depot 000000000000
+Investmentfonds EUR
+Bezeichnung Stück/Nominal Einstandskurs Tageskurs Gewinn Wert in
+WKN/ISIN Währg. Deviseneinstand Devisenkurs Verlust EUR
+VANG.FTSE D.A.P.X.J.DLD 73,091 22,2253 26,1485 286,74 1.911,20
+A1T8FT/IE00B9F5YL18 EUR 1,000000 1,000000
+VANG.FTSE DEV.EU.UETF EOD 209,388 30,1275 33,4350 692,56 7.000,88
+A1T8FS/IE00B945VV12 EUR 1,000000 1,000000
+VANG.FTSE N.AME.U.ETF DLD 169,135 66,9476 84,0129 2.886,34 14.209,52
+A12CXY/IE00BKX55R35 EUR 1,000000 1,000000
+VANGUARD FTSE EMU.ETF DLD 121,853 51,4675 59,7064 1.003,93 7.275,40
+A1JX51/IE00B3VVMM84 EUR 1,000000 1,000000
+VANGUARD FTSE JP.UETF DLD 79,968 26,2139 30,7645 363,90 2.460,18
+A1T8FU/IE00B95PGT31 EUR 1,000000 1,000000
+VAN.INVT-GL SC IDX EOA 14,564 216,2959 283,4307 977,78 4.128,00
+A1J8CD/IE00B42W4L06 EUR 1,000000 1,000000
+Gesamtwert EUR-Investmentfonds in EUR 6.211,25 36.985,18
+Gesamtwert Investmentfonds in EUR 6.211,25 36.985,18
+Depotwerte gesamt 000000000000 in EUR 6.211,25 36.985,18
+Total Depotwerte in EUR 6.211,25 36.985,18
+Kontoübersicht vom 01.01.2021 bis 31.03.2021
+Letzte Kontoübersicht vom 01.01.2021
+IBAN DE50 7012 0400 5606 3930 06
+Verrechnungskonto 0000000000 nach Buchungsdatum EUR
+Transaktion Instrument/Bezeichnung WKN Valuta Soll Haben
+Verwendungszweck
+Saldovortrag per 31.12.20 17,43
+Kursangaben ohne Gewähr
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+München, den 20.04.2021
+Stammnummer: 0000000
+Konto/Depotnummer: 000000000000
+Vermögensstatus
+Mustermann Max
+Erstellungsdatum: 19.04.2021
+Seite 3 von 6
+Kontoübersicht vom 01.01.2021 bis 31.03.2021
+Letzte Kontoübersicht vom 01.01.2021
+IBAN DE50 7012 0400 5606 3930 06
+Verrechnungskonto 0000000000 nach Buchungsdatum EUR
+Transaktion Instrument/Bezeichnung WKN Valuta Soll Haben
+Verwendungszweck
+Dividende / VANGUARD FTSE EMU.ETF DLD A1JX51 30.12.20 10,38
+Ausschüttung
+Dividende / VANGUARD FTSE JP.UETF DLD A1T8FU 30.12.20 11,46
+Ausschüttung
+Dividende / VANG.FTSE D.A.P.X.J.DLD A1T8FT 30.12.20 4,32
+Ausschüttung
+Dividende / VANG.FTSE N.AME.U.ETF DLD A12CXY 30.12.20 31,70
+Ausschüttung
+Kontostand per 04.01.21 75,29
+Kauf VANGUARD FTSE EMU.ETF DLD A1JX51 06.01.21 15,02
+Kauf VANG.FTSE N.AME.U.ETF DLD A12CXY 06.01.21 28,86
+Kauf VANG.FTSE D.A.P.X.J.DLD A1T8FT 06.01.21 3,77
+Kauf VANG.FTSE DEV.EU.UETF EOD A1T8FS 06.01.21 14,83
+Kauf VANGUARD FTSE JP.UETF DLD A1T8FU 06.01.21 5,27
+Kontostand per 05.01.21 7,54
+Kauf VAN.INVT-GL SC IDX EOA A1J8CD 07.01.21 7,52
+Kontostand per 07.01.21 0,02
+SEPA-Lastschrift Lastschrift Managementgebühr 29.06.20 53,02
+SERVICEENTGELT WELTINVEST RAISIN
+SEPA-Lastschrift Lastschrift Managementgebühr 29.06.20 23,05
+SERVICEENTGELT WELTINVEST DAB
+SEPA-Lastschrift Max Mustermann 13.01.21 400,00
+SEPA-Lastschrift
+WeltInvest Sparplan 000000000
+SEPA EndToEndId: 000000000
+Gläubiger-ID: DE27ZZZ00000024315
+Mandatsref.: SPWELTINVEST0000000000
+Kontostand per 13.01.21 400,02
+Zinszahlung / Kupon VAN.INVT-GL SC IDX EOA A1J8CD 13.01.21 0,26
+Kauf VANG.FTSE DEV.EU.UETF EOD A1T8FS 15.01.21 78,80
+Kauf VANG.FTSE D.A.P.X.J.DLD A1T8FT 15.01.21 20,04
+Kauf VANGUARD FTSE EMU.ETF DLD A1JX51 15.01.21 79,80
+Kursangaben ohne Gewähr
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+München, den 20.04.2021
+Stammnummer: 0000000
+Konto/Depotnummer: 000000000000
+Vermögensstatus
+Mustermann Max
+Erstellungsdatum: 19.04.2021
+Seite 4 von 6
+Kontoübersicht vom 01.01.2021 bis 31.03.2021
+Letzte Kontoübersicht vom 01.01.2021
+IBAN DE50 7012 0400 5606 3930 06
+Verrechnungskonto 0000000000 nach Buchungsdatum EUR
+Transaktion Instrument/Bezeichnung WKN Valuta Soll Haben
+Verwendungszweck
+Kontostand per 15.01.21 221,12
+Kauf VANGUARD FTSE JP.UETF DLD A1T8FU 18.01.21 28,00
+Kauf VANG.FTSE N.AME.U.ETF DLD A12CXY 18.01.21 153,36
+Kauf VAN.INVT-GL SC IDX EOA A1J8CD 19.01.21 40,00
+Kontostand per 18.01.21 0,24
+SEPA-Lastschrift Max Mustermann 18.02.21 400,00
+SEPA-Lastschrift
+WeltInvest Sparplan 000000000
+SEPA EndToEndId: 000000000
+Gläubiger-ID: DE27ZZZ00000024315
+Mandatsref.: SPWELTINVEST0000000000
+Kauf VANG.FTSE DEV.EU.UETF EOD A1T8FS 22.02.21 78,75
+Kauf VANGUARD FTSE JP.UETF DLD A1T8FU 22.02.21 27,98
+Kauf VANG.FTSE D.A.P.X.J.DLD A1T8FT 22.02.21 20,02
+Kauf VANGUARD FTSE EMU.ETF DLD A1JX51 22.02.21 79,75
+Kauf VANG.FTSE N.AME.U.ETF DLD A12CXY 22.02.21 153,26
+Kontostand per 18.02.21 40,00
+Kauf VAN.INVT-GL SC IDX EOA A1J8CD 23.02.21 39,97
+Kontostand per 22.02.21 0,03
+SEPA-Lastschrift Max Mustermann 15.03.21 500,00
+SEPA-Lastschrift
+WeltInvest Sparplan 000000000
+SEPA EndToEndId: 000000000
+Gläubiger-ID: DE27ZZZ00000024315
+Mandatsref.: SPWELTINVEST0000000000
+Kauf VANG.FTSE D.A.P.X.J.DLD A1T8FT 17.03.21 25,05
+Kursangaben ohne Gewähr
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+München, den 20.04.2021
+Stammnummer: 0000000
+Konto/Depotnummer: 000000000000
+Vermögensstatus
+Mustermann Max
+Erstellungsdatum: 19.04.2021
+Seite 5 von 6
+Kontoübersicht vom 01.01.2021 bis 31.03.2021
+Letzte Kontoübersicht vom 01.01.2021
+IBAN DE50 7012 0400 5606 3930 06
+Verrechnungskonto 0000000000 nach Buchungsdatum EUR
+Transaktion Instrument/Bezeichnung WKN Valuta Soll Haben
+Verwendungszweck
+Kauf VANGUARD FTSE JP.UETF DLD A1T8FU 17.03.21 35,00
+Kauf VANG.FTSE DEV.EU.UETF EOD A1T8FS 17.03.21 98,50
+Kauf VANGUARD FTSE EMU.ETF DLD A1JX51 17.03.21 99,75
+Kauf VANG.FTSE N.AME.U.ETF DLD A12CXY 17.03.21 191,71
+Kontostand per 15.03.21 50,02
+Kauf VAN.INVT-GL SC IDX EOA A1J8CD 18.03.21 50,00
+Kontostand per 17.03.21 0,02
+Kontostand per 31.03.21 0,02
+Geldkonto nach Valutadatum 31.03.21
+Kontonummer Produkt Währg. Betrag Devisenkurs Wert in EUR
+0000000000 Verrechnungskonto EUR 87,33 1,000000 87,33
+Gesamtwert Geldkonten 87,33
+Anhang
+Eigenkapitalinstrumente:
+Bei folgenden Wertpapieren handelt es sich um Eigenkapitalinstrumente:
+Bezeichnung ISIN / WKN
+VANG.FTSE N.AME.U.ETF DLD IE00BKX55R35 / A12CXY
+VANGUARD FTSE EMU.ETF DLD IE00B3VVMM84 / A1JX51
+VANG.FTSE D.A.P.X.J.DLD IE00B9F5YL18 / A1T8FT
+VANG.FTSE DEV.EU.UETF EOD IE00B945VV12 / A1T8FS
+VANGUARD FTSE JP.UETF DLD IE00B95PGT31 / A1T8FU
+Unterschiedliche Salden der Geldkonten innerhalb einer Währung entstehen durch die Differenz von
+Buchungsdatum und Valutadatum. Der Saldo kann auch noch nicht wertgestellte Beträge enthalten, über
+die bis zur Wertstellung noch nicht ohne Abzug von Sollzinsen verfügt werden kann.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig.
+Nähere Informationen können dem „Informationsbogen für den Einleger“ entnommen werden.
+Kursangaben ohne Gewähr
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+München, den 20.04.2021
+Stammnummer: 0000000
+Konto/Depotnummer: 000000000000
+Vermögensstatus
+Mustermann Max
+Erstellungsdatum: 19.04.2021
+Seite 6 von 6
+RECHNUNGSABSCHLUSS / SALDOMITTEILUNG
+Wichtiger Hinweis:
+Genehmigung des Rechnungsabschlusses
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit des Rechnungsabschlusses müssen Sie bis spätestens vor Ablauf von sechs
+Wochen nach dessen Zugang erheben. Sofern Sie Ihre Einwendungen schriftlich geltend machen, genügt die Absendung innerhalb der
+Sechs-Wochen-Frist. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung des Rechnungsabschlusses.
+Genehmigung von Belastungen aus Lastschriften
+Haben Sie eine Belastungsbuchung aus einer Lastschrift, für die Sie dem Gläubiger eine Einzugsermächtigung erteilt haben, nicht schon
+genehmigt, so müssen Sie Einwendungen gegen die im Saldo dieses Rechnungsabschlusses enthaltene Belastungsbuchung spätestens vor
+Ablauf von sechs Wochen nach Zugang des Rechnungsabschlusses erheben. Sofern Sie Ihre Einwendungen schriftlich geltend machen,
+genügt die Absendung innerhalb der Sechs-Wochen-Frist. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung der
+Belastungsbuchung.
+Ihre Einwendungen richten Sie bitte an den DAB Kundenservice, Landsberger Str. 300, 80687 München
+Gewinn- und Verlustrechnungen sowie Kursangaben dienen, soweit angegeben, lediglich Ihrer Information; sie können unrichtig oder
+unvollständig sein.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé

@@ -1,0 +1,49 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.5
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: RiTiIh RYnDuW
+Frau Direkt-Depot Nr.: 2335267545
+FgnsGY kaQkxs Datum: 08.11.2023
+XNHvUMjyx. 1 Seite: 1 von 2
+50600 wtfUJOwfN
+Wertpapierabrechnung zum steuerrelevanten Umtausch
+Ordernummer 872885069.001
+ISIN (WKN) LU1291109293 (A2ACQY)
+Wertpapierbezeichnung BNP P.Easy-ECPI Gl ESG Infra.
+Nam.-Ant.UCITS ETF CAP EUR o.N
+Nominale Stück 4,00
+Kurs EUR 64,7182
+Ausführungstag 03.11.2023
+Kurswert EUR 258,87
+Zwischensumme EUR 258,87
+Endbetrag zu Ihren Lasten EUR 0,00
+Abrechnungs-IBAN Ne53 6877 0464 3717 6603 28
+Valuta 03.11.2023
+Wertpapiere zulasten Girosammelverwahrung.
+Ihre Anteile wurden im Verhältnis 1:1 in die WKN A3EWYS umgetauscht.
+Weiter geht es auf Seite 2.
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzende des Aufsichtsrates: Susanne Klöß-Braekler · Vorstand: Nick Jue (Vorsitzender),
+Michael Clijdesdale, Eddy Henning, Sigrid Kozmiensky, Daniel Llano Manibardo, Dr. Ralph Müller · Sitz: Frankfurt am Main · AG Frankfurt am Main · HRB 7727
+Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+34WAAD8019809669_T
+Depotinhaber: ChMSOp jRSXCR
+Direkt-Depot Nr.: 8245194387
+Datum: 08.11.2023
+Seite: 2 von 2
+Ordernummer 551345365.001
+ISIN (WKN) LU1291109293 (A2ACQY)
+Veräußerungsverlust nach Differenzmethode -19,55 EUR
+Abzüglich besitzanteilige Vorabpauschale 0,00 EUR
+Abzgl. Teilfreistellung 30,00 % -5,87 EUR
+Veräußerungsergebnis nach Teilfreistellung -13,68 EUR
+Mit Verrechnungstopf Allgemein verrechnet 13,68 EUR
+Verrechnungstopf Aktien vor Geschäft 0,00 EUR
+Verrechnungstopf Aktien nach Geschäft 0,00 EUR
+Verrechnungstopf Allgemein vor Geschäft 179,36 EUR
+Verrechnungstopf Allgemein nach Geschäft 193,04 EUR
+Verrechnungstopf ausländ. Quellensteuer vor Geschäft 2,16 EUR
+Verrechnungstopf ausländ. Quellensteuer nach Geschäft 2,16 EUR
+Sparer-Pauschbetrag nach Geschäft 355,31 EUR
+Bei Fragen besuchen Sie uns einfach unter www.ing.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing.de .

@@ -12,15 +12,20 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord.Periodicity;
+import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord.Periodicity;
 import name.abuchen.portfolio.util.Dates;
 
 /* package */class DividendCalculation extends Calculation
 {
+    public record DividendCalculationResult(Money sum, LocalDate lastDividendPayment, int numOfEvents,
+                    Periodicity periodicity, double rateOfReturnPerYear)
+    {
+    }
+
     /**
      * A dividend payment.
      */
-    /* package */static class DividendPayment
+    private static class Payment
     {
         /**
          * Amount of the payment.
@@ -49,7 +54,7 @@ import name.abuchen.portfolio.util.Dates;
          * @param security
          *            {@link Security}
          */
-        public DividendPayment(CurrencyConverter converter, DividendTransaction t, Security security)
+        public Payment(CurrencyConverter converter, CalculationLineItem.DividendPayment t, Security security)
         {
             this.amount = t.getGrossValue().with(converter.at(t.getDateTime()));
             LocalDateTime time = t.getDateTime();
@@ -60,8 +65,17 @@ import name.abuchen.portfolio.util.Dates;
             double rr = Double.NaN;
             if (security != null)
             {
-                // try to get moving average/fifo price
-                rr = t.getPersonalDividendYieldMovingAverage();
+                // calculate the rate of return, but do NOT use the method on
+                // the DividendPayment class. Why? The DividendPayment looks
+                // only at the payment, but the payment might only be for a
+                // partial position (for example if the security is held in
+                // multiple accounts). The moving average cost is always the
+                // total costs.
+
+                Money movingAverageCost = t.getMovingAverageCost();
+                if (movingAverageCost != null && !movingAverageCost.isZero())
+                    rr = t.getGrossValueAmount() / (double) movingAverageCost.getAmount();
+
                 // check if it is valid (non 0)
                 if (rr == 0)
                 {
@@ -82,13 +96,13 @@ import name.abuchen.portfolio.util.Dates;
         }
     }
 
-    private final List<DividendPayment> payments = new ArrayList<>();
+    private final List<Payment> payments = new ArrayList<>();
     private Periodicity periodicity;
     private MutableMoney sum;
     private double rateOfReturnPerYear;
 
     @Override
-    public void finish()
+    public void finish(CurrencyConverter converter, List<CalculationLineItem> lineItems)
     {
         // no payments result in no periodicity
         if (payments.isEmpty())
@@ -112,7 +126,7 @@ import name.abuchen.portfolio.util.Dates;
         double sumRateOfReturn = 0;
 
         // first calc total sum of all payments
-        for (DividendPayment p : payments)
+        for (Payment p : payments)
         {
             // add to total sum
             sum.add(p.amount);
@@ -120,7 +134,7 @@ import name.abuchen.portfolio.util.Dates;
         }
 
         int years = 0;
-        
+
         // now walk through individual years
         for (int year = firstPayment.getYear(); year <= lastPayment.getYear(); year++)
         {
@@ -130,7 +144,7 @@ import name.abuchen.portfolio.util.Dates;
             LocalDate lastDate = null;
 
             // first calc sum only for this year
-            for (DividendPayment p : payments)
+            for (Payment p : payments)
             {
                 if (p.year == year)
                 {
@@ -148,9 +162,9 @@ import name.abuchen.portfolio.util.Dates;
 
             // calc expected amount for this year
             double expectedAmount = sumPerYear / (double) countPerYear;
-            
+
             // then calc significance
-            for (DividendPayment p : payments)
+            for (Payment p : payments)
             {
                 if (p.year == year)
                 {
@@ -204,6 +218,12 @@ import name.abuchen.portfolio.util.Dates;
         }
     }
 
+    public DividendCalculationResult getResult()
+    {
+        return new DividendCalculationResult(sum.toMoney(), getLastDividendPayment(), payments.size(), periodicity,
+                        rateOfReturnPerYear);
+    }
+
     public LocalDate getLastDividendPayment()
     {
         return payments.isEmpty() ? null : payments.get(payments.size() - 1).date;
@@ -213,8 +233,8 @@ import name.abuchen.portfolio.util.Dates;
     {
         return payments.size();
     }
-    
-    public List<DividendPayment> getPayments()
+
+    public List<Payment> getPayments()
     {
         return payments;
     }
@@ -242,9 +262,9 @@ import name.abuchen.portfolio.util.Dates;
     }
 
     @Override
-    public void visit(CurrencyConverter converter, DividendTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.DividendPayment t)
     {
         // construct new payment and add it to the list
-        payments.add(new DividendPayment(converter, t, getSecurity()));
+        payments.add(new Payment(converter, t, getSecurity()));
     }
 }

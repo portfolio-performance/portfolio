@@ -8,6 +8,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -19,6 +20,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
+import name.abuchen.portfolio.ui.wizards.events.CustomEventWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 
@@ -68,6 +70,7 @@ public class SecurityContextMenu
                         .parameters(AccountTransaction.Type.DIVIDENDS) //
                         .with(portfolio != null ? portfolio.getReferenceAccount() : null) //
                         .with(security) //
+                        .with(portfolio) //
                         .addTo(manager);
 
         new OpenDialogAction(owner, AccountTransaction.Type.TAXES + "...") //$NON-NLS-1$
@@ -89,7 +92,22 @@ public class SecurityContextMenu
             @Override
             public void run()
             {
-                StockSplitWizard wizard = new StockSplitWizard(owner.getClient(), security);
+                StockSplitWizard wizard = new StockSplitWizard(owner.getStylingEngine(), owner.getClient(), security);
+                WizardDialog dialog = new WizardDialog(owner.getActiveShell(), wizard);
+                if (dialog.open() == Window.OK)
+                {
+                    owner.markDirty();
+                    owner.notifyModelUpdated();
+                }
+            }
+        });
+
+        manager.add(new Action(Messages.SecurityMenuAddEvent)
+        {
+            @Override
+            public void run()
+            {
+                CustomEventWizard wizard = new CustomEventWizard(owner.getStylingEngine(), owner.getClient(), security);
                 WizardDialog dialog = new WizardDialog(owner.getActiveShell(), wizard);
                 if (dialog.open() == Window.OK)
                 {
@@ -128,7 +146,7 @@ public class SecurityContextMenu
         {
             manager.add(new OpenDialogAction(owner, Messages.InvestmentPlanMenuCreate) //
                             .type(InvestmentPlanDialog.class) //
-                            .parameters(PortfolioTransaction.class) //
+                            .parameters(InvestmentPlan.Type.PURCHASE_OR_DELIVERY) //
                             .with(security));
 
             manager.add(new Separator());
@@ -138,8 +156,8 @@ public class SecurityContextMenu
                 @Override
                 public void run()
                 {
-                    Dialog dialog = owner.make(EditSecurityDialog.class, security);                    
-                    
+                    Dialog dialog = owner.make(EditSecurityDialog.class, security);
+
                     if (dialog.open() == Window.OK)
                     {
                         owner.markDirty();
@@ -147,7 +165,7 @@ public class SecurityContextMenu
                     }
                 }
             });
-            
+
             manager.add(new Separator());
             manager.add(new BookmarkMenu(owner.getPart(), security));
         }

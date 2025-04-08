@@ -74,7 +74,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
     public void setCallFrequencyLimit(int limit)
     {
         if (limit <= 0)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("illegal limit value " + limit); //$NON-NLS-1$
 
         rateLimiter.setRate((limit - .5) / 60d);
     }
@@ -101,7 +101,10 @@ public class AlphavantageQuoteFeed implements QuoteFeed
         }
 
         if (apiKey == null)
-            throw new IllegalArgumentException(Messages.MsgAlphaVantageAPIKeyMissing);
+        {
+            PortfolioLog.error(Messages.MsgAlphaVantageAPIKeyMissing);
+            return Optional.empty();
+        }
 
         if (!rateLimiter.tryAcquire())
             throw new RateLimitExceededException(Messages.MsgAlphaVantageRateLimitExceeded);
@@ -136,7 +139,6 @@ public class AlphavantageQuoteFeed implements QuoteFeed
             price.setHigh(asPrice(values[2]));
             price.setLow(asPrice(values[3]));
             price.setVolume(Long.parseLong(values[5]));
-            price.setPreviousClose(LatestSecurityPrice.NOT_AVAILABLE);
 
             if (price.getValue() != 0)
                 return Optional.of(price);
@@ -179,7 +181,8 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                             new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
 
         if (apiKey == null)
-            throw new IllegalArgumentException(Messages.MsgAlphaVantageAPIKeyMissing);
+            return QuoteFeedData.withError(
+                            new IllegalArgumentException(Messages.MsgAlphaVantageAPIKeyMissing));
 
         if (!rateLimiter.tryAcquire())
             throw new RateLimitExceededException(Messages.MsgAlphaVantageRateLimitExceeded);
@@ -232,7 +235,6 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                 price.setHigh(asPrice(values[2]));
                 price.setLow(asPrice(values[3]));
                 price.setVolume(Long.parseLong(values[5]));
-                price.setPreviousClose(LatestSecurityPrice.NOT_AVAILABLE);
 
                 if (price.getValue() != 0)
                     data.addPrice(price);

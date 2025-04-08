@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 123456
+IBAN: CH1111111111111111111
+Herrn Max Muster
+Adresse x
+CH-xxxx Stadt
+Gland, 30.03.2023
+Dividende Unsere Referenz: 123456789 
+Im Hinblick auf folgenden Titel:
+Titel
+Bezeichnung Anzahl
+Vanguard AllWrld Div ETF Dist ISIN: IE00B8GKDB10NKN: 20974572 3.553
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben: 
+Kontonummer 123456789
+Ausführungsdatum 16.03.2023
+Valutadatum 29.03.2023
+Anzahl 3.553
+Dividende 0.411317 USD
+Betrag USD 1.46
+Total USD 1.46
+Wechselkurs USD / CHF : 0.91707
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen für Yuh Accounts und
+jeglichen Vereinbarungen, die Sie mit Swissquote Bank AG in Bezug auf Ihren Yuh Account abgeschlossen haben.
+Die Bankdienstleistungen für Yuh werden von Swissquote Bank AG erbracht, einer Bank,  Formular ohne Unterschrift | SE&O.
+die von der Eidgenössischen Finanzmarktaufsicht (FINMA) reguliert wird.
+Swissquote Bank AG, chemin de la Crétaux 33, CH-1196 Gland | Customer Care: +41 44 825 87 89

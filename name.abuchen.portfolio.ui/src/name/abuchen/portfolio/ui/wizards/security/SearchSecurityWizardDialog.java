@@ -8,10 +8,15 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 
-public class SearchSecurityWizardDialog extends WizardDialog
+public class SearchSecurityWizardDialog extends WizardDialog // NOSONAR
 {
+    private static final int EMPTY_NEW_SECURITY_ID = 4711;
+
+    private Security newSecurity;
+
     public SearchSecurityWizardDialog(Shell parentShell, Client client)
     {
         super(parentShell, new SearchSecurityWizard(client));
@@ -20,6 +25,8 @@ public class SearchSecurityWizardDialog extends WizardDialog
     @Override
     protected void createButtonsForButtonBar(Composite parent)
     {
+        createButton(parent, EMPTY_NEW_SECURITY_ID, Messages.SecurityMenuEmptyInstrument, false);
+
         super.createButtonsForButtonBar(parent);
 
         Button finish = getButton(IDialogConstants.FINISH_ID);
@@ -27,8 +34,39 @@ public class SearchSecurityWizardDialog extends WizardDialog
         setButtonLayoutData(finish);
     }
 
+    @Override
+    protected void finishPressed()
+    {
+        newSecurity = ((SearchSecurityWizard) this.getWizard()).getSecurity();
+        super.finishPressed();
+    }
+
+    public void triggerFinish()
+    {
+        finishPressed();
+    }
+
+    @Override
+    protected void buttonPressed(int buttonId)
+    {
+        if (buttonId == EMPTY_NEW_SECURITY_ID)
+        {
+            Client client = ((SearchSecurityWizard) this.getWizard()).getClient();
+
+            newSecurity = new Security(null, client.getBaseCurrency());
+            newSecurity.setFeed(QuoteFeed.MANUAL);
+
+            setReturnCode(OK);
+            close();
+        }
+        else
+        {
+            super.buttonPressed(buttonId);
+        }
+    }
+
     public Security getSecurity()
     {
-        return ((SearchSecurityWizard) this.getWizard()).getSecurity();
+        return newSecurity;
     }
 }

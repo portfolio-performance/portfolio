@@ -1,0 +1,112 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.5.qualifier
+-----------------------------------------
+VORNAME NACHNAME DATUM 01 Apr. 2024 - 30 Apr. 2024
+Straße 1, 12345 IBAN DE00000000000000000000
+Ort, DE BIC DEUTDEFFVAC
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Depotkonto 16.046,45 € 4.079,96 € 1.612,09 € 18.514,32 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+01 Apr. 
+2024 Zinszahlung Your interest payment 53,89 € 16.100,34 €
+02 Apr. Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf 2024 DE00000000000000000000 1.200,00 € 17.300,34 €
+02 Apr. Erträge Ereignisausführung Ertrag US1912161007 COCA-COLA CO. DL-,25 2024 1697689020240402 99,18 € 17.399,52 €
+10 Apr. 
+2024 Kartentransaktion TooGoodT 4,00 € 17.395,52 €
+10 Apr. 
+2024 Kartentransaktion BURGER 12,00 € 17.383,52 €
+12 Apr. Überweisung Einzahlung akzeptiert: DE00000000000000000000 auf 2024 DE00000000000000000000 1.500,00 € 18.883,52 €
+13 Apr. 
+2024 Kartentransaktion TooGoodT 4,00 € 18.879,52 €
+14 Apr. 
+2024 Kartentransaktion Lidl sagt Danke 39,86 € 18.839,66 €
+14 Apr. 
+2024 Kartentransaktion Visa Geld zurueck Aktion 0,08 € 18.839,74 €
+16 Apr. 
+2024 Kartentransaktion ALIEXPRESS.COM 18,34 € 18.821,40 €
+16 Apr. 
+2024 Kartentransaktion ALIEXPRESS.COM 17,53 € 18.803,87 €
+16 Apr. 
+2024 Kartentransaktion Lidl sagt Danke 19,40 € 18.784,47 €
+16 Apr. Handel Ausführung Handel Direktkauf Kauf DE0008404005 ALLIANZ SE NA O.N. 2024 4003142220240416 KW 200,00 € 18.584,47 €
+16 Apr. 
+2024 Kartentransaktion Visa Geld zurueck Aktion 0,08 € 18.584,55 €
+Seite 1 von 4
+Erstellt am 01 Mai 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+16 Apr. Handel Ausführung Handel Direktkauf Kauf IE00BQN1K786 ISHSIV-E.MSCI EO M.F.EO A 2024 9969843520240416 KW 200,00 € 18.384,55 €
+16 Apr. Ausführung Handel Direktkauf Kauf DE0006047004 HEIDELBERG MATERIALS O.
+2024 Handel N. 3394703020240416 KW 200,00 € 18.184,55 €
+16 Apr. Handel Ausführung Handel Direktkauf Kauf IE00B0M62Q58 ISHS-MSCI WORLD DL D 2024 8813741020240416 KW 200,00 € 17.984,55 €
+16 Apr. Handel Ausführung Handel Direktkauf Kauf IE00B3WJKG14 ISHSV-S+500INF.T.SECT.2024 DLA 2040171820240416 KW 200,00 € 17.784,55 €
+16 Apr. Handel Ausführung Handel Direktkauf Kauf US1912161007 COCA-COLA CO. DL-,25 2024 4883734620240416 KW 200,00 € 17.584,55 €
+17 Apr. 
+2024 Kartentransaktion ALIEXPRESS.COM 18,34 € 17.602,89 €
+17 Apr. 
+2024 Kartentransaktion TooGoodT 4,00 € 17.598,89 €
+17 Apr. 
+2024 Kartentransaktion Hornbach Baumarkt AG FIL. 20,40 € 17.578,49 €
+19 Apr. 
+2024 Kartentransaktion AMZN Mktp DE*HD9KW0JT4 7,99 € 17.570,50 €
+19 Apr. 
+2024 Kartentransaktion Visa Geld zurueck Aktion 0,37 € 17.570,87 €
+19 Apr. 
+2024 Kartentransaktion Visa Geld zurueck Aktion 0,35 € 17.571,22 €
+20 Apr. 
+2024 Kartentransaktion TooGoodT 4,00 € 17.567,22 €
+20 Apr. 
+2024 Kartentransaktion Visa Geld zurueck Aktion 0,08 € 17.567,30 €
+21 Apr. 
+2024 Kartentransaktion Lidl sagt Danke 36,26 € 17.531,04 €
+21 Apr. 
+2024 Kartentransaktion NETFLIX.COM 17,99 € 17.513,05 €
+22 Apr. 
+2024 Kartentransaktion VORWERK CO. KG 51,70 € 17.461,35 €
+22 Apr. 
+2024 Kartentransaktion eBay O*99-99999-99999 10,90 € 17.450,45 €
+22 Apr. 
+2024 Kartentransaktion eBay O*99-99999-99999 7,59 € 17.442,86 €
+23 Apr. 
+2024 Kartentransaktion TooGoodT 4,00 € 17.438,86 €
+23 Apr. 
+2024 Kartentransaktion Rossmann 1234 6,08 € 17.432,78 €
+Seite 2 von 4
+Erstellt am 01 Mai 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+24 Apr. 
+2024 Kartentransaktion Lidl sagt Danke 18,51 € 17.414,27 €
+25 Apr. 
+2024 Kartentransaktion AMZN Mktp DE*H545J2OX7 43,99 € 17.370,28 €
+25 Apr. 
+2024 Kartentransaktion TooGoodT 4,00 € 17.366,28 €
+26 Apr. 
+2024 Kartentransaktion DHL*YKUNQRDBB99U 15,49 € 17.350,79 €
+27 Apr. 
+2024 Kartentransaktion Lidl sagt Danke 18,09 € 17.332,70 €
+29 Apr. 
+2024 Kartentransaktion eBay 7,59 € 17.340,29 €
+30 Apr. 
+2024 Kartentransaktion Lidl sagt Danke 25,97 € 17.314,32 €
+30 Apr. 
+2024 Überweisung
+Einzahlung akzeptiert: DE00000000000000000000 auf 
+DE00000000000000000000 1.200,00 € 18.514,32 €
+Seite 3 von 4
+Erstellt am 01 Mai 2024
+Trade Republic Bank GmbH
+HAFTUNGSAUSSCHLUSS
+Sehr geehrte Kundin, sehr geehrter Kunde
+Bitte überprüfe unbedingt deine Buchungen, Berechnungen und den Schlusssaldo auf dem Kontoauszug, der gleichzeitig deinen Rechnungsabschluss 
+darstellt. Der Rechnungsabschluss gilt als anerkannt, wenn du innerhalb von sechs Wochen nach Zugang keine Einwendungen erhebst. Einwendungen 
+gegen Kontoauszüge sind schriftlich an uns zu richten. Guthaben sind einlagefähig im Sinne des Einlagensicherungsgesetzes (EinSiG). Weitere 
+Informationen entnehme bitte dem Merkblatt für den Einleger, das zusammen mit unseren Allgemeinen Geschäftsbedingungen eingesehen werden kann.
+Trade Republic Bank GmbH Kontakt Sitz der Gesellschaft: Berlin
+Brunnenstraße 19-21 www.traderepublic.com AG Charlottenburg HRB 244347 B
+10119 Berlin service@traderepublic.com Umsatzsteuer-ID DE307510626
+Seite 4 von 4
+Erstellt am 01 Mai 2024
+Trade Republic Bank GmbH

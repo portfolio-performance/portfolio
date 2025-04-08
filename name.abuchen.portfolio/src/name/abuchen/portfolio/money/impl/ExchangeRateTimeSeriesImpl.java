@@ -13,7 +13,7 @@ import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 
 public class ExchangeRateTimeSeriesImpl implements ExchangeRateTimeSeries
 {
-    private transient ExchangeRateProvider provider;
+    private transient ExchangeRateProvider provider; // NOSONAR
 
     private String baseCurrency;
     private String termCurrency;
@@ -86,6 +86,12 @@ public class ExchangeRateTimeSeriesImpl implements ExchangeRateTimeSeries
             rates.add(~index, rate);
         else
             rates.set(index, rate);
+    }
+
+    /* package */ void replaceAll(List<ExchangeRate> newRates)
+    {
+        Collections.sort(newRates, (r, l) -> r.getTime().compareTo(l.getTime()));
+        this.rates = newRates;
     }
 
     public Optional<ExchangeRate> getLatest()

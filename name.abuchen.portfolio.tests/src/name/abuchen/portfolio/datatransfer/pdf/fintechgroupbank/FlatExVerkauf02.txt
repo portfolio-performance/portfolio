@@ -1,0 +1,65 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+flatex Bank AG
+Kundenservice
+Opernring 1 / Top 736
+1010 Wien
+Tel.: +43 - (0)720 518 777
+Mail: info@flatex.at
+flatex Bank AG -  Opernring 1 / Top 736 -  A-1010 Wien
+             Wien, 19.02.2021
+0202282000001871974800
+Herr Auftragsdatum      19.02.2021n
+XXXXXXXXXXXX Handelstag         19.02.2021am
+XXXXXXXXXXXX Ausführungszeit    09:22 Uhr
+XXXXXXXXXXXX Valuta             23.02.2021
+XXXXXXXXXXXX Auftragsnummer     170997375/1
+Ausf.platz/-art    Tradegate
+Wertpapierabrechnung Verkauf Fonds/Zertifikate
+Ihre Depotnummer: XXXXXXXXXXX
+Depotinhaber:     XXXXXXXXXXXX
+Nr.170997375/1     Verkauf     ISHSV-S+500INF.T.SECT.DLA (IE00B3WJKG14/A142N1)
+Ausgeführt    :             425 St.     Kurswert      :           5.999,30 EUR
+Kurs          :       14,116000 EUR     Provision     :               9,90 EUR
+Devisenkurs   :        1,000000         Eigene Spesen :               0,00 EUR
+                                       *Fremde Spesen :               2,51 EUR
+Verwahrart    : Wertpapierrechnung
+Lagerstelle   : Clearstream Lux.
+Lagerland     : Irland                  Bemessungs-
+                                        grundlage     :               0,00 EUR
+Gewinn/Verlust:        1.112,18 EUR   **Einbeh. KESt  :             305,85 EUR
+                                        Endbetrag     :           5.681,04 EUR
+*   Enthalten sind folgende Gebühren Courtage         :               0,00 EUR
+                             Tradinggebühr            :               0,00 EUR
+                             Regulierung              :               2,44 EUR
+                             Schlussnoten             :               0,07 EUR
+                             LS-Umlegung              :               0,00 EUR
+                             Finanztransaktionssteuer :               0,00 EUR
+                             Sonstige                 :               0,00 EUR
+**  Einbehaltene Kapitalerstragsteuer. Details dazu finden Sie im Steuerreport
+    unter der Transaktion-Nr.: XXXXXXXXXXXX.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: XXXXXXXXXXXXX
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem  angegebenen  Valutatag  buchen.  Bitte prüfen Sie  diese  Abrechnung  auf
+Richtigkeit und Vollständigkeit.  Etwaige Einwendungen gegen diese  Abrechnung
+müssen unverzüglich  nach Zugang bei der Bank  erhoben werden. Die
+______________________________________________________________________________
+                                                                     Seite 1/2
+flatex Bank AG Niederlassung Österreich | Aktiengesellschaft | Opernring 1 / Top 736 | 1010 Wien | Handelsgericht Wien | FN 334642 x | DVR 4000544 | UID ATU 65140956
+Hauptniederlassung: flatex Bank AG | Rotfeder-Ring 7 | 60327 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Martin Korbmacher | Vorstand: Frank Niehage (Vors.), Jörn Engelmann, Steffen Jentsch -
+2000001871974800 0351202280000102
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten  hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese  Mitteilung  ist  maschinell  erstellt  und  wird  nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+flatex Bank AG Niederlassung Österreich | Aktiengesellschaft | Opernring 1 / Top 736 | 1010 Wien | Handelsgericht Wien | FN 334642 x | DVR 4000544 | UID ATU 65140956
+Hauptniederlassung: flatex Bank AG | Rotfeder-Ring 7 | 60327 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Martin Korbmacher | Vorstand: Frank Niehage (Vors.), Jörn Engelmann, Steffen Jentsch -
+2000001871974800 0351202280000202

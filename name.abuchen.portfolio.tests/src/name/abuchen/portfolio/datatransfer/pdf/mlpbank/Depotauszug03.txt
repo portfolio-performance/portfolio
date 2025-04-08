@@ -1,0 +1,105 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Vermögensdepot Konto                    
+EUR-Konto Kontonummer 192837465    
+MLP Finanzdienstleistungen AG, BLZ 67230000         
+Postfach 1379, 69154 Wiesloch                       Kontoauszug             Nr.   1/2012
+0752 6M          0987654 erstellt am 02.04.2012 21:23 Blatt    1 von 2   
+Herrn                                                                                      
+                                                   
+Max Mustermann                         IBAN: DE00 1111 2222 3333 4444 55  BIC: MLPBDE61   
+Musterweg 1                       
+11111 Musterstadt                            
+                                        
+                                        
+                                        
+Bu-Tag Wert Vorgang
+alter Kontostand vom 31.12.2011                           0,03 H
+04.01. 05.01. EINZUGSERMAECHTIGUNG PN:1989                                          3,57 S          
+              MLP FINANZDIENSTLEISTUNGEN                                                            
+              Konto: 0000100106 BLZ: 67230000                                                       
+              0008 DEPOTPREIS 3132720                                                               
+              0192837465 TITAN           2011 QUARTAL IV                                            
+              UST-ID DE 143 449 956      NETTOBETRAG        3,00 EUR                                
+              19% UST.        0,57 EUR                                                              
+16.01. 16.01. LASTSCHRIFTEINR. PN:1942                                                       50,00 H
+              Mustermann Max                                                                       
+              Konto: 447991203 BLZ: 67230000                                                       
+              MLP TITAN PORTFOLIO                                                                   
+              SPARPLAN                   WKN A0MUWS                                                 
+18.01. 18.01. EFFEKTEN PN:938                                                      46,42 S          
+              MLP FDL AG                                                                            
+              Konto: 0132334400 BLZ: 67230000                                                       
+              KONTO    0192837465                                                                   
+              WERTPAPIERABRECHNUNG       DEPOT-NR       0192837465                                  
+              ZINSPLUS OP                WKN A0MUWS / DE000A0MUWS7                                  
+              HANDELSTAG       16.01.2012MENGE                0,8560                                
+              KURS            54,23000000AUFTR.-NR.  000007392088100                                
+15.02. 15.02. LASTSCHRIFTEINR. PN:1942                                                       50,00 H
+              Mustermann Max                                                                       
+              Konto: 447991203 BLZ: 67230000                                                       
+              MLP TITAN PORTFOLIO                                                                   
+              SPARPLAN                   WKN A0MUWS                                                 
+17.02. 17.02. EFFEKTEN PN:938                                                      50,02 S          
+              MLP FDL AG                                                                            
+              Konto: 0132334400 BLZ: 67230000                                                       
+              KONTO    0192837465                                                                   
+              WERTPAPIERABRECHNUNG       DEPOT-NR       0192837465                                  
+              ZINSPLUS OP                WKN A0MUWS / DE000A0MUWS7                                  
+              HANDELSTAG       15.02.2012MENGE                0,9210                                
+              KURS            54,31000000AUFTR.-NR.  000007595723200                                
+15.03. 15.03. LASTSCHRIFTEINR. PN:1942                                                       50,00 H
+              Mustermann Max                                                                       
+              Konto: 447991203 BLZ: 67230000                                                       
+              VERMOEGENSDEPOT                                                                       
+              SPARPLAN                   WKN A0MUWS                                                 
+                                                                                                    
+                                            Übertrag auf Blatt 2                             50,02 H
+0752
+000
+K00221237 Bitte beachten Sie die Hinweise auf der Rückseite!  
+                                        Vermögensdepot Konto                    
+Max Mustermann                         EUR-Konto Kontonummer 192837465    
+Kontoauszug             Nr.   1/2012
+erstellt am 02.04.2012 21:23 Blatt    2 von 2   
+Bu-Tag Wert Vorgang
+                                            Übertrag von Blatt 1                             50,02 H
+19.03. 19.03. EFFEKTEN PN:938                                                      49,99 S          
+              MLP FDL AG                                                                            
+              Konto: 0132334400 BLZ: 67230000                                                       
+              KONTO    0192837465                                                                   
+              WERTPAPIERABRECHNUNG       DEPOT-NR       0192837465                                  
+              ZINSPLUS OP                WKN A0MUWS / DE000A0MUWS7                                  
+              HANDELSTAG       15.03.2012MENGE                0,9190                                
+              KURS            54,40000000AUFTR.-NR.  000003465037700                                
+                                    neuer Kontostand vom 02.04.2012                           0,03 H
+                                                                                                    
+                    Neue Adresse ? Hat sich Ihre Adresse geändert,                                  
+                    dann bitten wir um Mitteilung. Vielen Dank.                                     
+0752
+000
+K00221237 Bitte beachten Sie die Hinweise auf der Rückseite!  
+Sehr geehrte Kundin, sehr geehrter Kunde,
+dieses Formular verwenden wir für Bankmitteilungen verschiedenster Art (z.B. Konto- und Sparkontoauszüge, Dividendenabrech-
+nungen). Wir bitten Sie deshalb, diese bei Empfang zu prüfen und uns über etwaige Unstimmigkeiten zu unterrichten. 
+Sind  umseitig Bankdienstleistungen aufgeführt, so sind diese umsatzsteuerfrei, sofern nichts Abweichendes angegeben ist.
+Der auf dem Kontoauszug ausgewiesene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeu-
+tet, dass der im Kontoauszug ausgewiesene Betrag nicht dem tatsächlichen Kontoguthaben entsprechen muss und bei Verfügungen
+möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+Rechnungsabschlüsse. Ist der Kontoauszug zusätzlich mit dem Hinweis "Rechnungsabschluss" versehen, haben wir für Ihr Konto
+einen Rechnungsabschluss durchgeführt. Dabei werden die in dem Abrechnungszeitraum entstandenen beiderseitigen Ansprüche
+(einschließlich Zinsen und Entgelte) verrechnet. Umsätze und Kontoauszüge, die nach dem Erstellungsdatum anfallen und sich auf
+den Abrechnungssaldo des abgelaufenen Abrechnungszeitraumes auswirken, werden erst in der folgenden Abrechnung berücksich-
+tigt. Korrekturen, die sich auf Zinsen beziehen, werden entsprechend gekennzeichnet.
+Einwendungen gegen Rechnungsabschlüsse bei Kontokorrentkonten sowie gegen eine im Saldo von Rechnungsabschlüssen ent-
+haltene Belastungsbuchung aus einer Einzugsermächtigungslastschrift, die nicht schon genehmigt ist, sind spätestens vor Ablauf
+von sechs Wochen nach Zugang des Rechnungsabschlusses zu erheben. Machen Sie Ihre Einwendungen schriftlich geltend, ge-
+nügt die Absendung innerhalb der Sechs-Wochen-Frist. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Den Rechnungsabschluss können Sie zur Vorlage beim Finanzamt verwenden.
+Einzugsaufträge. Einzugspapiere wie z.B. Schecks und Lastschriften werden unter dem Vorbehalt des Eingangs gutgeschrieben,
+und zwar auch dann, wenn diese Papiere bei uns selbst zahlbar sind.
+Schecks und Lastschriften sind erst eingelöst, wenn die Belastungsbuchung nicht spätestens am zweiten Bankarbeitstag nach ihrer
+Vornahme rückgängig gemacht wird. Barschecks sind bereits mit Zahlung an den Scheckvorleger eingelöst. Schecks sind auch
+schon dann eingelöst, wenn wir im Einzelfall eine Bezahltmeldung absenden.
+Mit freundlichen Grüßen
+Ihre Bank

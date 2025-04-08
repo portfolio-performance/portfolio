@@ -1,0 +1,106 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Deutsche Kreditbank, Taubenstr. 7-9, 10117 Berlin
+Max Mustermann
+Musterstr. 32 IHR DISPOKREDIT EUR 123,45
+12345 ORT
+DKB-Cash
+Kontoauszug Nummer 002 / 2015 vom 03.03.2015 bis 01.04.2015
+Kontonummer 1234567890 / IBAN DE12 3456 7890 1234 5678 90
+Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
+17.03. 17.03. Zahlungseingang 500,00
+Abc, Def
+EREF+ABC SVWZ+ABC
+19.03. 19.03. Überweisung 300,00
+DKB VISACARD
+KREF+ABC3123 SVWZ+123456789 22.48
+XZY FJDKl  DKB INTE RNET BANKING DATUM
+18.03.2015, 22.49 UHR 1.TAN 123456
+31.03. 31.03. Basislastschrift 34,00
+Abc Defgh
+EREF+12345678-123456789 MREF+123456789-
+123456789-10 5314 CRED+DE123456789
+SVWZ+Laufender Beitrag. Nae chster Einzug
+turnusmaessig am 30.04.2015 Vielen Dank fuer deinen
+Beitrag.
+01.04. 01.04. Abrechnung 31.03.2015 0,01
+Abrechnung 31.03.2015 siehe Anlage
+ALTER KONTOSTAND 0,00 H EUR
+NEUER KONTOSTAND 166,01 H EUR
+Abrechnung 31.03.2015
+Information zur Abrechnung
+Kontostand am 31.03.2015                                          166,00 +
+                                                            --------------
+Abrechnungszeitraum vom 03.02.2015 bis 31.03.2015
+Zinsen für Guthaben                                                  0,01+
+ 0,1000 v.H. Haben-Zins bis 30.03.2015
+                                                            --------------
+Abrechnung 31.03.2015                                                0,01+
+Sollzinssätze am 30.03.2015
+ 7,5000 v.H. für Dispositionskredit
+(aktuelle Kreditlinie         123,45)
+ 7,5000 v.H. für Kontoüberziehungen
+über die Kreditlinie hinaus
+DEUTSCHE KREDITBANK AG IBAN: DE12345678901234567890 Seite 1 von 3
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN Steuernr.: 27/337/00119
+Kontoauszug Nummer 002 / 2015 vom 03.03.2015 bis 01.04.2015
+Kontonummer 1234567890 / IBAN DE12 3456 7890 1234 5678 90
+Kontostand/Rechnungsabschluss am 31.03.2015                       166,01 +
+Rechnungsnummer: 20150401-BY111-00012560712
+Kundeninformation zur Kirchensteuer
+Für Kirchenmitglieder sind wir ab 2015 gesetzlich verpflichtet die Kirchensteuer auf Kapitalertragsteuer
+automatisch an das Finanzamt abzuführen, sofern wir Kapitalertragsteuer auf Ihre Kapitalerträge abführen.
+Zur Vereinfachung fragen wir daher Ihre Religionszugehörigkeit jährlich beim Bundeszentralamt für Steuern
+(BZSt) mit Wirkung zum Folgejahr ab.
+Möchten Sie nicht, dass das BZSt Ihre Religionszugehörigkeit verschlüsselt an uns übermittelt, können Sie
+der Datenweitergabe bis zum 30.06. eines Jahres widersprechen. Das amtlich vorgeschriebene Formular dafür
+finden Sie auf www.formulare-bfinv.de als „Erklärung zum Sperrvermerk“ unter dem Stichwort "Kirchensteuer".
+Wenn Sie der Datenweitergabe bereits widersprochen haben, brauchen Sie den Widerspruch nicht erneut
+einzulegen. Ein bereits beantragter Sperrvermerk gilt bis zu seinem Widerruf. Da wir in diesem Fall die
+Kirchensteuer nicht direkt für Sie abführen, sind  Kirchenmitglieder zur Abgabe einer Steuererklärung zur
+Erhebung der Kirchensteuer auf Kapitalertragsteuer verpflichtet.
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte beachten Sie nachstehenden Auszug aus unseren Allgemeinen Geschäftsbedingungen, sowie die mit Ihnen
+getroffene Regelung über die Erteilung von Rechnungsabschlüssen:
+Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet,
+dass der genannte Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei
+Verfügungen möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten
+Kontoüberziehung anfallen können.
+Schreibt die Bank den Gegenwert von Schecks, Lastschriften oder anderen Einzugspapieren schon vor ihrer
+Einlösung gut, so geschieht dies unter dem Vorbehalt der Einlösung und des Einganges des Gegenwertes (E.v.-
+Gutschrift). Das gilt auch dann, wenn die Schecks, Lastschriften oder anderen Einzugspapiere bei der Bank
+selbst zahlbar sind. Werden Schecks oder Lastschriften nicht eingelöst oder geht der Bank der Gegenwert aus
+einem anderen Einzugspapier nicht zu, so macht sie die Gutschrift gemäß Nr. 23 dieser AGB rückgängig
+(Stornobuchung), und zwar auch nach einem zwischenzeitlich erfolgten Rechnungsabschluss.
+Schecks und andere Einzugspapiere sind erst eingelöst, wenn die Belastungsbuchung nicht bis zum Ablauf des
+übernächsten Bankarbeitstages rückgängig gemacht wird. Sie sind auch eingelöst, wenn die Bank ihren
+Einlösungswillen schon vorher Dritten gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für
+Lastschriften gelten die Einlöseregeln in den hierfür vereinbarten besonderen Bedingungen. Über die
+Abrechnungsstelle der Bundesbank eingezogene Schecks sind eingelöst, wenn sie nach deren Allgemeinen
+Geschäftsbedingungen nicht mehr zurückgegeben werden können. Barschecks sind mit Zahlung an den
+Scheckvorleger eingelöst.
+Aufgrund gesetzlicher Bestimmungen (§ 355 HGB) sind wir verpflichtet, Ihnen in regelmäßigen Abständen einen
+Rechnungsabschluss zu erteilen. Wir haben festgelegt, dass dies bei Kontoabrechnungsbuchungen (Zinsen
+und/oder sonstige Entgelte), zumindest aber einmal jährlich geschieht. Beachten Sie bitte, dass dieser
+Kontoauszug einen Rechnungsabschluss darstellt, wenn er als solcher bezeichnet ist. Im Abschlusssaldo sind
+Zinsen und/oder sonstige Entgelte bis zum letzten Zinsabschlusstermin berücksichtigt.
+Bitte prüfen Sie den Abschlusssaldo des Rechnungsabschlusses. Rechnungsabschlüsse gelten als genehmigt,
+sofern Sie innerhalb von 6 Wochen nach Zugang keine Einwendungen erheben.
+Einwendungen gegen Rechnungsabschlüsse müssen der Deutsche Kreditbank AG, Bereich Revision,
+Taubenstraße 7-9, 10117 Berlin schriftlich oder, wenn im Rahmen der Geschäftsbeziehung der elektronische
+Kommunikationsweg vereinbart wurde (z. B. Onlinebanking), auf diesem Wege zugehen. Zur Fristwahrung genügt
+die rechtzeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+Dieser Kontoauszug gilt im Zusammenhang mit dem zugrunde liegenden Vertrag laut angegebener Kontonummer als
+Rechnung im Sinne des UStG.
+DEUTSCHE KREDITBANK AG IBAN: DE12345678901234567890 Seite 2 von 3
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN Steuernr.: 27/337/00119
+Kontoauszug Nummer 002 / 2015 vom 03.03.2015 bis 01.04.2015
+Kontonummer 1234567890 / IBAN DE12 3456 7890 1234 5678 90
+Mit freundlichen Grüßen
+Ihre Deutsche Kreditbank AG
+DEUTSCHE KREDITBANK AG IBAN: DE12345678901234567890 Seite 3 von 3
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN Steuernr.: 27/337/00119

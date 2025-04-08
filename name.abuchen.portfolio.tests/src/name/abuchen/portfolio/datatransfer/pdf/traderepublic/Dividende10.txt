@@ -1,0 +1,33 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+MAX MUSTERMANN SEITE 1 von 1
+MUSTERSTASSE Str. 88 DATUM 18.12.2020
+D 88888 MUSTERSTADT DEPOT 888888888
+DIVIDENDE
+ÜBERSICHT
+Dividende mit dem Ex-Tag 09.12.2020.
+POSITION ANZAHL ERTRÄGNIS BETRAG
+Stora Enso Oyj 25 Stk. 0,15 EUR 3,75 EUR
+Reg. Shares Cl.R EO 1,70
+ISIN: FI0009005961
+GESAMT 3,75 EUR
+ABRECHNUNG
+POSITION BETRAG
+Quellensteuer -1,13 EUR
+Kapitalertragssteuer -0,37 EUR
+Solidaritätszuschlag -0,02 EUR
+Kirchensteuer -0,03 EUR
+GESAMT 2,20 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE000000000000000000000 2020-12-17 2,20 EUR
+Stora Enso Oyj Reg. Shares Cl.R EO 1,70 in Girosammelverwahrung.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / f0e9-f5c0

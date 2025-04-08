@@ -1,0 +1,45 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+CREDIT SUISSE (Schweiz) AG
+CH-8070 Zürich Telefon +41 44 333 99 99
+credit-suisse.com
+BIC CRESCHZZ80A
+Depot-Nr. 0000- 000000-00
+Depot A
+Herr A
+Ihre Berater Herr Max Muster Moritz Kunde
+Telefon 044 222 22 22 Strasse 5b
+8001 Zürich
+Wertschriftenabrechnung 30.04.2018
+Ihr Verkauf Seite 1/1
+Ort(e) siehe Ausführungsdetails
+Datum 30.04.2018
+1,000 Akt. -A- Royal Dutch Shell PLC EUR 0.07
+Valor 1987674, DE000A1KD0E9, ISIN GB00B03MLX29
+zum Kurs von EUR 29.02
+SIX SIS, Position Type NL (DST: 0038)
+Werte ex Depot
+Kurswert EUR 29,020.00
+Kommission Schweiz/Ausland EUR - 232.17
+Eidgenössische Umsatzabgabe EUR - 43.53
+Valuta 03.05.2018
+Konto 0000- 000000-00-0
+IBAN CH39 0000 0000 0000 0000 0
+Kontokorrent Bonviva EUR 28,744.30
+Gutschrift EUR 28,744.30
+Der Auftrag zur Ausführung dieser Transaktion wurde ohne vorgängige Beratung unsererseits erteilt.
+Die Erfüllung bzw. Gutschrift steht bei sämtlichen Transaktionen unter der Bedingung, dass die Gegenpartei auf der Marktseite
+ihre Leistungsverpflichtungen gegenüber der Bank erfüllt.
+Wir danken Ihnen für Ihren Auftrag.
+Ausführungsdetails
+Anzahl Handels-ID Lokale Ort zum Kurse von
+Ausführungszeit
+876 3625954029868 17:26:53 XAMS EUR 29.02
+124 3625954029871 17:26:53 XAMS EUR 29.02
+1,000 Durchschnittskurs EUR 29.02
+FFrreeuunnddlliicchhee  GGrrüüssssee
+CCRREEDDIITT  SSUUIISSSSEE  ((SScchhwweeiizz))  AAGG
+Formular ohne Unterschrift Auftrags-Nr. DN02-20180430-70-00000
+SLW-Ref: QA2OTM
+WI01

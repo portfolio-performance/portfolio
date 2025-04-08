@@ -2,12 +2,11 @@ package name.abuchen.portfolio.ui.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Display;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;

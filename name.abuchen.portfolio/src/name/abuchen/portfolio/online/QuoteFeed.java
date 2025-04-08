@@ -25,6 +25,17 @@ public interface QuoteFeed // NOSONAR
     String getName();
 
     /**
+     * Returns true if the download request should be merged, i.e. first the
+     * historical prices and then immediately the latest prices. It is used if
+     * the quote provider does not support different APIs for historical and
+     * latest prices and the underlying request can be cached.
+     */
+    default boolean mergeDownloadRequests()
+    {
+        return false;
+    }
+
+    /**
      * Returns the help URL to be shown to the user.
      */
     default Optional<String> getHelpURL()

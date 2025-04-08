@@ -1,0 +1,139 @@
+
+/* Common LIGHT styles */
+
+.MPart Composite,
+.MPart Label {
+	background-color: white;
+}
+
+.MPart ToolBar {
+	background-color:inherit;
+}
+
+.MPartStack {
+	swt-selected-tab-fill: #F5F5F5 #F9FAFA 100% 100%;
+	swt-unselected-tabs-color: #F9FAFA #F9FAFA 100% 100%;
+	swt-unselected-hot-tab-color-background: #E4E6E9;
+    padding: 0px;
+}
+
+.MPartStack.active {
+	swt-selected-tab-fill: #E4E6E9 #F9FAFA 100% 100%;
+	swt-unselected-tabs-color: white white 100% 100%;
+	swt-selected-tab-highlight: none;
+}
+
+CTabFolder {
+    swt-tab-renderer: url('bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering');
+    padding: 0px;
+    swt-tab-outline: '#org-eclipse-ui-workbench-ACTIVE_TAB_OUTLINE_COLOR';
+    swt-outer-keyline-color: '#org-eclipse-ui-workbench-ACTIVE_TAB_OUTER_KEYLINE_COLOR';
+    swt-unselected-tabs-color: '#org-eclipse-ui-workbench-ACTIVE_UNSELECTED_TABS_COLOR_START' '#org-eclipse-ui-workbench-ACTIVE_UNSELECTED_TABS_COLOR_END' 100% 100%;
+    swt-selected-tab-fill: white;
+	swt-selected-tab-highlight: none;
+    swt-shadow-visible: false;
+}
+
+CTabItem {
+	color: #393E42;
+}
+
+CTabItem:selected {
+	color: #393E42;
+}
+
+.MPart .sidebar,
+.MPart .sidebar Label {
+	color: #393E42;
+	background-color: #F9FAFA;
+	selection-color: #393E42;
+	selection-background-color: #E4E6E9;
+}
+
+.MPart .sidebarBorder {
+	background-color: #F4F5F5;
+}
+
+.tooltip Label,
+.tooltip Composite,
+.tooltip Text {
+	color: black;
+	background-color: #ECECEC;
+}
+
+.hoverbutton Shell,
+.hoverbutton ImageHyperlink {
+	background-color: white;
+}
+
+.chart {
+	background-color: white;
+	axis-color: black;
+	grid-color: lightgrey;
+	highlight-color: black;
+	measurement-color: #f18f01;
+}
+
+.dashboard Composite,
+.dashboard Label,
+.dashboard StyledLabel,
+.dashboard ImageHyperlink {
+	background-color: white;
+}
+
+CustomColors {
+	default-foreground: black;
+	default-background: white;
+	warning-background: #FEDF6B;
+	red-background: #FE2B05;
+	green-background: #02F500;
+
+	red-foreground: #7f0000;
+	green-foreground: #377500;
+	gray-foreground: #707070;
+}
+
+SecuritiesChart {
+	quote-color: #6a58db;
+	quote-area-positive-color: #8396f2;
+	quote-area-negative-color: #ed6766;
+
+	purchase-event-color: #1AAD21;
+	sale-event-color: #FF2B30;
+	dividend-event-color: #800080;
+
+	extreme-marker-high-color: #377500;
+	extreme-marker-low-color: #a30000;
+
+	non-trading-color: #FF8959;
+	
+	shares-held-color: #EBC934
+}
+
+PortfolioBalanceChart {
+	invested-capital-color: #EBC934;
+	absolute-delta-color: #6a58db;
+	delta-area-positive-color: #8396f2;
+	delta-area-negative-color: #ed6766;
+}
+
+* {
+	font-family: "#systemfont";
+}
+
+.heading1 {
+	font-family: "#org.eclipse.jface.headerfont";
+	font-weight: bold;
+	color: #393E42;
+}
+
+.heading2 {
+	font-family: "#systemfont";
+	font-weight: bold;
+	color: #393E42;
+}
+
+.kpi {
+	font-family: "#systemfont";
+	font-weight: normal;
+}

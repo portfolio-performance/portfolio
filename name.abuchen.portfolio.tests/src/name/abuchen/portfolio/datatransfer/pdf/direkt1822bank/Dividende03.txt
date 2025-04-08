@@ -1,0 +1,52 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postfach · 60255 Frankfurt am Main Seite 1
+Depotnummer 1111111111
+Kundennummer 1111111
+Max Muster
+Abrechnungsnr. 11111111122
+Herrn Max Muster Datum 13.03.2021
+c/o Fam. Muster Ihr Berater 1822direkt
+Meine-Strasse. 42 Telefon 012 34560-0
+12345 Berlin
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 6 EXXON MOBIL CORP. US30231G1022 (852549)
+REGISTERED SHARES O.N.
+Zahlbarkeitstag 10.03.2021 Dividende pro Stück 0,87 USD
+Bestandsstichtag 08.02.2021 Herkunftsland USA
+Ex-Tag 09.02.2021 Art der Dividende Quartalsdividende
+Geschäftsjahr 01.01.2021 - 31.12.2021
+Devisenkurs EUR / USD 1,1913
+Devisenkursdatum 10.03.2021
+Dividendengutschrift 5,22 USD 4,38+ EUR
+Umrechnung in EUR 4,38 EUR
+Einbehaltene Quellensteuer 15 % auf 5,22 USD 0,66- EUR
+Anrechenbare Quellensteuer 15 % auf 4,38 EUR 0,66 EUR
+Kapitalertragsteuerpflichtige Dividende 4,38 EUR
+Verrechneter Sparer-Pauschbetrag 4,38 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 3,72+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir mit Wertstellung 12.03.2021 zu Gunsten des Kontos 1234567890 (IBAN DE00 1111 2222 3333
+4444 55), BLZ 500 500 01 (BIC HELADEF1822).
+Keine Steuerbescheinigung.
+Bitte ggf. Rückseite beachten.
+4444.77777777.0000111ER01
+
+Seite 2
+Depotnummer 1111111111
+Kundennummer 1111111
+Abrechnungsnr. 11111111122
+Datum 10.03.2021
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2021 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 111,11 0,00 100,00 0,50 0,00
+Ertrag 0,00 0,00 4,38- 0,66 0,00
+Nachher 111,11 0,00 95,62 1,16 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+4444.77777777.0000112ER01

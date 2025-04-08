@@ -1,0 +1,33 @@
+PDF Autor: '3BankenEDV'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Wertpapier-Abrechnu n g                     Ausschüttung
+515613 - 23.12.2020
+Depotnummer Betreuer
+Nachname Vorname 999-123456 789
+Wertpapiernummer Bezeichnung Nominale/Stück
+IE00B0M63284 iShs Euro.Property Yield U.ETF Stk .               4,00
+Registered Shares EUR (Dist)oN
+Ertrag 0,0806 EUR Kurswert EUR                0,32KESt-Neu EUR               -0,02
+Summe EUR                0,30
+00,,00006021  EEUURR  AKEusSlta nSudsbs-tKEaSnztgewinn
+Extag 10.12.2020
+Verrechnung
+Verwahrart, Positionsdaten
+Wertpapierrechnung Wert 23.12.2020 EUR                0,30
+München zu Gunsten Konto AT99 1234 1234 1234 1234
+      Seite 1 von 2
+Rechtsform: Aktiengesellschaft, Sitz: Klagenfurt, Firmenbuch-Nr.: FN 91810s/Klagenfurt, DVR 0063703, UID-Nr. ATU 25231503
+Wertpapier-Abrechnung
+515613 - 23.12.2020
+Depotbezeichnung Depotnummer Betreuer
+Nachname Vorname 999-123456 789
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                           4,00 STK
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+  ausschüttungsgleicher Ertrag:                                                      0,09 EUR
+  Anschaffungswertreduzierender Betrag:                                              0,32 EUR
+  steuerlicher Anschaffungswert:                                                   169,17 EUR
+---------------------------------------------------------------------------------------------
+Die KESt wird an das Finanzamt Klagenfurt abgeführt.
+Fondsgesellschaft: iShares PLC
+Rechtsform: Aktiengesellschaft, Sitz: Klagenfurt, Firmenbuch-Nr.: FN 91810s/Klagenfurt, DVR 0063703, UID-Nr. ATU 25231503       Seite 2 von 2

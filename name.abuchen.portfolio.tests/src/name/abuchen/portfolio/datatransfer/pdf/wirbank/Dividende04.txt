@@ -1,0 +1,27 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+E-Mail info@viac.ch
+Telefon 0800 80 40 40
+Vertrag x.xxx.xxx.xxx Frau
+Portfolio x.xxx.xxx.xxx.xx Maxi Mustermann
+Musterstr. 111
+3333 Musterstadt
+Basel, 04.02.2022
+Dividendenausschüttung
+Wir haben für Sie folgende Ausschüttung verbucht:
+Dividendenart: Ordentliche Dividende
+47.817 Ant UBS ETF MSCI USA SRI
+ISIN: LU0629460089
+Ausschüttung: USD 0.72
+Betrag USD 34.26
+Umrechnungskurs CHF/USD 
+0.91759 CHF 31.44
+Gutgeschriebener Betrag: Valuta 04.02.2022 CHF 31.44
+S. E. & O.
+Freundliche Grüsse
+Terzo Vorsorgestiftung
+Anzeige ohne Unterschrift

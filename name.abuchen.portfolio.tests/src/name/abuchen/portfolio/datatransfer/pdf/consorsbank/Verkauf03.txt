@@ -1,0 +1,44 @@
+PDF Autor: 'Consorsbank'
+PDFBox Version: 1.8.16
+-----------------------------------------
+  
+ 
+ 
+ 
+ 
+ 
+                                            NUERNBERG, 20.11.2001
+                                            POSTFACH 17 43
+                                            90006 NUERNBERG
+ 
+      Peter Power                 9200
+      Germaniastraße 18           2
+                                            DEPOT-NR.:  546956987
+      31275 Lehrte
+ 
+ 
+ 
+ 
+ 
+ 
+      WERTPAPIERABRECHNUNG
+      VERKAUF              AM 19.11.2001 AUSSERBOERSLICH       NR. 7536824.001
+      ------------------------------------------------------------------------
+      ST                       200,00000               WKN: 915771
+                 CYBERIAN OUTPOST INC.
+                 SHARES O.N.
+      ------------------------------------------------------------------------
+      KURS        0,250000 P.ST.
+      KURSWERT                                      EUR                  56,68
+                                                    --------------------------
+                                                    USD                  50,00
+      UMGER. ZUM DEVISENKURS  USD        0,882100   EUR                  56,68
+      PROVISION                                     EUR                   5,30
+      EIG.SPESEN                                    EUR                   4,60
+                                                    --------------------------
+      WERT  19.11.2001                              EUR                  46,78
+ 
+      ZU GUNSTEN KONTO-NR.   546956980              EUR                  46,78
+      WERTPAPIERE ZU LASTEN  WR  USA/KANADA
+ 
+      OBLIGATORISCHE BARABFINDUNG PER EXTAG 09.11.2001.

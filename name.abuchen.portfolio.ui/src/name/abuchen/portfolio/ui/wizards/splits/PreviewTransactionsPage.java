@@ -4,9 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -32,6 +32,7 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class PreviewTransactionsPage extends AbstractWizardPage
@@ -64,19 +65,16 @@ public class PreviewTransactionsPage extends AbstractWizardPage
                 case 0:
                     return Values.DateTime.format(t.getDateTime());
                 case 1:
-                    if (t instanceof AccountTransaction)
-                        return ((AccountTransaction) t).getType().toString();
-                    else if (t instanceof PortfolioTransaction)
-                        return ((PortfolioTransaction) t).getType().toString();
+                    if (t instanceof AccountTransaction at)
+                        return at.getType().toString();
+                    else if (t instanceof PortfolioTransaction pt)
+                        return pt.getType().toString();
                     return null;
                 case 2:
                     return Values.Share.format(t.getShares());
                 case 3:
                     if (model.isChangeTransactions() && t.getDateTime().toLocalDate().isBefore(model.getExDate()))
-                    {
-                        long shares = t.getShares() * model.getNewShares() / model.getOldShares();
-                        return Values.Share.format(shares);
-                    }
+                        return Values.Share.format(model.calculateNewStock(t.getShares()));
                     return null;
                 case 4:
                     return pair.getOwner().toString();
@@ -105,7 +103,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
     {
         Security security = model.getSecurity();
         List<TransactionPair<?>> transactions = security.getTransactions(model.getClient());
-        Collections.sort(transactions, new TransactionPair.ByDate());
+        Collections.sort(transactions, TransactionPair.BY_DATE);
         tableViewer.setInput(transactions);
     }
 
@@ -127,6 +125,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
         tableContainer.setLayout(layout);
 
         tableViewer = new TableViewer(tableContainer, SWT.BORDER);
+        CopyPasteSupport.enableFor(tableViewer);
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
@@ -158,8 +157,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
 
         DataBindingContext context = new DataBindingContext();
 
-        IObservableValue<?> targetObservable = WidgetProperties.selection().observe(checkbox);
-        @SuppressWarnings("unchecked")
+        IObservableValue<?> targetObservable = WidgetProperties.buttonSelection().observe(checkbox);
         IObservableValue<?> modelObservable = BeanProperties.value("changeTransactions").observe(model); //$NON-NLS-1$
         context.bindValue(targetObservable, modelObservable);
 

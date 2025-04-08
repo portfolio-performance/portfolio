@@ -1,0 +1,50 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+MLP Banking AG · Alte Heerstraße 40 · 69168 Wiesloch Seite 1
+Depotnummer 9876543210
+Kundennummer 7654321
+Max Mustermann
+Abrechnungsnr. 12345678910
+Max Mustermann Datum 21.11.2019
+Musterstr. 1
+11111 Musterstadt
+Vermögensdepot
+0016
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 34,942 MULTICOOP.-GAM COMMODITY LU0244125554 (A0JJUS)
+ACTIONS AU PORTEUR A O.N.
+Zahlbarkeitstag 20.11.2019 Ausschüttung pro St. 0,240000000 USD
+Bestandsstichtag 11.11.2019 Herkunftsland Luxemburg
+Ex-Tag 12.11.2019
+Geschäftsjahr 01.07.2018 - 30.06.2019
+Devisenkurs EUR / USD 1,1107
+Devisenkursdatum 21.11.2019
+Ausschüttung 8,39 USD 7,55+ EUR
+Kapitalertragsteuerpflichtiger Ertrag 8,39 USD
+Umrechnung in EUR 7,55 EUR
+Eingebuchte sonstige negative Kapitalerträge 7,55 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 7,55+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Den Betrag buchen wir mit Wertstellung 22.11.2019 zu Gunsten des Kontos 987654321 (IBAN DE11 2222 0000 3333 4444
+55).
+Keine Steuerbescheinigung.
+Bitte ggf. Rückseite beachten.
+0866.11220106.0000567ER03
+
+Seite 2
+Depotnummer 9876543210
+Kundennummer 7654321
+Abrechnungsnr. 12345678910
+Datum 21.11.2019
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2019 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 150,20 300,00 0,00 0,00
+Ertrag 0,00 7,55- 0,00 0,00 0,00
+Nachher 0,00 142,65 300,00 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0866.11220106.0000568ER03

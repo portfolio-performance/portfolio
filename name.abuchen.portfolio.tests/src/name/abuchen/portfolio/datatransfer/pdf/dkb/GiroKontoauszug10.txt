@@ -1,0 +1,83 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Deutsche Kreditbank, Taubenstr. 7-9, 10117 Berlin
+DKB-Cash
+Kontoauszug Nummer 008 / 2015 vom 04.09.2015 bis 01.10.2015
+Kontonummer 1234 / IBAN DE1234
+Bu.Tag Wert Wir haben für Sie gebucht Belastung in EUR Gutschrift in EUR
+01.10. 01.10. Abrechnung 30.09.2015 0,15
+Abrechnung 30.09.2015 siehe Anlage
+DEUTSCHE KREDITBANK AG IBAN: DE1234 Seite 1 von 3
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN Steuernr.: 123
+Kontoauszug Nummer 008 / 2015 vom 04.09.2015 bis 01.10.2015
+Kontonummer 123 / IBAN DE123
+ALTER KONTOSTAND 91,01 H EUR
+NEUER KONTOSTAND 162,05 S EUR
+Abrechnung 30.09.2015
+Information zur Abrechnung
+Kontostand am 30.09.2015                                          161,90 -
+                                                            --------------
+Abrechnungszeitraum vom 01.07.2015 bis 30.09.2015
+Zinsen für Guthaben                                                  0,04+
+ 0,1000 v.H. Haben-Zins bis 27.09.2015
+Kapitalertragsteuer                                    0,01-
+                                              --------------
+                                                       0,01-         0,01-
+Zinsen für Dispositionskredit                                        0,18-
+ 7,5000 v.H. Kred-Zins  bis 30.09.2015
+                                                            --------------
+Abrechnung 30.09.2015                                                0,15-
+Sollzinssätze am 30.09.2015
+ 7,5000 v.H. für Dispositionskredit
+(aktuelle Kreditlinie         500,00)
+ 7,5000 v.H. für Kontoüberziehungen
+über die Kreditlinie hinaus
+Kontostand/Rechnungsabschluss am 30.09.2015                       162,05 -
+Rechnungsnummer: 123
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig.
+Nähere Informationen können dem Informationsbogen für Einleger entnommen werden, den Sie
+auch unter www.dkb.de/kundenservice/einlagensicherung einsehen können.
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte beachten Sie nachstehenden Auszug aus unseren Allgemeinen Geschäftsbedingungen, sowie die mit Ihnen
+getroffene Regelung über die Erteilung von Rechnungsabschlüssen:
+Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet,
+dass der genannte Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei
+Verfügungen möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten
+Kontoüberziehung anfallen können.
+Schreibt die Bank den Gegenwert von Schecks, Lastschriften oder anderen Einzugspapieren schon vor ihrer
+Einlösung gut, so geschieht dies unter dem Vorbehalt der Einlösung und des Einganges des Gegenwertes (E.v.-
+Gutschrift). Das gilt auch dann, wenn die Schecks, Lastschriften oder anderen Einzugspapiere bei der Bank
+selbst zahlbar sind. Werden Schecks oder Lastschriften nicht eingelöst oder geht der Bank der Gegenwert aus
+einem anderen Einzugspapier nicht zu, so macht sie die Gutschrift gemäß Nr. 23 dieser AGB rückgängig
+DEUTSCHE KREDITBANK AG IBAN: DE3123 Seite 2 von 3
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN Steuernr.: 123
+Kontoauszug Nummer 008 / 2015 vom 04.09.2015 bis 01.10.2015
+Kontonummer 123 / IBAN DE123
+(Stornobuchung), und zwar auch nach einem zwischenzeitlich erfolgten Rechnungsabschluss.
+Schecks und andere Einzugspapiere sind erst eingelöst, wenn die Belastungsbuchung nicht bis zum Ablauf des
+übernächsten Bankarbeitstages rückgängig gemacht wird. Sie sind auch eingelöst, wenn die Bank ihren
+Einlösungswillen schon vorher Dritten gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für
+Lastschriften gelten die Einlöseregeln in den hierfür vereinbarten besonderen Bedingungen. Über die
+Abrechnungsstelle der Bundesbank eingezogene Schecks sind eingelöst, wenn sie nach deren Allgemeinen
+Geschäftsbedingungen nicht mehr zurückgegeben werden können. Barschecks sind mit Zahlung an den
+Scheckvorleger eingelöst.
+Aufgrund gesetzlicher Bestimmungen (§ 355 HGB) sind wir verpflichtet, Ihnen in regelmäßigen Abständen einen
+Rechnungsabschluss zu erteilen. Wir haben festgelegt, dass dies bei Kontoabrechnungsbuchungen (Zinsen
+und/oder sonstige Entgelte), zumindest aber einmal jährlich geschieht. Beachten Sie bitte, dass dieser
+Kontoauszug einen Rechnungsabschluss darstellt, wenn er als solcher bezeichnet ist. Im Abschlusssaldo sind
+Zinsen und/oder sonstige Entgelte bis zum letzten Zinsabschlusstermin berücksichtigt.
+Bitte prüfen Sie den Abschlusssaldo des Rechnungsabschlusses. Rechnungsabschlüsse gelten als genehmigt,
+sofern Sie innerhalb von 6 Wochen nach Zugang keine Einwendungen erheben.
+Einwendungen gegen Rechnungsabschlüsse müssen der Deutsche Kreditbank AG, Bereich Revision,
+Taubenstraße 7-9, 10117 Berlin schriftlich oder, wenn im Rahmen der Geschäftsbeziehung der elektronische
+Kommunikationsweg vereinbart wurde (z. B. Onlinebanking), auf diesem Wege zugehen. Zur Fristwahrung genügt
+die rechtzeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+Dieser Kontoauszug gilt im Zusammenhang mit dem zugrunde liegenden Vertrag laut angegebener Kontonummer als
+Rechnung im Sinne des UStG.
+Mit freundlichen Grüßen
+Ihre Deutsche Kreditbank AG
+DEUTSCHE KREDITBANK AG IBAN: DE123 Seite 3 von 3
+TAUBENSTRASSE 7-9 BIC: BYLADEM1001
+10117 BERLIN Steuernr.: 123

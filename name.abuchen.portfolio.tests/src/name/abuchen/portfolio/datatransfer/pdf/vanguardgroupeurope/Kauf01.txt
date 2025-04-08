@@ -1,0 +1,39 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+So erreichen Sie uns:
+Web: www.de.vanguard
+Telefon: (030) 3119 6465
+E-Mail: kundenservice@vanguard.com
+Herr
+Total Egal
+Dumdideldumweg 19
+12345 Investcity Außerdem können Sie
+uns eine Nachricht aus
+dem Postfach Ihres
+Benutzerkontos
+schreiben.
+Wertpapierabrechnung: Kauf
+Am 03.02.2023 haben wir für Sie folgende Transaktion ausgeführt:
+Wertpapierbezeichnung FDBL Vanguard LifeStrategy 60% Equity UCITS ETF
+(EUR) Distributing
+ISIN IE00BMVB5Q68
+Lagerland Luxemburg
+Nominal / Stück 11,956954
+Währung EUR
+Ordernummer 9876543
+Handelsplatz Xetra
+Kurs (Stückpreis) EUR 25,0900
+Auftragsdatum / -zeit 03.02.2023 um 11:00:58 Uhr
+Ausführungstag / -zeit 03.02.2023 um 11:11:17 Uhr
+Kurswert EUR 300,00
+EUR 300,00
+Abrechnungskonto DE01234567891234567890
+Referenznummer 12345678
+Valutadatum (Buchungsdatum) 07.02.2023
+Vanguard Group Europe GmbH Postanschrift: Geschäftsführung: Rechtsform: Gesellschaft mit
+Kurfürstendamm 21 Kurfürstendamm 21 Sebastian Külps beschränkter Haftung
+10719 Berlin 10719 Berlin Julia Maschkow Sitz: Berlin
+kundenservice@vanguard.com 030 31196465 Vorsitzender des Aufsichtsrats: Amtsgericht:Charlottenburg, Berlin
+www.de.vanguard Sean Hagerty HRB Nr. 222205
+Umsatzsteuer-ID-Nr. DE336773878

@@ -1,0 +1,199 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.3
+-----------------------------------------
+  
+  
+  
+  
+  
+  
+  
+  
+  
+                                              Es betreut Sie: 
+                                              Oldenburgische Landesbank AG 
+                                              Postfach 26 07 
+                                              26016 Oldenburg 
+2222/2222/00000/07 
+  
+  
+Herr 
+Max Mustermann                          BIC:  OLBODEH2XXX 
+Musterstr. 10                          IBAN: DE25 2802 0050 1112 2122 00 
+01234 Musterstadt 
+  
+  
+  
+  
+Auszug   Euro-Konto 111 22122 00                  31.08.23           NR. 4/1 
+---------------------------------------------------------------------------- 
+Alter Saldo                                       EUR                  0,00+ 
+---------------------------------------------------------------------------- 
+Buchung  Wert 
+Saldo per 31.07.2023                              EUR                  0,00+ 
+  
+03.08.23 04.08. WERTPAPIERE                                           10,00- 
+                Oldenburgische Landesbank AG 
+                OLBODEH2XXX    DE00000200000000000000 
+                WP-Abrechnung 532500, Kauf, 01.08.2 
+                023, 10,624200, EUR, 0,034833, A2JS 
+                DA, LU1861134382, 1112212250, AIS-A 
+                M.WORLD SRI PAB Act.Nom. UCITS ETF 
+                TRA532389 
+  
+03.08.23 03.08. CORE-LA-EV   EINGANG VORBEHALTEN                      10,00+ 
+                Mustermann2, Mike 
+                BICFROMHomeBank    DE00000200000000000000 
+                Sparplan LU1861134382, DE0000000050 
+                1112212200 
+                O585327 
+  
+16.08.23 18.08. WERTPAPIERE                                           10,00- 
+                Oldenburgische Landesbank AG 
+                OLBODEH2XXX    DE00000200000000000000 
+                WP-Abrechnung 595600, Kauf, 15.08.2 
+                023, 10,234100, EUR, 0,033402, A2JS 
+                DA, LU1861134382, 1112212250, AIS-A 
+                M.WORLD SRI PAB Act.Nom. UCITS ETF 
+                TRA595596 
+  
+17.08.23 17.08. CORE-LA-EV   EINGANG VORBEHALTEN                      10,00+ 
+  
+                                                       --------------------- 
+Fortsetzung Seite    2                Übertrag    EUR                  0,00+ 
+  
+  
+  
+                                                                      06-735 
+Bitte beachten Sie unsere ergänzenden Hinweise zum Kontoauszug.         VA 7 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Auszug   Euro-Konto 111 22122 00                  31.08.23           NR. 4/2 
+  
+                                      Übertrag    EUR                  0,00+ 
+Buchung  Wert                                          --------------------- 
+                Mustermann2, Mike 
+                BICFROMHomeBank    DE00000200000000000000 
+                Sparplan LU1861134382, DE0000000050 
+                1112212200 
+                O661831 
+---------------------------------------------------------------------------- 
+Neuer Saldo                                       EUR                  0,00+ 
+---------------------------------------------------------------------------- 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Max Mustermann 
+  
+                                                                      06-735 
+Bitte beachten Sie unsere ergänzenden Hinweise zum Kontoauszug.         VA 7 
+Genehmigung des Rechnungsabschlusses: Einwendungen wegen Unrichtigkeit oder Unvollständigkeit des Rechnungsab-
+schlusses müssen Sie spätestens vor Ablauf von sechs Wochen nach dessen Zugang erheben. Sofern Sie Ihre Einwendungen in 
+Textform geltend machen, genügt die Absendung innerhalb der Sechs-Wochen-Frist. Das Unterlassen rechtzeitiger Einwendungen 
+gilt als Genehmigung des Rechnungsabschlusses. 
+ 
+Wir bitten Sie, etwaige Einwendungen an 
+ 
+Oldenburgische Landesbank AG 
+Compliance 
+Postfach 26 05 
+26016 Oldenburg 
+ 
+zu senden. 
+ 
+Schecks, Wechsel und sonstige Einzugspapiere werden unter dem Vorbehalt des Eingangs gutgeschrieben. Lastschriften und 
+Schecks sind eingelöst, wenn die Belastungsbuchung nicht spätestens am zweiten Bankarbeitstag nach Ihrer Vornahme rückgän-
+gig gemacht wird. 
+ 
+Der angegebene Kontostand berücksichtigt nicht die Wertstellung der Buchungen. Dies bedeutet, dass der genannte Betrag nicht 
+dem tatsächlich zur Verfügung stehenden Guthaben entsprechen muss. Somit können bei Verfügungen möglicherweise Zinsen für 
+die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen. 
+ 
+Bei Ausweis von Entgelten/Gebühren/Zinsen gilt dieser Auszug in Verbindung mit den Auszugsbeilagen, dem Kontoeröffnungsan-
+trag und den vertraglichen Grundlagen als Rechnung im Sinne des § 14 UStG. Soweit nichts anderes bestimmt ist, stimmt der 
+Zeitpunkt der Lieferung oder Leistung mit dem Buchungsdatum überein. Unsere USt-ld Nr.: DE117471233; vorbehaltlich § 9 UStG 
+handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Sparkonten: Der letzte Sparkontoauszug gilt als Sparurkunde im Sinne unserer Bedingungen für Sparkonten mit SparCard und 
+der Bedingungen für den Sparverkehr - Bedingungen für Sparkonten (Loseblatt-System). Bei Sparkonten mit SparCard können 
+Kontoauszüge jederzeit an den Kontoauszugsdruckern der Bank abgerufen werden. Werden Sparkontoauszüge länger als 12 Mo-
+nate nicht am Kontoauszugsdrucker abgerufen, erstellt die Bank automatisch einen Auszug, der dem Kontoinhaber zugesandt wird. 
+Bei allen anderen Sparkonten werden die Kontoauszüge gemäß Vereinbarung zugesandt. Im Sparkontoauszug sind die Ein- und 
+Auszahlungen, sonstige Gutschriften und Belastungen sowie der jeweilige Kontostand vermerkt. Eine Kontoauflösung ist nur gegen 
+Vorlage des letzten Sparkontoauszuges möglich. 
+Bitte bewahren Sie diese Sparurkunde sorgfältig auf! 
+ 
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können 
+dem „Informationsbogen für den Einleger“ entnommen werden. 
+ 
+Zinsanpassungen bei „geduldeten Überziehungen“ gemäß § 505 Absatz 1 BGB: Erhöht sich der letzte veröffentlichte Monats-
+durchschnittssatz für EURIBOR-Dreimonatsgeld* gegenüber dem im Vormonat der letzten Zinsanpassung bzw. Zinsvereinbarung 
+ermittelten Monatsdurchschnittssatz um mehr als 0,25 Prozentpunkte, so sind wir berechtigt, den Vertragszinssatz nach billigem 
+Ermessen (§ 315 BGB) maximal um die Veränderung des Monatsdurchschnittssatzes anzuheben. Wir werden den Vertragszins 
+nach billigem Ermessen mindestens um die Veränderung des Monatsdurchschnittssatzes senken, wenn sich der Monatsdurch-
+schnittssatz für EURIBOR-Dreimonatsgeld um mehr als 0,25 Prozentpunkte ermäßigt hat; bei Zinserhöhungen und Zinssenkungen 
+werden wir unser Ermessen in gleicher Weise ausüben. Faktoren, wie Veränderungen des Kreditausfallrisikos des Kreditnehmers, 
+des Ratings der Bank sowie der innerbetrieblichen Kostenkalkulation bleiben bei der Ausübung des Ermessens außer Betracht. 
+ 
+Falls der Refinanzierungszinssatz EURIBOR in der Zukunft aufgehoben wird, tritt für die Zwecke dieser Definition an dessen Stelle 
+der Refinanzierungszinssatz, der den EURIBOR funktional ersetzt (der „Nachfolgerefinanzierungszinssatz“). Sofern durch eine 
+Aufsichtsbehörde, eine Zentralbank oder eine andere vergleichbare öffentliche Stelle offiziell ein Nachfolger für den EURIBOR 
+bestimmt wird gilt der so bestimmte Nachfolgerefinanzierungszinssatz. Gibt es keinen so bestimmten Nachfolger für den EURIBOR, 
+so ist derjenige Referenzzinssatz der Nachfolgerefinanzierungszinssatz, der im Markt als Nachfolger EURIBOR allgemein aner-
+kannt wird. Unter mehreren Nachfolgereferenzzinssätzen ist derjenige maßgebend, der dem EURIBOR wirtschaftlich am nächsten 
+kommt. 
+ 
+Gem. Art. 28 Abs. 2 der Benchmark-Verordnung (EU) 2016/1011 hat die Bank als Verwender von Referenzwerten in der Vertrags-
+beziehung mit Kreditnehmern einen Notfallplan aufgestellt und pflegt diesen kontinuierlich. Die Bank orientiert sich in Notfällen auch 
+in der Vertragsbeziehung mit den Kreditnehmern an dem Notfallplan. In dem Notfallplan sind Maßnahmen dargelegt, welche die 
+Bank ergreift, wenn ein Referenzwert sich wesentlich ändert oder nicht mehr bereitgestellt wird. In diesen Fällen wird vom Bank-
+steuerungskomitee über die Verwendung alternativer Referenzwerte entschieden. 
+ 
+* Bei der Dreimonats-European-lnter-Bank-Offered-Rate (EURIBOR) handelt es sich um einen Satz, zu dem sich Banken, die im Gebiet der europäischen Wirt-
+schafts- und Währungsunion ansässig sind, untereinander Dreimonatsgelder leihen. Die Durchschnittssätze für EURIBOR-Dreimonatsgeld werden monatlich in 
+der amtlichen Zinsstatistik der Deutschen Bundesbank veröffentlicht. Diese spiegeln jedoch wegen der vielschichtigen Refinanzierungsmethodik der Bank die 
+Änderungen der Refinanzierungsbedingungen nicht exakt wider. 

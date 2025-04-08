@@ -1,0 +1,41 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+  
+ 
+  
+Abcd Depotkreis:  12345_2012 
+Abcd Abcdefghijk Währung:  EUR 
+Ab. 12  
+1234 Abcdefghi  
+  
+Abcdefghijkl: 12.12.2012 Wien, 28.04.2013 
+  
+ 
+ 
+BESCHEINIGUNG ÜBER DEN VERLUSTAUSGLEICH 
+für den Zeitraum 01.04.2012 bis 31.12.2012 
+ 
+Berücksichtigte Depots: 
+Depot Von-Datum Bis-Datum 
+12345-1 01.04.2012 31.12.2012 
+   
+ 
+Zusammenfassung: 
+Bemessungsgrundlage Gewinne Verluste 
+Zinsen/Dividenden: 1.345,06  0,00 
+Fondsausschüttungen: 45,72 0,00 
+Gewinne/Verluste aus realisierten Wertsteigerungen: 1.244,80 -792,84 
+Gewinne/Verluste aus Derivaten 0,00 0,00 
+Summe: 2.635,58 -792,84 
+Saldo Erträge/Gewinne/Verluste: 1.842,74  
+   
+abgeführte KESt: -559,17  
+gegengerechnete KESt:  198,21 
+ 
+Es wurde Ihnen dieser Betrag gutgebucht: 198,21 
+  
+Brokerjet Bank AG | Mariahilfer Straße 121B | A-1060 Wien Seite 1 von 2  
+e-mail: support@brokerjet.com | Fax: +43 1 53689-13550 | www.brokerjet.at  
+Wien | Handelsgericht Wien | FB-Nr. 193944m | DVR 1052322 | UID ATU49227901  
+Ein Unternehmen der Erste Bank-Gruppe

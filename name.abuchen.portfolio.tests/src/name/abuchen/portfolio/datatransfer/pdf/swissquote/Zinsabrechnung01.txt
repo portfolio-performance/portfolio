@@ -1,0 +1,53 @@
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+Herrn Max Mustermann
+Muster Str. 23
+123456 Musterstadt
+GERMANY
+IBAN : CH3308781000123456700 - Währung : CHF
+Zinsabrechnung vom 05.09.2022 bis zum 31.12.2022
+Datum Habenzins Sollzins Zu Ihren Verrechnungs- Total CHF
+Gunsten/Lasten steuer
+30.12.2022 1.36 0.00 1.36 0.00 1.36
+Total 1.36 0.00 1.36 0.00 1.36
+Kontostand 1'094.36
+Die Berechnung der in diesem Dokument angegebenen Zinsen erfolgte auf Grundlage der für Ihre Einlage(n) geltenden Zinssätze, die auf schriftliche Anfrage
+erhältlich sind.
+Bitte für Ihre Steuererklärung aufbewahren
+Die Bankdienstleistungen für Yuh werden von Swissquote Bank AG erbracht, einer Bank, SE&O.
+die von der Eidgenössischen Finanzmarktaufsicht (FINMA) reguliert wird. Dokument erstellt am: 5. Januar 2023
+Swissquote Bank AG, chemin de la Crétaux 33, CH-1196 Gland | Customer Care: +41 44 825 87 89
+Herrn Max Mustermann
+Muster Str. 23
+12345 Musterstadt
+GERMANY
+IBAN : CH3308781000123456700 - Währung : USD
+Zinsabrechnung vom 05.09.2022 bis zum 31.12.2022
+Datum Habenzins Sollzins Zu Ihren Verrechnungs- Total USD Kurs Total CHF
+Gunsten/Lasten steuer
+30.12.2022 0.08 0.00 0.08 0.00 0.08 0.92352 0.07
+Total 0.08 0.00 0.08 0.00 0.08 0.07
+Kontostand 0.07
+Die Berechnung der in diesem Dokument angegebenen Zinsen erfolgte auf Grundlage der für Ihre Einlage(n) geltenden Zinssätze, die auf schriftliche Anfrage
+erhältlich sind.
+Bitte für Ihre Steuererklärung aufbewahren
+Die Bankdienstleistungen für Yuh werden von Swissquote Bank AG erbracht, einer Bank, SE&O.
+die von der Eidgenössischen Finanzmarktaufsicht (FINMA) reguliert wird. Dokument erstellt am: 5. Januar 2023
+Swissquote Bank AG, chemin de la Crétaux 33, CH-1196 Gland | Customer Care: +41 44 825 87 89
+Herrn Max Mustermann
+Muster Str. 23
+123456 Musterstadt
+GERMANY
+IBAN : CH3308781000123456700 - Währung : EUR
+Zinsabrechnung vom 05.09.2022 bis zum 31.12.2022
+Datum Habenzins Sollzins Zu Ihren Verrechnungs- Total EUR Kurs Total CHF
+Gunsten/Lasten steuer
+30.12.2022 0.60 0.00 0.60 0.00 0.60 0.98423 0.59
+Total 0.60 0.00 0.60 0.00 0.60 0.59
+Kontostand 470.47
+Die Berechnung der in diesem Dokument angegebenen Zinsen erfolgte auf Grundlage der für Ihre Einlage(n) geltenden Zinssätze, die auf schriftliche Anfrage
+erhältlich sind.
+Bitte für Ihre Steuererklärung aufbewahren
+Die Bankdienstleistungen für Yuh werden von Swissquote Bank AG erbracht, einer Bank, SE&O.
+die von der Eidgenössischen Finanzmarktaufsicht (FINMA) reguliert wird. Dokument erstellt am: 5. Januar 2023
+Swissquote Bank AG, chemin de la Crétaux 33, CH-1196 Gland | Customer Care: +41 44 825 87 89

@@ -1,16 +1,18 @@
 package name.abuchen.portfolio.datatransfer;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction.Context;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
+import name.abuchen.portfolio.datatransfer.ibflex.IBFlexStatementExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.AbstractPDFExtractor;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -51,11 +53,7 @@ public interface Extractor
 
     public abstract static class Item
     {
-        /**
-         * Store arbitrary data with the extracted item. Currently to pass the
-         * JSON structure of the transaction to the test cases
-         */
-        private Object data;
+        private Map<String, Object> data = new HashMap<>();
 
         private Account accountPrimary;
 
@@ -65,9 +63,15 @@ public interface Extractor
 
         private Portfolio portfolioSecondary;
 
+        private String failureMessage;
+
+        private boolean investmentPlanItem = false;
+
         public abstract Annotated getSubject();
 
         public abstract Security getSecurity();
+
+        public abstract void setSecurity(Security security);
 
         public abstract String getTypeInformation();
 
@@ -83,16 +87,38 @@ public interface Extractor
             return 0; // NOSONAR
         }
 
-        public abstract Status apply(ImportAction action, Context context);
-
-        public Object getData()
+        public String getFailureMessage()
         {
-            return data;
+            return failureMessage;
         }
 
-        public void setData(Object data)
+        public void setFailureMessage(String failureMessage)
         {
-            this.data = data;
+            this.failureMessage = failureMessage;
+        }
+
+        public boolean isFailure()
+        {
+            return failureMessage != null;
+        }
+
+        public String getSource()
+        {
+            return null;
+        }
+
+        public abstract void setNote(String note);
+
+        public abstract Status apply(ImportAction action, Context context);
+
+        public Object getData(String key)
+        {
+            return this.data.get(key);
+        }
+
+        public void setData(String key, Object value)
+        {
+            this.data.put(key, value);
         }
 
         public Account getAccountPrimary()
@@ -135,65 +161,25 @@ public interface Extractor
             portfolioSecondary = portfolio;
         }
 
-    }
-
-    /**
-     * Represents an item which cannot be imported because it is either not
-     * supported or not needed. It is used for documents that can be
-     * successfully parsed, but do not contain any transaction relevant to
-     * Portfolio Performance. For example, a tax refund of 0 Euro (Consorsbank)
-     * can be parsed, but is of no further use to PP.
-     */
-    static class NonImportableItem extends Item implements Annotated
-    {
-        private String typeInformation;
-        private String note;
-
-        public NonImportableItem(String typeInformation)
+        public boolean isInvestmentPlanItem()
         {
-            this.typeInformation = typeInformation;
+            return investmentPlanItem;
         }
 
-        @Override
-        public Annotated getSubject()
+        public void setInvestmentPlanItem(boolean flag)
         {
-            return this;
+            investmentPlanItem = flag;
         }
 
+        @SuppressWarnings("nls")
         @Override
-        public Security getSecurity()
+        public String toString()
         {
-            return null;
-        }
-
-        @Override
-        public String getTypeInformation()
-        {
-            return typeInformation;
-        }
-
-        @Override
-        public LocalDateTime getDate()
-        {
-            return null;
-        }
-
-        @Override
-        public Status apply(ImportAction action, Context context)
-        {
-            return action.process(this);
-        }
-
-        @Override
-        public void setNote(String note)
-        {
-            this.note = note;
-        }
-
-        @Override
-        public String getNote()
-        {
-            return note;
+            // debug output
+            return String.format("%s %s %s %s %s", getDate() != null ? Values.DateTime.format(getDate()) : "",
+                            getTypeInformation(), getAmount() != null ? Values.Money.format(getAmount()) : "",
+                            getSecurity() != null ? getSecurity().getName() : "",
+                            getSource() != null ? getSource() : "");
         }
     }
 
@@ -232,10 +218,10 @@ public interface Extractor
         @Override
         public String getTypeInformation()
         {
-            if (transaction instanceof AccountTransaction)
-                return ((AccountTransaction) transaction).getType().toString();
-            else if (transaction instanceof PortfolioTransaction)
-                return ((PortfolioTransaction) transaction).getType().toString();
+            if (transaction instanceof AccountTransaction at)
+                return at.getType().toString();
+            else if (transaction instanceof PortfolioTransaction pt)
+                return pt.getType().toString();
             else
                 throw new UnsupportedOperationException();
         }
@@ -265,21 +251,39 @@ public interface Extractor
         }
 
         @Override
+        public void setSecurity(Security security)
+        {
+            transaction.setSecurity(security);
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            transaction.setNote(note);
+        }
+
+        @Override
+        public String getSource()
+        {
+            return transaction.getSource();
+        }
+
+        @Override
         public Status apply(ImportAction action, Context context)
         {
-            if (transaction instanceof AccountTransaction)
+            if (transaction instanceof AccountTransaction at)
             {
                 Account account = getAccountPrimary();
                 if (account == null)
                     account = context.getAccount();
-                return action.process((AccountTransaction) transaction, account);
+                return action.process(at, account);
             }
-            else if (transaction instanceof PortfolioTransaction)
+            else if (transaction instanceof PortfolioTransaction pt)
             {
                 Portfolio portfolio = getPortfolioPrimary();
                 if (portfolio == null)
                     portfolio = context.getPortfolio();
-                return action.process((PortfolioTransaction) transaction, portfolio);
+                return action.process(pt, portfolio);
             }
             else
             {
@@ -334,6 +338,24 @@ public interface Extractor
         }
 
         @Override
+        public void setSecurity(Security security)
+        {
+            entry.setSecurity(security);
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            entry.setNote(note);
+        }
+
+        @Override
+        public String getSource()
+        {
+            return entry.getAccountTransaction().getSource();
+        }
+
+        @Override
         public Status apply(ImportAction action, Context context)
         {
             Account account = getAccountPrimary();
@@ -344,7 +366,14 @@ public interface Extractor
             if (portfolio == null)
                 portfolio = context.getPortfolio();
 
-            return action.process(entry, account, portfolio);
+            Status status = action.process(entry, account, portfolio);
+
+            // check if message was set in DetectDuplicatesAction
+            if (Messages.InvestmentPlanItemImportToolTip.equals(status.getMessage()))
+            {
+                super.setInvestmentPlanItem(true);
+            }
+            return status;
         }
     }
 
@@ -388,6 +417,24 @@ public interface Extractor
         public Security getSecurity()
         {
             return null;
+        }
+
+        @Override
+        public void setSecurity(Security security)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            entry.setNote(note);
+        }
+
+        @Override
+        public String getSource()
+        {
+            return entry.getSourceTransaction().getSource();
         }
 
         @Override
@@ -454,6 +501,24 @@ public interface Extractor
         }
 
         @Override
+        public void setSecurity(Security security)
+        {
+            entry.setSecurity(security);
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            entry.setNote(note);
+        }
+
+        @Override
+        public String getSource()
+        {
+            return entry.getSourceTransaction().getSource();
+        }
+
+        @Override
         public Status apply(ImportAction action, Context context)
         {
             Portfolio portfolio = getPortfolioPrimary();
@@ -499,6 +564,18 @@ public interface Extractor
         public Security getSecurity()
         {
             return security;
+        }
+
+        @Override
+        public void setSecurity(Security security)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            security.setNote(note);
         }
 
         @Override
@@ -550,6 +627,18 @@ public interface Extractor
         }
 
         @Override
+        public void setSecurity(Security security)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            // not supported; prices have no notes
+        }
+
+        @Override
         public Status apply(ImportAction action, Context context)
         {
             return action.process(security, price);
@@ -575,36 +664,36 @@ public interface Extractor
 
         Client client = null;
 
-        if (this instanceof AbstractPDFExtractor)
+        if (this instanceof AbstractPDFExtractor pdf)
         {
-            client = ((AbstractPDFExtractor) this).getClient();
+            client = pdf.getClient();
         }
-        else if (this instanceof IBFlexStatementExtractor)
+        else if (this instanceof IBFlexStatementExtractor ibflex)
         {
-            client = ((IBFlexStatementExtractor) this).getClient();
+            client = ibflex.getClient();
         }
         else
         {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("can't evaluate client for class " + this.getClass().getName()); //$NON-NLS-1$
         }
 
         SecurityCache securityCache = new SecurityCache(client);
 
         List<Item> result = file.stream() //
                         .flatMap(f -> extract(securityCache, f, errors).stream()) //
-                        .collect(Collectors.toList());
+                        .collect(toMutableList());
 
         Map<Extractor, List<Item>> itemsByExtractor = new HashMap<>();
-        itemsByExtractor.put(this, postProcessing(result));
+        postProcessing(result);
+        itemsByExtractor.put(this, result);
 
         securityCache.addMissingSecurityItems(itemsByExtractor);
 
         return result;
     }
 
-    default List<Item> postProcessing(List<Item> result)
+    default void postProcessing(List<Item> result)
     {
-        return result;
     }
 
 }

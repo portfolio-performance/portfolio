@@ -1,0 +1,30 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+WrYYBDy BkShP SEITE 1 von 1
+XaeuvmRU 86 DATUM 17.06.2024
+77939 hGtaOVPaFz DEPOT 5169656104
+DIVIDENDE
+ÜBERSICHT
+Dividende mit Ex-Datum22.05.2024.
+POSITION ANZAHL ERTRAG BETRAG
+MSCI World USD (Dist) 39.33 USD
+IE00BK1PV551 110.661875 Stücke 0.36 USD
+GESAMT 39.33 USD
+ABRECHNUNG
+POSITION BETRAG
+Zwischensumme 39.33 USD
+Zwischensumme 1.0894 EUR/USD 36.10 EUR
+Kapitalertragssteuer 1.0894 EUR/USD -6.32 EUR
+Solidaritätszuschlag 1.0894 EUR/USD -0.34 EUR
+GESAMT 29.44 EUR
+BUCHUNG
+VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
+DE13120700700121535220 07.06.2024 29.44 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich um eine umsatzsteuerfreie Leistung gemäß § 4 Nr. 8 UStG
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin DirektorenBrunnenstraße 19-21
+10119 Berlin service@traderepublic.com
+AG Charlottenburg HRB 244347 B Andreas Torner
+Umsatzsteuer-ID DE307510626 Gernot Mittendorfer

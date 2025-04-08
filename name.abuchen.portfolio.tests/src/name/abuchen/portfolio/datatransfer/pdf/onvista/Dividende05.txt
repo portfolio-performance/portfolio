@@ -1,0 +1,75 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=376955000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=<myname>
+ADRESSZEILE3=<myaddress1>
+ADRESSZEILE4=<myaddress2>
+Dividende für
+Herr ADRESSZEILE5=01.01.2019 - 31.12.2019
+<myname> ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+<myaddress1> BELEGNUMMER=2405
+<myaddress2> <mydepot> <Abrechnungsnummer> / 10.09.2019 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+<myname>
+Frankfurt am Main, 10.09.2019
+Kupongutschrift
+Gattungsbezeichnung Fälligkeit Zinstermin ISIN
+5,875% Telefónica Europe B.V. 14.02.2033 14.02.2020 XS0162869076
+EO-Medium-Term Notes 2003(33)
+Nominal Zahltag Zinssatz
+EUR 5.000,000 14.02.2020 5,875000 %
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+14.02.2020 123456789 EUR 219,17
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zinsertrag EUR 293,75
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 25,21 0,00
+Quellensteuertopf EUR 0,53 0,00
+zu versteuern EUR 266,42
+einbehaltene Kapitalertragsteuer EUR 65,14
+einbehaltener Solidaritätszuschlag EUR 3,58
+einbehaltene Kirchensteuer EUR 5,86
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 65,14
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 3,58
+im laufenden Jahr einbehaltene Kirchensteuer EUR 5,86
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Itzehoe, Steuernummer 18/297/13562.
+Steuerlicher Stichtag: 14.02.2020
+Zinsen für 365 Tage
+Jahressteuerbescheinigung folgt
+Es folgt Seite 2
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.20/ABREEREIERTR/GDBERTRG/012599/140220/010553
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=[removed]
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+
+[removed]
+
+Verwahrart: Wertpapierrechnung Lagerland: Grossbritannien SEITENNUMMER=2
+STEUERERSTATTUNG=N
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.20/ABREEREIERTR/GDBERTRG/012599/140220/010553

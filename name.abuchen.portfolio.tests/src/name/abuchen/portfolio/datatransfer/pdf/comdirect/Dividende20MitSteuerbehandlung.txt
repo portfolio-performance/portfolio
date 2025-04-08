@@ -1,0 +1,55 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+           
+25449 Quickborn
+                                                                                                    
+                                                  
+                                                                      
+                                                                      
+                                                                      
+                   
+                        
+       
+11111 111 Depo tnummer:    1111111 11     
+Frau                                                            
+Vorname Nachname                                               
+und Frau Vorname Nachname                                          
+Straße 11                                                     
+                             
+1111 Stadt                                                     
+10.06.2008
+Gutschrift fälliger Wertpapier-Erträge - Halbeinkünfteverfahren                    
+                                                                                   
+Dividendengutschrift                                                               
+Depotbestand                          Wertpapier-Bezeichnung               WKN/ISIN
+p  e r  0 6.  05  . 20  0 8                         I nt l  B u s i  ne  ss  M  a c hi  n e s  Co r p .            8 5 1 3 9 9 
+ S TK              1 0 0 ,  0 0 0                R eg  i s te r  ed  S  ha r  es   DL  -  ,2 0          US 4  59 2 0 0  10 1  4
+                                      Emissionsland: VEREINIGTE STAATEN            
+USD 0,50       Dividende pro Stück für Geschäftsjahr        01.01.08 bis 31.12.08  
+zahlbar ab 10.06.2008                 Quartalsdividende                            
+                         Ermittlung der Steuerbasisbeträge                         
+Bruttobetrag:                     USD              50,00                           
+    zum Devisenkurs: EUR/USD      1,552700                                         
+                                                                                   
+Bruttobetrag:                                              EUR              32,20  
+Einnahmen aus Kapitalvermögen i. S. d. Par. 20 EStG        EUR              32,20  
+                         Abrechnung Dividendengutschrift                           
+Bruttobetrag:                     USD              50,00                           
+15,000 % Quellensteuer            USD               7,50 -                         
+Ausmachender Betrag               USD              42,50                           
+    zum Devisenkurs: EUR/USD      1,552700                 EUR              27,37  
+Gutschrift auf Konto                    Valuta             Zu Ihren Gunsten        
+1111111 11     EUR                      12.06.2008         EUR              27,37  
+Die nicht erstattungsfähige Quellensteuer in Höhe von      USD               7,50  
+gleich EUR               4,83   ist ggf. auf die Einkommen- bzw. Körperschaft-     
+steuer anrechenbar.                                                                
+Erträge aus ausländischen Aktien unterliegen nicht der Kapitalertragsteuer.        
+comdirect bank                                                                     
+Aktiengesellschaft                                                                 
+                                                                                   
+*Diese Abrechnung wird von der Bank nicht unterschrieben                           
+                                                                                   
+                             Keine Steuerbescheinigung                             
+         Ausländische Quellensteuern dürfen nicht bescheinigt werden               
+Kapitalerträge sind einkommensteuerpflichtig
+D111S1/11/2001

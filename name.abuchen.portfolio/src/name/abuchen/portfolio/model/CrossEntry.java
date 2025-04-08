@@ -13,4 +13,8 @@ public interface CrossEntry
     TransactionOwner<? extends Transaction> getCrossOwner(Transaction t);
 
     void insert();
+
+    String getSource();
+
+    void setSource(String source);
 }

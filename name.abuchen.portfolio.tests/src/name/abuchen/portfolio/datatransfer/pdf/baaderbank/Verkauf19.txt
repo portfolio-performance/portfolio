@@ -1,0 +1,65 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Scalable Capital GmbH 
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/2
+Herrn München
+01.02.2024
+Max kdKdCmVkf
+Goethestr. 62 Max HJFNzixuU
+07851 QAYuTaFb Stamm-Nr.: 4178395    Portfolio: 1
+Depot-Nr.: 1868363647
+Vorgangs-Nr.: 25742277
+Referenz-Nr.: 514512276
+Buchungsanzeige
+Obligatorische Barabfindung
+Ex-Tag: 24.01.2024
+Ausbuchung aus Depot 0498007224 per 25.01.2024
+Nominale ISIN: US60468T1051 WKN: A1W1XV Barabfindung
+STK 4 Mirati Therapeutics Inc. USD 58,00 p.STK
+Registered Shares DL -,01
+Umrechnungskurs: EUR/USD 1,09084
+Bruttobetrag USD 232,00
+Bruttobetrag EUR 212,68
+Zu Gunsten Konto 7876628284 Valuta: 25.01.2024 EUR 212,68
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • HRB 217778, Amtsgericht 
+München • USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de AUSB-044.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Obligatorische Barabfindung
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Freistellungsauftrag (FSA) EUR 561,60 EUR 87,88 - EUR 473,72
+Verrechnung FSA mit Aktiengewinnen EUR 0,00 EUR 87,88 - EUR 87,88 -
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Gewinn / Verlust aus Aktienveräußerungen EUR 87,88 EUR 0,00
+Bemessungsgrundlage zur KESt (Aktiengewinne) EUR 87,88 EUR 0,00
+Ausbuchung
+Stück 4 Mirati Therapeutics Inc.
+ISIN: US60468T1051/EUR
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP Kauf 210187949 14.07.2023 STK 4 124,80 212,68 87,88
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • HRB 217778, Amtsgericht 
+München • USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de AUSB-044.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.

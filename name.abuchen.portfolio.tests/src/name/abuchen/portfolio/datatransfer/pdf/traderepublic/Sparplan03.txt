@@ -1,0 +1,30 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Max Mustermann SEITE 1 von 1
+Hauptstraße 99 DATUM 18.05.2020
+D 00000 Musterhausen AUSFÜHRUNG 8eac-25ab
+SPARPLAN 77c8-1b0c
+DEPOT 155305601
+WERTPAPIERABRECHNUNG SPARPLAN
+ÜBERSICHT
+Sparplanausführung am 18.05.2020 an der Lang & Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL DURCHSCHNITTSKURS BETRAG
+iShs Core S&P 500 UC.ETF USDD 5,5520 Stk. 27,02 EUR 150,00 EUR
+Registered Shares USD (Dist)oN
+ISIN: IE0031442068
+GESAMT 150,00 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE07110101001111111111 20.05.2020 -150,00 EUR
+iShs Core S&P 500 UC.ETF USDD Registered Shares USD (Dist)oN in Wertpapierrechnung.
+Lagerland: Grossbritannien
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Ingo Hillen
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 2020-05-18 / 12345678 / 0ae7-36ef

@@ -1,0 +1,29 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Vorname Nachname SEITE 1 von 1
+Strasse 1 DATUM 20.07.2021
+12345 Ort DEPOT 1234567890
+UMTAUSCH/BEZUG
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+1 Umtausch/Bezug Nordex SE 47 Stk.
+Inhaber-Aktien o.N.
+DE000A0D6554
+ABRECHNUNG
+NR. POSITION BETRAG
+1 Kurswert -643,90 EUR
+Gebühr Kundenweisung -5,00 EUR
+GESAMT -648,90 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE00000000000000000000 15.07.2021 -648,90 EUR
+Nordex SE Inhaber-Aktien o.N. in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 20.07.2021 / 26388184 / 17a1-63f0

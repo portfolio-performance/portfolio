@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.editor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.IMenuListener;
@@ -31,13 +32,17 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
  */
 /* package */ class ToolBarPlusChevronLayout extends Layout implements IMenuListener
 {
+    private int alignment = SWT.LEFT;
     private ImageHyperlink chevron;
     private Menu chevronMenu;
 
     private List<ContributionItem> invisible = new ArrayList<>();
 
-    public ToolBarPlusChevronLayout(Composite host)
+    public ToolBarPlusChevronLayout(Composite host, int alignment)
     {
+        if (alignment == SWT.RIGHT)
+            this.alignment = SWT.RIGHT;
+
         this.chevron = new ImageHyperlink(host, SWT.PUSH);
         this.chevron.setImage(Images.CHEVRON.image());
         this.chevron.addHyperlinkListener(new HyperlinkAdapter()
@@ -112,6 +117,13 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
             }
             else
             {
+                // on Linux (and Linux only) the toolbar items are indented -
+                // typically 4 pixels on the left and 3 pixels on the right. We
+                // determine this by looking at the first item
+
+                if (index == 0 && itemBounds.x > 0)
+                    width += (2 * itemBounds.x) - 1;
+
                 width += itemBounds.width;
             }
         }
@@ -120,37 +132,47 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
         {
             if (chevron.isVisible())
                 chevron.setVisible(false);
+
+            // all items are visible - give the tool bar the full space, the
+            // alignment is up to the tool bar itself
+            toolBar.setBounds(0, 0, availableBounds.width, availableBounds.height);
         }
         else
         {
-            chevron.setBounds(availableBounds.width - chevronSize.x, (availableBounds.height - chevronSize.y) / 2,
-                            chevronSize.x, chevronSize.y);
+            if (Platform.WS_GTK.equals(Platform.getWS()))
+            {
+                // due to the padding issues on Linux, make the tool bar always
+                // as big as possible
+                chevron.setBounds(availableBounds.width - chevronSize.x, (availableBounds.height - chevronSize.y) / 2,
+                                chevronSize.x, chevronSize.y);
+
+                toolBar.setBounds(0, 0, availableBounds.width - chevronSize.x, availableBounds.height);
+            }
+            else
+            {
+                int x = alignment == SWT.LEFT ? width : availableBounds.width - chevronSize.x;
+                chevron.setBounds(x, (availableBounds.height - chevronSize.y) / 2, chevronSize.x, chevronSize.y);
+
+                if (alignment == SWT.LEFT)
+                    toolBar.setBounds(0, 0, width, availableBounds.height);
+                else
+                    toolBar.setBounds(availableBounds.width - chevronSize.x - width, 0, width, availableBounds.height);
+            }
 
             if (!chevron.isVisible())
                 chevron.setVisible(true);
-
-            availableBounds.width -= chevronSize.x;
         }
-
-        toolBar.setBounds(availableBounds.width - width, 0, width, availableBounds.height);
     }
 
     private ToolBar getToolBar(Composite composite)
     {
-        ToolBar toolBar = null;
         for (Control child : composite.getChildren())
         {
-            if (child instanceof ToolBar)
-            {
-                toolBar = (ToolBar) child;
-                break;
-            }
+            if (child instanceof ToolBar toolBar)
+                return toolBar;
         }
 
-        if (toolBar == null)
-            throw new IllegalArgumentException();
-
-        return toolBar;
+        throw new IllegalArgumentException("no toolbar found in list of childs"); //$NON-NLS-1$
     }
 
     @Override
@@ -158,19 +180,24 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
     {
         for (ContributionItem item : invisible)
         {
-            if (item instanceof DropDown)
+            if (item instanceof DropDown dropDown)
             {
-                DropDown dropDown = (DropDown) item;
+                if (dropDown.getMenuListener() != null)
+                {
+                    MenuManager subMenu = new MenuManager(dropDown.getLabel());
+                    if (dropDown.getImage() != null)
+                        subMenu.setImageDescriptor(dropDown.getImage().descriptor());
+                    dropDown.getMenuListener().menuAboutToShow(subMenu);
+                    manager.add(subMenu);
+                }
+                else
+                {
+                    dropDown.fill(manager);
+                }
 
-                MenuManager subMenu = new MenuManager(dropDown.getLabel());
-                subMenu.setImageDescriptor(dropDown.getImage().descriptor());
-                dropDown.getMenuListener().menuAboutToShow(subMenu);
-                manager.add(subMenu);
             }
-            else if (item instanceof ActionContributionItem)
+            else if (item instanceof ActionContributionItem action)
             {
-                ActionContributionItem action = (ActionContributionItem) item;
-
                 // need to create a wrapper action because an action in the
                 // toolbar typically has no text (only the icon)
 

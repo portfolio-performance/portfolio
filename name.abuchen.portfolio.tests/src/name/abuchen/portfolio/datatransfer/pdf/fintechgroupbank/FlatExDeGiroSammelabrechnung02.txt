@@ -1,0 +1,63 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+flatexDEGIRO Bank AG
+Kundenservice
+Opernring 1 / Top 736
+1010 Wien
+Tel.: +43 - (0)720 518 777
+Mail: info@flatex.at
+flatexDEGIRO Bank AG -  Opernring 1 / Top 736 -  A-1010 Wien
+0303502000002285419000
+Herrn
+Max Mustermann
+Dorfstraße 11 / 11
+1010 Ort
+ÖSTERREICH
+          Wien, den 10.12.2021
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 31013976000
+Depotinhaber:     Max Mustermann
+Nr.183646902/1    Kauf          DOCUSIGN INC    DL-,0001 (US2561631068/A2JHLZ)
+Ordervolumen  : 25,00 St.               Handelsplatz  :              Tradegate
+davon ausgef. : 25,00 St.               Schlusstag    :  09.12.2021, 14:14 Uhr
+Kurs          : 137,9200 EUR            Kurswert      :           3.448,00 EUR
+Devisenkurs   :                         Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : Wertpapierrechnung     *Fremde Spesen :               2,51 EUR
+Lagerstelle   : Clearstream Lux.
+Lagerland     : USA                   **Einbeh. Steuer:               0,00 EUR
+Gewinn/Verlust: 0,00 EUR
+Valuta        : 13.12.2021              Endbetrag     :          -3.456,41 EUR
+*   Enthalten sind folgende Gebühren
+                                Courtage                :             0,00 EUR
+                                Tradinggebühr           :             0,00 EUR
+                                Regulierung             :             2,44 EUR
+                                Schlussnoten            :             0,07 EUR
+                                Finanztransaktionssteuer:             0,00 EUR
+                                Sonstige                :             0,00 EUR
+**  Einbehaltene Kapitalertragsteuer. Details dazu finden Sie im Steuerreport
+    unter der Transaktion-Nr.: 2592937917.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 31013976000
+______________________________________________________________________________
+                                                                     Seite 1/2
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Opernring 1 / Top 736 | 1010 Wien | Handelsgericht Wien | FN 334642 x | DVR 4000544 | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Rotfeder-Ring 7 | 60327 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Martin Korbmacher | Vorstand: Frank Niehage (Vors.), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch -
+2000002285419960 0351303500000101
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem  angegebenen  Valutatag  buchen.  Bitte prüfen Sie  diese  Abrechnung  auf
+Richtigkeit und Vollständigkeit.  Etwaige Einwendungen gegen diese  Abrechnung
+müssen unverzüglich  nach Zugang bei der Bank  erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten  hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese  Mitteilung  ist  maschinell  erstellt  und  wird  nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+flatexDEGIRO Bank AG Niederlassung Österreich | Aktiengesellschaft | Opernring 1 / Top 736 | 1010 Wien | Handelsgericht Wien | FN 334642 x | DVR 4000544 | UID ATU 65140956
+Hauptniederlassung: flatexDEGIRO Bank AG | Rotfeder-Ring 7 | 60327 Frankfurt am Main (Deutschland) | Amtsgericht Frankfurt am Main | HRB 105687
+- Vorsitzender des Aufsichtsrats: Martin Korbmacher | Vorstand: Frank Niehage (Vors.), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch -
+2000002285419960

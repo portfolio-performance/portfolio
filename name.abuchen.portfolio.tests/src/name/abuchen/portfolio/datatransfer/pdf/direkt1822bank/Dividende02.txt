@@ -1,0 +1,41 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postfach · 60255 Frankfurt am Main
+Depotnummer 1234567890
+Kundennummer 1234567
+Max Muster
+Abrechnungsnr. 56838700560
+Herrn Datum 09.03.2021
+Max Muster Ihr Berater 1822direkt
+Hauptstr. 1 Telefon 069 94170-0
+12345 Hauptstadt
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 118,901 DEKA EO STOXX SEL.DIV.30 U.ETF DE000ETFL078 (ETFL07)
+INHABER-ANTEILE
+Zahlbarkeitstag 10.03.2021 Ausschüttung pro St. 0,060000000 EUR
+Bestandsstichtag 09.03.2021 mit Teilfreistellung (Aktien-
+Ex-Tag 10.03.2021 fonds) 0,042000000 EUR
+Geschäftsjahr 01.02.2020 - 31.01.2021
+Ausschüttung 7,13+ EUR
+davon steuerfreier Anteil wg. Teilfreistellung 2,14 EUR
+Kapitalertragsteuerpfl. Ertrag nach Teilfreistellung 4,99 EUR
+Verrechneter Sparer-Pauschbetrag 4,99 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 7,13+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir mit Wertstellung 10.03.2021 zu Gunsten des Kontos 1234567890 (IBAN DE05 5005 0201 1234
+5678 90), BLZ 500 502 01 (BIC HELADEF1822).
+Keine Steuerbescheinigung.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2021 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 29,75 3,04 0,00
+Ertrag 0,00 0,00 4,99- 0,00 0,00
+Nachher 0,00 0,00 24,76 3,04 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+1234.03100100.0000847ER03

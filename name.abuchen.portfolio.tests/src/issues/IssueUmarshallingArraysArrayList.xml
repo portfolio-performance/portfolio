@@ -1,0 +1,58 @@
+<client>
+  <version>56</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities/>
+  <watchlists/>
+  <accounts>
+    <account>
+      <uuid>e1fd0cb9-9279-408d-bfec-1a85274531b1</uuid>
+      <name>asdf</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions/>
+      <updatedAt>2023-01-01T11:41:42.294890Z</updatedAt>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio>
+      <uuid>64d54be0-30dc-4efa-b5bd-afe440fb4411</uuid>
+      <name>sadf</name>
+      <isRetired>false</isRetired>
+      <referenceAccount reference="../../../accounts/account"/>
+      <transactions/>
+      <updatedAt>2023-01-01T11:41:41.461671Z</updatedAt>
+    </portfolio>
+  </portfolios>
+  <plans/>
+  <taxonomies>
+    <taxonomy>
+      <id>f68bd17a-c0dc-4168-bcae-79b6b8d5e3c8</id>
+      <name>Regionen (MSCI)</name>
+      <dimensions class="java.util.Arrays$ArrayList">
+        <a class="string-array">
+          <string>Markt</string>
+          <string>Region</string>
+          <string>Land</string>
+        </a>
+      </dimensions>
+      <root>
+        <id>4d48f519-72ad-4c8e-a029-a67c4b54a572</id>
+        <name>Regionen (MSCI)</name>
+        <color>#b9a3c6</color>
+        <children/>
+        <assignments/>
+        <weight>10000</weight>
+        <rank>0</rank>
+        <data>
+          <entry>
+            <string>portfolioClassificationKey</string>
+            <string>regions-msci</string>
+          </entry>
+        </data>
+      </root>
+    </taxonomy>
+  </taxonomies>
+  <dashboards/>
+  <properties/>
+  <settings/>
+</client>

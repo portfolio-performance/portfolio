@@ -1,0 +1,34 @@
+PDF Autor: 'LGT Bank AG'
+PDFBox Version: 1.8.16
+-----------------------------------------
+LGT Bank AG
+Herrengasse 12, FL-9490 Vaduz
+Tel. +423 235 11 22
+info@lgt.com, www.lgt.li, BIC BLFLLI2X
+HR Nr.: 1122356-7, Sitz: 9490 Vaduz, MWST-Nr. 50119
+UID: CHE-260.887.880
+Herr
+Max Muster
+Schlossallee 4
+50859 Köln 1 / 1
+DEUTSCHLAND
+Vaduz, 14. Mai 2020
+ 
+Barausschüttung Portfolio: 0012345.006
+Auftragsnummer: 256401138 Kontonummer: 0012345.021
+Kunde: Max Muster IBAN: LI74 0881 0000 0123 4503 9 
+ 
+Stand Ihres Depots am 12. Mai 2020:
+551 Veolia Environnement SA
+Namen- und Inhaber-Aktien
+ISIN: FR0000124141, Valoren-Nr.: 1098758
+Wir rechnen folgende Erträgnisse unter Eingangsvorbehalt ab:
+Ausschüttung EUR 0.50
+Ex-Datum 12. Mai 2020
+Ausschüttungsart Ordentliche Dividende
+Betrag EUR 275.50
+Quellensteuer 28 % EUR -77.14
+Netto EUR 198.36
+Zu Ihren Gunsten EUR 198.36
+Valuta 14. Mai 2020
+0012345 13E T VA I SEA0107 50784613 13:33 14.05.2020 %Media:XML-A4H

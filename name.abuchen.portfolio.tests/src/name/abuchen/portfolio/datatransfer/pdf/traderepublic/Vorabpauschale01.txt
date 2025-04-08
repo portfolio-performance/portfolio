@@ -1,0 +1,31 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Vorname Name SEITE 1 von 1
+Strassestr. 1 DATUM 04.02.2021
+12345 Stadt DEPOT 0123456789
+VORABPAUSCHALE
+ÜBERSICHT
+Besteuerung der Vorabpauschale gem. § 18 InvStG.
+POSITION ANZAHL
+iShs Core MSCI EM IMI U.ETF 173,3905 Stk.
+Registered Shares o.N.
+ISIN: IE00BKM4GZ66
+ABRECHNUNG
+POSITION BETRAG
+Kapitalertragssteuer -0,30 EUR
+Solidaritätszuschlag -0,02 EUR
+GESAMT -0,32 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE12345678912345678912 04.01.2021 -0,32 EUR
+iShs Core MSCI EM IMI U.ETF Registered Shares o.N. in Wertpapierrechnung in Deutschland.
+Lagerland: Vereinigtes Königreich
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 04.02.2021 / 79935507 / 15db-97f1

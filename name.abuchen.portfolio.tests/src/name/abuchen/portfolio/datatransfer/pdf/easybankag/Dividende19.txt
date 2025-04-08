@@ -1,0 +1,37 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.3
+-----------------------------------------
+Abrechnung Ereignis
+easybank Service Center 36501843-27.2.2023
+BAWAG P.S.K. AG Depot-Nr.: 23456789012
+Wiedner Gürtel 11 Max Mustermann               
+1100 Wien 35/9835
+BAWAG P.S.K. AG                    
+An
+Max Mustermann
+Straße 74
+1234 Ort                                                                                                                                                                                         
+Wir haben für Sie am 27.2.2023 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+2.000 EUR
+Titel: DE000A14J587  t h y s s e n k r u p p AG                    
+Medium Term Notes v.15(25)         
+Kup. 25.2.2023/GZJ Endfälligkeit 25.2.2025
+aktueller Zinssatz: 2,5 %
+Zinssatz: 2,5 % von 25.2.2022 bis 24.2.2023
+Verwahrart: WR
+Positionsdaten: Loco: Wien                               
+Zinsertrag für 365 Tage: 50,-- EUR 
+Inkassoprovision: -0,95 EUR 
+Umsatzsteuer: -0,19 EUR 
+Zu Gunsten IBAN AT12 1234 1234 1234 1234 48,86 EUR 
+Valuta 27.2.2023
+Kunden UID: ATU12312312    
+Es wurde Umsatzsteuer in der Höhe von 20% berücksichtigt.
+Extag: 25.2.2023
+Record-Tag: 24.2.2023
+Bemessungsgrundlage USt: -0,95 EUR
+1.3.2023 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten!
+12967 Doknr.: ON00-036-0000000001

@@ -1,0 +1,24 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+comdirect bank AG, 25449 Quickborn 888 88 888
+Frau Telefon: 04106 - 708 25 00
+xxxxxx xxxn Telefax: 04106 - 708 25 85
+xxxxxxxxxxxxx xx E-Mail: www.comdirect.de/kontakt
+xxxxxxxxxxxx (E-Mail über Kontaktformular)
+Kundennummer: 888 8888888
+Abrechnung Verwahrentgelt Xetra Gold, WKN A0S9GB 06.05.2019
+DDDDDDDD
+Sehr geehrte Frau xxxxxxxx,
+für die Verwahrung Ihres Wertpapieres Xetra Gold, WKN A0S9GB, belasten wir Ihr Konto für
+den vorherigen Monat mit einem Entgelt in Höhe von 123,45 Euro. Das entspricht 0,0298 %
+(0,025 % zzgl. 19 % MwSt.) pro Monat auf Ihren Bestandswert in der Gattung.
+Für Fragen stehen Ihnen unsere Kundenbetreuer rund um die Uhr gerne zur Verfügung.
+Mit freundlichen Grüßen
+comdirect bank AG
+Henning Ratjen
+Leiter Service
+comdirect bank AG
+Pascalkehre 15
+25451 Quickborn Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Matthias Hach, Frauke Hegemann
+(AG Pinneberg HRB 4889) Vorsitzender des Aufsichtsrates: Michael Mandel

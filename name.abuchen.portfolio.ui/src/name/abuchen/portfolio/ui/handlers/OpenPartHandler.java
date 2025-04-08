@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.handlers;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import name.abuchen.portfolio.ui.UIConstants;
 

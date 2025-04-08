@@ -2,6 +2,7 @@ package name.abuchen.portfolio.snapshot.reportingperiod;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -21,19 +22,17 @@ public class FromXtoYTest
         String code = "F2020-04-04_2020-04-08";
         ReportingPeriod period = ReportingPeriod.from(code);
 
-        assertEquals(period.getClass(), FromXtoY.class);
+        assertEquals(FromXtoY.class, period.getClass());
     }
 
     @Test
     public void testWriteTo() throws IOException
     {
         String code = "F2020-04-04_2020-04-08";
-        StringBuilder strb = new StringBuilder();
 
         ReportingPeriod period = ReportingPeriod.from(code);
-        period.writeTo(strb);
 
-        assertEquals(strb.toString(), code);
+        assertEquals(code, period.getCode());
     }
 
     @Test
@@ -45,7 +44,7 @@ public class FromXtoYTest
 
         Interval result = period.toInterval(intervalEnd);
 
-        assertEquals(result, Interval.of(intervalStart, intervalEnd));
+        assertEquals(Interval.of(intervalStart, intervalEnd), result);
     }
 
     @Test
@@ -56,7 +55,7 @@ public class FromXtoYTest
         ReportingPeriod notEqualSameClass = ReportingPeriod.from("F2020-04-04_2020-04-09");
         ReportingPeriod notEqualDifferentClass = ReportingPeriod.from("T10");
 
-        assertNotEquals(equal1, null);
+        assertNotNull(equal1);
         assertNotEquals(equal1, notEqualSameClass);
         assertNotEquals(equal1, notEqualDifferentClass);
 

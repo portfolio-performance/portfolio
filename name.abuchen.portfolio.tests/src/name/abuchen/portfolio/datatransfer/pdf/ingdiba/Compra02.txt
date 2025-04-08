@@ -1,0 +1,21 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+Operaciones Cuenta de Valores
+Fecha 26/06/2024 Página 1 de 1
+Código de  cuenta Tarifa Titular BRUNO GOMEZ RUIZ
+1465 0100 32 5120505073 Base
+Nº Título  Valor ISIN Mercado Tipo Precio  Importe Comisión Gastos de Impuestos Comisión  Importe
+    operación  operación de ING bolsa  cambio   total
+          de divisa
+30 DIAGEO GB0002374006 LONDRES Compra 25,19 GBP 894,48 EUR 4,47 EUR 4,52 EUR 0,00 EUR 4,47 EUR 907,94 EUR
+Detalle de la orden Cuenta de cargo ES2114651100722130875247
+08757761 0617743
+Fecha y hora Fecha ejecución Nº de títulos  Tipo de orden  Precio  Fecha precio Cambio GBP  / EUR Importe
+orden y hora      total
+07/06/2024 19/06/2024 09:00 30 Limitada 25,19 GBP 07/06/2024 16:15 1,190 EUR 899,28 EUR
+Podrá solicitar el detalle de comisiones y gastos, así como el de las ejecuciones.
+ing.es
+T OP BR EXT OL 07/23
+ING BANK NV, Sucursal en España, C/ Vía de los Poblados, 1F, 28033 Madrid, CIF W0037986G, inscrita en el
+Registro Mercantil de Madrid, Tomo 31798, Folio 1, Sección 8ª, Hoja M-572225.

@@ -1,0 +1,171 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Cortal Consors • 90318 Nürnberg Kontonummer 0820011111
+Kontotyp Verrechnungskonto
+1108011111/00
+Kontoinhaber Max Mustermann
+Max Mustermann
+Musterstr. 77
+44144 Stadt Vermerk der Bank 1000
+00
+1108011111/00
+Soll Haben
+Saldo alt
+57,46+
+Saldo neu
+6.017,26+
+Valutarischer Saldo
+7.258,72+
+Kontoauszug 5 Konto-Nr. 0820 011 111 Blatt 1
+Datum 03.09.12 Bankleitzahl 760 300 80 Kontowährung EUR
+BIC (für EUR) CSDBDE71XXX BIC GENODEFFXXX
+IBAN DE03760300800820011111 (Alle Währungen außer EUR)
+Text/Verwendungszweck Datum PNNr Wert Soll Haben
+UEBERWEISUNG NR.99999999991 21.08. 8401 21.08. 25.308,00-
+   Max Mustermann
+   < 760 300 80 >  820022222   sidelines
+GUTSCHRIFT NR.99999999992 21.08. 8401 21.08. 6.500,00+
+   Mustermann,Max
+   < 760 300 80 >  820022222   puts
+*** VALUTARISCHER SALDO PER 21.08. *** 18.750,54-
+EFFEKTEN NR.0000000000011 21.08. 8808 23.08. 13.166,19+
+                               WP-ABRECHNUNG 0000000000011
+   Verkauf                     WKN: 659990
+   MERCK KGAA O.N.
+EFFEKTEN NR.0000000000111 21.08. 8808 23.08. 6.349,12+
+                               WP-ABRECHNUNG 0000000000111
+   Verkauf                     WKN: 803200
+   COMMERZBANK AG O.N.
+EFFEKTEN NR.0000000001111 21.08. 8808 23.08. 5.735,42+
+                               WP-ABRECHNUNG 0000000001111
+   Verkauf                     WKN: 823212
+   LUFTHANSA AG VNA O.N.
+Hinweis für Kontoauszüge, Wertpapierabrechnungen und Depotbuchungsanzeigen:
+Kapitalerträge und Spekulationsgewinne sind einkommensteuerpflichtig.
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung oder die Nichtgenehmigung einer im Wege der Einzugsermächtigung erfolgten
+Lastschriftabbuchung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der Allgemeine Geschäftsbedingungen (AGB Banken) sowie
+unter B. VII. Ziffer 2.4 der Lastschriftbedingungen. Umsätze und Kontobuchungen, die nach dem Erstellungsdatum anfallen und sich auf den Abrechnungssaldo des
+abgelaufenen Abrechnungszeitraumes auswirken, werden erst mit dem folgenden Kontoauszug ausgewiesen. Korrekturen werden seitens der Bank gekennzeichnet.
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an Cortal Consors Deutschland (Revision) oder per
+Fax oder Mail an die unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Cortal Consors S.A. Zweigniederlassung Deutschland
+Bahnhofstraße 55, 90402 Nürnberg, HR Nürnberg B20075, USt-IdNr. DE225900761, info@cortalconsors.de, www.cortalconsors.de
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00
+Sitz der Cortal Consors S.A.: 1, boulevard Haussmann, 75318 Paris CEDEX 09, Frankreich, Registergericht: R.C.S. Paris 327 787 909
+Président du Conseil d’Administration (Verwaltungsratsvorsitzender) und Directeur Général (Generaldirektor) der Cortal Consors S.A.: Olivier Le Grand
+Leitung der Zweigniederlassung Deutschland: Kai Friedrich (CEO), Richard Döppmann
+Kontoauszug 5 Konto-Nr. 0820 011 111 Blatt 2
+Datum 03.09.12 Bankleitzahl 760 300 80 Kontowährung EUR
+BIC (für EUR) CSDBDE71XXX BIC GENODEFFXXX
+IBAN DE03760300800820011111 (Alle Währungen außer EUR)
+Text/Verwendungszweck Datum PNNr Wert Soll Haben
+*** VALUTARISCHER SALDO PER 23.08. *** 13.199,19+
+GUTSCHRIFT NR.99999999993 22.08. 8401 22.08. 5.500,00+
+   Mustermann,Max
+   < 760 300 80 >  820022222   google 2
+GUTSCHRIFT NR.99999999994 22.08. 8401 22.08. 757,00+
+   Mustermann,Max
+   < 760 300 80 >  820022222   google 4
+GUTSCHRIFT NR.99999999995 22.08. 8401 22.08. 10.000,00+
+   Mustermann,Max
+   < 760 300 80 >  820022222   balance trades
+GUTSCHRIFT NR.99999999996 22.08. 8401 22.08. 2.800,00+
+   Mustermann,Max
+   < 760 300 80 >  820022222   google 3
+*** VALUTARISCHER SALDO PER 22.08. *** 306,46+
+EFFEKTEN NR.0000000000001 22.08. 8808 24.08. 6.080,10-
+                               WP-ABRECHNUNG 0000000000001
+   Kauf                        WKN: DE4FY1
+   DEUT.BANK PUT13 DAX
+*** VALUTARISCHER SALDO PER 24.08. *** 7.119,09+
+UEBERWEISUNG NR.99999999997 23.08. 8401 23.08. 12.358,00-
+   Max Mustermann
+   < 760 300 80 >  820022222   saving
+*** VALUTARISCHER SALDO PER 23.08. *** 13.199,19+
+EFFEKTEN 23.08. 8808 27.08. 253,90-
+                               WP-ABRECHNUNG 0000000111115
+   Kauf                        WKN: A0B7FY
+   GOOGLE INC. A DL -,001
+EFFEKTEN 23.08. 8808 27.08. 438,93-
+                               WP-ABRECHNUNG 0000000111113
+   Kauf                        WKN: A0B7FY
+   GOOGLE INC. A DL -,001
+EFFEKTEN 23.08. 8808 27.08. 800,48-
+                               WP-ABRECHNUNG 0000000111117
+   Kauf                        WKN: A0B7FY
+   GOOGLE INC. A DL -,001
+EFFEKTEN 23.08. 8808 27.08. 1.015,59-
+                               WP-ABRECHNUNG 0000000111114
+   Kauf                        WKN: A0B7FY
+   GOOGLE INC. A DL -,001
+Hinweis für Kontoauszüge, Wertpapierabrechnungen und Depotbuchungsanzeigen:
+Kapitalerträge und Spekulationsgewinne sind einkommensteuerpflichtig.
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung oder die Nichtgenehmigung einer im Wege der Einzugsermächtigung erfolgten
+Lastschriftabbuchung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der Allgemeine Geschäftsbedingungen (AGB Banken) sowie
+unter B. VII. Ziffer 2.4 der Lastschriftbedingungen. Umsätze und Kontobuchungen, die nach dem Erstellungsdatum anfallen und sich auf den Abrechnungssaldo des
+abgelaufenen Abrechnungszeitraumes auswirken, werden erst mit dem folgenden Kontoauszug ausgewiesen. Korrekturen werden seitens der Bank gekennzeichnet.
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an Cortal Consors Deutschland (Revision) oder per
+Fax oder Mail an die unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Cortal Consors S.A. Zweigniederlassung Deutschland
+Bahnhofstraße 55, 90402 Nürnberg, HR Nürnberg B20075, USt-IdNr. DE225900761, info@cortalconsors.de, www.cortalconsors.de
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00
+Sitz der Cortal Consors S.A.: 1, boulevard Haussmann, 75318 Paris CEDEX 09, Frankreich, Registergericht: R.C.S. Paris 327 787 909
+Président du Conseil d’Administration (Verwaltungsratsvorsitzender) und Directeur Général (Generaldirektor) der Cortal Consors S.A.: Olivier Le Grand
+Leitung der Zweigniederlassung Deutschland: Kai Friedrich (CEO), Richard Döppmann
+Kontoauszug 5 Konto-Nr. 0820 011 111 Blatt 3
+Datum 03.09.12 Bankleitzahl 760 300 80 Kontowährung EUR
+BIC (für EUR) CSDBDE71XXX BIC GENODEFFXXX
+IBAN DE03760300800820011111 (Alle Währungen außer EUR)
+Text/Verwendungszweck Datum PNNr Wert Soll Haben
+EFFEKTEN 23.08. 8808 27.08. 1.024,55-
+                               WP-ABRECHNUNG 0000000111112
+   Kauf                        WKN: A0B7FY
+   GOOGLE INC. A DL -,001
+EFFEKTEN 23.08. 8808 27.08. 1.713,87-
+                               WP-ABRECHNUNG 0000000111111
+   Kauf                        WKN: A0B7FY
+   GOOGLE INC. A DL -,001
+EFFEKTEN 23.08. 8808 27.08. 1.871,25-
+                               WP-ABRECHNUNG 0000000111116
+   Kauf                        WKN: A0B7FY
+   GOOGLE INC. A DL -,001
+*** VALUTARISCHER SALDO PER 27.08. *** 0,52+
+GUTSCHRIFT NR.99999999998 31.08. 8401 31.08. 2.358,20+
+   Mustermann,Max
+   < 760 300 80 >  820022222   trade put
+*** VALUTARISCHER SALDO PER 31.08. *** 2.358,72+
+EFFEKTEN NR.0000001111111 31.08. 8808 04.09. 6.140,25-
+                               WP-ABRECHNUNG 0000001111111
+   Kauf                        WKN: DE4FY1
+   DEUT.BANK PUT13 DAX
+EFFEKTEN NR.0000011111112 31.08. 8808 04.09. 7.175,83-
+                               WP-ABRECHNUNG 0000011111112
+   Kauf                        WKN: DE4FY1
+   DEUT.BANK PUT13 DAX
+EFFEKTEN NR.0000111111111 31.08. 8808 04.09. 6.094,57+
+                               WP-ABRECHNUNG 0000111111111
+   Verkauf                     WKN: DE4FY1
+   DEUT.BANK PUT13 DAX
+EFFEKTEN NR.0000111111112 31.08. 8808 04.09. 5.980,05+
+                               WP-ABRECHNUNG 0000111111112
+   Verkauf                     WKN: DE4FY1
+   DEUT.BANK PUT13 DAX
+*** VALUTARISCHER SALDO PER 04.09. *** 6.017,26+
+D-GUTSCHRIFT NR.99999999999 03.09. 7998 03.09. 4.900,00+
+   Mustermann,Max
+   < 760 300 80 >  820022222
+*** VALUTARISCHER SALDO PER 03.09. *** 7.258,72+
+Hinweis für Kontoauszüge, Wertpapierabrechnungen und Depotbuchungsanzeigen:
+Kapitalerträge und Spekulationsgewinne sind einkommensteuerpflichtig.
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung oder die Nichtgenehmigung einer im Wege der Einzugsermächtigung erfolgten
+Lastschriftabbuchung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der Allgemeine Geschäftsbedingungen (AGB Banken) sowie
+unter B. VII. Ziffer 2.4 der Lastschriftbedingungen. Umsätze und Kontobuchungen, die nach dem Erstellungsdatum anfallen und sich auf den Abrechnungssaldo des
+abgelaufenen Abrechnungszeitraumes auswirken, werden erst mit dem folgenden Kontoauszug ausgewiesen. Korrekturen werden seitens der Bank gekennzeichnet.
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an Cortal Consors Deutschland (Revision) oder per
+Fax oder Mail an die unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Cortal Consors S.A. Zweigniederlassung Deutschland
+Bahnhofstraße 55, 90402 Nürnberg, HR Nürnberg B20075, USt-IdNr. DE225900761, info@cortalconsors.de, www.cortalconsors.de
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00
+Sitz der Cortal Consors S.A.: 1, boulevard Haussmann, 75318 Paris CEDEX 09, Frankreich, Registergericht: R.C.S. Paris 327 787 909
+Président du Conseil d’Administration (Verwaltungsratsvorsitzender) und Directeur Général (Generaldirektor) der Cortal Consors S.A.: Olivier Le Grand
+Leitung der Zweigniederlassung Deutschland: Kai Friedrich (CEO), Richard Döppmann

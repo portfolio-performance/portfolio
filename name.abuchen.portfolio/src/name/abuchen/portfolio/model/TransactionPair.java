@@ -12,14 +12,19 @@ import name.abuchen.portfolio.money.Values;
  */
 public class TransactionPair<T extends Transaction> implements Adaptable
 {
-    public static final class ByDate implements Comparator<TransactionPair<?>>, Serializable
+    /**
+     * Date comparator for transaction pairs. Guarantees a stable sorting. 
+     */
+    public static final Comparator<TransactionPair<?>> BY_DATE = new ByDate();
+
+    private static final class ByDate implements Comparator<TransactionPair<?>>, Serializable
     {
         private static final long serialVersionUID = 1L;
 
         @Override
         public int compare(TransactionPair<?> t1, TransactionPair<?> t2)
         {
-            return t1.getTransaction().getDateTime().compareTo(t2.getTransaction().getDateTime());
+            return Transaction.BY_DATE.compare(t1.getTransaction(), t2.getTransaction());
         }
     }
 
@@ -82,6 +87,8 @@ public class TransactionPair<T extends Transaction> implements Adaptable
             return type.cast(transaction);
         else if (type == Transaction.class)
             return type.cast(transaction);
+        else if (type == Named.class)
+            return type.cast(transaction.getSecurity());
         else if (type == Security.class)
             return type.cast(transaction.getSecurity());
         else
@@ -125,10 +132,10 @@ public class TransactionPair<T extends Transaction> implements Adaptable
 
     private String getTypeString()
     {
-        if (transaction instanceof AccountTransaction)
-            return ((AccountTransaction) transaction).getType().toString();
-        else if (transaction instanceof PortfolioTransaction)
-            return ((PortfolioTransaction) transaction).getType().toString();
+        if (transaction instanceof AccountTransaction at)
+            return at.getType().toString();
+        else if (transaction instanceof PortfolioTransaction pt)
+            return pt.getType().toString();
         else
             return ""; //$NON-NLS-1$
     }

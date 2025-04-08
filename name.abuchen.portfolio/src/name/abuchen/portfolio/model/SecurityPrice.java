@@ -3,6 +3,7 @@ package name.abuchen.portfolio.model;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.Objects;
 
 import name.abuchen.portfolio.money.Values;
 
@@ -61,11 +62,7 @@ public class SecurityPrice implements Comparable<SecurityPrice>
     @Override
     public int hashCode()
     {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((date == null) ? 0 : date.hashCode());
-        result = prime * result + (int) (value ^ (value >>> 32));
-        return result;
+        return Objects.hash(date, value);
     }
 
     @Override
@@ -78,16 +75,7 @@ public class SecurityPrice implements Comparable<SecurityPrice>
         if (getClass() != obj.getClass())
             return false;
         SecurityPrice other = (SecurityPrice) obj;
-        if (date == null)
-        {
-            if (other.date != null)
-                return false;
-        }
-        else if (!date.equals(other.date))
-            return false;
-        if (value != other.value)
-            return false;
-        return true;
+        return Objects.equals(date, other.date) && value == other.value;
     }
 
     @Override

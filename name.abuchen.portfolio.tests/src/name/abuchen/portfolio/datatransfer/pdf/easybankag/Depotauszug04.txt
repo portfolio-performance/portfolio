@@ -1,0 +1,26 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.5
+-----------------------------------------
+easybank Service Center KONTOAUSZUG
+Wiedner Gürtel 11 | 1100 Wien vom 03.10.2022
+Alter Saldo per 05.09.2022 2.329,86
+Summe der Gutschriften 116,93
+Summe der Lastschriften 4,50-
+Abs.: Wiedner Gürtel 11, 1100 Wien
+Neuer Saldo zu Ihren Gunsten
+Max Mustermann EUR 2.442,29
+Straße 74
+1234 Ort
+Konto-Nr.: 12345678912 Bankleitzahl: 19250
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+29.09 Ertrag                           Depot   23456789012/20220928-36308772 28.09 116,93
+ISIN IE0032523478 ISHS-EO C.BD L.C.U.ETFEOD
+30.09 Abschluss 30.09 4,50-
+Kontoführungsgebühr                          4,50-
+Wir bitten Sie, Ihre Reklamationen gemäß Ziffer 16
+unserer AGB innerhalb von zwei Monaten an uns zu richten.
+Neuer Saldo zu Ihren Gunsten 2.442,29
+AT12 1234 1234 1234 1234 DIRAAT2S 35 0009 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 12995 Doknr.: ON00-036-0000000001

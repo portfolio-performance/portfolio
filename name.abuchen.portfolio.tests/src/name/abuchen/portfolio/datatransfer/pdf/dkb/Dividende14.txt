@@ -1,0 +1,58 @@
+﻿PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+10919 Berlin Seite 1
+Depotnummer 123456789
+Kundennummer 12345678901
+Hans und Anna
+Mustermann
+Herrn u.Frau Abrechnungsnr. 12345678901
+Hans Mustermann Datum 04.03.2021
+und Anna Mustermann
+Hauptstr. 1
+11111 Ort
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 935 PCC SE DE000A1R1AN5 (A1R1AN)
+INH.-TEILSCHULDV. V.13(13/17)
+Zahlbarkeitstag 03.03.2021 Ausschüttung pro St. 0,023704000 USD
+Bestandsstichtag 17.02.2021 Herkunftsland Irland
+Ex-Tag 18.02.2021
+Geschäftsjahr 01.07.2020 - 30.06.2021
+Devisenkurs EUR / USD 1,2071
+Devisenkursdatum 04.03.2021
+Ausschüttung 22,16 USD 18,36+ EUR
+Kapitalertragsteuerpflichtiger Ertrag 22,16 USD
+Umrechnung in EUR 18,36 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 18,36 EUR
+Anteilige Berechnungsgrundlage für (50,00 %) entspricht 9,18 EUR
+Kapitalertragsteuer 24,45 % auf 9,18 EUR 2,24- EUR
+Solidaritätszuschlag 5,5 % auf 2,24 EUR 0,12- EUR
+Kirchensteuer 9 % auf 2,24 EUR 0,20- EUR
+Anteilige Berechnungsgrundlage für (50,00 %) entspricht 9,18 EUR
+Kapitalertragsteuer 24,45 % auf 9,18 EUR 2,24- EUR
+Solidaritätszuschlag 5,5 % auf 2,24 EUR 0,12- EUR
+Kirchensteuer 9 % auf 2,24 EUR 0,20- EUR
+Ausmachender Betrag 13,24+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Den Betrag buchen wir mit Wertstellung 05.03.2021 zu Gunsten des Kontos 1234567890 (IBAN DE12 1234 1234 1234
+1234 01), BLZ 120 300 00 (BIC BYLADEM1001).
+Keine Steuerbescheinigung.
+Bitte ggf. Rückseite beachten.
+0883.03050100.0004667ER03
+
+Seite 2
+Depotnummer 123456789
+Kundennummer 12345678901
+Abrechnungsnr. 12345678901
+Datum 04.03.2021
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2021 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 0,61
+Ertrag 0,00 0,00 0,00 0,00 0,36
+Nachher 0,00 0,00 0,00 0,00 0,97
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.03050100.0004668ER03

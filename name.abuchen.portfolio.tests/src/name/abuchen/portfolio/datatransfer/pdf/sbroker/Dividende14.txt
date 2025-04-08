@@ -1,0 +1,59 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.1
+-----------------------------------------
+Kreissparkasse Heidenheim · Postfach 1540 · 89505 Heidenheim  Seite 1
+Depotnummer
+ 1234567890
+ Kundennummer 11111111
+ Max MusterAbrechnungsnr. 84528768080
+Herrn Datum 11.12.2023
+Max Muster Ihr Berater Herr Florian Schermayer
+Musterstr 123 Telefon 07321 344-6850 
+88888 Hausen Telefax 07321 344-995799 
+ 
+   
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 105 YUM! BRANDS, INC. US9884981013 (909190)
+REGISTERED SHARES O.N.
+Zahlbarkeitstag 08.12.2023 Dividende pro Stück 0,605 USD
+Bestandsstichtag 24.11.2023 Herkunftsland USA
+Ex-Tag 27.11.2023 Art der Dividende Quartalsdividende
+Geschäftsjahr 30.12.2022 - 29.12.2023
+Devisenkurs EUR / USD 1,0788
+Devisenkursdatum 11.12.2023
+Dividendengutschrift 63,53 USD 58,89+ EUR
+Umrechnung in EUR 58,89 EUR
+Einbehaltene Quellensteuer 15 % auf 63,53 USD 8,83- EUR
+Anrechenbare Quellensteuer 15 % auf 58,89 EUR 8,83 EUR
+Kapitalertragsteuerpflichtige Dividende 58,89 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 8,83 EUR 35,32 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 23,57 EUR
+Kapitalertragsteuer 24,51 % auf 23,57 EUR 5,78- EUR
+Solidaritätszuschlag 5,5 % auf 5,78 EUR 0,31- EUR
+Kirchensteuer 8 % auf 5,78 EUR 0,46- EUR
+Ausmachender Betrag 43,51+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir mit Wertstellung 12.12.2023 zu Gunsten des Kontos 12345678 (IBAN DE12 1234 1234 1234 1234
+12), BLZ 632 500 30 (BIC SOLADES1HDH). 
+Bitte ggf. Rückseite beachten.
+2332.12120100.0000157ER01
+
+Seite 2
+Depotnummer 1234567890
+Kundennummer 11111111
+Abrechnungsnr. 84528768080
+Datum 11.12.2023
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2023 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 759,80
+Ertrag 8,83
+0,00 0,00 0,00 8,83- 23,57
+Nachher 0,00 0,00 0,00 0,00 783,37
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+2332.12120100.0000158ER01

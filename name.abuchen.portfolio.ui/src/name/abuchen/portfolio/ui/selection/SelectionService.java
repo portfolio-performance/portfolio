@@ -2,7 +2,7 @@ package name.abuchen.portfolio.ui.selection;
 
 import java.util.Optional;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 

@@ -1,0 +1,38 @@
+PDF Autor: 'Deutsche Postbank AG'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postbank Köln · 51222 Köln    
+Depotnummer
+ 999999999
+ Kundennummer 1234567890
+Maxime Mustermann Max Mustermann
+ Abrechnungsnr. 12345678901
+Frau und Herrn Datum 07.04.2021
+Maxime Mustermann und
+Max Mustermann
+Strasse HsNr.
+12345 Ort
+                                                        
+                                                        
+                                                         
+Ertragsgutschrift nach § 27 KStG
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 114 DEUTSCHE TELEKOM AG DE0005557508 (555750)
+NAMENS-AKTIEN O.N.
+Zahlbarkeitstag 08.04.2021 Ertrag  pro Stück 0,60 EUR
+Bestandsstichtag 01.04.2021
+Ex-Tag 06.04.2021
+Geschäftsjahr 01.01.2020 - 31.12.2020
+Dividendengutschrift nach § 27 KStG 68,40+ EUR
+Ausmachender Betrag 68,40+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir mit Wertstellung 08.04.2021 zu Gunsten des Kontos 123456789 (IBAN DE11 2222 3333 4444 5555
+66), BLZ 999 999 99 (BIC PBNKDEFFXXX). 
+Keine Steuerbescheinigung. 
+Es handelt sich bei der Ausschüttung um Leistungen aus dem steuerlichen Einlagekonto der Kapitalgesellschaft (§27 Abs.
+1-7 KStG). Dieser Ertrag unterliegt laut Gesetz zum Zeitpunkt des Zuflusses keinem Steuerabzug und ist
+einkommensteuerfrei. Er mindert jedoch im Nachhinein den Kaufkurs der bezogenen Aktie, so dass bei deren Verkauf
+möglicherweise ein entsprechend höherer Kursgewinn zu versteuern ist. 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+0860.04080101.0019388ER01

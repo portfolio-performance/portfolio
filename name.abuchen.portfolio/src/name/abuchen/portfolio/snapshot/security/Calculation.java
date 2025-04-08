@@ -14,9 +14,16 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     private String termCurrency;
 
     /**
+     * Prepare calculations.
+     */
+    public void prepare()
+    {
+    }
+
+    /**
      * Finish up all calculations.
      */
-    public void finish()
+    public void finish(CurrencyConverter converter, List<CalculationLineItem> lineItems)
     {
     }
 
@@ -51,55 +58,62 @@ import name.abuchen.portfolio.money.CurrencyConverter;
         this.termCurrency = termCurrency;
     }
 
-    public void visit(CurrencyConverter converter, DividendInitialTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtStart t)
     {
     }
 
-    public void visit(CurrencyConverter converter, DividendFinalTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtEnd t)
     {
     }
 
-    public void visit(CurrencyConverter converter, DividendTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.DividendPayment t)
     {
     }
 
-    public void visit(CurrencyConverter converter, PortfolioTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem item, PortfolioTransaction t)
     {
     }
 
-    public void visit(CurrencyConverter converter, AccountTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem item, AccountTransaction t)
     {
     }
 
-    /* package */ final void visitAll(CurrencyConverter converter, List<? extends Transaction> transactions)
+    /* package */ final void visitAll(CurrencyConverter converter, List<CalculationLineItem> lineItems)
     {
-        for (Transaction t : transactions)
+        for (CalculationLineItem item : lineItems)
         {
-            if (t instanceof DividendInitialTransaction)
-                visit(converter, (DividendInitialTransaction) t);
-            else if (t instanceof DividendFinalTransaction)
-                visit(converter, (DividendFinalTransaction) t);
-            else if (t instanceof DividendTransaction)
-                visit(converter, (DividendTransaction) t);
-            else if (t instanceof PortfolioTransaction)
-                visit(converter, (PortfolioTransaction) t);
-            else if (t instanceof AccountTransaction)
-                visit(converter, (AccountTransaction) t);
+            if (item instanceof CalculationLineItem.ValuationAtStart atStart)
+                visit(converter, atStart);
+            else if (item instanceof CalculationLineItem.ValuationAtEnd atEnd)
+                visit(converter, atEnd);
+            else if (item instanceof CalculationLineItem.DividendPayment dividend)
+                visit(converter, dividend);
+            else if (item instanceof CalculationLineItem.TransactionItem txItem)
+            {
+                Transaction tx = txItem.getTransaction().orElseThrow(IllegalArgumentException::new);
+                if (tx instanceof PortfolioTransaction pt)
+                    visit(converter, (CalculationLineItem.TransactionItem) item, pt);
+                else if (tx instanceof AccountTransaction at)
+                    visit(converter, (CalculationLineItem.TransactionItem) item, at);
+                else
+                    throw new UnsupportedOperationException();
+            }
             else
                 throw new UnsupportedOperationException();
         }
     }
 
     public static <T extends Calculation> T perform(Class<T> type, CurrencyConverter converter, Security security,
-                    List<? extends Transaction> transactions)
+                    List<CalculationLineItem> lineItems)
     {
         try
         {
             T thing = type.getDeclaredConstructor().newInstance();
             thing.setSecurity(security);
             thing.setTermCurrency(converter.getTermCurrency());
-            thing.visitAll(converter, transactions);
-            thing.finish();
+            thing.prepare();
+            thing.visitAll(converter, lineItems);
+            thing.finish(converter, lineItems);
             return thing;
         }
         catch (Exception e)

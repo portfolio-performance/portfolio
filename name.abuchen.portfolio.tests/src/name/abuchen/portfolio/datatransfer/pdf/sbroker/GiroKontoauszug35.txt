@@ -1,0 +1,392 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.63.0
+-----------------------------------------
+Sparkasse
+S
+Schweinfurt-Haßberge
+341 00 00  81
+Herrn
+Ihr Ansprechpartner:
+Max Max
+Max Max
+Kundenberatung Hofheim
+Egerländerstr. 8
+Marktplatz 7
+99999 Strasse
+97461 Hofheim i.UFr.
+Telefon 09721 721-7752
+Fax 09521 58-499
+Max.Max@sparkasse-sw-has.de
+ 
+ 
+ 
+2. November 2020
+Kontoauszug 10/2020 Seite 1 von 5
+Giro Plus 190999999, DE78 7935 0101 0190 9999 99
+  
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+ Kontostand am 30.09.2020, Auszug Nr.    9            6.248,80+
+01.10.2020 01.10.2020
+Dauerauftrag
+             200,00-
+Max Max
+Miete
+01.10.2020 01.10.2020
+Dauerauftrag
+              25,00-
+Max Max
+Taschengeld
+01.10.2020 01.10.2020
+GutschriftÜberweisung
+              44,01+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1010560618128 PAYPAL
+01.10.2020 01.10.2020
+GutschriftÜberweisung
+              70,54+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1010548452347 PAYPAL
+05.10.2020 05.10.2020
+GutschriftÜberweisung
+              17,31+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1010577425122 PAYPAL
+05.10.2020 05.10.2020
+GutschriftÜberweisung
+              51,99+
+Ochlich Matthias
+AWV-MELDEPFLICHT BEACHTEN
+HOTLINE BUNDESBANK: (0800) 1234-111
+05.10.2020 05.10.2020
+GutschriftÜberweisung
+              98,99+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1010602424756 PAYPAL
+06.10.2020 06.10.2020
+Lastschrift
+           1.276,87-
+KREDITKARTENABRECHNUNG
+VISA-ABR. 490762XXXXXX0842
+06.10.2020 06.10.2020
+GutschriftÜberweisung
+              71,78+
+Max Ziebell
+RADZX
+28031004010
+08.10.2020 08.10.2020
+GutschriftÜberweisung
+           1.664,54+
+Autohaus Eberhardt GmbH
+Abrechnung September
+CT-7-07.10.2020
+           6.766,09+
+Übertrag:
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 10/2020 Seite 2 von 5
+Giro Plus 190999999, DE78 7935 0101 0190 9999 99  Max Max
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+           6.766,09+
+Übertrag:
+09.10.2020 09.10.2020
+GutschriftÜberweisung
+             104,20+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1010655292288 PAYPAL
+12.10.2020 12.10.2020
+Dauerauftrag
+              42,00-
+Max Max
+Bausparbeitrag 999999999
+12.10.2020 12.10.2020
+Überweisung online
+              10,00-
+Max Max
+Thaysen Dirk-Manne Geschenk
+DATUM 10.10.2020, 12.36 UHR
+13.10.2020 13.10.2020
+GutschriftÜberweisung
+              34,91+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1010702365030 PAYPAL
+13.10.2020 13.10.2020
+GutschriftÜberweisung
+             103,98+
+  
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1010698991272 PAYPAL
+14.10.2020 14.10.2020
+Kartenzahlung
+               0,01-
+Autohaus Eberhardt GmbH//Lichtenfel
+s/DE
+2020-10-13T15:10 Debitk.2 2022-12
+14.10.2020 14.10.2020
+GutschriftÜberweisung
+              10,00+
+Max Max
+Spiel
+AWV-MELDEPFLICHT BEACHTEN
+HOTLINE BUNDESBANK: (0800) 1234-111
+14.10.2020 14.10.2020
+GutschriftÜberweisung
+              41,20+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1010712035366 PAYPAL
+14.10.2020 14.10.2020
+GutschriftÜberweisung
+              51,20+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1010714414099 PAYPAL
+14.10.2020 14.10.2020
+GutschriftÜberweisung
+              55,00+
+Max Max
+Spiel
+AWV-MELDEPFLICHT BEACHTEN
+HOTLINE BUNDESBANK: (0800) 1234-111
+15.10.2020 15.10.2020
+Lastschrift
+              52,90-
+AMAZON PAYMENTS EUROPE S.C.A.
+306-6410583-5293139 AMZN Mktp DE 6V
+PDH6YSN8V0R4Z8
+6VPDH6YSN8V0R4Z8
+g1nRT9ltjN4mFYjZD2pRmMFAnksDzk
+Gläubiger-ID: DE94ZZZ00000561653
+15.10.2020 15.10.2020
+Lastschrift
+              19,49-
+Telefonica Germany GmbH + Co. OHG
+Kd-Nr.: 6099999999, Rg-Nr.: 1737977
+007/6, Ihre Tarifrechnung
+3403151919090001737977007006RCUR
+T0010001B000006099999999
+Gläubiger-ID: DE9700000000142462
+           7.042,18+
+Übertrag:
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 10/2020 Seite 3 von 5
+Giro Plus 190999999, DE78 7935 0101 0190 9999 99  Max Max
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+           7.042,18+
+Übertrag:
+15.10.2020 15.10.2020
+Lastschrift
+              11,54-
+AMAZON EU S.A R.L., NIEDERLASSUNG D
+306-0780421-6494717 Amazon.de 1UDOR
+9T8N8M9AZR8
+1UDOR9T8N8M9AZR8
+g1nRT9ltjN4mFYjZD2pRmMFAnksDzk
+Gläubiger-ID: DE24ZZZ00000561652
+15.10.2020 15.10.2020
+Lastschrift
+               9,24-
+AMAZON PAYMENTS EUROPE S.C.A.
+306-8847367-8980324 AMZN Mktp DE 7E
+5B214Z8H363A3P
+7E5B214Z8H363A3P
+g1nRT9ltjN4mFYjZD2pRmMFAnksDzk
+Gläubiger-ID: DE94ZZZ00000561653
+  
+16.10.2020 16.10.2020
+GutschriftÜberweisung
+              24,00+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1010737711174 PAYPAL
+20.10.2020 20.10.2020
+GutschriftÜberweisung
+              22,49+
+Max Max
+Handyvertrag & Max
+21.10.2020 21.10.2020
+Lastschrift
+              34,98-
+PayPal Europe S.a.r.l. et Cie S.C.A
+PP.4548.PP . KONSOLENKOS, Ihr Einka
+uf bei KONSOLENKOS
+AWV-MELDEPFLICHT BEACHTEN
+HOTLINE BUNDESBANK: (0800) 1234-111
+1010789232627 PP.4548.PP PAYPAL
+53MJ224VXLA3L
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+22.10.2020 23.10.2020
+Wertpapierabrechnung
+           1.326,68+
+DekaBank Deutsche Girozentrale
+Verkauf AT 21.10.2020 St 11,428 zu
+116,090000EUR DekaLux-Deutschland T
+F A
+Depot 0119701753 LU0062624902 00
+23.10.2020 23.10.2020
+Überweisung online
+              11,00-
+Max Maute
+DLAN 4x ALL 1685
+DATUM 22.10.2020, 20.54 UHR
+1.TAN 126115
+-676525768-20201022205344
+26.10.2020 26.10.2020
+GutschriftÜberweisung
+               7,00+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1010840382721 PAYPAL
+27.10.2020 27.10.2020
+Lastschrift
+              34,10-
+Telefonica Germany GmbH + Co. OHG
+Kd-Nr.: 99999530, Rg-Nr.: 175254999
+1/6, Ihre Tarifrechnung
+3303244216910001752549991006RCUR
+T0010001B000000099999530
+Gläubiger-ID: DE9700000000142462
+           8.321,49+
+Übertrag:
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 10/2020 Seite 4 von 5
+Giro Plus 190999999, DE78 7935 0101 0190 9999 99  Max Max
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+           8.321,49+
+Übertrag:
+27.10.2020 27.10.2020
+GutschriftÜberweisung
+              12,99+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+. KONSOLENKOS, IHR EINKAUF BEI KONS
+OLENKOS
+YYW1010861976335 PAYPAL
+27.10.2020 27.10.2020
+GutschriftÜberweisung
+             171,75+
+MONIKA DIETZ
+11/2020
+27.10.2020 27.10.2020
+GutschriftÜberweisung
+             350,00+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1010872424486 PAYPAL
+28.10.2020 28.10.2020
+Lastschrift
+               9,35-
+Lotto24 AG
+C95558853 T334448076145 Spieleinsat
+  
+z per Bankeinzug
+C95558853-T334448076145
+LOTTO24AG-95558853-151117160142
+Gläubiger-ID: DE68ZZZ00000071398
+28.10.2020 28.10.2020
+Lastschrift
+               8,87-
+Lotto24 AG
+C95558853 T304445947715 Spieleinsat
+z per Bankeinzug
+C95558853-T304445947715
+LOTTO24AG-95558853-151117160142
+Gläubiger-ID: DE68ZZZ00000071398
+28.10.2020 28.10.2020
+Lastschrift
+               4,60-
+Lotto24 AG
+C95558853 T332314442002 Spieleinsat
+z per Bankeinzug
+C95558853-T332314442002
+LOTTO24AG-95558853-151117160142
+Gläubiger-ID: DE68ZZZ00000071398
+28.10.2020 28.10.2020
+GutschriftÜberweisung
+               5,00+
+PAYPAL (EUROPE) S.A.R.L ET CIE,S.C.
+YYW1010873198281 PAYPAL
+29.10.2020 29.10.2020
+Lastschrift
+             127,19-
+PayPal Europe S.a.r.l. et Cie S.C.A
+PP.4548.PP . RETROGAMING, Ihr Einka
+uf bei RETROGAMING
+AWV-MELDEPFLICHT BEACHTEN
+HOTLINE BUNDESBANK: (0800) 1234-111
+1010877254927 PP.4548.PP PAYPAL
+53MJ224VXLA3L
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+30.10.2020 01.11.2020
+Entgeltabrechnung
+               8,50-
+siehe Anlage Nr. 1
+ Kontostand am 30.10.2020 um 20:03 Uhr
+           8.702,72+
+Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
+Anzahl Anlagen
+1
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+Sparkasse
+S
+Schweinfurt-Haßberge
+Kontoauszug 10/2020 Seite 5 von 5
+Giro Plus 190999999, DE78 7935 0101 0190 9999 99  Max Max
+Entgeltabschluss: Anlage     1
+Entgelte vom 01.10.2020 bis 30.10.2020                               8,50-
+Grundpreis (Kontoführung)                              8,50-
+                                                            --------------
+Abrechnung 30.10.2020                                                8,50-
+Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
+Rechnungsnummer: 20201030-BY044-00011090015
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+  
+Hinweise zum Kontoauszug:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug. Eventuelle Rückfragen besprechen Sie bitte mit Ihrem
+Kundenberater.
+l Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere Revisionsabteilung. Unsere Anschrift(en)
+entnehmen Sie bitte unserem Preis- und Leistungsverzeichnis.
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs Wochen nach Zugang keine Einwendungen erheben.
+Einwendungen gegen Rechnungsabschlüsse müssen der Sparkasse zugehen. Zur Fristwahrung genügt die rechtzeitige
+Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+l Gutschriften aus eingereichten Schecks, Lastschriften und anderen Einzugspapieren erfolgen unter dem Vorbehalt der
+Einlösung.
+l Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht bis zum Ablauf des übernächsten Bankarbeitstages
+storniert oder korrigiert werden. Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren Einlösungswillen schon vorher
+Dritten gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für Lastschriften gelten die Einlösungsregeln in den
+hierfür vereinbarten besonderen Bedingungen.
+l Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+l Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen laut angegebener Kontonummer als
+Rechnung im Sinne des UStG.
+l Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können
+dem "Informationsbogen für den Einleger" entnommen werden.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäftsbedingungen und besonderen Bedingungen stellen
+wir Ihnen auf Wunsch gern zur Verfügung.
+Mit freundlichen Grüßen
+Ihre Sparkasse Schweinfurt-Haßberge
+Sparkasse Schweinfurt-Haßberge Anstalt des öffentlichen Rechts Telefon 09721/721-0 www.sparkasse-sw-has.de
+Jägersbrunnen 1-7 HR Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 info@sparkasse-sw-has.de
+97421 Schweinfurt USt-IdNr. DE 133 906 578 BLZ: 793 501 01 BIC: BYLADEM1KSW
+Sparkassen-Finanzgruppe
+
+```

@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -76,8 +76,10 @@ public class RawResponsesDialog extends Dialog
             }
         });
         comboURL.setInput(rawResponses);
-        comboURL.addSelectionChangedListener(event -> rawText
-                        .setText(((RawResponse) event.getStructuredSelection().getFirstElement()).getContent()));
+        comboURL.addSelectionChangedListener(event -> {
+            RawResponse response = (RawResponse) event.getStructuredSelection().getFirstElement();
+            rawText.setText(response.getContent() != null ? response.getContent() : ""); //$NON-NLS-1$
+        });
 
         rawText = new Text(editArea, SWT.READ_ONLY | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
 
@@ -113,7 +115,7 @@ public class RawResponsesDialog extends Dialog
 
             try
             {
-                JsonElement jsonElement = new JsonParser().parse(rawText.getText());
+                JsonElement jsonElement = JsonParser.parseString(rawText.getText());
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 rawText.setText(gson.toJson(jsonElement));
             }
@@ -128,7 +130,7 @@ public class RawResponsesDialog extends Dialog
             if (rawText.isDisposed())
                 return;
 
-            rawText.setText(Jsoup.clean(rawText.getText(), Whitelist.relaxed()));
+            rawText.setText(Jsoup.clean(rawText.getText(), Safelist.relaxed()));
         }));
 
     }

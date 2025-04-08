@@ -1,0 +1,42 @@
+﻿PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+VR-Bank Erding eG · Zollnerstraße 4 · 85435 Erding    
+Depotnummer
+ 77417330
+ Kundennummer 741734444
+Max Mustermann
+ Abrechnungsnr. 53627755555
+Max Mustermann Datum 05.02.2021
+Georg-Meyer-Strasse-Platz 10 Ihr Berater Herr Musterfrau
+28200 Bremen Telefon 08122 30000      
+Telefax 08122 30001             
+ 
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 160 SIEMENS AG DE0007236101 (723610)
+NAMENS-AKTIEN O.N.
+Zahlbarkeitstag 08.02.2021 Dividende pro Stück 3,50 EUR
+Bestandsstichtag 03.02.2021
+Ex-Tag 04.02.2021
+Geschäftsjahr 01.10.2019 - 30.09.2020
+Dividendengutschrift 560,00+ EUR
+Kapitalertragsteuerpflichtige Dividende 560,00 EUR
+Verrechneter Sparer-Pauschbetrag 560,00 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 560,00+ EUR
+Lagerstelle CBF w/7268 w/DZ Bank (600502 / 72680000)
+Den Betrag buchen wir mit Wertstellung 08.02.2021 zu Gunsten des Kontos 7414444 (IBAN DE37 7016 9605 0007 4444
+00), BLZ 701 696 05 (BIC GENODEF1ISE). 
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2021 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 1.602,00 0,00 0,00
+Ertrag 0,00 0,00 560,00- 0,00 0,00
+Nachher 0,00 0,00 1.042,00 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+6352.02060103.0000058ER01

@@ -1,0 +1,274 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Vermögensdepot Konto
+EUR-Konto Kontonummer 192837465
+MLP Banking AG, BLZ 67230000
+Postfach 1379, 69154 Wiesloch Kontoauszug Nr.  1/2022
+erstellt am 31.03.2022 22:48 Blatt  1 von 5
+IBAN: DE00 1111 2222 3333 4444 55 BIC: MLPBDE61
+Herrn
+Max Mustermann
+Musterweg 1
+11111 Musterstadt
+Bu-Tag Wert Vorgang
+alter Kontostand vom 30.12.2021                          27,80 H
+03.01. 03.01. LASTSCHRIFTEINR. PN:2042                                                      500,00 H
+              Mustermann Max
+              7354435 VERMOEGENSDEPOT SPARPLAN WKN A0NDDA EREF: SPAR
+              SP 9086904 MREF: WPMI0000019218 IBAN: DE04672300001122
+              91203 BIC: MLPBDE61XXX
+05.01. 05.01. ENTGELT gem. PLV PN:2089                                             11,90 S
+              MLP BANKING AG
+              0008 DEPOTPREIS 33140833 Q4/2021 DEPOT 0192837465 UST-
+              ID DE143449956 NETTO 10,00EUR 19% UST. 1,90EUR EREF: D
+              P 2021 QUARTAL IV IBAN: DE83672300009110294115 BIC: ML
+              PBDE61XXX
+05.01. 05.01. EFFEKTEN PN:925                                                      49,83 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN 933349 / LU0104884860
+              PICTET-WATER NAM.P EO      DEPOTNR.:      0192837465
+              HANDELSTAG 03.01.2022      MENGE              0,0940
+              KURS      530,12000000     AUFTRAGSNR.      4122252000
+05.01. 05.01. ENTGELT gem. PLV PN:2089                                             73,78 S
+              MLP Banking AG
+              0010 VERWALTUNGSENTGELT 33196345 Q4/2021 DEPOT 8502479
+              158 UST-ID DE143449956 NETTO 62,00EUR 19% UST. 11,78EU
+              R EREF: VG 2021 QUARTAL IV IBAN: DE8367230000911029411
+              5 BIC: MLPBDE61XXX
+07.01. 05.01. EFFEKTEN PN:925                                                      49,87 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN 984811 / DE0009848119
+              DWS TOP DIVIDENDE LD       DEPOTNR.:      0192837465
+              HANDELSTAG 03.01.2022      MENGE              0,3640
+              KURS      137,01000000     AUFTRAGSNR.      4175404700
+                                            Übertrag auf Blatt 2                            342,42 H
+0752
+000
+K00284002
+6M Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Vermögensdepot Konto
+EUR-Konto Kontonummer 192837465
+Max Mustermann
+Kontoauszug Nr.  1/2022
+erstellt am 31.03.2022 22:48 Blatt  2 von 5
+Bu-Tag Wert Vorgang
+                                            Übertrag von Blatt 1                            342,42 H
+07.01. 06.01. EFFEKTEN PN:925                                                      49,92 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A1JA1R / LU0629459743
+              UBSLFS-MSCI WLD.SR DLAD    DEPOTNR.:      0192837465
+              HANDELSTAG 04.01.2022      MENGE              0,3690
+              KURS      134,95630000     AUFTRAGSNR.      4249142500
+07.01. 06.01. EFFEKTEN PN:925                                                      49,95 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A0BL36 / LU0171307068
+              BGF-WLD HEALTHSC.NA.A2EO   DEPOTNR.:      0192837465
+              HANDELSTAG 03.01.2022      MENGE              0,8560
+              KURS       58,35000000     AUFTRAGSNR.      4175537600
+07.01. 06.01. EFFEKTEN PN:925                                                      49,99 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A0NEKK / DE000A0NEKK1
+              HANSAGOLD USD-KL. A        DEPOTNR.:      0192837465
+              HANDELSTAG 04.01.2022      MENGE              0,6950
+              KURS       81,10400000     DEVISENKURS       1,1277000
+              AUFTRAGSNR.      4206756600
+07.01. 06.01. EFFEKTEN PN:925                                                      74,90 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A1H6XK / LU0552385295
+              MORGAN STAN.I-GL.OPP.ADL   DEPOTNR.:      0192837465
+              HANDELSTAG 03.01.2022      MENGE              0,6390
+              KURS      131,57000000     DEVISENKURS       1,1225000
+              AUFTRAGSNR.      4178274200
+07.01. 06.01. EFFEKTEN PN:925                                                      74,91 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A0YEDG / IE00B5BMR087
+              ISHSVII-CORE S+P500 DLACC  DEPOTNR.:      0192837465
+              HANDELSTAG 04.01.2022      MENGE              0,1730
+              KURS      432,67910000     AUFTRAGSNR.      4202746900
+                                            Übertrag auf Blatt 3                             42,75 H
+0752
+000
+K00284002 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Vermögensdepot Konto
+EUR-Konto Kontonummer 192837465
+Max Mustermann
+Kontoauszug Nr.  1/2022
+erstellt am 31.03.2022 22:48 Blatt  3 von 5
+Bu-Tag Wert Vorgang
+                                            Übertrag von Blatt 2                             42,75 H
+07.01. 06.01. EFFEKTEN PN:925                                                      99,97 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN 921800 / LU0099574567
+              FID.FDS-GL TECHNOL.A GL.   DEPOTNR.:      0192837465
+              HANDELSTAG 03.01.2022      MENGE              1,9050
+              KURS       52,48000000     AUFTRAGSNR.      4173906300
+19.01. 20.01. EFFEKTENGUTSCHRIFT PN:925                                                      57,21 H
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              VERKAUF                    WKN A0NDDA / LU0438336264
+              BLACK.ST.-FIX.INC.STR.AEO  DEPOTNR.:      0192837465
+              HANDELSTAG 17.01.2022      MENGE              0,4650
+              KURS      123,03000000     AUFTRAGSNR.      4344998200
+01.02. 01.02. LASTSCHRIFTEINR. PN:2042                                                      500,00 H
+              Mustermann Max
+              7462637 VERMOEGENSDEPOT SPARPLAN WKN A0NDDA EREF: SPAR
+              SP 9474031 MREF: WPMI0000019218 IBAN: DE04672300001122
+              91203 BIC: MLPBDE61XXX
+03.02. 03.02. EFFEKTEN PN:925                                                      49,97 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN 984811 / DE0009848119
+              DWS TOP DIVIDENDE LD       DEPOTNR.:      0192837465
+              HANDELSTAG 01.02.2022      MENGE              0,3630
+              KURS      137,66000000     AUFTRAGSNR.      4585687800
+03.02. 03.02. EFFEKTEN PN:925                                                      49,98 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN 933349 / LU0104884860
+              PICTET-WATER NAM.P EO      DEPOTNR.:      0192837465
+              HANDELSTAG 01.02.2022      MENGE              0,1040
+              KURS      480,56000000     AUFTRAGSNR.      4648445500
+03.02. 03.02. EFFEKTEN PN:925                                                      74,79 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A0YEDG / IE00B5BMR087
+              ISHSVII-CORE S+P500 DLACC  DEPOTNR.:      0192837465
+              HANDELSTAG 01.02.2022      MENGE              0,1810
+              KURS      412,85830000     AUFTRAGSNR.      4610320200
+                                            Übertrag auf Blatt 4                            325,25 H
+0752
+000
+K00284002 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Vermögensdepot Konto
+EUR-Konto Kontonummer 192837465
+Max Mustermann
+Kontoauszug Nr.  1/2022
+erstellt am 31.03.2022 22:48 Blatt  4 von 5
+Bu-Tag Wert Vorgang
+                                            Übertrag von Blatt 3                            325,25 H
+04.02. 04.02. EFFEKTEN PN:925                                                      49,97 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A0BL36 / LU0171307068
+              BGF-WLD HEALTHSC.NA.A2EO   DEPOTNR.:      0192837465
+              HANDELSTAG 01.02.2022      MENGE              0,9090
+              KURS       54,97000000     AUFTRAGSNR.      4665845500
+04.02. 04.02. EFFEKTEN PN:925                                                      74,92 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A1H6XK / LU0552385295
+              MORGAN STAN.I-GL.OPP.ADL   DEPOTNR.:      0192837465
+              HANDELSTAG 01.02.2022      MENGE              0,7150
+              KURS      118,01000000     DEVISENKURS       1,1263000
+              AUFTRAGSNR.      4602987800
+04.02. 04.02. EFFEKTEN PN:925                                                      99,99 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN 921800 / LU0099574567
+              FID.FDS-GL TECHNOL.A GL.   DEPOTNR.:      0192837465
+              HANDELSTAG 01.02.2022      MENGE              1,9870
+              KURS       50,32000000     AUFTRAGSNR.      4619786200
+07.02. 04.02. EFFEKTEN PN:925                                                      49,87 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A1JA1R / LU0629459743
+              UBSLFS-MSCI WLD.SR DLAD    DEPOTNR.:      0192837465
+              HANDELSTAG 02.02.2022      MENGE              0,3970
+              KURS      125,31940000     AUFTRAGSNR.      4658362600
+07.02. 04.02. EFFEKTEN PN:925                                                      49,96 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A0NEKK / DE000A0NEKK1
+              HANSAGOLD USD-KL. A        DEPOTNR.:      0192837465
+              HANDELSTAG 02.02.2022      MENGE              0,6910
+              KURS       81,18100000     DEVISENKURS       1,1230000
+              AUFTRAGSNR.      4633188800
+                                            Übertrag auf Blatt 5                              0,54 H
+0752
+000
+K00284002 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Vermögensdepot Konto
+EUR-Konto Kontonummer 192837465
+Max Mustermann
+Kontoauszug Nr.  1/2022
+erstellt am 31.03.2022 22:48 Blatt  5 von 5
+Bu-Tag Wert Vorgang
+                                            Übertrag von Blatt 4                              0,54 H
+08.02. 08.02. EFFEKTENGUTSCHRIFT PN:925                                                       2,91 H
+              MLP Banking AG
+              Konto: 4999991103 BLZ: 67230000
+              WP-ERTRÄGNISGUTSCHRIFT
+              INVESTMENTFONDS            WKN A1JA1R / LU0629459743
+              UBSLFS-MSCI WLD.SR DLAD    DEPOTNR.:      0192837465
+              MENGE              5,0970  ABRECHN.NR.     53840915780
+01.03. 01.03. LASTSCHRIFTEINR. PN:2042                                                      500,00 H
+              Mustermann Max
+              7568426 VERMOEGENSDEPOT SPARPLAN WKN A0NDDA EREF: SPAR
+              SP 9642267 MREF: WPMI0000019218 IBAN: DE04672300001122
+              91203 BIC: MLPBDE61XXX
+04.03. 04.03. EFFEKTEN PN:925                                                     499,90 S
+              MLP Banking AG
+              Konto: 0132334400 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A0NDDA / LU0438336264
+              BLACK.ST.-FIX.INC.STR.AEO  DEPOTNR.:      0192837465
+              HANDELSTAG 01.03.2022      MENGE              4,1910
+              KURS      119,28000000     AUFTRAGSNR.      5087442200
+                                    neuer Kontostand vom 31.03.2022                           3,55 H
+0752
+000
+K00284002 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Sehr geehrte Kundin, sehr geehrter Kunde,
+Sie haben eine Bankmitteilung erhalten, z. B. einen Kontoauszug, einen Sparkontoauszug oder eine Dividendenabrechnung. Bitte 
+prüfen Sie diese genau: Ist alles korrekt? Falls nicht, sprechen Sie uns bitte an. Damit Sie immer gut informiert sind und wissen, wie 
+Sie Ihre Bankmitteilung "richtig lesen", haben wir diese nützlichen Hinweise für Sie zusammengestellt:
+Falls in diesem Dokument Bankdienstleistungen aufgeführt sind, sind diese umsatzsteuerfrei - sofern nichts Abweichendes angegeben
+ist. Der im Kontoauszug ausgewiesene Betrag muss nicht dem tatsächlichen Kontoguthaben entsprechen, weil z. B. die Wertstellung
+einzelner Buchungen nicht berücksichtigt wurde oder noch Zinsen für eine Kontoüberziehung bei einer Verfügung anfallen können.
+Rechnungsabschlüsse
+Ihr Kontoauszug ist mit dem Hinweis "Rechnungsabschluss" versehen?
+Dann haben wir für Ihr Konto einen Rechnungsabschluss durchgeführt, einschließlich Zinsen und Entgelte. Alle weiteren, nach dem
+Erstellungsdatum dieser Mitteilung anfallenden Umsätze und Kontoauszüge werden erst in der folgenden Abrechnung
+berücksichtigt - auch wenn sie sich auf den Abrechnungssaldo des abgelaufenen Abrechnungszeitraumes auswirken.
+Korrekturen werden gekennzeichnet. Den Rechnungsabschluss können Sie beim Finanzamt vorlegen.
+Einwendungen
+Sie haben Einwendungen gegen den Rechnungsabschluss Ihres Kontokorrentkontos oder den Inhalt des Sparkontoauszugs? Dann
+haben Sie nach Erhalt sechs Wochen Zeit, uns schriftlich zu informieren. Sonst gilt der Rechnungsabschluss als genehmigt.
+Einzugsaufträge
+Einzugspapiere wie z. B. Schecks und Lastschriften werden unter dem Vorbehalt des Eingangs gutgeschrieben, und zwar auch
+dann, wenn diese Papiere bei uns selbst zahlbar sind. 
+Schecks und Lastschriften sind erst eingelöst, wenn die Belastungsbuchung nicht spätestens am zweiten Bankarbeitstag - bei 
+Lastschriften im SEPA-Firmen-Lastschriftverfahren nicht spätestens am dritten Bankarbeitstag - nach ihrer Vornahme rückgängig
+gemacht wird. Barschecks sind bereits mit Zahlung an den Scheckvorleger eingelöst. Schecks sind auch schon dann eingelöst,
+wenn wir im Einzelfall eine Bezahltmeldung absenden.
+Guthaben
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. 
+Nähere Informationen können dem "Informationsbogen für den Einleger" entnommen werden.
+Sie haben noch Fragen? Dann kontaktieren Sie uns bitte. Wir sind gern für Sie da.
+Mit freundlichen Grüßen
+Ihre Bank

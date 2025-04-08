@@ -1,0 +1,26 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Freizügigkeitsstiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+E-Mail info@viac.ch
+Telefon 0800 80 40 40
+Vertrag XXXXXXXXXXXXXX
+Segment XXXXXXXXXXXXXX
+Strasse XXXXXXXX
+9999 Ort
+Basel, 09.06.2022
+Börsenabrechnung - Verkauf CSIF Gold
+Wir haben für Sie folgenden Auftrag ausgeführt:
+Order: Verkauf
+0.135 Ant CSIF Gold
+ISIN: CH0209106761
+Kurs: USD 1'529.17
+Betrag USD 205.76
+Umrechnungskurs CHF/USD 0.97538 CHF 200.69
+Verrechneter Betrag: Valuta 09.06.2022 CHF 200.69
+S. E. & O.
+Freundliche Grüsse
+Freizügigkeitsstiftung der WIR Bank
+Anzeige ohne Unterschrift

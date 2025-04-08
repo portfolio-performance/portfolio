@@ -1,0 +1,28 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Umsatzabrechnung-Nr. 16
+Depot-Nr. XXXXXX
+Seite 1 von 3
+Herrn
+XXX XXX
+XXX XXX
+XXX XXX
+06.07.2021
+Umsatzabrechnung für Ihr VL-FondsDepot bei ebase
+für den Zeitraum vom 03.07.2021 bis 05.07.2021
+Entgeltbelastung Verkauf 3,00 EUR mit Kursdatum 05.07.2021 aus Depotposition 123456789
+iShare.NASDAQ-100 UCITS ETF DE Inhaber-Anteile
+Ref. Nr. 123456789/123456789, Buchungsdatum 05.07.2021
+Belastung der offenen Forderung(en) aus Ref. Nr. 123456789/123456789
+ISIN Anteile Abrechnungskurs Betrag
+DE000A0F5UF5 -0,024859 120,680000 EUR 3,00 EUR
+Belastete Entgelte abzgl. Entgelte
+Summe 3,00 EUR
+Zahlungsbetrag 0,00 EUR
+Entgelte Betrag offene Forderung belasteter Betrag
+Depotführungsentgelt inkl. 19 %
+USt 3,00 EUR 0,00 EUR 3,00 EUR
+zum 30.06.2021
+Summe der belasteten Entgelte 3,00 EUR

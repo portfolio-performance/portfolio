@@ -1,0 +1,27 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Herr Tobias Brandt
+Gazertstraße 58 A
+21073 Hamburg
+Germany
+Benutzername: ********mbe
+(31009436)
+Transaktionsübersicht von 22-10-2020 bis 03-03-2021
+Datum Uhrzei Produkt ISIN Referen Ausführungsot zbörse rt Anzahl Kurs
+Wert in
+Lokalwährung Wert
+Wechse Transaktions
+lkurs kosten Gesamt
+21-12-2020 10:33 VARTA AG DE000A0TGJ55 XET XETA -11 111,60 EUR 1.227,60 EUR 1.227,60 EUR -2,22 EUR 1.225,38 EUR
+13-11-2020 13:37 ROYAL DUTCH SHELL PLC GB00B03MLX29 XET XETB -120 13,118 EUR 1.574,16 EUR 1.574,16 EUR -2,28 EUR 1.571,88 EUR
+13-11-2020 13:36 FRESENIUS SE & CO KGAA DE0005785604 XET XETA -22 37,35 EUR 821,70 EUR 821,70 EUR -2,15 EUR 819,55 EUR
+09-11-2020 15:34 VISA INC. US92826C8394 NSY XNYS -7 215,00 USD 1.505,00 USD 1.262,18 EUR 1,1912 -0,52 EUR 1.261,66 EUR
+09-11-2020 13:16 ALLIANZ SE DE0008404005 XET XETA -11 182,00 EUR 2.002,00 EUR 2.002,00 EUR -2,36 EUR 1.999,64 EUR
+09-11-2020 09:06 MICROSOFT CORP US5949181045 XET XETB -10 191,02 EUR 1.910,20 EUR 1.910,20 EUR -2,34 EUR 1.907,86 EUR
+22-10-2020 16:35 THE KRAFT HEINZ COMPAN US5007541064 NDQ -40 31,21 USD 1.248,40 USD 1.054,33 EUR 1,1829 -0,64 EUR 1.053,69 EUR
+DEGIRO B.V. DEGIRO B.V. ist als
+Amstelplein 1 E Investmentgesellschaft bei der
+1096 HA Amsterdam kundenservice@degiro.de niederländischen Seite 1 / 1
+I www.degiro.de Finanzaufsichtsbehörde (AFM) Konto 2021-03-03
+registriert.

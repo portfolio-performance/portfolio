@@ -7,29 +7,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import org.apache.pdfbox.exceptions.CryptographyException;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentInformation;
-import org.apache.pdfbox.util.PDFTextStripper;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.Version;
-
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.pdfbox1.PDFBox1Adapter;
+import name.abuchen.portfolio.pdfbox3.PDFBox3Adapter;
 
 public class PDFInputFile extends Extractor.InputFile
 {
     private String text;
-    private String author;
+    private String version;
 
     public PDFInputFile(File file)
     {
         super(file);
     }
 
-    public PDFInputFile(File file, String extractedText)
+    /* protected */ PDFInputFile(File file, String extractedText)
     {
         this(file);
-        this.text = extractedText;
+        this.text = sanitize(extractedText);
     }
 
     public static List<Extractor.InputFile> loadTestCase(Class<?> testCase, String... filenames)
@@ -37,15 +32,18 @@ public class PDFInputFile extends Extractor.InputFile
         List<Extractor.InputFile> answer = new ArrayList<>();
 
         for (String filename : filenames)
-        {
-            try (Scanner scanner = new Scanner(testCase.getResourceAsStream(filename), StandardCharsets.UTF_8.name()))
-            {
-                String extractedText = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
-                answer.add(new PDFInputFile(new File(filename), extractedText));
-            }
-        }
+            answer.add(loadSingleTestCase(testCase, filename));
 
         return answer;
+    }
+
+    public static PDFInputFile loadSingleTestCase(Class<?> testCase, String filename)
+    {
+        try (Scanner scanner = new Scanner(testCase.getResourceAsStream(filename), StandardCharsets.UTF_8.name()))
+        {
+            String extractedText = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
+            return new PDFInputFile(new File(filename), extractedText);
+        }
     }
 
     public static List<Extractor.InputFile> createTestCase(String filename, String text)
@@ -60,36 +58,32 @@ public class PDFInputFile extends Extractor.InputFile
         return text;
     }
 
-    public String getAuthor()
+    public String getPDFBoxVersion()
     {
-        return author;
-    }
-
-    public Version getPDFBoxVersion()
-    {
-        return FrameworkUtil.getBundle(PDDocument.class).getVersion();
+        return version;
     }
 
     public void convertPDFtoText() throws IOException
     {
-        try (PDDocument document = PDDocument.load(getFile()))
-        {
-            boolean isProtected = document.isEncrypted();
-            if (isProtected)
-            {
-                document.decrypt(""); //$NON-NLS-1$
-                document.setAllSecurityToBeRemoved(true);
-            }
-            PDDocumentInformation pdd = document.getDocumentInformation();
-            author = pdd.getAuthor() == null ? "" : pdd.getAuthor(); //$NON-NLS-1$
+        var adapter = new PDFBox3Adapter();
 
-            PDFTextStripper textStripper = new PDFTextStripper();
-            textStripper.setSortByPosition(true);
-            text = textStripper.getText(document);
-        }
-        catch (CryptographyException e)
-        {
-            throw new IOException(e);
-        }
+        text = sanitize(adapter.convertToText(getFile()));
+        version = adapter.getPDFBoxVersion();
+    }
+
+    public void convertLegacyPDFtoText() throws IOException
+    {
+        var adapter = new PDFBox1Adapter();
+
+        text = sanitize(adapter.convertToText(getFile()));
+        version = adapter.getPDFBoxVersion();
+    }
+
+    @SuppressWarnings("nls")
+    private String sanitize(String s)
+    {
+        // replace horizontal whitespace characters by normal whitespace
+        // without carriage returns
+        return s.replaceAll("\\h", " ").replace("\r", "");
     }
 }

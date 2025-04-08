@@ -10,6 +10,8 @@ import java.util.List;
  */
 public interface TransactionOwner<T extends Transaction>
 {
+    String getUUID();
+
     List<T> getTransactions();
 
     /**

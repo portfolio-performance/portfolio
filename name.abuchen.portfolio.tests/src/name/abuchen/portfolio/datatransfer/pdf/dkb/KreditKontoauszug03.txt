@@ -1,0 +1,61 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Kontakt & Notfallservice:
+Tel.: 030 120 300 00
+www.DKB.de
+14460 Potsdam
+                              
+                              
+                              
+Herrn                         
+Max Mustermann                 
+Muster Str. 3              
+01111 Muster                 
+Abrechnung: September 2021
+Ihre Abrechnung vom 20.08.2021 bis 22.09.2021 Abrechnungsdatum: 22. September 2021
+DKB-VISA-Card: 1111 00XX XXXX 1111
+Karteninhaber: Max Mustermann 
+Seite 1 von 2
+Datum Datum Angabe des Unternehmens / Währung Betrag Kurs Betrag in
+Beleg BuchungVerwendungszweck EUR
+20.08.21 Saldo letzte Abrechnung 40,72 -
+20.08.21 21.08.21 Ausgleich Kreditkarte gem. Abrechnung v. 40,72+
+20.08.21 
+28.08.21 30.08.21 VB DRESDEN-BAUTZEN EG, DD 100,00 -
+LOEBTAU
+07.09.21 07.09.21 Einzahlung 400,00+
+08.09.21 09.09.21 VB DRESDEN-BAUTZEN EG, DD 100,00 -
+LOEBTAU
+17.09.21 20.09.21 GITHUB, HTTPSGITHUB.C USD 5,00 1,1722 4,27 -
+Neuer Saldo 195,73+
+Sehr geehrter Herr Max Mustermann,
+bitte prüfen Sie diese Abrechnung/Saldenmitteilung auf ihre Richtigkeit. Etwaige Einwendungen müssen dem Institut unverzüglich
+nach Zugang dieser Abrechnung/Saldenmitteilung schriftlich mitgeteilt werden.
+Das Guthaben wird mit der weiteren Verwendung der Hinweis:
+Kreditkarte verrechnet. Über Zinsen und Gebühren informiert unser Preis- und
+Leistungsverzeichnis, das Sie online unter www.DKB.de
+Der monatliche Verfügungsrahmen (Kartenlimit) Ihrer abrufen können.
+DKB-VISA-Card beträgt 500 EUR. Soweit auf dem Umsatzsteuernummer: DE137178746
+Kreditkartenkonto ein Guthaben vorhanden ist, sind
+Kartenumsätze über den monatlichen Verfügungsrahmen
+hinaus in Höhe des jeweiligen Guthabens möglich.
+Kontakt & Notfallservice:
+Tel.: 030 120 300 00
+www.DKB.de
+14460 Potsdam
+                              
+                              
+                              
+Herrn                         
+Max Mustermann                 
+Muster Str. 3              
+01111 Muster                  
+Abrechnung: September 2021
+Ihre Abrechnung vom 20.08.2021 bis 22.09.2021 Abrechnungsdatum: 22. September 2021
+DKB-VISA-Card: 1111 00XX XXXX 1111
+Karteninhaber: Max Mustermann 
+Seite 2 von 2
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. 
+Nähere Informationen können dem Informationsbogen für Einleger entnommen werden, den 
+Sie auch unter www.dkb.de/kundenservice/einlagensicherung einsehen können.
+ 

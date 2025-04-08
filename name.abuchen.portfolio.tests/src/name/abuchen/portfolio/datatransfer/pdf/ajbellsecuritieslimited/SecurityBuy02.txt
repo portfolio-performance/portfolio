@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+XXXXXX CONTNOTE                      11112019 XXXXXX     000000049284919 44619C46TWX
+Tel: 0845 373 3479
+Email: dealingservices@Youinvest.co.uk
+Mr X Y
+200
+10 Some Street
+London
+United Kingdom
+XXXX YYY
+CONTRACT NOTE
+Account No. XXXXXX AJ Bell Youinvest ISA for Mr X Y
+     Deal date           Time Settlement date Bought or Sold          Sedol Reference
+08/11/19 13.15 14/11/19 Bought BF41Q72 C46TWX
+We have bought for you as agent
+LEGAL & GENERAL(UNIT TRUST MNGRS) WORLD CLIM CHNGE EQTY FACTORS IND I
+ACC
+Venue Quantity Price Consideration
+XOFF            14,008.055 0.5711         8,000.00 GBP
+Dealing charge          1.50 GBP
+                     _____________    
+
+Total debit      8,001.50 GBP
+Order type: Market order
+This stock is not listed on the London Stock Exchange
+Fund manager’s initial charge       0.00%
+Unit trust accumulation
+Dealing services for AJ Bell Youinvest are provided by AJ Bell Securities Limited (company number 2723420)
+whose registered office is: 4 Exchange Quay, Salford Quays, Manchester M5 3EE .
+AJ Bell Securities Limited is a member of the London Stock Exchange and is authorised and regulated by the Financial Conduct Authority (number 155593)

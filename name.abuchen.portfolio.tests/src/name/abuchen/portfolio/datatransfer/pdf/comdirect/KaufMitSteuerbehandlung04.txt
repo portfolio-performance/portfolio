@@ -1,0 +1,185 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.2.qualifier
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+25449 Quickborn unverzüglich zu erheben.
+fon   : 04106-708 25 00                                                  Tele   
+                                                                              
+                             
+                                       
+                             
+    50016 458
+Depotnr.:        6962637 00 
+            BLZ:             704 411 55
+fINVWnCHCK HHMGtuhsOD        
+                             
+                             
+Musterstr. 833                                         
+05499 yfSzoSj                                             
+                             
+                             
+                             
+                                                  
+                                                  
+GESCHÄFTSABRECHNUNG VOM 01.11.2018                                                   
+                                                                                                                                    
+*
+Wertpapierkauf                                                                                                                      
+Geschäftsnummer   : 77 117413                                                                                                       
+                    303796885690      Rechnungsnummer   : 468179348267DC35                                                          
+Geschäftstag      : 01.11.2018        Ausführungsplatz  : XETRA                                                                     
+                                                          (Kommissionsgeschäft)                                                     
+                                                                                                                                    
+Wertpapier-Bezeichnung                                               WPKNR/ISIN                                                     
+BASF SE                                                                  BASF11                                                     
+Namens-Aktien o.N.                                                 DE000BASF111                                                     
+                                                                                                                                    
+                                                                                                                                    
+Nennwert                  Zum Mischkurs von                                                                                         
+St.  2,17                 EUR  67,65036                                                                                             
+                          Kurswert                    : EUR              146,80                                                     
+                                                                                                                                    
+--------------------------------------------------------------------------------                                                    
+Eigene Entgelte                                                                                                                     
+                          Provision                   : EUR                2,20                                                     
+                          Umschreibeentgelt           : EUR                0,95                                                     
+                          Summe Entgelte              : EUR                3,15                                                     
+--------------------------------------------------------------------------------                                                    
+                                                                                                                                    
+                                                                                                                                    
+IBAN                                  Valuta         Zu Ihren Lasten vor Steuern                                                    
+DE36 1750 5676 1859 4015 54   EUR     05.11.2018        EUR              149,95                                                     
+                                                                                                                                    
+Verwahrungs-Art: GIROSAMMELDEPOT                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf                                                      
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.                                                      
+                                                                                                                                    
+                                                                                                                                    
+comdirect bank AG                                                                                                                   
+                                                                                                                                    
+Diese Abrechnung wird von der Bank nicht unterschrieben                                                                             
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 111 111 111                                                    
+A113
+DO15DD/16/04/2010
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Kundennr. /BLZ Bezeichnung
+0697044  mxdfNzPyJj  AdgpiOrAUu                             
+                                                  
+            
+200 411 55 Musterstr. 314                                 87463 YOMXebG                                     
+abweichend wirtschaftlich Berechtigter
+                              
+                                              ----                    
+c  o  m   d  i r e  c  t   b  a  n  k    A  G               
+               
+ 2  5  4  5  1   Q  u  i c  k  b  o  r n                   
+0  1   0  9  7859
+                                                  
+T   e  le  f o  n  :             0   4  1  0  6   -  7  0 8 25 00
+                              
+Herrn                          D  a  t u  m   :                        0  1  . 1  1  .2018         
+ M  u  s  t e   r r rr  r   M   u  s  t  e  r uber         D   e  p  o  t  n  u  m   m  er:        1   1  1  1  1  1 1 11  
+M   u  s  t  er r r  r  s  t r .   1  1  1                  
+62362 CibZkiW                 R   e  f e  r e  n  z  - N   u mmer:    1 K   I D  K   R  1  B   9J00005G                           
+                                      
+                                                  
+                                                  
+                                                  
+Steuerliche Behandlung: Wertpapierkauf Nr. 91031178 vom 01.11.2018                                                                
+Stk.               2,170 BASF SE NA O.N. , WKN / ISIN: BASF11  / DE000BASF111                                                     
+ Zu  Ih r e n L a s te n  v o r  S te u e r n:                                                                                                       E U R            -149,9 5   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+S  te u e rb e m  e ss u n g s g r u n d la g e                                                            E  U   R                                  0 , 0 0                          
+                                                                                                                                
+                                                                                                                                
+K  ap i ta le r tr a gs t e ue r                                                                        E  U   R                                  0 , 0 0                          
+S  ol id a ri tä t sz u s c hl a g                                                                      E  U   R                                  0 , 0 0                          
+K  irc h e n s te u e r                                                                              _E  _U   R_  _  _  _   _  _  _   _  _  _  _   _  _  _   _  0_ _, 0_ 0_                          
+a b g e f ü h rt e S t e u er n                                                                                                                    _E U_ _R _ _ _ _ _ _ _  _ _ _ _ __  _0__,_0 0_   
+                                                                                                                                
+ Zu  Ih r e n L a s te n  n a ch  S te u e r n :                                                                                                    E U R            -149,9 5   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+Die Belastung erfolgt mit Valuta 05.11.2018 auf Konto EUR mit der IBAN DE36 4924 0353 0413 5434 98                                                    
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2018 einbehaltene einbehaltener einbehaltene angerechneteKapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung
+                0,00                 0,00
+                0,00                 0,00
+nach Ermittlung
+                0,00 0,00                 0,00                 0,00                
+Verrechnungssalden in EUR (4)
+in 2018 Gewinne / Verluste sonstige anrechenbare verfügbareraus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung
+              -26,77               183,88               -15,07                 0,00
+nach Ermittlung
+              -26,77               183,88
+              -15,07                 0,00
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+comdirect bank AG                                                                                                                                     
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.                                                                               
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.                                                                  
+KEINE STEUERBESCHEINIGUNG
+
+```

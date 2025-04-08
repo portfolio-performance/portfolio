@@ -21,7 +21,7 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
         super(client, type);
 
         if (!accepts(type))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("type " + type + " not accepted for this model"); //$NON-NLS-1$ //$NON-NLS-2$
 
         this.transactionCurrency = CurrencyUnit.getInstance(client.getBaseCurrency());
     }
@@ -39,12 +39,21 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
     {
         this.source = (TransactionPair<PortfolioTransaction>) transaction;
 
-        this.type = source.getTransaction().getType();
-        this.portfolio = (Portfolio) source.getOwner();
-        this.transactionCurrency = CurrencyUnit.getInstance(source.getTransaction().getCurrencyCode());
-        fillFromTransaction(source.getTransaction());
+        presetFromSource(transaction);
     }
-    
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void presetFromSource(Object transaction)
+    {
+        var tx = (TransactionPair<PortfolioTransaction>) transaction;
+
+        this.type = tx.getTransaction().getType();
+        this.portfolio = (Portfolio) tx.getOwner();
+        this.transactionCurrency = CurrencyUnit.getInstance(tx.getTransaction().getCurrencyCode());
+        fillFromTransaction(tx.getTransaction());
+    }
+
     @Override
     public boolean hasSource()
     {

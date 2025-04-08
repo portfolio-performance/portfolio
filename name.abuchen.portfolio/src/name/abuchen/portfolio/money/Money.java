@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.money;
 
+import java.text.MessageFormat;
 import java.util.Objects;
 
 public final class Money implements Comparable<Money>
@@ -9,7 +10,8 @@ public final class Money implements Comparable<Money>
 
     private Money(String currencyCode, long amount)
     {
-        Objects.requireNonNull(currencyCode);
+        if (currencyCode == null || currencyCode.isEmpty())
+            throw new NullPointerException();
 
         this.currencyCode = currencyCode;
         this.amount = amount;
@@ -45,7 +47,15 @@ public final class Money implements Comparable<Money>
         return amount < 0L;
     }
 
-    public boolean isGreaterOrEqualThan(Money other)
+    public boolean isGreaterThan(Money other)
+    {
+        Objects.requireNonNull(other);
+        if (!other.getCurrencyCode().equals(currencyCode))
+            throw new MonetaryException();
+        return amount > other.getAmount();
+    }
+
+    public boolean isGreaterOrEqualTo(Money other)
     {
         Objects.requireNonNull(other);
         if (!other.getCurrencyCode().equals(currencyCode))
@@ -53,10 +63,27 @@ public final class Money implements Comparable<Money>
         return amount >= other.getAmount();
     }
 
+    public boolean isLessThan(Money other)
+    {
+        Objects.requireNonNull(other);
+        if (!other.getCurrencyCode().equals(currencyCode))
+            throw new MonetaryException();
+        return amount < other.getAmount();
+    }
+
+    public boolean isLessOrEqualTo(Money other)
+    {
+        Objects.requireNonNull(other);
+        if (!other.getCurrencyCode().equals(currencyCode))
+            throw new MonetaryException();
+        return amount <= other.getAmount();
+    }
+
     public Money add(Money monetaryAmount)
     {
         if (!monetaryAmount.getCurrencyCode().equals(currencyCode))
-            throw new MonetaryException();
+            throw new MonetaryException(MessageFormat.format("Illegal addition: {0} + {1}", //$NON-NLS-1$
+                            Values.Money.format(this), Values.Money.format(monetaryAmount)));
 
         return Money.of(currencyCode, amount + monetaryAmount.getAmount());
     }
@@ -64,7 +91,8 @@ public final class Money implements Comparable<Money>
     public Money subtract(Money monetaryAmount)
     {
         if (!monetaryAmount.getCurrencyCode().equals(currencyCode))
-            throw new MonetaryException();
+            throw new MonetaryException(MessageFormat.format("Illegal subtraction: {0} - {1}", //$NON-NLS-1$
+                            Values.Money.format(this), Values.Money.format(monetaryAmount)));
 
         return Money.of(currencyCode, amount - monetaryAmount.getAmount());
     }
@@ -77,6 +105,16 @@ public final class Money implements Comparable<Money>
     public Money multiply(long multiplicand)
     {
         return Money.of(currencyCode, amount * multiplicand);
+    }
+
+    public Money multiplyAndRound(double multiplicand)
+    {
+        return Money.of(currencyCode, Math.round(amount * multiplicand));
+    }
+
+    public Money absolute()
+    {
+        return Money.of(currencyCode, Math.abs(amount));
     }
 
     public Money with(MonetaryOperator operator)

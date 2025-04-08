@@ -1,0 +1,859 @@
+<client>
+  <version>56</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>bf881504-8fde-4e66-8e6d-5bb2809323b4</uuid>
+      <onlineId>035ffa2ff94b49a08ede0637bdfcbc2d</onlineId>
+      <name>APPLE INC.</name>
+      <currencyCode>USD</currencyCode>
+      <isin>US0378331005</isin>
+      <tickerSymbol>AAPL</tickerSymbol>
+      <wkn>865985</wkn>
+      <feed>YAHOO</feed>
+      <prices>
+        <price t="2014-12-22" v="2823500000"/>
+        <price t="2014-12-23" v="2813500000"/>
+        <price t="2014-12-24" v="2800250000"/>
+        <price t="2014-12-26" v="2849750000"/>
+        <price t="2014-12-29" v="2847750000"/>
+        <price t="2014-12-30" v="2813000000"/>
+        <price t="2014-12-31" v="2759500000"/>
+        <price t="2015-01-02" v="2733250000"/>
+        <price t="2015-01-05" v="2656250000"/>
+        <price t="2015-01-06" v="2656500000"/>
+        <price t="2015-01-07" v="2693750000"/>
+        <price t="2015-01-08" v="2797250000"/>
+        <price t="2015-01-09" v="2800250000"/>
+        <price t="2015-01-12" v="2731250000"/>
+        <price t="2015-01-13" v="2755500000"/>
+        <price t="2015-01-14" v="2745000000"/>
+        <price t="2015-01-15" v="2670500000"/>
+        <price t="2015-01-16" v="2649750000"/>
+        <price t="2015-01-20" v="2718000000"/>
+      </prices>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <property type="MARKET" name="XNYS">AAPL</property>
+      <property type="MARKET" name="XFRA">APC</property>
+      <property type="MARKET" name="XNAS">AAPL</property>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;firstPriceDate&quot;:&quot;2000-01-03&quot;,&quot;lastPriceDate&quot;:&quot;2023-05-24&quot;}]</property>
+      <isRetired>false</isRetired>
+      <updatedAt>2023-05-25T05:54:44.486Z</updatedAt>
+    </security>
+    <security>
+      <uuid>a70f690d-730c-4d68-9bef-8d65218c675b</uuid>
+      <onlineId>be525a0ebdef4921b261aa2498a6949e</onlineId>
+      <name>BASF SE NA O.N.</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE000BASF111</isin>
+      <tickerSymbol>BAS</tickerSymbol>
+      <wkn>BASF11</wkn>
+      <feed>PORTFOLIO-REPORT</feed>
+      <prices>
+        <price t="2014-12-22" v="7027000000"/>
+        <price t="2014-12-23" v="7101000000"/>
+        <price t="2014-12-29" v="7090000000"/>
+        <price t="2014-12-30" v="6988000000"/>
+        <price t="2015-01-02" v="6969000000"/>
+        <price t="2015-01-05" v="6671000000"/>
+        <price t="2015-01-06" v="6669000000"/>
+        <price t="2015-01-07" v="6713000000"/>
+        <price t="2015-01-08" v="6987000000"/>
+        <price t="2015-01-09" v="6812000000"/>
+        <price t="2015-01-12" v="6881000000"/>
+        <price t="2015-01-13" v="7103000000"/>
+        <price t="2015-01-14" v="7032000000"/>
+        <price t="2015-01-15" v="7195000000"/>
+        <price t="2015-01-16" v="7267000000"/>
+        <price t="2015-01-19" v="7336000000"/>
+        <price t="2015-01-20" v="7408000000"/>
+      </prices>
+      <latest t="2023-05-24" v="4642500000">
+        <high>-1</high>
+        <low>-1</low>
+        <volume>-1</volume>
+      </latest>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <property type="MARKET" name="XFRA">BAS</property>
+      <property type="MARKET" name="XNAS">BFFAF</property>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
+      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;firstPriceDate&quot;:&quot;2000-01-03&quot;,&quot;lastPriceDate&quot;:&quot;2023-05-24&quot;}]</property>
+      <isRetired>false</isRetired>
+      <updatedAt>2023-05-25T05:54:54.978536Z</updatedAt>
+    </security>
+  </securities>
+  <watchlists/>
+  <accounts>
+    <account>
+      <uuid>6cfd32c7-1992-4d61-92c6-df6c540573a8</uuid>
+      <name>Cash Account 1</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <uuid>8ac9f849-9008-4c07-b85d-573beef24949</uuid>
+          <date>2014-01-01T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>100000</amount>
+          <shares>0</shares>
+          <note>deposit before reporting period</note>
+          <updatedAt>2023-05-25T06:00:39.491089Z</updatedAt>
+          <type>DEPOSIT</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>3842c2cf-b52b-4b5f-a765-da1ad620cf1d</uuid>
+          <date>2014-05-25T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>400</amount>
+          <shares>0</shares>
+          <note>interest before reporting period</note>
+          <units>
+            <unit type="TAX">
+              <amount currency="EUR" amount="100"/>
+            </unit>
+          </units>
+          <updatedAt>2023-05-25T06:03:54.608045Z</updatedAt>
+          <type>INTEREST</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>2edec9a7-7a17-4573-ac9a-1befa62334ec</uuid>
+          <date>2014-12-22T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>70570</amount>
+          <security reference="../../../../../securities/security[2]"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>e7a74f2d-8b4c-4ce7-a705-52d93bedd7eb</uuid>
+              <name>Securities Account 1</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <uuid>cedcad28-0268-490d-ae10-0ebbe5779cb9</uuid>
+                  <date>2014-12-22T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>70570</amount>
+                  <security reference="../../../../../../../../../securities/security[2]"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>1000000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="100"/>
+                    </unit>
+                    <unit type="TAX">
+                      <amount currency="EUR" amount="200"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2023-05-25T06:09:36.593558Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>e038d7f2-c666-4bf3-9d98-d3f464185a8a</uuid>
+                  <date>2015-01-06T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>6869</amount>
+                  <security reference="../../../../../../../../../securities/security[2]"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>b0943f77-a9c1-403d-b4b9-dcd362b7e5b7</uuid>
+                      <date>2015-01-06T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>6869</amount>
+                      <security reference="../../../../../../../../../../../securities/security[2]"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <updatedAt>2023-05-25T06:10:03.238148Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>100000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="100"/>
+                    </unit>
+                    <unit type="TAX">
+                      <amount currency="EUR" amount="100"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2023-05-25T06:10:03.238224Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>9b6a6c15-4f23-48ef-9c25-e84c4de33ceb</uuid>
+                  <date>2015-01-07T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>20694</amount>
+                  <security reference="../../../../../../../../../securities/security[2]"/>
+                  <shares>300000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="EUR" amount="222"/>
+                    </unit>
+                    <unit type="TAX">
+                      <amount currency="EUR" amount="333"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2023-05-25T06:14:59.849766Z</updatedAt>
+                  <type>DELIVERY_INBOUND</type>
+                </portfolio-transaction>
+              </transactions>
+              <attributes>
+                <map/>
+              </attributes>
+              <updatedAt>2023-05-25T05:53:29.579349Z</updatedAt>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <updatedAt>2023-05-25T06:09:36.593494Z</updatedAt>
+          <type>BUY</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>0fa8a9f5-b0f4-48a4-82a9-85b8c136baf4</uuid>
+          <date>2015-01-02T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>4444</amount>
+          <shares>0</shares>
+          <units>
+            <unit type="TAX">
+              <amount currency="EUR" amount="123"/>
+            </unit>
+          </units>
+          <updatedAt>2023-05-25T06:08:05.505095Z</updatedAt>
+          <type>INTEREST</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>b043b86c-7098-413c-a017-232038a54c4b</uuid>
+          <date>2015-01-02T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>10000</amount>
+          <shares>0</shares>
+          <note>deposit on first day</note>
+          <updatedAt>2023-05-25T06:00:54.340898Z</updatedAt>
+          <type>DEPOSIT</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>77dbf05c-02e1-4a40-89af-7465c350d76a</uuid>
+          <date>2015-01-04T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>12300</amount>
+          <shares>0</shares>
+          <updatedAt>2023-05-25T06:06:58.902969Z</updatedAt>
+          <type>TAXES</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>7d9f6bdd-09be-474b-91f3-daa43cec897b</uuid>
+          <date>2015-01-05T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>2300</amount>
+          <shares>0</shares>
+          <updatedAt>2023-05-25T06:07:13.900824Z</updatedAt>
+          <type>TAX_REFUND</type>
+        </account-transaction>
+        <account-transaction reference="../account-transaction[3]/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/accountTransaction"/>
+        <account-transaction>
+          <uuid>d9ce7949-1156-435a-a736-8f5822f39443</uuid>
+          <date>2015-01-09T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>700</amount>
+          <shares>0</shares>
+          <updatedAt>2023-05-25T06:04:22.914290Z</updatedAt>
+          <type>INTEREST_CHARGE</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>9002c21c-7f8e-4f9d-8fae-ee589b63f86b</uuid>
+          <date>2015-01-10T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>900</amount>
+          <shares>0</shares>
+          <note>interest with taxes</note>
+          <units>
+            <unit type="TAX">
+              <amount currency="EUR" amount="100"/>
+            </unit>
+          </units>
+          <updatedAt>2023-05-25T06:03:12.494241Z</updatedAt>
+          <type>INTEREST</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>4ca8f2f8-b5e5-426c-996d-59508c8070a0</uuid>
+          <date>2015-01-11T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>999</amount>
+          <shares>0</shares>
+          <updatedAt>2023-05-25T06:04:41.965098Z</updatedAt>
+          <type>FEES</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>f1d8d600-e995-4d54-937f-91fb485856bb</uuid>
+          <date>2015-01-12T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>712</amount>
+          <shares>0</shares>
+          <updatedAt>2023-05-25T06:05:03.287452Z</updatedAt>
+          <type>FEES_REFUND</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>9176b4d5-8dea-4fa8-9f1e-667c9543620f</uuid>
+          <date>2015-01-13T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>1020</amount>
+          <security reference="../../../../../securities/security[2]"/>
+          <shares>1100000000</shares>
+          <units>
+            <unit type="FEE">
+              <amount currency="EUR" amount="200"/>
+            </unit>
+            <unit type="TAX">
+              <amount currency="EUR" amount="100"/>
+            </unit>
+          </units>
+          <updatedAt>2023-05-25T06:10:37.320157Z</updatedAt>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>2453a5e2-92b8-4c4c-b625-70d8456a981e</uuid>
+          <date>2015-01-14T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>1000</amount>
+          <shares>0</shares>
+          <units>
+            <unit type="TAX">
+              <amount currency="EUR" amount="234"/>
+            </unit>
+          </units>
+          <updatedAt>2023-05-25T06:08:33.831545Z</updatedAt>
+          <type>INTEREST</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>645fda97-35fc-4151-9771-150d7f71aa13</uuid>
+          <date>2015-01-14T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>20000</amount>
+          <shares>0</shares>
+          <note>deposit on last day</note>
+          <updatedAt>2023-05-25T06:01:06.384832Z</updatedAt>
+          <type>DEPOSIT</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>a1fb2e2a-e9d6-4d82-800a-b7d6724b43bb</uuid>
+          <date>2015-05-25T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>1000</amount>
+          <shares>0</shares>
+          <note>interest after reporting period</note>
+          <units>
+            <unit type="TAX">
+              <amount currency="EUR" amount="1000"/>
+            </unit>
+          </units>
+          <updatedAt>2023-05-25T06:03:29.492390Z</updatedAt>
+          <type>INTEREST</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>49c022ae-1918-4b3b-884e-24b17e7fe819</uuid>
+          <date>2015-06-01T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>50000</amount>
+          <shares>0</shares>
+          <note>deposit after reporting period</note>
+          <updatedAt>2023-05-25T06:01:21.982458Z</updatedAt>
+          <type>DEPOSIT</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>762cdb3d-a315-4ff6-abcc-810ed402847f</uuid>
+          <date>2023-05-25T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>927</amount>
+          <crossEntry class="account-transfer">
+            <accountFrom>
+              <uuid>b6a5f511-7c51-4d94-950f-795dc7a60b73</uuid>
+              <name>Cach Account 2</name>
+              <currencyCode>USD</currencyCode>
+              <isRetired>false</isRetired>
+              <transactions>
+                <account-transaction>
+                  <uuid>d33aa7fd-a7ab-477c-b952-503bb4d7b834</uuid>
+                  <date>2014-05-25T00:00</date>
+                  <currencyCode>USD</currencyCode>
+                  <amount>100000</amount>
+                  <shares>0</shares>
+                  <note>deposit before reporting period</note>
+                  <updatedAt>2023-05-25T06:12:57.645647Z</updatedAt>
+                  <type>DEPOSIT</type>
+                </account-transaction>
+                <account-transaction>
+                  <uuid>bac01b9c-bde5-40f6-9254-18b77c7f8c3b</uuid>
+                  <date>2014-12-22T00:00</date>
+                  <currencyCode>USD</currencyCode>
+                  <amount>28235</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio>
+                      <uuid>9e91496e-d2b6-458f-8e3e-76caeaf8bccd</uuid>
+                      <name>Securities Account 2</name>
+                      <isRetired>false</isRetired>
+                      <referenceAccount reference="../../../../.."/>
+                      <transactions>
+                        <portfolio-transaction>
+                          <uuid>0edea7bc-a8a3-4497-b35f-3579e9ca74d6</uuid>
+                          <date>2014-12-22T00:00</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>28235</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security"/>
+                          <crossEntry class="buysell" reference="../../../.."/>
+                          <shares>1000000000</shares>
+                          <updatedAt>2023-05-25T06:11:28.721490Z</updatedAt>
+                          <type>BUY</type>
+                        </portfolio-transaction>
+                        <portfolio-transaction>
+                          <uuid>089f5016-0fbb-4f7f-b02a-9ffac7e8b2ad</uuid>
+                          <date>2015-01-13T00:00</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>12078</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security"/>
+                          <crossEntry class="buysell">
+                            <portfolio reference="../../../.."/>
+                            <portfolioTransaction reference="../.."/>
+                            <account reference="../../../../../../../.."/>
+                            <accountTransaction>
+                              <uuid>ba1fc37e-c673-408c-9bf5-39fd9adb78bd</uuid>
+                              <date>2015-01-13T00:00</date>
+                              <currencyCode>USD</currencyCode>
+                              <amount>12078</amount>
+                              <security reference="../../../../../../../../../../../../../../../securities/security"/>
+                              <crossEntry class="buysell" reference="../.."/>
+                              <shares>0</shares>
+                              <updatedAt>2023-05-25T06:12:04.892041Z</updatedAt>
+                              <type>SELL</type>
+                            </accountTransaction>
+                          </crossEntry>
+                          <shares>500000000</shares>
+                          <units>
+                            <unit type="FEE">
+                              <amount currency="USD" amount="1000"/>
+                            </unit>
+                            <unit type="TAX">
+                              <amount currency="USD" amount="700"/>
+                            </unit>
+                          </units>
+                          <updatedAt>2023-05-25T06:12:04.892081Z</updatedAt>
+                          <type>SELL</type>
+                        </portfolio-transaction>
+                        <portfolio-transaction>
+                          <uuid>b561ede3-ec8b-42e8-a98e-fcac285d7593</uuid>
+                          <date>2015-01-14T00:00</date>
+                          <currencyCode>USD</currencyCode>
+                          <amount>5157</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security"/>
+                          <shares>200000000</shares>
+                          <units>
+                            <unit type="FEE">
+                              <amount currency="USD" amount="111"/>
+                            </unit>
+                            <unit type="TAX">
+                              <amount currency="USD" amount="222"/>
+                            </unit>
+                          </units>
+                          <updatedAt>2023-05-25T06:15:36.403005Z</updatedAt>
+                          <type>DELIVERY_OUTBOUND</type>
+                        </portfolio-transaction>
+                      </transactions>
+                      <attributes>
+                        <map/>
+                      </attributes>
+                      <updatedAt>2023-05-25T05:54:02.984754Z</updatedAt>
+                    </portfolio>
+                    <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+                    <account reference="../../../.."/>
+                    <accountTransaction reference="../.."/>
+                  </crossEntry>
+                  <shares>0</shares>
+                  <updatedAt>2023-05-25T06:11:28.721484Z</updatedAt>
+                  <type>BUY</type>
+                </account-transaction>
+                <account-transaction>
+                  <uuid>e2dd60b9-e4e6-4de4-b1d7-3b46617e9d22</uuid>
+                  <date>2015-01-02T00:00</date>
+                  <currencyCode>USD</currencyCode>
+                  <amount>20000</amount>
+                  <shares>0</shares>
+                  <note>deposit first day</note>
+                  <updatedAt>2023-05-25T06:01:55.600601Z</updatedAt>
+                  <type>DEPOSIT</type>
+                </account-transaction>
+                <account-transaction>
+                  <uuid>10b813eb-1c9e-45d5-bdb1-d0c79ea10894</uuid>
+                  <date>2015-01-10T00:00</date>
+                  <currencyCode>USD</currencyCode>
+                  <amount>20000</amount>
+                  <shares>0</shares>
+                  <updatedAt>2023-05-25T06:12:48.034171Z</updatedAt>
+                  <type>REMOVAL</type>
+                </account-transaction>
+                <account-transaction>
+                  <uuid>4ed5e5a7-c245-42d8-8c03-1f6d34f0a258</uuid>
+                  <date>2015-01-10T00:00</date>
+                  <currencyCode>USD</currencyCode>
+                  <amount>30000</amount>
+                  <shares>0</shares>
+                  <updatedAt>2023-05-25T06:02:02.089126Z</updatedAt>
+                  <type>DEPOSIT</type>
+                </account-transaction>
+                <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/accountTransaction"/>
+                <account-transaction>
+                  <uuid>96e05887-7c41-4376-aaa0-8dea288a5d42</uuid>
+                  <date>2015-01-14T00:00</date>
+                  <currencyCode>USD</currencyCode>
+                  <amount>40000</amount>
+                  <shares>0</shares>
+                  <note>deposit last day</note>
+                  <updatedAt>2023-05-25T06:02:11.517572Z</updatedAt>
+                  <type>DEPOSIT</type>
+                </account-transaction>
+                <account-transaction>
+                  <uuid>fe729f91-b6ac-4eee-af9d-d24e1c82fd17</uuid>
+                  <date>2015-04-14T00:00</date>
+                  <currencyCode>USD</currencyCode>
+                  <amount>50000</amount>
+                  <shares>0</shares>
+                  <note>deposit after reporting period</note>
+                  <updatedAt>2023-05-25T06:02:26.497577Z</updatedAt>
+                  <type>DEPOSIT</type>
+                </account-transaction>
+                <account-transaction>
+                  <uuid>0f6aec49-0b00-4774-8fb0-16eb0cd857dc</uuid>
+                  <date>2023-05-25T00:00</date>
+                  <currencyCode>USD</currencyCode>
+                  <amount>1000</amount>
+                  <crossEntry class="account-transfer" reference="../../../.."/>
+                  <shares>0</shares>
+                  <note>cash transfer</note>
+                  <units>
+                    <unit type="GROSS_VALUE">
+                      <amount currency="USD" amount="1000"/>
+                      <forex currency="EUR" amount="927"/>
+                      <exchangeRate>1.0785000000</exchangeRate>
+                    </unit>
+                  </units>
+                  <updatedAt>2023-05-25T06:13:52.783701Z</updatedAt>
+                  <type>TRANSFER_OUT</type>
+                </account-transaction>
+              </transactions>
+              <attributes>
+                <map/>
+              </attributes>
+              <updatedAt>2023-05-25T05:53:48.752318Z</updatedAt>
+            </accountFrom>
+            <transactionFrom reference="../accountFrom/transactions/account-transaction[9]"/>
+            <accountTo reference="../../../.."/>
+            <transactionTo reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <note>cash transfer</note>
+          <updatedAt>2023-05-25T06:13:52.783414Z</updatedAt>
+          <type>TRANSFER_IN</type>
+        </account-transaction>
+      </transactions>
+      <attributes>
+        <map/>
+      </attributes>
+      <updatedAt>2023-05-25T05:53:30.414068Z</updatedAt>
+    </account>
+    <account reference="../account/transactions/account-transaction[18]/crossEntry/accountFrom"/>
+  </accounts>
+  <portfolios>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[3]/crossEntry/portfolio"/>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[18]/crossEntry/accountFrom/transactions/account-transaction[2]/crossEntry/portfolio"/>
+  </portfolios>
+  <plans/>
+  <taxonomies/>
+  <dashboards>
+    <dashboard name="Dashboard">
+      <configuration>
+        <entry>
+          <string>REPORTING_PERIOD</string>
+          <string>L1Y0</string>
+        </entry>
+      </configuration>
+      <columns>
+        <column>
+          <weight>1</weight>
+          <widgets>
+            <widget type="HEADING">
+              <label>Kennzahlen</label>
+            </widget>
+            <widget type="TTWROR">
+              <label>True Time-Weighted Rate of Return (kumulativ)</label>
+              <configuration/>
+            </widget>
+            <widget type="IRR">
+              <label>Interner Zinsfuß (IZF)</label>
+              <configuration/>
+            </widget>
+            <widget type="ABSOLUTE_CHANGE">
+              <label>Absolute Veränderung</label>
+              <configuration/>
+            </widget>
+            <widget type="DELTA">
+              <label>Delta (im Berichtszeitraum)</label>
+              <configuration/>
+            </widget>
+            <widget type="HEADING">
+              <label>Letzter Tag</label>
+            </widget>
+            <widget type="TTWROR">
+              <label>True Time-Weighted Rate of Return (kumulativ)</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>T1</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="ABSOLUTE_CHANGE">
+              <label>Absolute Veränderung</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>T1</string>
+                </entry>
+              </configuration>
+            </widget>
+          </widgets>
+        </column>
+        <column>
+          <weight>1</weight>
+          <widgets>
+            <widget type="HEADING">
+              <label>Risikokennzahlen</label>
+            </widget>
+            <widget type="MAXDRAWDOWN">
+              <label>Maximaler Drawdown</label>
+              <configuration/>
+            </widget>
+            <widget type="MAXDRAWDOWNDURATION">
+              <label>Maximale Drawdown Duration</label>
+              <configuration/>
+            </widget>
+            <widget type="VOLATILITY">
+              <label>Volatilität</label>
+              <configuration/>
+            </widget>
+            <widget type="SEMIVOLATILITY">
+              <label>Semivolatilität</label>
+              <configuration/>
+            </widget>
+          </widgets>
+        </column>
+        <column>
+          <weight>1</weight>
+          <widgets>
+            <widget type="HEADING">
+              <label>Berechnung</label>
+            </widget>
+            <widget type="CALCULATION">
+              <label>Performance-Berechnung</label>
+              <configuration/>
+            </widget>
+          </widgets>
+        </column>
+      </columns>
+    </dashboard>
+  </dashboards>
+  <properties/>
+  <settings>
+    <bookmarks>
+      <bookmark>
+        <label>finance.yahoo.com</label>
+        <pattern>http://finance.yahoo.com/quote/{tickerSymbol}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>onvista.de</label>
+        <pattern>http://www.onvista.de/suche.html?SEARCH_VALUE={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>finanzen.net</label>
+        <pattern>http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>ariva.de</label>
+        <pattern>http://www.ariva.de/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>justetf.com  (ETF)</label>
+        <pattern>https://www.justetf.com/etf-profile.html?isin={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>fondsweb.com</label>
+        <pattern>http://www.fondsweb.com/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>morningstar.de</label>
+        <pattern>http://www.morningstar.de/de/funds/SecuritySearchResults.aspx?type=ALL&amp;search={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>extraETF.com (ETF)</label>
+        <pattern>https://extraetf.com/etf-profile/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>alleaktien.de (Aktie)</label>
+        <pattern>https://www.alleaktien.de/quantitativ/{isin}/</pattern>
+      </bookmark>
+      <bookmark>
+        <label>comdirect.de (Aktie)</label>
+        <pattern>https://www.comdirect.de/inf/aktien/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>comdirect.de (ETF)</label>
+        <pattern>https://www.comdirect.de/inf/etfs/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>divvydiary.com</label>
+        <pattern>https://divvydiary.com/symbols/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>trackingdifferences.com (ETF)</label>
+        <pattern>https://www.trackingdifferences.com/ETF/ISIN/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>tradingview.com</label>
+        <pattern>https://www.tradingview.com/chart/?symbol=XETR:{tickerSymbolPrefix}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>cnbc.com (Aktie)</label>
+        <pattern>https://www.cnbc.com/quotes/{tickerSymbolPrefix}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>nasdaq.com (Aktie)</label>
+        <pattern>https://www.nasdaq.com/market-activity/stocks/{tickerSymbolPrefix}</pattern>
+      </bookmark>
+    </bookmarks>
+    <attributeTypes>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.Account</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.Portfolio</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>logo</id>
+        <name>Logo</name>
+        <columnLabel>Logo</columnLabel>
+        <target>name.abuchen.portfolio.model.InvestmentPlan</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$ImageConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>ter</id>
+        <name>Gesamtkostenquote (TER)</name>
+        <columnLabel>TER</columnLabel>
+        <source>ter</source>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>aum</id>
+        <name>Fondsgröße</name>
+        <columnLabel>Fondsgröße</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Long</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$AmountPlainConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>vendor</id>
+        <name>Anbieter</name>
+        <columnLabel>Anbieter</columnLabel>
+        <source>vendor</source>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$StringConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>acquisitionFee</id>
+        <name>Kaufgebühr (prozentual)</name>
+        <columnLabel>Kaufgebühr</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>managementFee</id>
+        <name>Verwaltungsgebühr (prozentual)</name>
+        <columnLabel>Verwaltungsgebühr</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
+      </attribute-type>
+    </attributeTypes>
+    <configurationSets>
+      <entry>
+        <string>StatementOfAssetsHistoryView-PICKER</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>1d6e8380-1ab1-42d7-a458-6cc79d2386dc</uuid>
+              <name>Standard</name>
+              <data>Client-totals;#000000;SOLID;false;2,Client-transferals;#808080;SOLID;false;2</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.SecuritiesTable</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>0e57d954-f3c3-49eb-bf95-b0da6f0770c3</uuid>
+              <name>Standard</name>
+              <data>{&quot;items&quot;:[{&quot;id&quot;:&quot;0&quot;,&quot;sortDirection&quot;:128,&quot;width&quot;:400},{&quot;id&quot;:&quot;note&quot;,&quot;width&quot;:200},{&quot;id&quot;:&quot;1&quot;,&quot;width&quot;:100},{&quot;id&quot;:&quot;2&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;7&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;4&quot;,&quot;width&quot;:60},{&quot;id&quot;:&quot;5&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;changeonpreviousamount&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;9&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;10&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;q-date-first-historic&quot;,&quot;width&quot;:80}]}</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.StatementOfAssetsViewer</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>c3cbb081-c99e-4995-8026-0b81b67f90a9</uuid>
+              <name>Standard</name>
+              <data>{&quot;items&quot;:[{&quot;id&quot;:&quot;0&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;1&quot;,&quot;width&quot;:300},{&quot;id&quot;:&quot;2&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;4&quot;,&quot;width&quot;:60},{&quot;id&quot;:&quot;5&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;6&quot;,&quot;width&quot;:80},{&quot;id&quot;:&quot;note&quot;,&quot;width&quot;:200}]}</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+    </configurationSets>
+  </settings>
+</client>

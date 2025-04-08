@@ -2,11 +2,13 @@ package name.abuchen.portfolio.bootstrap.swt;
 
 import java.util.function.Consumer;
 
+import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.e4.ui.workbench.renderers.swt.StackRenderer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Menu;
@@ -18,6 +20,19 @@ import name.abuchen.portfolio.bootstrap.Messages;
 public class CustomStackRenderer extends StackRenderer
 {
     private static final String SELECTED_PART = "name.abuchen.portfolio.selectedPart"; //$NON-NLS-1$
+
+    
+    
+    @Override
+    public Object createWidget(MUIElement element, Object parent)
+    {
+        CTabFolder tabFolder = (CTabFolder)super.createWidget(element, parent);
+        
+        // remove the wrap alignment as the tool bar should never to into the second row
+        tabFolder.setTopRight(tabFolder.getTopRight(), SWT.RIGHT);
+        
+        return tabFolder;
+    }
 
     @Override
     protected void populateTabMenu(Menu menu, MPart part)

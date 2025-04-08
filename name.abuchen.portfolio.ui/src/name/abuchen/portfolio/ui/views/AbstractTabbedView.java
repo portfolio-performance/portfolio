@@ -2,8 +2,8 @@ package name.abuchen.portfolio.ui.views;
 
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.ToolBarManager;

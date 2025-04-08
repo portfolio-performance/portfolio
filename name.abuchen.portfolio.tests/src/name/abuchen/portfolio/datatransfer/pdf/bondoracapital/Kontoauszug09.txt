@@ -1,0 +1,16 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.1
+-----------------------------------------
+Zusammenfassung
+********* ***** Zu Beginn 4.679,41 €
+Einzahlungen 4.230,18 €
+Datum 01.12.2022 - 31.12.2022 Auszahlungen 4.704,62 €
+Referenznummer GG****** Ergebnis 4.204,97 €
+Ziel 100€ Zinsen monatlich
+Datum Zahlungsart Eingänge Ausgänge Guthaben
+29.12.2022 Go & Grow Zinsen 0,86 € 4.703,78 €
+30.12.2022 Abheben 474,35 € 4.229,43 €
+30.12.2022 Abheben 4.230,27 € -0,84 €
+30.12.2022 Go & Grow Zinsen 0,84 € 0 €
+31.12.2022 Überweisen 4.204,97 € 4.204,97 €
+Gesamt 4.204,97 €

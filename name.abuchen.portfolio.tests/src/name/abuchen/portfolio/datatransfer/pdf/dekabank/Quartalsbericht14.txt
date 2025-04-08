@@ -1,0 +1,384 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1.qualifier
+-----------------------------------------
+Jahresdepotauszug per 31.12.2011
+Depotübersicht 
+Depot: 0111111111   
+Depotinhaber:
+...
+..
+.
+.. Richard Mustermann    
+.... Bankverbindung:    
+Konto: 0000111111 BLZ: 793 517 30   
+Spk Ostunterfranken    
+Herrn Inh.: Richard Mustermann    
+Richard Mustermann Sparer-Pauschbetrag   
+Musterstraße 9 Erteilt 2011: EUR 600,00  
+11111 Stadt Beansprucht: EUR 141,81  
+ 
+ISIN Unterdepot Bezeichnung Wert Wertentwicklung
+in EUR in EUR 
+per 31.12.2011 * für 2011
+LU0268059614  00 Deka-LiquiditätsPlan TF 1.023,10 +8,45
+LU0348413815  00 DekaLux-PharmaTech TF 1.932,04 +129,83
+DE0008474511  00 AriDeka CF 1.537,35 -209,92
+LU0133666759  00 Deka-ConvergenceAktien TF 2.080,03 -632,22
+LU0133666759  01 Deka-ConvergenceAktien TF 801,61 -243,65
+LU0052859252  00 DekaLux-Pazifik 2.508,93 -489,30
+LU0062624902  00 DekaLux-Deutschland TF A 2.197,50 -593,53
+DE0009771980  00 Deka-EuropaBond TF 2.053,93 +80,69
+DE0009786285  00 Deka-EuropaPotential TF 2.079,44 -523,37
+XF0009994050  00 Deka-BonusRente  
+DE0005424519  00 - Deka-BR 100 2.139,25 -100,67
+   Gesamt in EUR 18.353,18 -2.573,69
+D epotpreis inkl. 19% MwSt: 
+10,00 EUR wurden für 2011 belastet
+Entgelte werden gemäß Preis- und Leistungsverzeichnis erhoben.
+ 
+Besondere Hinweise zur Deka-BonusRente:
+Das Jahresendereporting zur Deka-BonusRente mit der Bescheinigung nach § 92 EStG sowie der Zusatzinformation nach § 7 Abs. 4
+Altersvorsorgeverträge-Zertifizierungsgesetz (AltZertG) geht Ihnen mit separater Post Ende Februar 2012 zu. Sofern Sie die DekaBank per
+Dauerzulageantrag bevollmächtigt haben, die Zulage jedes Jahr für Sie automatisch zu beantragen, übernehmen wir dies auf Grundlage der von
+Ihnen mitgeteilten Daten. Die Zulage wird nach Eingang Ihrem Deka-BonusRente Vertrag gutgeschrieben. Liegt uns Ihre Zustimmung zur
+Datenübermittlung der gezahlten Beiträge zur Beantragung des Sonderausgabenabzugs vor, erfolgt per Datenfernübertragung eine Meldung an die
+Deutsche Rentenversicherung Bund - Zentrale Zulagenstelle für Altersvermögen (ZfA).
+* Beachten Sie hierzu bitte die Erläuterungen unter "Hinweise zu Ihrem Jahresdepotauszug" auf der Rück- bzw. Folgeseite.
+Zu allen Themen rund um Ihr DekaBank Depot informiert Sie Ihr Berater der Sparkasse Ostunterfranken
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+HINWEISE ZU IHREM JAHRESDEPOTAUSZUG
+Wert in EUR per 31.12.2011:
+Der Wert der Investmentanlage berechnet sich aus dem Anteilbestand per 31. Dezember 2011 multipliziert mit dem Preis je Anteil. Die Bewertung des Fonds erfolgt mit dem
+jeweils letzten verfügbaren Rücknahmepreis, der zum Zeitpunkt der Erstellung dieses Auszugs vorlag. 
+Wertentwicklung in EUR per 31.12.2011:
+Die Berechnung der Wertentwicklung im Rahmen des Jahresdepotauszuges erfolgt für den Betrachtungszeitraum 01. Januar bis 31. Dezember des betreffenden Kalenderjahres. 
+Für die Berechnung der Wertentwicklung werden für den Betrachtungszeitraum die Anfangs- und Endbestände sowie Buchungen, bei denen es zu einer stücke- und/oder
+geldmäßigen Bewegung kam, herangezogen. Gegebenenfalls abgeführte Steuern werden hierbei nicht berücksichtigt. Eventuell einbehaltene Gebühren und Ausgabeaufschläge
+reduzieren Ihre Wertentwicklung. Es wird keine Wertentwicklung für das Unterdepot ausgewiesen, wenn dieses im Betrachtungszeitraum ohne Bestand ist.
+Allgemeine Risikohinweise:
+Anteile an Investmentfonds sind Wertpapiere, deren Preise durch die börsentäglichen Kursschwankungen der im jeweiligen Investmentfonds befindlichen Vermögenswerte
+bestimmt werden (und deshalb steigen oder auch fallen können). Kursänderungen bei den Vermögensgegenständen (z. B. Aktien, Anleihen) und Wechselkursschwankungen
+können somit den Wert einer Anlage in Investmentfonds sowohl positiv als auch negativ beeinflussen. 
+Verwahrung des Anteilsbestandes:
+Die Anteile werden im Girosammel-Depot oder in Form einer Gutschrift in Wertpapierrechnung verwahrt. Die Anteilsbruchteile stellen das Miteigentum an einer
+Bruchteilgemeinschaft dar.
+Beanspruchter Sparer-Pauschbetrag für das Kalenderjahr 2011:
+Die Höhe des von Ihnen erteilten Sparer-Pauschbetrages entnehmen Sie bitte Ihrer Depotübersicht oder Ihrem Depotauszug. Der in Anspruch genommene Betrag wird in der
+Steuerbescheinigung ausgewiesen. Eingereichte Freistellungsaufträge gelten für alle bestehenden und zukünftigen DekaBank Depots, die von einem vermittelnden Institut betreut
+werden. 
+Der Freistellungsauftrag muss zur steuerlichen Wirksamkeit die angeforderten persönlichen Daten enthalten (Name, abweichender Geburtsname, Vorname, Geburtsdatum,
+vollständige Anschrift und seit 01. Januar 2011 zwingend auch die Steuer-ID-Nr.). 
+Ab dem Jahr 2016 verlieren alte - also bis zum 31.12.2010 ohne Steuer-ID-Nr. erteilte - Freistellungsaufträge ihre Wirksamkeit. In diesen Fällen obliegt es den Kreditinstituten die
+Steuer-ID-Nr. beim Kunden zu erfragen oder - soweit der Kunde nicht widerspricht - die Steuer-ID-Nr. beim Bundeszentralamt für Steuern abzufragen. 
+Ehegattenübergreifende Verlustverrechnung:
+Bei Vorlage eines gemeinschaftlichen Freistellungsauftrages von Ehegatten wird seit dem Kalenderjahr 2010 eine ehegattenübergreifende Verlustverrechnung durchgeführt. Diese
+erfolgt stets zum Jahresende. Die ehegattenübergreifende Verlustverrechnung erfolgt immer unter sämtlichen für die Ehegatten geführten Depots
+(Einzeldepots/Gemeinschaftsdepots) und zwar unabhängig davon, ob die tatsächlichen Voraussetzungen einer Zusammenveranlagung i. S. des § 26 Absatz 1 Satz 1 EStG gegeben
+sind.
+ Ist keine übergreifende Verlustverrechnung gewünscht bzw. liegen die Voraussetzungen einer Zusammenveranlagung i. S. des § 26 Absatz 1 Satz 1 EStG nicht vor (da getrennte
+Veranlagung), können für Einzeldepots getrennte Freistellungsaufträge erteilt werden. Eine Darstellung zu den infolge der ehegattenübergreifenden Verlustverrechnung
+übertragenen bzw. erhaltenen Beständen finden Sie im nichtamtlichen Teil der Steuerbescheinigung.  
+Zum Zweck der übergreifenden Verlustverrechnung kann ein Freistellungsauftrag auch in Höhe von 0,00 EUR eingereicht werden, z. B. wenn Ehegatten ihren gemeinsamen
+Sparerpauschbetrag bereits bei anderen Instituten ausgeschöpft haben. Dabei ist zu beachten, dass eine auf Bankebene erfolgte Verlustverrechnung nach derzeitiger Auffassung
+der Finanzverwaltung in der Veranlagung nicht mehr rückgängig gemacht werden kann.
+Fehlerkorrekturen bei Privatanlegern:
+Bei der Erhebung der Abgeltungsteuer können auf Ebene des deutschen Kreditinstituts Fehler beim Abgeltungsteuerabzug nicht vollständig ausgeschlossen werden. 
+Grundsätzlich erfolgt die Korrektur von Fehlern rückwirkend.
+In Fällen kalenderjahresübergreifender Fehler erfolgt die Korrektur grundsätzlich nur mit Wirkung für die Zukunft, d.h. es erfolgt keine Stornierung und Neuabrechnung des
+ursprünglichen Geschäftsvorfalls. Für Zwecke der Korrektur wird dann auf den Kundenstatus und dessen steuerlichen Merkmale zum Zeitpunkt des Bekanntwerdens des Fehlers
+abgestellt.
+Eine solche Korrektur mit Wirkung in die Zukunft hat den Vorteil, dass eine Rückforderung und Neuausstellung der bereits erteilten und fehlerhaften Steuerbescheinigung für das
+Fehlerjahr und diesem nachfolgenden Jahren unterbleiben kann.
+Ausweis von Umsätzen mit 0,000 Anteilen infolge kaufmännischer Rundungen:
+Fondsanteile werden im DekaBank Depot mit drei Nachkommastellen abgebildet. Hierdurch kann es bei Buchungen von Kleinstbeträgen, speziell auch bei Erstattungen von
+Kapitalertragsteuer und Solidaritätszuschlag mittels Kauf von Fondsanteilen zu Rundungsdifferenzen kommen (Berechnung des Umsatzes / Anteilpreis), so dass eventuell 0,000
+Anteile ausgewiesen werden.
+Werbungskosten:
+Werbungskosten, z. B. Depotgebühren, die Ihnen im Zusammenhang mit Ihren Investmentanteilen entstanden sind, können im Rahmen der Einkommensteuererklärung nicht mehr
+individuell steuerlich geltend gemacht werden. Diese gelten im Rahmen des Sparer-Pauschbetrages als bereits berücksichtigt.
+Bescheinigung vermögenswirksamer Leistungen für 2011:
+Wenn in Ihrem Depot vermögenswirksame Leistungen (VL) verwahrt werden, erhalten Sie mit dem Jahresdepotauszug per 31. Dezember 2011 eine Bescheinigung der im
+Kalenderjahr 2011 eingezahlten VL-Leistungen. Bitte fügen Sie diese Bescheinigung Ihrer Einkommensteuererklärung bei. Sie dient als Antrag zur Gewährung einer Sparzulage. 
+Zahlungseingänge, die nicht mehr im Kalenderjahr 2011 erfolgten (z. B. im Januar 2012 für Dezember 2011), werden erst in der Bescheinigung für das Kalenderjahr 2012
+ausgewiesen. 
+Sollten auf Ihrem Vertrag Zahlungseingänge fehlen, fragen Sie bitte erst bei Ihrem Arbeitgeber nach, auf welches Konto die vermögenswirksamen Leistungen überwiesen wurden.
+Erst mit dieser Information können wir die Zahlungseingänge überprüfen.
+Steuerbescheinigung 2011:
+Die Steuerbescheinigung enthält grundsätzlich alle im Kalenderjahr zugrunde liegenden Kapitalerträge, die mit Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer
+belastet wurden. Veräußerungsgewinne wie auch ausländische Quellensteuern werden ebenso ausgewiesen. Außerdem werden nicht ausgeglichene Verluste bescheinigt, wenn
+ein Antrag auf Verlustbescheinigung bis zum 15. Dezember gestellt wurde. Ist bis zu diesem Datum kein Antrag auf Verlustbescheinigung gestellt worden, werden nicht
+ausgeglichene Verrechnungssalden auf das nächste Kalenderjahr übertragen. Bitte berücksichtigen Sie, dass trotz Abgeltungsteuer durch bestimmte Tatbestände eine Pflicht zur
+Veranlagung durch das Wohnsitzfinanzamt besteht (z. B. unberücksichtigte Kirchensteuer bei inländischen thesaurierenden Fonds) bzw. eine freiwillige Veranlagung in Betracht
+kommen kann (z. B. Günstigerprüfung, Berücksichtigung anrechenbarer aber noch nicht angerechneter ausländischer Quellensteuer, Verrechnung von Kapitalerträgen bei
+mehreren Kreditinstituten etc.). Nähere Informationen entnehmen Sie bitte der Broschüre "Die Abgeltungsteuer, Alles Wissenswerte im Überblick", die Sie bei Ihrer
+Sparkasse/Landesbank oder unter deka.de  erhalten.
+Kapitalerträge aus Investmentanteilen bei Privatvermögen: 
+Die Kapitalerträge errechnen sich aus dem Gesamtbetrag aller kapitalertragsteuerpflichtigen Erträge (z.B. Ausschüttungen, Thesaurierungen, Veräußerungsgeschäfte) des
+Kalenderjahres 2011. Diese werden um den verrechenbaren Verlustverrechnungstopf (gezahlte Zwischengewinne und Veräußerungsverluste) gemindert. Bei Angaben zu
+besitzanteiligen akkumulierten Thesaurierungen aus dem Verkauf von ausländisch thesaurierenden Fonds oder bei Ausweis der Ersatzbemessungsgrundlage (Anwendung wegen
+fehlender Anschaffungskosten) kann die tatsächliche Einkommensteuerpflicht nur im Wege der Veranlagung ermittelt werden.
+Kapitalerträge aus Investmentanteilen bei Betriebsvermögen:
+Die Kapitalerträge errechnen sich aus mit Kapitalertragsteuer belasteten Erträgen aus Ausschüttungen, Thesaurierungen und kapitalertragsteuerpflichtigen Erträgen aus Verkäufen
+(vereinnahmte Zwischengewinne und/oder besitzanteilig akkumulierte Thesaurierungen) des Kalenderjahres 2011. Eine Verlustverrechnung findet grundsätzlich nicht statt.
+Veräußerungsgeschäfte werden berücksichtigt, sofern eine Kapitalertragsteuer aufgrund der Rechtsform oder fehlender Freistellung belastet wurde. Für betriebliche Anleger stellt
+die Abgeltungsteuer nur eine Vorauszahlung auf die Einkommen- oder Körperschaftsteuerschuld dar und hat keine abgeltende Wirkung.
+Fonds mit Mindestanlagesumme von 100.000 EUR nach § 18 Abs. 2a InvStG:
+Haben Sie zwischen dem 09. November 2007 und dem 01. Januar 2009 Anteile der oben genannten Fonds im privaten Vermögen erworben und nach dem 31. Dezember 2008
+zurückgegeben, dann unterliegt der Gewinn daraus (unabhängig von einer Haltedauer) der Abgeltungsteuer. Somit ist der gesamte Rückgabe- oder Veräußerungsgewinn
+steuerpflichtig. 
+Bitte berücksichtigen Sie dies bei den Angaben in Ihrer Steuererklärung. Für weitere Informationen wenden Sie sich bitte an eine steuerfachkundige Person oder Ihr
+Wohnsitzfinanzamt.
+Zinsinformationsverordnung:
+Aufgrund der am 01. Juli 2005 in Kraft getretenen Zinsinformationsverordnung (auf Grundlage der EU-Zinsrichtlinie 2003/ 48 / EG des Rates vom 03. Juni 2003) ist die DekaBank
+verpflichtet, Zinserträge die im Rahmen von Ausschüttungen gezahlt wurden bzw. den Gegenwert von Anteilscheinrücknahmen von Investmentfonds von wirtschaftlichen
+Eigentümern mit ausländischem steuerlichen Wohnsitz innerhalb der angeschlossenen Staaten in bestimmten Fällen an das Bundeszentralamt für Steuern zu melden.
+Jahresdepotauszug per 31.12.2011
+Umsatz-Jahresübersicht
+Seite 1
+Depot: 0111111111   
+Depotinhaber:
+Richard Mustermann    
+Deka-LiquiditätsPlan TF
+ISIN: LU0268059614 Unterdepot: 00
+Verwahrart: GiroSammel  
+Wichtige Information: Der Fonds Deka-GeldmarktPlan TF wurde mit Wirkung zum 01.07.11 in Deka-LiquiditätsPlan TF umbenannt.
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2010 1.014,65 991,840000  1,023   
+Bewertung mit dem Rücknahmepreis vom 30.12.2010
+Abrechnungsbetrag Ausschüttung 12,48 983,890000  +0,013 19.08.2011 19.08.2011
+Summe der Betragsbewegungen     0,00   
+Bestand am 31.12.2011 1.023,10  987,550000  1,036   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+ 
+DekaLux-PharmaTech TF
+ISIN: LU0348413815 Unterdepot: 00
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2010 1.802,21 114,100000  15,795   
+Bewertung mit dem Rücknahmepreis vom 30.12.2010
+Abrechnungsbetrag Thesaurierung 0,00 116,320000  +0,000 01.07.2011 01.07.2011
+Summe der Betragsbewegungen     0,00   
+Bestand am 31.12.2011 1.932,04  122,320000  15,795   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+ 
+AriDeka CF
+ISIN: DE0008474511 Unterdepot: 00
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2010 1.747,27 51,670000  33,816   
+Bewertung mit dem Rücknahmepreis vom 30.12.2010
+Abrechnungsbetrag Ausschüttung 8,88 53,480000  +0,166 18.02.2011 18.02.2011
+Summe der Betragsbewegungen     0,00   
+Bestand am 31.12.2011 1.537,35  45,240000  33,982   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+ 
+Bitte prüfen Sie den Anteilbestand. Bei etwaigen Unstimmigkeiten wenden Sie sich schriftlich an unsere Revisionsabteilung.
+Diese Aufstellung gilt als anerkannt, wenn Sie Ihre Einwendungen nicht innerhalb eines Monats nach Zugang abgesandt haben.
+Fortsetzung auf Seite 2
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068
+Jahresdepotauszug per 31.12.2011
+Umsatz-Jahresübersicht
+Seite 2
+Depot: 0111111111   
+Depotinhaber:
+Richard Mustermann    
+Deka-ConvergenceAktien TF
+ISIN: LU0133666759 Unterdepot: 00
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2010 2.712,25 178,250000  15,216   
+Bewertung mit dem Rücknahmepreis vom 30.12.2010
+Abrechnungsbetrag Thesaurierung 0,00 127,080000  +0,000 04.10.2011 04.10.2011
+Summe der Betragsbewegungen     0,00   
+Bestand am 31.12.2011 2.080,03  136,700000  15,216   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+ 
+Deka-ConvergenceAktien TF
+ISIN: LU0133666759 Unterdepot: 01
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2010 1.045,26 178,250000  5,864   
+Bewertung mit dem Rücknahmepreis vom 30.12.2010
+Abrechnungsbetrag Thesaurierung 0,00 127,080000  +0,000 04.10.2011 04.10.2011
+Summe der Betragsbewegungen     0,00   
+Bestand am 31.12.2011 801,61  136,700000  5,864   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+ 
+DekaLux-Pazifik
+ISIN: LU0052859252 Unterdepot: 00
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2010 2.998,23 492,320000  6,090   
+Bewertung mit dem Rücknahmepreis vom 30.12.2010
+Abrechnungsbetrag Ausschüttung 38,73 387,930000  +0,100 21.11.2011 21.11.2011
+Summe der Betragsbewegungen     0,00   
+Bestand am 31.12.2011 2.508,93  405,320000  6,190   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+ 
+Fortsetzung auf Seite 3
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068
+Jahresdepotauszug per 31.12.2011
+Umsatz-Jahresübersicht
+Seite 3
+Depot: 0111111111   
+Depotinhaber:
+Richard Mustermann    
+DekaLux-Deutschland TF A
+ISIN: LU0062624902 Unterdepot: 00
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2010 2.791,03 86,220000  32,371   
+Bewertung mit dem Rücknahmepreis vom 30.12.2010
+Abrechnungsbetrag Ausschüttung 4,86 65,340000  +0,074 21.11.2011 21.11.2011
+Summe der Betragsbewegungen     0,00   
+Bestand am 31.12.2011 2.197,50  67,730000  32,445   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+ 
+Deka-EuropaBond TF
+ISIN: DE0009771980 Unterdepot: 00
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2010 1.973,24 37,800000  52,202   
+Bewertung mit dem Rücknahmepreis vom 30.12.2010
+Abrechnungsbetrag Ausschüttung 60,03 38,000000  +1,580 19.08.2011 19.08.2011
+Summe der Betragsbewegungen     0,00   
+Bestand am 31.12.2011 2.053,93  38,190000  53,782   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+ 
+Deka-EuropaPotential TF
+ISIN: DE0009786285 Unterdepot: 00
+Verwahrart: GiroSammel  
+ Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung Anteil Anteile tag nungstag
+EUR
+Bestand am 31.12.2010 2.602,81 72,210000  36,045   
+Bewertung mit dem Rücknahmepreis vom 30.12.2010
+Abrechnungsbetrag Thesaurierung 0,00 57,690000  +0,000 30.12.2011 30.12.2011
+Summe der Betragsbewegungen     0,00   
+Bestand am 31.12.2011 2.079,44  57,690000  36,045   
+Bewertung mit dem Rücknahmepreis vom 30.12.2011
+ 
+Dieser Depotauszug besteht aus 3 Seiten.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Jahresdepotauszug per 31.12.2011
+Umsatz-Jahresübersicht Deka-BonusRente
+Seite 1
+Depot: 0111111111   
+Depotinhaber:
+Richard Mustermann    
+Deka-BonusRente
+ISIN: XF0009994050 Unterdepot: 00  
+Vertragsnummer: 011111111199940500  Z ertifizierungs-Nr.: 003604
+ 
+Aktuelle Phase: Ansparphase B  eginn der Auszahlungsphase: 01.10.2047
+Übersicht der angesparten Fonds
+ Fondsname ISIN Verwahrart
+ Deka-BR 100 DE0005424519 GiroSammel
+Übersicht der erfolgten Zahlungen
+Umsatzart Fondsname Ein-/Auszahlung Preis je A nteil Abgerechnete Buchungs- Abrech-
+ EUR EUR  Anteile tag nungstag
+Bestand am 31.12.2010 Deka-BR 100 1.861,03 39,230000  47,439   
+Gesamtbestand des Vertrages am 31.12.2010 1.861,03
+Bewertung mit dem Rücknahmepreis vom 30.12.2010
+Zulagenzahlung      2010 Deka-BR 100 108,89 39,750000  +2,739 19.05.2011 19.05.2011
+Abrechnungsbetrag Thesaurierung Deka-BR 100 1,92 37,340000  +0,051 01.07.2011 01.07.2011
+Lastschrifteinzug Deka-BR 100 270,00 33,430000  +8,077 04.10.2011 04.10.2011
+Bestand am 31.12.2011 Deka-BR 100 2.139,25 36,690000  58,306   
+Gesamtbestand des Vertrages am 31.12.2011 2.139,25
+ Bewertung mit dem Rücknahmepreis vom 30.12.2011
+Bitte prüfen Sie den Anteilbestand. Bei etwaigen Unstimmigkeiten wenden Sie sich schriftlich an unsere Revisionsabteilung.
+Diese Aufstellung gilt als anerkannt, wenn Sie Ihre Einwendungen nicht innerhalb eines Monats nach Zugang abgesandt haben.
+Dieser Depotauszug besteht aus 1 Seite.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068
+ Bescheinigung 
+Bescheinigung für alle Privatdepots
+Verlustbescheinigung im Sinne des § 43 a Abs. 3 Satz 4 EStG für alle Privatdepots
+Für
+Richard Mustermann  , 11111 Stadt, Musterstraße 9
+ werden für das Kalenderjahr 2011 folgende Angaben bescheinigt: 
+Betrag EUR Anlage KAP der
+Einkommensteuer-
+erklärung
+Höhe der Kapitalerträge 141,81 KAP: Zeile 7
+davon: Gewinn aus Kapitalerträgen im Sinne des § 20 Abs. 2 EStG 0,00 KAP: Zeile 8
+Ersatzbemessungsgrundlage im Sinne des § 43a Abs. 2 Satz 7, 10, 13 und 14 EStG 0,00 KAP: Zeile 11
+Enthalten in den bescheinigten Kapitalerträgen
+Höhe des nicht ausgeglichenen Verlustes ohne Verlust aus der Veräußerung von Aktien 0,00 KAP: Zeile 12
+Höhe des nicht ausgeglichenen Verlustes  aus der Veräußerung von Aktien im Sinne des § 20 0,00 KAP: Zeile 13
+Abs. 2 Satz 1 Nr. 1 EStG
+Höhe des in Anspruch genommenen Sparer-Pauschbetrages 141,81 KAP: Zeile 14
+Kapitalertragsteuer 0,00 KAP: Zeile 49
+Solidaritätszuschlag 0,00 KAP: Zeile 50
+Kirchensteuer zur Kapitalertragsteuer 0,00 KAP: Zeile 51
+Kirchensteuer zur Kapitalertragsteuer 0,00
+Summe der angerechneten ausländischen Steuer 0,00 KAP: Zeile 52
+Summe der anrechenbaren noch nicht angerechneten ausländischen Steuer 5,18 KAP: Zeile 53
+Ausländischer thesaurierender Investmentfonds vorhanden
+nur nachrichtlich:
+Höhe der ausschüttungsgleichen Erträge aus ausländischen thesaurierenden 3,73 KAP: Zeile 15
+Investmentvermögen
+Bei Veräußerung/Rückgabe von Anteilen 0,00
+Summe der als zugeflossen geltenden, noch nicht dem Steuerabzug unterworfenen Erträge
+aus Anteilen an ausländischen Investmentvermögen in Fällen des § 7 Abs. 1 Satz 1 Nr. 3
+InvStG
+(Diese Summe ist in der bescheinigten Höhe der Kapitalerträge enthalten und in der Anlage
+KAP von der Höhe der Kapitalerträge abzuziehen.)
+Vermerke des bescheinigenden Institutes:
+Gegebenenfalls zu zahlende Steuern wurden an das Finanzamt Frankfurt am Main V - Höchst, 60305 Frankfurt unter der Steuernummer
+1111111111111 abgeführt.
+Das Ankreuzfeld "Ausländischer thesaurierender Investmentfonds vorhanden" bezieht sich auf den Stichtag 31.12..
+Bei inländisch thesaurierenden Fonds kann ein Kirchensteuerantrag nicht berücksichtigt werden. Bitte holen Sie die Besteuerung in der
+Veranlagung nach, wenn Sie Kirchensteuerpflichtig sind.
+Der Thesaurierungsbetrag aus der Zeile "nur nachrichtlich: Höhe der ausschüttungsgleichen Erträge aus ausländischen thesaurierenden
+Investmentvermögen" wurde nicht der Kapitalertragsteuer unterworfen. Deshalb müssen Sie diesen Betrag gegebenenfalls in Ihrer
+Steuererklärung angeben. Bei Fragen wenden Sie sich bitte an Ihren steuerlichen Berater oder an Ihr Finanzamt.
+Sie finden zusätzliche Informationen zu Ihrer Steuerbescheinigung auf der Rückseite.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+ Richard Mustermann  , 11111 Stadt, Musterstraße 9
+Aufgrund der rechtlichen Vorgaben können anrechenbare Quellensteuer und Verluste grundsätzlich direkt mit gezahlter Kapitalertragsteuer
+verrechnet werden. In bestimmten Fällen, z. B. Erbfälle, Quellensteuer für beschränkt Steuerpflichtige oder Quellensteuer aus ausländisch
+thesaurierenden Fonds ist diese Verrechnung jedoch nicht möglich. 
+Die Beträge sind nicht in der Steuerbescheinigung enthalten und können gegebenenfalls nur im Rahmen der Veranlagung geltend gemacht
+werden. Zusätzlich erfolgt für beschränkt steuerpflichtige Depotinhaber der Ausweis der steuerpflichtigen Beträge und bereits gezahlter
+Kapitalertragsteuer und Solidaritätszuschlag aus inländischen Dividenden.
+Betrag EUR
+Höhe des nicht ausgeglichenen Verlustes ohne Verlust aus der Veräußerung von Aktien 0,00
+Summe der anrechenbaren noch nicht angerechneten ausländischen Steuer  0,76
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068

@@ -1,0 +1,35 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Mxxx Xxxx SEITE 1 von 1
+XXXXWEG X DATUM 23.05.2021
+11111 Lottoladen ORDER 5a93-03d1
+AUSFÜHRUNG b11c-12c4
+DEPOT 01XXXXXX01
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Limit-Order Verkauf am 23.05.2020, um 21:10 Uhr (Europe/Berlin) an der Lang & Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL KURS BETRAG
+HOCHTIEF AG 9 Stk. 69,40 EUR 624,60 EUR
+Inhaber-Aktien o.N.
+ISIN: DE0006070006
+GESAMT 624,60 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+Kapitalertragsteuer Optimierung 4,56 EUR
+Solidaritätszuschlag Optimierung 0,25 EUR
+GESAMT 628,41 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE3811010XXXXXXXXXX120 28.05.2021 628,41 EUR
+HOCHTIEF AG Inhaber-Aktien o.N. in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 23.05.2021 / 61232734 / 2628-43a5

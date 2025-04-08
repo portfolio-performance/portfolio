@@ -1,0 +1,59 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+Wertpapierabrechnung
+Kauf
+Referenz-Nr 28522373
+Datum 05.01.2017
+Depot 1234567800
+Herrn Muster, Hans
+Dipl. Ing. Hans Muster
+Vogelsangstr. 89 Betreuer XXXXXXX XXXXXXX
+70197 Stuttgart Telefon +49 (0) 69 247 504 918
+E-Mail XXXXXXX.XXXXXXX@quirinprivatbank.de
+Seite 1 von 2
+Wertpapierbezeichnung db x-tr.II Gl Sovereign ETF Inhaber-Anteile 1D EUR o.N.
+ISIN LU0690964092
+WKN DBX0MF
+Ausführungsplatz Berlin - Tradegate Exchange
+Verwahrart Girosammelverwahrung
+Lagerland Deutschland
+Handelstag / Zeit 30.12.2016 12:46:28
+Nominal / Stück 140,0000 ST
+Kurs EUR 214,899
+Kurswert EUR - 30.085,86
+Abwicklungsgebühren * EUR - 4,90
+Bank-Provision EUR 0,00
+Courtage * EUR 0,00
+Spesen * EUR 0,00
+Ausmachender Betrag EUR - 30.090,76
+Der Abrechnungsbetrag wird mit Valuta 03.01.2017 über Ihr Konto 1234567800 EUR gebucht.
+Keine Steuerbescheinigung!
+*Fremde Gebühren und Spesen
+Diesem Geschäft liegt keine Anlageberatung der Bank zugrunde.
+Verzicht auf die Verkaufsunterlagen. Zusendung des KIID.
+Diese Mitteilung wurde maschinell erstellt und wird von der Bank nicht unterschrieben.
+quirin bank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann | Dr. Marcel Morschbach
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+MetaType: STEX / OrderType: B / Timestamp: 20170105 19:30:34
+Wertpapierabrechnung
+Kauf
+Referenz-Nr 28522373
+Seite 2 von 2
+Steuerliche Informationen
+Zwischengewinn EUR -801,33
+Kapitalertragsteuerpflichtiger Betrag EUR -801,33
+Stand allg. Verlustverrechnungstopf vor Veränderung EUR 0,00
+Veränderung allg. Verlustverrechnungstopf EUR 801,33
+Stand allg. Verlustverrechnungstopf nach Veränderung EUR 801,33
+Bemessungsgrundlage für Kapitalertragsteuer EUR 0,00
+Kapitalertragsteuer EUR 0,00
+Solidaritätszuschlag EUR 0,00
+Kirchensteuer EUR 0,00
+quirin bank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann | Dr. Marcel Morschbach
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+MetaType: STEX / OrderType: B / Timestamp: 20170105 19:30:34

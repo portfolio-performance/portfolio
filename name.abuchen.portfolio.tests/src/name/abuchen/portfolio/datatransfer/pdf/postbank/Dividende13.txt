@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+Postbank
+24/7-Kundenservice (0228) 5500-5500
+NNN MMMM
+NN2 MMM2
+Am Wiesengrund 2
+76189 Karlsruhe
+24. Januar 2023
+Ihr Depot Nr. 111 2222222 33
+Kupongutschrift
+Nominal Währung WKN ISIN
+20.000,000000 USD JPM4DQ US46625HKC33
+3,125% JPMORGAN CHASE & CO.NT.15 23.J/J 01:25
+Zinsen in % 1,5625000000 Zahlbar 23.01.2023
+Ursprungsland USA Ex-Tag 23.01.2023
+Bruttoertrag 312,50 USD 285,83 EUR
+Kapitalertragsteuer (KESt) - 78,13 USD - 71,46 EUR
+Solidaritätszuschlag auf KESt - 4,30 USD - 3,93 EUR
+Umrechnungskurs USD zu EUR 1,0933000000
+Gutschrift mit Wert 25.01.2023 210,44 EUR
+Wir überweisen den Betrag von 210,44 EUR auf Ihr Konto 2222222 00.
+Kapitalerträge sind einkommensteuerpflichtig!
+Diese Mitteilung wurde maschinell erstellt und wird nicht unterschrieben.
+Postbank - eine Niederlassung der Deutsche Bank AG - Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts - Vorstand: Christian Sewing (Vorsitzender),
+James von Moltke, Karl von Rohr, Fabrizio Campelli, Bernd Leukert, Alexander von zur Mühlen, Christiana Riley, Rebecca Short, Stefan Simon, Olivier Vigneron
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main, Amtsgericht Frankfurt am Main, HRB Nr. 30 000, Umsatzsteuer-Id.-Nr. DE114103379; www.postbank.de
+TRINCM0001 KUPO 20230124 18015789

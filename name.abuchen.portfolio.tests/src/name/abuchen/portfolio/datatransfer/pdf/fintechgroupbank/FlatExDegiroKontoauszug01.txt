@@ -1,0 +1,80 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+             Frankfurt, 03.10.2021
+0101012000001100111110
+Herrn
+Max Mustermann
+FlatExStr. Str. 3
+01111 FlatCity
+Kontoauszug Nr:    003/2021                              Seite 1 von 4
+Kontonummer :      1011111111      IBAN: DE11 1011 0100 1111 1111 11
+Kontenart   :      Kontokorrentkonto
+Kontowährung:      EUR
+Alter Saldo vom    30.06.2021                     in EUR             2.381,07+
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+01.07.     30.06.  Zinsabschluss  01.04.2021 - 30.06.2021                2,73-
+07.07.     08.07.  Überweisung                                         200,00+
+                   FlatEx Verrechnungskonto
+                   BYLADEM1001
+                   DE1111111111111111111
+                   Max Mustermann
+                   KREF: 1111-01-01-11.11.34.511120-2021010
+17.07.     19.07.  Depotgebühren 01.04.2021 - 30.04.2021,                0,00-
+                   Depot-Nr. 1011111111, inkl. MwSt.                          
+17.07.     19.07.  Depotgebühren 01.05.2021 - 31.05.2021,                0,00-
+                   Depot-Nr. 1011111111, inkl. MwSt.
+17.07.     19.07.  Depotgebühren 01.06.2021 - 30.06.2021,                0,00-
+                   Depot-Nr. 1011111111, inkl. MwSt.                          
+09.08.     10.08.  Überweisung                                         200,00+
+                   FlatEx Verrechnungskonto
+                   BYLADEM1001
+                   DE11110100001111111111
+                   Max Mustermann
+                   KREF: 1101-01-01-10.00.11.111110-2021010
+07.09.     08.09.  Überweisung                                         200,00+
+                   FlatEx Verrechnungskonto
+                   BYLADEM1001
+                   DE11110100001111111111
+Neuer Saldo 30.09.2021 Nr. 003/2021         Währung EUR              1.508,07+
+Der ausgewiesene Kontosaldo kann durch abweichende Wertstellung (Valuta) vom
+wertmäßigen Kontostand abweichen. Die Wertstellung von Buchungen ist auch
+relevant für die Berechnung von Zinsen.
+Gemäß § 11 Außenwirtschaftsgesetz (AWG) in Verbindung mit §§ 67 ff. Außen-
+wirtschaftsverordnung (AWV) haben Inländer (in Deutschland ansässige
+natürliche und juristische Personen) Zahlungen von mehr als 12 500 Euro oder
+Gegenwert zu melden, die sie von Ausländern (im Ausland ansässige natürliche
+und juristische Personen) oder für deren Rechnung von Inländern entgegennehmen
+(eingehende Zahlungen) oder an Ausländer oder für deren Rechnung an Inländer
+leisten (ausgehende Zahlungen). Die Deutsche Bundesbank und ihre Filialen
+erteilen dazu gern die notwendigen Auskünfte.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes
+entschädigungsfähig. Nähere Informationen können dem "Informationsbogen für
+den Einleger" entnommen werden.
+Der Rechnungsabschluss wird Ihnen als separates Dokument zur Verfügung
+gestellt.
+Beanstandungen  gegen Rechnungsabschlüsse sind unverzüglich und schriftlich zu
+senden an:
+      flatexDEGIRO Bank AG
+      Revision
+      Postfach 100551
+      41405 Neuss
+Der Abschlusssaldo gilt als genehmigt, wenn ihm nicht innerhalb von 6 Wochen
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002200758290
+Kontoauszug Nr:    003/2021                              Seite 4 von 4
+ab Zugang schriftlich widersprochen  wird. Zur Fristwahrung genügt die
+rechtzeitige Absendung der Einwendung.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002200758290

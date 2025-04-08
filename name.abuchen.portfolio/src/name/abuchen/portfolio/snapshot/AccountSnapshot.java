@@ -24,7 +24,7 @@ public class AccountSnapshot
 
         for (AccountTransaction t : account.getTransactions())
         {
-            if (t.getDateTime().isBefore(reference))
+            if (!t.getDateTime().isAfter(reference))
             {
                 if (t.getType().isDebit())
                     funds -= t.getAmount();
@@ -55,7 +55,7 @@ public class AccountSnapshot
     
     /* package */ Account unwrapAccount()
     {
-        return account instanceof ReadOnlyAccount ? ((ReadOnlyAccount) account).unwrap() : account;
+        return account instanceof ReadOnlyAccount readOnly ? readOnly.unwrap() : account;
     }
 
     public Account getAccount()

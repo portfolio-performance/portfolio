@@ -2,18 +2,25 @@ package name.abuchen.portfolio.money;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.util.Pair;
 
 public final class CurrencyUnit implements Comparable<CurrencyUnit>
 {
-    public static final CurrencyUnit EMPTY = new CurrencyUnit(Messages.LabelNoCurrency, Messages.LabelNoCurrencyDescription, null);
+    public static final CurrencyUnit EMPTY = new CurrencyUnit(Messages.LabelNoCurrency,
+                    Messages.LabelNoCurrencyDescription, null);
+
     public static final String EUR = "EUR"; //$NON-NLS-1$
     public static final String USD = "USD"; //$NON-NLS-1$
 
@@ -23,14 +30,14 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
 
     static
     {
-        Enumeration<String> codes = BUNDLE.getKeys();
+        var codes = BUNDLE.getKeys();
         while (codes.hasMoreElements())
         {
-            String currencyCode = codes.nextElement();
+            var currencyCode = codes.nextElement();
             if (currencyCode.indexOf('.') >= 0)
                 continue;
 
-            String displayName = BUNDLE.getString(currencyCode);
+            var displayName = BUNDLE.getString(currencyCode);
 
             // currency symbol
             String currencySymbol = null;
@@ -68,6 +75,59 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
         return CACHE.get(currencyCode);
     }
 
+    public static CurrencyUnit getDefaultInstance()
+    {
+        var defaultCurrencyISO4217 = java.util.Currency.getInstance(Locale.getDefault());
+        if (defaultCurrencyISO4217 == null || defaultCurrencyISO4217.getCurrencyCode() == null)
+            return CurrencyUnit.getInstance(EUR);
+
+        var defaultCurrencyUnit = CurrencyUnit.getInstance(defaultCurrencyISO4217.getCurrencyCode());
+        return defaultCurrencyUnit != null ? defaultCurrencyUnit : CurrencyUnit.getInstance(EUR);
+    }
+
+    public static CurrencyUnit getInstanceBySymbol(String currencySymbol)
+    {
+        if (currencySymbol == null)
+            return null;
+
+        for (CurrencyUnit unit : CACHE.values())
+        {
+            if (currencySymbol.equals(unit.getCurrencySymbol()))
+                return unit;
+        }
+
+        return null;
+    }
+
+    public static boolean containsCurrencyCode(String currencyCode)
+    {
+        return CACHE.containsKey(currencyCode);
+    }
+
+    public static List<Pair<String, List<CurrencyUnit>>> getAvailableCurrencyUnitsGrouped()
+    {
+        NavigableMap<Integer, Pair<String, List<CurrencyUnit>>> sublists = new TreeMap<>();
+        sublists.put(0, new Pair<>("A - D", new ArrayList<>())); //$NON-NLS-1$
+        sublists.put(4, new Pair<>("E - I", new ArrayList<>())); //$NON-NLS-1$
+        sublists.put(9, new Pair<>("J - M", new ArrayList<>())); //$NON-NLS-1$
+        sublists.put(13, new Pair<>("N - R", new ArrayList<>())); //$NON-NLS-1$
+        sublists.put(18, new Pair<>("S - V", new ArrayList<>())); //$NON-NLS-1$
+        sublists.put(22, new Pair<>("W - Z", new ArrayList<>())); //$NON-NLS-1$
+
+        for (CurrencyUnit unit : CACHE.values())
+        {
+            var letter = unit.getCurrencyCode().charAt(0) - 'A';
+            sublists.floorEntry(letter).getValue().getRight().add(unit);
+        }
+
+        List<Pair<String, List<CurrencyUnit>>> answer = new ArrayList<>(sublists.values());
+
+        for (Pair<String, List<CurrencyUnit>> pair : answer)
+            Collections.sort(pair.getRight());
+
+        return answer;
+    }
+
     public String getCurrencyCode()
     {
         return currencyCode;
@@ -103,8 +163,8 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
     @Override
     public int hashCode()
     {
-        final int prime = 31;
-        int result = 1;
+        final var prime = 31;
+        var result = 1;
         result = prime * result + ((currencyCode == null) ? 0 : currencyCode.hashCode());
         return result;
     }
@@ -114,17 +174,15 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
     {
         if (this == obj)
             return true;
+
         if (obj == null)
             return false;
+
         if (getClass() != obj.getClass())
             return false;
-        CurrencyUnit other = (CurrencyUnit) obj;
-        if (currencyCode == null)
-        {
-            if (other.currencyCode != null)
-                return false;
-        }
-        else if (!currencyCode.equals(other.currencyCode))
+
+        var other = (CurrencyUnit) obj;
+        if (!Objects.equals(currencyCode, other.currencyCode))
             return false;
         return true;
     }

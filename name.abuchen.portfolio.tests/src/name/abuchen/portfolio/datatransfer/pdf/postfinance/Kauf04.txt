@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+PostFinance AG 
+Sie werden betreut von 
+Iris Soldat und Team Post  CH  AG 
+Telefon +41 848 888 700 
+www.postfinance.ch P.  P.  CH- 4808  Zofingen A- PRIORITY 
+Herr 
+Max Mustermann 
+Mustermann Max Musterstrasse 21 
+Stadt 1111 Stadt 
+Transaktionsabrechnung: Zeichnung Seite: 1 / 2 
+E-Vermögensverwaltung Datum: 20.12.2021 
+Depot 11-111111-1 Ort der Ausführung Over-the-Counter 
+Auftrag 10111111 
+Gemäss Ihrem Auftrag haben wir folgende Transaktion vorgenommen: 
+Position Anteile Währung Kurs 
+Pictet - Japan Index - I JPY 1.441 JPY 23 608.200 
+ISIN LU0188802960 
+Kurswert in Handelswährung JPY 34 019.00 
+Umsatzabgabe JPY 51.00 
+Total JPY 34 070.00 
+Total in Kontowährung zum Kurs von JPY/CHF 0.0082450 CHF 280.91 
+Der Totalbetrag von CHF 280.91 wurde Ihrem Konto CH11 0100 0000 1111 1111 1 mit Valuta 21.12.2021 belastet. 
+01521 DE   000033.00 
+Transaktionsabrechnung: Zeichnung 
+Depot 11-111111-1 Datum: 20.12.2021 Seite: 2 / 2 
+Bitte prüfen Sie dieses Dokument und benachrichtigen Sie uns bei Unstimmigkeiten innert Monatsfrist. 
+Im Rahmen dieser Transaktion hat PostFinance als Kommissionärin gehandelt. 
+Freundliche Grüsse 
+PostFinance AG 
+01521 DE   000033.00 

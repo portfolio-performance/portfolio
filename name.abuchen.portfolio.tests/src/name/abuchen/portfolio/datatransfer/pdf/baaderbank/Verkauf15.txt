@@ -1,0 +1,92 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.1
+-----------------------------------------
+ Scalable Capital GmbH
+Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/2
+Herrn München
+29.12.2022
+A B
+Bergweg A B
+30613 Hannover Stamm-Nr.: 12345    Portfolio: 1
+Depot-Nr.: 123456
+Vorgangs-Nr.: 123456
+Referenz-Nr.: 1234587
+Wertpapierabrechnung: Verkauf
+Auftragsdatum: 29.12.2022 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 10:07:25:00
+Nominale ISIN: IE00BYZK4552 WKN: A2ANH0 Kurs 
+STK 183,347 iShsIV-Automation&Robot.U.ETF EUR 8,74
+Registered Shares o.N.
+Auftraggeber: ext.Vermögensverw.
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 1.602,45
+Zu Gunsten Konto 1257638005 Valuta: 02.01.2023 EUR 1.602,45
+Die Wertpapiere buchen wir zu Lasten Ihres Depots.
+Details zur Ausführung:
+Handelsdatum Handelsuhrzeit
+29.12.2022 10:22:15:57
+Verwahrart: Wertpapierrechnung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 1419 MIC des Ausführungsplatzes: MUNC
+Lagerland: Luxemburg
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Diese Auftragsbestätigung/Abrechnung wurde von der Baader Bank AG erstellt. Bitte prüfen Sie diese auf Richtigkeit und Vollständigkeit. Etwaige 
+Einwendungen gegen diese Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden. 
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+aSiHkD1xtpGwe2oPT9G4Et
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz, Dirk Urmoneit • HRB 217778, Amtsgericht München • USt-IdNr. 
+DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de
+WPABRECHNUNG-059.112
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Wertpapierabrechnung: Verkauf
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Allgemeiner Verlusttopf (VVT) EUR 154,52 EUR 338,74 EUR 493,26
+Allgemeiner Verlusttopf (VVT) EUR 493,26 EUR 101,62 - EUR 391,64
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Veräußerungsergebnis vor Teilfreistellung Aktienfonds EUR 338,74 - EUR 0,00
+Veräußerungsergebnis Teilfreistellung 30% EUR 101,62 EUR 0,00
+Bemessungsgrundlage zur Kapitalertragsteuer EUR 237,12 - EUR 0,00
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP Kauf 32676717 02.03.2021 STK 9,62 99,99 84,08 15,91 -
+WP Kauf 35914490 06.04.2021 STK 9,45 100,00 82,59 17,41 -
+WP Kauf 38786320 04.05.2021 STK 9,823 100,00 85,85 14,15 -
+WP Kauf 42322959 03.06.2021 STK 9,71 99,99 84,87 15,12 -
+WP Kauf 45541197 02.07.2021 STK 9,114 100,00 79,66 20,34 -
+WP Kauf 49274020 03.08.2021 STK 4,419 50,00 38,62 11,38 -
+WP Kauf 53224340 02.09.2021 STK 8,53 99,99 74,55 25,44 -
+WP Kauf 57093273 04.10.2021 STK 8,967 100,00 78,37 21,63 -
+WP Kauf 62180702 04.11.2021 STK 8,021 99,99 70,10 29,89 -
+WP Kauf 68534617 06.12.2021 STK 8,207 99,99 71,73 28,26 -
+WP Kauf 73131105 04.01.2022 STK 7,783 100,00 68,02 31,98 -
+WP Kauf 80496603 04.02.2022 STK 9,521 99,99 83,21 16,78 -
+WP Kauf 94860593 07.04.2022 STK 9,65 99,99 84,34 15,65 -
+WP Kauf 105720203 09.05.2022 STK 10,629 100,00 92,90 7,10 -
+WP Kauf 111780835 07.06.2022 STK 10,421 100,00 91,08 8,92 -
+WP Kauf 118289730 07.07.2022 STK 10,999 99,99 96,13 3,86 -
+WP Kauf 124683545 08.08.2022 STK 9,686 100,00 84,66 15,34 -
+WP Kauf 131524368 07.09.2022 STK 10,797 99,99 94,37 5,62 -
+WP-Einlief. mit AK 145775254 15.01.2021 STK 9,708 100,00 84,85 15,15 -
+WP-Einlief. mit AK 145775254 15.02.2021 STK 8,292 91,28 72,47 18,81 -
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz, Dirk Urmoneit • HRB 217778, Amtsgericht München • USt-IdNr. 
+DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 121537 • Sitz der 
+Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de
+WPABRECHNUNG-059.112
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.

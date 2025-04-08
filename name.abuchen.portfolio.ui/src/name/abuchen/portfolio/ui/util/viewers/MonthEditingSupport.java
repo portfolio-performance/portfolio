@@ -25,7 +25,7 @@ public class MonthEditingSupport extends PropertyEditingSupport
         Month[] months = Month.values();
         options = new String[months.length];
         for (int ii = 0; ii < months.length; ii++)
-            options[ii] = months[ii].getDisplayName(TextStyle.FULL, Locale.getDefault());
+            options[ii] = months[ii].getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault());
     }
 
     @Override

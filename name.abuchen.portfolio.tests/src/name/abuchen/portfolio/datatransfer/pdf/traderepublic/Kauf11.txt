@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.66.1
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+asdfödasf sadfjkhasdlf SEITE 1 von 1
+Weg 20 DATUM 12.12.2023
+71234 whatever ORDER c141-b5b3
+AUSFÜHRUNG 4019-2100
+DEPOT 0409123456
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Market-Order Kauf am 12.12.2023, um 19:41 Uhr (Europe/Berlin).
+Der Kontrahent der Transaktion ist HSBC Trinkaus & Burkhardt AG.
+POSITION ANZAHL PREIS BETRAG
+HSBC Trinkaus & Burkhardt GmbH 1.000 Stk. 1,61 EUR 1.610,00 EUR
+TurboC O.End Chevron
+ISIN: DE000HG0HJ17
+GESAMT 1.610,00 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+GESAMT -1.611,00 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE3050110801955678932 14.12.2023 -1.611,00 EUR
+HSBC Trinkaus & Burkhardt GmbH TurboC O.End Chevron in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
+ABRE / 12.12.2023 / 92268251 / 031e-611a

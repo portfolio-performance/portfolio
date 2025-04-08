@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+cgWgw mLh bolGSUQ PAGE 1 / 1
+42 VRwFhq Bg dYWFU DATE 16/05/2024
+66838 ageKj COMPTE-TITRES 8041860503
+DIVIDENDE
+RÉCAPITULATIF
+Dividende à la date du 10/05/2024.
+POSITION QUANTITÉ REVENU MONTANT
+Apple Inc. 1,92086 titre(s) 0,25 USD 0,48 USD
+Registered Shares o.N.
+ISIN : US0378331005
+TOTAL 0,48 USD
+DÉTAIL
+POSITION MONTANT
+Impôt à la source pour les émetteurs américains -0,07 USD
+Sous-total 0,41 USD
+Sous-total 1,0802 EUR/USD 0,38 EUR
+TOTAL 0,38 EUR
+RÉSERVATION
+COMPTE-ESPÈCES DATE DE VALEUR MONTANT
+DE98502109007017811111 16/05/2024 0,38 EUR
+Apple Inc. Registered Shares o.N. en garde collective en Allemagne.
+Ce document est généré automatiquement et n'est donc pas signé.
+Si aucune taxe sur le chiffre d'affaires n'est indiquée, il s'agit d'un service non sujet à la taxe sur le chiffre d'affaires (conformément à la 
+réglementation UStG. § 4 n° 8).
+Trade Republic Bank GmbH www.traderepublic.com Siège de la Société: Berlin Directeur Général
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin VAT-ID DE307510626 Gernot Mittendorfer
+ABRE / 16/05/2024 / 64217923 / d7c6-4ca9

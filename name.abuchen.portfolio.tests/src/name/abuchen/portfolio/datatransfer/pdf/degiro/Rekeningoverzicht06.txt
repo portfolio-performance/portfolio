@@ -1,0 +1,17 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1.qualifier
+-----------------------------------------
+Dhr. John
+Doe
+Hoofdstraat 1
+1001AA Amsterdam
+Gebruikersnaam: ****bob
+Rekeningoverzicht van 25-07-2022 t/m 26-07-2022
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+25-07-2022 10:50 25-07-2022 flatex Storting EUR 123,45 EUR 123,47
+flatex DEGIRO Bank Dutch Branch, handelend onder de naam www.degiro.nl Rekeningoverzicht
+DEGIRO, is de Nederlandse vestiging van flatexDEGIRO Bank AG. klanten@degiro.nl 2022-07-31
+flatexDEGIRO Bank AG staat primair onder supervisie van de Duitse
+Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin). Amstelplein 1 1096 HA Pagina 1 / 1
+[flatexDEGIRO Bank AG Dutch Branch] staat in Nederland onder
+integriteitstoezicht van DNB en gedragstoezicht van de AFM.

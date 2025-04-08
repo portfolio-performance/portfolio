@@ -1,0 +1,48 @@
+PDF Autor: 'ING-DiBa'
+PDFBox Version: 1.8.16
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: Max Muster
+Herrn Direkt-Depot Nr.: 1234567890
+Max Muster Datum: 24.09.2020
+Musterstraße 10 Seite: 1 von 2
+XXXXX Musterdorf
+Wertpapierabrechnung Verkauf
+Ordernummer 123456789.001
+ISIN (WKN) DE000MA03JY5 (MA03JY)
+Wertpapierbezeichnung Morgan Stanley & Co. Intl PLC
+FaktL O.End DAX 11476,96
+Kündigungsrecht des Emittenten ab 08.07.2020
+Nominale Stück 70,00
+Kurs EUR 5,70
+Handelsplatz Stuttgart
+Ausführungstag / -zeit 24.09.2020 um 08:14:25 Uhr
+Kurswert EUR 399,00
+Provision EUR 5,90
+Endbetrag zu Ihren Gunsten EUR 393,10
+Abrechnungs-IBAN DE12 0000 1234 5678 9999 00
+Valuta 28.09.2020
+Wertpapiere zulasten Girosammelverwahrung.
+Diese Order wurde mit folgendem Limit / -typ erteilt: 5,70 EUR / stop loss
+Weiter geht es auf Seite 2.
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzender des Aufsichtsrates: Dr. Claus Dieter Hoffmann · Vorstand: Nick Jue (Vorsitzender),
+Bernd Geilen (stellv. Vorsitzender), Zeljko Kaurin, Daniel Llano Manibardo, Dr. Joachim von Schorlemer, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main HRB 7727,
+Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+34WAAD8013777000_T
+Depotinhaber: Max Muster
+Direkt-Depot Nr.: 1234567890
+Datum: 24.09.2020
+Seite: 2 von 2
+Ordernummer 123456789.001
+ISIN (WKN) DE000MA03JY5 (MA03JY)
+Veräußerungsverlust nach Differenzmethode -xx,xx EUR
+Mit Verrechnungstopf Allgemein verrechnet xx,xx EUR
+Verrechnungstopf Aktien vor Geschäft xxxx,xx EUR
+Verrechnungstopf Aktien nach Geschäft xxxx,xx EUR
+Verrechnungstopf Allgemein vor Geschäft xxxx,xx EUR
+Verrechnungstopf Allgemein nach Geschäft xxxx,xx EUR
+Verrechnungstopf ausländ. Quellensteuer vor Geschäft x,xx EUR
+Verrechnungstopf ausländ. Quellensteuer nach Geschäft x,xx EUR
+Sparer-Pauschbetrag nach Geschäft xxx,xx EUR
+Bei Fragen besuchen Sie uns einfach unter www.ing.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing.de .

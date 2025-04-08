@@ -17,53 +17,57 @@ import name.abuchen.portfolio.money.Values;
     private List<Double> values = new ArrayList<>();
 
     @Override
-    public void visit(CurrencyConverter converter, DividendInitialTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtStart t)
     {
         dates.add(t.getDateTime().toLocalDate());
-        values.add(-t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount() / Values.Amount.divider());
+        values.add(-t.getValue().with(converter.at(t.getDateTime())).getAmount() / Values.Amount.divider());
     }
 
     @Override
-    public void visit(CurrencyConverter converter, DividendFinalTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtEnd t)
     {
         dates.add(t.getDateTime().toLocalDate());
-        values.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount() / Values.Amount.divider());
+        values.add(t.getValue().with(converter.at(t.getDateTime())).getAmount() / Values.Amount.divider());
     }
 
     @Override
-    public void visit(CurrencyConverter converter, DividendTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.DividendPayment t)
     {
         dates.add(t.getDateTime().toLocalDate());
 
-        long taxes = t.getUnitSum(Unit.Type.TAX, converter).getAmount();
-        long amount = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
+        long taxes = t.getTransaction().orElseThrow(IllegalArgumentException::new).getUnitSum(Unit.Type.TAX, converter)
+                        .getAmount();
+        long amount = t.getValue().with(converter.at(t.getDateTime())).getAmount();
 
         values.add((amount + taxes) / Values.Amount.divider());
     }
 
     @Override
-    public void visit(CurrencyConverter converter, AccountTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem item, AccountTransaction t)
     {
         switch (t.getType())
         {
             case TAXES:
             case TAX_REFUND:
-                // ignore tax and tax refunds when calculating the irr for a single security
+                // ignore tax and tax refunds when calculating the irr for a
+                // single security
                 break;
             case FEES:
                 dates.add(t.getDateTime().toLocalDate());
-                values.add(-converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount() / Values.Amount.divider());
+                values.add(-converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount()
+                                / Values.Amount.divider());
                 break;
             case FEES_REFUND:
                 dates.add(t.getDateTime().toLocalDate());
-                values.add(converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount() / Values.Amount.divider());
+                values.add(converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount()
+                                / Values.Amount.divider());
                 break;
             default:
         }
     }
 
     @Override
-    public void visit(CurrencyConverter converter, PortfolioTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem item, PortfolioTransaction t)
     {
         dates.add(t.getDateTime().toLocalDate());
         long taxes = t.getUnitSum(Unit.Type.TAX, converter).getAmount();

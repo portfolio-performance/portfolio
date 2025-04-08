@@ -58,7 +58,7 @@ public class TaxonomyNodeTransfer extends ByteArrayTransfer
     protected Object nativeToJava(TransferData transferData)
     {
         Object result = super.nativeToJava(transferData);
-        if (result instanceof byte[] && TYPE_NAME.equals(new String((byte[]) result)))
+        if (result instanceof byte[] byteArray && TYPE_NAME.equals(new String(byteArray)))
             return nodes;
         return null;
     }

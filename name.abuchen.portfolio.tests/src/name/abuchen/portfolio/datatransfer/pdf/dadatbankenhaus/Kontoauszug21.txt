@@ -1,0 +1,34 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+Schelhammer Capital Bank AG vom 15.10.2021
+60003
+Kundennummer
+Alter Saldo per 04.10.2021 5,67
+Summe der Gutschriften 7.087,19
+Summe der Lastschriften 0,00
+Schelhammer , PF 1000, 5021 Salzburg
+Neuer Saldo zu Ihren Gunsten
+Max Mustermann EUR 7.092,86
+Dorfstraße 17/11
+1010 Dorf
+Konto-Nr.: 00078000082 Bankleitzahl: 19190
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+15.10 Verkauf                          Depot    7806000200/20211014-32284384 18.10 3.716,47
+ISIN US92556H2067 VIACOMCBS INC. BDL-,001               110,00000 STK
+Kurs                     33,925000  KURSWERT              3.731,75 EUR
+Handelsspesen            -2,70 EUR  DADAT Handelsspesen     -11,48 EUR
+Clearing Gebühr          -1,10 EUR
+15.10 Verkauf                          Depot    7806000200/20211015-33366549 19.10 3.211,15
+ISIN US1667641005 CHEVRON CORP.      DL-,75              35,00000 STK
+Kurs                     93,340000  KURSWERT              3.266,90 EUR
+KEST                    -46,78 EUR  Handelsspesen            -1,80 EUR
+DADAT Handelsspesen      -7,17 EUR
+15.10 KESt-Verlustausgleich            Depot    7806000200/20211014-41350584 18.10 159,57
+ISIN US92556H2067 VIACOMCBS INC. BDL-,001
+KEST                    159,57 EUR
+Neuer Saldo zu Ihren Gunsten 7.092,86
+AT40 1919 0000 7806 0002 BSSWATWW 01 0033 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 13127 Doknr.: EK00-045-0288006323

@@ -1,0 +1,277 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.0
+-----------------------------------------
+Vermögensdepot Konto
+EUR-Konto Kontonummer 123456789
+MLP Banking AG, BLZ 67230000
+Postfach 1379, 69154 Wiesloch Kontoauszug Nr.  3/2022
+erstellt am 30.09.2022 22:37 Blatt  1 von 5
+IBAN: DE02 6723 0000 0123 4567 89 BIC: MLPBDE61
+Frau
+Erika Mustermann
+Musterweg 1
+11111 Musterstadt
+Bu-Tag Wert Vorgang
+alter Kontostand vom 30.06.2022                44,95 S
+01.07. 01.07. LASTSCHRIFTEINR. PN:2042                                                      300,00 H
+              MUSTERMANN, ERIKA
+              8009771 VERMOEGENSDEPOT SAMMELBUCHUNG SPARPLAN WKN 847
+              811, A0M430, 930921 DBX1DA, A0RCVV, A2JMGE EREF: SPARS
+              P 10345247 MREF: WPBF0000167726 IBAN: DE65672300004015
+              345678 BIC: MLPBDE61XXX
+04.07. 04.07. GUTSCHRIFT PN:2089                                                             13,11 H
+              MLP Banking AG
+              0060 ERSTATTUNG VERTRIEBSFOLGEPROVISION/BESTANDSPROVIS
+              ION 37346899 Q2/2022 DEPOT 9876543210 EREF: VFP 2022 Q
+              UARTAL II
+04.07. 04.07. ENTGELT gem. PLV PN:2089                                             37,25 S
+              MLP BANKING AG
+              0008 DEPOTENTGELT 40785264 Q2/2022 DEPOT 9876543210 US
+              T-ID DE143449956 NETTO 31,30EUR 19% UST. 5,95EUR EREF:
+               DE 2022 QUARTAL II IBAN: DE83672300001234567890 BIC:
+              MLPBDE61XXX
+05.07. 05.07. EFFEKTEN PN:925                                                      49,95 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN DBX1DA / LU0274211480
+              XTR.DAX 1C                 DEPOTNR.:      9876543210
+              HANDELSTAG 01.07.2022      MENGE              0,4090
+              KURS      121,97570000     AUFTRAGSNR.      6718863500
+06.07. 06.07. EFFEKTEN PN:925                                                      49,68 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A0RCVV / LU0384405519
+              VONTOBEL-CLEAN TECHN.A EO  DEPOTNR.:      9876543210
+              HANDELSTAG 01.07.2022      MENGE              0,1130
+              KURS      439,69000000     AUFTRAGSNR.      6721543600
+                                            Übertrag auf Blatt 2                            131,28 H
+0752
+000
+K00554461
+6M Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Vermögensdepot Konto
+EUR-Konto Kontonummer 123456789
+Erika Mustermann
+Kontoauszug Nr.  3/2022
+erstellt am 30.09.2022 22:37 Blatt  2 von 5
+Bu-Tag Wert Vorgang
+                                            Übertrag von Blatt 1                            131,28 H
+06.07. 06.07. EFFEKTEN PN:925                                                      49,68 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN 847811 / DE0008478116
+              FMM-FONDS                  DEPOTNR.:      9876543210
+              HANDELSTAG 04.07.2022      MENGE              0,0830
+              KURS      598,55000000     AUFTRAGSNR.      6719854000
+06.07. 06.07. EFFEKTEN PN:925                                                      49,87 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A0M430 / LU0323578657
+              FLOSSB.V.STORCH-MUL.OPP.R  DEPOTNR.:      9876543210
+              HANDELSTAG 04.07.2022      MENGE              0,1810
+              KURS      275,55000000     AUFTRAGSNR.      6721529300
+08.07. 07.07. EFFEKTEN PN:925                                                      49,97 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN 930921 / LU0106280919
+              SAUREN GLOB.OPPS A         DEPOTNR.:      9876543210
+              HANDELSTAG 05.07.2022      MENGE              1,3510
+              KURS       36,99000000     AUFTRAGSNR.      6754145900
+08.07. 07.07. EFFEKTEN PN:925                                                      49,99 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A2JMGE / IE00BG0J4C88
+              ISHSIV-DIGITIL.SECUR.DL A  DEPOTNR.:      9876543210
+              HANDELSTAG 05.07.2022      MENGE              8,4430
+              KURS        5,90960000     AUFTRAGSNR.      6749485400
+20.07. 19.07. EFFEKTENGUTSCHRIFT PN:925                                                      68,26 H
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              VERKAUF                    WKN DBX1DA / LU0274211480
+              XTR.DAX 1C                 DEPOTNR.:      9876543210
+              HANDELSTAG 15.07.2022      MENGE              0,5580
+              KURS      122,46520000     AUFTRAGSNR.      6856553300
+01.08. 01.08. LASTSCHRIFTEINR. PN:2042                                                      300,00 H
+              MUSTERMANN, ERIKA
+              8101167 VERMOEGENSDEPOT SAMMELBUCHUNG SPARPLAN WKN 847
+              811, A0M430, 930921 DBX1DA, A0RCVV, A2JMGE EREF: SPARS
+              P 10707176 MREF: WPBF0000167726 IBAN: DE65672300004015
+              345678 BIC: MLPBDE61XXX
+                                            Übertrag auf Blatt 3                            300,03 H
+0752
+000
+K00554461 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Vermögensdepot Konto
+EUR-Konto Kontonummer 123456789
+Erika Mustermann
+Kontoauszug Nr.  3/2022
+erstellt am 30.09.2022 22:37 Blatt  3 von 5
+Bu-Tag Wert Vorgang
+                                            Übertrag von Blatt 2                            300,03 H
+03.08. 03.08. EFFEKTEN PN:925                                                      49,97 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN DBX1DA / LU0274211480
+              XTR.DAX 1C                 DEPOTNR.:      9876543210
+              HANDELSTAG 01.08.2022      MENGE              0,3890
+              KURS      128,31150000     AUFTRAGSNR.      7026174600
+04.08. 04.08. EFFEKTEN PN:925                                                      49,59 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN 847811 / DE0008478116
+              FMM-FONDS                  DEPOTNR.:      9876543210
+              HANDELSTAG 02.08.2022      MENGE              0,0820
+              KURS      604,80000000     AUFTRAGSNR.      7042731000
+04.08. 04.08. EFFEKTEN PN:925                                                      49,83 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A0RCVV / LU0384405519
+              VONTOBEL-CLEAN TECHN.A EO  DEPOTNR.:      9876543210
+              HANDELSTAG 01.08.2022      MENGE              0,1000
+              KURS      498,28000000     AUFTRAGSNR.      7043600600
+04.08. 04.08. EFFEKTEN PN:925                                                      49,90 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A0M430 / LU0323578657
+              FLOSSB.V.STORCH-MUL.OPP.R  DEPOTNR.:      9876543210
+              HANDELSTAG 02.08.2022      MENGE              0,1720
+              KURS      290,12000000     AUFTRAGSNR.      7043169700
+04.08. 04.08. EFFEKTEN PN:925                                                      50,00 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A2JMGE / IE00BG0J4C88
+              ISHSIV-DIGITIL.SECUR.DL A  DEPOTNR.:      9876543210
+              HANDELSTAG 02.08.2022      MENGE              8,0000
+              KURS        6,23730000     AUFTRAGSNR.      7048875100
+05.08. 05.08. EFFEKTEN PN:925                                                      49,99 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN 930921 / LU0106280919
+              SAUREN GLOB.OPPS A         DEPOTNR.:      9876543210
+              HANDELSTAG 03.08.2022      MENGE              1,2980
+              KURS       38,51000000     AUFTRAGSNR.      7061301300
+                                            Übertrag auf Blatt 4                              0,75 H
+0752
+000
+K00554461 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Vermögensdepot Konto
+EUR-Konto Kontonummer 123456789
+Erika Mustermann
+Kontoauszug Nr.  3/2022
+erstellt am 30.09.2022 22:37 Blatt  4 von 5
+Bu-Tag Wert Vorgang
+                                            Übertrag von Blatt 3                              0,75 H
+01.09. 01.09. LASTSCHRIFTEINR. PN:2042                                                      300,00 H
+              MUSTERMANN, ERIKA
+              9005503 VERMOEGENSDEPOT SAMMELBUCHUNG SPARPLAN WKN 847
+              811, A0M430, 930921 DBX1DA, A0RCVV, A2JMGE EREF: SPARS
+              P 10805254 MREF: WPBF0000167726 IBAN: DE65672300004015
+              345678 BIC: MLPBDE61XXX
+06.09. 06.09. EFFEKTEN PN:925                                                      49,48 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN 847811 / DE0008478116
+              FMM-FONDS                  DEPOTNR.:      9876543210
+              HANDELSTAG 02.09.2022      MENGE              0,0830
+              KURS      596,18000000     AUFTRAGSNR.      7451388200
+06.09. 06.09. EFFEKTEN PN:925                                                      49,82 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A0RCVV / LU0384405519
+              VONTOBEL-CLEAN TECHN.A EO  DEPOTNR.:      9876543210
+              HANDELSTAG 01.09.2022      MENGE              0,1040
+              KURS      479,03000000     AUFTRAGSNR.      7453776700
+06.09. 05.09. EFFEKTEN PN:925                                                      49,95 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN DBX1DA / LU0274211480
+              XTR.DAX 1C                 DEPOTNR.:      9876543210
+              HANDELSTAG 01.09.2022      MENGE              0,4150
+              KURS      120,21470000     AUFTRAGSNR.      7500761500
+06.09. 06.09. EFFEKTEN PN:925                                                      49,98 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A0M430 / LU0323578657
+              FLOSSB.V.STORCH-MUL.OPP.R  DEPOTNR.:      9876543210
+              HANDELSTAG 02.09.2022      MENGE              0,1770
+              KURS      282,40000000     AUFTRAGSNR.      7451487600
+07.09. 07.09. EFFEKTEN PN:925                                                      49,97 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN 930921 / LU0106280919
+              SAUREN GLOB.OPPS A         DEPOTNR.:      9876543210
+              HANDELSTAG 05.09.2022      MENGE              1,3330
+              KURS       37,49000000     AUFTRAGSNR.      7472670700
+                                            Übertrag auf Blatt 5                             51,55 H
+0752
+000
+K00554461 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Vermögensdepot Konto
+EUR-Konto Kontonummer 123456789
+Erika Mustermann
+Kontoauszug Nr.  3/2022
+erstellt am 30.09.2022 22:37 Blatt  5 von 5
+Bu-Tag Wert Vorgang
+                                            Übertrag von Blatt 4                             51,55 H
+07.09. 06.09. EFFEKTEN PN:925                                                      49,99 S
+              MLP Banking AG
+              Konto: 3000068574 BLZ: 67230000
+              WERTPAPIERABRECHNUNG
+              KAUF                       WKN A2JMGE / IE00BG0J4C88
+              ISHSIV-DIGITIL.SECUR.DL A  DEPOTNR.:      9876543210
+              HANDELSTAG 02.09.2022      MENGE              8,1180
+              KURS        6,06820000     DEVISENKURS       0,9873000
+              AUFTRAGSNR.      7477231600
+                                    neuer Kontostand vom 30.09.2022                           1,56 H
+                    Informationen zum Datenschutz finden
+                    Sie unter mlp.de/mlp/datenschutz.
+0752
+000
+K00554461 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Sehr geehrte Kundin, sehr geehrter Kunde,
+Sie haben eine Bankmitteilung erhalten, z. B. einen Kontoauszug, einen Sparkontoauszug oder eine Dividendenabrechnung. Bitte 
+prüfen Sie diese genau: Ist alles korrekt? Falls nicht, sprechen Sie uns bitte an. Damit Sie immer gut informiert sind und wissen, wie 
+Sie Ihre Bankmitteilung "richtig lesen", haben wir diese nützlichen Hinweise für Sie zusammengestellt:
+Falls in diesem Dokument Bankdienstleistungen aufgeführt sind, sind diese umsatzsteuerfrei - sofern nichts Abweichendes angegeben
+ist. Der im Kontoauszug ausgewiesene Betrag muss nicht dem tatsächlichen Kontoguthaben entsprechen, weil z. B. die Wertstellung
+einzelner Buchungen nicht berücksichtigt wurde oder noch Zinsen für eine Kontoüberziehung bei einer Verfügung anfallen können.
+Rechnungsabschlüsse
+Ihr Kontoauszug ist mit dem Hinweis "Rechnungsabschluss" versehen?
+Dann haben wir für Ihr Konto einen Rechnungsabschluss durchgeführt, einschließlich Zinsen und Entgelte. Alle weiteren, nach dem
+Erstellungsdatum dieser Mitteilung anfallenden Umsätze und Kontoauszüge werden erst in der folgenden Abrechnung
+berücksichtigt - auch wenn sie sich auf den Abrechnungssaldo des abgelaufenen Abrechnungszeitraumes auswirken.
+Korrekturen werden gekennzeichnet. Den Rechnungsabschluss können Sie beim Finanzamt vorlegen.
+Einwendungen
+Sie haben Einwendungen gegen den Rechnungsabschluss Ihres Kontokorrentkontos oder den Inhalt des Sparkontoauszugs? Dann
+haben Sie nach Erhalt sechs Wochen Zeit, uns schriftlich zu informieren. Sonst gilt der Rechnungsabschluss als genehmigt.
+Einzugsaufträge
+Einzugspapiere wie z. B. Schecks und Lastschriften werden unter dem Vorbehalt des Eingangs gutgeschrieben, und zwar auch
+dann, wenn diese Papiere bei uns selbst zahlbar sind. 
+Schecks und Lastschriften sind erst eingelöst, wenn die Belastungsbuchung nicht spätestens am zweiten Bankarbeitstag - bei 
+Lastschriften im SEPA-Firmen-Lastschriftverfahren nicht spätestens am dritten Bankarbeitstag - nach ihrer Vornahme rückgängig
+gemacht wird. Barschecks sind bereits mit Zahlung an den Scheckvorleger eingelöst. Schecks sind auch schon dann eingelöst,
+wenn wir im Einzelfall eine Bezahltmeldung absenden.
+Guthaben
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. 
+Nähere Informationen können dem "Informationsbogen für den Einleger" entnommen werden.
+Sie haben noch Fragen? Dann kontaktieren Sie uns bitte. Wir sind gern für Sie da.
+Mit freundlichen Grüßen
+Ihre Bank

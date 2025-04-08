@@ -1,0 +1,56 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.2.qualifier
+-----------------------------------------
+Kontoauszug
+Herrn Kunde Max Muster
+Max Muster
+Musterstr. 2
+Datum 30.11.2022
+04668 Musterhausen
+Auszug Nr. 12
+Blatt 1 von 1
+Kontonummer 50154075
+IBAN DE87330200000050154075
+alter Saldo zum 31.10.2022
+in EUR 5.744,46
+Nr. Valuta / Buchungstag Buchungstext EUR
+01 01.11.2022 / 01.11.2022 Sparkonto Kündigung -5.742,27
+Max Muster 
+Betragskuendigung Sparkonto 
+02 30.11.2022 / 30.11.2022 Kontoabschluß 0,05
+Habenzinsen 
+v. 31.10.2022 b. 11.11.2022 
+Zinsen zu 0,300 % 
+Ihre Einlage wird von einem gesetzlichen Einlagensicherungs- neuer Saldo zum 30.11.2022
+system gedeckt. Wir sind der Entschädigungseinrichtung deutscher  
+Banken GmbH (EdB) angeschlossen. Im Falle unserer Insolvenz in EUR 2,24
+werden Ihre Einlagen in jedem Fall bis zu 100 000 Euro erstattet. 
+Weitere Informationen finden Sie im "Informationsbogen für den  Werden innerhalb der Frist keine Einwendungen vorgebracht, so 
+Einleger" und unter www.edb-banken.de.  gilt der Saldo bzw. gelten die Salden wie oben aufgeführt, 
+entsprechend unserer Allgemeinen Geschäftsbedingungen, als 
+Bitte beachten Sie die folgenden Hinweise: von Ihnen anerkannt.
+Kontoauszug ohne Rechnungsabschluss (Kontoübersicht) Genehmigung von Belastungen aus Lastschriften
+Wir bitten Sie, den Kontoauszug gemäß Ziffer 11. Absatz 4 Haben Sie eine Belastungsbuchung aus einer Lastschrift, für die 
+unserer Allgemeinen Geschäftsbedingungen auf Vollständigkeit Sie dem Gläubiger eine Einzugsermächtigung erteilt haben, nicht 
+und Richtigkeit zu prüfen und Einwendungen der Revision schon genehmigt, so haben Sie Einwendungen gegen die im 
+unserer Bank unverzüglich in Textform mitzuteilen. Saldo bzw. in den Salden dieses Rechnungsabschlusses 
+enthaltene Belastungsbuchung spätestens vor Ablauf von sechs 
+akf bank GmbH & Co KG, Abteilung Revision, Wochen nach Zugang des Rechnungsabschlusses zu erheben. 
+Am Diek 50, 42277 Wuppertal Sofern Sie Ihre Einwendungen in Textform geltend machen, 
+E-Mail: Revision@akf.de genügt die Absendung innerhalb der Sechs-Wochen-Frist. Das 
+unterlassen rechtzeitiger Einwendungen gilt als Genehmigung der 
+Rechnungsabschluss inkl. Saldenmitteilung
+Wir bitten Sie, den Saldo Ihres Kontos bzw. die Salden Ihrer 
+Konten zu prüfen und Einwendungen der Revision unserer Bank Ihre 
+unverzüglich, spätestens innerhalb von sechs Wochen nach akf bank GmbH & Co KG 
+Zugang, in Textform mitzuteilen.
+akf bank GmbH & Co KG Sitz der Gesellschaft: Geschäftsführer: 
+Servicecenter Am Diek 50, 42277 Wuppertal Dr. Frank Henes (Vorsitzender), 
+Postfach 1242 Bernhard Ismann, Holger Stuhlmann
+85312 Freising
+T +49 202 25727-2121 www.akf24.de Zuständige Aufsichtsbehörde: 
+F +49 202 25727-2122 service@akf24.de Bundesanstalt für Finanzdienstleistungsaufsicht
+ELG_KAbl_20_10_27
+
+```

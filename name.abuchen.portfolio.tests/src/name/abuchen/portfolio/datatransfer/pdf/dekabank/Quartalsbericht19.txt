@@ -1,0 +1,278 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1.qualifier
+-----------------------------------------
+Quartalsbericht per 30.06.2020
+Depotübersicht
+Seite: 1
+Depot: 0111111111
+Depotinhaber:
+Armin Mustermann
+Herrn
+Armin Mustermann
+Musterstraße
+Frankenweg 7
+11111 Stadt
+ISIN Unter- Bezeichnung Wert Wertentwicklung
+depot in EUR in EUR 
+per 30.06.2020 seit 31.03.2020 1
+LU0348413815 00 DekaLux-PharmaTech TF         4.573,48 +436,37
+LU0350482435 00 DekaLuxTeam-EmergingMarkets 3.680,89 +460,43
+DE000DK2CFT3 00 Deka-BasisAnlage A100         1.017,71 +110,04
+VL-Vertrag: gesperrt bis zum 31.12.2024 
+Vertragsinhaber: Armin Mustermann
+LU0052859252 00 DekaLuxTeam-Aktien Asien 4.359,93 +539,35
+LU0062624902 00 DekaLux-Deutschland TF A      1.133,92 +200,30
+DE0009786186 00 Deka-EuropaSelect CF 1.839,87 +265,84
+DE0009786285 00 Deka-EuropaPotential TF       4.372,98 +883,46
+DE0009786285 01 Deka-EuropaPotential TF 1.143,96 +231,11
+XF0009995000 00 Deka-ZukunftsPlan             Variante: Select
+LU0230155797 00 - Deka-Renten konservativ       0,00 +16,98
+DE000DK2J6P1 00 - Deka-RentenStrategie Global CF 1.940,78 +50,51
+            Garantiertes Kapital zu Beginn der Auszahlungsphase (Beitragszusage):
+2.351,25 EUR
+Dieser Betrag steht Ihnen auf Basis der bisher eingezahlten
+Altersvorsorgebeiträge (einschließlich Zulagen) zu Beginn der
+Auszahlungsphase mindestens zur Verfügung.
+Gesamt in EUR 24.063,52 +3.194,39
+1 Hinweis: Der letzte Handelstag kann stichtagsbezogen vom Quartalsultimo abweichen.
+Alle auf dieser Depotübersicht aufgeführten Vermögenswerte fallen unter die Regelungen der Richtlinie 2014/65/EU (MiFID II) und deren
+Durchführungsmaßnahmen bzw. der sie umsetzenden nationalen Regelungen.
+Wir weisen ausdrücklich darauf hin, dass im Markt unterschiedliche Berechnungsmethoden zur Ermittlung der Wertentwicklung verwendet
+werden (z.B. geldgewichtete oder zeitgewichtete Berechnungsmethode). Bei Verwendung unterschiedlicher Berechnungsmethoden ist es
+möglich, dass die in anderen Informationen ausgewiesenen Wertentwicklungen von der in dieser Information dargestellten Wertentwicklung
+abweichen.
+Fortsetzung auf Seite 2
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Quartalsbericht per 30.06.2020
+Depotübersicht
+Seite: 2
+Depot: 0111111111
+Depotinhaber:
+Armin Mustermann
+Hinweise zum Berater:
+Zu allen Themen rund um Ihr DekaBank Depot informiert Sie Ihr Berater der Sparkasse Schweinfurt-Haßberge.
+Gute Neuigkeiten für Sie: Der deutsche Gesetzgeber hat die Mehrwertsteuersätze im Rahmen seines Zweiten Corona-Steuerhilfegesetzes
+im Zeitraum vom 1. Juli 2020 bis zum 31. Dezember 2020 gesenkt. In der Depotführung des DekaBank Depots geben wir diese Senkung
+gerne in vollem Umfang an unsere Kunden weiter. Die reduzierten Preise haben wir in unser Preis- und Leistungsverzeichnis zum DekaBank
+Depot für den genannten Zeitraum aufgenommen. Anschließend gilt das reguläre Preis- und Leistungsverzeichnis weiter. Die aktuelle Fassung
+finden Sie auf unserer Homepage www.deka.de.
+Ressourcen, Zeit und Geld sparen: Mit einem Online-Zugang haben Sie von überall und jederzeit Zugriff auf Ihr DekaBank Depot sowie die
+dazugehörigen Dokumente, z.B. auch über die S-Invest App (www.deka.de/s-invest).
+Außerdem helfen Sie dabei, wichtige Ressourcen zu schonen! Jedes auf die Online-Nutzung umgestellte DekaBank Depot bedeutet ca. 
+6 Briefe im Jahr weniger, die verschickt werden müssen. Und Sie profitieren durch den reduzierten Depotpreis. Weitere Informationen zur
+Online-Freischaltung erhalten Sie unter www.deka.de/online oder in Ihrer Sparkasse.
+Dieser Report besteht aus 2 Seiten.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Quartalsbericht per 30.06.2020
+Umsatzübersicht
+Seite 1
+Depot: 0111111111
+Depotinhaber:
+Armin Mustermann
+DekaLux-PharmaTech TF         
+ISIN: LU0348413815 Unterdepot: 00
+Verwahrart: GiroSammel
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.03.2020 4.137,11  285,180000 14,507
+Bewertung mit dem Rücknahmepreis vom 31.03.2020
+Summe der Betragsbewegungen 0,00
+Bestand am 30.06.2020 4.573,48 315,260000 14,507
+Bewertung mit dem Rücknahmepreis vom 30.06.2020
+DekaLuxTeam-EmergingMarkets   
+ISIN: LU0350482435 Unterdepot: 00
+Verwahrart: GiroSammel
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.03.2020 3.220,46  114,290000 28,178
+Bewertung mit dem Rücknahmepreis vom 31.03.2020
+Summe der Betragsbewegungen 0,00
+Bestand am 30.06.2020 3.680,89 130,630000 28,178
+Bewertung mit dem Rücknahmepreis vom 30.06.2020
+Bitte prüfen Sie die vorliegenden Informationen.
+Fortsetzung auf Seite 2
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Quartalsbericht per 30.06.2020
+Umsatzübersicht
+Seite 2
+Depot: 0111111111
+Depotinhaber:
+Armin Mustermann
+Deka-BasisAnlage A100         
+ISIN: DE000DK2CFT3 Unterdepot: 00
+Verwahrart: GiroSammel
+VL-Vertrag: gesperrt bis zum 31.12.2024, Vertragsinhaber: Armin Mustermann
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.03.2020 799,67  143,670000 5,566
+Bewertung mit dem Rücknahmepreis vom 31.03.2020
+Kauf 36,00 163,400000 +0,220 16.04.2020 16.04.2020
+Kauf 36,00 166,760000 +0,216 18.05.2020 18.05.2020
+Kauf 36,00 169,100000 +0,213 16.06.2020 16.06.2020
+Summe der Betragsbewegungen 108,00
+Bestand am 30.06.2020 1.017,71 163,750000 6,215
+Bewertung mit dem Rücknahmepreis vom 30.06.2020
+DekaLuxTeam-Aktien Asien      
+ISIN: LU0052859252 Unterdepot: 00
+Verwahrart: GiroSammel
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.03.2020 3.820,58  621,940000 6,143
+Bewertung mit dem Rücknahmepreis vom 31.03.2020
+Summe der Betragsbewegungen 0,00
+Bestand am 30.06.2020 4.359,93 709,740000 6,143
+Bewertung mit dem Rücknahmepreis vom 30.06.2020
+Fortsetzung auf Seite 3
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Quartalsbericht per 30.06.2020
+Umsatzübersicht
+Seite 3
+Depot: 0111111111
+Depotinhaber:
+Armin Mustermann
+DekaLux-Deutschland TF A      
+ISIN: LU0062624902 Unterdepot: 00
+Verwahrart: GiroSammel
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.03.2020 933,62  94,620000 9,867
+Bewertung mit dem Rücknahmepreis vom 31.03.2020
+Summe der Betragsbewegungen 0,00
+Bestand am 30.06.2020 1.133,92 114,920000 9,867
+Bewertung mit dem Rücknahmepreis vom 30.06.2020
+Deka-EuropaSelect CF          
+ISIN: DE0009786186 Unterdepot: 00
+Verwahrart: GiroSammel
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.03.2020 1.574,03  60,750000 25,910
+Bewertung mit dem Rücknahmepreis vom 31.03.2020
+Summe der Betragsbewegungen 0,00
+Bestand am 30.06.2020 1.839,87 71,010000 25,910
+Bewertung mit dem Rücknahmepreis vom 30.06.2020
+Deka-EuropaPotential TF       
+ISIN: DE0009786285 Unterdepot: 00
+Verwahrart: GiroSammel
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.03.2020 3.489,52  103,170000 33,823
+Bewertung mit dem Rücknahmepreis vom 31.03.2020
+Summe der Betragsbewegungen 0,00
+Bestand am 30.06.2020 4.372,98 129,290000 33,823
+Bewertung mit dem Rücknahmepreis vom 30.06.2020
+Fortsetzung auf Seite 4
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Quartalsbericht per 30.06.2020
+Umsatzübersicht
+Seite 4
+Depot: 0111111111
+Depotinhaber:
+Armin Mustermann
+Deka-EuropaPotential TF       
+ISIN: DE0009786285 Unterdepot: 01
+Verwahrart: GiroSammel
+Umsatzart Ein-/Auszahlung Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR Fremdwährung EUR Anteile tag nungstag
+Bestand am 31.03.2020 912,85  103,170000 8,848
+Bewertung mit dem Rücknahmepreis vom 31.03.2020
+Summe der Betragsbewegungen 0,00
+Bestand am 30.06.2020 1.143,96 129,290000 8,848
+Bewertung mit dem Rücknahmepreis vom 30.06.2020
+Dieser Report besteht aus 4 Seiten.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Quartalsbericht per 30.06.2020
+Umsatzübersicht Deka-ZukunftsPlan
+Seite 1
+Depot: 0111111111
+Depotinhaber:
+Armin Mustermann
+Deka-ZukunftsPlan
+ISIN: XF0009995000 Unterdepot: 00 Variante: Select
+Vertragsnummer: 011970177999950000  Zertifizierungs-Nr.: 004455
+Aktuelle Phase:  Ansparphase Beginn der Auszahlungsphase: 01.02.2062
+Übersicht der angesparten Fonds
+Fondsname ISIN Verwahrart
+Deka-Renten konservativ LU0230155797 GiroSammel
+Deka-RentenStrategie Global CF DE000DK2J6P1 GiroSammel
+Übersicht der erfolgten Zahlungen
+Umsatzart Fondsname Ein-/Auszahlung Preis je Anteil Abgerechnete Buchungs- Abrech-
+EUR EUR Anteile tag nungstag
+Bestand am 31.03.2020 Deka-Renten konservativ 1.698,29 47,670000 35,626
+Gesamtbestand des Vertrages am 01.04.2020 1.698,29
+Bewertung mit dem Rücknahmepreis vom 31.03.2020
+Zulagenzahlung       2019 Deka-Renten konservativ 68,25 48,000000 +1,422 19.05.2020 19.05.2020
+Zulagenzahlung       2019 Deka-RentenStrategie 106,75 94,790000 +1,126 19.05.2020 19.05.2020
+Global CF
+Ausschüttung / Kauf aus Ertrag Deka-RentenStrategie 42,00 89,200000 +0,471 22.05.2020 22.05.2020
+Global CF
+Zusammenfassung der Umschichtungen (Details siehe nachfolgende "Übersicht der Umschichtungen")
+Deka-Renten konservativ -37,048
+Deka-RentenStrategie +19,503
+Global CF
+Bestand am 30.06.2020 Deka-Renten konservativ 0,00 48,370000 0,000
+Bestand am 30.06.2020 Deka-RentenStrategie 1.940,78 91,980000 21,100
+Global CF
+Gesamtbestand des Vertrages am 30.06.2020 1.940,78
+Bewertung mit dem Rücknahmepreis vom 30.06.2020
+Übersicht der Umschichtungen
+Umsatzart Fondsname Betrag Preis je Anteil Abgerechnete Buchungs- Abrech-
+ EUR EUR Anteile tag nungstag
+Verkauf / Tausch Deka-Renten konservativ 340,80 47,890000 -7,116 16.04.2020 16.04.2020
+Kauf / Tausch Deka-RentenStrategie 340,80 90,020000 +3,786 16.04.2020 16.04.2020
+Global CF
+Verkauf / Tausch Deka-Renten konservativ 0,50 47,900000 -0,010 17.04.2020 17.04.2020
+Kauf / Tausch Deka-RentenStrategie 0,50 90,200000 +0,006 17.04.2020 17.04.2020
+Global CF
+Verkauf / Tausch Deka-Renten konservativ 682,17 48,010000 -14,209 18.05.2020 18.05.2020
+Kauf / Tausch Deka-RentenStrategie 682,17 91,740000 +7,436 18.05.2020 18.05.2020
+Global CF
+Verkauf / Tausch Deka-Renten konservativ 373,94 48,370000 -7,731 09.06.2020 09.06.2020
+Kauf / Tausch Deka-RentenStrategie 373,94 91,710000 +4,077 09.06.2020 09.06.2020
+Global CF
+Verkauf / Tausch Deka-RentenStrategie 0,66 91,580000 -0,007 10.06.2020 10.06.2020
+Global CF
+Kauf / Tausch Deka-Renten konservativ 0,66 48,370000 +0,014 10.06.2020 10.06.2020
+Bitte prüfen Sie die vorliegenden Informationen.
+Fortsetzung auf Seite 2
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068
+Quartalsbericht per 30.06.2020
+Umsatzübersicht Deka-ZukunftsPlan
+Seite 2
+Depot: 0111111111
+Depotinhaber:
+Armin Mustermann
+Umsatzart Fondsname Betrag Preis je Anteil Abgerechnete Buchungs- Abrech-
+ EUR EUR Anteile tag nungstag
+Fortsetzung von vorheriger Seite
+Verkauf / Tausch Deka-Renten konservativ 386,77 48,370000 -7,996 30.06.2020 30.06.2020
+Kauf / Tausch Deka-RentenStrategie 386,77 91,980000 +4,205 30.06.2020 30.06.2020
+Global CF
+Summe Deka-Renten konservativ -37,048
+Summe Deka-RentenStrategie +19,503
+Global CF
+Dieser Report besteht aus 2 Seiten.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: USt-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht DE 114103563
+60625 Frankfurt www.deka.de Frankfurt am Main
+HRA 16068

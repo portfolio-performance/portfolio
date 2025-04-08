@@ -1,0 +1,41 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+Bank Direkt                                 IBAN: UV12 4805 1111 1111 1111
+der Raiffeisenlandesbank OÖ                                  BIC: NUYDsK6y
+Ihr Betreuer:  Bank Direkt
+Herrn                               3
+wgerBqH rGUMyeMC                  000
+wPCLNRcX 719
+7109 qunAc
+Datum Buchungstext                                   Wert       Betrag EUR
+Alter Kontostand laut Auszug vom 28.04.2023                       1.784,44
+08.05 Gutschrift                                     0805         5.000,00
+      Auftraggeber: qXozqLt hPYYqrvV
+      Zahlungsreferenz: Wertpapierkonto direktbank.at
+08.05 Abrechnung Steuer      11.222.333              0405        -1.931,55
+      IE00B6R52259 ISHSV-MSCI ACWI DL A
+      Nr. 49802887-05.05.23
+      Devisenkurs:       1,099800 (02.05.23)
+      Kapitalertragsteuer:                        1.931,55- EUR
+      Steuerbelastung auf ausschüttungsgleichen Ertrag
+      KESt-Neubestand mit Anschaffungskosten nach dem
+      gleitenden Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG:
+                                                 8.800,000 Stk
+      steuerlicher Anschaffungswert:            540.547,42  EUR
+      ausschüttungsgleicher Ertrag:               9.671,32  EUR
+      Anschaffungswertreduzierender Betrag:           0,00  EUR
+      steuerlicher Anschaffungswert:            550.218,74  EUR
+      KESt wird mit dem Finanzamt für Großbetriebe abgerechnet.
+      Steuerl. Behandlung vorbehaltlich Beurteilung durch BMF
+08.05.2023   M I T T E I L U N G
+Stand WP-KESt-Verrechnung 020548764
+vom 05.05.2023 um 19:47:52 Uhr
+Aktueller Stand KESt bezahlt:               4.676,64  EUR
+Aktueller Stand KESt-Verrechnung:               0,00  EUR
+17.05 Gutschrift                                     1705         5.000,00
+      Auftraggeber: UbyTibG vTejGnUa
+      Zahlungsreferenz: Wertpapier
+Gutschriften         10.000,00              Neuer Kontostand
+Lastschriften        -1.931,55              Guthaben EUR          9.852,89
+Auszug  13/001 vom 31.05.2023

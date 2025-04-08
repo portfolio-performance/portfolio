@@ -1,0 +1,27 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+Email info@viac.ch
+Phone 0800 80 40 40
+Contract 1.234.567.890 Mr
+Portfolio 1.234.567.890.04 Max Mustermann
+Musterstrasse 12
+1234 Mustercity
+Mustertown, 17.06.2022
+Refund withholding tax
+We have booked the following dividend payment for you:
+Type of dividend: Refund withholding tax
+0.104 Qty CSIF Emerging Markets
+ISIN: CH0017844686
+Dividend payment: CHF 15.88
+Amount CHF 1.65
+ 
+Amount credited: Value date 23.05.2022 CHF 1.65
+S. E. & O.
+Kind regards
+Terzo Pension Foundation
+Notice without signature

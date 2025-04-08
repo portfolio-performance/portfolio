@@ -1,6 +1,9 @@
 package name.abuchen.portfolio.money;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,27 +12,50 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
 
+import name.abuchen.portfolio.util.FormatHelper;
+
 public abstract class Values<E>
 {
+    public static final MathContext MC = new MathContext(10, RoundingMode.HALF_UP);
+
     public static final class MoneyValues extends Values<Money>
     {
         private MoneyValues()
         {
-            super("#,##0.00", 100D, 100); //$NON-NLS-1$
+            super("#,##0.00", 2); //$NON-NLS-1$
         }
 
         @Override
         public String format(Money amount)
         {
-            return String.format("%s %,.2f", amount.getCurrencyCode(), amount.getAmount() / divider()); //$NON-NLS-1$
+            return format(amount, false);
+        }
+
+        private String format(Money amount, boolean alwaysVisible)
+        {
+            if (!alwaysVisible && DiscreetMode.isActive())
+                return amount.getCurrencyCode() + " " + DiscreetMode.HIDDEN_AMOUNT; //$NON-NLS-1$
+            else
+                return String.format("%s %,.2f", amount.getCurrencyCode(), amount.getAmount() / divider()); //$NON-NLS-1$
         }
 
         public String format(Money amount, String skipCurrencyCode)
         {
-            if (skipCurrencyCode.equals(amount.getCurrencyCode()))
-                return String.format("%,.2f", amount.getAmount() / divider()); //$NON-NLS-1$
+            return format(amount, skipCurrencyCode, false);
+        }
+
+        public String formatAlwaysVisible(Money amount, String skipCurrencyCode)
+        {
+            return format(amount, skipCurrencyCode, true);
+        }
+
+        private String format(Money amount, String skipCurrencyCode, boolean alwaysVisible)
+        {
+            if (!FormatHelper.alwaysDisplayCurrencyCode() && skipCurrencyCode.equals(amount.getCurrencyCode()))
+                return !alwaysVisible && DiscreetMode.isActive() ? DiscreetMode.HIDDEN_AMOUNT
+                                : String.format("%,.2f", amount.getAmount() / divider()); //$NON-NLS-1$
             else
-                return format(amount);
+                return format(amount, alwaysVisible);
         }
 
         @Override
@@ -53,14 +79,20 @@ public abstract class Values<E>
 
     public static final class QuoteValues extends Values<Long>
     {
-        private static final String QUOTE_PATTERN = "#,##0.00##"; //$NON-NLS-1$
+        private static final String QUOTE_PATTERN = "#,##0.00######"; //$NON-NLS-1$
 
         private static final ThreadLocal<DecimalFormat> QUOTE_FORMAT = ThreadLocal // NOSONAR
                         .withInitial(() -> new DecimalFormat(QUOTE_PATTERN));
 
+        private final BigDecimal factorToMoney;
+        private final int precisionDeltaToMoney;
+
         private QuoteValues()
         {
-            super(QUOTE_PATTERN, 10000D, 10000);
+            super(QUOTE_PATTERN, 8);
+
+            factorToMoney = BigDecimal.valueOf(factor() / Values.Money.factor());
+            precisionDeltaToMoney = precision() - Values.Money.precision();
         }
 
         @Override
@@ -71,7 +103,7 @@ public abstract class Values<E>
 
         public String format(String currencyCode, long quote, String skipCurrency)
         {
-            if (currencyCode == null || skipCurrency.equals(currencyCode))
+            if (currencyCode == null || !FormatHelper.alwaysDisplayCurrencyCode() && skipCurrency.equals(currencyCode))
                 return format(quote);
             else
                 return format(currencyCode, quote);
@@ -79,7 +111,7 @@ public abstract class Values<E>
 
         public String format(String currencyCode, long quote)
         {
-            return currencyCode + " " + format(quote); //$NON-NLS-1$
+            return currencyCode != null ? currencyCode + " " + format(quote) : format(quote); //$NON-NLS-1$
         }
 
         public String format(Quote quote)
@@ -90,6 +122,11 @@ public abstract class Values<E>
         public String format(Quote quote, String skipCurrency)
         {
             return format(quote.getCurrencyCode(), quote.getAmount(), skipCurrency);
+        }
+
+        public String formatNonZero(Quote amount, String skipCurrencyCode)
+        {
+            return amount == null || amount.isZero() ? null : format(amount, skipCurrencyCode);
         }
 
         /**
@@ -111,27 +148,102 @@ public abstract class Values<E>
         {
             return divider() / Values.Money.divider();
         }
+
+        public BigDecimal getBigDecimalFactorToMoney()
+        {
+            return factorToMoney;
+        }
+
+        public int precisionDeltaToMoney()
+        {
+            return precisionDeltaToMoney;
+        }
     }
 
-    public static final Values<Long> Amount = new Values<Long>("#,##0.00", 100D, 100) //$NON-NLS-1$
+    public static final class CalculatedQuoteValues extends Values<Long>
+    {
+        private static final String QUOTE_PATTERN = "#,##0.00######"; //$NON-NLS-1$
+
+        private static final ThreadLocal<DecimalFormat> QUOTE_FORMAT = ThreadLocal // NOSONAR
+                        .withInitial(() -> {
+                            int precision = FormatHelper.getCalculatedQuoteDisplayPrecision();
+                            DecimalFormat format = new DecimalFormat("#,##0.##"); //$NON-NLS-1$
+                            format.setMinimumFractionDigits(precision);
+                            format.setMaximumFractionDigits(precision);
+                            return format;
+                        });
+
+        private CalculatedQuoteValues()
+        {
+            super(QUOTE_PATTERN, 8);
+        }
+
+        @Override
+        public String format(Long quote)
+        {
+            DecimalFormat format = QUOTE_FORMAT.get();
+            if (format.getMinimumFractionDigits() != FormatHelper.getCalculatedQuoteDisplayPrecision())
+            {
+                QUOTE_FORMAT.remove();
+                format = QUOTE_FORMAT.get();
+            }
+            return format.format(quote / divider());
+        }
+
+        public String format(String currencyCode, long quote, String skipCurrency)
+        {
+            if (currencyCode == null || !FormatHelper.alwaysDisplayCurrencyCode() && skipCurrency.equals(currencyCode))
+                return format(quote);
+            else
+                return format(currencyCode, quote);
+        }
+
+        public String format(String currencyCode, long quote)
+        {
+            return currencyCode + " " + format(quote); //$NON-NLS-1$
+        }
+
+        public String format(Quote quote)
+        {
+            return format(quote.getCurrencyCode(), quote.getAmount());
+        }
+
+        public String format(Quote quote, String skipCurrency)
+        {
+            return format(quote.getCurrencyCode(), quote.getAmount(), skipCurrency);
+        }
+
+        public String formatNonZero(Quote amount, String skipCurrencyCode)
+        {
+            return amount == null || amount.isZero() ? null : format(amount, skipCurrencyCode);
+        }
+    }
+
+    public static final Values<Long> Amount = new Values<Long>("#,##0.00", 2) //$NON-NLS-1$
     {
         @Override
         public String format(Long amount)
         {
-            return String.format("%,.2f", amount / divider()); //$NON-NLS-1$
+            if (DiscreetMode.isActive())
+                return DiscreetMode.HIDDEN_AMOUNT;
+            else
+                return String.format("%,.2f", amount / divider()); //$NON-NLS-1$
         }
     };
 
     public static final MoneyValues Money = new MoneyValues(); // NOSONAR
 
-    public static final Values<Long> AmountFraction = new Values<Long>("#,##0.00###", 100000D, 100000) //$NON-NLS-1$
+    public static final Values<Long> AmountFraction = new Values<Long>("#,##0.00###", 5) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());
 
         @Override
         public String format(Long share)
         {
-            return format.format(share / divider());
+            if (DiscreetMode.isActive())
+                return DiscreetMode.HIDDEN_AMOUNT;
+            else
+                return format.format(share / divider());
         }
     };
 
@@ -139,42 +251,53 @@ public abstract class Values<E>
      * Optionally format values without decimal places. Currently used only for
      * attributes attached to the security.
      */
-    public static final Values<Long> AmountPlain = new Values<Long>("#,##0.##", 100D, 100) //$NON-NLS-1$
+    public static final Values<Long> AmountPlain = new Values<Long>("#,##0.##", 2) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());
 
         @Override
         public String format(Long amount)
         {
-            return format.format(amount / divider());
+            if (DiscreetMode.isActive())
+                return DiscreetMode.HIDDEN_AMOUNT;
+            else
+                return format.format(amount / divider());
         }
     };
 
-    public static final Values<Long> AmountShort = new Values<Long>("#,##0", 100D, 100) //$NON-NLS-1$
+    public static final Values<Long> AmountShort = new Values<Long>("#,##0", 2) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());
 
         @Override
         public String format(Long amount)
         {
-            return format.format(amount / divider());
+            if (DiscreetMode.isActive())
+                return DiscreetMode.HIDDEN_AMOUNT;
+            else
+                return format.format(amount / divider());
         }
     };
 
-    public static final Values<Long> Share = new Values<Long>("#,##0.######", 1000000D, 1000000) //$NON-NLS-1$
+    public static final Values<Long> Share = new Values<Long>("#,##0.########", 8) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());
 
         @Override
         public String format(Long share)
         {
-            return format.format(share / divider());
+            if (DiscreetMode.isActive())
+                return DiscreetMode.HIDDEN_AMOUNT;
+            else
+                return format.format(share / divider());
         }
     };
 
     public static final QuoteValues Quote = new QuoteValues(); // NOSONAR
 
-    public static final Values<BigDecimal> ExchangeRate = new Values<BigDecimal>("#,##0.0000", 1D, 1)//$NON-NLS-1$
+    public static final CalculatedQuoteValues CalculatedQuote = new CalculatedQuoteValues(); // NOSONAR
+
+    public static final Values<BigDecimal> ExchangeRate = new Values<BigDecimal>("#,##0.0000", 0)//$NON-NLS-1$
     {
         @Override
         public String format(BigDecimal exchangeRate)
@@ -183,7 +306,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Integer> Index = new Values<Integer>("#,##0.00", 100D, 100) //$NON-NLS-1$
+    public static final Values<Integer> Index = new Values<Integer>("#,##0.00", 2) //$NON-NLS-1$
     {
         @Override
         public String format(Integer index)
@@ -192,10 +315,10 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<LocalDate> Date = new Values<LocalDate>("yyyy-MM-dd", 1D, 1) //$NON-NLS-1$
+    public static final Values<LocalDate> Date = new Values<LocalDate>("yyyy-MM-dd", 0) //$NON-NLS-1$
     {
         DateTimeFormatter formatter = DateTimeFormatter
-                        .ofLocalizedDate(new Locale("pt").getLanguage().equals(Locale.getDefault() //$NON-NLS-1$
+                        .ofLocalizedDate(Locale.forLanguageTag("pt").getLanguage().equals(Locale.getDefault() //$NON-NLS-1$
                                         .getLanguage()) ? FormatStyle.SHORT : FormatStyle.MEDIUM);
 
         @Override
@@ -205,10 +328,10 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<LocalDateTime> DateTime = new Values<LocalDateTime>("yyyy-MM-dd HH:mm", 1D, 1) //$NON-NLS-1$
+    public static final Values<LocalDateTime> DateTime = new Values<LocalDateTime>("yyyy-MM-dd HH:mm", 0) //$NON-NLS-1$
     {
         DateTimeFormatter formatter = DateTimeFormatter
-                        .ofLocalizedDateTime(new Locale("pt").getLanguage().equals(Locale.getDefault() //$NON-NLS-1$
+                        .ofLocalizedDateTime(Locale.forLanguageTag("pt").getLanguage().equals(Locale.getDefault() //$NON-NLS-1$
                                         .getLanguage()) ? FormatStyle.SHORT : FormatStyle.MEDIUM, FormatStyle.SHORT);
 
         @Override
@@ -221,7 +344,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Double> Thousands = new Values<Double>("0.###k", 1D, 1) //$NON-NLS-1$
+    public static final Values<Double> Thousands = new Values<Double>("#,##0.00", 0) //$NON-NLS-1$
     {
         private ThreadLocal<DecimalFormat> numberFormatter = ThreadLocal // NOSONAR
                         .withInitial(() -> new DecimalFormat("#,##0.###")); //$NON-NLS-1$
@@ -229,11 +352,16 @@ public abstract class Values<E>
         @Override
         public String format(Double value)
         {
-            return numberFormatter.get().format(value / 1000) + "k"; //$NON-NLS-1$
+            if (value > -1000 && value < 1000)
+                return numberFormatter.get().format(value); // $NON-NLS-1$
+            else if (value > -1000000 && value < 1000000)
+                return numberFormatter.get().format(value / 1000) + "k"; //$NON-NLS-1$
+            else
+                return numberFormatter.get().format(value / 1000000) + "m"; //$NON-NLS-1$
         }
     };
 
-    public static final Values<Double> Percent = new Values<Double>("0.00%", 1D, 1) //$NON-NLS-1$
+    public static final Values<Double> Percent = new Values<Double>("0.00%", 0) //$NON-NLS-1$
     {
         @Override
         public String format(Double percent)
@@ -242,7 +370,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Double> PercentShort = new Values<Double>("0.00%", 1D, 1) //$NON-NLS-1$
+    public static final Values<Double> PercentShort = new Values<Double>("0.00%", 0) //$NON-NLS-1$
     {
         @Override
         public String format(Double percent)
@@ -251,7 +379,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Double> PercentPlain = new Values<Double>("0.00", 1D, 1) //$NON-NLS-1$
+    public static final Values<Double> PercentPlain = new Values<Double>("0.00", 0) //$NON-NLS-1$
     {
         @Override
         public String format(Double percent)
@@ -260,7 +388,16 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Integer> Weight = new Values<Integer>("#,##0.00", 100D, 100) //$NON-NLS-1$
+    public static final Values<Double> PercentWithSign = new Values<Double>("+#.##%;-#.##%", 0) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Double percent)
+        {
+            return String.format("%+,.2f%%", percent * 100); //$NON-NLS-1$
+        }
+    };
+
+    public static final Values<Integer> Weight = new Values<Integer>("#,##0.00", 2) //$NON-NLS-1$
     {
         @Override
         public String format(Integer weight)
@@ -269,7 +406,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Integer> WeightPercent = new Values<Integer>("#,##0.00", 100D, 100) //$NON-NLS-1$
+    public static final Values<Integer> WeightPercent = new Values<Integer>("#,##0.00", 2) //$NON-NLS-1$
     {
         @Override
         public String format(Integer weight)
@@ -278,7 +415,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Double> Percent2 = new Values<Double>("0.00%", 1D, 1) //$NON-NLS-1$
+    public static final Values<Double> Percent2 = new Values<Double>("0.00%", 0) //$NON-NLS-1$
     {
         @Override
         public String format(Double percent)
@@ -287,7 +424,19 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Double> Percent5 = new Values<Double>("0.00000%", 1D, 1) //$NON-NLS-1$
+    public static final Values<Double> AnnualizedPercent2 = new Values<Double>("0.00% 'p.a.'", 0) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Double percent)
+        {
+            if (FormatHelper.isDisplayPerAnnum())
+                return Values.Percent2.format(percent) + " p.a."; //$NON-NLS-1$
+            else
+                return Percent2.format(percent);
+        }
+    };
+
+    public static final Values<Double> Percent5 = new Values<Double>("0.00000%", 0) //$NON-NLS-1$
     {
         @Override
         public String format(Double percent)
@@ -296,7 +445,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Integer> Id = new Values<Integer>("#,##0", 1D, 1) //$NON-NLS-1$
+    public static final Values<Integer> Id = new Values<Integer>("#,##0", 0) //$NON-NLS-1$
     {
         @Override
         public String format(Integer amount)
@@ -305,7 +454,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Integer> Year = new Values<Integer>("0", 1D, 1) //$NON-NLS-1$
+    public static final Values<Integer> Year = new Values<Integer>("0", 0) //$NON-NLS-1$
     {
         @Override
         public String format(Integer amount)
@@ -315,31 +464,42 @@ public abstract class Values<E>
     };
 
     private final String pattern;
-    private final double divider;
     private final int factor;
+    private final double divider;
+    private final int precision;
     private final BigDecimal bdFactor;
 
-    private Values(String pattern, double divider, int factor)
+    private Values(String pattern, int precision)
     {
         this.pattern = pattern;
-        this.divider = divider;
-        this.factor = factor;
+        this.factor = BigInteger.TEN.pow(precision).intValue();
+        this.divider = factor;
+        this.precision = precision;
         this.bdFactor = BigDecimal.valueOf(factor);
     }
 
-    public String pattern()
+    public final String pattern()
     {
         return pattern;
     }
 
-    public double divider()
+    public final double divider()
     {
         return divider;
     }
 
-    public int factor()
+    public final int factor()
     {
         return factor;
+    }
+
+    /**
+     * The number of decimal digits, for example the shares are stored in a long
+     * with 8 decimal digits.
+     */
+    public final int precision()
+    {
+        return precision;
     }
 
     /**
@@ -359,10 +519,8 @@ public abstract class Values<E>
 
     public String formatNonZero(E amount)
     {
-        if (amount instanceof Double)
+        if (amount instanceof Double d)
         {
-            Double d = (Double) amount;
-
             if (d.isNaN())
                 return null;
             else if (d.doubleValue() == 0d)
@@ -370,9 +528,9 @@ public abstract class Values<E>
             else
                 return format(amount);
         }
-        else if (amount instanceof Number)
+        else if (amount instanceof Number num)
         {
-            boolean isNotZero = ((Number) amount).longValue() != 0;
+            boolean isNotZero = num.longValue() != 0;
             return isNotZero ? format(amount) : null;
         }
 
@@ -381,9 +539,9 @@ public abstract class Values<E>
 
     public String formatNonZero(E amount, double threshold)
     {
-        if (amount instanceof Double)
+        if (amount instanceof Double d)
         {
-            boolean isNotZero = Math.abs(((Double) amount).doubleValue()) >= threshold;
+            boolean isNotZero = Math.abs(d.doubleValue()) >= threshold;
             return isNotZero ? format(amount) : null;
         }
 

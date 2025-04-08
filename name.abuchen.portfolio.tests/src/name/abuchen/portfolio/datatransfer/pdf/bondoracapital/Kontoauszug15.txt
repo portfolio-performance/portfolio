@@ -1,0 +1,22 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+Zusammenfassung
+Zu Beginn 2.736,96 €
+FoEEPf mEymtG
+Einzahlungen 1.019,23 €
+Datum 01.01.2024 - 31.01.2024 Auszahlungen 0 €
+Referenznummer GG1216391 Ergebnis 3.756,19 €
+Go & Grow
+Datum Zahlungsart Eingänge Ausgänge Guthaben
+01.01.2024 Go & Grow Zinsen 0,54 € 2.737,5 €
+Bis zu 4 %* Rendite p. a. 0,01 €
+Bis zu 6,75 %* Rendite p. a. 0,54 € 2.737,49 €
+01.01.2024 Automatische Überweisung 2.737,5 €
+Bis zu 4 %* Rendite p. a. 0,01 € 0 €
+Bis zu 6,75 %* Rendite p. a. 0,01 € 2.737,5 €
+02.01.2024 Go & Grow Zinsen 0,49 € 2.737,99 €
+Bis zu 4 %* Rendite p. a. 0 €
+Bis zu 6,75 %* Rendite p. a. 0,49 € 2.737,99 €
+02.01.2024 SEPA-Banküberweisung 700 € 3.437,99 €
+Gesamt 3.756,19 €
