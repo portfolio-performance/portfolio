@@ -5,20 +5,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swtchart.ICircularSeries;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.model.Node;
 
-import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.CircularChart;
 import name.abuchen.portfolio.ui.util.chart.CircularChartToolTip;
-import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.AssignmentNode;
 import name.abuchen.portfolio.util.ColorConversion;
 import name.abuchen.portfolio.util.Pair;
 
@@ -74,7 +71,7 @@ public class TargetsDonutChartBuilder
 
         // classified nodes
         TaxonomyNode node = model.getClassificationRootNode();
-        addChildren(answer, node, node.getChildren(), model.isSecuritiesInPieChartExcluded());
+        addChildren(answer, node, node.getChildren());
 
         // add unclassified if included
         if (!model.isUnassignedCategoryInChartsExcluded())
@@ -88,7 +85,7 @@ public class TargetsDonutChartBuilder
             {
                 List<TaxonomyNode> children = new ArrayList<>(unassigned.getChildren());
                 Collections.sort(children, (r, l) -> Long.compare(getValue(l), getValue(r)));
-                addChildren(answer, unassigned, children, model.isSecuritiesInPieChartExcluded());
+                addChildren(answer, unassigned, children);
             }
         }
 
@@ -96,7 +93,7 @@ public class TargetsDonutChartBuilder
     }
 
     private void addChildren(List<Pair<TaxonomyNode, TaxonomyNode>> answer, TaxonomyNode parent,
-                    List<TaxonomyNode> children, boolean firstLevelOnly)
+                    List<TaxonomyNode> children)
     {
         for (TaxonomyNode child : children)
         {
@@ -107,41 +104,16 @@ public class TargetsDonutChartBuilder
             {
                 answer.add(new Pair<>(parent, child));
             }
-            else if (child.isClassification() && firstLevelOnly)
-            {
-                answer.add(new Pair<>(child, child));
-            }
             else if (child.isClassification())
             {
-                List<TaxonomyNode> grandchildren = new ArrayList<>();
-                child.accept(n -> {
-                    if (n.isAssignment())
-                        grandchildren.add(n);
-                });
-
-                // merge investment vehicles that have been assigned to multiple
-                // sub-node into one assignment
-                grandchildren.stream() //
-                                .filter(n -> getValue(n) != 0)
-                                .collect(Collectors.toMap(TaxonomyNode::getBackingInvestmentVehicle, n -> n, (r, l) -> {
-
-                                    Assignment mergedAssignment = new Assignment(r.getBackingInvestmentVehicle(),
-                                                    r.getAssignment().getWeight() + r.getAssignment().getWeight());
-
-                                    TaxonomyNode mergedNode = new AssignmentNode(child, mergedAssignment);
-                                    mergedNode.setTarget(r.getTarget().add(l.getTarget()));
-                                    return mergedNode;
-                                })) //
-                                .values().stream() //
-                                .sorted((l, r) -> Long.compare(getValue(r), getValue(l))) //
-                                .forEach(grandchild -> answer.add(new Pair<>(child, grandchild)));
+                answer.add(new Pair<>(child, child));
             }
         }
     }
 
     private long getValue(TaxonomyNode node)
     {
-        return node.getTarget().getAmount();
+        return node.getTarget().isZero() ? 0 : node.getTarget().getAmount();
     }
 
 }

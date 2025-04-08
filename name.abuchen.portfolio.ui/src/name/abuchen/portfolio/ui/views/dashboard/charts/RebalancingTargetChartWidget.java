@@ -29,7 +29,6 @@ public class RebalancingTargetChartWidget extends CircularChartWidget<TaxonomyMo
 
         addConfigAfter(ReportingPeriodConfig.class, new TaxonomyConfig(this));
         addConfigAfter(ClientFilterConfig.class, new IncludeUnassignedCategoryConfig(this, true));
-        addConfigAfter(ClientFilterConfig.class, new IncludeSecuritiesConfig(this, false));
     }
 
     @Override
@@ -55,9 +54,7 @@ public class RebalancingTargetChartWidget extends CircularChartWidget<TaxonomyMo
                     model.updateClientSnapshot(filteredClient);
 
                 model.setExcludeUnassignedCategoryInCharts(true);
-                
-                model.setExcludeSecuritiesInPieChart(
-                                !get(IncludeSecuritiesConfig.class).isSecuritiesIncluded());
+                model.setExcludeSecuritiesInPieChart(false);
 
                 return model;
             }

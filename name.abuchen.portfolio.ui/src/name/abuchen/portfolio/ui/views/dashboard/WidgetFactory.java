@@ -414,14 +414,14 @@ public enum WidgetFactory
                                     }) //
                                     .build()),
 
-    // typo is API now!!
-    VERTICAL_SPACEER(Messages.LabelVerticalSpacer, Messages.LabelCommon, VerticalSpacerWidget::new),
-
     REBALANCING_CHART(Messages.RebalancingChart, Messages.LabelStatementOfAssets, Images.VIEW_BARCHART,
                     RebalancingChartWidget::new),
     
     REBALANCING_TARGET_CHART(Messages.RebalancingTargetChart, Messages.LabelStatementOfAssets, Images.VIEW_BARCHART,
-                    RebalancingTargetChartWidget::new);
+                    RebalancingTargetChartWidget::new),
+
+    // typo is API now!!
+    VERTICAL_SPACEER(Messages.LabelVerticalSpacer, Messages.LabelCommon, VerticalSpacerWidget::new);
 
     private String label;
     private String group;
