@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
-import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -22,6 +21,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.swt.ControlDecoration;
 
 public class SecurityMasterDataPage extends AbstractPage
 {
@@ -79,11 +79,11 @@ public class SecurityMasterDataPage extends AbstractPage
             }));
         }
 
-        ComboViewer currencyCode = bindings.bindCurrencyCodeCombo(container, Messages.ColumnCurrency, "currencyCode", //$NON-NLS-1$
+        Control currencyCode = bindings.bindCurrencyCodeCombo(container, Messages.ColumnCurrency, "currencyCode", //$NON-NLS-1$
                         !isExchangeRate);
         if (model.getSecurity().hasTransactions(model.getClient()))
         {
-            currencyCode.getCombo().setEnabled(false);
+            currencyCode.setEnabled(false);
 
             // empty cell
             new Label(container, SWT.NONE).setText(""); //$NON-NLS-1$
@@ -101,14 +101,14 @@ public class SecurityMasterDataPage extends AbstractPage
 
         if (isExchangeRate)
         {
-            ComboViewer targetCurrencyCode = bindings.bindCurrencyCodeCombo(container, Messages.ColumnTargetCurrency,
+            Control targetCurrencyCode = bindings.bindCurrencyCodeCombo(container, Messages.ColumnTargetCurrency,
                             "targetCurrencyCode", false); //$NON-NLS-1$
-            targetCurrencyCode.getCombo().setToolTipText(Messages.ColumnTargetCurrencyToolTip);
+            targetCurrencyCode.setToolTipText(Messages.ColumnTargetCurrencyToolTip);
         }
 
         if (!isExchangeRate)
         {
-            isin = bindings.bindISINInput(container, Messages.ColumnISIN, "isin"); //$NON-NLS-1$
+            isin = bindings.bindISINInput(container, Messages.ColumnISIN, "isin", 30); //$NON-NLS-1$
             if (isSyncedOnline)
             {
                 isin.setEditable(false);
@@ -116,11 +116,11 @@ public class SecurityMasterDataPage extends AbstractPage
             }
         }
 
-        bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol", SWT.NONE, 12); //$NON-NLS-1$
+        bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol", SWT.NONE, 30); //$NON-NLS-1$
 
         if (!isExchangeRate)
         {
-            wkn = bindings.bindStringInput(container, Messages.ColumnWKN, "wkn", SWT.NONE, 12); //$NON-NLS-1$
+            wkn = bindings.bindStringInput(container, Messages.ColumnWKN, "wkn", SWT.NONE, 30); //$NON-NLS-1$
             if (isSyncedOnline)
             {
                 wkn.setEditable(false);
@@ -146,8 +146,8 @@ public class SecurityMasterDataPage extends AbstractPage
         deco.show();
 
         Text valueNote = bindings.bindStringInput(container, Messages.ColumnNote, "note", //$NON-NLS-1$
-                        SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, SWT.DEFAULT);
-        GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, SWTHelper.lineHeight(valueNote) * 4)
+                        SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.WRAP, SWT.DEFAULT);
+        GridDataFactory.fillDefaults().grab(true, true).hint(SWT.DEFAULT, SWTHelper.lineHeight(valueNote) * 4)
                         .applyTo(valueNote);
     }
 }

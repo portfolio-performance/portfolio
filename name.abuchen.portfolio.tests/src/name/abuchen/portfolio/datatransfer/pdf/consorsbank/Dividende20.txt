@@ -1,0 +1,48 @@
+PDF Author: 'Consorsbank'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: XXXXXXXX
+Vermerk der Bank: XXX
+xxxxx
+
+Seite: 1 von 2
+Dividendengutschrift
+Wertpapierbezeichnung WKN ISIN
+Allianz SE vink.Namens-Aktien o.N. 840400 DE0008404005
+Bestand
+80 Stück
+Dividende pro Stück 9,00 EUR Schlusstag 08.05.2019
+Brutto 720,00 EUR
+abzgl. Kapitalertragsteuer 24,45 % von 720,00 EUR 176,04 EUR
+abzgl. Solidaritätszuschlag 5,50 % von 176,04 EUR 9,68 EUR
+abzgl. Kirchensteuer 9,00 % von 176,04 EUR 15,84 EUR
+Netto zugunsten IBAN XXXXXX 518,44 EUR
+Valuta 13.05.2019 BIC XXXX
+Bitte beachten Sie die weiteren Informationen auf Seite 2.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+PrØsident du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur GØnØral (Generaldirektor): Jean-Laurent BonnafØ
+Depotnummer: XXXXXX
+Vermerk der Bank: XXX
+Datum: 13.05.2019
+Seite: 2 von 2
+Details zur Abrechnung
+Steuerpflichtiger Gesamtertrag 720,00 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Mit Quellensteuer verrechnet 0,00 EUR
+somit verrechnete Quellensteuer 0,00 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 720,00 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf "Allgemein" vor der Abrechnung 0,00 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Verrechnungstopf "Allgemein" nach der Abrechnung 0,00 EUR
+Sparerpauschbetrag vor der Abrechnung 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Sparerpauschbetrag nach der Abrechnung 0,00 EUR
+Verrechnungstopf "Quellensteuer" vor der Abrechnung 0,00 EUR
+Änderung Verrechnungstopf "Quellensteuer" 0,00 EUR
+Verrechnungstopf "Quellensteuer" nach der Abrechnung 0,00 EUR

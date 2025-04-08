@@ -1,0 +1,146 @@
+PDF Autor: 'User'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Volksbank Raiffeisenbank XXXXXX eG
+Hauptstr. 14, 92586 Hof
+www.vr-XXXXX.de
+Kontokorrent
+EUR-Konto Kontonummer 12364567
+Volksbank Raiffeisenbank XXXXX eG
+92586 Hof Kontoauszug Nr.  12/2020
+erstellt am 30.12.2020 22:55 Blatt    1 von 2
+IBAN: DE19 9999 0000 0001 2345 67  BIC: GENOXXXXXXX
+Herrn
+Max Mustermann
+Hauptstr. 56d
+92586 Hof
+Bu-Tag Wert Vorgang
+alter Kontostand vom 30.11.2020                       8.389,60 H
+01.12. 01.12. BASISLASTSCHRIFT PN:931                                             42,13 S
+              Beispiel
+              654646 Testversicherung 00001 1220 EREF
+              : 5564655566 MREF: 46546464646 CRED: 5646464646
+              46464646
+01.12. 01.12. BASISLASTSCHRIFT PN:931                                              10,01 S
+              Beispiel
+              654646 Testv 00001 1220 EREF
+              : 5564655566 MREF: 46546464646 CRED: 5646464646
+01.12. 01.12. BASISLASTSCHRIFT PN:931                                              79,58 S
+              Beispiel
+              654646 Test 00001 1220 EREF
+              : 5564655566 MREF: 46546464646 CRED: 5646464646
+              46464646
+01.12. 01.12. DAUERAUFTRAG PN:900                                                  50,00 S
+              Beispiel
+              654646 Test 00001 1220 EREF
+              : 5564655566 MREF: 46546464646 CRED: 5646464646
+02.12. 02.12. BASISLASTSCHRIFT PN:931                                              60,00 S
+              Beispiel
+              654646 Test 00001 1220 EREF
+              : 5564655566 MREF: 46546464646 CRED: 5646464646
+              46464646
+              Testzeile
+02.12. 03.12. EURO-UEBERWEISUNG PN:801                                            500,00 S
+              Beispiel
+              : 5564655566 MREF: 46546464646 CRED: 5646464646
+              46464646
+04.12. 04.12. BASISLASTSCHRIFT PN:931                                              15,00 S
+              Beispiel
+              : 5564655566 MREF: 46546464646 CRED: 5646464646
+              46464646
+              Testzeile
+04.12. 04.12. EURO-UEBERWEISUNG PN:801                                            119,06 S
+              Beispiel S
+              : 5564655566 MREF: 46546464646 CRED: 5646464646
+              46464646
+04.12. 04.12. EURO-UEBERWEISUNG PN:801                                            123,34 S
+                                            Übertrag auf Blatt 2                          7.390,48 H
+0701
+062
+K00101729
+5M  62 Bitte beachten Sie die Hinweise auf der Rückseite!
+Volksbank Raiffeisenbank XXXXXX eG
+Hauptstr. 14, 92586 Hof
+www.vr-XXXXX.de
+Kontokorrent
+EUR-Konto Kontonummer 12364567
+Max Mustermann
+Kontoauszug Nr.  12/2020
+erstellt am 30.12.2020 22:55 Blatt    2 von 2
+Bu-Tag Wert Vorgang
+                                            Übertrag von Blatt 1                          7.390,48 H
+              Beispiel S
+              : 5564655566 MREF: 46546464646 CRED: 5646464646
+              46464646
+07.12. 07.12. EURO-UEBERWEISUNG PN:801                                             35,00 S
+              Beispiel
+              : 5564655566 MREF: 46546464646 CRED: 5646464646
+              46464646
+              Testzeile
+15.12. 15.12. GUTSCHRIFT PN:931                                                              41,25 H
+              Max Mustermann
+              Dividende Gesch.Guth. 2019
+18.12. 18.12. BASISLASTSCHRIFT PN:931                                             250,00 S
+              Beispiel
+              : 5564655566 MREF: 46546464646 CRED: 5646464646
+              46464646
+23.12. 23.12. GUTSCHRIFT PN:931                                                              85,65 H
+              Erstattung
+              : 5564655566 MREF: 46546464646 CRED: 5646464646
+28.12. 28.12. GUTSCHRIFT PN:931                                                              70,00 H
+              Ticket
+              : 5564655566 MREF: 46546464646 CRED: 5646464646
+28.12. 28.12. BASISLASTSCHRIFT PN:931                                              34,62 S
+              Vodafone GmbH
+              Beispiel
+              654646 Test 00001 1220 EREF
+              : 5564655566 MREF: 46546464646 CRED: 5646464646
+              46464646
+29.12. 29.12. Einnahmen PN:931                                                          1.097,00 H
+              Beispiel
+              654646 Test 00001 BIS 1220 EREF
+30.12. 31.12. Abschluss PN:905                                                      1,95 S
+               9,60000% einger. Kontoüberziehung    3112       1,00S
+              14,60000% einger. Kontoüberziehung    3112       1,00S
+              Entgelte vom 01.12.2020 - 31.12.2020
+                        Buchungen Online   St.    4 3112       0,00H
+                        Buchungen automatisch    12 3112       0,00H
+                        Kontoführungsentgelt        3112       1,95S
+              Abschluss vom 01.10.2020 bis 31.12.2020
+              für Konto    1234567
+              Rechnung Nr.  0001234567.20201231.001
+              USt. IdNr. - DE 123456789
+              USt.-befreite Finanzdienstleistung
+                                    neuer Kontostand vom 30.12.2020                      8.362,81 H
+0701
+062
+K00101729 Bitte beachten Sie die Hinweise auf der Rückseite!
+Sehr geehrte Kundin, sehr geehrter Kunde,
+Sie  haben  eine Bankmitteilung  erhalten, z. B. einen  Kontoauszug, einen  Sparkontoauszug  oder  eine  Dividendenabrechnung. Bitte 
+prüfen  Sie diese genau: Ist alles korrekt? Falls  nicht, sprechen Sie uns bitte an. Damit Sie immer gut  informiert sind und wissen, wie 
+Sie Ihre Bankmitteilung "richtig lesen", haben wir diese nützlichen Hinweise für Sie zusammengestellt:
+Falls  umseitig Bankdienstleistungen  aufgeführt sind, sind  diese umsatzsteuerfrei - sofern  nichts  Abweichendes angegeben ist.  Der
+im  Kontoauszug  ausgewiesene   Betrag  muss  nicht  dem  tatsächlichen  Kontoguthaben  entsprechen,  weil z. B.  die   Wertstellung
+einzelner  Buchungen  nicht  berücksichtigt wurde  oder noch Zinsen für  eine Kontoüberziehung  bei einer Verfügung anfallen können.
+Rechnungsabschlüsse
+Ihr Kontoauszug ist mit dem Hinweis "Rechnungsabschluss" versehen?
+Dann  haben wir  für Ihr Konto  einen Rechnungsabschluss  durchgeführt, einschließlich  Zinsen und  Entgelte. Alle weiteren, nach dem
+Erstellungsdatum   dieser   Mitteilung   anfallenden   Umsätze   und   Kontoauszüge   werden   erst   in   der   folgenden   Abrechnung
+berücksichtigt - auch wenn sie sich auf den Abrechnungssaldo des abgelaufenen Abrechnungszeitraumes auswirken.
+Korrekturen werden gekennzeichnet. Den Rechnungsabschluss können Sie beim Finanzamt vorlegen.
+Einwendungen
+Sie  haben  Einwendungen  gegen den  Rechnungsabschluss Ihres Kontokorrentkontos oder  den Inhalt des  Sparkontoauszugs? Dann
+haben Sie nach Erhalt sechs Wochen Zeit, uns schriftlich zu informieren. Sonst gilt der Rechnungsabschluss als genehmigt.
+Einzugsaufträge
+Einzugspapiere  wie  z. B.  Schecks  und  Lastschriften  werden  unter  dem  Vorbehalt  des  Eingangs  gutgeschrieben, und zwar auch
+dann, wenn diese Papiere bei uns selbst zahlbar sind. 
+Schecks  und  Lastschriften  sind  erst  eingelöst, wenn  die  Belastungsbuchung  nicht  spätestens  am  zweiten  Bankarbeitstag  - bei 
+Lastschriften  im  SEPA-Firmen-Lastschriftverfahren  nicht  spätestens  am dritten  Bankarbeitstag  -  nach ihrer  Vornahme rückgängig
+gemacht  wird.  Barschecks  sind  bereits  mit  Zahlung an  den Scheckvorleger  eingelöst. Schecks  sind auch  schon  dann  eingelöst,
+wenn wir im Einzelfall eine Bezahltmeldung absenden.
+Guthaben
+Ihr Guthaben ist durch das Einlagensicherungsgesetz gesichert und entschädigungsfähig. Nähere Informationen finden Sie im
+"Informationsbogen für den Einleger".
+Sie haben noch Fragen? Dann kontaktieren Sie uns bitte. Wir sind gern für Sie da.
+Mit freundlichen Grüßen
+Ihre Bank

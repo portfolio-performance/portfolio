@@ -1,0 +1,178 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.5
+-----------------------------------------
+Postbank Köln · 51222 Köln    
+Depotnummer
+ 123456789
+ Kundennummer 1234567890
+Vorname Nachname
+ Auftragsnummer 189617/56.00
+Herr Datum 05.12.2019
+Vorname Nachname Rechnungsnummer W00860-0001380168/19
+Stadtteil Umsatzsteuer-ID DE811907980   
+Strasse 12
+12345 Wohnort
+ 
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 3,6027 VANGUARD USD CORPORATE B.U.ETF     IE00BZ163K21 (A143JM)
+REGISTERED SHARES USD DIS.ON       
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 05.12.2019
+Ausführungskurs 49,963 EUR
+Wertpapierrechnung Lagerland Grossbritannien
+Kurswert 180,00- EUR
+Provision 0,90- EUR
+Ausmachender Betrag 180,90- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 09.12.2019 zu Lasten des Kontos 0123456789
+(IBAN DE00 0000 0000 0000 0000 13), BLZ 37011000 (BIC PBNKDEFFXXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Gegenpartei bei diesem Geschäft war BÖRSE QUOTRIX
+ABR. OHNE AUSGABEAUFSCHLAG
+IHR ETF-SPARPLAN NR.     26
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.12051922.0003500OR07                                                             
+Postbank Köln · 51222 Köln    
+Depotnummer
+ 123456789
+ Kundennummer 1234567890
+Vorname Nachname
+ Auftragsnummer 189663/67.00
+Herr Datum 05.12.2019
+Vorname Nachname Rechnungsnummer W00860-0001380869/19
+Stadtteil Umsatzsteuer-ID DE811907980   
+Strasse 12
+12345 Wohnort
+ 
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 8,6892 VANG.FTSE DEVELOP.WORLD U.ETF      IE00BKX55T58 (A12CX1)
+REGISTERED SHARES USD DIS.ON       
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 05.12.2019
+Ausführungskurs 60,42 EUR
+Wertpapierrechnung Lagerland Grossbritannien
+Kurswert 525,00- EUR
+Provision 0,90- EUR
+Ausmachender Betrag 525,90- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 09.12.2019 zu Lasten des Kontos 0123456789
+(IBAN DE00 0000 0000 0000 0000 13), BLZ 37011000 (BIC PBNKDEFFXXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Gegenpartei bei diesem Geschäft war BÖRSE QUOTRIX
+ABR. OHNE AUSGABEAUFSCHLAG
+IHR ETF-SPARPLAN NR.     27
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.12051922.0003501OR07                                                             
+Postbank Köln · 51222 Köln    
+Depotnummer
+ 123456789
+ Kundennummer 1234567890
+Vorname Nachname
+ Auftragsnummer 189751/60.00
+Herr Datum 05.12.2019
+Vorname Nachname Rechnungsnummer W00860-0001381856/19
+Stadtteil Umsatzsteuer-ID DE811907980   
+Strasse 12
+12345 Wohnort
+ 
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 9,2308 VANGUARD FTSE EM.MARKETS U.ETF     IE00B3VVMM84 (A1JX51)
+REGISTERED SHARES USD DIS.ON       
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 05.12.2019
+Ausführungskurs 52,00 EUR
+Wertpapierrechnung Lagerland Grossbritannien
+Kurswert 480,00- EUR
+Provision 0,90- EUR
+Ausmachender Betrag 480,90- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 09.12.2019 zu Lasten des Kontos 0123456789
+(IBAN DE00 0000 0000 0000 0000 13), BLZ 37011000 (BIC PBNKDEFFXXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Gegenpartei bei diesem Geschäft war BÖRSE QUOTRIX
+ABR. OHNE AUSGABEAUFSCHLAG
+IHR ETF-SPARPLAN NR.     29
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.12051922.0003502OR07                                                             
+Postbank Köln · 51222 Köln    
+Depotnummer
+ 123456789
+ Kundennummer 1234567890
+Vorname Nachname
+ Auftragsnummer 189908/99.00
+Herr Datum 05.12.2019
+Vorname Nachname Rechnungsnummer W00860-0001382946/19
+Stadtteil Umsatzsteuer-ID DE811907980   
+Strasse 12
+12345 Wohnort
+ 
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 5,6693 VANGUARD FTSE DEV.EUROPE U.ETF     IE00B945VV12 (A1T8FS)
+REGISTERED SHARES EUR DIS.ON       
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 05.12.2019
+Ausführungskurs 31,75 EUR
+Wertpapierrechnung Lagerland Grossbritannien
+Kurswert 180,00- EUR
+Provision 0,90- EUR
+Ausmachender Betrag 180,90- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 09.12.2019 zu Lasten des Kontos 0123456789
+(IBAN DE00 0000 0000 0000 0000 13), BLZ 37011000 (BIC PBNKDEFFXXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Gegenpartei bei diesem Geschäft war BÖRSE QUOTRIX
+ABR. OHNE AUSGABEAUFSCHLAG
+IHR ETF-SPARPLAN NR.     30
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.12051922.0003503OR07                                                             
+Postbank Köln · 51222 Köln    
+Depotnummer
+ 123456789
+ Kundennummer 1234567890
+Vorname Nachname
+ Auftragsnummer 190945/98.00
+Herr Datum 05.12.2019
+Vorname Nachname Rechnungsnummer W00860-0001385098/19
+Stadtteil Umsatzsteuer-ID DE811907980   
+Strasse 12
+12345 Wohnort
+ 
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 29,9897 ISHSIII-MSCI WLD SM.CA.UCI.ETF     IE00BF4RFH31 (A2DWBY)
+REGISTERED SHARES USD(ACC)O.N.     
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 05.12.2019
+Ausführungskurs 4,835 EUR
+Wertpapierrechnung Lagerland Irland
+Kurswert 145,00- EUR
+Provision 0,90- EUR
+Ausmachender Betrag 145,90- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 09.12.2019 zu Lasten des Kontos 0123456789
+(IBAN DE00 0000 0000 0000 0000 13), BLZ 37011000 (BIC PBNKDEFFXXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Gegenpartei bei diesem Geschäft war BÖRSE QUOTRIX
+ABR. OHNE AUSGABEAUFSCHLAG
+IHR ETF-SPARPLAN NR.     31
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.12051922.0003504OR07

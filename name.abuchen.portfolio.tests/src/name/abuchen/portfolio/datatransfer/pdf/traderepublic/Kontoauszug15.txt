@@ -1,0 +1,555 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+Humbda Dumpta DATUM 01 Juni 2024 - 30 Juni 2024
+Strasse 0815, 12345 IBAN DE305011081538476927465
+Stutensee, DE BIC CHASDEFXXXX
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Depotkonto 58.070,07 € 188.634,61 € 190.091,50 € 56.613,18 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+01 Juni 
+2024 Zinszahlung Your interest payment 123,98 € 58.194,05 €
+03 Juni Handel Ausführung Handel Direktverkauf Verkauf DE000HG6QN63 HSBC T+B MINIL DAX 2024 6075341620240603 1.096,40 € 59.290,45 €
+03 Juni Handel Ausführung Handel Direktverkauf Verkauf DE000HS3D927 HSBC T+B TURBOC N100 2024 9749718220240603 4.251,57 € 63.542,02 €
+03 Juni Handel Ausführung Handel Direktkauf Kauf DE000HG9KFX5 HSBC T+B TURBOC ABEC 2024 6706014120240603 483,00 € 63.059,02 €
+03 Juni Handel Ausführung Handel Direktkauf Kauf DE000HS6BUW7 HSBC T+B TURBOC DAX 2024 1782039120240603 1.216,00 € 61.843,02 €
+03 Juni Handel Ausführung Handel Direktkauf Kauf DE000HG6QN63 HSBC T+B MINIL DAX 2024 4609002820240603 2.175,00 € 59.668,02 €
+03 Juni Ausführung Handel Direktkauf Kauf IE00B53SZB19 ISHSVII-NASDAQ 100 DL ACC 
+2024 Handel 4619499620240603 2.922,40 € 56.745,62 €
+03 Juni Handel Ausführung Handel Direktkauf Kauf DE000HS6BUW7 HSBC T+B TURBOC DAX 2024 1803390320240603 1.051,00 € 55.694,62 €
+03 Juni Handel Ausführung Handel Direktkauf Kauf DE000HS6BUW7 HSBC T+B TURBOC DAX 2024 9761385220240603 961,00 € 54.733,62 €
+03 Juni Handel Ausführung Handel Direktkauf Kauf DE000HS3D927 HSBC T+B TURBOC N100 2024 4552715520240603 1.021,00 € 53.712,62 €
+03 Juni Handel Ausführung Handel Direktkauf Kauf DE000HS3D927 HSBC T+B TURBOC N100 2024 6362911920240603 512,25 € 53.200,37 €
+03 Juni Handel Ausführung Handel Direktkauf Kauf DE000HG6QN63 HSBC T+B MINIL DAX 2024 3540311720240603 1.072,50 € 52.127,87 €
+04 Juni Handel Ausführung Handel Direktverkauf Verkauf DE000HS3D927 HSBC T+B TURBOC N100 2024 9437723020240604 1.562,66 € 53.690,53 €
+04 Juni Handel Ausführung Handel Direktkauf Kauf DE000HS6BUW7 HSBC T+B TURBOC DAX 2024 9711151420240604 150,00 € 53.540,53 €
+Seite 1 von 15
+Erstellt am 01 Juli 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+04 Juni 
+2024 Handel
+Ausführung Handel Direktkauf Kauf DE000HG6QN63 HSBC T+B MINIL DAX 
+9762197820240604 1.057,25 € 52.483,28 €
+04 Juni Steuern Kapitalertragssteueroptimierung Depot Direktverkauf DE000HS6BUW7 HSBC T+B 2024 TURBOC DAX 5883391620240604 877,69 € 53.360,97 €
+04 Juni Handel Ausführung Handel Direktverkauf Verkauf DE000HS6BUW7 HSBC T+B TURBOC DAX 2024 7775709120240604 223,00 € 53.583,97 €
+04 Juni Steuern Kapitalertragssteueroptimierung Depot Direktverkauf DE000HG6QN63 HSBC T+B 2024 MINIL DAX 3273943520240604 33,49 € 53.617,46 €
+04 Juni Handel Ausführung Handel Direktverkauf Verkauf DE000HG6QN63 HSBC T+B MINIL DAX 2024 2834833520240604 2.483,60 € 56.101,06 €
+04 Juni 
+2024 Handel
+Ausführung Handel Direktkauf Kauf DE000HS64N58 HSBC T+B TURBOC DAX 
+9171680120240604 3.016,00 € 53.085,06 €
+04 Juni Handel Ausführung Handel Direktkauf Kauf DE000HS64N58 HSBC T+B TURBOC DAX 2024 1734227920240604 1.478,50 € 51.606,56 €
+04 Juni Handel Ausführung Handel Direktverkauf Verkauf DE000HS64N58 HSBC T+B TURBOC DAX 2024 7743300920240604 4.524,81 € 56.131,37 €
+04 Juni Handel Ausführung Handel Direktkauf Kauf DE000HG0JUV9 HSBC T+B TURBOP DAX 2024 9369898820240604 1.039,00 € 55.092,37 €
+04 Juni Handel Ausführung Handel Direktverkauf Verkauf DE000HG0JUV9 HSBC T+B TURBOP DAX 2024 6321429220240604 1.047,67 € 56.140,04 €
+04 Juni Handel Ausführung Handel Direktverkauf Verkauf DE000HG6QN63 HSBC T+B MINIL DAX 2024 4349800420240604 1.706,99 € 57.847,03 €
+04 Juni Handel Ausführung Handel Direktverkauf Verkauf US91324P1021 UNITEDHEALTH GROUP DL-,2024 01 3492105020240604 2.785,70 € 60.632,73 €
+04 Juni Steuern Kapitalertragssteueroptimierung Depot Direktverkauf US91324P1021 UNITEDHEALTH 2024 GROUP DL-,01 4087585020240604 8,42 € 60.641,15 €
+04 Juni Ausführung Handel Direktverkauf Verkauf DE000TT377X1 HSBC T+B TURBOC UNH 
+2024 Handel 6056495420240604 3.790,88 € 64.432,03 €
+04 Juni Handel Ausführung Handel Direktkauf Kauf DE000HG7V3B6 HSBC T+B TURBOC 307 2024 7186910420240604 816,00 € 63.616,03 €
+05 Juni Handel Ausführung Handel Direktkauf Kauf DE000HS5R4Y9 HSBC T+B TURBOP DAX 2024 2471753020240605 3.141,00 € 60.475,03 €
+05 Juni Handel Ausführung Handel Direktkauf Kauf DE000HS5R4Y9 HSBC T+B TURBOP DAX 2024 7055393520240605 6.351,00 € 54.124,03 €
+05 Juni 
+2024 Handel
+Ausführung Handel Direktverkauf Verkauf DE000HS5R4Y9 HSBC T+B TURBOP DAX 
+2899043120240605 3.193,69 € 57.317,72 €
+05 Juni Handel Ausführung Handel Direktverkauf Verkauf DE000HS5R4Y9 HSBC T+B TURBOP DAX 2024 6788325220240605 3.188,84 € 60.506,56 €
+05 Juni Handel Ausführung Handel Direktkauf Kauf DE000HS5R4Y9 HSBC T+B TURBOP DAX 2024 7638637420240605 3.151,00 € 57.355,56 €
+Seite 2 von 15
+Erstellt am 01 Juli 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+05 Juni 
+2024 Handel
+Ausführung Handel Direktverkauf Verkauf DE000HS5R4Y9 HSBC T+B TURBOP DAX 
+6206881620240605 3.178,04 € 60.533,60 €
+05 Juni Handel Ausführung Handel Direktkauf Kauf DE000HS5R4Y9 HSBC T+B TURBOP DAX 2024 6280462920240605 3.101,00 € 57.432,60 €
+05 Juni Handel Ausführung Handel Direktkauf Kauf DE000HS5R4Y9 HSBC T+B TURBOP DAX 2024 9951381020240605 3.151,00 € 54.281,60 €
+05 Juni Kapitalertragssteueroptimierung Depot Direktverkauf DE000HS5R4Y9 HSBC T+B 
+2024 Steuern TURBOP DAX 6672838320240605 82,62 € 54.364,22 €
+05 Juni Handel Ausführung Handel Direktverkauf Verkauf DE000HS5R4Y9 HSBC T+B TURBOP DAX 2024 5664888320240605 2.854,00 € 57.218,22 €
+05 Juni 
+2024 Handel
+Ausführung Handel Direktverkauf Verkauf DE000HS5R4Y9 HSBC T+B TURBOP DAX 
+3450393620240605 2.789,00 € 60.007,22 €
+05 Juni 
+2024 Steuern
+Kapitalertragssteueroptimierung Depot Direktverkauf DE000HS5R4Y9 HSBC T+B 
+TURBOP DAX 7257893620240605 100,70 € 60.107,92 €
+05 Juni Handel Ausführung Handel Direktkauf Kauf DE000HG6QN63 HSBC T+B MINIL DAX 2024 8371800520240605 4.339,00 € 55.768,92 €
+05 Juni Steuern Kapitalertragssteueroptimierung Depot Direktverkauf DE000HS5R4Y9 HSBC T+B 2024 TURBOP DAX 8844482020240605 110,44 € 55.879,36 €
+05 Juni Handel Ausführung Handel Direktverkauf Verkauf DE000HS5R4Y9 HSBC T+B TURBOP DAX 2024 8455182020240605 2.704,00 € 58.583,36 €
+05 Juni Ausführung Handel Direktverkauf Verkauf DE000HG6QN63 HSBC T+B MINIL DAX 
+2024 Handel 6296084620240605 4.341,16 € 62.924,52 €
+05 Juni 
+2024 Handel
+Ausführung Handel Direktkauf Kauf DE000HS5R4Y9 HSBC T+B TURBOP DAX 
+3345121220240605 2.796,00 € 60.128,52 €
+05 Juni Handel Ausführung Handel Direktkauf Kauf DE000HS5R4Y9 HSBC T+B TURBOP DAX 2024 4258884820240605 2.781,00 € 57.347,52 €
+05 Juni 
+2024 Handel
+Ausführung Handel Direktverkauf Verkauf DE000HS5R4Y9 HSBC T+B TURBOP DAX 
+8879391020240605 5.439,00 € 62.786,52 €
+05 Juni Steuern Kapitalertragssteueroptimierung Depot Direktverkauf DE000HS5R4Y9 HSBC T+B 2024 TURBOP DAX 9294931020240605 38,40 € 62.824,92 €
+05 Juni Handel Ausführung Handel Direktkauf Kauf DE000HS5R4Y9 HSBC T+B TURBOP DAX 2024 3747809420240605 5.331,00 € 57.493,92 €
+05 Juni Handel Ausführung Handel Direktverkauf Verkauf DE000HS5R4Y9 HSBC T+B TURBOP DAX 2024 4084071620240605 5.748,20 € 63.242,12 €
+05 Juni 
+2024 Überweisung PayOut to transit 2.000,00 € 61.242,12 €
+05 Juni Handel Ausführung Handel Direktverkauf Verkauf IE00B53SZB19 ISHSVII-NASDAQ 100 DL 2024 ACC 7147610320240605 4.950,17 € 66.192,29 €
+05 Juni Handel Ausführung Handel Direktkauf Kauf US26856L1035 E.L.F. BEAUTY INC DL-,01 2024 2240091620240605 850,00 € 65.342,29 €
+Seite 3 von 15
+Erstellt am 01 Juli 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+06 Juni Steuern Kapitalertragssteueroptimierung Depot Direktverkauf DE000SV17UQ1 SG EFF. 2024 TURBOL MOH 6300114520240606 95,04 € 65.437,33 €
+06 Juni Handel Ausführung Handel Direktverkauf Verkauf DE000SV17UQ1 SG EFF. TURBOL MOH 2024 5899764520240606 1.899,00 € 67.336,33 €
+06 Juni Handel Ausführung Handel Direktkauf Kauf DE000HS64N58 HSBC T+B TURBOC DAX 2024 3514149220240606 4.166,00 € 63.170,33 €
+06 Juni Handel Ausführung Handel Direktverkauf Verkauf DE000HS64N58 HSBC T+B TURBOC DAX 2024 1606321820240606 4.218,70 € 67.389,03 €
+07 Juni Handel Ausführung Handel Direktkauf Kauf DE000HG6HZ94 HSBC T+B TURBOC MOB 2024 9805127620240607 461,00 € 66.928,03 €
+07 Juni Handel Ausführung Handel Direktkauf Kauf DE000HG95KB4 HSBC T+B TURBOC 0ZC 2024 4488304320240607 797,00 € 66.131,03 €
+10 Juni 
+2024 Überweisung Einzahlung akzeptiert: DE17500105175434601138 auf DE30501108019083804737 10.000,00 € 76.131,03 €
+10 Juni 
+2024 Handel Sell trade DE000HG95KB4 Open End Turbo auf ZSCALER INC. DL-,001, quantity: 100 812,00 € 76.943,03 €
+10 Juni 
+2024 Handel Buy trade DE000HS64N58 Open End Turbo auf DAX®, quantity: 500 3.361,00 € 73.582,03 €
+11 Juni 
+2024 Handel Sell trade DE000HS64N58 Open End Turbo auf DAX®, quantity: 500 3.629,00 € 77.211,03 €
+11 Juni 
+2024 Handel Buy trade DE000HS64N58 Open End Turbo auf DAX®, quantity: 500 3.196,00 € 74.015,03 €
+11 Juni 
+2024 Handel Sell trade DE000HS64N58 Open End Turbo auf DAX®, quantity: 500 3.244,00 € 77.259,03 €
+11 Juni Handel Sell trade DE000HG6HZ94 Open End Turbo auf MONSTER BEVER.NEW DL-,005, 2024 quantity: 1000 149,00 € 77.408,03 €
+11 Juni Handel Buy trade DE000SW0U1V0 Unlimited Turbo auf NOVO-NORDISK AS B DK 0,1, quantity: 2024 100 1.071,00 € 76.337,03 €
+11 Juni 
+2024 Handel Buy trade CA82509L1076 SHOPIFY A SUB.VTG, quantity: 10 596,40 € 75.740,63 €
+11 Juni Handel Buy trade DE000SW42LC6 Unlimited Turbo auf AMAZON.COM INC. DL-,01, quantity: 2024 100 502,00 € 75.238,63 €
+11 Juni 
+2024 Handel Buy trade CA82509L1076 SHOPIFY A SUB.VTG, quantity: 10 593,50 € 74.645,13 €
+11 Juni 
+2024 Handel Buy trade DE000SV17UQ1 Best Turbo auf LVMH EO 0,3, quantity: 250 428,50 € 74.216,63 €
+12 Juni 
+2024 Handel Sell trade DE000SV17UQ1 Best Turbo auf LVMH EO 0,3, quantity: 250 426,50 € 74.643,13 €
+12 Juni Handel Buy trade DE000SW42LC6 Unlimited Turbo auf AMAZON.COM INC. DL-,01, quantity: 2024 100 509,00 € 74.134,13 €
+Seite 4 von 15
+Erstellt am 01 Juli 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+12 Juni Handel Buy trade DE000HS35HY3 Open End Turbo auf Dow Jones Industrial Average, 2024 quantity: 500 1.781,00 € 72.353,13 €
+12 Juni Handel Buy trade DE000HS35HY3 Open End Turbo auf Dow Jones Industrial Average, 2024 quantity: 500 1.776,00 € 70.577,13 €
+13 Juni 
+2024 Handel Buy trade DE000HS64N58 Open End Turbo auf DAX®, quantity: 500 3.826,00 € 66.751,13 €
+13 Juni 
+2024 Handel Buy trade DE000HS64N58 Open End Turbo auf DAX®, quantity: 500 3.791,00 € 62.960,13 €
+13 Juni 
+2024 Handel Buy trade DE000HS64N58 Open End Turbo auf DAX®, quantity: 500 3.496,00 € 59.464,13 €
+13 Juni 
+2024 Handel Buy trade DE000HS5R4Y9 Open End Turbo auf DAX®, quantity: 500 3.281,00 € 56.183,13 €
+13 Juni 
+2024 Handel Sell trade DE000HS5R4Y9 Open End Turbo auf DAX®, quantity: 500 3.227,44 € 59.410,57 €
+13 Juni 
+2024 Handel Buy trade DE000HS64N58 Open End Turbo auf DAX®, quantity: 500 3.066,00 € 56.344,57 €
+13 Juni 
+2024 Handel
+Sell trade DE000HS35HY3 Open End Turbo auf Dow Jones Industrial Average, 
+quantity: 1000 3.580,11 € 59.924,68 €
+13 Juni Handel Buy trade DE000HS35HY3 Open End Turbo auf Dow Jones Industrial Average, 2024 quantity: 500 1.776,00 € 58.148,68 €
+13 Juni 
+2024 Handel Sell trade DE000HS64N58 Open End Turbo auf DAX®, quantity: 1000 4.759,00 € 62.907,68 €
+13 Juni 
+2024 Handel Sell trade DE000HS64N58 Open End Turbo auf DAX®, quantity: 500 2.429,00 € 65.336,68 €
+13 Juni Handel Buy trade DE000SW0U1V0 Unlimited Turbo auf NOVO-NORDISK AS B DK 0,1, quantity: 2024 100 1.042,00 € 64.294,68 €
+13 Juni Sell trade DE000HS35HY3 Open End Turbo auf Dow Jones Industrial Average, 
+2024 Handel quantity: 500 1.814,00 € 66.108,68 €
+13 Juni 
+2024 Handel Buy trade DE000HG7V3B6 Open End Turbo auf SHOPIFY A SUB.VTG, quantity: 500 1.041,00 € 65.067,68 €
+14 Juni 
+2024 Handel Sell trade DE000HS64N58 Open End Turbo auf DAX®, quantity: 500 1.974,00 € 67.041,68 €
+14 Juni 
+2024 Handel Buy trade DE000HS709V4 Open End Turbo auf DAX®, quantity: 500 1.016,00 € 66.025,68 €
+14 Juni 
+2024 Handel Sell trade DE000HS709V4 Open End Turbo auf DAX®, quantity: 500 1.029,00 € 67.054,68 €
+14 Juni 
+2024 Handel Buy trade DE000HS709V4 Open End Turbo auf DAX®, quantity: 500 971,00 € 66.083,68 €
+14 Juni 
+2024 Handel Buy trade DE000HS5R4S1 Open End Turbo auf DAX®, quantity: 100 1.055,00 € 65.028,68 €
+Seite 5 von 15
+Erstellt am 01 Juli 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+14 Juni 
+2024 Handel Sell trade DE000HS709V4 Open End Turbo auf DAX®, quantity: 500 979,00 € 66.007,68 €
+14 Juni 
+2024 Handel Sell trade CA82509L1076 SHOPIFY A SUB.VTG, quantity: 30 1.860,50 € 67.868,18 €
+14 Juni 
+2024 Handel Sell trade DE000HG7V3B6 Open End Turbo auf SHOPIFY A SUB.VTG, quantity: 1000 2.199,00 € 70.067,18 €
+14 Juni 
+2024 Handel Sell trade DE000HS5R4S1 Open End Turbo auf DAX®, quantity: 100 1.103,00 € 71.170,18 €
+14 Juni 
+2024 Handel Buy trade DE000HG0JUV9 Open End Turbo auf DAX®, quantity: 100 1.030,00 € 70.140,18 €
+14 Juni 
+2024 Handel Buy trade US5801351017 MCDONALDS CORP., quantity: 5 1.181,75 € 68.958,43 €
+14 Juni 
+2024 Handel Buy trade DE000TT3A8K3 Open End Turbo auf MCDONALDS CORP., quantity: 250 453,50 € 68.504,93 €
+17 Juni 
+2024 Handel Buy trade DE000HS7BLN3 Open End Turbo auf DAX®, quantity: 500 1.091,00 € 67.413,93 €
+17 Juni 
+2024 Handel Buy trade DE000HG0JUV9 Open End Turbo auf DAX®, quantity: 200 1.817,00 € 65.596,93 €
+17 Juni 
+2024 Handel Buy trade DE000HS7BLN3 Open End Turbo auf DAX®, quantity: 250 703,50 € 64.893,43 €
+17 Juni 
+2024 Handel Sell trade DE000HS7BLN3 Open End Turbo auf DAX®, quantity: 500 1.381,90 € 66.275,33 €
+17 Juni 
+2024 Handel Sell trade DE000HS7BLN3 Open End Turbo auf DAX®, quantity: 250 707,48 € 66.982,81 €
+17 Juni 
+2024 Handel Sell trade DE000HG0JUV9 Open End Turbo auf DAX®, quantity: 100 972,00 € 67.954,81 €
+17 Juni 
+2024 Handel Sell trade DE000HG0JUV9 Open End Turbo auf DAX®, quantity: 200 1.922,65 € 69.877,46 €
+17 Juni 
+2024 Handel Sell trade DE000HS7BLN3 Open End Turbo auf DAX®, quantity: 500 1.617,57 € 71.495,03 €
+17 Juni 
+2024 Handel Buy trade DE000HS7BLN3 Open End Turbo auf DAX®, quantity: 500 1.536,00 € 69.959,03 €
+17 Juni 
+2024 Handel Buy trade DE000HS7BLN3 Open End Turbo auf DAX®, quantity: 500 1.546,00 € 68.413,03 €
+17 Juni 
+2024 Handel Buy trade DE000HS7BLN3 Open End Turbo auf DAX®, quantity: 500 1.436,00 € 66.977,03 €
+17 Juni 
+2024 Handel Sell trade DE000HS7BLN3 Open End Turbo auf DAX®, quantity: 250 711,50 € 67.688,53 €
+17 Juni 
+2024 Handel Sell trade DE000HS7BLN3 Open End Turbo auf DAX®, quantity: 250 716,50 € 68.405,03 €
+Seite 6 von 15
+Erstellt am 01 Juli 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+17 Juni 
+2024 Handel Sell trade DE000HS7BLN3 Open End Turbo auf DAX®, quantity: 250 674,00 € 69.079,03 €
+17 Juni 
+2024 Handel Sell trade DE000HS7BLN3 Open End Turbo auf DAX®, quantity: 250 711,50 € 69.790,53 €
+18 Juni 
+2024 Handel Buy trade US26856L1035 E.L.F. BEAUTY INC DL-,01, quantity: 5 932,25 € 68.858,28 €
+18 Juni 
+2024 Handel Buy trade DE000TT1R116 Open End Turbo auf VISA, quantity: 50 432,00 € 68.426,28 €
+18 Juni 
+2024 Überweisung PayOut to transit 8.000,00 € 60.426,28 €
+18 Juni 
+2024 Handel Sell trade US26856L1035 E.L.F. BEAUTY INC DL-,01, quantity: 5 938,26 € 61.364,54 €
+18 Juni Handel Buy trade DE000HG9KFX5 Open End Turbo auf ALPHABET INC.CL C DL-,001, quantity: 2024 100 512,00 € 60.852,54 €
+18 Juni 
+2024 Handel Buy trade DE000TT3A8K3 Open End Turbo auf MCDONALDS CORP., quantity: 250 411,00 € 60.441,54 €
+18 Juni 
+2024 Handel Buy trade US91324P1021 UNITEDHEALTH GROUP DL-,01, quantity: 4 1.794,00 € 58.647,54 €
+19 Juni 
+2024 Handel Buy trade DE000HS7BLN3 Open End Turbo auf DAX®, quantity: 250 503,50 € 58.144,04 €
+19 Juni 
+2024 Handel Sell trade DE000HS7BLN3 Open End Turbo auf DAX®, quantity: 250 559,81 € 58.703,85 €
+19 Juni 
+2024 Handel Sell trade DE000TT3A8K3 Open End Turbo auf MCDONALDS CORP., quantity: 250 406,50 € 59.110,35 €
+20 Juni 
+2024 Handel Buy trade DE000HS7BLN3 Open End Turbo auf DAX®, quantity: 500 1.136,00 € 57.974,35 €
+20 Juni 
+2024 Handel Sell trade DE000HS7BLN3 Open End Turbo auf DAX®, quantity: 500 1.188,70 € 59.163,05 €
+20 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 781,00 € 58.382,05 €
+20 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 759,00 € 59.141,05 €
+20 Juni 
+2024 Handel Sell trade US91324P1021 UNITEDHEALTH GROUP DL-,01, quantity: 4 1.793,20 € 60.934,25 €
+20 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 726,00 € 60.208,25 €
+20 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 732,20 € 60.940,45 €
+20 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 721,00 € 60.219,45 €
+Seite 7 von 15
+Erstellt am 01 Juli 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+20 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 731,50 € 60.950,95 €
+20 Juni Sell trade DE000SW0U1V0 Unlimited Turbo auf NOVO-NORDISK AS B DK 0,1, quantity: 
+2024 Handel 100 937,31 € 61.888,26 €
+20 Juni 
+2024 Handel
+Sell trade DE000SW42LC6 Unlimited Turbo auf AMAZON.COM INC. DL-,01, quantity: 
+100 504,00 € 62.392,26 €
+20 Juni Handel Buy trade DE000SW42LC6 Unlimited Turbo auf AMAZON.COM INC. DL-,01, quantity: 2024 100 500,00 € 61.892,26 €
+20 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 1.254,00 € 63.146,26 €
+20 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 1.294,00 € 64.440,26 €
+20 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 1.486,00 € 62.954,26 €
+20 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 1.216,00 € 61.738,26 €
+20 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 1.216,00 € 60.522,26 €
+20 Juni 
+2024 Handel Buy trade DE000SY1WR66 Turbo auf Nasdaq-100 Index®, quantity: 50 979,50 € 59.542,76 €
+21 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 1.293,97 € 60.836,73 €
+21 Juni 
+2024 Handel Buy trade DE000SV17UQ1 Best Turbo auf LVMH EO 0,3, quantity: 500 736,00 € 60.100,73 €
+21 Juni 
+2024 Handel Sell trade DE000TT3A8K3 Open End Turbo auf MCDONALDS CORP., quantity: 250 452,87 € 60.553,60 €
+21 Juni Buy trade DE000SW0U1V0 Unlimited Turbo auf NOVO-NORDISK AS B DK 0,1, quantity: 
+2024 Handel 100 1.039,00 € 59.514,60 €
+21 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 793,50 € 58.721,10 €
+21 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 1.619,28 € 60.340,38 €
+21 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 813,50 € 59.526,88 €
+21 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 851,00 € 58.675,88 €
+21 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 873,02 € 59.548,90 €
+21 Juni 
+2024 Handel Buy trade US91324P1021 UNITEDHEALTH GROUP DL-,01, quantity: 4 1.789,20 € 57.759,70 €
+Seite 8 von 15
+Erstellt am 01 Juli 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+21 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 938,50 € 56.821,20 €
+21 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 886,50 € 57.707,70 €
+21 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 736,00 € 56.971,70 €
+21 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 799,56 € 57.771,26 €
+21 Juni 
+2024 Handel Sell trade US91324P1021 UNITEDHEALTH GROUP DL-,01, quantity: 4 1.789,15 € 59.560,41 €
+21 Juni 
+2024 Handel Buy trade DE000SY1WR66 Turbo auf Nasdaq-100 Index®, quantity: 50 964,00 € 58.596,41 €
+21 Juni 
+2024 Handel Sell trade DE000SY1WR66 Turbo auf Nasdaq-100 Index®, quantity: 100 1.961,91 € 60.558,32 €
+21 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 748,50 € 59.809,82 €
+24 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 684,00 € 60.493,82 €
+24 Juni 
+2024 Handel Buy trade DE000HS6T520 Open End Turbo auf Nasdaq-100 Index®, quantity: 100 908,00 € 59.585,82 €
+24 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 563,50 € 59.022,32 €
+24 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 546,00 € 58.476,32 €
+24 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 1.196,00 € 57.280,32 €
+24 Juni 
+2024 Handel Buy trade DE000HS6T520 Open End Turbo auf Nasdaq-100 Index®, quantity: 100 818,00 € 56.462,32 €
+24 Juni 
+2024 Handel Buy trade DE000HS6T520 Open End Turbo auf Nasdaq-100 Index®, quantity: 100 778,00 € 55.684,32 €
+24 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 1.195,22 € 56.879,54 €
+24 Juni 
+2024 Handel Buy trade DE000HS6T520 Open End Turbo auf Nasdaq-100 Index®, quantity: 100 758,00 € 56.121,54 €
+24 Juni 
+2024 Handel Buy trade DE000HS6T520 Open End Turbo auf Nasdaq-100 Index®, quantity: 100 759,00 € 55.362,54 €
+24 Juni 
+2024 Handel Sell trade DE000TT1R116 Open End Turbo auf VISA, quantity: 50 467,50 € 55.830,04 €
+24 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 1.214,00 € 57.044,04 €
+Seite 9 von 15
+Erstellt am 01 Juli 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+24 Juni 
+2024 Handel Buy trade US67066G1040 NVIDIA CORP. DL-,001, quantity: 5 563,00 € 56.481,04 €
+24 Juni 
+2024 Handel Buy trade DE000TT3QP05 Open End Turbo auf MERCK KGAA O.N., quantity: 500 1.371,00 € 55.110,04 €
+25 Juni 
+2024 Handel Buy trade US67066G1040 NVIDIA CORP. DL-,001, quantity: 5 546,60 € 54.563,44 €
+25 Juni 
+2024 Handel Buy trade DE000SQ3MVR8 Best Turbo auf AIRBUS SE, quantity: 500 1.081,00 € 53.482,44 €
+25 Juni 
+2024 Handel Sell trade DE000TT3QP05 Open End Turbo auf MERCK KGAA O.N., quantity: 500 1.009,00 € 54.491,44 €
+25 Juni 
+2024 Handel Sell trade DE000HS6T520 Open End Turbo auf Nasdaq-100 Index®, quantity: 200 1.433,00 € 55.924,44 €
+25 Juni 
+2024 Handel Buy trade DE000SQ3MVR8 Best Turbo auf AIRBUS SE, quantity: 500 891,00 € 55.033,44 €
+25 Juni 
+2024 Handel Sell trade DE000HS6T520 Open End Turbo auf Nasdaq-100 Index®, quantity: 300 2.177,00 € 57.210,44 €
+25 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 856,00 € 56.354,44 €
+25 Juni 
+2024 Handel Sell trade US91324P1021 UNITEDHEALTH GROUP DL-,01, quantity: 4 1.835,00 € 58.189,44 €
+25 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 911,50 € 59.100,94 €
+25 Juni Handel Sell trade DE000SW0U1V0 Unlimited Turbo auf NOVO-NORDISK AS B DK 0,1, quantity: 2024 200 2.191,05 € 61.291,99 €
+25 Juni 
+2024 Handel Buy trade US91324P1021 UNITEDHEALTH GROUP DL-,01, quantity: 4 1.829,40 € 59.462,59 €
+25 Juni 
+2024 Handel Sell trade US67066G1040 NVIDIA CORP. DL-,001, quantity: 10 1.133,15 € 60.595,74 €
+25 Juni 
+2024 Handel Buy trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 250 706,00 € 59.889,74 €
+25 Juni 
+2024 Handel Sell trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 250 749,68 € 60.639,42 €
+25 Juni 
+2024 Handel Sell trade DE000SQ3MVR8 Best Turbo auf AIRBUS SE, quantity: 500 929,00 € 61.568,42 €
+25 Juni 
+2024 Handel Buy trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 250 746,00 € 60.822,42 €
+25 Juni 
+2024 Handel Buy trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 250 721,00 € 60.101,42 €
+25 Juni Handel Sell trade DE000SW42LC6 Unlimited Turbo auf AMAZON.COM INC. DL-,01, quantity: 2024 200 1.047,00 € 61.148,42 €
+Seite 10 von 15
+Erstellt am 01 Juli 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+25 Juni 
+2024 Handel Sell trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 500 1.479,00 € 62.627,42 €
+25 Juni 
+2024 Handel Buy trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 500 1.391,00 € 61.236,42 €
+25 Juni 
+2024 Handel Buy trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 500 1.271,00 € 59.965,42 €
+25 Juni 
+2024 Handel Sell trade US5801351017 MCDONALDS CORP., quantity: 5 1.196,00 € 61.161,42 €
+25 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 1.571,00 € 59.590,42 €
+25 Juni 
+2024 Handel Sell trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 500 1.289,00 € 60.879,42 €
+25 Juni 
+2024 Handel Buy trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 500 1.266,00 € 59.613,42 €
+25 Juni 
+2024 Handel Buy trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 500 1.091,00 € 58.522,42 €
+25 Juni 
+2024 Handel Sell trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 500 1.199,00 € 59.721,42 €
+25 Juni 
+2024 Handel Buy trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 500 1.106,00 € 58.615,42 €
+25 Juni 
+2024 Handel Sell trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 500 1.149,00 € 59.764,42 €
+25 Juni Handel Buy trade DE000SW42LC6 Unlimited Turbo auf AMAZON.COM INC. DL-,01, quantity: 2024 200 1.009,00 € 58.755,42 €
+26 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 961,00 € 57.794,42 €
+26 Juni Handel Buy trade DE000SW0U1V0 Unlimited Turbo auf NOVO-NORDISK AS B DK 0,1, quantity: 2024 100 1.127,00 € 56.667,42 €
+26 Juni 
+2024 Handel Sell trade DE000SQ3MVR8 Best Turbo auf AIRBUS SE, quantity: 250 404,00 € 57.071,42 €
+26 Juni Handel Buy trade DE000HS787Z1 Open End Turbo auf Dow Jones Industrial Average, quantity: 2024 100 1.036,00 € 56.035,42 €
+26 Juni Handel Buy trade DE000HS787Z1 Open End Turbo auf Dow Jones Industrial Average, quantity: 2024 100 991,00 € 55.044,42 €
+26 Juni Handel Sell trade DE000SW0U1V0 Unlimited Turbo auf NOVO-NORDISK AS B DK 0,1, quantity: 2024 200 1.974,94 € 57.019,36 €
+26 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 531,00 € 56.488,36 €
+26 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 750 1.561,00 € 54.927,36 €
+Seite 11 von 15
+Erstellt am 01 Juli 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+26 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 859,00 € 55.786,36 €
+26 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 969,00 € 56.755,36 €
+26 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 1.342,64 € 58.098,00 €
+26 Juni Handel Sell trade DE000HG9KFX5 Open End Turbo auf ALPHABET INC.CL C DL-,001, quantity: 2024 200 1.005,51 € 59.103,51 €
+26 Juni 
+2024 Handel Sell trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 250 514,00 € 59.617,51 €
+26 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 961,00 € 58.656,51 €
+26 Juni 
+2024 Handel Sell trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 250 576,91 € 59.233,42 €
+26 Juni 
+2024 Handel Sell trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 250 604,26 € 59.837,68 €
+26 Juni 
+2024 Handel Buy trade DE000SQ3MVR8 Best Turbo auf AIRBUS SE, quantity: 250 363,50 € 59.474,18 €
+26 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 1.013,70 € 60.487,88 €
+26 Juni 
+2024 Handel Sell trade DE000HS778H8 Open End Turbo auf Nasdaq-100 Index®, quantity: 250 611,48 € 61.099,36 €
+27 Juni 
+2024 Handel
+Sell trade DE000HS787Z1 Open End Turbo auf Dow Jones Industrial Average, 
+quantity: 200 2.043,00 € 63.142,36 €
+27 Juni 
+2024 Handel Buy trade DE000SU9CW55 Best Turbo auf NOVO-NORDISK AS B DK 0,1, quantity: 100 281,00 € 62.861,36 €
+27 Juni 
+2024 Handel Buy trade DE000SU9CW55 Best Turbo auf NOVO-NORDISK AS B DK 0,1, quantity: 200 559,00 € 62.302,36 €
+27 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 673,50 € 61.628,86 €
+27 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 803,50 € 60.825,36 €
+27 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 1.694,00 € 62.519,36 €
+27 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 778,50 € 61.740,86 €
+27 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 813,50 € 60.927,36 €
+27 Juni 
+2024 Erträge Cash Dividend for ISIN US91324P1021 19,97 € 60.947,33 €
+Seite 12 von 15
+Erstellt am 01 Juli 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+27 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 826,50 € 61.773,83 €
+27 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 726,00 € 61.047,83 €
+27 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 1.504,00 € 62.551,83 €
+27 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 706,00 € 61.845,83 €
+27 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 626,00 € 61.219,83 €
+27 Juni 
+2024 Steuern Tax Optimisation 216,56 € 61.436,39 €
+27 Juni 
+2024 Steuern Tax Optimisation 111,69 € 61.548,08 €
+27 Juni Handel Buy trade DE000HS787Z1 Open End Turbo auf Dow Jones Industrial Average, quantity: 2024 100 937,00 € 60.611,08 €
+27 Juni 
+2024 Handel Buy trade DE000SY1WR66 Turbo auf Nasdaq-100 Index®, quantity: 100 1.960,00 € 58.651,08 €
+27 Juni Handel Buy trade DE000HS787Z1 Open End Turbo auf Dow Jones Industrial Average, quantity: 2024 100 1.039,00 € 57.612,08 €
+27 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 671,00 € 56.941,08 €
+28 Juni Handel Buy trade DE000HS787Z1 Open End Turbo auf Dow Jones Industrial Average, quantity: 2024 100 927,00 € 56.014,08 €
+28 Juni 
+2024 Handel Buy trade DE000SQ3MVR8 Best Turbo auf AIRBUS SE, quantity: 250 363,50 € 55.650,58 €
+28 Juni 
+2024 Handel Buy trade DE000SU9CW55 Best Turbo auf NOVO-NORDISK AS B DK 0,1, quantity: 200 579,00 € 55.071,58 €
+28 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 1.081,00 € 53.990,58 €
+28 Juni 
+2024 Handel Buy trade DE000SU9CW55 Best Turbo auf NOVO-NORDISK AS B DK 0,1, quantity: 100 284,00 € 53.706,58 €
+28 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 619,00 € 54.325,58 €
+28 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 641,50 € 54.967,08 €
+28 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 679,00 € 55.646,08 €
+28 Juni 
+2024 Handel Buy trade DE000HS64N58 Open End Turbo auf DAX®, quantity: 250 931,00 € 54.715,08 €
+Seite 13 von 15
+Erstellt am 01 Juli 2024
+Trade Republic Bank GmbH
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+28 Juni 
+2024 Handel Sell trade DE000HS64N58 Open End Turbo auf DAX®, quantity: 250 939,00 € 55.654,08 €
+28 Juni Handel Buy trade DE000SW42LC6 Unlimited Turbo auf AMAZON.COM INC. DL-,01, quantity: 2024 100 613,00 € 55.041,08 €
+28 Juni 
+2024 Handel Buy trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 250 568,50 € 54.472,58 €
+28 Juni 
+2024 Handel Sell trade DE000HS7A6W5 Open End Turbo auf DAX®, quantity: 500 1.377,60 € 55.850,18 €
+28 Juni Handel Buy trade DE000SW42LC6 Unlimited Turbo auf AMAZON.COM INC. DL-,01, quantity: 2024 100 592,00 € 55.258,18 €
+28 Juni Handel Sell trade DE000HS787Z1 Open End Turbo auf Dow Jones Industrial Average, 2024 quantity: 100 877,00 € 56.135,18 €
+28 Juni Handel Buy trade DE000SW42LC6 Unlimited Turbo auf AMAZON.COM INC. DL-,01, quantity: 2024 100 592,00 € 55.543,18 €
+28 Juni Handel Sell trade DE000HS787Z1 Open End Turbo auf Dow Jones Industrial Average, 2024 quantity: 100 1.070,00 € 56.613,18 €
+Seite 14 von 15
+Erstellt am 01 Juli 2024
+Trade Republic Bank GmbH
+HAFTUNGSAUSSCHLUSS
+Sehr geehrte Kundin, sehr geehrter Kunde
+Bitte überprüfe unbedingt deine Buchungen, Berechnungen und den Schlusssaldo auf dem Kontoauszug, der gleichzeitig deinen Rechnungsabschluss 
+darstellt. Der Rechnungsabschluss gilt als anerkannt, wenn du innerhalb von sechs Wochen nach Zugang keine Einwendungen erhebst. Einwendungen 
+gegen Kontoauszüge sind schriftlich an uns zu richten. Guthaben sind einlagefähig im Sinne des Einlagensicherungsgesetzes (EinSiG). Weitere 
+Informationen entnehme bitte dem Merkblatt für den Einleger, das zusammen mit unseren Allgemeinen Geschäftsbedingungen eingesehen werden kann.
+Trade Republic Bank GmbH Kontakt Sitz der Gesellschaft: Berlin
+Brunnenstraße 19-21 www.traderepublic.com AG Charlottenburg HRB 244347 B
+10119 Berlin service@traderepublic.com Umsatzsteuer-ID DE307510626
+Seite 15 von 15
+Erstellt am 01 Juli 2024
+Trade Republic Bank GmbH
+
+```

@@ -1,0 +1,39 @@
+PDF Autor: 'Consorsbank'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 0318 681 142
+1122067621/00
+Vermerk der Bank: 1000
+2
+VORNAME NACHNAME
+STRASSE Datum: 06.01.2021
+09823 ORTSNAME Seite: 1 von 1
+Ordernummer 186089202.001
+Orderdatum 06.01.2021
+ORDERABRECHNUNG
+KAUF AM 06.01.2021 UM 15:46:08 INL.AUSSERBOERSLICH NR. 186089202.001
+Bezeichnung WKN ISIN
+SG EFF. TURBOL BC8 SB8VZT DE000SB8VZT2
+Einheit Umsatz
+ST 500,00000
+Kündigungsrecht
+Kündigungsrecht des Emittenten zum 03.12.2021
+Preis pro Anteil 1,310000 EUR
+Kurswert 655,00 EUR
+Grundgebühr 4,95 EUR
+zulasten Konto-Nr. 123123123123 659,95 EUR
+Bestand zugunsten Girosammelverwahrung
+CBF 2126
+Limitkurs 1,310000 EUR
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+PrØsident du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur GØnØral (Generaldirektor): Jean-Laurent BonnafØ

@@ -1,0 +1,41 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=000000000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=XXXXXXXXXXX
+ADRESSZEILE2=XXXXXXXXXXXXXXXXXX
+Kauf ADRESSZEILE3=XXXXXXXXXXXXXXXXX
+Kommissionsgeschäft ADRESSZEILE4=XXXXXXXXXXXXX
+XXXXXXXXXXXXXXX ADRESSZEILE5=
+XXXXXXXXXXXXXXX ADRESSZEILE6=Depot-Nr. Abrechnungs-Nr.
+XXXXXXXXXXXXXXX BELEGNUMMER=0000
+XXXXXXXXXXXXX XXXXXXXX XXXXXXXXXXXX / 13.09.2021 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Frankfurt am Main, 13.09.2021
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+TotalEnergies SE Actions au Porteur EO 2,50 FR0000120271
+Nominal Kurs
+STK 100,000 EUR 37,2950
+Handelstag 13.09.2021 Kurswert EUR 3.729,50-
+Handelszeit 10:04 Handelsplatzgebühr EUR 2,00-
+Handelsplatz außerbörslich Lang & Schwarz Frz. Finanztrans. Steuer EUR 11,19-
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+15.09.2021 123456789 EUR 3.742,69
+Wir werden in Ihrem Depot wie angegeben buchen.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+onvist a bank - eine M arke der Com merzbank AG · Wildunger S t raße 6a · 6 0 487 Frankfur t a m M ain
+Kundenservice: +49 ( 0 )69-710 7-53 0 · T: +49 ( 0 )69-710 7- 0 · F: +49 ( 0 )69-710 7-10 0 · E: in fo@onvist a -bank.de · W: w w w.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender),
+Marcus Chromik, Jörg Hessenmüller, Michael Kotzbauer, Bet t ina Orlopp, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
+3.18/ABREABHNHANDKFDI/POJ1618/008007/140921/003148

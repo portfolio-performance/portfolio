@@ -48,7 +48,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
     public List<Item> extract(int skipLines, List<String[]> rawValues, Map<String, Column> field2column,
                     List<Exception> errors)
     {
-        Security dummy = new Security();
+        Security dummy = new Security(null, null);
 
         for (String[] line : rawValues)
         {

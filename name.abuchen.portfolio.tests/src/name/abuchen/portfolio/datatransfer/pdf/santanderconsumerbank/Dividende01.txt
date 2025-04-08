@@ -1,0 +1,40 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Santander Consumer Bank AG · Santander-Platz 1 · 41061 Mönchengladbach    
+Depotnummer
+  0000 0000000000
+ Kundennummer 000000000
+VORNAME NACHNAME
+ Abrechnungsnr. 00000000000
+ANREDE Datum 14.06.2021
+VORNAME NACHNAME Ihr Berater Santander Expertenberatung
+STRAßE NUMMER Telefon 02161/9060187       
+PLZ STADT
+                                                        
+                                                        
+                                                         
+Dividendengutschrift
+bei NV-Bescheinigung nach § 44a Abs. 1 S. 4 und Abs. 2 Nr. 2 EStG gültig bis 00.00.0000
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 2 3M CO. US88579Y1010 (851745)
+REGISTERED SHARES DL -,01
+Zahlbarkeitstag 14.06.2021 Dividende pro Stück 1,48 USD
+Bestandsstichtag 19.05.2021 Herkunftsland USA
+Ex-Tag 20.05.2021 Art der Dividende Quartalsdividende
+Geschäftsjahr 01.01.2021 - 31.12.2021
+Devisenkurs EUR / USD  1,2137
+Devisenkursdatum 14.06.2021
+Dividendengutschrift 2,96 USD 2,44+ EUR
+Umrechnung in EUR 2,44 EUR
+Einbehaltene Quellensteuer 15 % auf 2,96 USD 0,37- EUR
+Anrechenbare Quellensteuer 15 % auf 2,44 EUR 0,37 EUR
+Kapitalertragsteuerpflichtige Dividende 2,44 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 2,07+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir mit Wertstellung 16.06.2021 zu Gunsten des Kontos 0000000000 (IBAN XX00 0000 0000 0000
+0000 00), BLZ 310 108 33 (BIC SCFBDE33XXX). 
+Keine Steuerbescheinigung. 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+0000.00000000.0000000XX00

@@ -1,0 +1,86 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.63.0
+-----------------------------------------
+S Sparkasse
+Ostunterfranken
+341 00 00 81
+Herrn Ihr Ansprechpartner:
+Max Mustermann Kompetenzcenter Hofheim
+Strasse Oliver Füglein
+Strasse 7 Marktplatz 7
+99999 Stadt 97461 Hofheim
+Telefon 09523 9228-24
+Telefax 09523 9228-39
+oliver.fueglein@spk-ostunterfranken.de
+ 
+ 
+ 
+1. Februar 2017
+. Kontoauszug 1/2017 Seite 1 von 4
+Giro Plus 999999, DE51 7935 1730 0000 9999 99
+  
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+ Kontostand am 30.12.2016, Auszug Nr.   18            2.223,38+
+20.01.2017 20.01.2017 Überweisung              831,01-
+HUK-COBURG Unternehmensgruppe
+Max Mustermann 99999 Stadt Vers
+.-Nr. 99999999999 xxx-xx 999
+DATUM 20.01.2017, 18.07 UHR
+1.TAN 188124
+20.01.2017 20.01.2017 Überweisung               50,00-
+Max Mustermann
+Gutschrift
+DATUM 20.01.2017, 18.05 UHR
+1.TAN 627857
+ Kontostand am 31.01.2017 um 20:06 Uhr            1.418,97+
+Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
+Sparkasse Ostunterfranken Telefon 09521/58-0    SWIFT-Adr. (BIC): BYLADEM1HAS
+Marktplatz 14/15 Telefax 09521/58-499    BLZ: 793 517 30
+97437 Haßfurt Handelsregister www.spk-ostunterfranken.de    Ust-IDNr. DE 133906625
+Anstalt des öffentlichen Rechts HRA 5337 (AG Amtsgericht Bamberg) info@spk-ostunterfranken.de   Steuer-Nr. 249/114/70639
+0.53.2.79F5
+0100 94078.000 (Fassung November 2013) - (V1) inanz I.n1f.o1r4m7a7tik 
+Urheberrechtlich geschützt *0000000000100383011150*
+0000000000100383011150
+S Sparkasse
+Ostunterfranken
+Kontoauszug 1/2017 Seite 4 von 4
+Giro Plus 999999, DE51 7935 1730 0000 9999 99 Max Mustermann
+Hinweise zum Kontoauszug:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug. Eventuelle Rückfragen besprechen Sie bitte mit Ihrem
+Kundenberater.
+l Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere Revisionsabteilung. Unsere Anschrift(en)
+entnehmen Sie bitte unserem Preis- und Leistungsverzeichnis.
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs Wochen nach Zugang keine Einwendungen erheben.
+Einwendungen gegen Rechnungsabschlüsse müssen der Sparkasse zugehen. Zur Fristwahrung genügt die rechtzeitige
+Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+l Gutschriften aus eingereichten Schecks, Lastschriften und anderen Einzugspapieren erfolgen unter dem Vorbehalt der
+Einlösung.
+l Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht bis zum Ablauf des übernächsten Bankarbeitstages
+. storniert oder korrigiert werden. Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren Einlösungswillen schon vorherDritten gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für Lastschriften gelten die Einlösungsregeln in den
+hierfür vereinbarten besonderen Bedingungen.
+  
+l Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+l Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen laut angegebener Kontonummer als
+Rechnung im Sinne des UStG.
+l Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können
+dem Informationsbogen für den Einleger entnommen werden.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäftsbedingungen und besonderen Bedingungen stellen
+wir Ihnen auf Wunsch gern zur Verfügung.
+Mit freundlichen Grüßen
+Ihre Sparkasse Ostunterfranken
+.
+Sparkasse Ostunterfranken Telefon 09521/58-0    SWIFT-Adr. (BIC): BYLADEM1HAS
+Marktplatz 14/15 Telefax 09521/58-499    BLZ: 793 517 30
+97437 Haßfurt Handelsregister www.spk-ostunterfranken.de    Ust-IDNr. DE 133906625
+Anstalt des öffentlichen Rechts HRA 5337 (AG Amtsgericht Bamberg) info@spk-ostunterfranken.de   Steuer-Nr. 249/114/70639
+0.53.2.7950100 94078..10.0104 7(F7assung November 2013) - (V1) Finanz Informatik 
+Urheberrechtlich geschützt *0000000000100383011150*
+0000000000100383011150
+
+```

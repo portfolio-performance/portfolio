@@ -5,15 +5,16 @@ import org.eclipse.e4.ui.css.core.dom.properties.converters.ICSSValueConverter;
 import org.eclipse.e4.ui.css.core.engine.CSSEngine;
 import org.eclipse.e4.ui.css.swt.properties.AbstractCSSPropertySWTHandler;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.ILegend;
-import org.swtchart.ITitle;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.ILegend;
+import org.eclipse.swtchart.IPlotArea;
+import org.eclipse.swtchart.ITitle;
 import org.w3c.dom.css.CSSValue;
 
 import name.abuchen.portfolio.ui.util.chart.ScatterChart;
+import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 
 @SuppressWarnings("restriction")
 public class ChartCSSHandler extends AbstractCSSPropertySWTHandler implements ICSSPropertyHandler
@@ -22,15 +23,15 @@ public class ChartCSSHandler extends AbstractCSSPropertySWTHandler implements IC
     private static final String AXIS_COLOR = "axis-color"; //$NON-NLS-1$
     private static final String GRID_COLOR = "grid-color"; //$NON-NLS-1$
     private static final String HIGHLIGHT_COLOR = "highlight-color"; //$NON-NLS-1$
+    private static final String MEASUREMENT_COLOR = "measurement-color"; //$NON-NLS-1$
 
     @Override
     protected void applyCSSProperty(Control control, String property, CSSValue value, String pseudo, CSSEngine engine)
                     throws Exception
     {
-        if (!(control instanceof Chart))
+        if (!(control instanceof Chart chart))
             return;
 
-        Chart chart = (Chart) control;
         if (AXIS_COLOR.equalsIgnoreCase(property) && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE))
         {
             Color newColor = (Color) engine.convert(value, Color.class, control.getDisplay());
@@ -56,11 +57,11 @@ public class ChartCSSHandler extends AbstractCSSPropertySWTHandler implements IC
             for (IAxis axis : chart.getAxisSet().getAxes())
                 axis.getGrid().setForeground(newColor);
         }
-        else if (chart instanceof ScatterChart && HIGHLIGHT_COLOR.equalsIgnoreCase(property)
+        else if (chart instanceof ScatterChart scatterChart && HIGHLIGHT_COLOR.equalsIgnoreCase(property)
                         && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE))
         {
             Color newColor = (Color) engine.convert(value, Color.class, control.getDisplay());
-            ((ScatterChart) chart).setHighlightColor(newColor);
+            scatterChart.setHighlightColor(newColor);
         }
         else if (BACKGROUND_COLOR.equalsIgnoreCase(property)
                         && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE))
@@ -69,12 +70,19 @@ public class ChartCSSHandler extends AbstractCSSPropertySWTHandler implements IC
 
             chart.setBackground(newColor);
 
-            Composite plotArea = chart.getPlotArea();
+            IPlotArea plotArea = chart.getPlotArea();
             if (plotArea != null)
                 plotArea.setBackground(newColor);
             ILegend legend = chart.getLegend();
             if (legend != null)
                 legend.setBackground(newColor);
+        }
+        else if (MEASUREMENT_COLOR.equalsIgnoreCase(property)
+                        && (value.getCssValueType() == CSSValue.CSS_PRIMITIVE_VALUE)
+                        && chart instanceof TimelineChart timelineChart)
+        {
+            Color newColor = (Color) engine.convert(value, Color.class, control.getDisplay());
+            timelineChart.getChartToolsManager().setColor(newColor);
         }
     }
 
@@ -82,10 +90,9 @@ public class ChartCSSHandler extends AbstractCSSPropertySWTHandler implements IC
     protected String retrieveCSSProperty(Control control, String property, String pseudo, CSSEngine engine)
                     throws Exception
     {
-        if (!(control instanceof Chart))
+        if (!(control instanceof Chart chart))
             return null;
 
-        Chart chart = (Chart) control;
         if (AXIS_COLOR.equalsIgnoreCase(property))
         {
             ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
@@ -96,15 +103,20 @@ public class ChartCSSHandler extends AbstractCSSPropertySWTHandler implements IC
             ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
             return cssValueConverter.convert(chart.getAxisSet().getAxes()[0].getGrid().getForeground(), engine, null);
         }
-        else if (HIGHLIGHT_COLOR.equalsIgnoreCase(property) && chart instanceof ScatterChart)
+        else if (HIGHLIGHT_COLOR.equalsIgnoreCase(property) && chart instanceof ScatterChart scatterChart)
         {
             ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
-            return cssValueConverter.convert(((ScatterChart) chart).getHighlightColor(), engine, null);
+            return cssValueConverter.convert(scatterChart.getHighlightColor(), engine, null);
         }
         else if (BACKGROUND_COLOR.equalsIgnoreCase(property))
         {
             ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
             return cssValueConverter.convert(chart.getPlotArea().getBackground(), engine, null);
+        }
+        else if (MEASUREMENT_COLOR.equalsIgnoreCase(property) && chart instanceof TimelineChart timelineChart)
+        {
+            ICSSValueConverter cssValueConverter = engine.getCSSValueConverter(String.class);
+            return cssValueConverter.convert(timelineChart.getChartToolsManager().getColor(), engine, null);
         }
 
         return null;

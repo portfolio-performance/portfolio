@@ -12,8 +12,8 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -21,12 +21,14 @@ import name.abuchen.portfolio.util.TextUtil;
 
 /* package */class ChartContextMenu
 {
+    private static final int DEFAULT_FILE_EXTENSION = 2;
+
     private static final String[] EXTENSIONS = new String[] { "*.jpeg", "*.jpg", "*.png" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
     private Chart chart;
     private Menu contextMenu;
-    
-    private static int lastUsedFileExtension = 0;
+
+    private static int lastUsedFileExtension = DEFAULT_FILE_EXTENSION;
 
     public ChartContextMenu(Chart chart)
     {
@@ -37,22 +39,28 @@ import name.abuchen.portfolio.util.TextUtil;
         menuMgr.addMenuListener(manager -> configMenuAboutToShow(manager));
 
         contextMenu = menuMgr.createContextMenu(chart);
-        chart.getPlotArea().setMenu(contextMenu);
+        chart.getPlotArea().getControl().setMenu(contextMenu);
 
-        chart.getPlotArea().addDisposeListener(e -> dispose());
+        chart.getPlotArea().getControl().addDisposeListener(e -> dispose());
     }
 
     private void configMenuAboutToShow(IMenuManager manager)
     {
-        Action actionAdjustRange = new Action(Messages.MenuChartAdjustRange)
+        if (chart instanceof TimelineChart timelineChart)
+        {
+            timelineChart.getChartToolsManager().addContextMenu(manager);
+            manager.add(new Separator());
+        }
+
+        Action actionAdjustRange = new Action(Messages.MenuChartAdjustRangeToOriginalSize)
         {
             @Override
             public void run()
             {
-                if (chart instanceof ScatterChart)
-                    ((ScatterChart) chart).adjustRange();
-                else if (chart instanceof TimelineChart)
-                    ((TimelineChart) chart).adjustRange();
+                if (chart instanceof ScatterChart scatterChart)
+                    scatterChart.adjustRange();
+                else if (chart instanceof TimelineChart timelineChart)
+                    timelineChart.adjustRange();
                 else
                     chart.getAxisSet().adjustRange();
 
@@ -205,38 +213,47 @@ import name.abuchen.portfolio.util.TextUtil;
                         if (filename == null)
                             return;
 
+                        lastUsedFileExtension = dialog.getFilterIndex();
+                        if (lastUsedFileExtension == -1)
+                            lastUsedFileExtension = DEFAULT_FILE_EXTENSION;
+
                         int format;
                         if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) //$NON-NLS-1$ //$NON-NLS-2$
                             format = SWT.IMAGE_JPEG;
                         else if (filename.endsWith(".png")) //$NON-NLS-1$
                             format = SWT.IMAGE_PNG;
                         else
-                            format = SWT.IMAGE_UNDEFINED;
-                        
-                        lastUsedFileExtension = dialog.getFilterIndex();
-                        if(lastUsedFileExtension == -1)
-                            lastUsedFileExtension = 0;
-
-                        if (format != SWT.IMAGE_UNDEFINED)
                         {
-                            boolean isChartTitleVisible = chart.getTitle().isVisible(); 
-                            boolean isChartLegendVisible = chart.getLegend().isVisible();
-                            try
+                            if (lastUsedFileExtension == 0 || lastUsedFileExtension == 1)
                             {
-                                chart.suspendUpdate(true);
-                                chart.getTitle().setVisible(true);
-                                chart.getLegend().setVisible(true);
-                                chart.getLegend().setPosition(SWT.BOTTOM);
-                                chart.suspendUpdate(false);
-                                chart.save(filename, format);
+                                filename = filename + ".jpg"; //$NON-NLS-1$
+                                format = SWT.IMAGE_JPEG;
                             }
-                            finally
+                            else
                             {
-                                chart.suspendUpdate(true);
-                                chart.getTitle().setVisible(isChartTitleVisible);
-                                chart.getLegend().setVisible(isChartLegendVisible);
-                                chart.suspendUpdate(false);
+                                filename = filename + ".png"; //$NON-NLS-1$
+                                format = SWT.IMAGE_PNG;
                             }
+                        }
+
+                        boolean isChartTitleVisible = chart.getTitle().isVisible();
+                        boolean isChartLegendVisible = chart.getLegend().isVisible();
+                        try
+                        {
+                            chart.suspendUpdate(true);
+                            chart.getTitle().setVisible(true);
+                            chart.getLegend().setVisible(true);
+                            chart.getLegend().setPosition(SWT.BOTTOM);
+                            chart.suspendUpdate(false);
+                            chart.save(filename, format);
+                        }
+                        finally
+                        {
+                            chart.suspendUpdate(true);
+                            chart.getTitle().setVisible(isChartTitleVisible);
+                            chart.getLegend().setVisible(isChartLegendVisible);
+                            chart.redraw();
+                            chart.suspendUpdate(false);
                         }
                     }
 
@@ -249,8 +266,7 @@ import name.abuchen.portfolio.util.TextUtil;
                 {
                     PortfolioPlugin.log(e);
                 }
-                
-                
+
             }
         });
     }

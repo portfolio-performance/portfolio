@@ -1,0 +1,34 @@
+Abrechnung Ereignis
+easybank Service Center 36487935-11.5.2022
+BAWAG P.S.K. AG Depot-Nr.: 35955489806
+Wiedner Gürtel 11 Mustermann               
+1100 Wien 35/9835
+BAWAG P.S.K. AG                    
+An
+Mustermann
+Straße 74
+1234 Ort                                                                                                                                                                                         
+Wir haben für Sie am 11.5.2022 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+1.250 Stk
+Titel: DE0005552004  D E U T S C H E  P O ST AG                   
+NAMENS-AKTIEN O.N.                 
+Dividende: 1,8 EUR 
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt                          
+Bruttoertrag: 2.250,-- EUR 
+Quellensteuer: -593,44 EUR 
+Inkassoprovision: -5,63 EUR 
+Umsatzsteuer: -1,13 EUR 
+Zu Gunsten IBAN AT12 1234 1234 1234 1234 1.649,80 EUR 
+Valuta 11.5.2022
+Kunden UID: ATU12312312    
+Es wurde Umsatzsteuer in der Höhe von 20% berücksichtigt.
+Extag: 9.5.2022
+Record-Tag: 10.5.2022
+Bemessungsgrundlage USt: -5,63 EUR
+QUSt pro Stück 26,375 %
+1.6.2022 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten!
+04601 Doknr.: ON00-036-0000000001

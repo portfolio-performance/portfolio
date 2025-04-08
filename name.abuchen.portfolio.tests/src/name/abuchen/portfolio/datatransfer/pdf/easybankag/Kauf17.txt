@@ -1,0 +1,47 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.3
+-----------------------------------------
+Herrn
+Mag. Max Mustermann
+Musterstraße 2
+8020 Musterstadt
+Wien, den 27.10.2022
+Wir haben für Sie am 27.10.2022 unten angeführtes Geschäft abgerechnet:
+Depot: 11111-222-333
+Geschäftsart: Kauf Auftrags-Nr.: 25456794 - 27.10.2022
+Zugang: Stk 13
+Titel: US1912161007 COCA-COLA CO., THE
+Registered Shares DL -,25
+Kurs: 59,15 EUR
+Verwahrart: WR Wertpapierrechnung
+Positionsdaten: Loco: Düsseldorf
+Kurswert: -768,95 EUR
+Fremde Börsespesen: -0,69 EUR
+Fremde Settlementspesen: -2,00 EUR
+Eigene Spesen: -8,95 EUR
+Zu Lasten IBAN AT11 1111 1111 1111 1111 Valuta 31.10.2022 -780,59 EUR
+Handelsplatz: XETRA-Frankfurt
+Eingang vorbehalten
+Schlusstag/-zeit: 27.10.2022 12:21:47
+Kassatag: 31.10.2022
+Wertpapier-Risiko: 4_spekulativ
+Limit: 59,150000
+KESt-pflichtiges Wertpapier
+Steuerrelevante Hinweise finden Sie auf der Rückseite.
+Seite 1 von 2
+easybank Service Center | +43 (0) 5 70 05-500 | easy@easybank.at | www.easybank.at | Wiedner Gürtel 11 | 1100 Wien
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postsparkasse Aktiengesellschaft | Handelsgericht Wien | FN 205340x
+GEODRU02 WGEWTGSDR15ABREP2022102703080P27_a/777
+Steuerrelevanter Anschaffungswert für den Gesamtbestand: 2.996,45 EUR
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe.
+Die BAWAG erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle steuerliche
+Nachteile im Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen ihrer
+Kunden. Die Besteuerung der Kapitaleinkünfte hängt von den persönlichen Verhältnissen des Anlegers
+ab und kann künftigen Änderungen unterworfen sein. Vor einer Veranlagungsentscheidung sollten Sie
+sich bei Ihrem Steuerberater über die damit verbundenen steuerlichen Konsequenzen und
+Meldepflichten informieren.
+Mit freundlichen Grüßen
+Ihr easybank Service Center
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 2 von 2
+GEODRU02 WGEWTGSDR15ABREP2022102703080P27_a/778

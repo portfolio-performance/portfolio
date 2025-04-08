@@ -9,7 +9,8 @@ public class ExcessReturnDataSeriesConfig extends DataSeriesConfig
 {
     public ExcessReturnDataSeriesConfig(WidgetDelegate<?> delegate)
     {
-        super(delegate, true, true, Messages.LabelExcessReturnBaselineDataSeries, Dashboard.Config.SECONDARY_DATA_SERIES);
+        super(delegate, true, true, null, Messages.LabelExcessReturnBaselineDataSeries,
+                        Dashboard.Config.SECONDARY_DATA_SERIES);
     }
 
 }

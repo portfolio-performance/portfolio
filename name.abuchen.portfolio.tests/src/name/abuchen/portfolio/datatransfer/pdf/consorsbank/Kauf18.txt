@@ -1,0 +1,43 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consors 
+bank! 
+by BNP PARIBAS 
+Consorsbank » 90318 Nürnberg 
+Depotnummer: 1234 567 890 
+1110204561/00 
+Vermerk der Bank: 1000 
+2 
+Max Mustermann
+Musterst. 1 Datum: 03.01.2022 
+12345 Entenhausen Seite: 1 von 1 
+Ordernummer 123456789.001 
+Orderdatum 03.01.2022 
+ORDERABRECHNUNG 
+KAUF AM 03.01.2022 UM 09:30:55 SPARPLAN NR. 123456789.001 
+  
+Bezeichnung WKN ISIN 
+AMAZON.COM INC.  DL-,01 906866 US0231351067 
+Einheit Umsatz 
+ST 0,00830 
+Preis pro Anteil 2.968,000000 EUR 
+Kurswert 24,63 EUR 
+Provision 0,37 EUR 
+  
+zulasten Konto-Nr. 0000000001 25,00 EUR 
+Valuta 05.01.2022 
+Bestand zugunsten Girosammelverwahrung 
+CBF 2126 
+Die Order wurde an folgender Börse gehandelt: SPARPLAN TRADEGATE 
+Sparplanname: Amazon 
+Beratungsfreies Geschäft 
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen: 
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der 
+Allgemeinen Geschäftsbedingungen (AGB Banken). 
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die 
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung. 
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht). 
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929 
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de 
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 
+President du Conseil d’Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur General (Generaldirektor): Jean-Laurent  Bonnafe

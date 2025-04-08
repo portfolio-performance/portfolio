@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Max Mustermann PAGE 1 from 1
+Musterstrasse 1 DATE 31.07.2024
+12345 12345 SECURITIES ACCOUNT 1234567890
+CASH DIVIDEND
+OVERVIEW
+Cash Dividend with Ex-Date 18.07.2024.
+POSITION QUANTITY YIELD AMOUNT
+Core Euro Corp Bond EUR (Dist)
+IE00B3F81R35 43.000000 Pcs. 2.0996 EUR
+90.28 EUR
+TOTAL 90.28 EUR
+INVOICE
+POSITION AMOUNT
+Sub Total 90.28 EUR
+TOTAL 90.28 EUR
+BOOKING
+SETTLEMENT ACCOUNT PAYMENT DATE AMOUNT
+DE20502109007012030856 31.07.2024 90.28 EUR
+IE00B3F81R35 in securities invoice
+This statement is generated automatically and therefore not signed.
+If no sales tax is shown, this is a sales tax-free service in accordance with Section § 4 Nr. 8 UStG
+Trade Republic Bank GmbH www.traderepublic.com Headquarters: Berlin DirectorsBrunnenstraße 19-21
+10119 Berlin service@traderepublic.com
+AG Charlottenburg HRB 244347 B Andreas Torner
+VAT-ID DE307510626 Gernot Mittendorfer

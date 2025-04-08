@@ -1,0 +1,18 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+
+Herr **** ****
+
+Germany
+Benutzername: ****
+(****)
+Transaktionsübersicht von 07-01-2020 bis 11-01-2020
+Datum Uhrzeit Produkt ISIN Börse Anzahl Kurs Wert in Wert WechselkurLokalwährun s Gebühr Gesamt
+09-01-2020 09:31 TURBOC O.END GOLD 1109,22 DE000VA5DDR3 FRA -55 EUR 42,46 EUR 2.335,30 EUR 2.335,30 EUR -4,76 EUR 2.330,54
+08-01-2020 09:30 VARTA AG DE000A0TGJ55 XET 25 EUR 93,60 EUR -2.340,00 EUR -2.340,00 EUR -2,61 EUR -2.342,61
+DEGIRO B.V. DEGIRO B.V. ist als
+Amstelplein 1 E Investmentgesellschaft bei der
+1096 HA Amsterdam kundenservice@degiro.de niederländischen Seite 1 / 1
+I www.degiro.de Finanzaufsichtsbehörde (AFM) Konto 2020-11-25
+registriert.

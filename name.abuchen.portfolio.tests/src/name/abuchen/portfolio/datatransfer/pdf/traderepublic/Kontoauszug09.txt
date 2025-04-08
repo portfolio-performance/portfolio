@@ -1,0 +1,40 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+VORNAME NACHNAME DATUM 01 Mai 2024 - 03 Mai 2024
+Straße 1, 12345 IBAN DE00000000000000000000
+Ort, DE BIC DEUTDEFFVAC
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Depotkonto 18.514,32 € 85,65 € 124,24 € 18.475,73 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+01 Mai 
+2024 Zinszahlung Your interest payment 58,71 € 18.573,03 €
+01 Mai 
+2024 Kartentransaktion DETLEV LOUIS MOTORRAD 69,99 € 18.503,04 €
+01 Mai Erträge Ereignisausführung Ertrag DE000XYZ0000 AG NA O.N. 2024 2996732520240501 Bruttoertrag 22,00 € 18.525,04 €
+02 Mai 
+2024 Kartentransaktion PAYPAL *VODAFONE 5,00 € 18.520,04 €
+02 Mai 
+2024 Prämie Your Saveback payment 4,94 € 18.524,98 €
+02 Mai Handel Ausführung Handel Direktkauf Kauf IE00BQN1K786 ISHSIV-E.MSCI EO M.F.EO A 2024 8729811220240502 KW 4,94 € 18.520,04 €
+03 Mai 
+2024 Kartentransaktion Lidl sagt Danke 40,31 € 18.479,73 €
+03 Mai 
+2024 Kartentransaktion TooGoodT 4,00 € 18.475,73 €
+Seite 1 von 2
+Erstellt am 04 Mai 2024
+Trade Republic Bank GmbH
+HAFTUNGSAUSSCHLUSS
+Sehr geehrte Kundin, sehr geehrter Kunde
+Bitte überprüfe unbedingt deine Buchungen, Berechnungen und den Schlusssaldo auf dem Kontoauszug, der gleichzeitig deinen Rechnungsabschluss 
+darstellt. Der Rechnungsabschluss gilt als anerkannt, wenn du innerhalb von sechs Wochen nach Zugang keine Einwendungen erhebst. Einwendungen 
+gegen Kontoauszüge sind schriftlich an uns zu richten. Guthaben sind einlagefähig im Sinne des Einlagensicherungsgesetzes (EinSiG). Weitere 
+Informationen entnehme bitte dem Merkblatt für den Einleger, das zusammen mit unseren Allgemeinen Geschäftsbedingungen eingesehen werden kann.
+Trade Republic Bank GmbH Kontakt Sitz der Gesellschaft: Berlin
+Brunnenstraße 19-21 www.traderepublic.com AG Charlottenburg HRB 244347 B
+10119 Berlin service@traderepublic.com Umsatzsteuer-ID DE307510626
+Seite 2 von 2
+Erstellt am 04 Mai 2024
+Trade Republic Bank GmbH

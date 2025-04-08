@@ -1,0 +1,130 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+Barclays Bank Ireland PLC
+Hamburg Branch
+Gasstraße 4 c
+Barclays | 22792 Hamburg
+22761 Hamburg
+Herrn
+Vorname Nachname
+Produkt ID: 1234567890
+Straße 1
+12345 Ort
+Kontoauszug vom 10. Dezember 2023
+Abrechnungszeitraum: 11.11.2023 - 10.12.2023 Alter Saldo: EUR          0,00
+Barclays Kontonummer: 1234567890 Neuer Saldo: EUR        821,96 -
+IBAN: DE00 0000 0000 0000 0000 00 Kreditrahmen: EUR      4.000,00
+BIC: BARCDEHAXXX Offener Verfügungsrahmen: EUR      3.178,04
+Die Barclays Privatkunden App - einfach, schnell und sicher
+Mit der Barclays Privatkunden App können Sie mit wenigen Klicks Ihren Kontostand abrufen, Umsätze checken,
+Kontoauszüge überprüfen und vieles mehr. Für einzelne Ausgaben oder die ganze Monatsrechnung ab 95 Euro können
+Sie per App ganz einfach Ratenkäufe einrichten - sogar noch bis zu 8 Wochen nachträglich. Einfach Höhe der
+Monatsrate auswählen, Namen vergeben, fertig. Mehr erfahren Sie unter: barclays.de/ratenkauf
+Konto-Saldo und Rückzahlung
+Bezeichnung/Individueller Verwendungszweck Neuer Saldo Rückzahlungsoptionen Nächste Zahlung
+(EUR) (EUR)
+Allgemeine Umsätze        597,00- 100,0 %        597,00
+Ratenkauf: BootAlbufeira        119,96- 3 offene Raten         39,99
+Gesamt (EUR)        821,96-        671,99
+Wie mit Ihnen vereinbart, ziehen wir zum 08.01.2024 den Betrag in Höhe von EUR 671,99 von Ihrem Konto mit der IBAN
+DE00 0000 0000 0000 0000 00 und BIC BICXXXXX ein. Die Gutschrift des Betrags auf Ihrem Barclays Konto erfolgt am
+06.01.2024. Dieser Betrag vermindert sich um vorab eingegangene Einzahlungen auf Ihrem Barclays Konto.
+Ihre Mandatsreferenz zu dieser Transaktion lautet P200000000000000, unsere Gläubiger-Identifikationsnummer ist
+DE04ZZZ00000001740.
+Ihre Rückzahlungsoptionen können Sie jederzeit per Barclays Privatkunden App oder im Online-Banking einsehen und
+anpassen.
+                   Seite 1 von 4
+Barclays Bank Ireland PLC Hamburg Branch | Gasstraße 4 c | 22761 Hamburg | barclays.de | BIC BARCDEHAXXX | Handelsregister HRB: 153530
+USt-IdNr.: DE 319 453 063 | Finanzdienstleistungen sind nach § 4 Nr. 8 UStG steuerfrei / Financial Services are VAT exempt | Hauptsitz: One Molesworth Street Dublin 2 DO2 RF29
+Reg. Ireland: 396330 | Ständiger Vertreter: Tobias Grieß | Vorstand der Barclays Bank Ireland PLC: Francesco Ceccato und Jasper Johannes Hanebuth. Eine Liste mit den Namen
+sowie weiteren persönlichen Informationen zu den Vorständen der Gesellschaft kann am Geschäftssitz der Gesellschaft eingesehen werden.
+Tipp: Zahlen Sie z. B. Ihre Monatsrechnung in Höhe von EUR 597,00 einfach später - z. B. in 12 festen Raten zu EUR
+53,20 zu einem Sollzins von 11,99 % p.a. Unser Barclays Ratenkauf macht es möglich. Einfach bis zum 03.01.2024 mit
+wenigen Klicks in der Barclays Privatkunden App oder dem Online-Banking aktivieren. Mehr dazu unter:
+barclays.de/ratenkauf
+Umsatzübersicht
+Beleg- Buchungs-/ Beschreibung Karte Betrag (EUR)
+datum Valutadatum
+Alter Saldo vom 10. November 2023               0,00
+Hauptkarte/n, Vorname Nachname
+19.11.2023 20.11.2023 GetYourGuide Tickets   Berlin        DE Visa B            119,96-
+19.11.2023 20.11.2023 ALDI ALBUFEIRA         ALBUFEIRA     PT Visa B A             21,84-
+18.11.2023 20.11.2023 GRUPO PESTANA          ALCACER DO SA PT Visa B A              8,00-
+30.11.2023 01.12.2023 eBay O*00-00000-00000  Luxembourg    LU Visa B             34,99-
+05.12.2023 06.12.2023 PAYPAL *IONOS SE       00000000000   DE Visa              1,00-
+08.12.2023 09.12.2023 Globus Baumarkt        Ort           DE Visa B A              8,48-
+08.12.2023 09.12.2023 Tegut Filiale 0000     LangOrtsnamen DE Visa B A              1,29-
+Neuer Saldo am 10. Dezember 2023            821,96-
+                   Seite 2 von 4
+Barclays Bank Ireland PLC Hamburg Branch | Gasstraße 4 c | 22761 Hamburg | barclays.de | BIC BARCDEHAXXX | Handelsregister HRB: 153530
+USt-IdNr.: DE 319 453 063 | Finanzdienstleistungen sind nach § 4 Nr. 8 UStG steuerfrei / Financial Services are VAT exempt | Hauptsitz: One Molesworth Street Dublin 2 DO2 RF29
+Reg. Ireland: 396330 | Ständiger Vertreter: Tobias Grieß | Vorstand der Barclays Bank Ireland PLC: Francesco Ceccato und Jasper Johannes Hanebuth. Eine Liste mit den Namen
+sowie weiteren persönlichen Informationen zu den Vorständen der Gesellschaft kann am Geschäftssitz der Gesellschaft eingesehen werden.
+Hauptkarte/n, Vorname Nachname
+Umsätze Visa Karten-Nr. 123456XXXXXX7890  EUR           821,96
+Zinssätze
+Allgemeine Umsätze
+Allgemeine Umsätze sind alle Umsätze, für deren Rückzahlung Sie keinen Ratenkauf eingerichtet haben. Für diese
+allgemeinen Umsätze gelten folgende Sollzinssätze:
+Sollzinsen bei Einkäufen und Überweisungen (einschl. möglicher Gebühren) 21,49 % p.a.
+Sollzinsen bei Barabhebungen (einschl. möglicher Gebühren) 21,49 % p.a.
+Bitte beachten Sie: Aufgrund der EZB-Leitzinserhöhungen bringen wir wie in Ihrem Antrag bzw. unter Ziffer 8 unserer
+AGB vereinbart eine Zinserhöhung in Höhe von 0,50 % ab dieser Abrechnungsperiode zur Anwendung.
+Sofern Sie alle allgemeinen Umsätze bis zum 06.01.2024 vollständig zurückgezahlt haben, fallen die oben genannten
+Zinsen nicht an. Bei Teilzahlung werden Zinsen taggenau ab dem Buchungs-/Valutadatum berechnet.
+Ratenkäufe
+Für Ihre nachfolgend aufgeführten Ratenkäufe gelten ab Einrichtung bis zur Auflösung oder Beendigung des jeweiligen
+Ratenkaufs folgende Sollzinssätze:
+Ratenkauf: " BootAlbufeira " - gültig seit 24.11.2023  0,00 % p.a.
+Der Barclays Ratenkauf
+Für einzelne Umsätze ab 95 Euro bieten wir Ihnen auch den Barclays Ratenkauf an. Diesen richten Sie ganz einfach per
+App oder im Online-Banking zu einem vergünstigten Sollzinssatz ein. Die Gesamtkosten werden Ihnen vor der
+Aktivierung transparent ausgewiesen. Bitte beachten Sie, dass Ihr Barclays Konto für die Nutzung eines Barclays
+Ratenkaufs nicht im Zahlungsverzug sein darf. Mehr Infos unter: barclays.de/ratenkauf
+Für folgende Umsätze aus diesem Kontoauszug können Sie einen Barclays Ratenkauf einrichten:
+Belegdatum Beschreibung Betrag (EUR) Einrichtung
+möglich bis
+19.11.2023 GetYourGuide Tickets   Berlin        DE            119,96- 03.01.2024
+                   Seite 3 von 4
+Barclays Bank Ireland PLC Hamburg Branch | Gasstraße 4 c | 22761 Hamburg | barclays.de | BIC BARCDEHAXXX | Handelsregister HRB: 153530
+USt-IdNr.: DE 319 453 063 | Finanzdienstleistungen sind nach § 4 Nr. 8 UStG steuerfrei / Financial Services are VAT exempt | Hauptsitz: One Molesworth Street Dublin 2 DO2 RF29
+Reg. Ireland: 396330 | Ständiger Vertreter: Tobias Grieß | Vorstand der Barclays Bank Ireland PLC: Francesco Ceccato und Jasper Johannes Hanebuth. Eine Liste mit den Namen
+sowie weiteren persönlichen Informationen zu den Vorständen der Gesellschaft kann am Geschäftssitz der Gesellschaft eingesehen werden.
+Wichtige Hinweise
+Reklamation
+Bei Unstimmigkeiten Ihrer Umsätze nehmen Sie bitte direkt Kontakt zu Ihrem Händler auf. Wenn Sie keine Einigung
+erzielen konnten, sind wir für Sie da und versuchen in Ihrem Namen eine Klärung herbeizuführen.
+Informationen zum Reklamationsprozess finden Sie unter: barclays.de/hilfe-und-kontakt/reklamation
+Reklamationen müssen innerhalb von 6 Wochen nach Zugang des Kontoauszuges an Barclays abgesendet werden. Wird
+diese Frist nicht eingehalten, gelten die aufgeführten Umsätze als akzeptiert.
+Betrug
+Wenn Sie ungewöhnliche Bewegungen auf Ihrem Konto bemerken, die Sie nicht selbst getätigt haben, informieren Sie
+uns umgehend über unsere 24h-Notfall-Hotline: +49 40 890 99-900
+Einlagensicherung
+Guthaben auf Ihrem Konto sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig.
+Nähere Informationen finden Sie im "Informationsbogen für Einleger" unter: barclays.de/einlagensicherung
+Karten-PIN Management
+Mit der Barclays Privatkunden App und im Online-Banking können Sie Ihre Karten-PIN jederzeit sicher abrufen, ändern
+und bei Bedarf entsperren. Damit die neue Karten-PIN nach einer Änderung aktiviert wird, muss zunächst immer ein
+Umsatz an einem Online-Terminal getätigt werden, z. B. durch eine Bargeldabhebung an einem Geldautomaten. Bitte
+beachten Sie dabei den Mindestbetrag von 50 € und das Tageslimit von 500 €. Bargeldabhebungen in Geschäften sind
+mit der Barclays Kreditkarte nicht möglich. Mehr Details unter:  barclays.de/karten-pin
+Aktuelles
+Mehr Transparenz zu Wechselkursen im Europäischen Wirtschaftsraum (EWR)
+Seit dem 19. April 2021 gelten neue gesetzliche Informationspflichten und auch wir bieten Ihnen mehr Transparenz bei
+Zahlungen mit der Kreditkarte innerhalb des EWR, die in einem Nicht-Euro Land durchgeführt werden und eine
+Währungsumrechnung beinhalten. Im Rahmen unseres Konto-Infoservices können Sie sich über den für solche
+Transaktionen anwendbaren Wechselkurs informieren lassen. Haben Sie den SMS-Kanal aktiviert, erhalten Sie
+automatisch bei der ersten Transaktion eines jeden Monats in einer ausländischen Währung des EWR jeweils eine SMS,
+die Sie über den dann gültigen Wechselkurs informiert. Im Online-Banking unter Konto-Infoservice können Sie Ihre
+Einstellungen jederzeit ändern. Tagesaktuelle Wechselkurse finden Sie zusätzlich unter: barclays.de/wechselkurse
+Vielen Dank, dass Sie Ihre Barclays Kreditkarten eingesetzt haben!
+                   Seite 4 von 4
+Barclays Bank Ireland PLC Hamburg Branch | Gasstraße 4 c | 22761 Hamburg | barclays.de | BIC BARCDEHAXXX | Handelsregister HRB: 153530
+USt-IdNr.: DE 319 453 063 | Finanzdienstleistungen sind nach § 4 Nr. 8 UStG steuerfrei / Financial Services are VAT exempt | Hauptsitz: One Molesworth Street Dublin 2 DO2 RF29
+Reg. Ireland: 396330 | Ständiger Vertreter: Tobias Grieß | Vorstand der Barclays Bank Ireland PLC: Francesco Ceccato und Jasper Johannes Hanebuth. Eine Liste mit den Namen
+sowie weiteren persönlichen Informationen zu den Vorständen der Gesellschaft kann am Geschäftssitz der Gesellschaft eingesehen werden.
+
+```

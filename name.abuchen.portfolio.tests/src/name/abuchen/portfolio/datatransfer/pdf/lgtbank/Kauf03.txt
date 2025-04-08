@@ -1,0 +1,44 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.1
+-----------------------------------------
+LGT Bank (Schweiz) AG
+Glärnischstrasse 36, Postfach, CH-8027 Zürich
+Tel. +41 44 250 81 81
+lgt.ch@lgt.com, www.lgt.ch, BIC BLFLCHBB
+CHE-109.346.830 MWST
+Securities dealer no. 647613
+____________________
+P.P. Post CH AGCH-8027 Zürich  PF 1909 -PRIORITY
+__________________________________________________A__________________
+Liberty Freizügigkeitsstiftung 
+bei Liberty Vorsorge AG 
+Postfach 733 
+6431 Schwyz
+1 / 1
+Zürich, 29. Juni 2023
+ 
+Abrechnung Kauf Portfolio: 1234567.000
+Auftragsnummer: 210796978 Kundenportfolio
+Kunde: Liberty Freizügigkeitsstiftung XX - 1.9009.5067-01
+Titel iShares ETF (CH) - iShares SLI(R) ETF (CH)
+Inhaber-Anteile -A-
+Verwaltungsgesellschaft / AIFM BlackRock Asset Management Schweiz AG
+ISIN CH0031768937
+Valorennummer 3176893
+Wertpapierkennnummer A0MW4N
+Auftragserteilung 28.06.2023 17:34:14 
+Abschlussdatum 29.06.2023 14:54:02
+Ausführungsplatz SIX Swiss Exchange, börslich
+Auftragstyp Bestens
+Anzahl 260 Stück
+Kurs CHF 186.4056
+Kurswert CHF 48'465.46
+Eidg. Umsatzabgabe  CHF 36.35
+SIX Meldegebühr  CHF 0.20
+Belastung CHF Freizügigkeitskonto 2026457.031 CHF 48'502.01
+Valuta 03.07.2023
+Wir haben die Titel in das oben genannte Depot eingebucht.
+Die Gutschrift im oben erwähnten Depot erfolgt vorbehaltlich der effektiven Lieferung.
+2026457 00A T ZH I TRD1001 39509429 16:11 29.06.2023 %Media:XML-A4H
+____
+____

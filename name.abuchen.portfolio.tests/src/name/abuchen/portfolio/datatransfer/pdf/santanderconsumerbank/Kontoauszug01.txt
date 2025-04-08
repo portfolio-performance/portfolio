@@ -1,0 +1,22 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.2.qualifier
+-----------------------------------------
+Kontoauszug
+BestFlex Kontonummer: 99-99999-9999
+IBAN: AT941245678901234567
+Kontoauszug Erstellungsdatum: 03.06.2023
+Kontoinhaber: Max Muster
+BestFlex Eröffnungsdatum: 11.05.2023
+Kontostand per 11.05.2023 Kontostand per 31.05.2023 Summe Gutschriften Summe Belastungen Zinserträge Steuern (KeSt bzw. QueSt)
+€ 0,00 € 37,98 € 40,64 € 2,66 € 6,63 € 1,66
+Buchungsdatum Valutadatum Betrag Saldo Buchungstext
+15.05.2023 15.05.2023 0,01 0,01 Einzahlung von Konto  AT123456789012345678 lautend auf Max Muster
+19.05.2023 19.05.2023 34,00 34,01 Einzahlung von Konto  AT123456789012345678 lautend auf Max Muster
+20.05.2023 20.05.2023 -1,00 33,01 Auszahlung auf Konto IBAN AT123456789012345678
+31.05.2023 31.05.2023 6,63 39,64 Zinsgutschrift Habenzinsen
+31.05.2023 31.05.2023 -1,66 37,98 Kapitalertragsteuer
+Ihre Einlagen bei der Santander Consumer Bank GmbH sind geschützt durch die Einlagensicherung Austria GmbH (ESA). 
+Alle Ihre Einlagen bei unserem Kreditinstitut werden aufaddiert, und die Gesamtsumme der erstattungsfähigen Einlagen unterliegt der Obergrenze von EUR 100.000,00. Aktuelle Informationen zur 
+Einlagensicherung finden Sie hier.
+Santander Consumer Bank GmbH, Postfach 1234, 7001 Eisenstadt Seite 1
+Santander Consumer Bank GmbH, Firmensitz 1220 Wien, Wagramer Straße 19, FN 62610 z Handelsgericht Wien, UID-Nr.: ATU15350108,

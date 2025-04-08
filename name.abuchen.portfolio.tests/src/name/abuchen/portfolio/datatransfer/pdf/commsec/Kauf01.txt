@@ -1,0 +1,53 @@
+PDF author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BUY
+Address - Locked Bag 22 Australia Square NSW 1215
+  Telephone - 13 15 19 TAX INVOICE
+  Facsimile - 1300 131 519
+  Email - shares@commsec.com.au CONFIRMATION
+  Internet - commsec.com.au
+  Please retain for taxation purposes
+  Trading, Clearing and Settlement of this transaction is undertaken by
+  Commonwealth Securities Limited.
+MR JOHN DOE
+1 LONG ROAD
+SYNDEY NSW 2000
+WE HAVE BOUGHT THE FOLLOWING SECURITIES FOR YOU
+COMPANY: QANTAS AIRWAYS LIMITED
+QAN
+SECURITY: ORDINARY FULLY PAID
+DATE: 20/04/2020 UNITS AT PRICE
+AS AT DATE: 20/04/2020 277 3.610000
+CONFIRMATION NO: 98505191
+AVERAGE PRICE: 3.610000
+ORDER NO: N118818020
+ACCOUNT NO: 3448833 PID 1402 HIN 88494687
+ORDER COMPLETED
+TOTAL UNITS: 277
+CONSIDERATION (AUD): $999.97 CONTRACT COMMENTS:
+BROKERAGE & COSTS INCL GST: $29.95 55685147 0404181685
+(may include printed confirmation postal fee) 158
+APPLICATION MONEY: $0.00
+TOTAL COST: $1,029.92
+TOTAL GST: $2.72
+SETTLEMENT DATE: 22/04/2020
+PAYMENT METHOD - DIRECT DEBIT OF CLEARED 
+FUNDS FROM NOMINATED BANK A/C ON 
+SETTLEMENT DATE.
+1. This Confirmation Contract Note is issued by Commonwealth Securities Limited and is issued subject to:
+  
+  (a) The current General Conditions of Trade of Commonwealth Securities Limited ("CommSec");
+  
+  (b) Directions, decisions and requirements of the Market Operators, the ASIC Market Integrity Rules, the Market Operating Rules, the Clearing Rules and where relevant, the 
+Settlement Rules, the customs and usages of the Market Operators, and the correction of any errors and/or omissions. Under the Rules of ASIC and the Market Operators, 
+CommSec is required to act consistently with a fair and orderly market. CommSec or the Market Operators are entitled to cancel a trade without further reference to you as 
+permitted by the current General Conditions of Trade and the Market Operating Rules. 
+  
+  If you request a Confirmation Contract Note to be sent to you by post, a $1.95 fee will be charged in addition to brokerage.
+  
+  Commonwealth Securities Limited ABN 60 067 254 399, AFSL 238814 is a wholly owned, but non-guaranteed subsidiary of the Commonwealth Bank of Australia ABN 48 123 
+123 124 and a Participant of the ASX Group and Chi-X Australia. 
+  
+  Your order may have been executed as multiple market transactions across multiple trade execution venues in accordance with our Best Execution policy. This Confirmation 
+specifies the volume weighted average price for those market transactions.

@@ -1,0 +1,23 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 1234567890 - TRADING
+IBAN: CH12345678901234567890
+Herrn Manfred Mutermann
+Musterstrasse 3
+012345 Musterhausen
+Gland, 08.04.2024
+Derivatetransaktion: Verfall Unsere Referenz: 549183576 
+Am 08.04.2024 haben wir folgende Transaktionen vorgenommen:
+Bezeichnung Anzahl Kontraktwährung Preis
+QQQ APR24 447C 1.00 USD -
+Kontraktgrösse Multiplikator Ausübungspreis Fälligkeit Börsenplatz
+100 100 447 05.04.2024 International Securities
+Exchange
+Kontonummer 1234567890
+Valutadatum 08.04.2024
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland  Formular ohne Unterschrift | SE&O.
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+CHE-116.310.079 MwSt

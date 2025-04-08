@@ -89,7 +89,7 @@ public class CheckCurrenciesAction implements ImportAction
                             .map(Unit::getAmount) //
                             .collect(MoneyCollectors.sum(transaction.getCurrencyCode()));
 
-            if (!transaction.getMonetaryAmount().isGreaterOrEqualThan(taxAndFees))
+            if (!transaction.getMonetaryAmount().isGreaterOrEqualTo(taxAndFees))
                 return new Status(Status.Code.ERROR, MessageFormat.format(Messages.MsgCheckTaxAndFeesTooHigh,
                                 Values.Money.format(transaction.getMonetaryAmount()), Values.Money.format(taxAndFees)));
         }

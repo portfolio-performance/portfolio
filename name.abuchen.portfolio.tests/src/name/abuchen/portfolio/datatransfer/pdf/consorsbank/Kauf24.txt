@@ -1,0 +1,39 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.1
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 2657 845 344
+7159292297/10
+Vermerk der Bank: 5543
+4
+mSNtRyt fVTfDSw
+dH mHe LcRAPvhbQz 8
+56277 uewloZi Datum: 17.08.2023Seite: 1 von 1
+Ordernummer 5421561.010
+Orderdatum 17.08.2023
+ORDERABRECHNUNG
+KAUF AM 17.08.2023 UM 08:10:59 TRADEGATE EXCHANGE NR. 5421561.010
+Bezeichnung WKN ISIN
+AENA SME S.A. EO 10 A12D3A ES0105046009
+Einheit Umsatz
+ST 7,00000
+Preis pro Anteil 143,000000 EUR FRANCO COURTAGE
+Kurswert 1.001,00 EUR
+Spanische Finanztransaktionssteuer 0,20% 2,00 EUR
+Handelsplatzkosten 0,95 EUR
+zulasten Konto-Nr. 8250910273 1.003,95 EUR
+Valuta 21.08.2023
+Bestand zugunsten Girosammelverwahrung
+CBF 2127
+Limitkurs 143,000000 EUR
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé

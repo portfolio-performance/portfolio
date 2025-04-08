@@ -1,0 +1,27 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.1
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+Schelhammer Capital Bank AG vom 09.01.2024
+99999
+Kundennummer
+Alter Saldo per 08.01.2024 45.452,58
+Summe der Gutschriften 45,97
+Summe der Lastschriften 0,00
+Schelhammer, PF 1000, A-5021 Salzburg
+Neuer Saldo zu Ihren Gunsten
+Bv uuDwCN vYyzPvY EUR 99.888,55
+NLGEHFRNxj 66/75
+0064 Wien
+Konto-Nr.: 63365073411 Bankleitzahl: 19190
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+09.01 Ertrag                           Depot    0450115847/10802351-84757305 05.01 45,97
+ISIN US7134481081 PEPSICO INC.     DL-,0166              55,00000 STK
+Kurs                      1,265000  Zinsen/Dividenden        69,58 USD
+Quellensteuer           -10,44 USD  Auslands-KESt            -8,70 USD
+DevKurs        1,097300/5.1.2024
+Neuer Saldo zu Ihren Gunsten 99.999,55
+AT21 0699 9485 4579 5511 BSSWATWW 01 0002 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 27540 Doknr.: EK00-714-0919865102

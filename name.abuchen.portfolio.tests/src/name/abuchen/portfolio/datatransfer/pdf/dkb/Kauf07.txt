@@ -1,0 +1,35 @@
+﻿PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+10919 Berlin
+Depotnummer 123456789
+Kundennummer 123456789
+Max Mustermann
+Auftragsnummer 123456789/92.00
+Herrn Datum 01.09.2021
+Max Mustermann Rechnungsnummer W123456-1234567879/21
+Musterstraße 12 Umsatzsteuer-ID DE1234567879
+88888 Musterstadt
+Wertpapier Abrechnung Kauf
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 3 LVMH MOET HENN. L. VUITTON SE FR0000121014 (853292)
+ACTIONS PORT. (C.R.) EO 0,3
+Handels-/Ausführungsplatz Tradegate (Best Execution)
+Börsensegment XGAT
+Market-Order
+Limit billigst
+Schlusstag/-Zeit 01.09.2021 08:00:04 Auftraggeber Max Mustermann
+Ausführungskurs 634,20 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 1.902,60- EUR
+Provision 10,00- EUR
+Finanztransaktionssteuer 5,71- EUR
+Ausmachender Betrag 1.918,31- EUR
+Den Gegenwert buchen wir mit Valuta 03.09.2021 zu Lasten des Kontos 123456789
+(IBAN DE12 1203 0000 123456789), BLZ 12030000 (BIC BYLADEM1001).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+123456789

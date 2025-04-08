@@ -35,9 +35,9 @@ public class PageIterator implements Iterator<String>
 
         for (Macro macro : url.getMacros())
         {
-            if (macro instanceof PageNumber)
+            if (macro instanceof PageNumber pageNumber)
             {
-                result.append(((PageNumber)macro).resolve(current));
+                result.append(pageNumber.resolve(current));
             }
             else
             {

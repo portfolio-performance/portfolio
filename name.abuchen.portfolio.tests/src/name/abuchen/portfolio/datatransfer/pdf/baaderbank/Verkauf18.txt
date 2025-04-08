@@ -1,0 +1,62 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Scalable Capital GmbH 
+Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/2
+Herrn München
+28.05.2022
+Max Mustermann
+Musterstrasse 11 Max Mustermann
+00000 Musterstadt Stamm-Nr.: 1234567    Portfolio: 1
+Depot-Nr.: 1234567001
+Vorgangs-Nr.: 8679954
+Referenz-Nr.: 251551933
+Buchungsanzeige
+Ablauf der Optionsfrist
+Ex-Tag: 18.05.2022
+Ausbuchung aus Depot 1234567001 per 25.05.2022
+Nominale ISIN: DE000HB2KBG9 WKN: HB2KBG Barabfindung
+STK 6 UniCredit Bank AG EUR 10,00 p.STK
+HVB Inline 18.05.22 BASF 45-70
+Bruttobetrag EUR 60,00
+Zu Gunsten Konto 1234567005 Valuta: 25.05.2022 EUR 60,00
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz, Dirk Urmoneit • HRB 217778, Amtsgericht München 
+• USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Dr. Horst Schiessl • Amtsgericht München 
+HRB 121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de AUSB-043.048
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+ 
+Ablauf der Optionsfrist
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Freistellungsauftrag EUR 520,36 EUR 28,74 - EUR 491,62
+Ausnutzung FSA EUR 4,64 - EUR 28,74 - EUR 33,38 -
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+KESt./ AbgSt. Gewinne/Verluste EUR 28,74 EUR 0,00
+Kapitalertragsteuer auf allgemeine Gewinne EUR 28,74 EUR 0,00
+Ausbuchung
+Stück 6 UniCredit Bank AG
+ISIN: DE000HB2KBG9
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP Kauf 103862560 03.05.2022 STK 6 - 31,26 60,00 28,74
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz, Dirk Urmoneit • HRB 217778, Amtsgericht München 
+• USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Dietmar von Blücher, Oliver Riedel • Vorsitzender des Aufsichtsrates: Dr. Horst Schiessl • Amtsgericht München 
+HRB 121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13
+T 00800 00 586336* • service@baaderbank.de AUSB-043.048
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+ 

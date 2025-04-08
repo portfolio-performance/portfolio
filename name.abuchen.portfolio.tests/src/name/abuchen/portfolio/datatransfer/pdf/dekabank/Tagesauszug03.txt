@@ -1,0 +1,126 @@
+Wertpapierabrechnung
+Depot-Tagesauszug
+Herrn
+xxxx
+xxx
+xxx
+Depot: xxx
+Depotinhaber:
+xxx
+Bankverbindung generell:
+IBAN:
+xxxx
+xxx
+Kontoinhaber:
+xxx
+14. Oktober 2021
+Auszug: 5 / Seite 1 von 3
+DekaBank
+Deutsche Girozentrale
+Depotservice
+DekaBank Depot
+60625 Frankfurt
+Telefon: (0 69) 71 47 - 6 52
+Telefax: (0 69) 25 46 - 24 83
+www.deka.de
+Handelsregister:
+Amtsgericht
+Frankfurt am Main
+HRA 16068
+USt-Id-Nr.:
+DE 114103563
+Kauf von Wertpapieren
+Verkauf von Wertpapieren
+Sehr geehrter xxxx
+folgende Buchungen haben wir für Ihr Depot durchgeführt:
+
+VERKAUF erteilt per Deka.de - Internet
+Auftraggeber: xxx
+Auftragserteilung: Geschäft ohne Beratung
+Bezeichnung: DekaLux-GlobalResources TF
+ISIN: LU0349172725
+Verwahrart: GiroSammel
+Unterdepot: 00 Auftragsnummer: 8101 4387
+Abrechnungstag: 14.10.2021
+Abrechnungsbetrag Betrag in Währung
+des Wertpapiers
+Wertpapierdaten
+je Anteil
+Bestandsdaten
+in Stück
+Auszahlungsbetrag EUR 2.355,09
++ Verrechnete Steuern EUR 21,09
+= Abrechnungsbetrag EUR 2.376,18
+EUR 2.376,18
+Kurs
+EUR 82,110000
+Bestand alt: 28,939
+Anteilumsatz: -28,939
+Bestand neu: 0,000
+Kirchensteuer wurde berücksichtigt.
+Depot: 0102162260
+Auszug: 5 / Seite 2 von 3
+DekaBank
+Deutsche Girozentrale
+Depotservice
+DekaBank Depot
+60625 Frankfurt
+Telefon: (0 69) 71 47 - 6 52
+Telefax: (0 69) 25 46 - 24 83
+www.deka.de
+Handelsregister:
+Amtsgericht
+Frankfurt am Main
+HRA 16068
+USt-Id-Nr.:
+DE 114103563
+
+LASTSCHRIFTEINZUG / Vorabankündigung (Pre-Notification) erteilt per Deka.de - Internet
+Auftraggeber: xxx
+Auftragserteilung: Geschäft ohne Beratung
+Bankverbindung: IBAN: xxx
+Kontoinhaber: xxxx
+Sparkasse xxxx
+Mandatsdaten: xxx
+Gläubiger-ID: DE02DBD00000081995
+Bezeichnung: Deka-EuropaPotential TF
+ISIN: DE0009786285
+Verwahrart: GiroSammel
+Unterdepot: 00 Auftragsnummer: 8102 3387
+Abrechnungstag: 14.10.2021
+Abrechnungsbetrag Betrag in Währung
+des Wertpapiers
+Wertpapierdaten
+je Anteil
+Bestandsdaten
+in Stück
+Einzugsbetrag EUR 4.000,00
+= Abrechnungsbetrag EUR 4.000,00 EUR 4.000,00
+Kurs/Kaufpreis
+EUR 193,730000
+Bestand alt: 0,000
+Anteilumsatz: 20,647
+Bestand neu: 20,647
+Wir werden aufgrund des von Ihnen erteilten Lastschriftmandats den zur Zahlung fälligen Betrag 
+(siehe Abrechnungsbetrag) mit der Mandatsreferenz: 0102162260003 und der
+Gläubiger-ID: DE02DBD00000081995 am 18.10.2021 von Ihrem Konto einziehen.
+Sollten Sie nicht der Inhaber des angegebenen Kontos sein, bitten wir Sie, den Kontoinhaber entsprechend zu
+informieren.
+Ihr erteilter Sparer-Pauschbetrag für xxxx beträgt EUR xxxx
+Aktuelle steuerliche Daten
+Stückzinsen und realisierte Veräußerungsverluste
+(sonstiger Verlusttopf)
+EUR 0,00
+Verfügbarer Sparer-Pauschbetrag EUR 0,00
+Alle steuerlich relevanten Informationen und Daten des aktuellen Jahres werden Ihnen mit der
+Steuerbescheinigung des Jahresdepotauszuges übersandt, den Sie bis Ende Januar des Folgejahres erhalten. Die
+erwirtschafteten Erträge der Vorsorgeprodukte Deka-BonusRente, Deka-BasisRente und Deka-ZukunftsPlan sind
+in der Ansparphase abgeltungsteuerfrei. Die Leistungen werden in der Regel erst in der Auszahlungsphase als
+sog. Sonstige Einkünfte versteuert. Leistungen, die auf geförderten Beiträgen beruhen, werden in der
+Auszahlungsphase voll versteuert (persönlicher Steuersatz).
+Bitte prüfen Sie die vorliegenden Informationen.
+Zu Ihrer persönlichen Anlagestrategie beraten Sie gern die Berater der Sparkasse Schwäbisch Hall-Crailsheim.
+Dort erhalten Sie ebenfalls die aktuellen Verkaufsunterlagen und Dokumentationen mit den Details Ihrer
+Vermögensanlage. Diese Unterlagen können Sie auch bei uns anfordern oder über www.deka.de abrufen.
+
+

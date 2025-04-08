@@ -16,6 +16,7 @@ import java.util.function.ToLongBiFunction;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.DuplicateHeaderMode;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.math.Risk.Drawdown;
@@ -49,6 +50,7 @@ public class PerformanceIndex
     protected long[] outboundTransferals;
     protected long[] taxes;
     protected long[] dividends;
+    protected long[] fees;
     protected long[] interest;
     protected long[] interestCharge;
     protected long[] buys;
@@ -58,7 +60,8 @@ public class PerformanceIndex
 
     private Drawdown drawdown;
     private Volatility volatility;
-    private ClientPerformanceSnapshot performanceSnapshot;
+    private ClientPerformanceSnapshot performanceSnapshotFifo;
+    private ClientPerformanceSnapshot performanceSnapshotMovingAverage;
 
     /* package */ PerformanceIndex(Client client, CurrencyConverter converter, Interval reportInterval)
     {
@@ -128,6 +131,11 @@ public class PerformanceIndex
         return reportInterval;
     }
 
+    public String getCurrency()
+    {
+        return converter.getTermCurrency();
+    }
+
     public CurrencyConverter getCurrencyConverter()
     {
         return converter;
@@ -161,6 +169,13 @@ public class PerformanceIndex
     public double getFinalAccumulatedPercentage()
     {
         return accumulated != null ? accumulated[accumulated.length - 1] : 0;
+    }
+
+    public double getFinalAccumulatedAnnualizedPercentage()
+    {
+        double accumulatedPercentage = getFinalAccumulatedPercentage();
+        long days = getActualInterval().getDays();
+        return Math.pow(1 + accumulatedPercentage, 365d / ((double) days)) - 1;
     }
 
     public double[] getDeltaPercentage()
@@ -241,10 +256,30 @@ public class PerformanceIndex
      */
     public Optional<ClientPerformanceSnapshot> getClientPerformanceSnapshot()
     {
-        if (performanceSnapshot == null)
-            performanceSnapshot = new ClientPerformanceSnapshot(client, converter, reportInterval);
+        return getClientPerformanceSnapshot(true);
+    }
 
-        return Optional.of(performanceSnapshot);
+    /**
+     * Returns the ClientPerformanceSnapshot if available with a choice between
+     * FIFO (useFifo true) or Moving Average (useFifo = false) CapitalGains. The
+     * snapshot is not available for benchmarks and the consumer price indices.
+     */
+    public Optional<ClientPerformanceSnapshot> getClientPerformanceSnapshot(boolean useFifo)
+    {
+        if (useFifo)
+        {
+            if (performanceSnapshotFifo == null)
+                performanceSnapshotFifo = new ClientPerformanceSnapshot(client, converter, reportInterval, true);
+
+            return Optional.of(performanceSnapshotFifo);
+        }
+        else
+        {
+            if (performanceSnapshotMovingAverage == null)
+                performanceSnapshotMovingAverage = new ClientPerformanceSnapshot(client, converter, reportInterval,
+                                false);
+            return Optional.of(performanceSnapshotFifo);
+        }
     }
 
     public double getPerformanceIRR()
@@ -261,6 +296,11 @@ public class PerformanceIndex
     public long[] getDividends()
     {
         return dividends;
+    }
+
+    public long[] getFees()
+    {
+        return fees;
     }
 
     public long[] getInterest()
@@ -405,8 +445,9 @@ public class PerformanceIndex
 
     private void exportTo(File file, IntPredicate filter) throws IOException
     {
-        CSVFormat csvformat = CSVFormat //
-                        .newFormat(';').withQuote('"').withRecordSeparator("\r\n").withAllowDuplicateHeaderNames(); //$NON-NLS-1$
+        CSVFormat csvformat = CSVFormat.DEFAULT.builder() //
+                        .setDelimiter(';').setQuote('"').setRecordSeparator("\r\n") //$NON-NLS-1$
+                        .setDuplicateHeaderMode(DuplicateHeaderMode.ALLOW_ALL).build();
 
         try (CSVPrinter printer = new CSVPrinter(
                         new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), csvformat))
@@ -432,5 +473,29 @@ public class PerformanceIndex
                 printer.println();
             }
         }
+    }
+
+    /**
+     * Returns the performance for the given interval. If the interval does not
+     * intersect with the performance time period, i.e. is before or after the
+     * performance time period, then zero is returned.
+     */
+    public double getPerformance(Interval interval)
+    {
+        int startIndex = Arrays.binarySearch(this.getDates(), interval.getStart());
+        int endIndex = Arrays.binarySearch(this.getDates(), interval.getEnd());
+
+        // return zero if the interval does not intersect
+        if (startIndex < 0 && startIndex == endIndex)
+            return 0;
+
+        // return zero if start is after end
+        if (Math.abs(startIndex) > Math.abs(endIndex))
+            return 0;
+
+        double startValue = this.getAccumulatedPercentage()[startIndex >= 0 ? startIndex : 0];
+        double endValue = this.getAccumulatedPercentage()[endIndex >= 0 ? endIndex : this.getDates().length - 1];
+
+        return ((endValue + 1) / (startValue + 1)) - 1;
     }
 }

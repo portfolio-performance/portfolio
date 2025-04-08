@@ -1,0 +1,47 @@
+﻿PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+10919 Berlin Seite 1 von 2
+Depotnummer 123456789
+Kundennummer 1234567890
+Max Mustermann
+Auftragsnummer 123456/78.90
+Herrn Datum 10.01.2023
+Max Mustermann Rechnungsnummer W12345-1234567890/12
+Musterstr. 1 Umsatzsteuer-ID DE12345679
+12345 Musterort
+Wertpapier Abrechnung Kauf
+Mischkursabrechnung
+Auftrag vom 09.01.2023 17:14:41 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 20 CALIDA HOLDING AG CH0126639464 (A1JJES)
+NAM.-AKT. SF 0,10
+Handels-/Ausführungsplatz Zürich (gemäß Weisung)
+Börsensegment XSWM
+Limit-Order
+Limit 50,00 CHF
+Schlusstag/-Zeit 09.01.2023 17:14:41 Auftraggeber Max Mustermann
+Ausführungskurs 48,55 CHF Auftragserteilung/ -ort Online-Banking
+Wertpapierrechnung Lagerland Schweiz
+Devisenkurs (EUR/CHF) 0,986 vom 10.01.2023
+Kurswert 984,79- EUR
+Provision 20,00- EUR
+Fremde Auslagen 9,89- EUR
+Ausmachender Betrag 1.014,68- EUR
+Den Gegenwert buchen wir mit Valuta 11.01.2023 zu Lasten des Kontos 1234567890
+(IBAN DE12 3456 7890 1234 5678 90), BLZ 12345678 (BIC ABCDEFG1234).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Der Abrechnungsmischkurs/-preis ergibt sich wie folgt:
+Stück Kurs Zeit Stück Kurs Zeit
+15 48,55 17:14:41 5 48,55 17:14:41
+0883.01101610.0001216OR07
+Seite 2 von 2
+Depotnummer 123456789
+Kundennummer 1234567890
+Auftragsnummer 123456/78.90
+Datum 10.01.2023
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.01101610.0001217OR07

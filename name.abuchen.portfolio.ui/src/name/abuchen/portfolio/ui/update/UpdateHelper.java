@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Locale;
@@ -42,6 +43,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 
+@SuppressWarnings("restriction")
 public final class UpdateHelper
 {
     private interface Task
@@ -53,8 +55,21 @@ public final class UpdateHelper
     private static final String HEADER = "header"; //$NON-NLS-1$
     private static final String PREVENT_UPDATE_CONDITION_PREFIX = "latest.changes.preventUpdate."; //$NON-NLS-1$
 
+    private static final boolean IS_IN_APP_UPDATE_ENABLED = !"disable" //$NON-NLS-1$
+                    .equals(System.getProperty("name.abuchen.portfolio.in-app-update")); //$NON-NLS-1$
+
     private IProvisioningAgent agent;
     private UpdateOperation operation;
+
+    /**
+     * Returns true if the installation support in-app updates. In-app updates
+     * can be disabled if a package manager such as flatpak is controlling the
+     * lifecycle.
+     */
+    public static boolean isInAppUpdateEnabled()
+    {
+        return IS_IN_APP_UPDATE_ENABLED;
+    }
 
     public void runUpdateWithUIMonitor()
     {
@@ -63,6 +78,9 @@ public final class UpdateHelper
 
     public void runUpdate(IProgressMonitor monitor, boolean silent) throws CoreException
     {
+        if (!isInAppUpdateEnabled())
+            return;
+
         SubMonitor sub = SubMonitor.convert(monitor, Messages.JobMsgCheckingForUpdates, 200);
 
         checkForLetsEncryptRootCertificate(silent);
@@ -283,7 +301,7 @@ public final class UpdateHelper
             // by forcing a refresh of the repositories.
             // p2 never tries to reconnect if a connection timeout happened like
             // described in
-            // https://github.com/buchen/portfolio/issues/578#issuecomment-251653225
+            // https://github.com/portfolio-performance/portfolio/issues/578#issuecomment-251653225
             manager.refreshRepository(uri, monitor);
             artifactManager.refreshRepository(uri, monitor);
         }
@@ -350,7 +368,7 @@ public final class UpdateHelper
         File fileTest = null;
         try
         {
-            fileTest = File.createTempFile("writeableArea", ".dll", installDir); //$NON-NLS-1$ //$NON-NLS-2$
+            fileTest = Files.createTempFile(installDir.toPath(), "writeableArea", ".dll").toFile(); //$NON-NLS-1$ //$NON-NLS-2$
         }
         catch (IOException e)
         {

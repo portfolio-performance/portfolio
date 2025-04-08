@@ -35,7 +35,7 @@ public class SecurityDragListener extends DragSourceAdapter
 
     private List<Security> getSecurities()
     {
-        IStructuredSelection selection = (IStructuredSelection) viewer.getStructuredSelection();
+        IStructuredSelection selection = viewer.getStructuredSelection();
         if (selection.isEmpty())
             return null;
 
@@ -44,13 +44,13 @@ public class SecurityDragListener extends DragSourceAdapter
         while (selectionIterator.hasNext())
         {
             Object object = selectionIterator.next();
-            if (object instanceof Security)
+            if (object instanceof Security security)
             {
-                selectedSecurities.add((Security) object);
+                selectedSecurities.add(security);
             }
-            else if (object instanceof Adaptable)
+            else if (object instanceof Adaptable adaptable)
             {
-                Security selectedSecurity = ((Adaptable) object).adapt(Security.class);
+                Security selectedSecurity = adaptable.adapt(Security.class);
                 if (selectedSecurity != null)
                 {
                     selectedSecurities.add(selectedSecurity);

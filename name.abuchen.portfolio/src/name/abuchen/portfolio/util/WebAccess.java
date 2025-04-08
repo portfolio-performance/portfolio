@@ -5,22 +5,33 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.stream.Stream;
 
-import org.apache.http.Header;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.client5.http.HttpResponseException;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.impl.EnglishReasonPhraseCatalog;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.core5.http.message.BasicHeader;
+import org.apache.hc.core5.net.URIBuilder;
+import org.apache.hc.core5.util.Timeout;
 
 //@formatter:off
 /**
@@ -79,7 +90,7 @@ import org.apache.http.util.EntityUtils;
  *  String html = new WebAccess("example.com", "/path/page.html")
  *                       .withScheme("http")
  *                       .addParameter("parameter", "value")
- *                       .addHeader("Content-Type", "application/json;chartset=UTF-8")
+ *                       .addHeader("Content-Type", "application/json;charset=UTF-8")
  *                       .addHeader("X-Response", "daily")
  *                       .addUserAgent("Mozilla/1.0N (Windows)")
  *                       .ignoreContentType(true)
@@ -91,11 +102,95 @@ public class WebAccess
     @FunctionalInterface
     private interface Request
     {
-        HttpRequestBase create(URI uri) throws IOException;
+        HttpUriRequestBase create(URI uri) throws IOException;
     }
 
-    public static final RequestConfig defaultRequestConfig = RequestConfig.custom().setSocketTimeout(20000)
-                    .setConnectTimeout(2000).setConnectionRequestTimeout(20000).setCookieSpec(CookieSpecs.STANDARD)
+    public static class WebAccessException extends IOException
+    {
+        private static final long serialVersionUID = 1L;
+        private final int httpErrorCode;
+        private final List<Pair<String, String>> headers;
+        private final String body;
+
+        public WebAccessException(String message, int httpErrorCode, List<Pair<String, String>> headers, String body)
+        {
+            super(message);
+            this.httpErrorCode = httpErrorCode;
+            this.headers = headers;
+            this.body = body;
+        }
+
+        public int getHttpErrorCode()
+        {
+            return httpErrorCode;
+        }
+
+        public List<String> getHeader(String key)
+        {
+            return headers.stream().filter(p -> p.getKey().equalsIgnoreCase(key)).map(Pair::getValue).toList();
+        }
+
+        public String getBody()
+        {
+            return body;
+        }
+    }
+
+    private static class CustomResponseHandler implements HttpClientResponseHandler<String>
+    {
+        private final String uri;
+
+        public CustomResponseHandler(String uri)
+        {
+            super();
+            this.uri = uri;
+        }
+
+        @Override
+        public String handleResponse(final ClassicHttpResponse response) throws IOException
+        {
+            final HttpEntity entity = response.getEntity();
+            if (response.getCode() >= HttpStatus.SC_REDIRECTION)
+            {
+                String body = null;
+                if (entity != null)
+                {
+                    try
+                    {
+                        body = EntityUtils.toString(entity);
+                    }
+                    catch (final ParseException ignore)
+                    {
+                        // ignore additional exceptions reading the body
+                    }
+                }
+
+                EntityUtils.consume(entity);
+                var headers = Stream.of(response.getHeaders()).map(h -> new Pair<>(h.getName(), h.getValue())).toList();
+                throw new WebAccessException(buildMessage(uri, response.getCode()), response.getCode(), headers, body);
+            }
+
+            if (entity == null)
+                return null;
+
+            try
+            {
+                return EntityUtils.toString(entity);
+            }
+            catch (final ParseException ex)
+            {
+                throw new ClientProtocolException(ex);
+            }
+        }
+    }
+
+    public static final RequestConfig defaultRequestConfig = RequestConfig.custom()
+                    .setResponseTimeout(Timeout.ofSeconds(20)) //
+                    .setCookieSpec(StandardCookieSpec.STRICT) //
+                    .build();
+
+    public static final ConnectionConfig defaultConnectionConfig = ConnectionConfig.custom()
+                    .setConnectTimeout(Timeout.ofSeconds(5)) //
                     .build();
 
     private final URIBuilder builder;
@@ -153,8 +248,13 @@ public class WebAccess
 
     public String get() throws IOException
     {
-        CloseableHttpResponse response = executeWith(HttpGet::new);
-        return EntityUtils.toString(response.getEntity());
+        var response = executeWith(HttpGet::new);
+
+        // the response handler can return a null string.
+        // To keep up the contract of the get method, we throw an exception
+        if (response == null)
+            throw new IOException("No message entity in response: " + builder.toString()); //$NON-NLS-1$
+        return response;
     }
 
     public void post(String body) throws IOException
@@ -167,13 +267,15 @@ public class WebAccess
         });
     }
 
-    private CloseableHttpResponse executeWith(Request function) throws IOException
+    private String executeWith(Request function) throws IOException
     {
-        CloseableHttpResponse response = null;
-
         try
         {
+            var connectionManager = new PoolingHttpClientConnectionManager();
+            connectionManager.setDefaultConnectionConfig(defaultConnectionConfig);
+
             CloseableHttpClient client = HttpClientBuilder.create() //
+                            .setConnectionManager(connectionManager) //
                             .setDefaultRequestConfig(defaultRequestConfig) //
                             .setDefaultHeaders(this.headers) //
                             .setUserAgent(this.userAgent) //
@@ -181,18 +283,36 @@ public class WebAccess
                             .build();
 
             URI uri = builder.build();
-            HttpRequestBase request = function.create(uri);
-            response = client.execute(request);
+            HttpUriRequestBase request = function.create(uri);
 
-            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
-                throw new IOException(uri.toString() + " --> " + response.getStatusLine().getStatusCode()); //$NON-NLS-1$
-
-            return response;
+            return client.execute(request, new CustomResponseHandler(uri.toString()));
+        }
+        catch (HttpResponseException e)
+        {
+            throw new WebAccessException(buildMessage(builder.toString(), e.getStatusCode()), e.getStatusCode(),
+                            new ArrayList<>(), null);
         }
         catch (URISyntaxException e)
         {
             throw new IOException(e);
         }
+    }
+
+    private static String buildMessage(String uri, int statusCode)
+    {
+        String message = String.valueOf(statusCode);
+        try
+        {
+            String reason = EnglishReasonPhraseCatalog.INSTANCE.getReason(statusCode, Locale.getDefault());
+            if (reason != null)
+                message += " " + reason; //$NON-NLS-1$
+        }
+        catch (IllegalArgumentException e)
+        {
+            // ignore -> unable to retrieve message
+        }
+        message += " --> " + uri; //$NON-NLS-1$
+        return message;
     }
 
     public String getURL() throws URISyntaxException

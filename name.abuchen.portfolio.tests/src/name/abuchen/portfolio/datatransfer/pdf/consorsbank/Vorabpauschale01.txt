@@ -1,0 +1,56 @@
+PDF Author: 'Consorsbank'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 0123456789
+1001234567/00
+Vermerk der Bank: 1000
+2
+Gxxxxx Lxxxxxx
+Pxxxxxxxxx Sxx 11 Datum: 27.01.2020
+20000 Hamburg Seite: 1 von 2
+Vorabpauschale
+Wertpapierbezeichnung WKN ISIN
+L&G-L&G R.Gbl Robot.Autom.UETF Bearer Shares (Dt. Zert.) o.N. A12GJD DE000A12GJD2
+Bestand
+106 Stück
+Vorabpauschale pro Anteil 0,04106074 EUR Schlusstag 01.01.2020
+Kapitalertrag 0,00 EUR
+abzgl. Kapitalertragsteuer 25,00 % von 2,79 EUR 0,70 EUR
+abzgl. Solidaritätszuschlag 5,50 % von 0,70 EUR 0,03 EUR
+Netto zulasten IBAN DE73 7603 0080 0123 4567 89 0,73 EUR
+Valuta 02.01.2020 BIC CSDBDE71XXX
+Bei unterjährigen Anschaffungen im Vorjahr vermindert sich die Vorabpauschale um ein Zwölftel für jeden Monat.
+Bitte beachten Sie die weiteren Informationen auf Seite 2.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+PrØsident du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur GØnØral (Generaldirektor): Jean-Laurent BonnafØ
+Depotnummer: 0123456789
+1001234567/00
+Vermerk der Bank: 1000
+2
+Datum: 27.01.2020
+Seite: 2 von 2
+Details zur Abrechnung
+Informationen zum Investmentsteuergesetz
+Vorabpauschale gem. §18 InvStG 3,98 EUR
+abzgl. Teilfreistellung 30,00 % von 3,98 EUR 1,19 EUR
+Vorabpauschale mit Teilfreistellung 2,79 EUR
+Steuerpflichtiger Gesamtertrag 2,79 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Mit Quellensteuer verrechnet 0,00 EUR
+somit verrechnete Quellensteuer 0,00 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 2,79 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf "Allgemein" vor der Abrechnung 0,00 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Verrechnungstopf "Allgemein" nach der Abrechnung 0,00 EUR
+Sparerpauschbetrag vor der Abrechnung 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Sparerpauschbetrag nach der Abrechnung 0,00 EUR
+Verrechnungstopf "Quellensteuer" vor der Abrechnung 0,00 EUR
+Änderung Verrechnungstopf "Quellensteuer" 0,00 EUR
+Verrechnungstopf "Quellensteuer" nach der Abrechnung 0,00 EUR

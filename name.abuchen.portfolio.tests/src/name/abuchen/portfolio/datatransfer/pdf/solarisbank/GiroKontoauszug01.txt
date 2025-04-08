@@ -1,0 +1,47 @@
+Herr Peter Pan Ausgestellt am
+Elfenstraße, 1 1 Nov. 2022
+88888, Musterstadt
+Deutschland Abrechnungszeitraum
+26 Okt. 2022 — 31 Okt. 2022
+Rechnungsabschluss
+Kontostand am 26 Okt. 2022
+0,00 EUR
+Tag der Tag der
+Buchung Wertstellung Typ Beschreibung Betrag
+Top up through ecommbx with
+id 650d081e-9fbc-464f-81a7-
+26.10.2022 26.10.2022 SEPA-Überweisung008eb3a1d003 etoken-google 200,00 EUR
+von ECOMMBX LTD
+DE22110101015915392322
+26.10.2022 26.10.2022 Überweisung an Peter Panzwischen Kunden DE11111111111111111111 -100,00 EUR
+Top up through ecommbx with
+id c8e350a9-cc5b-40ef-9ffe-
+27.10.2022 26.10.2022 SEPA-Überweisunga141b0b25f9d etoken-google 150,00 EUR
+von ECOMMBX LTD
+DE33333333333333333333
+28.10.2022 27.10.2022 Kartenzahlung Amazon.de AMAZON.DE LU -16,10 EUR
+Monatlich/10 Kontostand am 31 Okt. 2022
+43,20 EUR
+Unterstützt von der Solarisbank AG
+Seite 1 von 2
+IBAN: DE55 5555 5555 5555 5555 55
+BIC: SOBKDEB2XXX
+DEVISEN: EUR
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen, Berechnungen und den Abschlusssaldo im beiliegenden Kontoauszug, der zugleich
+einen Rechnungsabschluss darstellt. Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs
+Wochen nach Zugang keine Einwendungen erheben. Einwendungen gegen Rechnungsabschlüsse müssen schriftlich
+oder in Textform (z.B. an https://vivid.money/de-de/support) zugehen. Im Falle der Einwendung in Textform genügt
+zur Fristwahrung die rechtzeitige Absendung. Der angegebene Kontostand berücksichtigt nicht die Wertstellung der
+einzelnen Buchungen. Dies bedeutet, dass der genannte Betrag nicht dem für die Zinsrechnung maßgeblichen
+Kontostand entsprechen muss und bei Verfügungen möglicherweise Zinsen für die Inanspruchnahme einer
+eingeräumten oder geduldeten Kontoüberziehung anfallen können. Gutschriften aus eingereichten Lastschriften und
+anderen Einzugspapieren erfolgen unter dem Vorbehalt der Einlösung. Guthaben sind als Einlagen nach Maßgabe des
+Einlagensicherungsgesetzes (EinSiG) entschädigungsfähig. Nähere Informationen können dem Informationsbogen für
+den Einleger entnommen werden, den Sie gemeinsam mit unseren für den Geschäftsverkehr mit Ihnen geltenden
+Allgemeinen Geschäftsbedingungen und besonderen Bedingungen unter www.solarisbank.de/partner einsehen
+können.
+Mit freundlichen Grüßen
+Ihre Solarisbank
+Unterstützt von der Solarisbank AG
+Seite 2 von 2

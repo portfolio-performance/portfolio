@@ -1,0 +1,40 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/1
+München
+12.12.2020
+Herrn
+Scalable Capital 
+Maxima Musterfrau Vermögensverwaltung GmbH 
+Seitzstraße 8e
+Hauptstr. 4
+80538 München 
+12345 Schlumpfhausen service@scalable.capital
+Maxima Musterfrau
+Stamm-Nr.: 1234567    Portfolio: 1
+Konto-Nr.: 1234567890
+IBAN: DE12 1234 1234 1234 1234 00
+BLZ: 123 123 00
+BIC: BDDDDEDD
+Vorgangs-Nr.: 12345678
+Referenz-Nr.: 87654321
+Tageskontoauszug: EUR-Konto
+Kontoauszugs-Nr. 020003
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Kontostand in EUR am 08.12.2020 250,00
+11.12.2020 Gutschrift 11.12.2020 20,00
+MAXIMA MUSTERFRAU
+DE12345677674555
+BYLADEA3333
+Vorgangs-Nr.: 12345678
+Kontostand in EUR am 11.12.2020 270,00
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz | HRB 217778, Amtsgericht 
+München | USt-IdNr. DE300434774 | www.scalable.capital 
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. KKTKK801-036.038

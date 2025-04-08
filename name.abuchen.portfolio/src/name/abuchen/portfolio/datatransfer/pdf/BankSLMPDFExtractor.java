@@ -1,9 +1,11 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 
+import java.math.BigDecimal;
+
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -11,257 +13,292 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
-public class BankSLMPDFExtractor extends SwissBasedPDFExtractor
+/**
+ * @formatter:off
+ * @implNote Bank SLM AG
+ *
+ * @implSpec The VALOR number is the WKN number with 5 to 9 letters.
+ * @formatter:on
+ */
+
+@SuppressWarnings("nls")
+public class BankSLMPDFExtractor extends AbstractPDFExtractor
 {
     public BankSLMPDFExtractor(Client client)
     {
         super(client);
 
-        addBankIdentifier(getLabel());
-        addBankIdentifier("Spar + Leihkasse"); //$NON-NLS-1$
+        addBankIdentifier("Bank SLM AG");
+        addBankIdentifier("Spar + Leihkasse");
 
-        addBuyTransaction();
-        addSellTransaction();
-        addDividendTransaction();
-    }
-
-    @SuppressWarnings("nls")
-    private void addBuyTransaction()
-    {
-        DocumentType type = new DocumentType("abrechnung - Kauf");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("B.rsenabrechnung - Kauf");
-        type.addBlock(block);
-        Transaction<BuySellEntry> extractor = new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.BUY);
-                            return entry;
-                        })
-
-                        .section("date", "shares", "name", "wkn", "currency")
-                        .match("Wir haben f.r Sie am (?<date>\\d+.\\d+.\\d{4}+) gekauft.") //
-                        .match("^(?<shares>[\\d.']+) .*$") //
-                        .match("^(?<name>.*)$") //
-                        .match("^Valor: (?<wkn>[^ ]*)$") //
-                        .match("Total Kurswert (?<currency>\\w{3}+) .*") //
-                        .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
-                            t.setShares(asShares(v.get("shares")));
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
-
-                        .section("amount", "currency") //
-                        .match("Netto (?<currency>\\w{3}+) -(?<amount>[\\d.']+)") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
-                        })
-
-                        .wrap(t -> new BuySellEntryItem(t));
-
-        addForexGrossValue(extractor);
-        addFeesSection(extractor);
-
-        block.set(extractor);
-    }
-
-    @SuppressWarnings("nls")
-    private void addSellTransaction()
-    {
-        DocumentType type = new DocumentType("abrechnung - Verkauf");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("B.rsenabrechnung - Verkauf");
-        type.addBlock(block);
-        Transaction<BuySellEntry> extractor = new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.SELL);
-                            return entry;
-                        })
-
-                        .section("date", "shares", "name", "wkn", "currency")
-                        .match("Wir haben f.r Sie am (?<date>\\d+.\\d+.\\d{4}+) verkauft.") //
-                        .match("^(?<shares>[\\d.']+) .*$") //
-                        .match("^(?<name>.*)$") //
-                        .match("^Valor: (?<wkn>[^ ]*)$") //
-                        .match("Total Kurswert (?<currency>\\w{3}+) .*") //
-                        .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
-                            t.setShares(asShares(v.get("shares")));
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
-
-                        .section("amount", "currency") //
-                        .match("Netto (?<currency>\\w{3}+) (?<amount>[\\d.']+)") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
-                        })
-
-                        .wrap(t -> new BuySellEntryItem(t));
-
-        addForexGrossValue(extractor);
-        addFeesSection(extractor);
-
-        block.set(extractor);
-    }
-
-    @SuppressWarnings("nls")
-    private void addForexGrossValue(Transaction<BuySellEntry> extractor)
-    {
-        extractor.section("forexSum", "forexCurrency", "grossValue", "currency", "exchangeRate") //
-                        .optional() // only present if forex is available
-                        .match("Total Kurswert (?<forexCurrency>\\w{3}+) (?<forexSum>[\\d.'-]+)") //
-                        .match("Change .../... (?<exchangeRate>[\\d.']+) (?<currency>\\w{3}+) (?<grossValue>[\\d.'-]+)") //
-                        .assign((t, v) -> {
-                            Money grossValue = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(v.get("grossValue")));
-                            Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forexSum")));
-                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                            Unit unit = new Unit(Unit.Type.GROSS_VALUE, grossValue, forex, exchangeRate);
-
-                            // add gross value unit only if currency code of
-                            // security actually matches
-                            if (unit.getForex().getCurrencyCode()
-                                            .equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
-                                t.getPortfolioTransaction().addUnit(unit);
-                        });
-
-    }
-
-    @SuppressWarnings("nls")
-    private void addFeesSection(Transaction<BuySellEntry> extractor)
-    {
-        extractor.section("fees", "currency") //
-                        .match("Eidg. Umsatzabgabe (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
-
-                        .section("fees", "currency").optional() //
-                        .match("B.rsengeb.hr (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
-
-                        .section("fees", "currency").optional() //
-                        .match("B.rsengeb.hr Inland (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
-
-                        .section("fees", "currency").optional() //
-                        .match("Eigene Courtage (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))));
-    }
-
-    @SuppressWarnings("nls")
-    private void addDividendTransaction()
-    {
-        DocumentType type = new DocumentType("Dividende");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("Dividende");
-        type.addBlock(block);
-        Transaction<AccountTransaction> extractor = new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return transaction;
-                        })
-
-                        .section("date", "shares", "name", "wkn", "currency")
-                        .match("Am (?<date>\\d+.\\d+.\\d{4}+) wurde folgende Dividende gutgeschrieben:") //
-                        .match("^.*$") //
-                        .match("^(?<name>.*)$") //
-                        .match("^Valor: (?<wkn>[^ ]*)$") //
-                        .match("Brutto \\((?<shares>[\\d.']+) \\* ... ([\\d.']+)\\) (?<currency>\\w{3}+) ([\\d.']+)") //
-                        .assign((t, v) -> {
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setShares(asShares(v.get("shares")));
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
-
-                        .section("amount", "currency") //
-                        .match("Netto (?<currency>\\w{3}+) (?<amount>[\\d.']+)") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
-                        })
-
-                        .section("fees", "currency").optional() //
-                        .match(".* Verrechnungssteuer (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
-                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
-
-                        .section("fees", "currency").optional() //
-                        .match(".* Quellensteuer (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
-                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
-
-                        .section("fees", "currency").optional() //
-                        .match(".* Nicht r.ckforderbare Steuern (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
-                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
-
-                        .section("grossValue", "forexSum", "forexCurrency", "totalValue", "currency", "exchangeRate") //
-                        .optional() // only present if forex is available
-                        .match("Brutto \\(([\\d.']+) \\* ... ([\\d.']+)\\) (\\w{3}+) (?<grossValue>[\\d.']+)") //
-                        .match("Netto (?<forexCurrency>\\w{3}+) (?<forexSum>[\\d.']+)") //
-                        .match("Change ... / ... (?<exchangeRate>[\\d.']+) (?<currency>\\w{3}+) (?<totalValue>[\\d.'-]+)") //
-                        .assign((t, v) -> { // NOSONAR
-
-                            // if we end up in the branch, then we have forex
-                            // dividends and must convert taxes in local
-                            // currency
-                            Money totalValue = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(v.get("totalValue")));
-                            t.setMonetaryAmount(totalValue);
-
-                            // keep tax units in case we need to convert them
-                            List<Unit> tax = t.getUnits().collect(Collectors.toList());
-                            t.clearUnits();
-
-                            Money forexGrossValue = Money.of(asCurrencyCode(v.get("forexCurrency")),
-                                            asAmount(v.get("grossValue")));
-                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                            Money grossValue = Money.of(totalValue.getCurrencyCode(),
-                                            Math.round(exchangeRate.doubleValue() * forexGrossValue.getAmount()));
-                            Unit unit = new Unit(Unit.Type.GROSS_VALUE, grossValue, forexGrossValue, exchangeRate);
-                            t.addUnit(unit);
-
-                            // convert tax units
-                            tax.stream().forEach(u -> {
-                                if (u.getAmount().getCurrencyCode().equals(t.getCurrencyCode()))
-                                {
-                                    t.addUnit(u);
-                                }
-                                else
-                                {
-                                    Money txm = Money.of(t.getCurrencyCode(),
-                                                    Math.round(exchangeRate.doubleValue() * u.getAmount().getAmount()));
-                                    Unit fu = new Unit(Unit.Type.TAX, txm, u.getAmount(), exchangeRate);
-                                    t.addUnit(fu);
-                                }
-                            });
-                        })
-
-                        .wrap(t -> new TransactionItem(t));
-
-        block.set(extractor);
+        addBuySellTransaction();
+        addDividendeTransaction();
     }
 
     @Override
     public String getLabel()
     {
-        return "Bank SLM"; //$NON-NLS-1$
+        return "Bank SLM AG";
     }
 
+    private void addBuySellTransaction()
+    {
+        DocumentType type = new DocumentType("B.rsenabrechnung \\- (Kauf|Verkauf)");
+        this.addDocumentTyp(type);
+
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^B.rsenabrechnung \\- (Kauf|Verkauf)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^B.rsenabrechnung \\- (?<type>(Kauf|Verkauf))$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
+
+                        // @formatter:off
+                        // Wir haben f�r Sie am 03.09.2013 gekauft.
+                        // 17'000 Inhaber-Aktien
+                        // Nokia Corp
+                        // Valor: 472672
+                        // Total Kurswert EUR -74'120.00
+                        // @formatter:on
+                        .section("name1", "name", "wkn", "currency") //
+                        .find("Wir haben f.r.*") //)
+                        .match("^[\\.'\\d]+ (?<name1>.*)$") //
+                        .match("^(?<name>.*)$") //
+                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9})$") //
+                        .match("^Total Kurswert (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> {
+                            v.put("name", v.get("name") + " " + v.get("name1"));
+
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        // @formatter:off
+                        // 17'000 Inhaber-Aktien Nokia Corp
+                        // @formatter:on
+                        .section("shares") //
+                        .find("Wir haben.*")
+                        .match("^(?<shares>[\\.'\\d]+) .*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Wir haben für Sie am 03.09.2013 gekauft.
+                        // Wir haben für Sie am 22.08.2013 verkauft.
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Wir haben f.r Sie am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (gekauft|verkauft)\\.$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Netto CHF -43'412.10
+                        // Netto CHF 142'359.40
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^Netto (?<currency>[\\w]{3}) (\\-)?(?<amount>[\\.'\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        // @formatter:off
+                        // Total Kurswert EUR -74'120.00
+                        // Change EUR/CHF 1.241652 CHF -92'031.25
+                        // @formatter:on
+                        .section("fxGross", "termCurrency", "baseCurrency", "exchangeRate", "gross").optional() //
+                        .match("^Total Kurswert [\\w]{3} (\\-)?(?<fxGross>[\\.'\\d]+)$") //
+                        .match("^Change (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.'\\d]+) [\\w]{3} (\\-)?(?<gross>[\\.'\\d]+)$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                            Money fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDividendeTransaction()
+    {
+        DocumentType type = new DocumentType("Dividende");
+        this.addDocumentTyp(type);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+
+        Block firstRelevantLine = new Block("^Dividende$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            AccountTransaction accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Namen-Aktien nom CHF 100.00 Ex Datum: 02.05.2016
+                        // Bank SLM AG
+                        // Valor: 135186
+                        // ISIN: CH0001351862
+                        // Brutto (1 * CHF 28.00) CHF 28.00
+                        // @formatter:on
+                        .section("name1", "name", "wkn", "isin", "currency") //
+                        .match("^(?<name1>.*) Ex Datum: [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$") //
+                        .match("^(?<name>.*)$") //
+                        .match("^Valor: (?<wkn>[A-Z0-9]{5,9})$") //
+                        .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .match("^Brutto \\([\\.'\\d]+ \\* [\\w]{3} [\\.'\\d]+\\) (?<currency>[\\w]{3}) [\\.'\\d]+$") //
+                        .assign((t, v) -> {
+                            v.put("name", v.get("name") + " " + v.get("name1"));
+
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        // @formatter:off
+                        // Brutto (1 * CHF 28.00) CHF 28.00
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^Brutto \\((?<shares>[\\.'\\d]+) \\* .*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Am 02.05.2016 wurde folgende Dividende gutgeschrieben:
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) wurde folgende Dividende gutgeschrieben:$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Netto CHF 18.20
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^Netto (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        // @formatter:off
+                        // Brutto (17'000 * EUR 0.26) EUR 4'420.00
+                        // Change EUR / CHF 1.067227 CHF 3'302.00
+                        // @formatter:on
+                        .section("gross", "termCurrency", "baseCurrency", "exchangeRate").optional() //
+                        .match("^Brutto \\([\\.'\\d]+ \\* [\\w]{3} [\\.'\\d]+\\) >[\\w]{3} (?<gross>[\\.'\\d]+)$") //
+                        .match("^Change (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.'\\d]+) [\\w]{3} (\\-)?[\\.'\\d]+$") //
+                        .assign((t, v) -> {
+                            ExtrExchangeRate rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction //
+
+                        // @formatter:off
+                        // Eidg. Umsatzabgabe CHF -138.05
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^Eidg\\. Umsatzabgabe (?<currency>[\\w]{3}) \\-(?<tax>[\\.'\\d]+)$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // 35% Verrechnungssteuer CHF -9.80
+                        // @formatter:off
+                        .section("currency", "tax").optional() //
+                        .match("^[\\d]+% Verrechnungssteuer (?<currency>[\\w]{3}) \\-(?<tax>[\\.'\\d]+)$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // 20% Quellensteuer EUR -884.00
+                        // @formatter:on
+                        .section("currency", "withHoldingTax").optional() //
+                        .match("^[\\d]+% Quellensteuer (?<currency>[\\w]{3}) \\-(?<withHoldingTax>[\\.'\\d]+)$") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
+                        // @formatter:off
+                        // 10% Nichtrückforderbare Steuern EUR -442.00
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^[\\d]+% Nicht r.ckforderbare Steuern (?<currency>[\\w]{3}) \\-(?<tax>[\\.'\\d]+)$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type));
+    }
+
+    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
+    {
+        transaction //
+
+                        // @formatter:off
+                        // Eigene Courtage CHF -489.15
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^Eigene Courtage (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Börsengebühr Inland CHF -3.50
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^B.rsengeb.hr Inland (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Börsengebühr CHF -3.50
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^B.rsengeb.hr (?<currency>[\\w]{3}) \\-(?<fee>[\\.'\\d]+)$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type));
+    }
+
+    @Override
+    protected long asAmount(String value)
+    {
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, "de", "CH");
+    }
+
+    @Override
+    protected long asShares(String value)
+    {
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, "de", "CH");
+    }
+
+    @Override
+    protected BigDecimal asExchangeRate(String value)
+    {
+        return ExtractorUtils.convertToNumberBigDecimal(value, Values.Share, "de", "CH");
+    }
 }

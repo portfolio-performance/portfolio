@@ -1,0 +1,21 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+TURSlp gHgbKtx crXlDC SEITE 1 von 1
+nytdgftcykwDV 56 DATUM 30.07.2024
+23430 iJnrJZx DEPOT 0950027601
+AUSÜBUNG VON OPTIONSSCHEINEN
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+1 Ausbuchung Long @6.07 € TUI AG Best TurboDE000SU34220 2053 Stücke
+ABRECHNUNG
+Zwischensumme 2.05 EUR
+2.05 EUR
+BUCHUNG
+VERRECHNUNGSKONTO DATUM DER ZAHLUNG
+DE71100123450999999601 30.07.2024 2.05 EUR
+DE000SU34220 im Girosammelverwahrung in Deutschland
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich um eine umsatzsteuerfreie Leistung gemäß § 4 Nr. 8 UStG
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin DirektorenBrunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer

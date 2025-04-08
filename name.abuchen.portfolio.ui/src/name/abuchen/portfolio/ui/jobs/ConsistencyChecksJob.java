@@ -45,6 +45,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 
 public class ConsistencyChecksJob extends AbstractClientJob
 {
@@ -143,6 +144,8 @@ public class ConsistencyChecksJob extends AbstractClientJob
             tableArea.setLayout(layout);
 
             tableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.FULL_SELECTION);
+            CopyPasteSupport.enableFor(tableViewer);
+
             final Table table = tableViewer.getTable();
             table.setHeaderVisible(true);
             table.setLinesVisible(true);
@@ -239,7 +242,10 @@ public class ConsistencyChecksJob extends AbstractClientJob
                 public Image getImage(Object element)
                 {
                     ReportedIssue issue = (ReportedIssue) element;
-                    return issue.isFixed() ? Images.CHECK.image() : Images.QUICKFIX.image();
+                    if (issue.isFixed())
+                        return Images.CHECK.image();
+
+                    return issue.getAvailableFixes().isEmpty() ? null : Images.QUICKFIX.image();
                 }
             });
             layout.setColumnData(col.getColumn(), new ColumnPixelData(100));

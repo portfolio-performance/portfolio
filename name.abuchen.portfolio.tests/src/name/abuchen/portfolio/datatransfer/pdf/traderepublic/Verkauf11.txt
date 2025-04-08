@@ -1,0 +1,35 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+bKClOu ORJhPpUiAcN SEITE 1 von 1
+KGStgFLsDMi 41J DATUM 24.01.2025
+69508 ZwarkwOAbC ORDER 0085-7d2e
+AUSFÜHRUNG e13e-6ec7
+DEPOT 0162037301
+WERTPAPIERABRECHNUNG
+Korrektur des Belegs 8ac7-2fd8 vom 17.01.2025
+ÜBERSICHT
+Limit-Order Verkauf am 17.01.2025, um 16:05 Uhr (Europe/Berlin) an der Lang und Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL PREIS
+Lev MSCI USA EUR (Acc) 200 Stk. 26 EUR
+ISIN: FR0010755611
+STEUERKORREKTUREN
+POSITION BETRAG
+Kapitalertragsteuer 156,80 EUR
+Solidaritätszuschlag 8,62 EUR
+GESAMT 165,42 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DEXXX 2025-01-21 165,42 EUR
+Lev MSCI USA EUR (Acc) in Girosammelverwahrung in Deutschland
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+ABRE / b687-e2ac

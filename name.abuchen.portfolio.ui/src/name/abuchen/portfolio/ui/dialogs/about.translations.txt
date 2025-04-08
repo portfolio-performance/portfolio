@@ -1,0 +1,17 @@
+Translated with the help of
+
+Spanish by [PabloReyes](https://github.com/PabloReyes), Bolzass, Emilio
+Dutch by Mi, Thomas, Dizzy, Caspar, Husch, Idsert
+Portuguese by [iwalucas](https://github.com/iwalucas), Bruno, Paulo Santos, Teppss, David
+Brazilian Portuguese by Rafael
+French by [Skymirrh](https://github.com/Skymirrh), Matthieu, Jérémy
+Italian by [dfdario](https://github.com/dfdario), Luca, Emanuele, Dario Di Ludovico
+Czech by [drozdikd](https://github.com/drozdikd)
+Russian by Alexander Alyoshin
+Slovak by [Tomáš Vančo](https://github.com/seg-on)
+Polish by Marcin Wichtowski and Arkadiusz Wojtowicz
+Chinese (simplified) by [Jiahao Li](https://github.com/TheJiahao)
+Chinese (traditional) by Darius, yehchihtao, and others
+Danish by Arthur Madsen
+Turkish by ALGO IT, Alp ŞEBER, and others
+German with the help of BeeverTeeth

@@ -1,13 +1,16 @@
 package name.abuchen.portfolio.util;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 
 /**
  * An immutable pair consisting of two non-null <code>Object</code> elements.
  */
-public class Pair<L, R> implements Map.Entry<L, R>
+public class Pair<L, R> implements Map.Entry<L, R>, Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     private final L left;
     private final R right;
 

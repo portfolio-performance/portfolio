@@ -1,0 +1,55 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+biw AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+biw AG -  Hausbroicher Str. 222 -  47877 Willich
+Willich,                06.04.2011
+0101012000000189767030
+Herr 
+Max Mustermann 
+Strasse 9 
+99999 Stadt
+Kontoauszug Nr:    001/2011                              Seite     1 von     2
+Kontonummer :      1003999999  dazugehörige IBAN:  DE03 1013 0800 1003 9999 99
+Kontowährung:      EUR
+Alter Saldo vom    20.01.2011                     in EUR                 0,00+
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+10.02.     10.02.  CASH / 0/377366                                   1.300,00+
+16.03.     18.03.  Ausführung ORDER Kauf   DE0002635273              1.147,00-
+                   33368817                                                   
+16.03.     18.03.  Gebühren Ordernummer 33368817 Transnr                 0,00-
+                   334793332
+Neuer Saldo 31.03.2011 Nr. 001/2011         Währung EUR                153,00+
+Der ausgewiesene Kontosaldo kann durch abweichende Wertstellung (Valuta) vom
+wertmäßigen Kontostand abweichen. Die Wertstellung von Buchungen ist auch
+relevant für die Berechnung von Zinsen.
+Bei Geldeingängen aus dem Ausland beachten Sie bitte eventuelle Meldungen nach
+der Außenwirtschaftsverordnung (AWV). Die Deutsche Bundesbank und ihre
+Filialen erteilen dazu gern die notwendigen Auskünfte.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Michael Heinks
+2000000189767030 10101000
+Kontoauszug Nr:    001/2011                              Seite     2 von     2
+Kontonummer :      1003999999  dazugehörige IBAN:  DE03 1013 0800 1003 0999 99
+Beanstandungen  gegen Rechnungsabschlüsse sind unverzüglich und schriftlich zu
+senden an:
+      biw AG
+      Revision
+      Hausbroicher Str. 222
+      47877 Willich.
+Der Abschlusssaldo gilt als genehmigt, wenn ihm nicht innerhalb von 6 Wochen
+ab Zugang schriftlich widersprochen  wird. Zur Fristwahrung genügt die
+rechtzeitige Absendung der Einwendung.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Michael Heinks
+
+```

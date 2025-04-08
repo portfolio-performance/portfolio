@@ -1,0 +1,59 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.3
+-----------------------------------------
+Herrn
+Max Mustermann
+Gasse 1
+1000 Wien
+Wien, den 11.07.2024
+Wir haben für Sie am 11.07.2024 unten angeführtes Geschäft abgerechnet:
+Depot: 20000-111-222
+Verlusttopf Nr.: 012345678901
+Geschäftsart: Verkauf Auftrags-Nr.: 23456789 - 11.07.2024
+Abgang: Nom. 2.000
+davon
+KESt-Neubestand mit Anschaffungskosten: Nom 2.000
+Titel: DE000A1R0RZ5 Ekosem-Agrar AG
+Inh.-Schv. v.2012(2020/2027)
+Kup.: 07.12.2024 / Jährlich bis 07.12.2027
+aktueller Zinssatz: 2,5%
+Kurs: 20,2 %
+Verwahrart: WR Wertpapierrechnung
+Positionsdaten: Loco: Düsseldorf
+Kurswert: 404,00 EUR
+Fremde Spesen: -1,85 EUR
+Eigene Spesen: -0,71 EUR
+Grundgebühr: -6,75 EUR
+Zu Gunsten IBAN AT12 3456 7890 1234 0567 Valuta 15.07.2024 394,69 EUR
+Handelsplatz: Börse München - GETTEX
+Eingang vorbehalten
+Schlusstag/-zeit: 11.07.2024 11:38:21
+Kassatag: 15.07.2024
+Limit: 20,200000
+KESt-pflichtiges Wertpapier
+Steuerrelevante Hinweise finden Sie auf der Rückseite.
+Seite 1 von 2
+easybank Service Center | www.easybank.at | Wiedner Gürtel 11 | 1100 Wien
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postsparkasse Aktiengesellschaft | Handelsgericht Wien | FN 205340x
+GEODRU02 WGEWTGSDR15ABREP2024071108342P11_a/345
+Hinweis für KESt aus Neubestand mit Anschaffungskosten:
+Steuerrelevanter Anschaffungswert: 1.917,68 EUR
+Steuerrelevanter Veräußerungswert : 404,00 EUR
+Kursverlust: -1.513,68 EUR
+Hinweis für den Verlustausgleichstopf:
+Bisheriger Stand KESt bezahlt: 42,55 EUR
+KESt aus Verlust: -416,26 EUR
+Aktueller Stand KESt aus Verlust: -373,71 EUR
+Gutschrift aus Verlustausgleich: 42,55 EUR
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe.
+Die BAWAG erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle steuerliche
+Nachteile im Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen ihrer
+Kunden. Die Besteuerung der Kapitaleinkünfte hängt von den persönlichen Verhältnissen des Anlegers
+ab und kann künftigen Änderungen unterworfen sein. Vor einer Veranlagungsentscheidung sollten Sie
+sich bei Ihrem Steuerberater über die damit verbundenen steuerlichen Konsequenzen und
+Meldepflichten informieren.
+Mit freundlichen Grüßen
+Ihr easybank Service Center
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 2 von 2
+GEODRU02 WGEWTGSDR15ABREP2024071108342P11_a/346

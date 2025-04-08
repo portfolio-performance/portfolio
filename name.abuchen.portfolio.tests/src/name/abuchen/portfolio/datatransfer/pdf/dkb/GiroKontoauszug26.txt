@@ -1,0 +1,150 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.4.qualifier
+-----------------------------------------
+Deutsche Kreditbank AG
+Herrn
+Internes Zeichen:
+Max Mustermann
+180 41 00
+Muster Str. 3
+ 
+01111 City  
+ 
+ 
+ 
+ 
+ 
+ 
+5. Oktober 2023
+ 
+Kontoauszug 10/2023 Seite 1 von 6
+Girokonto 1111111111, DE45 1203 0000 1111 1111 11, DKB-Cash
+  
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+              1111,11
+ Kontostand am 04.09.2023, Auszug Nr.    9   
+             -480,00
+05.09.2023 Basislastschrift
+Eisenbahner- Wohnungsbaugenossensch 
+70530/111111111/3/35 480,00 Miete 00000111111 
+Gläubiger-ID: DE77ZZZ00000111111
+              -20,00
+05.09.2023 Basislastschrift
+Eisenbahner- Wohnungsbaugenossensch 
+77011/111111111/1/27 20,00 Miete 00000111111 
+Gläubiger-ID: DE77ZZZ00000111111
+              -73,36
+06.09.2023 Kartenzahlung
+STAR City/City//DE 2023-09-04T08:35 Debitk.54 
+2099-12 Zahl.System VISA Debit
+            9.999,99
+06.09.2023 Lohn, Gehalt, Rente
+Muster Muster Lohn/Gehalt Lohn/Gehalt
+               -0,01
+02.10.2023 Abrechnung 29.09.2023 / Wert: 01.10.2023
+siehe Anlage Nr. 1
+             -150,00
+04.10.2023 Überweisung
+Max Mustermann Anzahlung Max DATUM 04.10.2023, 09.42 
+UHR
+              150,00
+04.10.2023 Zahlungseingang / Wert: 03.10.2023
+Mustermann, Max Anzahlung City Urlaub
+              9999,99
+ Kontostand am 04.10.2023 um 18:05 Uhr   
+Anzahl Anlagen 1
+Ihr Dispositionskredit EUR: 20.000,00
+Gesamtumsatzsummen Summe Soll EUR Anzahl Summe Haben EUR Anzahl
+-9.999,99 35 9.999,99 4
+ .
+Kundenmitteilungen:
+Ab 01.10.2023 neuer Zinssatz  9,9000 v.H. für
+eingeräumte Kontoüberziehung         20.000,00
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE1311111 
+ Stefan Unterlandstättner (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Mikenberg (HRB 34165 B)
+Kontoauszug 10/2023 Seite 4 von 6
+Girokonto 1111111111, DE45 1203 0000 1111 1111 11, DKB-Cash, Max Mustermann
+Ab 01.10.2023 neuer Zinssatz  9,9000 v.H. für geduldete Kontoüberziehung
+  
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Stefan Unterlandstättner (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Mikenberg (HRB 34165 B)
+Kontoauszug 10/2023 Seite 5 von 6
+Girokonto 1111111111, DE45 1203 0000 1111 1111 11, DKB-Cash, Max Mustermann
+Rechnungsabschluss: Anlage     1
+Kontostand in EUR am 29.09.2023                                  9999,99 +
+                                                            --------------
+Abrechnungszeitraum vom 01.07.2023 bis 30.09.2023
+Zinsen für eingeräumte Kontoüberziehung                              0,01-
+ 9,2900 v.H. Kred-Zins  bis 05.09.2023
+                                                            --------------
+Abrechnung 30.09.2023                                                0,01-
+Sollzinssätze am 30.09.2023
+ 9,2900 v.H. für eingeräumte Kontoüberziehung
+  
+(aktuell eingeräumte Kontoüberziehung       2.000,00)
+ 9,2900 v.H. für geduldete Kontoüberziehung
+über die eingeräumte Kontoüberziehung hinaus
+Es handelt sich hierbei um eine umsatzsteuerfreie Leistung.
+Kontostand/Rechnungsabschluss in EUR am 29.09.2023               9999,99 +
+Rechnungsnummer: 111111-111111-00111111111
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Stefan Unterlandstättner (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Mikenberg (HRB 34165 B)
+Kontoauszug 10/2023 Seite 6 von 6
+Girokonto 1111111111, DE45 1203 0000 1111 1111 11, DKB-Cash, Max Mustermann
+Hinweise zum Kontoauszug:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können 
+dem Informationsbogen für Einleger entnommen werden, den Sie auch unter www.dkb.de/kundenservice/einlagensicherung 
+einsehen können. Bitte beachten Sie nachstehenden Auszug aus unseren Allgemeinen Geschäftsbedingungen, sowie die mit Ihnen 
+getroffene Regelung über die Erteilung von Rechnungsabschlüssen:
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte 
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise 
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Schreibt die Bank den Gegenwert von Schecks, Lastschriften oder anderen Einzugspapieren schon vor ihrer Einlösung gut, so 
+geschieht dies unter dem Vorbehalt der Einlösung und des Einganges des Gegenwertes (E.v.Gutschrift). Das gilt auch dann, wenn 
+die Schecks, Lastschriften oder anderen Einzugspapiere bei der Bank selbst zahlbar sind. Werden Schecks oder Lastschriften 
+nicht eingelöst oder geht der Bank der Gegenwert aus einem anderen Einzugspapier nicht zu, so macht sie die Gutschrift gemäß 
+Nr. 23 dieser AGB rückgängig (Stornobuchung), und zwar auch nach einem zwischenzeitlich erfolgten Rechnungsabschluss.
+l Schecks und andere Einzugspapiere sind erst eingelöst, wenn die Belastungsbuchung nicht bis zum Ablauf des übernächsten 
+Bankarbeitstages rückgängig gemacht wird. Sie sind auch eingelöst, wenn die Bank ihren Einlösungswillen schon vorher Dritten 
+gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für Lastschriften gelten die Einlöseregeln in den hierfür 
+vereinbarten besonderen Bedingungen. Über die Abrechnungsstelle der Bundesbank eingezogene Schecks sind eingelöst, wenn 
+  
+sie nach deren Allgemeinen Geschäftsbedingungen nicht mehr zurückgegeben werden können. Barschecks sind mit Zahlung an 
+den Scheckvorleger eingelöst.
+l Aufgrund gesetzlicher Bestimmungen (§ 355 HGB) sind wir verpflichtet, Ihnen in regelmäßigen Abständen einen 
+Rechnungsabschluss zu erteilen. Wir haben festgelegt, dass dies bei Kontoabrechnungsbuchungen (Zinsen und/oder sonstige 
+Entgelte), zumindest aber einmal jährlich geschieht. Beachten Sie bitte, dass dieser Kontoauszug einen Rechnungsabschluss 
+darstellt, wenn er als solcher bezeichnet ist. Im Abschlusssaldo sind Zinsen und/oder sonstige Entgelte bis zum letzten 
+Zinsabschlusstermin berücksichtigt.
+l Bitte prüfen Sie den Abschlusssaldo des Rechnungsabschlusses. Rechnungsabschlüsse gelten als genehmigt, sofern Sie 
+innerhalb von 6 Wochen nach Zugang keine Einwendungen erheben. Einwendungen gegen Rechnungsabschlüsse müssen der 
+Deutsche Kreditbank AG, Bereich Revision, Taubenstraße 7-9, 10117 Berlin schriftlich oder, wenn im Rahmen der 
+Geschäftsbeziehung der elektronische Kommunikationsweg vereinbart wurde (z. B. Onlinebanking), auf diesem Wege zugehen. 
+Zur Fristwahrung genügt die rechtzeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+Dieser Kontoauszug gilt im Zusammenhang mit dem zugrunde liegenden Vertrag laut angegebener Kontonummer als Rechnung im 
+Sinne des UStG.
+Mit freundlichen Grüßen
+Ihre Deutsche Kreditbank AG
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Stefan Unterlandstättner (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Mikenberg (HRB 34165 B)
+
+```

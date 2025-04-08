@@ -1,0 +1,26 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Vorname Nachname SEITE 1 von 1
+Straße 1 DATUM 18.07.2024
+12345 Ort DEPOT 0000000000
+STEUERLICHE OPTIMIERUNG
+ÜBERSICHT
+Steuerliche Optimierung am 18.07.2024
+ABRECHNUNG
+POSITION BETRAG
+Kapitalertragssteuer 735.67 EUR
+Solidaritätszuschlag 40.46 EUR
+GESAMT 776.13 EUR
+BUCHUNG
+VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
+DE00000000000000000000 18.07.2024 776.13 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Trade Republic Bank GmbH
+Brunnenstraße 19-21 www.traderepublic.com
+Sitz der Gesellschaft: Berlin Direktoren
+service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+
+```

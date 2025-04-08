@@ -1,0 +1,18 @@
+DFBox Version: 1.8.16
+-----------------------------------------
+Dhr. John
+Doe
+Hoofdstraat 1
+1001AA Amsterdam
+Gebruikersnaam: ****bob
+Rekeningoverzicht van 01-03-2022 t/m 27-05-2022
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+27-05-2022 07:34 26-05-2022 Valuta Creditering EUR 0,53 EUR 0,53
+27-05-2022 07:34 26-05-2022 Valuta Debitering 1,0758 USD -0,57 USD 0,00
+26-05-2022 08:08 25-05-2022 ISHARES INFRA GLO IE00B1FZS467 Dividend USD 0,57 USD 0,57
+flatex DEGIRO Bank Dutch Branch, handelend onder de naam www.degiro.nl Rekeningoverzicht
+DEGIRO, is de Nederlandse vestiging van flatexDEGIRO Bank AG. klanten@degiro.nl 2022-05-27
+flatexDEGIRO Bank AG staat primair onder supervisie van de Duitse
+Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin). Amstelplein 1 1096 HA Pagina 1 /11
+[flatexDEGIRO Bank AG Dutch Branch] staat in Nederland onder
+integriteitstoezicht van DNB en gedragstoezicht van de AFM.

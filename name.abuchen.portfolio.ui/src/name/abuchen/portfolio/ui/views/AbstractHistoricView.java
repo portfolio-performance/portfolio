@@ -22,4 +22,9 @@ public abstract class AbstractHistoricView extends AbstractFinanceView implement
     {
         return dropDown.getSelectedPeriod();
     }
+
+    protected final void setReportingPeriod(ReportingPeriod period)
+    {
+        dropDown.doSelect(period);
+    }
 }

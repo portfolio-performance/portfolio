@@ -1,0 +1,62 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank <95> 90318 Nürnberg
+Depotnummer: xxxx xxx xxx
+1000306411/00
+Vermerk der Bank: 1000
+2
+Vornamen Name
+Straße 11
+12345 Ort Datum: 03.12.2021Seite: 1 von 2
+Ordernummer 218450381.001
+Orderdatum 03.12.2021
+ORDERABRECHNUNG
+VERKAUF KAPITALMAßN. AM 03.12.2021 AUSSERBOERSLICH CA NR. 218450381.001
+Bezeichnung WKN ISIN
+HOLIDAYCHECK GRP Z.VERK. A3E5E9 DE000A3E5E97
+Einheit Umsatz
+ST 2.500,00000
+Preis pro Anteil 2,700000 EUR FRANCO COURTAGE
+Kurswert 6.750,00 EUR
+abzgl. Kapitalertragssteuer 24,51% 2.616,17 EUR 641,22 EUR
+abzgl. Solidaritätszuschlag 5,50% 641,22 EUR 35,26 EUR
+abzgl. Kirchensteuer 8,00% 641,22 EUR 51,29 EUR
+zugunsten Konto-Nr. 123456789 6.022,23 EUR
+Valuta 03.12.2021
+Bestand zulasten Girosammelverwahrung
+CBF 2126
+JAHRESSTEUERBESCHEINIGUNG FOLGT
+ABRECHNUNG BARABFINDUNG GEMAESS IHREM AUFTRAG
+Ursprungs-WKN 549532
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d<91>Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+Depotnummer: xxxx xxx xxx
+1000306411/00
+Vermerk der Bank: 1000
+2
+Datum: 03.12.2021
+Seite: 2 von 2
+Ordernummer 218450381.001
+Orderdatum 03.12.2021
+Informationen bei Gewinn Aktien / Wertpapiere ungleich Aktien
+Veräusserungsgewinn nach Differenzmethode 2.622,29 EUR
+mit Verrechnungstopf <84>Aktien<93> verrechnet - 6,12 EUR
+Bemessungsgrundlage für Kapitalertragsteuer 2.616,17 EUR
+Stand Ihrer Töpfe und Freibeträge nach dem Geschäft
+Sparerpauschbetrag nach dem Geschäft 0,00 EUR
+Verrechnungstopf Aktien nach dem Geschäft 0,00 EUR
+Verrechnungstopf Allg. nach dem Geschäft 0,00 EUR
+Verrechnungstopf QUST nach dem Geschäft 0,00 EUR
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d<91>Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé

@@ -1,0 +1,75 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.2.qualifier
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren Sonderbe-
+dingungen für Wertpapiergeschäfte wie nachstehend
+ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entspre-
+25449 Quickborn chend gebucht.Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Telefon    01803-33 63 66            Vollständigkeit zu überprüfen und etwaige Einwendungen: unverzüglich zu erheben.
+                                       
+                                       
+                                       
+                             
+    11857 010
+                                       
+            
+                             
+xHiOHx mtQg                  Depotnummer: 6190796 26
+                                                          
+Musterstr. 76                                            
+                             
+07170 rsqbXkjSeG             
+                             
+                             
+                             
+                                                  
+                                                  
+ABRECHNUNG VOM 20.02.2007                                                   
+Wertpapierverkauf bei Freistellungsauftrag                                                                                          
+Geschäftsnummer   : 18 665821                                                                                                       
+                    007301624026-004  Rechnungsnummer   : 099094791965DAF2                                                          
+Geschäftstag      : 20.02.2007        Ausführungsplatz  : INVESTRO                                                                  
+                                                                                                                                    
+                                                                                                                                    
+Wertpapier-Bezeichnung                                               WPKNR/ISIN                                                     
+DWS Internet-Aktien Typ O                                                984800                                                     
+Inhaber-Anteile                                                    DE0009848002                                                     
+                                                                                                                                    
+                                                                                                                                    
+Nennwert                  Zum Rücknahmepreis von                                                                                    
+St.  67                   EUR  14,99                                                                                                
+                                                                                                                                    
+                          Kurswert                    : EUR            1.004,33                                                     
+                                                                                                                                    
+                                                                                                                                    
+Verrechnung über Konto         Valuta                   Zu Ihren Gunsten                                                            
+    7070105 77  EUR            22.02.2007               EUR            1.004,33                                                     
+                                                                                                                                    
+Zwischengewinn je Anteil am 20.02.2007 von 0,010000 EUR                                                                             
+Von der zuständigen Stelle wurde der Aktiengewinn pro Anteil am 20.02.2007 mit                                                      
+-260,97 % vom Rücknahmepreis gemeldet.(Gilt nur für Anteile im Betriebs-                                                            
+vermögen.)                                                                                                                          
+Von der zuständigen Stelle wurde der Immobiliengewinn pro Anteil am 20.02.2007                                                      
+mit "Null %" gemeldet.                                                                                                              
+(Gilt nur für Anteile im Betriebsvermögen).                                                                                         
+Verwahrungs-Art: GIROSAMMELDEPOT                                                                                                    
+                                                                                                                                    
+Ermittlung der Steuerbasisbeträge:                                                                                                  
+vereinnahmter Zwischengewinn + ggf.Ersatzwert         : EUR                0,67                                                     
+- berücksichtigter Freibetrag                         : EUR                0,67-                                                    
+kapitalertragsteuerpflichtig                          : EUR                0,00                                                     
+                                                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+comdirect bank AG                                                                                                                   
+                                                                                                                                    
+                                                                                                                                    
+Diese Abrechnung wird von der Bank nicht unterschrieben                                                                             
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 111 111 111                                                    
+                                                                                                                                    
+Kapitalerträge sind einkommensteuerpflichtig.                                                                                       
+DoComd/01/2001
+
+```

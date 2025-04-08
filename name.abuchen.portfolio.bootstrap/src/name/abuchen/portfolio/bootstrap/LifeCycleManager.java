@@ -4,14 +4,18 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -35,7 +39,6 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
@@ -56,50 +59,31 @@ public class LifeCycleManager
     @PostContextCreate
     public void doPostContextCreate(IEclipseContext context)
     {
-        checkForJava8();
-        removeClearPersistedStateFlag();
+        checkForCustomCSSFile();
         checkForModelChanges();
         checkForRequestToClearPersistedState();
         setupEventLoopAdvisor(context);
     }
 
-    private void checkForJava8()
+    private void checkForCustomCSSFile()
     {
-        // if the java version is < 8, show a message dialog because otherwise
-        // the application would silently not start
-
-        double version = Double.parseDouble(System.getProperty("java.specification.version")); //$NON-NLS-1$
-
-        if (version < 1.8)
-        {
-            MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.TitleJavaVersion,
-                            Messages.MsgMinimumRequiredVersion);
-            throw new UnsupportedOperationException("The minimum Java version required is Java 8"); //$NON-NLS-1$
-        }
-    }
-
-    private void removeClearPersistedStateFlag()
-    {
-        // the 'old' update mechanism edited the ini file *after* the upgrade
-        // and added the -clearPersistedState flag. The current mechanism does
-        // not need it, hence it must be remove if present
-
-        // not applicable on Mac OS X because only update is not supported
-        if (Platform.OS_MACOSX.equals(Platform.getOS()))
-            return;
-
         try
         {
-            IniFileManipulator iniFile = new IniFileManipulator();
-            iniFile.load();
-            iniFile.unsetClearPersistedState();
-            if (iniFile.isDirty())
-                iniFile.save();
+            // the custom.css file *must* exist, otherwise no style sheets are
+            // loaded at all. Create the file if it does not exist
+
+            URL url = FileLocator.resolve(new URI("platform:/meta/name.abuchen.portfolio.ui/custom.css").toURL()); //$NON-NLS-1$ //NOSONAR
+            File customCSSFile = new File(url.getFile());
+
+            if (!customCSSFile.exists())
+            {
+                customCSSFile.getParentFile().mkdirs();
+                customCSSFile.createNewFile(); // NOSONAR
+            }
         }
-        catch (IOException ignore)
+        catch (URISyntaxException | IOException e)
         {
-            // ignore: in production, it will anyway be removed during the next
-            // update; in development, it will annoy to always report this error
+            logger.error(e);
         }
     }
 
@@ -161,9 +145,12 @@ public class LifeCycleManager
             public void eventLoopException(final Throwable exception)
             {
                 boolean isAnnoyingNullPointerOnElCapitan = isAnnoyingNullPointerOnElCapitan(exception);
+                boolean isAnnoyingNoClassDefFoundErrorAccessibleObject = isAnnoyingNoClassDefFoundErrorAccessibleObject(
+                                exception);
 
                 StatusReporter statusReporter = (StatusReporter) context.get(StatusReporter.class.getName());
-                if (!isAnnoyingNullPointerOnElCapitan && statusReporter != null)
+                if (!isAnnoyingNullPointerOnElCapitan && !isAnnoyingNoClassDefFoundErrorAccessibleObject
+                                && statusReporter != null)
                 {
                     statusReporter.show(StatusReporter.ERROR, "Internal Error", exception); //$NON-NLS-1$
                 }
@@ -194,6 +181,13 @@ public class LifeCycleManager
 
                 return true;
             }
+
+            private boolean isAnnoyingNoClassDefFoundErrorAccessibleObject(Throwable exception)
+            {
+                return (exception instanceof NoClassDefFoundError
+                                && "org/eclipse/swt/accessibility/AccessibleObject".equals(exception.getMessage())); //$NON-NLS-1$
+            }
+
         });
     }
 
@@ -281,13 +275,13 @@ public class LifeCycleManager
                 {
                     // Must be a Detached Window
                     MUIElement eParent = (MUIElement) ((EObject) container).eContainer();
-                    if (eParent instanceof MPerspective)
+                    if (eParent instanceof MPerspective perspective)
                     {
-                        ((MPerspective) eParent).getWindows().remove(container);
+                        perspective.getWindows().remove(container);
                     }
-                    else if (eParent instanceof MWindow)
+                    else if (eParent instanceof MWindow window)
                     {
-                        ((MWindow) eParent).getWindows().remove(container);
+                        window.getWindows().remove(container);
                     }
                 }
             }
@@ -310,7 +304,7 @@ public class LifeCycleManager
             File file = new File(Platform.getStateLocation(FrameworkUtil.getBundle(LifeCycleManager.class)).toFile(),
                             ModelConstants.E4XMICOPY_FILENAME);
 
-            try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file)))
+            try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file))) // NOSONAR
             {
                 resource.save(out, null);
             }

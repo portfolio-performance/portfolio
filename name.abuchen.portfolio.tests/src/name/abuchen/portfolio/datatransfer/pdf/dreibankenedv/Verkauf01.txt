@@ -1,0 +1,39 @@
+PDF Autor: '3BankenEDV'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Wertpapier-Abrechnu n g                          Verkauf
+789638 - 02.01.2017
+Depotnummer Betreuer
+Nachname Vorname 999-123456 789
+Wertpapiernummer Bezeichnung Nominale/Stück
+DE0007664039 VOLKSWAGEN AG Abgang Stk.                5,00
+VORZUGSAKTIEN O.ST. O.N.
+Kurs 136,75 EUR Kurswert EUR               683,75
+Kursgewinn-KESt EUR                -3,37
+Dritt- und Börsengebühr EUR                -0,08
+Summe EUR               680,30
+Handelszeitpunkt: 02.01.2017 13:54:46
+Handelsplatz: XETRA-Frankfurt
+Auftrags-Nr. 209578-02.01.2017
+Schlusstag 02.01.2017
+Kassatag 04.01.2017
+Verrechnung
+Verwahrart, Positionsdaten
+Wertpapierrechnung Wert 04.01.2017 EUR               680,30
+München zu Gunsten Konto 123-456789
+      Seite 1 von 2
+Rechtsform: Aktiengesellschaft, Sitz: Klagenfurt, Firmenbuch-Nr.: FN 91810s/Klagenfurt, DVR 0063703, UID-Nr. ATU 25231503
+Wertpapier-Abrechnung
+789638 - 02.01.2017
+Depotbezeichnung Depotnummer Betreuer
+Nachname Vorname 999-123456 789
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                           5,00 STK
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+  Nebenkosten:                                                                       0,08 EUR
+  steuerlicher Anschaffungswert:                                                   671,50 EUR
+  steuerlicher Veräußerungswert:                                                   683,75 EUR
+  steuerpflichtiger Kursgewinn:                                                     12,25 EUR
+---------------------------------------------------------------------------------------------
+Die KESt wird an das Finanzamt Klagenfurt abgeführt.
+Auftragszeitpunkt: 02.01.2017 um 13:54:43 Uhr
+Rechtsform: Aktiengesellschaft, Sitz: Klagenfurt, Firmenbuch-Nr.: FN 91810s/Klagenfurt, DVR 0063703, UID-Nr. ATU 25231503       Seite 2 von 2

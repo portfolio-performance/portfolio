@@ -1,0 +1,22 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Herr 
+weg 5
+XXXXX hausen
+Germany
+Benutzername: ******
+(31062145)
+Transaktionsübersicht von 11-02-2021 bis 14-02-2021
+Datum Uhrzeit Produkt ISIN
+Referen Ausführungso Wert in Wechse Transaktions
+zbörse rt Anzahl Kurs Lokalwährung Wert lkurs kosten Gesamt
+11-02-2021 15:41 CALL 16.12.22 LEONI 18 DE000DV0VC30 FRA FRAB 79 3,15 EUR -248,85 EUR -248,85 EUR -2,27 EUR -251,12 EUR
+11-02-2021 15:30 AVID BIOSERVICES INC US05368M1062 NDQ XNAS -34 18,20 USD 618,80 USD 508,87 EUR 1,2148 -0,61 EUR 508,26 EUR
+11-02-2021 15:30 PJT PARTNERS INC. CLAS US69343T1079 NSY XNYS -2 73,00 USD 146,00 USD 120,06 EUR 1,2148 -0,01 EUR 120,05 EUR
+11-02-2021 15:30 PJT PARTNERS INC. CLAS US69343T1079 NSY XNYS -5 73,00 USD 365,00 USD 300,16 EUR 1,2148 -0,52 EUR 299,64 EUR
+DEGIRO B.V. DEGIRO B.V. ist als
+Amstelplein 1 E Investmentgesellschaft bei der
+1096 HA Amsterdam kundenservice@degiro.de niederländischen Seite 1 / 1
+I www.degiro.de Finanzaufsichtsbehörde (AFM) Konto 2021-02-14
+registriert.

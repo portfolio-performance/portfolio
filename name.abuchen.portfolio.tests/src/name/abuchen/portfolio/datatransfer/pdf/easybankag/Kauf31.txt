@@ -1,0 +1,52 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.1
+-----------------------------------------
+Abrechnung Handel
+easybank Service Center 36591120-29.12.2022
+BAWAG P.S.K. AG Depot-Nr.: 23456789012
+Wiedner Gürtel 11 Max Mustermann
+1100 Wien 35/9835
+BAWAG P.S.K. AG
+An
+Max Mustermann
+Straße 74
+1234 Ort
+Wir haben für Sie am 29.12.2022 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Kauf
+Auftrags-Nr.: 36075607-29.12.2022
+Auftragseingang: 29.12.2022-13:01:00
+Zugang: 750 Stk
+Titel: AT0000APOST4  O E S T E R R E I C H ISCHE POST AG
+AKTIEN O.N.
+Kurs: 28,9154 EUR 
+Handelsplatz: XVIE     WIENER BOERSE
+Handelszeit: 29.12.2022 um 13:01:06 Uhr
+Verwahrart: WR
+Positionsdaten: Loco: Wien
+Kurswert: -21.686,55 EUR
+Flat Fee/Provision: -19,95 EUR
+Zu Lasten IBAN AT12 1234 1234 1234 1234 -21.706,50 EUR
+Valuta 2.1.2023
+Kunden UID: ATU12312312    
+Es wurde keine Umsatzsteuer verrechnet.
+Schlusstag: 29.12.2022
+Kassatag: 2.1.2023
+Der oben angeführte Kurs setzt sich aus folgenden Ausführungen zusammen:
+58 Stk Kurs: 28,90 EUR
+Handelszeit: 29.12.2022 13:01:06
+71 Stk Kurs: 28,95 EUR
+Handelszeit: 29.12.2022 13:01:06
+160 Stk Kurs: 28,95 EUR
+Handelszeit: 29.12.2022 13:01:06
+21 Stk Kurs: 28,90 EUR
+Handelszeit: 29.12.2022 13:01:06
+49 Stk Kurs: 28,90 EUR
+Handelszeit: 29.12.2022 13:01:06
+200 Stk Kurs: 28,90 EUR
+Handelszeit: 29.12.2022 13:01:06
+191 Stk Kurs: 28,90 EUR
+Handelszeit: 29.12.2022 13:01:06
+31.12.2022 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten!
+03116 Doknr.: ON00-036-0000000001

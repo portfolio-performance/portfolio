@@ -1,0 +1,100 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH BRUNNENSTRASSE 19-21 10119 BERLIN
+bMzApm fRpfLQ SEITE 1 von 4
+MHSKGhO 51, 52945 DATUM 01 Feb. 2025 - 28 Feb. 2025
+sdfsdfsdf, DE IBAN DE6345634563456345646
+BIC vUrpxDrWBvH
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Cashkonto 7.296,22 € 2.251,43 € 2.208,50 € 7.339,15 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+01 Feb.
+Zinszahlung Your interest payment 14,02 € 7.310,24 €
+2025
+02 Feb.
+Kartentransaktion XKCGtEUond mrCSfYTiNqeYko 10,00 € 7.300,24 €
+2025
+02 Feb.
+Kartentransaktion eKYU JDAu 45,47 € 7.254,77 €
+2025
+03 Feb.
+Überweisung Incoming transfer from hwPQmk Lnqlne 2.000,00 € 9.254,77 €
+2025
+03 Feb. SEPA
+Outgoing transfer for ORLJJB CjFgCR 500,00 € 8.754,77 €
+2025 Echtzeitüberweisung
+03 Feb.
+Prämie Your Saveback payment 7,41 € 8.762,18 €
+2025
+03 Feb. Savings plan execution US7475251036 LntyLVht INC. DL-,0001,
+Handel 7,41 € 8.754,77 €
+2025 quantity: 0.044563
+03 Feb. Savings plan execution US7475251036 XNbvCDnk INC. DL-,0001,
+Handel 100,00 € 8.654,77 €
+2025 quantity: 0.601395
+06 Feb.
+Kartentransaktion IJg iaMHdAtsmcz 50,00 € 8.604,77 €
+2025
+07 Feb.
+Kartentransaktion ssdfgdsg.dg*dfgdfgd 16,90 € 8.587,87 €
+2025
+07 Feb.
+Kartentransaktion slH*PHJv AGWQDEib 5,00 € 8.582,87 €
+2025
+08 Feb.
+Kartentransaktion NxZoZ FPEBxaxYHxEv 14,64 € 8.568,23 €
+2025
+09 Feb.
+Kartentransaktion BdSuGjcvjM JtiqCrHrewhNHO 3,00 € 8.565,23 €
+2025
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 12 März 2025 Seite 1 von 4
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+09 Feb.
+Kartentransaktion vwJx BYlo 32,93 € 8.532,30 €
+2025
+11 Feb.
+Kartentransaktion mUd*rAFw bzXrShpE 25,95 € 8.506,35 €
+2025
+...
+...
+...
+28 Feb.
+Kartentransaktion KNhf dsoW 24,43 € 7.439,15 €
+2025
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 12 März 2025 Seite 2 von 4
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+28 Feb.
+Überweisung Outgoing transfer for JVtffogi FIlx qd XdIEcrG 100,00 € 7.339,15 €
+2025
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 12 März 2025 Seite 3 von 4
+HAFTUNGSAUSSCHLUSS
+Sehr geehrte Kundin, sehr geehrter Kunde
+Bitte überprüfe unbedingt deine Buchungen, Berechnungen und den Schlusssaldo auf dem Kontoauszug, der gleichzeitig deinen Rechnungsabschluss
+darstellt. Der Rechnungsabschluss gilt als anerkannt, wenn du innerhalb von sechs Wochen nach Zugang keine Einwendungen erhebst. Einwendungen
+gegen Kontoauszüge sind schriftlich an uns zu richten. Guthaben sind einlagefähig im Sinne des Einlagensicherungsgesetzes (EinSiG). Weitere
+Informationen entnehme bitte dem Merkblatt für den Einleger, das zusammen mit unseren Allgemeinen Geschäftsbedingungen eingesehen werden kann.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Erstellt am 12 März 2025 Seite 4 von 4

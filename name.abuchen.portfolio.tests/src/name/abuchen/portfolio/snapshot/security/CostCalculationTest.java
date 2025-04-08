@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.PortfolioBuilder;
-import name.abuchen.portfolio.SecurityBuilder;
-import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.junit.PortfolioBuilder;
+import name.abuchen.portfolio.junit.SecurityBuilder;
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -89,7 +89,6 @@ public class CostCalculationTest
 
         assertThat(cost.getFifoCostTrail().getValue(), is(cost.getFifoCost()));
 
-        // expected moving average is identical because it is only one buy
         // transaction
         // (3149,20 + 1684.92) * 146/161 = 4383,736149068322981
 
@@ -129,8 +128,11 @@ public class CostCalculationTest
 
         CurrencyConverter converter = new TestCurrencyConverter().with(CurrencyUnit.EUR);
 
-        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter,
-                        Interval.of(LocalDate.parse("2015-01-16"), LocalDate.parse("2015-12-31")));
+        var interval = Interval.of(LocalDate.parse("2015-01-16"), LocalDate.parse("2015-12-31"));
+        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, interval);
+
+        new SecurityPerformanceSnapshotComparator(snapshot,
+                        LazySecurityPerformanceSnapshot.create(client, converter, interval)).compare();
 
         assertThat(snapshot.getRecords().size(), is(1));
 

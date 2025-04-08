@@ -1,0 +1,27 @@
+PDF author: 'VIAC'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+Email info@viac.ch
+Phone 0800 80 40 40
+Contract X.XXX.XXX.XXX Mr
+Portfolio X.XXX.XXX.XXX.XX Max Muster
+Musterstrasse 1
+8000 Zürich
+Basel, 25.02.2021
+Dividend Payment
+We have booked the following dividend payment for you:
+Type of dividend: Refund withholding tax
+1.841 Qty CSIF Europe ex CH
+ISIN: CH0037606552
+Dividend payment: CHF 9.38
+Amount CHF 17.28
+ 
+Amount credited: Value date 25.02.2021 CHF 17.28
+S. E. & O.
+Kind regards
+Terzo Pension Foundation
+Display without signature

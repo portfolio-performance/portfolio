@@ -1,0 +1,36 @@
+﻿PDF Autor: 'User'
+PDFBox Version: 1.8.16
+-----------------------------------------
+VR-Bank Erding eG · Zollnerstraße 4 · 85435 Erding    
+Depotnummer 12345678
+ 
+ Kundennummer 123456789
+Vorname und Vorname Name
+ Abrechnungsnr. 67305449999
+Vorname und Vorname Name Datum 22.06.2021
+Gustav-Pauli-Platz 6 Ihr Berater Herr Vorname Name
+04711 Bremen Telefon 0999 299-9999      
+Telefax 08122 200-50             
+ 
+Ertragsgutschrift nach § 27 KStG
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 250 FREENET AG DE000A0Z2ZZ5 (A0Z2ZZ)
+NAMENS-AKTIEN O.N.
+Zahlbarkeitstag 23.06.2021 Ertrag  pro Stück 1,65 EUR
+Bestandsstichtag 18.06.2021
+Ex-Tag 21.06.2021
+Geschäftsjahr 01.01.2020 - 31.12.2020
+Dividendengutschrift nach § 27 KStG 412,50+ EUR
+Ausmachender Betrag 412,50+ EUR
+Lagerstelle CBF w/7268 w/DZ Bank (600502 / 72680000)
+Den Betrag buchen wir mit Wertstellung 23.06.2021 zu Gunsten des Kontos 1234567 (IBAN DE37 1234 9605 0007 1234
+30), BLZ 701 696 05 (BIC GENODEF1XYZ). 
+Keine Steuerbescheinigung. 
+Es handelt sich bei der Ausschüttung um Leistungen aus dem steuerlichen Einlagekonto der Kapitalgesellschaft (§27 Abs.
+1-7 KStG). Dieser Ertrag unterliegt laut Gesetz zum Zeitpunkt des Zuflusses keinem Steuerabzug und ist
+einkommensteuerfrei. Er mindert jedoch im Nachhinein den Kaufkurs der bezogenen Aktie, so dass bei deren Verkauf
+möglicherweise ein entsprechend höherer Kursgewinn zu versteuern ist. 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+6352.06230101.0000020ER01
+

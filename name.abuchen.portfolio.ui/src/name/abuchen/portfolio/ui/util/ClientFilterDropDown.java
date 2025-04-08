@@ -19,23 +19,15 @@ public final class ClientFilterDropDown extends DropDown implements IMenuListene
     public ClientFilterDropDown(Client client, IPreferenceStore preferences, String prefKey,
                     Consumer<ClientFilter> listener)
     {
-        super(Messages.MenuChooseClientFilter, Images.FILTER_OFF, SWT.NONE);
+        super(Messages.MenuChooseClientFilter, Images.GROUPEDACCOUNTS, SWT.NONE);
         setMenuListener(this);
 
         this.menu = new ClientFilterMenu(client, preferences, listener);
-        this.menu.addListener(filter -> setImage(menu.hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF));
+        this.menu.addListener(filter -> setImage(
+                        menu.hasActiveFilter() ? Images.GROUPEDACCOUNTS_ON : Images.GROUPEDACCOUNTS));
 
-        String selection = preferences.getString(prefKey + ClientFilterMenu.PREF_KEY_POSTFIX);
-        if (selection != null)
-        {
-            this.menu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny().ifPresent(item -> {
-                this.menu.select(item);
-                setImage(menu.hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF);
-            });
-        }
-
-        addDisposeListener(e -> preferences.putValue(prefKey + ClientFilterMenu.PREF_KEY_POSTFIX,
-                        this.menu.getSelectedItem().getUUIDs()));
+        menu.trackSelectedFilterConfigurationKey(prefKey);
+        setImage(menu.hasActiveFilter() ? Images.GROUPEDACCOUNTS_ON : Images.GROUPEDACCOUNTS);
     }
 
     @Override
@@ -52,5 +44,10 @@ public final class ClientFilterDropDown extends DropDown implements IMenuListene
     public boolean hasActiveFilter()
     {
         return menu.hasActiveFilter();
+    }
+
+    public ClientFilterMenu getClientFilterMenu()
+    {
+        return menu;
     }
 }

@@ -1,0 +1,43 @@
+PDF Autor: 'Deutsche Postbank AG'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postbank Köln · 51222 Köln    
+Depotnummer
+ 123456789
+ Kundennummer 987654321
+VN NN VN NN
+ Abrechnungsnr. 56024913320
+Frau und Herrn Datum 01.03.2021
+VN NN und
+VN NN
+Strasse. Hs#
+PLZ Ort
+                                                        
+                                                        
+                                                         
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 20 INFINEON TECHNOLOGIES AG DE0006231004 (623100)
+NAMENS-AKTIEN O.N.
+Zahlbarkeitstag 02.03.2021 Dividende pro Stück 0,22 EUR
+Bestandsstichtag 25.02.2021
+Ex-Tag 26.02.2021
+Geschäftsjahr 01.10.2019 - 30.09.2020
+Dividendengutschrift 4,40+ EUR
+Kapitalertragsteuerpflichtige Dividende 4,40 EUR
+Verrechneter Sparer-Pauschbetrag 4,40 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 4,40+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir mit Wertstellung 02.03.2021 zu Gunsten des Kontos 123456789 (IBAN DExx xxxx xxxx xxxx xxxx
+xx), BLZ xxx xxx xx (BIC PBNKDEFFXXX). 
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2021 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien Sonstige
+Pauschbetrag Quellensteuer
+Nachher xx,xx 0,00 x.xxx,xx 0,00 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+0860.03020101.0007518ER01

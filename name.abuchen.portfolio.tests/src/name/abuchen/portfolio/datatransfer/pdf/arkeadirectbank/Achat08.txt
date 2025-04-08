@@ -1,0 +1,29 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+AVIS D'OPÉRATIONS M psoLzj xnXEQSb
+Au 10 mars 2025 80 pBI wGRnFCDq
+81255 JzakoWeW
+VOTRE COMPTE PEA N° 204616186309 M IbhJRS AKgeBWR
+Date
+opération Désignation Débit Crédit
+¢ TRACKER : IS.MSCI WLD SW.PEA UC.ETF EUR (IE0002XZSHO1)
+10-03-2025 Référence 00F2012613550101
+09:04:13 Sens Achat - Exécution unique
+Modalité A la meilleure limite
+Marché Comptant
+Lieu d'exécution EURONEXT PARIS
+Quantité 1 450 Cours 5,4941 €
+Montant Brut 7 966,45 €
+Courtage et Commission 27,88 €
+Montant NET 7 994,33 € 7 994,33 €
+Sous réserve de bonne fin.
+Lorsqu'elle s'applique, l'exonération de TVA relève de l'article 261 C du CGI.
+Sous réserve de son application à la présente transaction, la Taxe sur les Transactions Financières prévue par l'article 235 ter ZD du
+CGI est prélevée sur votre compte espèces et fait l'objet d'un avis récapitulatif spécifique.
+Duplicata Internet
+Page 1/1
+Fortuneo est une marque commerciale d'Arkéa Direct Bank. Arkéa Direct Bank, Société Anonyme à Directoire et Conseil de Surveillance
+au capital de 89 198 952 euros. RCS Nanterre 384 288 890. Siège social : Tour Trinity - 1bis, place de la Défense 92400 Courbevoie.
+Courtier en assurance n°ORIAS 07 008 441. Adresse postale : Fortuneo - Service Clients - TSA41707 - 35917 RENNES CEDEX 9.

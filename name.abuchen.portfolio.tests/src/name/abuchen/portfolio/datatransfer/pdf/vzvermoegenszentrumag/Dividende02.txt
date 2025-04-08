@@ -1,0 +1,33 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+VZ Depotbank AG
+Innere Güterstrasse 2
+6300 Zug
+058 411 88 88
+contact@vzdepotbank.ch
+www.vzdepotbank.ch
+CHE-116.326.867 MWST
+e-Dokument
+Herr Ver Portfolio Anlageberatung
+Max Mustermann Depot DB TF 123.456.78.500 / CHF
+Musterstrasse 12
+1234 Musterstadt
+Zug, 27.04.2023 Unsere Referenz CA20236723/50692    / PJD
+Dividende
+Sehr geehrter Herr Mustermann
+Wir beziehen uns auf die in Ihrem Wertschriftendepot verwahrten Titel und rechnen die Dividende wie folgt ab:
+Namen-Aktie Ex Datum: 25.04.2023
+Calida Holding AG Zahlbar Datum: 27.04.2023
+Valor: 12663946
+ISIN: CH0126639464
+Bestand: 20 zu CHF 0.60
+Brutto CHF 12.00
+Verrechnungssteuer 35% CHF -4.20
+Netto CHF 7.80
+Unsere Gutschrift erfolgt auf Konto 123.456.78.100 per 27.04.2023
+Eingang vorbehalten
+Freundliche Grüsse
+VZ Depotbank AG
+Anzeige ohne Unterschrift
+3425234 | 77653066682356 | 4597 Seite 1 / 1

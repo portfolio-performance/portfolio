@@ -1,0 +1,24 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.4.qualifier
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Vorname Nachname SEITE 1 von 1
+Straße 1 DATUM 03.11.2023
+12345 Ort DEPOT 0000000000
+SPIN-OFF
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+1 Einbuchung Net Lease Office Properties 2,564 Stk.
+Registered Shares DL -,001
+US64110Y1082
+Net Lease Office Properties Registered Shares DL -,001 in Wertpapierrechnung in Deutschland.
+Lagerland: Vereinigte Staaten
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
+DUAN / 18.10.2023 / 21882037 / 9d89-cd4b
+
+```

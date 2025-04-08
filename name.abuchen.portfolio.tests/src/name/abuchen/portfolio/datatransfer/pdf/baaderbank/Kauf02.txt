@@ -1,0 +1,43 @@
+Seite 1/1
+Unterschleißheim, 22.03.2017
+T 00800 00 222 337*
+Scalable Capital Vermögensverw.GmbH
+F +49 89 5150 2442
+Prinzregentenstr. 48 service@baaderbank.de
+80538 München Maximiliane Musterfrau
+Stamm-Nr.: 12345    Portfolio: 1
+Depot-Nr.: 0012345001
+Vorgangs-Nr.: 1234567
+Referenz-Nr.: 12345678
+Wertpapierabrechnung: Kauf KOPIE
+Auftragsdatum: 20.03.2017 Beauftragter Ausführungsplatz: XETRA
+Nominale ISIN: DE000A1C22M3 WKN: A1C22M Kurs 
+STK 70 HSBC S&P 500 UCITS ETF EUR 22,13500216
+Bearer Shares (Dt. Zert.) o.N.
+Auftraggeber: ext.Vermögensverw.
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 1.549,45
+Provision EUR 1,55
+Zu Lasten Konto 12345004 Valuta: 22.03.2017 EUR 1.551,00
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung:
+Handelsdatum Handelsuhrzeit
+20.03.2017 14:59:17:00
+Verwahrart: Girosammelverwahrung
+Lagerstelle: 100
+Lagerland: Deutschland
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Bitte prüfen Sie diese Auftragsbestätigung/Abrechnung auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese 
+Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden.
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank 
+erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537 
+Weihenstephaner Straße 4 F +49 89 5150 2442 Dieter Brichmann (stv. Vorsitzender), Sitz der Gesellschaft: Unterschleißheim 
+85716 Unterschleißheim service@baaderbank.de Christian Bacherl, Oliver Riedel StNr. 143/107/04009 
+Deutschland www.baaderbank.de Vorsitzender des Aufsichtsrates: USt-IdNr. DE114123893
+Dr. Horst Schiessl
+* Kostenfreie Telefonnummer (ohne Ländervorwahl)  aus dem deutschen und internationalen Festnetz, 
+abweichende Preise für Anrufe aus dem Mobilfunknetz möglich. WPABRECHNUNG-025.102

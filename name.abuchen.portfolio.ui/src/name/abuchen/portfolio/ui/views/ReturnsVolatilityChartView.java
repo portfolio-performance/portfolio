@@ -5,10 +5,11 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.function.ToDoubleFunction;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -24,9 +25,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.swtchart.IAxis;
-import org.swtchart.ILineSeries;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.ILineSeries.PlotSymbolType;
 
 import com.google.common.collect.Lists;
 
@@ -39,10 +39,17 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.ScatterChart;
 import name.abuchen.portfolio.ui.util.chart.ScatterChartCSVExporter;
+import name.abuchen.portfolio.ui.util.format.AxisTickPercentNumberFormat;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
 import name.abuchen.portfolio.util.Interval;
 
 public class ReturnsVolatilityChartView extends AbstractHistoricView
@@ -126,7 +133,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
             manager.add(new LabelOnly(Messages.LabelPerformanceMetric));
 
-            Action ttwror = new SimpleAction(Messages.ColumnTWROR, a -> {
+            Action ttwror = new SimpleAction(Messages.ColumnTTWROR, a -> {
                 this.useIRR = false;
 
                 IAxis yAxis = chart.getAxisSet().getYAxis(0);
@@ -186,17 +193,18 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
         xAxis.getTitle().setText(this.riskMetric.toString());
-        xAxis.getTick().setFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
+        xAxis.getTick().setFormat(new AxisTickPercentNumberFormat("0.##%")); //$NON-NLS-1$
 
         IAxis yAxis = chart.getAxisSet().getYAxis(0);
         yAxis.getTitle().setText(useIRR ? Messages.LabelPerformanceIRR : Messages.LabelPerformanceTTWROR);
-        yAxis.getTick().setFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
+        yAxis.getTick().setFormat(new AxisTickPercentNumberFormat("0.##%")); //$NON-NLS-1$
 
         configurator = new DataSeriesConfigurator(this, DataSeries.UseCase.RETURN_VOLATILITY);
         configurator.addListener(this::updateChart);
         configurator.setToolBarManager(getViewToolBarManager());
 
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, configurator);
+        legend.addSelectionChangedListener(e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
 
         updateTitle(Messages.LabelHistoricalReturnsAndVolatiltity + " (" + configurator.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         chart.getTitle().setText(getTitle());
@@ -208,6 +216,17 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         setChartSeries();
 
         return composite;
+    }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(HistoricalPricesPane.class));
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
     }
 
     @Override
@@ -239,7 +258,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
             chart.suspendUpdate(true);
             chart.getTitle().setText(getTitle());
-            for (ISeries s : chart.getSeriesSet().getSeries())
+            for (var s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             setChartSeries();
@@ -258,17 +277,25 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         Interval interval = getReportingPeriod().toInterval(LocalDate.now());
 
         Lists.reverse(configurator.getSelectedDataSeries()).forEach(series -> {
+
+            if (!series.isVisible())
+                return;
+
             PerformanceIndex index = cache.lookup(series, interval);
 
             double risk = this.riskMetric.getRisk(index);
             double retrn = this.useIRR ? index.getPerformanceIRR() : index.getFinalAccumulatedPercentage();
 
-            ILineSeries lineSeries = chart.addScatterSeries(new double[] { risk }, new double[] { retrn },
+            if (Double.isInfinite(risk) || Double.isInfinite(retrn))
+                return;
+
+            var lineSeries = chart.addScatterSeries(series.getUUID(), new double[] { risk }, new double[] { retrn },
                             series.getLabel());
 
             Color color = resources.createColor(series.getColor());
             lineSeries.setLineColor(color);
             lineSeries.setSymbolColor(color);
+            lineSeries.setSymbolType(series.isBenchmark() ? PlotSymbolType.DIAMOND : PlotSymbolType.CIRCLE);
             lineSeries.enableArea(series.isShowArea());
             lineSeries.setLineStyle(series.getLineStyle());
         });

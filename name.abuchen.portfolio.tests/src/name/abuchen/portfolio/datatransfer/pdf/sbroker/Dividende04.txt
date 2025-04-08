@@ -1,0 +1,50 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+~$~|ER03|265484||||||||ERTRAEGE.D220103.AFP||||20220103||4127|0000|||||~$~
+S Broker AG & Co. KG ´ Postfach 90 01 50 ´ 39133 Magdeburg Seite 1
+Depotnummer 
+Abrechnungsnr. 
+Datum 03.01.2022
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 250 GLADSTONE COMMERCIAL CORP. US3765361080 (260884)
+REGISTERED SHARES DL -,01
+Zahlbarkeitstag 31.12.2021 Ausschüttung pro St. 0,125275000 USD
+Bestandsstichtag 21.12.2021 Herkunftsland USA
+Ex-Tag 22.12.2021
+Geschäftsjahr 01.10.2021 - 30.09.2022
+Devisenkurs EUR / USD 1,1396
+Devisenkursdatum 03.01.2022
+Ausschüttung 31,32 USD 27,48+ EUR
+Einbehaltene Quellensteuer 15 % auf 31,32 USD 4,12- EUR
+Anrechenbare Quellensteuer pro Stück 0,01879125 USD 4,70 USD
+Kapitalertragsteuerpflichtiger Ertrag 31,32 USD
+Umrechnung in EUR 27,48 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 4,12 EUR 16,48 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 11,00 EUR
+Kapitalertragsteuer 24,51 % auf 11,00 EUR 2,70- EUR
+Solidaritätszuschlag 5,5 % auf 2,70 EUR 0,14- EUR
+Kirchensteuer 8 % auf 2,70 EUR 0,21- EUR
+Ausmachender Betrag 20,31+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Jahressteuerbescheinigung folgt.
+Bitte ggf. Rückseite beachten.
+5500.01032142.0010225ER03
+SBRO_ER03_v10.7P.ERTRAEGE.D220103.AFP_4127
+
+Seite 2
+Depotnummer 
+Abrechnungsnr. 
+Datum 03.01.2022
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2021 ohne Vorjahressaldo Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 247,54
+Ertrag 4,12
+0,00 0,00 0,00 4,12- 11,00
+Nachher 0,00 0,00 0,00 0,00 258,54
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+5500.01032142.0010226ER03

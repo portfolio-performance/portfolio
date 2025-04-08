@@ -1,0 +1,59 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.66.2
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Smartbroker AG
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Ritterstraße 11
+10969 Berlin
+Seite 1/2
+Berlin
+Max Mustermann 01.12.2023
+Teststraße 1
+Max Mustermann
+12345 Teststadt Stamm-Nr.: 1234500    Portfolio: 1
+Depot-Nr.: 1234500001
+Vorgangs-Nr.: 20483837
+Referenz-Nr.: 486345059
+Fondsausschüttung
+Ex-Tag: 16.11.2023
+Nominale ISIN: IE00B1XNHC34 WKN: A0MW0M Ausschüttung
+STK 140 iShsII-Gl.Clean Energy U.ETF USD 0,0447 p.STK
+Registered Shares o.N.
+Zahlungszeitraum: 01.11.2023 - 31.10.2024 
+Zahltag: 29.11.2023
+Umrechnungskurs: EUR/USD 1,0980000
+Bruttobetrag USD 6,26
+Zu Gunsten Konto 1234500031 Valuta: 29.11.2023 USD 6,26
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de DCUP-055.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Fondsausschüttung
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Ausschüttung Mischfonds nach Teilfreistellung
+Allgemeiner Verlusttopf (VVT) EUR 394,00 EUR 4,85 - EUR 389,15
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Ausschüttung Mischfonds vor Teilfreistellung EUR 5,70 EUR 5,70
+Ausschüttung Mischfonds nach Teilfreistellung EUR 4,85 EUR 0,00
+Bemessungsgrundlage zur Kapitalertragsteuer EUR 4,85 EUR 0,00
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+smartbrokerplus.de
+Brauchen Sie Unterstützung? Dann kontaktieren Sie bitte den Service von SMARTBROKER+ über das Kontaktformular in der SMARTBROKER+ App.
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de DCUP-055.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.

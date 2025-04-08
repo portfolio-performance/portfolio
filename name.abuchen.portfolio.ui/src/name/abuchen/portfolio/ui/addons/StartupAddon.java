@@ -2,15 +2,19 @@ package name.abuchen.portfolio.ui.addons;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
@@ -38,7 +42,6 @@ import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
 import name.abuchen.portfolio.ui.util.RecentFilesCache;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 
-@SuppressWarnings("restriction")
 public class StartupAddon
 {
     private static final class UpdateExchangeRatesJob extends Job
@@ -68,7 +71,21 @@ public class StartupAddon
 
             updateOnline(monitor);
 
-            schedule(1000L * 60 * 60 * 12); // every 12 hours
+            // schedule to run at 17 CET because the reference rates are
+            // "usually updated at around 16:00 CET every working day"
+            // or within in 6 hours in case that is sooner
+
+            ZonedDateTime nowInTimeZone = ZonedDateTime.now();
+            ZoneId cet = ZoneId.of("CET"); //$NON-NLS-1$
+            ZonedDateTime nowInCET = nowInTimeZone.withZoneSameInstant(cet);
+            ZonedDateTime nextCET17 = nowInCET.toLocalDate().atTime(17, 0).atZone(cet);
+            if (nowInCET.isAfter(nextCET17))
+                nextCET17 = nextCET17.plusDays(1);
+
+            long millisUntilNextCET17 = ChronoUnit.MILLIS.between(nowInCET, nextCET17);
+            var sixHours = 1000L * 60 * 60 * 6;
+
+            schedule(millisUntilNextCET17 > 0 && millisUntilNextCET17 < sixHours ? millisUntilNextCET17 : sixHours);
 
             return Status.OK_STATUS;
         }
@@ -132,7 +149,7 @@ public class StartupAddon
     public void checkForUpdates(@UIEventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) Event event, // NOSONAR
                     @Preference(value = UIConstants.Preferences.AUTO_UPDATE) boolean autoUpdate)
     {
-        if (autoUpdate)
+        if (autoUpdate && UpdateHelper.isInAppUpdateEnabled())
         {
             Job job = new Job(Messages.JobMsgCheckingForUpdates)
             {
@@ -155,7 +172,7 @@ public class StartupAddon
 
             };
             job.setSystem(true);
-            job.schedule(500);
+            job.schedule(3000);
         }
     }
 
@@ -188,6 +205,10 @@ public class StartupAddon
     @PostConstruct
     public void setMultipleWindowImages()
     {
+        // do not update on macOS b/c ICNS file contains all images
+        if (Platform.OS_MACOSX.equals(Platform.getOS()))
+            return;
+
         // setting window images
         // http://www.eclipse.org/forums/index.php/t/440442/
 

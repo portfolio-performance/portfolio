@@ -1,0 +1,44 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.2
+-----------------------------------------
+LGT Bank (Schweiz) AG
+Glärnischstrasse 36, Postfach, CH-8027 Zürich
+Tel. +41 44 250 81 81
+lgt.ch@lgt.com, www.lgt.ch, BIC BLFLCHBB
+CHE-109.346.830 MWST
+Securities dealer no. 647613
+____________________
+P.P. Post CH AG_____C_H__-_8_0_2_7_ _Z_ü_r_ic_h_  PF 1909 A -PRIORITY_________________________________________________
+Liberty Freizügigkeitsstiftung 
+bei Liberty Vorsorge AG 
+Postfach 733 
+6431 Schwyz
+1 / 1
+Zürich, 26. Juli 2023
+ 
+Abrechnung Kauf Portfolio: 1234457.000
+Auftragsnummer: 212706117 Kundenportfolio
+Kunde: Liberty Freizügigkeitsstiftung XX - 1.1001.4567-01
+Titel Roche Holding AG
+Inhaber-Genussschein
+ISIN CH0012032048
+Valorennummer 1203204
+Wertpapierkennnummer 855167
+Abschlussdatum 26.07.2023
+Ausführungsplatz SIX Swiss Exchange, börslich
+Auftragstyp Bestens
+Anzahl 40 Stück
+Kurs CHF 273.05
+Kurswert CHF 10'922.00
+Eidg. Umsatzabgabe  CHF 8.19
+SIX Börsengebühr  CHF 1.24
+SIX Meldegebühr  CHF 0.20
+Belastung CHF Freizügigkeitskonto 2026457.031 CHF 10'931.63
+Valuta 28.07.2023
+Wir haben die Titel in das oben genannte Depot eingebucht.
+Die Gutschrift im oben erwähnten Depot erfolgt vorbehaltlich der effektiven Lieferung.
+Dieser Auftrag wurde als Gruppenauftrag ausgeführt.
+Weitere Details zum durchgeführten Auftrag stellen wir Ihnen auf Anfrage gerne zur Verfügung.
+2026457 00A T ZH I TRD1001 39509429 12:10 26.07.2023 %Media:XML-A4H
+____
+____

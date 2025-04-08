@@ -1,0 +1,31 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+<Filialstadt>
+F i l n r . : 111
+D e p o t n r . : 111000111
+1 1 0 0 1 0 0 1 BLZ: 111 111 11
+H e r r n
+V o r n a m e 1 V o r n a m e 2 N a c h n a m e
+S t r a s s e N r . 2 4
+1 1 1 1 1 M u s t e r s t a d t
+10.02.2020
+Gutschrift fälliger Wertpapier-Erträge
+D i v i d e n d e n g u t s c h r i f t
+Depo tbes tand W e r t p a p i e r - B e z e i c h n u n g WKN/ISIN
+p e r 0 5 . 0 2 . 2 0 2 0 Siemens AG 723610
+STK 5 0 0 , 0 0 0 Namens-Aktien o . N . DE0007236101
+E m i s s i o n s l a n d : DEUTSCHLAND
+EUR 3 , 9 0 D i v i d e n d e p r o S t ü c k f ü r G e s c h ä f t s j a h r 0 1 . 1 0 . 1 8 b i s 3 0 . 0 9 . 1 9
+z a h l b a r ab 1 0 . 0 2 . 2 0 2 0
+Abrechnung D i v i d e n d e n g u t s c h r i f t
+B r u t t o b e t r a g : EUR 1 . 9 5 0 , 0 0
+Ve r rechnung ü b e r Kon to ( I B A N ) V a l u t a Zu I h r e n Gunsten v o r S t e u e r n
+DE11 1111 0000 0101 0201 11 EUR 1 0 . 0 2 . 2 0 2 0 EUR 1 . 9 5 0 , 0 0
+I n f o r m a t i o n z u r s t e u e r l i c h e n Behand lung d i e s e s G e s c h ä f t s v o r g a n g e s und den a u f
+I h r e m Kon to gebuch ten E n d b e t r a g f i n d e n S i e a u f d e r s e p a r a t e n S t e u e r m i t t e i l u n g
+( R e f e r e n z - N r . 1X1XX1XXXXX00111).
+C O M M E R Z B A N K
+A k t i e n g e s e l l s c h a f t
+*Diese Abrechnung wird von der Bank nicht unterschrieben
+DD762/11/09

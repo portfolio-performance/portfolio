@@ -1,0 +1,38 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.2
+-----------------------------------------
+Kauf
+Referenz O:000745405:1
+Herrn
+Vorname Nachname Datum 20.08.2010
+Straße Depot 6017439440Nachname, Vorname
+PLZ Ort
+Betreuer Betreuer-Nachname, Betreuer-Vorname
+Abteilung Honorarberater
+ 
+Telefon +49 (0) 911 249 299 10
+ E-Mail Betreuer-Vorname.Betreuer-Nachname@quirinbank.de
+ 
+Nominal/Stück Hewlett-Packard Co. Registered Shares DL -,01
+ST 150 ISIN US4282361033
+Abrechnungskonditionen Abrechnungswerte
+Kurs 39,99667 USD Kurswert -5.999,50 USD -4.734,08 EUR 
+Ausführungsplatz New York Stock Exchange Courtage *  0,00 EUR
+Handelstag/-zeit 20.08.2010 15:46:50 Bank-Provision  0,00 EUR
+Verwahrart Wertpapierrechnung Abwickl.Gebühr *  0,00 EUR
+Lagerland USA Aktien/Renten Spesen * -20,00 USD -15,78 EUR
+Devisenkurs  1,267300
+Ursprüngl. Handelstag 20.08.2010   15:46:50
+Valuta 25.08.2010
+* Fremde Gebühren und Kosten
+Den Gesamtbetrag werden wir mit Valuta 25.08.2010 auf Ihrem Ausmachender Betrag -4.749,86 EUR
+Konto Konto/Depot-Nr. EUR buchen.
+Ausmachender Betrag -6.019,50 USD
+Die Ausführung der Order erfolgte auf ausdrückliche Weisung des Kunden.
+quirin bank AG Telefon +49 (0) 30 89 021-300 Aufsichtsratsvorsitzender: Vorstand:
+Kurfürstendamm 119 - 10711 Berlin Telefax +49 (0) 30 89 021-321 Holger Timm Karl Matthäus Schmidt
+Postfach 311105 - 10641 Berlin BLZ 10110600 Johannes Eismann
+Gerichtsstand: Berlin USt-Id. DE 1956 61729 Klaus-Gerd Kleversaat
+Handelsregister: Berlin-Charlottenb., HR B 87859 BIC BEFFDEB1XXX Stefan Spannagl
+Internet www.quirinbank.de
+ABR_WPA_E  0000#6767669580#0000026624  VJ2588847   (10)  V 1.24

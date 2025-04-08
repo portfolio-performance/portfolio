@@ -1,0 +1,48 @@
+PDF Autor: 'ING-DiBa'
+PDFBox Version: 1.8.16
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: ###################
+###### Direkt-Depot Nr.: ###########
+############ Datum: 04.03.2021
+########### Seite: 1 von 2
+###########
+Dividendengutschrift
+ISIN (WKN) US4581401001 (855681)
+Wertpapierbezeichnung Intel Corp.
+Registered Shares DL -,001
+Nominale 250,00 Stück
+Zins-/Dividendensatz 0,3475 USD
+Ex-Tag 04.02.2021
+Zahltag 01.03.2021
+Brutto USD 86,88
+QuSt 15,00 % (EUR 10,73) USD 13,03
+Zwischensumme USD 73,85
+Umg. z. Dev.-Kurs (1,214228) EUR 60,82
+Gesamtbetrag zu Ihren Gunsten EUR 60,82
+Abrechnungs-IBAN ###########
+Valuta 01.03.2021
+Quellensteuer laut Doppelbesteuerungsabkommen (DBA).
+Jahressteuerbescheinigung folgt.
+Weitere steuerliche Informationen entnehmen Sie bitte der Rückseite.
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzender des Aufsichtsrates: Dr. Claus Dieter Hoffmann · Vorstand: Nick Jue (Vorsitzender),
+Dr. Joachim von Schorlemer (stellv. Vorsitzender), Zeljko Kaurin, Sigrid Kozmiensky, Daniel Llano Manibardo, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main
+HRB 7727, Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+Depotinhaber: ###########
+Direkt-Depot Nr.: ###########
+Datum: 04.03.2021
+Seite: 2 von 2
+ISIN (WKN) US4581401001 (855681)
+Anrechenbare ausländische Quellensteuer ###########
+KapSt-pflichtiger Kapitalertrag ###########
+Mit Verrechnungstopf ausländ. Quellenst. verrechnet -###########
+Bemessungsgrundlage für KapSt vor QuSt ###########
+Auf Kapitalertrag angerechn. ausl. QuSt ###########
+Verrechnungstopf Allgemein vor Ertrag ###########
+Verrechnungstopf Allgemein nach Ertrag ###########
+Sparer-Pauschbetrag vor Ertrag ###########
+Sparer-Pauschbetrag nach Ertrag ###########
+Verrechnungstopf ausländ. Quellenst. vor Ertrag ###########
+Verrechnungstopf ausländ. Quellenst. nach Ertrag ###########
+Bei Fragen besuchen Sie uns einfach unter www.ing.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing.de .

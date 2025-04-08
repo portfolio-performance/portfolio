@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 1234567890 - TRADING
+IBAN: CH12345678901234567890
+Herrn Manfred Mutermann
+Musterstrasse 3
+012345 Musterhausen
+Gland, 25.03.2024
+Derivatetransaktion: Buy to open Unsere Referenz: 539850276 
+Gemäss Ihrem Kaufauftrag vom 25.03.2024 haben wir folgende Transaktionen vorgenommen:
+Bezeichnung Anzahl Kontraktwährung Preis
+QQQ MAY24 460C 5.00 USD 6.27
+Kontraktgrösse Multiplikator Ausübungspreis Fälligkeit Börsenplatz
+100 100 460 17.05.2024 International Securities
+Exchange
+Wir haben die folgenden Beträge auf Ihrem Konto verbucht:
+Kontonummer 1234567890
+Valutadatum 26.03.2024
+Total USD 3'135.00
+Börsengebühren USD 2.25
+Bruttobetrag USD 3'137.25
+Kommission Swissquote Bank AG USD 7.50
+Total belastet USD 3'144.75
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland  Formular ohne Unterschrift | SE&O.
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+CHE-116.310.079 MwSt

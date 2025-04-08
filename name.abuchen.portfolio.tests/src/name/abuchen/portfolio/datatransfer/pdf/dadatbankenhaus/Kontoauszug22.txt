@@ -1,0 +1,24 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+Schelhammer Capital Bank AG vom 15.11.2021
+60003
+Kundennummer
+Alter Saldo per 28.10.2021 5.633,33
+Summe der Gutschriften 0,00
+Summe der Lastschriften 2.500,00-
+Schelhammer , PF 1000, 5021 Salzburg
+Neuer Saldo zu Ihren Gunsten
+Max Mustermann EUR 3.133,33
+Dorfstraße 17/11
+1010 Dorf
+Konto-Nr.: 00078060002 Bankleitzahl: 19190
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+15.11 UMBUCHUNG   INTERNET AM 2021-11-15 15.11 2.500,00-
+AT801919000055100000/Max Mustermann
+Transfer
+Neuer Saldo zu Ihren Gunsten 3.133,33
+AT40 1919 0000 7806 0002 BSSWATWW 01 0035 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 16113 Doknr.: EK00-045-0319007713

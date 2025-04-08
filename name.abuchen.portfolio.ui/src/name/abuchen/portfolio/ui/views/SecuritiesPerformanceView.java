@@ -1,30 +1,41 @@
 package name.abuchen.portfolio.ui.views;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.FontDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -32,142 +43,577 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.Control;
 
-import com.ibm.icu.text.MessageFormat;
-
+import name.abuchen.portfolio.model.Adaptable;
+import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.SecurityPosition;
-import name.abuchen.portfolio.snapshot.filter.ClientFilter;
-import name.abuchen.portfolio.snapshot.security.CalculationLineItem;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
-import name.abuchen.portfolio.snapshot.trades.TradeCollector;
-import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
+import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.trail.Trail;
+import name.abuchen.portfolio.snapshot.trail.TrailProvider;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
+import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu.Item;
 import name.abuchen.portfolio.ui.util.DropDown;
-import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
-import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.ui.util.swt.SashLayout;
-import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
+import name.abuchen.portfolio.ui.util.viewers.ClientFilterColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
-import name.abuchen.portfolio.ui.util.viewers.MoneyTrailToolTipSupport;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.ToolTipCustomProviderSupport;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.DividendPaymentColumns;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
+import name.abuchen.portfolio.ui.views.panes.CalculationLineItemPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class SecuritiesPerformanceView extends AbstractListView implements ReportingPeriodListener
+/**
+ * @implNote The RowElement separates aggregate rows from the security rows. The
+ *           columns must be able to handle row elements, EXCEPT for the sorter.
+ *           The sorter must handle LazySecurityPerformanceRecord (and is
+ *           centrally wrapped to handle the RowElement).
+ */
+public class SecuritiesPerformanceView extends AbstractFinanceView implements ReportingPeriodListener
 {
+    /**
+     * Enables aggregate operations (sum) on a list of records.
+     */
+    private static class AggregateRow
+    {
+        private final List<LazySecurityPerformanceRecord> records;
+        private final Map<Security, LazySecurityPerformanceRecord> security2record;
+
+        public AggregateRow(List<LazySecurityPerformanceRecord> records)
+        {
+            this.records = records;
+            this.security2record = records.stream().collect(Collectors.toMap(r -> r.getSecurity(), r -> r));
+        }
+
+        public List<LazySecurityPerformanceRecord> getRecords()
+        {
+            return records;
+        }
+
+        public LazySecurityPerformanceRecord getRecord(Security security)
+        {
+            return security2record.get(security);
+        }
+
+        public Money sum(String currencyCode, Function<LazySecurityPerformanceRecord, Money> value)
+        {
+            var sum = MutableMoney.of(currencyCode);
+
+            for (var r : records)
+            {
+                var v = value.apply(r);
+                if (v != null)
+                    sum.add(v);
+            }
+
+            return sum.toMoney();
+        }
+
+        public Integer sum(ToIntFunction<LazySecurityPerformanceRecord> value)
+        {
+            var sum = 0;
+
+            for (var r : records)
+            {
+                var v = value.applyAsInt(r);
+                sum += v;
+            }
+
+            return sum;
+        }
+    }
+
+    /**
+     * Extends the aggregate row with a) caching of computed snapshots as
+     * derived aggregate rows and b) caching of the filtered aggregate rows. The
+     * two level of caching are needed in order to not compute all records only
+     * because the display predicate changed.
+     */
+    private class Model extends AggregateRow
+    {
+        private static final String TOP = SecuritiesPerformanceView.class.getSimpleName() + "@top"; //$NON-NLS-1$
+        private static final String BOTTOM = SecuritiesPerformanceView.class.getSimpleName() + "@bottom"; //$NON-NLS-1$
+
+        private final Map<String, AggregateRow> filter2aggregates = new HashMap<>();
+        private final Map<String, AggregateRow> predicate2cache = new HashMap<>();
+
+        private boolean hideTotalsAtTheTop;
+        private boolean hideTotalsAtTheBottom;
+
+        public Model(LazySecurityPerformanceSnapshot snapshot)
+        {
+            super(snapshot.getRecords());
+
+            this.hideTotalsAtTheTop = getPreferenceStore().getBoolean(TOP);
+            this.hideTotalsAtTheBottom = getPreferenceStore().getBoolean(BOTTOM);
+        }
+
+        /**
+         * Invalidates the predicate cache.
+         */
+        public void invalidatePredicateCache()
+        {
+            predicate2cache.clear();
+        }
+
+        /**
+         * Returns the security performance records for a given filter. If the
+         * snapshot has not been computed yet, it is computed first.
+         */
+        private AggregateRow getAggregate(ClientFilterMenu.Item filterItem)
+        {
+            return filter2aggregates.computeIfAbsent(filterItem.getId(), id -> {
+                var filter = filterItem.getFilter();
+                var period = dropDown.getSelectedPeriod().toInterval(LocalDate.now());
+                var converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+                var snapshot = LazySecurityPerformanceSnapshot.create(filter.filter(getClient()), converter, period);
+                return new AggregateRow(snapshot.getRecords());
+            });
+        }
+
+        /**
+         * Returns the security performance records for a given filter and the
+         * current set of predicates applied to the view.
+         */
+        private AggregateRow getFilteredAggregate(ClientFilterMenu.Item filterItem)
+        {
+            return predicate2cache.computeIfAbsent(filterItem.getId(), id -> {
+
+                var aggregate = getAggregate(filterItem);
+
+                // remove records for which there is not corresponding record in
+                // the base set
+
+                List<LazySecurityPerformanceRecord> answer = new ArrayList<>();
+                loop: for (var r : aggregate.getRecords()) // NOSONAR
+                {
+                    var baseRecord = getRecord(r.getSecurity());
+                    if (baseRecord == null)
+                        continue loop;
+
+                    for (Predicate<LazySecurityPerformanceRecord> predicate : recordFilter)
+                    {
+                        if (!predicate.test(baseRecord))
+                            continue loop;
+                    }
+
+                    answer.add(r);
+                }
+
+                return new AggregateRow(answer);
+            });
+        }
+
+        /**
+         * Returns the security performance records filtered for the current set
+         * of predicates.
+         */
+        public AggregateRow getFilteredAggregate()
+        {
+            return predicate2cache.computeIfAbsent("$base$", id -> { //$NON-NLS-1$
+
+                if (recordFilter.isEmpty())
+                    return Model.this;
+
+                List<LazySecurityPerformanceRecord> answer = new ArrayList<>();
+                loop: for (var r : getRecords()) // NOSONAR
+                {
+                    for (Predicate<LazySecurityPerformanceRecord> predicate : recordFilter)
+                    {
+                        if (!predicate.test(r))
+                            continue loop;
+                    }
+
+                    answer.add(r);
+                }
+
+                return new AggregateRow(answer);
+            });
+        }
+
+        /**
+         * Retrieves the Security performance record for the given filter.
+         */
+        public LazySecurityPerformanceRecord getRecord(Security security, ClientFilterMenu.Item filterItem)
+        {
+            return getAggregate(filterItem).getRecord(security);
+        }
+
+        public boolean isHideTotalsAtTheTop()
+        {
+            return hideTotalsAtTheTop;
+        }
+
+        public void setHideTotalsAtTheTop(boolean hideTotalsAtTheTop)
+        {
+            this.hideTotalsAtTheTop = hideTotalsAtTheTop;
+            getPreferenceStore().setValue(TOP, hideTotalsAtTheTop);
+        }
+
+        public boolean isHideTotalsAtTheBottom()
+        {
+            return hideTotalsAtTheBottom;
+        }
+
+        public void setHideTotalsAtTheBottom(boolean hideTotalsAtTheBottom)
+        {
+            this.hideTotalsAtTheBottom = hideTotalsAtTheBottom;
+            getPreferenceStore().setValue(BOTTOM, hideTotalsAtTheBottom);
+        }
+
+        public List<RowElement> getRows()
+        {
+            var rows = new ArrayList<RowElement>();
+
+            if (!model.hideTotalsAtTheTop)
+                rows.add(new RowElement(model, -1));
+
+            model.getRecords().stream().map(r -> new RowElement(model, r)).forEach(rows::add);
+
+            if (!model.hideTotalsAtTheBottom)
+                rows.add(new RowElement(model, 1));
+
+            return rows;
+        }
+    }
+
+    /**
+     * Wrapper to distinguish between a security performance record and the
+     * aggregate rows.
+     */
+    private static class RowElement implements Adaptable, TrailProvider
+    {
+        /**
+         * The sortOrder is used to enable a stable sorting positioning for the
+         * aggregate rows (either on top or on the bottom or both).
+         */
+        private final int sortOrder;
+
+        private final Model model;
+        private final LazySecurityPerformanceRecord performanceRecord;
+
+        public RowElement(Model model, LazySecurityPerformanceRecord performanceRecord)
+        {
+            this.sortOrder = 0;
+            this.performanceRecord = performanceRecord;
+            this.model = model;
+        }
+
+        public RowElement(Model model, int sortOrder)
+        {
+            this.sortOrder = sortOrder;
+            this.performanceRecord = null;
+            this.model = model;
+        }
+
+        public int getSortOrder()
+        {
+            return sortOrder;
+        }
+
+        public boolean isRecord()
+        {
+            return performanceRecord != null;
+        }
+
+        @Override
+        public <T> T adapt(Class<T> type) // NOSONAR
+        {
+            if (type == BaseSecurityPerformanceRecord.class && isRecord())
+                return type.cast(performanceRecord);
+            else if (performanceRecord != null)
+                return performanceRecord.adapt(type);
+            else
+                return null;
+        }
+
+        @Override
+        public Optional<Trail> explain(String key)
+        {
+            if (performanceRecord == null)
+                return Optional.empty();
+            return performanceRecord.explain(key);
+        }
+    }
+
+    /**
+     * Comparator that compares row elements and delegates to the security
+     * performance record when necessary.
+     */
+    private static class RowElementComparator implements Comparator<Object>
+    {
+        private Comparator<Object> comparator;
+
+        public RowElementComparator(Comparator<Object> wrapped)
+        {
+            this.comparator = wrapped;
+        }
+
+        @Override
+        public int compare(Object o1, Object o2)
+        {
+            var a = (RowElement) o1;
+            var b = (RowElement) o2;
+
+            if (a.getSortOrder() != b.getSortOrder())
+            {
+                int direction = ColumnViewerSorter.SortingContext.getSortDirection();
+                return direction == SWT.UP ? a.getSortOrder() - b.getSortOrder() : b.getSortOrder() - a.getSortOrder();
+            }
+
+            return comparator.compare(a.performanceRecord, b.performanceRecord);
+        }
+    }
+
+    /**
+     * Label provider that is delegating to the underlying label provider that
+     * handles LazySecurityPerformnceRecord objects.
+     */
+    private class RowElementLabelProvider extends ColumnLabelProvider
+    {
+        private final ColumnLabelProvider recordLabelProvider;
+        private final Function<AggregateRow, String> aggregateLabelProvider;
+
+        public RowElementLabelProvider(ColumnLabelProvider recordLabelProvider,
+                        Function<AggregateRow, String> aggregateLabelProvider)
+        {
+            this.recordLabelProvider = recordLabelProvider;
+            this.aggregateLabelProvider = aggregateLabelProvider;
+        }
+
+        public RowElementLabelProvider(ColumnLabelProvider recordLabelProvider)
+        {
+            this.recordLabelProvider = recordLabelProvider;
+            this.aggregateLabelProvider = null;
+        }
+
+        public RowElementLabelProvider(Function<LazySecurityPerformanceRecord, String> recordLabelProvider)
+        {
+            this(ColumnLabelProvider.createTextProvider(
+                            object -> recordLabelProvider.apply((LazySecurityPerformanceRecord) object)));
+        }
+
+        public RowElementLabelProvider(Function<LazySecurityPerformanceRecord, String> recordLabelProvider,
+                        Function<AggregateRow, String> aggregateLabelProvider)
+        {
+            this(ColumnLabelProvider.createTextProvider(
+                            object -> recordLabelProvider.apply((LazySecurityPerformanceRecord) object)),
+                            aggregateLabelProvider);
+        }
+
+        public RowElementLabelProvider(Column column)
+        {
+            this((ColumnLabelProvider) column.getLabelProvider().get(), null);
+        }
+
+        public RowElementLabelProvider(Column column, Function<AggregateRow, String> aggregateLabelProvider)
+        {
+            this((ColumnLabelProvider) column.getLabelProvider().get(), aggregateLabelProvider);
+        }
+
+        @Override
+        public Font getFont(Object element)
+        {
+            var row = (RowElement) element;
+            if (row.performanceRecord != null)
+                return recordLabelProvider.getFont(row.performanceRecord);
+            else
+                return boldFont;
+        }
+
+        @Override
+        public Image getImage(Object element)
+        {
+            var row = (RowElement) element;
+            if (row.performanceRecord != null)
+                return recordLabelProvider.getImage(row.performanceRecord);
+            else
+                return null;
+        }
+
+        @Override
+        public Color getForeground(Object element)
+        {
+            var row = (RowElement) element;
+            if (row.performanceRecord != null)
+                return recordLabelProvider.getForeground(row.performanceRecord);
+            else
+                return null;
+        }
+
+        @Override
+        public String getText(Object element)
+        {
+            var row = (RowElement) element;
+            if (row.performanceRecord != null)
+                return recordLabelProvider.getText(row.performanceRecord);
+            else if (aggregateLabelProvider != null)
+                return aggregateLabelProvider.apply(row.model.getFilteredAggregate());
+            else
+                return null;
+        }
+
+        @Override
+        public String getToolTipText(Object element)
+        {
+            var row = (RowElement) element;
+            if (row.performanceRecord != null)
+                return recordLabelProvider.getToolTipText(row.performanceRecord);
+            else
+                return null;
+        }
+
+        @Override
+        public boolean useNativeToolTip(Object element)
+        {
+            var row = (RowElement) element;
+            if (row.performanceRecord != null)
+                return recordLabelProvider.useNativeToolTip(row.performanceRecord);
+            else
+                return true;
+        }
+
+    }
+
+    /**
+     * Label provider supporting options that is delegating to the underlying
+     * label provider that handles LazySecurityPerformnceRecord objects.
+     */
+    private class RowElementOptionLabelProvider extends OptionLabelProvider<ClientFilterMenu.Item>
+    {
+        private final Function<LazySecurityPerformanceRecord, String> recordLabelProvider;
+        private final Function<AggregateRow, String> aggregateLabelProvider;
+
+        public RowElementOptionLabelProvider(Function<LazySecurityPerformanceRecord, String> recordLabelProvider,
+                        Function<AggregateRow, String> aggregateLabelProvider)
+        {
+            this.recordLabelProvider = recordLabelProvider;
+            this.aggregateLabelProvider = aggregateLabelProvider;
+        }
+
+        public RowElementOptionLabelProvider(Function<LazySecurityPerformanceRecord, String> recordLabelProvider)
+        {
+            this(recordLabelProvider, null);
+        }
+
+        @Override
+        public String getText(Object element, ClientFilterMenu.Item filterItem)
+        {
+            var row = (RowElement) element;
+
+            if (row.isRecord())
+            {
+                var dataRecord = row.model.getRecord(row.performanceRecord.getSecurity(), filterItem);
+                return dataRecord == null ? null : recordLabelProvider.apply(dataRecord);
+            }
+            else if (aggregateLabelProvider != null)
+            {
+                return aggregateLabelProvider.apply(row.model.getFilteredAggregate(filterItem));
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        @Override
+        public Font getFont(Object element, Item option)
+        {
+            var row = (RowElement) element;
+            return row.isRecord() ? null : boldFont;
+        }
+    }
+
     private class FilterDropDown extends DropDown implements IMenuListener
     {
-        private final Predicate<SecurityPerformanceRecord> sharesGreaterZero = record -> record.getSharesHeld() > 0;
-        private final Predicate<SecurityPerformanceRecord> sharesEqualZero = record -> record.getSharesHeld() == 0;
-
-        private ClientFilterMenu clientFilterMenu;
+        private final Predicate<LazySecurityPerformanceRecord> sharesNotZero = r -> r.getSharesHeld().get() != 0;
+        private final Predicate<LazySecurityPerformanceRecord> sharesEqualZero = r -> r.getSharesHeld().get() == 0;
 
         public FilterDropDown(IPreferenceStore preferenceStore)
         {
             super(Messages.SecurityFilter, Images.FILTER_OFF, SWT.NONE);
 
             if (preferenceStore.getBoolean(SecuritiesPerformanceView.class.getSimpleName() + "-sharesGreaterZero")) //$NON-NLS-1$
-                recordFilter.add(sharesGreaterZero);
+                recordFilter.add(sharesNotZero);
 
             if (preferenceStore.getBoolean(SecuritiesPerformanceView.class.getSimpleName() + "-sharesEqualZero")) //$NON-NLS-1$
                 recordFilter.add(sharesEqualZero);
 
-            clientFilterMenu = new ClientFilterMenu(getClient(), preferenceStore, f -> {
-                setImage(recordFilter.isEmpty() && !clientFilterMenu.hasActiveFilter() ? Images.FILTER_OFF
-                                : Images.FILTER_ON);
-                clientFilter = f;
-                notifyModelUpdated();
-            });
-
-            loadPreselectedClientFilter(preferenceStore);
-
-            clientFilter = clientFilterMenu.getSelectedFilter();
-
-            if (!recordFilter.isEmpty() || clientFilterMenu.hasActiveFilter())
+            if (!recordFilter.isEmpty())
                 setImage(Images.FILTER_ON);
 
             setMenuListener(this);
 
             addDisposeListener(e -> {
                 preferenceStore.setValue(SecuritiesPerformanceView.class.getSimpleName() + "-sharesGreaterZero", //$NON-NLS-1$
-                                recordFilter.contains(sharesGreaterZero));
+                                recordFilter.contains(sharesNotZero));
                 preferenceStore.setValue(SecuritiesPerformanceView.class.getSimpleName() + "-sharesEqualZero", //$NON-NLS-1$
                                 recordFilter.contains(sharesEqualZero));
             });
         }
 
-        private void loadPreselectedClientFilter(IPreferenceStore preferenceStore)
-        {
-            String selection = preferenceStore.getString(
-                            SecuritiesPerformanceView.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX);
-            if (selection != null)
-                clientFilterMenu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
-                                .ifPresent(clientFilterMenu::select);
-
-            clientFilterMenu.addListener(filter -> preferenceStore.putValue(
-                            SecuritiesPerformanceView.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX,
-                            clientFilterMenu.getSelectedItem().getUUIDs()));
-        }
-
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
-            manager.add(createAction(Messages.SecurityFilterSharesHeldGreaterZero, sharesGreaterZero));
+            manager.add(createAction(Messages.SecurityFilterSharesHeldNotZero, sharesNotZero));
             manager.add(createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero));
-
-            manager.add(new Separator());
-            manager.add(new LabelOnly(Messages.MenuChooseClientFilter));
-            clientFilterMenu.menuAboutToShow(manager);
         }
 
-        private Action createAction(String label, Predicate<SecurityPerformanceRecord> predicate)
+        private Action createAction(String label, Predicate<LazySecurityPerformanceRecord> predicate)
         {
-            Action action = new Action(label, Action.AS_CHECK_BOX)
+            Action action = new Action(label, IAction.AS_CHECK_BOX)
             {
                 @Override
                 public void run()
@@ -182,15 +628,15 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                     // uncheck mutually exclusive actions if new filter is added
                     if (!isChecked)
                     {
-                        if (predicate == sharesGreaterZero)
+                        if (predicate == sharesNotZero)
                             recordFilter.remove(sharesEqualZero);
                         else if (predicate == sharesEqualZero)
-                            recordFilter.remove(sharesGreaterZero);
+                            recordFilter.remove(sharesNotZero);
                     }
 
-                    setImage(recordFilter.isEmpty() && !clientFilterMenu.hasActiveFilter() ? Images.FILTER_OFF
-                                    : Images.FILTER_ON);
+                    setImage(recordFilter.isEmpty() ? Images.FILTER_OFF : Images.FILTER_ON);
 
+                    model.invalidatePredicateCache();
                     records.refresh();
                 }
             };
@@ -211,15 +657,13 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     private ShowHideColumnHelper recordColumns;
 
     private TableViewer records;
-    private TableViewer transactions;
-    private TradesTableViewer trades;
     private ReportingPeriodDropDown dropDown;
+    private Font boldFont;
 
-    private ClientFilter clientFilter;
-    private List<Predicate<SecurityPerformanceRecord>> recordFilter = new ArrayList<>();
+    private ClientFilterDropDown clientFilter;
+    private List<Predicate<LazySecurityPerformanceRecord>> recordFilter = new ArrayList<>();
 
-    private SecuritiesChart chart;
-    private SecurityDetailsViewer latest;
+    private Model model;
 
     @Override
     protected String getDefaultTitle()
@@ -235,10 +679,36 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         toolBar.add(dropDown);
 
         toolBar.add(new FilterDropDown(getPreferenceStore()));
+        this.clientFilter = new ClientFilterDropDown(getClient(), getPreferenceStore(),
+                        SecuritiesPerformanceView.class.getSimpleName(), filter -> notifyModelUpdated());
+        toolBar.add(clientFilter);
+
         addExportButton(toolBar);
 
-        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
-                        manager -> recordColumns.menuAboutToShow(manager)));
+        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE, manager -> {
+            recordColumns.menuAboutToShow(manager);
+
+            manager.add(new Separator());
+            MenuManager submenu = new MenuManager(Messages.PrefTitlePresentation);
+            manager.add(submenu);
+
+            Action action = new SimpleAction(Messages.LabelTotalsAtTheTop, a -> {
+                model.setHideTotalsAtTheTop(!model.isHideTotalsAtTheTop());
+                records.setInput(model.getRows());
+                records.refresh();
+            });
+            action.setChecked(!model.isHideTotalsAtTheTop());
+            submenu.add(action);
+
+            action = new SimpleAction(Messages.LabelTotalsAtTheBottom, a -> {
+                model.setHideTotalsAtTheBottom(!model.isHideTotalsAtTheBottom());
+                records.setInput(model.getRows());
+                records.refresh();
+            });
+            action.setChecked(!model.isHideTotalsAtTheBottom());
+            submenu.add(action);
+        }));
+
     }
 
     private void addExportButton(ToolBarManager manager)
@@ -258,13 +728,13 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     }
 
     @Override
-    protected void createTopTable(Composite parent)
+    protected Control createBody(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        records = new TableViewer(container, SWT.FULL_SELECTION);
+        records = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
         recordColumns = new ShowHideColumnHelper(SecuritiesPerformanceView.class.getName(), getClient(),
                         getPreferenceStore(), records, layout);
 
@@ -272,8 +742,9 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         recordColumns.addListener(() -> updateTitle(getDefaultTitle()));
         recordColumns.setToolBarManager(getViewToolBarManager());
 
-        MoneyTrailToolTipSupport.enableFor(records, ToolTip.NO_RECREATE);
+        ToolTipCustomProviderSupport.enableFor(records, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(records);
+        CopyPasteSupport.enableFor(records);
 
         createCommonColumns();
         createDividendColumns();
@@ -281,8 +752,19 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         addCapitalGainsColumns();
         createRiskColumns();
         createAdditionalColumns();
+        createClientFilteredColumns();
+        createExperimentalEDivColumn();
 
-        recordColumns.createColumns();
+        // wrap all underlying sorter with the element comparator to handle the
+        // aggregate rows
+
+        recordColumns.getColumns().forEach(c -> {
+            var sorter = c.getSorter();
+            if (sorter != null)
+                sorter.wrap(RowElementComparator::new);
+        });
+
+        recordColumns.createColumns(true);
 
         records.getTable().setHeaderVisible(true);
         records.getTable().setLinesVisible(true);
@@ -295,48 +777,17 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         hookContextMenu(records.getTable(), this::fillContextMenu);
 
+        records.addSelectionChangedListener(event -> setInformationPaneInput(
+                        ((IStructuredSelection) event.getSelection()).getFirstElement()));
+
         records.addSelectionChangedListener(event -> {
-            SecurityPerformanceRecord record = (SecurityPerformanceRecord) ((IStructuredSelection) event.getSelection())
-                            .getFirstElement();
-
-            if (record != null)
-            {
-                transactions.setInput(record.getLineItems());
-                transactions.refresh();
-                chart.updateChart(record.getSecurity());
-                Client filteredClient = clientFilter.filter(getClient());
-                latest.setInput(record.getSecurity());
-
-                try
-                {
-                    CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-                    trades.setInput(new TradeCollector(filteredClient, converter).collect(record.getSecurity()));
-                }
-                catch (TradeCollectorException e)
-                {
-                    // for now: do not show any trades (or rather: remove the
-                    // existing trades from the previous security). Need to
-                    // think of a better way to show the error message in the
-                    // GUI
-                    PortfolioPlugin.log(e);
-                    trades.setInput(null);
-                }
-            }
+            List<Security> securities = event.getStructuredSelection().stream().filter(e -> ((RowElement) e).isRecord())
+                            .map(e -> ((RowElement) e).performanceRecord.getSecurity()).toList();
+            if (!securities.isEmpty())
+                selectionService.setSelection(new SecuritySelection(getClient(), securities));
             else
-            {
-                transactions.setInput(null);
-                transactions.refresh();
-                chart.updateChart(null);
-                trades.setInput(null);
-                latest.setInput(null);
-            }
-        });
+                selectionService.setSelection(null);
 
-        records.addSelectionChangedListener(event -> {
-            SecurityPerformanceRecord record = (SecurityPerformanceRecord) ((IStructuredSelection) event.getSelection())
-                            .getFirstElement();
-            if (record != null)
-                selectionService.setSelection(new SecuritySelection(getClient(), record.getSecurity()));
         });
 
         records.addFilter(new ViewerFilter()
@@ -347,9 +798,13 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 if (recordFilter.isEmpty())
                     return true;
 
-                for (Predicate<SecurityPerformanceRecord> predicate : recordFilter)
+                var row = (RowElement) element;
+                if (!row.isRecord())
+                    return true;
+
+                for (Predicate<LazySecurityPerformanceRecord> predicate : recordFilter)
                 {
-                    if (!predicate.test((SecurityPerformanceRecord) element))
+                    if (!predicate.test(row.performanceRecord))
                         return false;
                 }
 
@@ -358,6 +813,13 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         });
 
         stylingEngine.style(records.getTable());
+
+        LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), records.getTable());
+        boldFont = resources.create(FontDescriptor.createFrom(records.getTable().getFont()).setStyle(SWT.BOLD));
+
+        reportingPeriodUpdated();
+
+        return container;
     }
 
     private void createCommonColumns()
@@ -369,127 +831,50 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             @Override
             public Long getValue(Object e)
             {
-                return ((SecurityPerformanceRecord) e).getSharesHeld();
+                var row = (RowElement) e;
+                return row.performanceRecord != null ? row.performanceRecord.getSharesHeld().get() : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "sharesHeld")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getSharesHeld().get()));
         recordColumns.addColumn(column);
 
         // security name
         column = new NameColumn(getClient());
+        column.setLabelProvider(new RowElementLabelProvider(column, aggregate -> Messages.ColumnSum));
         column.getEditingSupport().addListener(new TouchClientListener(getClient()));
-        recordColumns.addColumn(column);
-
-        // cost value - fifo
-        column = new Column("pv", Messages.ColumnPurchaseValue, SWT.RIGHT, 75); //$NON-NLS-1$
-        column.setDescription(Messages.ColumnPurchaseValue_Description + TextUtil.PARAGRAPH_BREAK
-                        + Messages.DescriptionDataRelativeToReportingPeriod);
-        column.setImage(Images.INTERVAL);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Money.format(((SecurityPerformanceRecord) r).getFifoCost(),
-                                getClient().getBaseCurrency());
-            }
-
-            @Override
-            public String getToolTipText(Object r)
-            {
-                return ((SecurityPerformanceRecord) r).explain(SecurityPerformanceRecord.Trails.FIFO_COST).isPresent()
-                                ? SecurityPerformanceRecord.Trails.FIFO_COST
-                                : null;
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCost")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // cost value - moving average
-        column = new Column("pvmvavg", Messages.ColumnPurchaseValueMovingAverage, SWT.RIGHT, 75); //$NON-NLS-1$
-        column.setMenuLabel(Messages.ColumnPurchaseValueMovingAverage_MenuLabel);
-        column.setDescription(Messages.ColumnPurchaseValueMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
-                        + Messages.DescriptionDataRelativeToReportingPeriod);
-        column.setImage(Images.INTERVAL);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Money.format(((SecurityPerformanceRecord) r).getMovingAverageCost(),
-                                getClient().getBaseCurrency());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "movingAverageCost")); //$NON-NLS-1$
-        column.setVisible(false);
-        recordColumns.addColumn(column);
-
-        // cost value per share - fifo
-        column = new Column("pp", Messages.ColumnPurchasePrice, SWT.RIGHT, 75); //$NON-NLS-1$
-        column.setDescription(Messages.ColumnPurchasePrice_Description + TextUtil.PARAGRAPH_BREAK
-                        + Messages.DescriptionDataRelativeToReportingPeriod);
-        column.setImage(Images.INTERVAL);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Quote.format(((SecurityPerformanceRecord) r).getFifoCostPerSharesHeld(),
-                                getClient().getBaseCurrency());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCostPerSharesHeld")); //$NON-NLS-1$
-        recordColumns.addColumn(column);
-
-        // cost value per share - moving average
-        column = new Column("ppmvavg", Messages.ColumnPurchasePriceMovingAverage, SWT.RIGHT, 75); //$NON-NLS-1$
-        column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
-        column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
-                        + Messages.DescriptionDataRelativeToReportingPeriod);
-        column.setImage(Images.INTERVAL);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Quote.format(((SecurityPerformanceRecord) r).getMovingAverageCostPerSharesHeld(),
-                                getClient().getBaseCurrency());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "movingAverageCostPerSharesHeld")); //$NON-NLS-1$
-        column.setVisible(false);
+        column.setSortDirction(SWT.UP);
         recordColumns.addColumn(column);
 
         // latest / current quote
         column = new Column("quote", Messages.ColumnQuote, SWT.RIGHT, 75); //$NON-NLS-1$
         column.setDescription(Messages.ColumnQuote_DescriptionEndOfReportingPeriod);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new RowElementLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object element)
             {
-                SecurityPerformanceRecord record = (SecurityPerformanceRecord) element;
-                return Values.Quote.format(record.getQuote(), getClient().getBaseCurrency());
+                LazySecurityPerformanceRecord entry = (LazySecurityPerformanceRecord) element;
+                return Values.Quote.format(entry.getQuote().get(), getClient().getBaseCurrency());
             }
 
             @Override
             public String getToolTipText(Object element)
             {
-                SecurityPerformanceRecord record = (SecurityPerformanceRecord) element;
+                LazySecurityPerformanceRecord entry = (LazySecurityPerformanceRecord) element;
 
                 return MessageFormat.format(Messages.TooltipQuoteAtDate, getText(element),
-                                Values.Date.format(record.getLatestSecurityPrice().getDate()));
+                                Values.Date.format(entry.getLatestSecurityPrice().get().getDate()));
             }
-        });
-        column.setSorter(ColumnViewerSorter.create(e -> ((SecurityPerformanceRecord) e).getQuote()));
+        }));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getQuote().get()));
         recordColumns.addColumn(column);
 
         // change to previous day percent value
         column = new Column("5", Messages.ColumnChangeOnPrevious, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabel);
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, element -> {
-            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((SecurityPerformanceRecord) element).getSecurity()
-                            .getLatestTwoSecurityPrices();
+        column.setLabelProvider(new RowElementLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, element -> {
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((LazySecurityPerformanceRecord) element)
+                            .getSecurity().getLatestTwoSecurityPrices();
             if (previous.isPresent())
             {
                 double latestQuote = previous.get().getLeft().getValue();
@@ -501,8 +886,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 return null;
             }
         }, element -> {
-            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((SecurityPerformanceRecord) element).getSecurity()
-                            .getLatestTwoSecurityPrices();
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((LazySecurityPerformanceRecord) element)
+                            .getSecurity().getLatestTwoSecurityPrices();
             if (previous.isPresent())
             {
                 return Messages.ColumnLatestPrice + ": " //$NON-NLS-1$
@@ -519,12 +904,12 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             {
                 return null;
             }
-        }));
+        })));
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> { // NOSONAR
 
-            Optional<Pair<SecurityPrice, SecurityPrice>> previous1 = ((SecurityPerformanceRecord) o1).getSecurity()
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous1 = ((LazySecurityPerformanceRecord) o1).getSecurity()
                             .getLatestTwoSecurityPrices();
-            Optional<Pair<SecurityPrice, SecurityPrice>> previous2 = ((SecurityPerformanceRecord) o2).getSecurity()
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous2 = ((LazySecurityPerformanceRecord) o2).getSecurity()
                             .getLatestTwoSecurityPrices();
 
             if (!previous1.isPresent() && !previous2.isPresent())
@@ -550,44 +935,48 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column = new Column("changeonpreviousamount", Messages.ColumnChangeOnPreviousAmount, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabelAmount);
 
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Quote, element -> {
-            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((SecurityPerformanceRecord) element).getSecurity()
-                            .getLatestTwoSecurityPrices();
-            if (previous.isPresent())
-            {
-                double latestQuote = previous.get().getLeft().getValue();
-                double previousQuote = previous.get().getRight().getValue();
-                return (long) (latestQuote - previousQuote);
-            }
-            else
-            {
-                return null;
-            }
-        }, element -> {
-            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((SecurityPerformanceRecord) element).getSecurity()
-                            .getLatestTwoSecurityPrices();
-            if (previous.isPresent())
-            {
-                return Messages.ColumnLatestPrice + ": " //$NON-NLS-1$
-                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
-                                                Values.Quote.format(previous.get().getLeft().getValue()),
-                                                Values.Date.format(previous.get().getLeft().getDate()))
-                                + "\n" // //$NON-NLS-1$
-                                + Messages.ColumnPreviousPrice + ": " //$NON-NLS-1$
-                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
-                                                Values.Quote.format(previous.get().getRight().getValue()),
-                                                Values.Date.format(previous.get().getRight().getDate()));
-            }
-            else
-            {
-                return null;
-            }
-        }));
+        column.setLabelProvider(
+                        new RowElementLabelProvider(new NumberColorLabelProvider<>(Values.CalculatedQuote, element -> {
+                            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((LazySecurityPerformanceRecord) element)
+                                            .getSecurity().getLatestTwoSecurityPrices();
+                            if (previous.isPresent())
+                            {
+                                double latestQuote = previous.get().getLeft().getValue();
+                                double previousQuote = previous.get().getRight().getValue();
+                                return (long) (latestQuote - previousQuote);
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        }, element -> {
+                            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((LazySecurityPerformanceRecord) element)
+                                            .getSecurity().getLatestTwoSecurityPrices();
+                            if (previous.isPresent())
+                            {
+                                return Messages.ColumnLatestPrice + ": " //$NON-NLS-1$
+                                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
+                                                                Values.Quote.format(
+                                                                                previous.get().getLeft().getValue()),
+                                                                Values.Date.format(previous.get().getLeft().getDate()))
+                                                + "\n" // //$NON-NLS-1$
+                                                + Messages.ColumnPreviousPrice + ": " //$NON-NLS-1$
+                                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
+                                                                Values.Quote.format(
+                                                                                previous.get().getRight().getValue()),
+                                                                Values.Date.format(
+                                                                                previous.get().getRight().getDate()));
+                            }
+                            else
+                            {
+                                return null;
+                            }
+                        })));
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> { // NOSONAR
 
-            Optional<Pair<SecurityPrice, SecurityPrice>> previous1 = ((SecurityPerformanceRecord) o1).getSecurity()
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous1 = ((LazySecurityPerformanceRecord) o1).getSecurity()
                             .getLatestTwoSecurityPrices();
-            Optional<Pair<SecurityPrice, SecurityPrice>> previous2 = ((SecurityPerformanceRecord) o2).getSecurity()
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous2 = ((LazySecurityPerformanceRecord) o2).getSecurity()
                             .getLatestTwoSecurityPrices();
 
             if (!previous1.isPresent() && !previous2.isPresent())
@@ -611,44 +1000,69 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         // market value
         column = new Column("mv", Messages.ColumnMarketValue, SWT.RIGHT, 75); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Money.format(((SecurityPerformanceRecord) r).getMarketValue(),
-                                getClient().getBaseCurrency());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "marketValue")); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(
+                        r -> Values.Money.format(r.getMarketValue().get(), getClient().getBaseCurrency()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getMarketValue().get()),
+                                        getClient().getBaseCurrency())));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getMarketValue().get()));
+        recordColumns.addColumn(column);
+
+        addPurchaseCostColumns();
+
+        // cost value - FIFO
+        column = new Column("pv", Messages.ColumnPurchaseValue, SWT.RIGHT, 75); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnPurchaseValue_MenuLabel);
+        column.setDescription(Messages.ColumnPurchaseValue_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.DescriptionDataRelativeToReportingPeriod);
+        column.setImage(Images.INTERVAL);
+        column.setLabelProvider(new RowElementLabelProvider(
+                        r -> Values.Money.format(r.getFifoCost().get(), getClient().getBaseCurrency()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getFifoCost().get()),
+                                        getClient().getBaseCurrency())));
+        column.setToolTipProvider(
+                        element -> ((RowElement) element).explain(LazySecurityPerformanceRecord.Trails.FIFO_COST));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getFifoCost().get()));
+        recordColumns.addColumn(column);
+
+        // cost value - moving average
+        column = new Column("pvmvavg", Messages.ColumnPurchaseValueMovingAverage, SWT.RIGHT, 75); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnPurchaseValueMovingAverage_MenuLabel);
+        column.setDescription(Messages.ColumnPurchaseValueMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.DescriptionDataRelativeToReportingPeriod);
+        column.setImage(Images.INTERVAL);
+        column.setLabelProvider(new RowElementLabelProvider(
+                        r -> Values.Money.format(r.getMovingAverageCost().get(), getClient().getBaseCurrency()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                        r -> r.getMovingAverageCost().get()),
+                                        getClient().getBaseCurrency())));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getMovingAverageCost().get()));
+        column.setVisible(false);
         recordColumns.addColumn(column);
 
         // fees paid
         column = new Column("fees", Messages.ColumnFees, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setDescription(Messages.ColumnFees_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Money.format(((SecurityPerformanceRecord) r).getFees(), getClient().getBaseCurrency());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fees")); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(
+                        r -> Values.Money.format(r.getFees().get(), getClient().getBaseCurrency()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getFees().get()),
+                                        getClient().getBaseCurrency())));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getFees().get()));
         column.setVisible(false);
         recordColumns.addColumn(column);
 
         // taxes paid
         column = new Column("taxes", Messages.ColumnTaxes, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Money.format(((SecurityPerformanceRecord) r).getTaxes(), getClient().getBaseCurrency());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "taxes")); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(
+                        r -> Values.Money.format(r.getTaxes().get(), getClient().getBaseCurrency()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getTaxes().get()),
+                                        getClient().getBaseCurrency())));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getTaxes().get()));
         column.setVisible(false);
         recordColumns.addColumn(column);
 
@@ -677,64 +1091,153 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         recordColumns.addColumn(column);
     }
 
+    private void addPurchaseCostColumns()
+    {
+        // cost value per share - FIFO
+        Column column = new Column("pp", Messages.ColumnPurchasePrice, SWT.RIGHT, 75); //$NON-NLS-1$
+        column.setHeading(Messages.LabelTaxesAndFeesNotIncluded);
+        column.setGroupLabel(Messages.LabelPurchasePrice);
+        column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
+        column.setDescription(Messages.ColumnPurchasePrice_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.DescriptionDataRelativeToReportingPeriod);
+        column.setImage(Images.INTERVAL);
+        column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote
+                        .format(r.getFifoCostPerSharesHeld().get(), getClient().getBaseCurrency())));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getFifoCostPerSharesHeld().get()));
+        recordColumns.addColumn(column);
+
+        // cost value per share - moving average
+        column = new Column("ppmvavg", Messages.ColumnPurchasePriceMovingAverage, SWT.RIGHT, 75); //$NON-NLS-1$
+        column.setGroupLabel(Messages.LabelPurchasePrice);
+        column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
+        column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.DescriptionDataRelativeToReportingPeriod);
+        column.setImage(Images.INTERVAL);
+        column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote
+                        .format(r.getMovingAverageCostPerSharesHeld().get(), getClient().getBaseCurrency())));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getMovingAverageCostPerSharesHeld().get()));
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
+        // cost value per share including fees and taxes - FIFO
+        column = new Column("grosspp", Messages.ColumnGrossPurchasePriceFIFO, SWT.RIGHT, 75); //$NON-NLS-1$
+        column.setHeading(Messages.LabelTaxesAndFeesIncluded);
+        column.setGroupLabel(Messages.LabelPurchasePrice);
+        column.setMenuLabel(Messages.ColumnPurchasePrice_MenuLabel);
+        column.setDescription(Messages.ColumnGrossPurchasePriceFIFO_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.DescriptionDataRelativeToReportingPeriod);
+        column.setImage(Images.INTERVAL);
+        column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote
+                        .format(r.getGrossFifoCostPerSharesHeld().get(), getClient().getBaseCurrency())));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getGrossFifoCostPerSharesHeld().get()));
+        recordColumns.addColumn(column);
+
+        // cost value per share including fees and taxes - moving average
+        column = new Column("grossppmvavg", Messages.ColumnGrossPurchasePriceMovingAverage, SWT.RIGHT, 75); //$NON-NLS-1$
+        column.setGroupLabel(Messages.LabelPurchasePrice);
+        column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
+        column.setDescription(Messages.ColumnGrossPurchasePriceMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.DescriptionDataRelativeToReportingPeriod);
+        column.setImage(Images.INTERVAL);
+        column.setLabelProvider(new RowElementLabelProvider(r -> Values.CalculatedQuote
+                        .format(r.getGrossMovingAverageCostPerSharesHeld().get(), getClient().getBaseCurrency())));
+        column.setSorter(ColumnViewerSorter.create(
+                        e -> ((LazySecurityPerformanceRecord) e).getGrossMovingAverageCostPerSharesHeld().get()));
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+    }
+
     private void addPerformanceColumns()
     {
-        Column column = new Column("twror", Messages.ColumnTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
+        Column column = new Column("twror", Messages.ColumnTTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setMenuLabel(Messages.ColumnTWROR_Description);
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
-                        r -> ((SecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturn()));
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "trueTimeWeightedRateOfReturn")); //$NON-NLS-1$
+        column.setMenuLabel(Messages.LabelTTWROR);
+        column.setLabelProvider(new RowElementLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+                        r -> ((LazySecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturn().get())));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getTrueTimeWeightedRateOfReturn().get()));
+        recordColumns.addColumn(column);
+
+        column = new Column("ttwror_pa", Messages.ColumnTTWRORpa, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setMenuLabel(Messages.LabelTTWROR_Annualized);
+        column.setLabelProvider(new RowElementLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+                        r -> ((LazySecurityPerformanceRecord) r).getTrueTimeWeightedRateOfReturnAnnualized().get())));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(
+                        e -> ((LazySecurityPerformanceRecord) e).getTrueTimeWeightedRateOfReturnAnnualized().get()));
         recordColumns.addColumn(column);
 
         // internal rate of return
         column = new Column("izf", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
-        column.setLabelProvider(
-                        new NumberColorLabelProvider<>(Values.Percent2, r -> ((SecurityPerformanceRecord) r).getIrr()));
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "irr")); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+                        r -> ((LazySecurityPerformanceRecord) r).getIrr().get())));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getIrr().get()));
         recordColumns.addColumn(column);
 
         column = new Column("capitalgains", Messages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGains_Description);
-        column.setLabelProvider(new MoneyColorLabelProvider(
-                        element -> ((SecurityPerformanceRecord) element).getCapitalGainsOnHoldings(), getClient()));
+        column.setLabelProvider(
+                        new RowElementLabelProvider(
+                                        new MoneyColorLabelProvider(
+                                                        element -> ((LazySecurityPerformanceRecord) element)
+                                                                        .getCapitalGainsOnHoldings().get(),
+                                                        getClient()),
+                                        aggregate -> Values.Money.format(
+                                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                                        r -> r.getCapitalGainsOnHoldings().get()),
+                                                        getClient().getBaseCurrency())));
         column.setVisible(false);
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "capitalGainsOnHoldings")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getCapitalGainsOnHoldings().get()));
         recordColumns.addColumn(column);
 
         column = new Column("capitalgains%", Messages.ColumnCapitalGainsPercent, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGainsPercent_Description);
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
-                        r -> ((SecurityPerformanceRecord) r).getCapitalGainsOnHoldingsPercent()));
+        column.setLabelProvider(new RowElementLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+                        r -> ((LazySecurityPerformanceRecord) r).getCapitalGainsOnHoldingsPercent().get())));
         column.setVisible(false);
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "capitalGainsOnHoldingsPercent")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getCapitalGainsOnHoldingsPercent().get()));
         recordColumns.addColumn(column);
 
         column = new Column("capitalgainsmvavg", Messages.ColumnCapitalGainsMovingAverage, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setMenuLabel(Messages.ColumnCapitalGainsMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnCapitalGainsMovingAverage_Description);
-        column.setLabelProvider(new MoneyColorLabelProvider(
-                        element -> ((SecurityPerformanceRecord) element).getCapitalGainsOnHoldingsMovingAverage(),
-                        getClient()));
+        column.setLabelProvider(
+                        new RowElementLabelProvider(
+                                        new MoneyColorLabelProvider(
+                                                        element -> ((LazySecurityPerformanceRecord) element)
+                                                                        .getCapitalGainsOnHoldingsMovingAverage().get(),
+                                                        getClient()),
+                                        aggregate -> Values.Money.format(
+                                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                                        r -> r.getCapitalGainsOnHoldingsMovingAverage()
+                                                                                        .get()),
+                                                        getClient().getBaseCurrency())));
         column.setVisible(false);
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class,
-                        "capitalGainsOnHoldingsMovingAverage")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(
+                        e -> ((LazySecurityPerformanceRecord) e).getCapitalGainsOnHoldingsMovingAverage().get()));
         recordColumns.addColumn(column);
 
         column = new Column("capitalgainsmvavg%", Messages.ColumnCapitalGainsMovingAveragePercent, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setMenuLabel(Messages.ColumnCapitalGainsMovingAveragePercent_MenuLabel);
         column.setDescription(Messages.ColumnCapitalGainsMovingAveragePercent_Description);
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
-                        r -> ((SecurityPerformanceRecord) r).getCapitalGainsOnHoldingsMovingAveragePercent()));
+        column.setLabelProvider(new RowElementLabelProvider(
+                        new NumberColorLabelProvider<>(Values.Percent2, r -> ((LazySecurityPerformanceRecord) r)
+                                        .getCapitalGainsOnHoldingsMovingAveragePercent().get())));
         column.setVisible(false);
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class,
-                        "capitalGainsOnHoldingsMovingAveragePercent")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e)
+                        .getCapitalGainsOnHoldingsMovingAveragePercent().get()));
         recordColumns.addColumn(column);
 
         // delta
@@ -742,9 +1245,12 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setDescription(Messages.ColumnAbsolutePerformance_Description);
         column.setMenuLabel(Messages.ColumnAbsolutePerformance_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setLabelProvider(new MoneyColorLabelProvider(element -> ((SecurityPerformanceRecord) element).getDelta(),
-                        getClient()));
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "delta")); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(new MoneyColorLabelProvider(
+                        element -> ((LazySecurityPerformanceRecord) element).getDelta().get(), getClient()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getDelta().get()),
+                                        getClient().getBaseCurrency())));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getDelta().get()));
         recordColumns.addColumn(column);
 
         // delta percent
@@ -752,59 +1258,187 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setDescription(Messages.ColumnAbsolutePerformancePercent_Description);
         column.setMenuLabel(Messages.ColumnAbsolutePerformancePercent_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
-                        r -> ((SecurityPerformanceRecord) r).getDeltaPercent()));
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "deltaPercent")); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+                        r -> ((LazySecurityPerformanceRecord) r).getDeltaPercent().get())));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getDeltaPercent().get()));
         column.setVisible(false);
         recordColumns.addColumn(column);
     }
 
     private void addCapitalGainsColumns()
     {
+        // FIFO
         Column column = new Column("cg", //$NON-NLS-1$
                         Messages.ColumnRealizedCapitalGains, SWT.RIGHT, 80);
+        column.setHeading(Messages.LabelCapitalGainsMethod + " : " + Messages.LabelCapitalGainsMethodFIFO); //$NON-NLS-1$
         column.setGroupLabel(Messages.LabelCapitalGains);
-        column.setLabelProvider(new MoneyColorLabelProvider(
-                        element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains().getCapitalGains(),
-                        element -> SecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS, getClient()));
+        column.setDescription(Messages.ColumnRealizedCapitalGains_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.ColumnCapitalGainsGeneric_Description);
+        column.setLabelProvider(
+                        new RowElementLabelProvider(
+                                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
+                                                        .getRealizedCapitalGains().get().getCapitalGains(),
+                                                        getClient()),
+                                        aggregate -> Values.Money.format(
+                                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                                        r -> r.getRealizedCapitalGains().get()
+                                                                                        .getCapitalGains()),
+                                                        getClient().getBaseCurrency())));
+        column.setToolTipProvider(element -> ((RowElement) element)
+                        .explain(LazySecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS));
         column.setVisible(false);
-        column.setSorter(ColumnViewerSorter.create(
-                        element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains().getCapitalGains()));
+        column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
+                        .getRealizedCapitalGains().get().getCapitalGains()));
         recordColumns.addColumn(column);
 
         column = new Column("cgforex", //$NON-NLS-1$
                         Messages.ColumnCurrencyGains + " / " + Messages.ColumnRealizedCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.LabelCapitalGains);
-        column.setLabelProvider(new MoneyColorLabelProvider(
-                        element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains()
-                                        .getForexCaptialGains(),
-                        element -> SecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS_FOREX, getClient()));
+        column.setLabelProvider(
+                        new RowElementLabelProvider(
+                                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
+                                                        .getRealizedCapitalGains().get().getForexCaptialGains(),
+                                                        getClient()),
+                                        aggregate -> Values.Money.format(
+                                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                                        r -> r.getRealizedCapitalGains().get()
+                                                                                        .getForexCaptialGains()),
+                                                        getClient().getBaseCurrency())));
+        column.setToolTipProvider(element -> ((RowElement) element)
+                        .explain(LazySecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS_FOREX));
         column.setVisible(false);
-        column.setSorter(ColumnViewerSorter.create(
-                        element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains().getCapitalGains()));
+        column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
+                        .getRealizedCapitalGains().get().getCapitalGains()));
         recordColumns.addColumn(column);
 
         column = new Column("ucg", //$NON-NLS-1$
                         Messages.ColumnUnrealizedCapitalGains, SWT.RIGHT, 80);
         column.setGroupLabel(Messages.LabelCapitalGains);
-        column.setLabelProvider(new MoneyColorLabelProvider(
-                        element -> ((SecurityPerformanceRecord) element).getUnrealizedCapitalGains().getCapitalGains(),
-                        element -> SecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS, getClient()));
+        column.setDescription(Messages.ColumnUnrealizedCapitalGains_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.ColumnCapitalGainsGeneric_Description);
+
+        column.setLabelProvider(
+                        new RowElementLabelProvider(
+                                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
+                                                        .getUnrealizedCapitalGains().get().getCapitalGains(),
+                                                        getClient()),
+                                        aggregate -> Values.Money.format(
+                                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                                        r -> r.getUnrealizedCapitalGains().get()
+                                                                                        .getCapitalGains()),
+                                                        getClient().getBaseCurrency())));
+        column.setToolTipProvider(element -> ((RowElement) element)
+                        .explain(LazySecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS));
         column.setVisible(false);
-        column.setSorter(ColumnViewerSorter.create(element -> ((SecurityPerformanceRecord) element)
-                        .getUnrealizedCapitalGains().getCapitalGains()));
+        column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
+                        .getUnrealizedCapitalGains().get().getCapitalGains()));
         recordColumns.addColumn(column);
 
         column = new Column("ucgforex", //$NON-NLS-1$
                         Messages.ColumnCurrencyGains + " / " + Messages.ColumnUnrealizedCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.LabelCapitalGains);
-        column.setLabelProvider(new MoneyColorLabelProvider(
-                        element -> ((SecurityPerformanceRecord) element).getUnrealizedCapitalGains()
-                                        .getForexCaptialGains(),
-                        element -> SecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS_FOREX, getClient()));
+        column.setLabelProvider(new RowElementLabelProvider(
+                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
+                                        .getUnrealizedCapitalGains().get().getForexCaptialGains(), getClient()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                        r -> r.getUnrealizedCapitalGains().get()
+                                                                        .getForexCaptialGains()),
+                                        getClient().getBaseCurrency())));
+        column.setToolTipProvider(element -> ((RowElement) element)
+                        .explain(LazySecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS_FOREX));
         column.setVisible(false);
-        column.setSorter(ColumnViewerSorter.create(element -> ((SecurityPerformanceRecord) element)
-                        .getUnrealizedCapitalGains().getCapitalGains()));
+        column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
+                        .getUnrealizedCapitalGains().get().getCapitalGains()));
+        recordColumns.addColumn(column);
+
+        // Moving Average
+        column = new Column("cgMA", //$NON-NLS-1$
+                        Messages.ColumnRealizedCapitalGains + " (" + Messages.LabelCapitalGainsMethodMovingAverageAbbr //$NON-NLS-1$
+                                        + ")", //$NON-NLS-1$
+                        SWT.RIGHT, 80);
+        column.setHeading(Messages.LabelCapitalGainsMethod + " : " + Messages.LabelCapitalGainsMethodMovingAverage); //$NON-NLS-1$
+        column.setGroupLabel(Messages.LabelCapitalGains);
+        column.setMenuLabel(Messages.ColumnRealizedCapitalGains);
+        column.setDescription(Messages.ColumnRealizedCapitalGainsMA_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.ColumnCapitalGainsGeneric_Description);
+
+        column.setLabelProvider(new RowElementLabelProvider(
+                        new MoneyColorLabelProvider(
+                                        element -> ((LazySecurityPerformanceRecord) element)
+                                                        .getRealizedCapitalGainsMovingAvg().get().getCapitalGains(),
+                                        getClient()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                        r -> r.getRealizedCapitalGainsMovingAvg().get()
+                                                                        .getCapitalGains()),
+                                        getClient().getBaseCurrency())));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
+                        .getRealizedCapitalGainsMovingAvg().get().getCapitalGains()));
+        recordColumns.addColumn(column);
+
+        column = new Column("cgforexMA", //$NON-NLS-1$
+                        Messages.ColumnCurrencyGains + " / " + Messages.ColumnRealizedCapitalGains + " (" //$NON-NLS-1$ //$NON-NLS-2$
+                                        + Messages.LabelCapitalGainsMethodMovingAverageAbbr + ")", //$NON-NLS-1$
+                        SWT.RIGHT, 80);
+        column.setGroupLabel(Messages.LabelCapitalGains);
+        column.setMenuLabel(Messages.ColumnCurrencyGains + " / " + Messages.ColumnRealizedCapitalGains); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(
+                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
+                                        .getRealizedCapitalGainsMovingAvg().get().getForexCaptialGains(), getClient()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                        r -> r.getRealizedCapitalGainsMovingAvg().get()
+                                                                        .getForexCaptialGains()),
+                                        getClient().getBaseCurrency())));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
+                        .getRealizedCapitalGainsMovingAvg().get().getCapitalGains()));
+        recordColumns.addColumn(column);
+
+        column = new Column("ucgMA", //$NON-NLS-1$
+                        Messages.ColumnUnrealizedCapitalGains + " (" + Messages.LabelCapitalGainsMethodMovingAverageAbbr //$NON-NLS-1$
+                                        + ")", //$NON-NLS-1$
+                        SWT.RIGHT, 80);
+        column.setGroupLabel(Messages.LabelCapitalGains);
+        column.setMenuLabel(Messages.ColumnUnrealizedCapitalGains);
+        column.setDescription(Messages.ColumnUnrealizedCapitalGainsMA_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.ColumnCapitalGainsGeneric_Description);
+
+        column.setLabelProvider(new RowElementLabelProvider(
+                        new MoneyColorLabelProvider(
+                                        element -> ((LazySecurityPerformanceRecord) element)
+                                                        .getUnrealizedCapitalGainsMovingAvg().get().getCapitalGains(),
+                                        getClient()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                        r -> r.getUnrealizedCapitalGainsMovingAvg().get()
+                                                                        .getCapitalGains()),
+                                        getClient().getBaseCurrency())));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
+                        .getUnrealizedCapitalGainsMovingAvg().get().getCapitalGains()));
+        recordColumns.addColumn(column);
+
+        column = new Column("ucgforexMA", //$NON-NLS-1$
+                        Messages.ColumnCurrencyGains + " / " + Messages.ColumnUnrealizedCapitalGains + " (" //$NON-NLS-1$ //$NON-NLS-2$
+                                        + Messages.LabelCapitalGainsMethodMovingAverageAbbr + ")", //$NON-NLS-1$
+                        SWT.RIGHT, 80);
+        column.setGroupLabel(Messages.LabelCapitalGains);
+        column.setMenuLabel(Messages.ColumnCurrencyGains + " / " + Messages.ColumnUnrealizedCapitalGains); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(
+                        new MoneyColorLabelProvider(element -> ((LazySecurityPerformanceRecord) element)
+                                        .getUnrealizedCapitalGainsMovingAvg().get().getForexCaptialGains(),
+                                        getClient()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(),
+                                                        r -> r.getUnrealizedCapitalGainsMovingAvg().get()
+                                                                        .getForexCaptialGains()),
+                                        getClient().getBaseCurrency())));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(element -> ((LazySecurityPerformanceRecord) element)
+                        .getUnrealizedCapitalGainsMovingAvg().get().getCapitalGains()));
         recordColumns.addColumn(column);
     }
 
@@ -814,16 +1448,12 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         Column column = new Column("sumdiv", Messages.ColumnDividendSum, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnDividendSum_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelDividends);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Money.format(((SecurityPerformanceRecord) r).getSumOfDividends(),
-                                getClient().getBaseCurrency());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "sumOfDividends")); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(
+                        r -> Values.Money.format(r.getSumOfDividends().get(), getClient().getBaseCurrency()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getSumOfDividends().get()),
+                                        getClient().getBaseCurrency())));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getSumOfDividends().get()));
         recordColumns.addColumn(column);
 
         // Rendite insgesamt
@@ -831,15 +1461,10 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setDescription(Messages.ColumnDividendTotalRateOfReturn_Description);
         column.setVisible(false);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent2.formatNonZero(((SecurityPerformanceRecord) r).getTotalRateOfReturnDiv());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "totalRateOfReturnDiv")); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(
+                        r -> Values.Percent2.formatNonZero(r.getTotalRateOfReturnDiv().get())));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getTotalRateOfReturnDiv().get()));
         recordColumns.addColumn(column);
 
         // Rendite insgesamt, nach gleitendem Durchschnitt
@@ -848,17 +1473,10 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setMenuLabel(Messages.ColumnDividendMovingAverageTotalRateOfReturn_MenuLabel);
         column.setDescription(Messages.ColumnDividendMovingAverageTotalRateOfReturn_Description);
         column.setVisible(false);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent2
-                                .formatNonZero(((SecurityPerformanceRecord) r).getTotalRateOfReturnDivMovingAverage());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class,
-                        "totalRateOfReturnDivMovingAverage")); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(
+                        r -> Values.Percent2.formatNonZero(r.getTotalRateOfReturnDivMovingAverage().get())));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getTotalRateOfReturnDivMovingAverage().get()));
         recordColumns.addColumn(column);
 
         // Rendite pro Jahr
@@ -866,15 +1484,10 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setDescription(Messages.ColumnDividendRateOfReturnPerYear_Description);
         column.setVisible(false);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent2.formatNonZero(((SecurityPerformanceRecord) r).getRateOfReturnPerYear());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "rateOfReturnPerYear")); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(
+                        r -> Values.Percent2.formatNonZero(r.getRateOfReturnPerYear().get())));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getRateOfReturnPerYear().get()));
         recordColumns.addColumn(column);
 
         // Anzahl der Dividendenereignisse
@@ -882,15 +1495,10 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setMenuLabel(Messages.ColumnDividendPaymentCount_MenuLabel);
         column.setVisible(false);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Id.format(((SecurityPerformanceRecord) r).getDividendEventCount());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "dividendEventCount")); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(r -> Values.Id.format(r.getDividendEventCount().get()),
+                        aggregate -> Values.Id.format(aggregate.sum(r -> r.getDividendEventCount().get()))));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getDividendEventCount().get()));
         recordColumns.addColumn(column);
 
         // Datum der letzten Dividendenzahlung
@@ -898,16 +1506,10 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setMenuLabel(Messages.ColumnLastDividendPayment_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setVisible(false);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                LocalDate date = ((SecurityPerformanceRecord) r).getLastDividendPayment();
-                return date != null ? Values.Date.format(date) : null;
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "lastDividendPayment")); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(new DateLabelProvider(
+                        r -> ((LazySecurityPerformanceRecord) r).getLastDividendPayment().get())));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getLastDividendPayment().get()));
         recordColumns.addColumn(column);
 
         // Periodizität der Dividendenzahlungen
@@ -915,16 +1517,15 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setDescription(Messages.ColumnDividendPeriodicity_Description);
         column.setVisible(false);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return ((SecurityPerformanceRecord) r).getPeriodicity().toString();
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "periodicitySort")); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(r -> r.getPeriodicity().get().toString()));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getPeriodicity().get().ordinal()));
         recordColumns.addColumn(column);
+
+        DividendPaymentColumns.createFor(getClient()).forEach(c -> {
+            c.setLabelProvider(new RowElementLabelProvider(c));
+            recordColumns.addColumn(c);
+        });
     }
 
     private void createRiskColumns()
@@ -933,58 +1534,51 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setMenuLabel(Messages.LabelMaxDrawdown);
         column.setGroupLabel(Messages.LabelRiskIndicators);
         column.setVisible(false);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent2.formatNonZero(((SecurityPerformanceRecord) r).getMaxDrawdown());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "maxDrawdown")); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(
+                        r -> Values.Percent2.formatNonZero(r.getDrawdown().get().getMaxDrawdown())));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getDrawdown().get().getMaxDrawdown()));
         recordColumns.addColumn(column);
 
         column = new Column("mddduration", Messages.ColumnMaxDrawdownDuration, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setMenuLabel(Messages.LabelMaxDrawdownDuration);
         column.setGroupLabel(Messages.LabelRiskIndicators);
         column.setVisible(false);
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setLabelProvider(new RowElementLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object r)
             {
-                return String.valueOf(((SecurityPerformanceRecord) r).getMaxDrawdownDuration());
+                return String.valueOf(((LazySecurityPerformanceRecord) r).getDrawdown().get().getMaxDrawdownDuration()
+                                .getDays());
             }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "maxDrawdownDuration")); //$NON-NLS-1$
+
+            @Override
+            public String getToolTipText(Object r)
+            {
+                return ((LazySecurityPerformanceRecord) r).getDrawdown().get().getMaxDrawdownDuration().toString();
+            }
+        }));
+        column.setSorter(ColumnViewerSorter.create(e -> ((LazySecurityPerformanceRecord) e).getDrawdown().get()
+                        .getMaxDrawdownDuration().getDays()));
         recordColumns.addColumn(column);
 
         column = new Column("vola", Messages.LabelVolatility, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.LabelRiskIndicators);
         column.setVisible(false);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent2.format(((SecurityPerformanceRecord) r).getVolatility());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "volatility")); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(
+                        r -> Values.Percent2.format(r.getVolatility().get().getStandardDeviation())));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getVolatility().get().getStandardDeviation()));
         recordColumns.addColumn(column);
 
         column = new Column("semivola", Messages.LabelSemiVolatility, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.LabelRiskIndicators);
         column.setVisible(false);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object r)
-            {
-                return Values.Percent2.format(((SecurityPerformanceRecord) r).getSemiVolatility());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "semiVolatility")); //$NON-NLS-1$
+        column.setLabelProvider(new RowElementLabelProvider(
+                        r -> Values.Percent2.format(r.getVolatility().get().getSemiDeviation())));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((LazySecurityPerformanceRecord) e).getVolatility().get().getSemiDeviation()));
         recordColumns.addColumn(column);
     }
 
@@ -999,317 +1593,190 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         AttributeColumn.createFor(getClient(), Security.class) //
                         .forEach(column -> {
-                            column.setEditingSupport(null);
+                            column.getEditingSupport().addListener(new MarkDirtyClientListener(getClient()));
                             recordColumns.addColumn(column);
                         });
     }
 
-    @Override
-    protected void createBottomTable(Composite parent) // NOSONAR
+    private void createClientFilteredColumns()
     {
-        Composite sash = new Composite(parent, SWT.NONE);
-        sash.setLayout(new SashLayout(sash, SWT.HORIZONTAL | SWT.END));
+        // the suffix added to the column label so that the message format can
+        // print the filter name
+        var suffix = " [{0}]"; //$NON-NLS-1$
 
-        // folder
-        CTabFolder folder = new CTabFolder(sash, SWT.BORDER);
-
-        // folder - chart
-        CTabItem item = new CTabItem(folder, SWT.NONE);
-        item.setText(Messages.SecurityTabChart);
-        Composite chartComposite = new Composite(folder, SWT.NONE);
-        item.setControl(chartComposite);
-
-        chart = new SecuritiesChart(chartComposite, clientFilter.filter(getClient()),
-                        new CurrencyConverterImpl(factory, getClient().getBaseCurrency()));
-
-        // folder - transactions
-
-        item = new CTabItem(folder, SWT.NONE);
-        item.setText(Messages.SecurityTabTransactions);
-        Composite container = new Composite(folder, SWT.NONE);
-        item.setControl(container);
-        TableColumnLayout layout = new TableColumnLayout();
-        container.setLayout(layout);
-
-        transactions = new TableViewer(container, SWT.FULL_SELECTION);
-        ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
-
-        ShowHideColumnHelper support = new ShowHideColumnHelper(
-                        SecuritiesPerformanceView.class.getSimpleName() + "@bottom4", getPreferenceStore(), //$NON-NLS-1$
-                        transactions, layout);
-        createTransactionColumns(support);
-        support.createColumns();
-
-        transactions.getTable().setHeaderVisible(true);
-        transactions.getTable().setLinesVisible(true);
-        transactions.setContentProvider(ArrayContentProvider.getInstance());
-
-        // folder - trades
-
-        item = new CTabItem(folder, SWT.NONE);
-        item.setText(Messages.SecurityTabTrades);
-        trades = new TradesTableViewer(this);
-        item.setControl(trades.createViewControl(folder, TradesTableViewer.ViewMode.SINGLE_SECURITY));
-        item.setData((Consumer<IMenuManager>) manager -> trades.getShowHideColumnHelper().menuAboutToShow(manager));
-
-        folder.setSelection(0);
-
-        setupTabFolderToolBar(folder);
-
-        // latest quote information
-
-        latest = new SecurityDetailsViewer(sash, SWT.BORDER, getClient());
-        latest.getControl().setLayoutData(new SashLayoutData(SWTHelper.getPackedWidth(latest.getControl())));
-
-        reportingPeriodUpdated();
-    }
-
-    private void setupTabFolderToolBar(CTabFolder folder)
-    {
-        ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
-        toolBarManager.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE, manager -> {
-            CTabItem selection = folder.getSelection();
-            if (selection == null)
-                return;
-
-            @SuppressWarnings("unchecked")
-            Consumer<IMenuManager> menu = (Consumer<IMenuManager>) selection.getData();
-            if (menu == null)
-                return;
-
-            menu.accept(manager);
+        // shares held
+        Column column = new Column("filter:shares", Messages.ColumnSharesOwned, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ClientFilterColumnOptions(Messages.ColumnSharesOwned + suffix,
+                        new ClientFilterMenu(getClient(), getPreferenceStore())));
+        column.setGroupLabel(Messages.LabelClientFilterMenu);
+        column.setLabelProvider(
+                        new RowElementOptionLabelProvider(r -> Values.Share.formatNonZero(r.getSharesHeld().get())));
+        column.setSorter(ColumnViewerSorter.createWithOption((element, option) -> {
+            // important: because we wrap all sorters centrally, we only have
+            // the unwrapped record here -> use the model to resolve the correct
+            // record
+            var dataRecord = model.getRecord(((LazySecurityPerformanceRecord) element).getSecurity(),
+                            (ClientFilterMenu.Item) option);
+            return dataRecord == null ? null : dataRecord.getSharesHeld().get();
         }));
-        ToolBar toolBar = toolBarManager.createControl(folder);
-        toolBar.setBackground(folder.getBackground());
 
-        CTabItem selection = folder.getSelection();
-        toolBar.setVisible(selection != null && selection.getData() != null);
+        column.setVisible(false);
+        recordColumns.addColumn(column);
 
-        folder.setTopRight(toolBar);
-
-        folder.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> {
-            CTabItem s = folder.getSelection();
-            toolBar.setVisible(s != null && s.getData() != null);
-        }));
-    }
-
-    private void createTransactionColumns(ShowHideColumnHelper support)
-    {
-        // date
-        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return Values.DateTime.format(((CalculationLineItem) e).getDateTime());
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
-
-            CalculationLineItem c1 = (CalculationLineItem) o1;
-            CalculationLineItem c2 = (CalculationLineItem) o2;
-
-            return c1.getDateTime().compareTo(c2.getDateTime());
-        }));
-        support.addColumn(column);
-
-        // transaction type
-        column = new Column(Messages.ColumnTransactionType, SWT.None, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((CalculationLineItem) e).getLabel();
-            }
-        });
-        support.addColumn(column);
-
-        // shares
-        column = new Column(Messages.ColumnShares, SWT.None, 80);
-        column.setLabelProvider(new SharesLabelProvider() // NOSONAR
-        {
-            @Override
-            public Long getValue(Object e)
-            {
-                CalculationLineItem data = (CalculationLineItem) e;
-
-                Optional<SecurityPosition> position = data.getSecurityPosition();
-                if (position.isPresent())
-                    return position.get().getShares();
-
-                Optional<Transaction> transaction = data.getTransaction();
-                if (transaction.isPresent() && transaction.get().getShares() != 0L)
-                    return transaction.get().getShares();
-
+        // cost value - fifo
+        column = new Column("filter:pv", Messages.ColumnPurchaseValue, SWT.RIGHT, 75); //$NON-NLS-1$
+        column.setOptions(new ClientFilterColumnOptions(Messages.ColumnPurchaseValue + suffix,
+                        new ClientFilterMenu(getClient(), getPreferenceStore())));
+        column.setDescription(Messages.ColumnPurchaseValue_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.DescriptionDataRelativeToReportingPeriod);
+        column.setGroupLabel(Messages.LabelClientFilterMenu);
+        column.setImage(Images.INTERVAL);
+        column.setLabelProvider(new RowElementOptionLabelProvider(
+                        r -> Values.Money.format(r.getFifoCost().get(), getClient().getBaseCurrency()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getFifoCost().get()),
+                                        getClient().getBaseCurrency())));
+        column.setToolTipProvider((element, option) -> {
+            var row = (RowElement) element;
+            if (!row.isRecord())
                 return null;
-            }
+            var dataRecord = row.model.getRecord(row.performanceRecord.getSecurity(), (ClientFilterMenu.Item) option);
+            return dataRecord == null ? "" : dataRecord.explain(LazySecurityPerformanceRecord.Trails.FIFO_COST); //$NON-NLS-1$
         });
-        support.addColumn(column);
-
-        // dividend amount
-        column = new Column(Messages.ColumnDividendPayment, SWT.RIGHT, 80);
-        column.setDescription(Messages.ColumnGrossDividend);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                CalculationLineItem item = (CalculationLineItem) e;
-                if (item instanceof CalculationLineItem.DividendPayment)
-                    return Values.Money.format(((CalculationLineItem.DividendPayment) item).getGrossValue(),
-                                    getClient().getBaseCurrency());
-                else
-                    return null;
-            }
-        });
-        support.addColumn(column);
-
-        // dividend per share
-        column = new Column(Messages.ColumnDividendPerShare, SWT.RIGHT, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                CalculationLineItem item = (CalculationLineItem) e;
-                if (item instanceof CalculationLineItem.DividendPayment)
-                    return Values.AmountFraction
-                                    .formatNonZero(((CalculationLineItem.DividendPayment) item).getDividendPerShare());
-                else
-                    return null;
-            }
-        });
-        support.addColumn(column);
-
-        // dividend per share
-        column = new Column(Messages.ColumnPersonalDividendYield, SWT.RIGHT, 80);
-        column.setDescription(Messages.ColumnPersonalDividendYield_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                CalculationLineItem item = (CalculationLineItem) e;
-                if (item instanceof CalculationLineItem.DividendPayment)
-                    return Values.Percent2.formatNonZero(
-                                    ((CalculationLineItem.DividendPayment) item).getPersonalDividendYield());
-                else
-                    return null;
-            }
-        });
-        support.addColumn(column);
-
-        // dividend per share (moving average)
-        column = new Column(Messages.ColumnPersonalDividendYieldMovingAverage, SWT.RIGHT, 80);
-        column.setDescription(Messages.ColumnPersonalDividendYieldMovingAverage_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                CalculationLineItem item = (CalculationLineItem) e;
-                if (item instanceof CalculationLineItem.DividendPayment)
-                    return Values.Percent2.formatNonZero(((CalculationLineItem.DividendPayment) item)
-                                    .getPersonalDividendYieldMovingAverage());
-                else
-                    return null;
-            }
-        });
-        support.addColumn(column);
-
-        // einstandskurs / bewertung
-        column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                CalculationLineItem item = (CalculationLineItem) e;
-                if (item instanceof CalculationLineItem.DividendPayment)
-                    return null;
-                else
-                    return Values.Money.format(item.getValue(), getClient().getBaseCurrency());
-            }
-        });
-        support.addColumn(column);
-
-        // purchase quote
-        column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                Optional<Transaction> tx = ((CalculationLineItem) e).getTransaction();
-
-                if (tx.isPresent() && tx.get() instanceof PortfolioTransaction)
-                {
-                    PortfolioTransaction ptx = (PortfolioTransaction) tx.get();
-                    return Values.Quote.format(ptx.getGrossPricePerShare(), getClient().getBaseCurrency());
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        });
-        support.addColumn(column);
-
-        // gegenkonto
-        column = new Column(Messages.ColumnAccount, SWT.None, 120);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return String.valueOf(((CalculationLineItem) e).getOwner());
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                TransactionOwner<?> owner = ((CalculationLineItem) e).getOwner();
-                return LogoManager.instance().getDefaultColumnImage(owner, getClient().getSettings());
-            }
-
-        });
-        support.addColumn(column);
-
-        // note
-        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                Optional<Transaction> transaction = ((CalculationLineItem) e).getTransaction();
-                return transaction.isPresent() ? transaction.get().getNote() : null;
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                String note = getText(e);
-                return note != null && note.length() > 0 ? Images.NOTE.image() : null;
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
-
-            Optional<Transaction> t1 = ((CalculationLineItem) o1).getTransaction();
-            String s1 = t1.isPresent() ? t1.get().getNote() : ""; //$NON-NLS-1$
-            Optional<Transaction> t2 = ((CalculationLineItem) o2).getTransaction();
-            String s2 = t2.isPresent() ? t2.get().getNote() : ""; //$NON-NLS-1$
-            // notes can be null
-            if (s1 == null)
-                s1 = ""; //$NON-NLS-1$
-            if (s2 == null)
-                s2 = ""; //$NON-NLS-1$
-
-            return s1.compareTo(s2);
+        column.setSorter(ColumnViewerSorter.createWithOption((element, option) -> {
+            var dataRecord = model.getRecord(((LazySecurityPerformanceRecord) element).getSecurity(),
+                            (ClientFilterMenu.Item) option);
+            return dataRecord == null ? null : dataRecord.getFifoCost().get();
         }));
-        support.addColumn(column);
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
+        // market value
+        column = new Column("filter:mv", Messages.ColumnMarketValue, SWT.RIGHT, 75); //$NON-NLS-1$
+        column.setOptions(new ClientFilterColumnOptions(Messages.ColumnMarketValue + suffix,
+                        new ClientFilterMenu(getClient(), getPreferenceStore())));
+        column.setGroupLabel(Messages.LabelClientFilterMenu);
+        column.setLabelProvider(new RowElementOptionLabelProvider(
+                        r -> Values.Money.format(r.getMarketValue().get(), getClient().getBaseCurrency()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getMarketValue().get()),
+                                        getClient().getBaseCurrency())));
+        column.setSorter(ColumnViewerSorter.createWithOption((element, option) -> {
+            var dataRecord = model.getRecord(((LazySecurityPerformanceRecord) element).getSecurity(),
+                            (ClientFilterMenu.Item) option);
+            return dataRecord == null ? null : dataRecord.getMarketValue().get();
+        }));
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
+        // sum of dividends
+        column = new Column("filter:sumdiv", Messages.ColumnDividendSum, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ClientFilterColumnOptions(Messages.ColumnDividendSum + suffix,
+                        new ClientFilterMenu(getClient(), getPreferenceStore())));
+        column.setMenuLabel(Messages.ColumnDividendSum_MenuLabel);
+        column.setGroupLabel(Messages.LabelClientFilterMenu);
+        column.setLabelProvider(new RowElementOptionLabelProvider(
+                        r -> Values.Money.format(r.getSumOfDividends().get(), getClient().getBaseCurrency()),
+                        aggregate -> Values.Money.format(
+                                        aggregate.sum(getClient().getBaseCurrency(), r -> r.getSumOfDividends().get()),
+                                        getClient().getBaseCurrency())));
+        column.setSorter(ColumnViewerSorter.createWithOption((element, option) -> {
+            var dataRecord = model.getRecord(((LazySecurityPerformanceRecord) element).getSecurity(),
+                            (ClientFilterMenu.Item) option);
+            return dataRecord == null ? null : dataRecord.getSumOfDividends().get();
+        }));
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
+        // true time weighted rate of return
+        column = new Column("filter:twror", Messages.LabelTTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ClientFilterColumnOptions(Messages.ColumnTTWROR + suffix,
+                        new ClientFilterMenu(getClient(), getPreferenceStore())));
+        column.setGroupLabel(Messages.LabelClientFilterMenu);
+        column.setLabelProvider(new RowElementOptionLabelProvider(
+                        r -> Values.Percent2.format(r.getTrueTimeWeightedRateOfReturn().get())));
+        column.setSorter(ColumnViewerSorter.createWithOption((element, option) -> {
+            var dataRecord = model.getRecord(((LazySecurityPerformanceRecord) element).getSecurity(),
+                            (ClientFilterMenu.Item) option);
+            return dataRecord == null ? null : dataRecord.getTrueTimeWeightedRateOfReturn().get();
+        }));
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
+        // internal rate of erturn
+        column = new Column("filter:izf", Messages.ColumnIRR_MenuLabel, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ClientFilterColumnOptions(Messages.ColumnIRR + suffix,
+                        new ClientFilterMenu(getClient(), getPreferenceStore())));
+        column.setGroupLabel(Messages.LabelClientFilterMenu);
+        column.setLabelProvider(new RowElementOptionLabelProvider(r -> Values.Percent2.format(r.getIrr().get())));
+        column.setSorter(ColumnViewerSorter.createWithOption((element, option) -> {
+            var dataRecord = model.getRecord(((LazySecurityPerformanceRecord) element).getSecurity(),
+                            (ClientFilterMenu.Item) option);
+            return dataRecord == null ? null : dataRecord.getIrr().get();
+        }));
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+    }
+
+    private void createExperimentalEDivColumn()
+    {
+        // retrieve attribute
+
+        Optional<AttributeType> attribute = getClient().getSettings().getAttributeTypes()
+                        .filter(a -> a.supports(Security.class)) //
+                        .filter(a -> a.getType() == Double.class) //
+                        .filter(a -> "ediv".equalsIgnoreCase(a.getSource())) //$NON-NLS-1$
+                        .findAny();
+
+        if (attribute.isPresent())
+        {
+            var suffix = " [{0}]"; //$NON-NLS-1$
+            var edivAttribute = attribute.get();
+
+            // market value * expected dividend yield = expected dividends
+            Function<LazySecurityPerformanceRecord, Money> valueProvider = dataRecord -> {
+                var dive = (Double) dataRecord.getSecurity().getAttributes().get(edivAttribute);
+                if (dive == null)
+                    return null;
+
+                var marketValue = dataRecord.getMarketValue().get();
+
+                double expected = marketValue.getAmount() * dive;
+                if (attribute.get().getConverter().getClass() == AttributeType.PercentPlainConverter.class)
+                    expected /= 100;
+
+                return Money.of(marketValue.getCurrencyCode(), Math.round(expected));
+            };
+
+            Column column = new Column("filter:expecteddividends", //$NON-NLS-1$
+                            Messages.ExperimentalColumnExpectedDividends_MenuLabel, SWT.RIGHT, 80);
+            column.setOptions(new ClientFilterColumnOptions(Messages.ExperimentalColumnExpectedDividends + suffix,
+                            new ClientFilterMenu(getClient(), getPreferenceStore())));
+            column.setGroupLabel(Messages.LabelClientFilterMenu);
+            column.setLabelProvider(new RowElementOptionLabelProvider(
+                            r -> Values.Money.formatNonZero(valueProvider.apply(r), getClient().getBaseCurrency()),
+                            aggregate -> Values.Money.formatNonZero(
+                                            aggregate.sum(getClient().getBaseCurrency(), valueProvider::apply),
+                                            getClient().getBaseCurrency())));
+            column.setSorter(ColumnViewerSorter.createWithOption((element, option) -> {
+                var dataRecord = model.getRecord(((LazySecurityPerformanceRecord) element).getSecurity(),
+                                (ClientFilterMenu.Item) option);
+                return dataRecord == null ? null : valueProvider.apply(dataRecord);
+            }));
+
+            column.setVisible(false);
+            recordColumns.addColumn(column);
+        }
+    }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(CalculationLineItemPane.class));
+        pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
     }
 
     @Override
@@ -1318,36 +1785,45 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         // keep security selected even though SecurityPerformacneRecord changes
         Set<Security> oldSelection = new HashSet<>();
         for (Iterator<?> iter = records.getStructuredSelection().iterator(); iter.hasNext();)
-            oldSelection.add(((SecurityPerformanceRecord) iter.next()).getSecurity());
+        {
+            var row = (RowElement) iter.next();
+            if (row.isRecord())
+                oldSelection.add(row.performanceRecord.getSecurity());
+        }
 
         reportingPeriodUpdated();
         updateTitle(getDefaultTitle());
 
-        List<SecurityPerformanceRecord> newSelection = ((List<?>) records.getInput()).stream()
-                        .map(e -> (SecurityPerformanceRecord) e) //
-                        .filter(e -> oldSelection.contains(e.getSecurity())) //
-                        .collect(Collectors.toList());
+        List<RowElement> newSelection = ((List<?>) records.getInput()).stream() //
+                        .map(e -> (RowElement) e) //
+                        .filter(e -> e.isRecord()) //
+                        .filter(e -> oldSelection.contains(e.performanceRecord.getSecurity())) //
+                        .collect(toMutableList());
         records.setSelection(new StructuredSelection(newSelection));
     }
 
     @Override
     public void reportingPeriodUpdated()
     {
+        Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
+        setToContext(UIConstants.Context.FILTERED_CLIENT, filteredClient);
+
         Interval period = dropDown.getSelectedPeriod().toInterval(LocalDate.now());
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-        Client filteredClient = clientFilter.filter(getClient());
-        records.setInput(SecurityPerformanceSnapshot.create(filteredClient, converter, period).getRecords());
+
+        model = new Model(LazySecurityPerformanceSnapshot.create(filteredClient, converter, period));
+
+        records.setInput(model.getRows());
         records.refresh();
-        chart.setClient(filteredClient);
     }
 
     private void fillContextMenu(IMenuManager manager) // NOSONAR
     {
-        Object selection = ((IStructuredSelection) records.getSelection()).getFirstElement();
-        if (!(selection instanceof SecurityPerformanceRecord))
+        RowElement row = (RowElement) ((IStructuredSelection) records.getSelection()).getFirstElement();
+        if (row == null || !row.isRecord())
             return;
 
-        Security security = ((SecurityPerformanceRecord) selection).getSecurity();
+        Security security = row.performanceRecord.getSecurity();
         new SecurityContextMenu(this).menuAboutToShow(manager, security);
     }
 }

@@ -1,0 +1,76 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.4
+-----------------------------------------
+ da
+ 
+  
+Bank Direkt   
+der Raiffeisenlandesbank OÖ (BLZ: 34000)  
+Europaplatz 1a    b
+4020 Linz  
+ 
+ 
+a
+a  
+Abrechnung Ereignis a  
+45664992 - 16.03.2023 a  
+Depotnummer: 12.345.678  
+Herrn Max Muster
+Max Muster
+Dorf 124 230/475
+6789 Kufstein Bank Direkt
+Wir haben für Sie am 16.03.2023 unten angeführtes Geschäft abgerechnet:
+Abrechnungsnummer/-datum: 46711492 - 16.03.2023
+Geschäftsart: Ausbuchung
+wegen Steuerlicher Umtausch 
+Abgang: 433 Stk   
+Titel: LU0392496344 Lyxor MSCI Europe SmallCap ETF
+Inh.-An. I o.N.
+Fondsgesellschaft: Lyxor
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt am Main
+Zu Gunsten IBAN AT44 3400 0000 0123 4567 0,00 EUR 
+Valuta 10.03.2023
+Abrechnungsnummer/-datum: 45664992 - 16.03.2023
+Geschäftsart: Einbuchung
+wegen Steuerlicher Umtausch 
+im Verhältnis: 1 : 1
+Zugang: 433 Stk   
+Titel: LU2572257470 AIS-MSCI Eu.SC ESG CL.NZ AMCTB
+Act.Nom. U.ETF EUR Dis. oN
+Fondsgesellschaft: Amundi Index Solutions
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt am Main
+Zu Gunsten IBAN AT44 3400 0000 0123 4567 0,00 EUR 
+Valuta 10.03.2023
+Extag: 10.03.2023
+16.03.2023 1 / 2
+BIC: RZOOAT2L, Landesgericht Linz, FN 247579m, UID: ATU57834268
+Dieser Beleg wurde durch die Raiffeisenlandesbank Oberösterreich erstellt.
+Ohne Unterschrift. Bitte geben Sie Unstimmigkeiten sofort bekannt.
+Bank Direkt
+der Raiffeisenlandesbank OÖ (BLZ: 34000)
+Europaplatz 1a  b
+4020 Linz
+a
+a
+Abrechnung Ereignis a
+45664992 - 16.03.2023 a
+Depotnummer: 12.345.678
+Max Muster
+230/475
+Bank Direkt
+Ausgangssituation:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 433 Stk
+steuerlicher Anschaffungswert: 18.484,94 EUR
+Bezogene Kategorie: LU2572257470
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 433 Stk
+steuerlicher Anschaffungswert: 18.484,94 EUR
+Steuerl. Behandlung vorbehaltlich Beurteilung durch BMF
+          Für ein Veranlagungsgespräch stehen wir Ihnen gerne zur Verfügung.
+16.03.2023 2 / 2
+BIC: RZOOAT2L, Landesgericht Linz, FN 247579m, UID: ATU57834268
+Dieser Beleg wurde durch die Raiffeisenlandesbank Oberösterreich erstellt.
+Ohne Unterschrift. Bitte geben Sie Unstimmigkeiten sofort bekannt.

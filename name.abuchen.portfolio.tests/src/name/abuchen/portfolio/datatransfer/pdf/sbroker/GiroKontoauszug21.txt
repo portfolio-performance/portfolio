@@ -1,0 +1,78 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+StarMoney 29.04.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 19 1 von 2
+Buch.-Tag Wert Verwendungszweck/Erläuterungen Umsatz (EUR)
+Startsaldo am 14.11.2014 in EUR 3.869,54
+01.12 29.11.14 Entgeltabrechnung -1,75
+Entgeltabrechnung siehe Anlage
+01.12 01.12.14 Überweisung -400,00
+Mustermann Karl
+KREF+d32a57bd4f-481918-1246 4328-20141129
+SVWZ+DATUM 29.11.2014, 12.47 UHR, 1.TAN 083112
+01.12 01.12.14 Basis-Lastschrift -119,00
+DAA - Technikum GmbH
+EREF+2001446450 MREF+1799125018001
+CRED+DE68DAA00000092350 SVWZ+2001446450179912501800
+1Nr.SOLL11/2014/1.11.2014St udiengebuehr 11/2014
+01.12 01.12.14 Basis-Lastschrift -28,50
+IGM Schweinfurt
+EREF+17544444 MREF+9999999999
+CRED+DE71ZZZ00000053593 SVWZ+BEITRAG BIS 11/14 MAND
+ATSREF 9999999999 GLAEUBIGE R-ID DE71ZZZ00000053593 NAE
+CHSTER BEITRAGSEINZUG IN BE KANNTER HOEHE UND VEREINBAR
+TEM TURNUS
+Endsaldo am 01.12.2014 in EUR 5.569,15
+Anlage Rechnungsabschluss:
+Abrechnung 28.11.2014
+Information zur Abrechnung
+Entgelte vom 01.11.2014 bis 28.11.2014                               3,55-
+Entgelte / Auslagen                                    3,55-
+abzüglich 100% Nachlass auf        1,80- 1,80+         1,80+
+--------------
+Abrechnung 28.11.2014                                                1,75-
+Rechnungsnummer: 20141201-BY036-00000608578
+StarMoney 29.04.2023
+Sparkasse Bankleitzahl: 79351730SWIFT-BIC: BYLADEM1HAS
+Ostunterfranken IBAN: DE07793517300000999999 
+Max Mustermann Konto Kontoauszug Seite
+999999 19 2 von 2
+SPARKASSE OSTUNTERFRANKEN UST ID: DE133906625
+GENEHMIGUNGSFIKTION:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug.
+Eventuelle Rückfragen besprechen Sie bitte mit Ihrem Kundenberater.
+Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere
+Revisionsabteilung. Unsere Anschrift(en) entnehmen Sie bitte unserem Preis-
+und Leistungsverzeichnis.
+Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzel-
+nen Buchungen. Dies bedeutet, dass der genannte Betrag nicht dem für die
+Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen
+möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder gedul-
+deten Kontoüberziehung anfallen können.
+Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs
+Wochen nach Zugang keine Einwendungen erheben. Einwendungen gegen Rechnungs-
+abschlüsse müssen der Sparkasse schriftlich oder, wenn im Rahmen der Ge-
+schäftsbeziehung der elektronische Kommunikationsweg vereinbart wurde (z.B.
+Online-Banking), auf diesem Wege zugehen. Zur Fristwahrung genügt die recht-
+zeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+Gutschriften aus eingereichten Schecks, Lastschriften und anderen
+Einzugspapieren erfolgen unter dem Vorbehalt der Einlösung.
+Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht
+bis zum Ablauf des übernächsten Bankarbeitstages storniert oder korrigiert
+werden. Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren
+Einlösungswillen schon vorher Dritten gegenüber erkennbar bekundet hat (z.B.
+durch Bezahltmeldung). Für Lastschriften gelten die Einlösungsregeln in
+den hierfür vereinbarten besonderen Bedingungen.
+Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen
+laut angegebener Kontonummer als Rechnung im Sinne des UStG.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäfts-
+bedingungen und besonderen Bedingungen stellen wir Ihnen auf Wunsch gern
+zur Verfügung.
+Mit freundlichen Grüßen
+Ihre Sparkasse

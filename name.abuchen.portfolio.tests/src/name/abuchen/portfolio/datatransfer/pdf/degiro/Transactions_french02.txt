@@ -1,0 +1,18 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+
+Transactions du 01-03-2024 au 03-05-2024
+Date Heure Produit Code ISIN Place Lieu Quantit Cours Montant devise Montant Taux de Frais deboursiè d'exécution é locale change courtage Montant négocié
+16-04-2024 21:56 ADR ON AMBEV US02319V1035 NSY CDED -150 2,265 USD 339,75 USD 319,95 EUR 1,0619 -2,00 EUR 317,95 EUR
+26-03-2024 10:27 ISHARES PROP US IE00B1FZSF77 EAM XAMS -4 25,25 EUR 101,00 EUR 101,00 EUR EUR 101,00 EUR
+26-03-2024 10:13 ISHARES PROP US IE00B1FZSF77 EAM XAMS -12 25,25 EUR 303,00 EUR 303,00 EUR -3,00 EUR 300,00 EUR
+22-01-2024 16:51 UNITEDHEALTH GROUP INC US91324P1021 NSY XNAS 1 508,4 USD -508,40 USD -466,94 EUR 1,0888 -2,00 EUR -468,94 EUR
+22-01-2024 16:31 ELEVANCE HEALTH INC US0367521038 NSY BATS -1 469 USD 469,00 USD 430,59 EUR 1,0892 -2,00 EUR 428,59 EUR
+22-01-2024 16:30 MICRON TECHNOLOGY INC US5951121038 NDQ XNAS -4 88,31 USD 353,24 USD 324,22 EUR 1,0895 -2,00 EUR 322,22 EUR
+flatexDEGIRO Bank Dutch Branch, qui opère sous le nom de www.degiro.fr Compte
+DEGIRO, est la succursale néerlandaise de flatexDEGIRO Bank AG. clients@degiro.fr
+flatexDEGIRO Bank AG est principalement supervisée par le
+régulateur financier allemand (BaFin). Aux Pays-Bas, flatexDEGIRO Amstelplein 1 1096 HA 2024-05-03
+Bank Dutch Branch est enregistrée auprès de la DNB et supervisée Page 1 / 1
+par l'AFM et la DNB.

@@ -1,0 +1,76 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1.qualifier
+-----------------------------------------
+Wertpapierabrechnung
+Depot-Tagesauszug
+Depot: 0111111111
+Depotinhaber:
+Herrn Richard Mustermann
+Richard Mustermann Bankverbindung generell:
+Musterstraße 9 Konto: 0000111111
+11111  Stadt BLZ: 793 517 30
+Spk Ostunterfranken
+Kontoinhaber:
+Mustermann, Richard
+Vollmachten:
+Vollmacht Leben/Tod Karl Mustermann
+20. November 2012
+Ertragsabrechnung Auszug: 1 / Seite 1 von 3
+ 
+Sehr geehrter Herr Mustermann,
+folgende Buchung haben wir für Ihr Depot durchgeführt:
+ERTRAGSAUSSCHÜTTUNG
+Ertragstermin: 20.11.2012  
+Anteilbestand am Ertragstermin: 6,190  
+Ausschüttung (pro Anteil EUR 9,4500000): EUR 58,50
+Bezeichnung: DekaLux-Pazifik 
+ISIN: LU0052859252 Unterdepot: 00 Auftragsnummer: 9307 0124
+Verwahrart: GiroSammel Abrechnungstag: 20.11.2012
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten B  estandsdaten
+des Wertpapiers je Anteil in Stück
+ Ausschüttung EUR 58,50 Kurs Bestand alt: 6,190
+= Wiederanlagebetrag EUR 58,50 EUR 58,50 EUR 438,170000 Anteilumsatz: 0,134
+Bestand neu: 6,324
+Ihr erteilter Sparer-Pauschbetrag für Richard Mustermann beträgt EUR 600,00.
+Aktuelle steuerliche Daten
+Gezahlter Zwischengewinn, Stückzinsen und realisierte  E UR 0,00
+Veräußerungsverluste (sonstiger Verlusttopf)
+Verfügbarer Sparer-Pauschbetrag EUR 450,97
+Anrechenbare ausländische Quellensteuer EUR 6,17
+Alle steuerlich relevanten Informationen und Daten des aktuellen Jahres werden Ihnen mit der
+Steuerbescheinigung des Jahresdepotauszuges übersandt, den Sie bis spätestens Ende Januar des Folgejahres
+erhalten. Die erwirtschafteten Erträge der Vorsorgeprodukte Deka-BonusRente, Deka-BasisRente,
+Deka-ZukunftsPlan und Deka-RenteDirekt sind in der Ansparphase abgeltungsteuerfrei. Die Leistungen
+werden in der Regel erst in der Auszahlphase als sog. Sonstige Einkünfte versteuert. Leistungen, die auf
+geförderten Beiträgen beruhen, werden in der Auszahlungsphase voll besteuert (persönlicher Steuersatz).
+Eine evtl. Meldepflicht nach § 59ff. der Außenwirtschaftsverordnung (AWV) erfüllt die DekaBank.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Depot: 0111111111
+Auszug: 1 / Seite 2 von 3
+ 
+Zu Ihrer persönlichen Anlagestrategie beraten Sie gern die Berater der Sparkasse Ostunterfranken.
+ 
+Dort erhalten Sie ebenfalls die aktuellen Verkaufsunterlagen und Dokumentationen mit den Details Ihrer
+Vermögensanlage. Diese Unterlagen können Sie auch bei uns anfordern oder über www.deka.de abrufen.
+Mit freundlichen Grüßen
+DekaBank
+Deutsche Girozentrale
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068
+Sehr geehrte Kundin, sehr geehrter Kunde,
+regelmäßiges Sparen ist die Grundlage für einen zielgerichteten Vermögensaufbau. Und die ideale Ergänzung
+zu Ihrer Geldanlage. Nutzen Sie die Chance, mit dem Deka-FondsSparplan Ihre persönlichen Anlageziele noch
+leichter und flexibler zu erreichen - mit einer monatlichen Sparrate schon ab 25 Euro und einem individuellen
+Zahlungsrhythmus. Wenn Sie Ihren Deka-FondsSparplan erhöhen oder mit einem neuen Deka-FondsSparplan
+regelmäßig sparen möchten, senden Sie diesen Auftrag ausgefüllt an uns zurück. Mit der Zusendung unserer
+Bestätigung ist Ihr Sparplan automatisch eingerichtet.
+Depotnummer: 0111111111
+Depotinhaber: Richard Mustermann
+Generelle Bankverbindung: Konto: 0000111111 BLZ: 793 517 30 Spk Ostunterfranken
+Fondsbezeichnung: DekaLux-Pazifik
+ISIN: LU0052859252   Ausgabeaufschlag¹: 5,260 %

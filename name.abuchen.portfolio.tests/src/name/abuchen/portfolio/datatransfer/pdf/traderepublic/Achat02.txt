@@ -1,0 +1,33 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Marc Dupont PAGE 1 / 1
+86 Avenue du General DATE 10/04/2024
+75000 Paris ORDRE 69da-1c6f
+EXÉCUTION 6f72-063d
+COMPTE-TITRES 1922828944
+RELEVÉ DE TRANSACTION
+RÉCAPITULATIF
+Market-Order Achat le 10/04/2024 à 17:33 (Europe/Berlin).
+Le contractant de la transaction est Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION QUANTITÉ PRIX MONTANT
+Apple Inc. 1 titre(s) 156,18 EUR 156,18 EUR
+Registered Shares o.N.
+ISIN : US0378331005
+TOTAL 156,18 EUR
+DÉTAIL
+POSITION MONTANT
+Frais externes -1,00 EUR
+TOTAL -157,18 EUR
+RÉSERVATION
+COMPTE-ESPÈCES DATE DE VALEUR MONTANT
+DE98502109007017811111 12/04/2024 -157,18 EUR
+Apple Inc. Registered Shares o.N. en garde collective en Allemagne.
+Ce document est généré automatiquement et n'est donc pas signé.
+Si aucune taxe sur le chiffre d'affaires n'est indiquée, il s'agit d'un service non sujet à la taxe sur le chiffre d'affaires (conformément à la 
+réglementation UStG. § 4 n° 8).
+Trade Republic Bank GmbH www.traderepublic.com Siège de la Société: Berlin Directeur Général
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin VAT-ID DE307510626 Gernot Mittendorfer
+ABRE / 10/04/2024 / 26542302 / 9857-e95c

@@ -1,18 +1,21 @@
 package name.abuchen.portfolio.ui.util.chart;
 
 import java.text.DecimalFormat;
-import java.time.ZoneId;
+import java.text.Format;
+import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.FontDescriptor;
@@ -20,21 +23,21 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.IBarSeries;
-import org.swtchart.ILineSeries;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.IBarSeries;
+import org.eclipse.swtchart.ILineSeries;
+import org.eclipse.swtchart.ISeries;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.swt.ColoredLabel;
 import name.abuchen.portfolio.util.Pair;
-import name.abuchen.portfolio.util.TextUtil;
 
 public class TimelineChartToolTip extends AbstractChartToolTip
 {
@@ -42,7 +45,8 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
     private Function<Object, String> xAxisFormat;
 
-    private DecimalFormat valueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
+    private Format defaultValueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
+    private Map<String, Format> overrideValueFormat = new HashMap<>();
 
     private boolean categoryEnabled = false;
     private boolean reverseLabels = false;
@@ -79,9 +83,19 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         this.xAxisFormat = format;
     }
 
-    public void setValueFormat(DecimalFormat valueFormat)
+    public void setDefaultValueFormat(Format defaultValueFormat)
     {
-        this.valueFormat = valueFormat;
+        this.defaultValueFormat = defaultValueFormat;
+    }
+
+    public Format getDefaultValueFormat()
+    {
+        return this.defaultValueFormat;
+    }
+
+    public void overrideValueFormat(String series, Format valueFormat)
+    {
+        this.overrideValueFormat.put(series, valueFormat);
     }
 
     /**
@@ -108,7 +122,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
     }
 
     @Override
-    protected Object getFocusObjectAt(Event event)
+    protected final Object getFocusObjectAt(Event event)
     {
         return categoryEnabled ? getFocusCategoryAt(event) : getFocusDateAt(event);
     }
@@ -128,47 +142,44 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         return coordinate;
     }
 
-    private Date getFocusDateAt(Event event)
+    private LocalDate getFocusDateAt(Event event)
     {
         IAxis xAxis = getChart().getAxisSet().getXAxes()[0];
 
-        long time = (long) xAxis.getDataCoordinate(event.x);
+        long epochDay = (long) xAxis.getDataCoordinate(event.x);
 
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(time);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
+        var date = LocalDate.ofEpochDay(epochDay);
 
         if (showToolTipOnlyForDatesInThisDataSeries == null)
-            return cal.getTime();
+            return date;
 
-        ISeries timeSeries = getChart().getSeriesSet().getSeries(showToolTipOnlyForDatesInThisDataSeries);
+        ISeries<?> timeSeries = getChart().getSeriesSet().getSeries(showToolTipOnlyForDatesInThisDataSeries);
         if (timeSeries == null)
-            return cal.getTime();
+            return date;
 
-        int line = Arrays.binarySearch(timeSeries.getXDateSeries(), cal.getTime());
+        var dataModel = (TimelineSeriesModel) timeSeries.getDataModel();
+        var xDateSeries = dataModel.getXDateSeries();
+
+        int line = Arrays.binarySearch(xDateSeries, date);
 
         if (line >= 0)
-            return cal.getTime();
+            return date;
 
         // otherwise: find closest existing date
         line = -line - 1;
 
         if (line == 0)
-            return timeSeries.getXDateSeries()[line];
+            return xDateSeries[line];
 
-        int length = timeSeries.getXDateSeries().length;
+        int length = xDateSeries.length;
         if (line >= length)
-            return timeSeries.getXDateSeries()[length - 1];
+            return xDateSeries[length - 1];
 
         // check which date is closer to the targeted date
-        long target = cal.getTimeInMillis();
-        Date left = timeSeries.getXDateSeries()[line - 1];
-        Date right = timeSeries.getXDateSeries()[line];
+        var left = xDateSeries[line - 1];
+        var right = xDateSeries[line];
 
-        return target - left.getTime() < right.getTime() - target ? left : right;
+        return epochDay - left.toEpochDay() < right.toEpochDay() - epochDay ? left : right;
     }
 
     @Override
@@ -188,7 +199,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         Label right = new Label(data, SWT.NONE);
         right.setText(formatXAxisData(getFocusedObject()));
 
-        List<Pair<ISeries, Double>> values = computeValues(getChart().getSeriesSet().getSeries());
+        List<Pair<ISeries<?>, Double>> values = computeValues(getChart().getSeriesSet().getSeries());
 
         if (reverseLabels)
             Collections.reverse(values);
@@ -196,19 +207,20 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         if (isAltPressed())
             Collections.sort(values, (l, r) -> r.getValue().compareTo(l.getValue()));
 
-        for (Pair<ISeries, Double> value : values)
+        for (Pair<ISeries<?>, Double> value : values)
         {
-            ISeries series = value.getKey();
+            ISeries<?> series = value.getKey();
 
-            Color color = series instanceof ILineSeries ? ((ILineSeries) series).getLineColor()
-                            : ((IBarSeries) series).getBarColor();
+            Color color = series instanceof ILineSeries<?> lineSeries ? lineSeries.getLineColor()
+                            : ((IBarSeries<?>) series).getBarColor();
 
             ColoredLabel cl = new ColoredLabel(data, SWT.NONE);
             cl.setBackdropColor(color);
-            cl.setText(TextUtil.tooltip(series.getId()));
+            cl.setText(series.getDescription() != null ? series.getDescription() : series.getId());
             GridDataFactory.fillDefaults().grab(true, false).applyTo(cl);
 
             right = new Label(data, SWT.RIGHT);
+            Format valueFormat = overrideValueFormat.getOrDefault(series.getId(), defaultValueFormat);
             right.setText(valueFormat.format(value.getRight()));
             GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(right);
         }
@@ -216,18 +228,27 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         Object focus = getFocusedObject();
         extraInfoProvider.forEach(provider -> provider.accept(container, focus));
 
-        Label hint = new Label(data, SWT.NONE);
-        hint.setText(Messages.TooltipHintPressAlt);
-        hint.setFont(this.resourceManager.createFont(
-                        FontDescriptor.createFrom(data.getFont()).increaseHeight(-3).withStyle(SWT.ITALIC)));
-        GridDataFactory.fillDefaults().span(2, 1).applyTo(hint);
+        Label hint = new Label(data, SWT.WRAP);
+        hint.setText(MessageFormat.format(Messages.TooltipHintPressAlt,
+                        Platform.OS_MACOSX.equals(Platform.getOS()) ? "Option" : "Alt")); //$NON-NLS-1$ //$NON-NLS-2$
+        // first set a small width and then update later
+        GridData hintData = GridDataFactory.fillDefaults().span(2, 1).hint(10, SWT.DEFAULT).span(2, 1).create();
+        hint.setLayoutData(hintData);
+
+        hint.getParent().pack();
+        hintData.widthHint = hint.getBounds().width;
+        hint.getParent().pack();
+        hint.setFont(this.resourceManager
+                        .create(FontDescriptor.createFrom(data.getFont()).increaseHeight(-3).withStyle(SWT.ITALIC)));
     }
 
-    private List<Pair<ISeries, Double>> computeValues(ISeries[] allSeries)
+    private List<Pair<ISeries<?>, Double>> computeValues(ISeries<?>[] allSeries)
     {
-        List<Pair<ISeries, Double>> values = new ArrayList<>();
+        List<Pair<ISeries<?>, Double>> values = new ArrayList<>();
 
-        for (ISeries series : allSeries) // NOSONAR
+        var focusedObject = getFocusedObject();
+
+        for (ISeries<?> series : allSeries) // NOSONAR
         {
             if (excludeFromTooltip.contains(series.getId()))
                 continue;
@@ -243,10 +264,24 @@ public class TimelineChartToolTip extends AbstractChartToolTip
             }
             else
             {
-                int line = Arrays.binarySearch(series.getXDateSeries(), getFocusedObject());
-                if (line < 0)
+                var dataModel = (TimelineSeriesModel) series.getDataModel();
+                var xData = dataModel.getXDateSeries();
+
+                int line = Arrays.binarySearch(xData, focusedObject);
+                if (line >= 0)
+                {
+                    // user hit the pixel, show value
+                    value = series.getYSeries()[line];
+                }
+                else if (line == -1 || line == -xData.length - 1)
+                {
+                    // pixel is before or after data series, show nothing
                     continue;
-                value = series.getYSeries()[line];
+                }
+                else
+                {
+                    value = series.getYSeries()[Math.max(0, -line - 2)];
+                }
             }
 
             values.add(new Pair<>(series, value));
@@ -259,10 +294,10 @@ public class TimelineChartToolTip extends AbstractChartToolTip
     {
         if (xAxisFormat != null)
             return xAxisFormat.apply(obj);
-        else if (categoryEnabled && obj instanceof Integer)
-            return getChart().getAxisSet().getXAxis(0).getCategorySeries()[(Integer) obj];
-        else if (obj instanceof Date)
-            return Values.Date.format(((Date) obj).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        else if (categoryEnabled && obj instanceof Integer integer)
+            return getChart().getAxisSet().getXAxis(0).getCategorySeries()[integer];
+        else if (obj instanceof LocalDate date)
+            return Values.Date.format(date);
         else
             return String.valueOf(obj);
     }

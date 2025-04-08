@@ -1,6 +1,9 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Optional;
 
 import name.abuchen.portfolio.Messages;
@@ -52,6 +55,12 @@ public interface CalculationLineItem
         }
 
         @Override
+        public long getOrderingHint()
+        {
+            return txPair.getTransaction().getUpdatedAt().getEpochSecond();
+        }
+
+        @Override
         public Money getValue()
         {
             return txPair.getTransaction().getMonetaryAmount();
@@ -67,6 +76,7 @@ public interface CalculationLineItem
         {
             return txPair.getTransaction();
         }
+
     }
 
     public static class DividendPayment extends TransactionItem
@@ -85,30 +95,39 @@ public interface CalculationLineItem
             return amountFractionPerShare(getGrossValueAmount(), tx().getShares());
         }
 
-        public Money getFifoCost()
+        /**
+         * Returns the FIFO costs. It is the cost of the total position of the
+         * given security. However, a dividend payment may only be about partial
+         * holdings, for example if the security is held in multiple securities
+         * accounts.
+         */
+        /* package */ Money getFifoCost()
         {
             return fifoCost;
         }
 
-        /* package */
-        void setFifoCost(Money fifoCost)
+        /* package */ void setFifoCost(Money fifoCost)
         {
             this.fifoCost = fifoCost;
         }
 
-        public Money getMovingAverageCost()
+        /**
+         * Returns the costs based on moving average. It is the cost of the
+         * total position of the given security. However, a dividend payment may
+         * only be about partial holdings, for example if the security is held
+         * in multiple securities accounts.
+         */
+        /* package */ Money getMovingAverageCost()
         {
             return movingAverageCost;
         }
 
-        /* package */
-        void setMovingAverageCost(Money movingAverageCost)
+        /* package */ void setMovingAverageCost(Money movingAverageCost)
         {
             this.movingAverageCost = movingAverageCost;
         }
 
-        /* package */
-        void setTotalShares(long totalShares)
+        /* package */ void setTotalShares(long totalShares)
         {
             this.totalShares = totalShares;
         }
@@ -144,8 +163,12 @@ public interface CalculationLineItem
             if (shares == 0)
                 return 0;
 
-            return Math.round((amount * (Values.AmountFraction.factor() / (double) Values.Amount.factor())
-                            * Values.Share.divider()) / (double) shares);
+            return BigDecimal.valueOf(amount) //
+                            .movePointLeft(Values.Amount.precision()) //
+                            .movePointRight(Values.AmountFraction.precision()) //
+                            .movePointRight(Values.Share.precision()) //
+                            .divide(BigDecimal.valueOf(shares), Values.MC) //
+                            .setScale(0, RoundingMode.HALF_EVEN).longValue();
         }
 
         public long getGrossValueAmount()
@@ -212,6 +235,13 @@ public interface CalculationLineItem
         {
             super(portfolio, position, date);
         }
+
+        @Override
+        public long getOrderingHint()
+        {
+            return 0;
+        }
+
     }
 
     public static class ValuationAtEnd extends Valuation
@@ -220,7 +250,27 @@ public interface CalculationLineItem
         {
             super(portfolio, position, date);
         }
+
+        @Override
+        public long getOrderingHint()
+        {
+            return Long.MAX_VALUE;
+        }
     }
+
+    public static final Comparator<CalculationLineItem> BY_DATE = new Comparator<CalculationLineItem>()
+    {
+        @Override
+        public int compare(CalculationLineItem l1, CalculationLineItem l2)
+        {
+            int compareTo = l1.getDateTime().compareTo(l2.getDateTime());
+            if (compareTo != 0)
+                return compareTo;
+
+            // Fallback
+            return Long.compare(l1.getOrderingHint(), l2.getOrderingHint());
+        }
+    };
 
     public static CalculationLineItem of(TransactionPair<?> transaction)
     {
@@ -256,6 +306,8 @@ public interface CalculationLineItem
     String getLabel();
 
     LocalDateTime getDateTime();
+
+    long getOrderingHint();
 
     Money getValue();
 

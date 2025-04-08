@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.70.3
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Name Surname PAGE 1 from 1
+My Address 99 DATE 04.07.2024
+9999 City Name SECURITIES ACCOUNT 9999999999
+CASH DIVIDEND
+OVERVIEW
+Cash Dividend with Ex-Date 18.06.2024.
+POSITION QUANTITY YIELD AMOUNT
+Vici Properties 30.000000 Pcs. 0.415 USD 12.45 USDUS9256521090
+TOTAL 12.45 USD
+INVOICE
+POSITION AMOUNT
+Withholding Tax for US issuer -1.87 USD
+Sub Total 10.58 USD
+Sub Total 1.0729 USD/EUR 9.86 EUR
+TOTAL 9.86 EUR
+BOOKING
+SETTLEMENT ACCOUNT PAYMENT DATE AMOUNT
+DE99999999999999999999 03.07.2024 9.86 EUR
+US9256521090 in securities invoice
+This statement is generated automatically and therefore not signed.
+If no sales tax is shown, this is a sales tax-free service in accordance with Section § 4 Nr. 8 UStG
+Trade Republic Bank GmbH www.traderepublic.com Headquarters: Berlin DirectorsBrunnenstraße 19-21
+10119 Berlin service@traderepublic.com
+AG Charlottenburg HRB 244347 B Andreas Torner
+VAT-ID DE307510626 Gernot Mittendorfer

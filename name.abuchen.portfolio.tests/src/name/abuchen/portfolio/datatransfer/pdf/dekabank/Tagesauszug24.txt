@@ -1,0 +1,115 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1.qualifier
+-----------------------------------------
+Wertpapierabrechnung
+Depot-Tagesauszug
+Depot: 0111111111
+Depotinhaber:
+Herrn Richard Mustermann
+Richard Mustermann Bankverbindung generell:
+Musterstraße IBAN:
+Frankenweg 7 DE07793517300000111111 
+11111  Stadt BIC: BYLADEM1HAS 
+Spk Ostunterfranken
+Kontoinhaber:
+Mustermann, Richard
+Vollmachten:
+Vollmacht Leben/Tod Karl Mustermann
+20. November 2014
+Ertragsabrechnungen Auszug: 2 / Seite 1 von 3
+ 
+Sehr geehrter Herr Mustermann,
+folgende Buchungen haben wir für Ihr Depot durchgeführt:
+ERTRAGSAUSSCHÜTTUNG
+Ertragstermin: 20.11.2014  
+Anteilbestand am Ertragstermin: 15,216  
+Ausschüttung (pro Anteil EUR 0,5400000): EUR 8,22
+Bezeichnung: Deka-ConvergenceAktien TF 
+ISIN: LU0133666759 Unterdepot: 00 Auftragsnummer: 9406 3036
+Verwahrart: GiroSammel Abrechnungstag: 20.11.2014
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten  B estandsdaten
+des Wertpapiers je Anteil in Stück
+ Ausschüttung EUR 8,22 Kurs Bestand alt: 15,216
+= Wiederanlagebetrag EUR 8,22 EUR 8,22 EUR 130,550000 Anteilumsatz: 0,063
+Bestand neu: 15,279
+ERTRAGSAUSSCHÜTTUNG
+Ertragstermin: 20.11.2014  
+Anteilbestand am Ertragstermin: 5,864  
+Ausschüttung (pro Anteil EUR 0,5400000): EUR 3,17
+Bezeichnung: Deka-ConvergenceAktien TF 
+ISIN: LU0133666759 Unterdepot: 01 Auftragsnummer: 9406 3037
+Verwahrart: GiroSammel Abrechnungstag: 20.11.2014
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten B  estandsdaten
+des Wertpapiers je Anteil in Stück
+ Ausschüttung EUR 3,17 Kurs Bestand alt: 5,864
+= Wiederanlagebetrag EUR 3,17 EUR 3,17 EUR 130,550000 Anteilumsatz: 0,024
+Bestand neu: 5,888
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068
+Depot: 0111111111
+Auszug: 2 / Seite 2 von 3
+ERTRAGSAUSSCHÜTTUNG
+Ertragstermin: 20.11.2014  
+Anteilbestand am Ertragstermin: 6,449  
+Ausschüttung (pro Anteil EUR 8,2400000): EUR 53,14
+Bezeichnung: DekaLuxTeam-Aktien Asien 
+ISIN: LU0052859252 Unterdepot: 00 Auftragsnummer: 9407 8611
+Verwahrart: GiroSammel Abrechnungstag: 20.11.2014
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten B  estandsdaten
+des Wertpapiers je Anteil in Stück
+ Ausschüttung EUR 53,14 Kurs Bestand alt: 6,449
+= Wiederanlagebetrag EUR 53,14 EUR 53,14 EUR 485,620000 Anteilumsatz: 0,109
+Bestand neu: 6,558
+ERTRAGSAUSSCHÜTTUNG
+Ertragstermin: 20.11.2014  
+Anteilbestand am Ertragstermin: 32,962  
+Ausschüttung (pro Anteil EUR 1,6000000): EUR 52,74
+Bezeichnung: DekaLux-Deutschland TF A 
+ISIN: LU0062624902 Unterdepot: 00 Auftragsnummer: 9408 5425
+Verwahrart: GiroSammel Abrechnungstag: 20.11.2014
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten  B estandsdaten
+des Wertpapiers je Anteil in Stück
+ Ausschüttung EUR 52,74 Kurs Bestand alt: 32,962
+= Wiederanlagebetrag EUR 52,74 EUR 52,74 EUR 100,700000 Anteilumsatz: 0,524
+Bestand neu: 33,486
+Ihr erteilter Sparer-Pauschbetrag für Richard Mustermann beträgt EUR 600,00.
+Aktuelle steuerliche Daten
+Gezahlter Zwischengewinn, Stückzinsen und realisierte  E UR 0,00
+Veräußerungsverluste (sonstiger Verlusttopf)
+Verfügbarer Sparer-Pauschbetrag EUR 411,05
+Anrechenbare ausländische Quellensteuer EUR 13,82
+Alle steuerlich relevanten Informationen und Daten des aktuellen Jahres werden Ihnen mit der
+Steuerbescheinigung des Jahresdepotauszuges übersandt, den Sie bis spätestens Ende Januar des Folgejahres
+erhalten. Die erwirtschafteten Erträge der Vorsorgeprodukte Deka-BonusRente, Deka-BasisRente,
+Deka-ZukunftsPlan und Deka-RenteDirekt sind in der Ansparphase abgeltungsteuerfrei. Die Leistungen
+werden in der Regel erst in der Auszahlphase als sog. Sonstige Einkünfte versteuert. Leistungen, die auf
+geförderten Beiträgen beruhen, werden in der Auszahlungsphase voll besteuert (persönlicher Steuersatz).
+Eine evtl. Meldepflicht nach § 59ff. der Außenwirtschaftsverordnung (AWV) erfüllt die DekaBank.
+ 
+Zu Ihrer persönlichen Anlagestrategie beraten Sie gern die Berater der Sparkasse Ostunterfranken.
+ 
+Dort erhalten Sie ebenfalls die aktuellen Verkaufsunterlagen und Dokumentationen mit den Details Ihrer
+Vermögensanlage. Diese Unterlagen können Sie auch bei uns anfordern oder über www.deka.de abrufen.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Depot: 0111111111
+Auszug: 2 / Seite 3 von 3
+ 
+Capital Award 2014
+ 
+Höchstnote! Die Deka wurde vom Wirtschaftsmagazin Capital ausgezeichnet. Von 57
+Fonds-Universalanbietern bekamen nur die Deka und fünf weitere fünf Sterne und den Titel
+Top-Fondsgesellschaft. Fragen Sie Ihren Berater nach weiteren Investmentfondslösungen der Deka (Quelle:
+Capital Heft 3/2014).
+ 
+Mit freundlichen Grüßen
+DekaBank
+Deutsche Girozentrale
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068

@@ -1,0 +1,59 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.2
+-----------------------------------------
+VR Bank Niederbayern-Oberpfalz · 93041 Regensburg    Seite 1
+Depotnummer
+ 999999999
+ Kundennummer 999999999
+Max Mustermann
+ Abrechnungsnr. 88888888888
+Max Mustermann Datum 27.10.2022
+Ortszusatz
+Musterstr. 1
+9999 Musterstadt
+ 
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 100 CISCO SYSTEMS INC.  SHARES US17275R1023 (878841)
+REGISTERED SHARES DL-,001
+Zahlbarkeitstag 26.10.2022 Dividende pro Stück 0,38 USD
+Bestandsstichtag 03.10.2022 Herkunftsland USA
+Ex-Tag 04.10.2022 Art der Dividende Quartalsdividende
+Geschäftsjahr 26.07.2021 - 25.07.2022
+Devisenkurs EUR / USD  1,0085
+Devisenkursdatum 27.10.2022
+Dividendengutschrift 38,00 USD 37,68+ EUR
+Umrechnung in EUR 37,68 EUR
+Einbehaltene Quellensteuer 15 % auf 38,00 USD 5,65- EUR
+Anrechenbare Quellensteuer 15 % auf 37,68 EUR 5,65 EUR
+Kapitalertragsteuerpflichtige Dividende 37,68 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 5,65 EUR 22,60 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 15,08 EUR
+Kapitalertragsteuer 24,51 % auf 15,08 EUR 3,69- EUR
+Solidaritätszuschlag 5,5 % auf 3,69 EUR 0,20- EUR
+Kirchensteuer 8 % auf 3,69 EUR 0,30- EUR
+Ausmachender Betrag 27,84+ EUR
+Lagerstelle CBF w/7270 w/DZ Bank (600702 / 92780000)
+Den Betrag buchen wir mit Wertstellung 28.10.2022 zu Gunsten des Kontos 1111111111 (IBAN DE99 7509 0900 1111
+1111 11), BLZ 750 909 00 (BIC GENODEF1P18). 
+Bitte ggf. Rückseite beachten.
+6293.10010101.0000001ER01
+
+Seite 2
+Depotnummer 999999999
+Kundennummer 999999999
+Abrechnungsnr. 88888888888
+Datum 27.10.2022
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2022 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 100,76
+Ertrag 5,65
+0,00 0,00 0,00 5,65- 15,08
+Nachher 0,00 0,00 0,00 0,00 115,84
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6293.10010101.0000002ER01

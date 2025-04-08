@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.beans.PropertyChangeListener;
+import java.text.MessageFormat;
 import java.util.function.Function;
 
 import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
@@ -11,8 +12,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Values;
@@ -37,7 +36,7 @@ public class DeltaPercentageIndicatorLabelProvider extends OwnerDrawLabelProvide
 
             Data data = new Data();
 
-            data.totalAmount = node.getRoot().getActual().getAmount();
+            data.totalAmount = node.getClassificationRoot().getActual().getAmount();
             data.targetAmount = node.getTarget().getAmount();
             data.actualAmount = node.getActual().getAmount();
 
@@ -111,12 +110,12 @@ public class DeltaPercentageIndicatorLabelProvider extends OwnerDrawLabelProvide
 
     private Rectangle getBounds(Widget widget, int index)
     {
-        if (widget instanceof TableItem)
-            return ((TableItem) widget).getBounds(index);
-        else if (widget instanceof TreeItem)
-            return ((TreeItem) widget).getBounds(index);
+        if (widget instanceof TableItem tableItem)
+            return tableItem.getBounds(index);
+        else if (widget instanceof TreeItem treeItem)
+            return treeItem.getBounds(index);
         else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("unsupported widget type " + widget); //$NON-NLS-1$
     }
 
     @Override

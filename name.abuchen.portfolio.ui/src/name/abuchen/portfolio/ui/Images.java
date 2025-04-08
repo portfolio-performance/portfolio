@@ -12,9 +12,13 @@ import org.eclipse.swt.graphics.Image;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+import name.abuchen.portfolio.model.ImageManager;
+
 @SuppressWarnings("restriction")
 public enum Images
 {
+    // logos
+
     LOGO_16("pp_16.png"), //$NON-NLS-1$
     LOGO_32("pp_32.png"), //$NON-NLS-1$
     LOGO_48("pp_48.png"), //$NON-NLS-1$
@@ -22,7 +26,11 @@ public enum Images
     LOGO_256("pp_256.png"), //$NON-NLS-1$
     LOGO_512("pp_512.png"), //$NON-NLS-1$
 
+    // UX elements
+
     BANNER("banner.png"), //$NON-NLS-1$
+    HANDLE_NS("handle_ns.png"), //$NON-NLS-1$
+    HANDLE_WE("handle_we.png"), //$NON-NLS-1$
 
     // model items
 
@@ -30,13 +38,15 @@ public enum Images
     SECURITY_RETIRED("watchlist.png"), //$NON-NLS-1$
     ACCOUNT("account.png"), //$NON-NLS-1$
     PORTFOLIO("portfolio.png"), //$NON-NLS-1$
+    GROUPEDACCOUNTS("groupedaccounts.png"), //$NON-NLS-1$
+    GROUPEDACCOUNTS_ON("groupedaccounts_on.png"), //$NON-NLS-1$
     WATCHLIST("watchlist.png"), //$NON-NLS-1$
     INVESTMENTPLAN("investmentplan.png"), //$NON-NLS-1$
     NOTE("note.png"), //$NON-NLS-1$
     BOOKMARK("bookmark.png"), //$NON-NLS-1$
     BOOKMARK_OPEN("bookmark_open.png"), //$NON-NLS-1$
 
-    // buttons
+    // tool bar
 
     PLUS("plus.png"), //$NON-NLS-1$
     CONFIG("config.png"), //$NON-NLS-1$
@@ -47,6 +57,11 @@ public enum Images
     CALENDAR_ON("calendar_on.png"), //$NON-NLS-1$
     CALENDAR_OFF("calendar_off.png"), //$NON-NLS-1$
     CLOCK("clock.png"), //$NON-NLS-1$
+    CLOUD("cloud.png"), //$NON-NLS-1$
+    MEASUREMENT_ON("measurement_on.png"), //$NON-NLS-1$
+    MEASUREMENT_OFF("measurement_off.png"), //$NON-NLS-1$
+    CROSSHAIR_ON("crosshair_on.png"), //$NON-NLS-1$
+    CROSSHAIR_OFF("crosshair_off.png"), //$NON-NLS-1$
 
     // views
 
@@ -55,7 +70,8 @@ public enum Images
     VIEW_PIECHART("view_piechart.png"), //$NON-NLS-1$
     VIEW_DONUT("view_donut.png"), //$NON-NLS-1$
     VIEW_REBALANCING("view_rebalancing.png"), //$NON-NLS-1$
-    VIEW_STACKEDCHART("view_stackedchart.png"), //$NON-NLS-1$
+    VIEW_STACKEDCHART("view_stackedchart_percentage.png"), //$NON-NLS-1$
+    VIEW_STACKEDCHART_ACTUALVALUE("view_stackedchart.png"), //$NON-NLS-1$
     VIEW_BARCHART("view_barchart.png"), //$NON-NLS-1$
     VIEW_LINECHART("view_linechart.png"), //$NON-NLS-1$
 
@@ -64,10 +80,15 @@ public enum Images
     QUICKFIX("quickfix.png"), //$NON-NLS-1$
     ADD("add.png"), //$NON-NLS-1$
     REMOVE("remove.png"), //$NON-NLS-1$
+    NEXT("next.png"), //$NON-NLS-1$
+    PREVIOUS("previous.png"), //$NON-NLS-1$
     CHEVRON("chevron.png"), //$NON-NLS-1$
+    DOT_HORIZONAL("dot_horizontal.png"), //$NON-NLS-1$
     INTERVAL("interval.png"), //$NON-NLS-1$
     NEW_TRANSACTION("new_transaction.png"), //$NON-NLS-1$
     INVERT_EXCHANGE_RATE("invert_exchange_rate.png"), //$NON-NLS-1$
+    IMPORT_FILE("import_file.png"), //$NON-NLS-1$
+    EXPORT_FILE("export_file.png"), //$NON-NLS-1$
 
     CATEGORY("category.png"), //$NON-NLS-1$
     UNASSIGNED_CATEGORY("unassigned.png"), //$NON-NLS-1$
@@ -79,6 +100,7 @@ public enum Images
 
     TEXT("text.png"), //$NON-NLS-1$
 
+    OK("ok.png"), //$NON-NLS-1$
     ERROR("error.png"), //$NON-NLS-1$
     WARNING("warning.png"), //$NON-NLS-1$
     INFO("info.png"), //$NON-NLS-1$
@@ -88,10 +110,20 @@ public enum Images
     RED_ARROW("red_arrow.png"), //$NON-NLS-1$
     GREEN_ARROW("green_arrow.png"), //$NON-NLS-1$
 
-    HANDLE_NS("handle_ns.png"), //$NON-NLS-1$
-    HANDLE_WE("handle_we.png"), //$NON-NLS-1$
+    VISIBLE("visible.png"), //$NON-NLS-1$
+    HIDDEN("hidden.png"), //$NON-NLS-1$
 
-    DIVVYDIARY_LOGO("divvydiary.com-logo.png"); //$NON-NLS-1$
+    ARROW_FORWARD("arrow_forward.png"), //$NON-NLS-1$
+    ARROW_BACK("arrow_back.png"), //$NON-NLS-1$
+
+    // 3rd party logos
+
+    POEDITOR_LOGO("poeditor-logo.png"), //$NON-NLS-1$
+    DIVVYDIARY_LOGO("divvydiary.com-logo.png"), //$NON-NLS-1$
+    MYDIVIDENDS24_LOGO("mydividends24.de-logo.png"), //$NON-NLS-1$
+    EODHISTORICALDATA_LOGO("eodhistoricaldata-logo.png"), //$NON-NLS-1$
+    PORTFOLIO_REPORT_LOGO("portfolio-report.net-logo.png"), //$NON-NLS-1$
+    GITHUB_LOGO("github.com-logo.png"); //$NON-NLS-1$
 
     static
     {
@@ -116,7 +148,26 @@ public enum Images
         this.file = file;
     }
 
-    public ImageDescriptor descriptor()
+    public static Image resolve(String file, boolean disabled)
+    {
+        String key = file + ":" + disabled; //$NON-NLS-1$
+        Image image = imageRegistry.get(key);
+        if (image != null)
+            return image;
+
+        descriptor(file); // lazy loading
+        image = imageRegistry.get(file);
+
+        if (disabled)
+        {
+            image = ImageManager.getDisabledVersion(image);
+            imageRegistry.put(key, image); // $NON-NLS-1$
+        }
+
+        return image;
+    }
+
+    private static ImageDescriptor descriptor(String file)
     {
         ImageDescriptor descriptor = imageRegistry.getDescriptor(file);
         if (descriptor == null)
@@ -130,15 +181,19 @@ public enum Images
         return descriptor;
     }
 
+    public ImageDescriptor descriptor()
+    {
+        return descriptor(file);
+    }
+
     public Image image()
     {
-        Image image = imageRegistry.get(file);
-        if (image == null)
-        {
-            descriptor(); // lazy loading
-            image = imageRegistry.get(file);
-        }
-        return image;
+        return resolve(file, false);
+    }
+
+    public Image image(boolean disabled)
+    {
+        return resolve(file, disabled);
     }
 
     public String getImageURI()

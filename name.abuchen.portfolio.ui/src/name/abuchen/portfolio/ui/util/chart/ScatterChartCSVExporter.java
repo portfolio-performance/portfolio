@@ -10,7 +10,6 @@ import java.text.NumberFormat;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.eclipse.swt.widgets.Shell;
-import org.swtchart.ISeries;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
@@ -50,11 +49,11 @@ public class ScatterChartCSVExporter extends AbstractCSVExporter
             printer.println();
 
             // write body
-            ISeries[] series = chart.getSeriesSet().getSeries();
+            var series = chart.getSeriesSet().getSeries();
             
-            for (ISeries serie : series)
+            for (var serie : series)
             {
-                printer.print(serie.getId());
+                printer.print(serie.getDescription() != null ? serie.getDescription() : serie.getId());
                 printer.print(valueFormat.format(serie.getXSeries()[0]));
                 printer.print(valueFormat.format(serie.getYSeries()[0]));
                 printer.println();

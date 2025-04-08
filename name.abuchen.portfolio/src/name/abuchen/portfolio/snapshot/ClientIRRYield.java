@@ -26,13 +26,18 @@ public class ClientIRRYield
         List<Transaction> transactions = new ArrayList<>();
         collectAccountTransactions(client, interval, transactions);
         collectPortfolioTransactions(client, interval, transactions);
-        Collections.sort(transactions, new Transaction.ByDate());
+        Collections.sort(transactions, Transaction.BY_DATE);
 
         List<LocalDate> dates = new ArrayList<>();
         List<Double> values = new ArrayList<>();
         collectDatesAndValues(interval, snapshotStart, snapshotEnd, transactions, dates, values);
 
-        double irr = IRR.calculate(dates, values);
+        double irr = 0d;
+
+        // calculate IRR only if there any transaction or valuations at all.
+        // There might be none in the selected interval.
+        if (!values.isEmpty())
+            irr = IRR.calculate(dates, values);
 
         return new ClientIRRYield(irr);
     }
@@ -112,25 +117,29 @@ public class ClientIRRYield
     {
         CurrencyConverter converter = snapshotStart.getCurrencyConverter();
 
-        dates.add(interval.getStart());
-        // snapshots are always in target currency, no conversion needed
-        values.add(-snapshotStart.getMonetaryAssets().getAmount() / Values.Amount.divider());
+        // add start day only if there is already a valuation (the interval
+        // period might start way before the first transaction)
+
+        if (!snapshotStart.getMonetaryAssets().isZero())
+        {
+            dates.add(interval.getStart());
+            // snapshots are always in target currency, no conversion needed
+            values.add(-snapshotStart.getMonetaryAssets().getAmount() / Values.Amount.divider());
+        }
 
         for (Transaction t : transactions)
         {
             dates.add(t.getDateTime().toLocalDate());
 
-            if (t instanceof AccountTransaction)
+            if (t instanceof AccountTransaction at)
             {
-                AccountTransaction at = (AccountTransaction) t;
                 long amount = converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
                 if (at.getType() == Type.DEPOSIT || at.getType() == Type.TRANSFER_IN)
                     amount = -amount;
                 values.add(amount / Values.Amount.divider());
             }
-            else if (t instanceof PortfolioTransaction)
+            else if (t instanceof PortfolioTransaction pt)
             {
-                PortfolioTransaction pt = (PortfolioTransaction) t;
                 long amount = converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
                 if (pt.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
                                 || pt.getType() == PortfolioTransaction.Type.TRANSFER_IN)
@@ -143,7 +152,10 @@ public class ClientIRRYield
             }
         }
 
-        dates.add(interval.getEnd());
-        values.add(snapshotEnd.getMonetaryAssets().getAmount() / Values.Amount.divider());
+        if (!snapshotEnd.getMonetaryAssets().isZero())
+        {
+            dates.add(interval.getEnd());
+            values.add(snapshotEnd.getMonetaryAssets().getAmount() / Values.Amount.divider());
+        }
     }
 }

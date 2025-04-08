@@ -1,0 +1,40 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.0
+-----------------------------------------
+Abrechnung Dauerauftrag
+easybank Service Center 36254472-14.6.2022
+BAWAG P.S.K. AG Depot-Nr.: 00000000000
+Wiedner Gürtel 11 Mustermann      
+1100 Wien 35/9835
+BAWAG P.S.K. AG                    
+An
+Mustermann
+Strasse Hausnummer
+PLZ ORT                                                                                                                                                                                        
+Wir haben für Sie am 14.6.2022 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Kauf aus Dauerauftrag
+Auftrags-Nr.: 00000000-3.5.2017
+Auftragseingang: 11.6.2022-01:30:01
+Zugang: 6,94 Stk
+Titel: DE000A0F5UK5  i S h . S T . E u . 6 00 Bas.Res.U.ETF DE     
+Inhaber-Anlageaktien               
+Fondsgesellschaft: iShares [DE] I Investmentaktiengese
+llschaft mit Teilgesellschaftsvermö
+Kurs: 66,88 EUR 
+Handelsplatz: XETR     Deutsche Börse - Frankfurt Xetra
+Handelszeit: 13.6.2022 um 09:04:00 Uhr
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt                          
+Kurswert: -464,15 EUR 
+Eigene Spesen: -1,28 EUR 
+Grundgebühr: -3,-- EUR 
+Zu Lasten IBAN AT00 0000 0000 0000 0000 -468,43 EUR 
+Valuta 15.6.2022
+Kunden UID: ATU00000000    
+Es wurde keine Umsatzsteuer verrechnet.
+Schlusstag: 13.6.2022
+Kassatag: 15.6.2022
+1.7.2022 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten!
+00795 Doknr.: ON00-036-0000000001

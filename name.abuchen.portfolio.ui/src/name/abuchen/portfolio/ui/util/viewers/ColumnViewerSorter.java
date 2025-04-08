@@ -29,6 +29,7 @@ import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.util.TextUtil;
 
 public final class ColumnViewerSorter
 {
@@ -109,7 +110,8 @@ public final class ColumnViewerSorter
     {
         private final Class<?> clazz;
         private final Method method;
-        private final int type;
+
+        private final Comparator<Object> comparator;
 
         private BeanComparator(Class<?> clazz, String attribute)
         {
@@ -119,27 +121,27 @@ public final class ColumnViewerSorter
             Class<?> returnType = method.getReturnType();
 
             if (returnType.equals(Object.class))
-                type = 0;
+                comparator = (r, l) -> TextUtil.compare(String.valueOf(r), String.valueOf(l));
             else if (returnType.isAssignableFrom(String.class))
-                type = 1;
+                comparator = (r, l) -> TextUtil.compare((String) r, (String) l);
             else if (returnType.isAssignableFrom(Enum.class))
-                type = 2;
+                comparator = (r, l) -> ((Enum<?>) r).name().compareTo(((Enum<?>) l).name());
             else if (returnType.isAssignableFrom(Integer.class) || returnType.isAssignableFrom(int.class))
-                type = 3;
+                comparator = (r, l) -> ((Integer) r).compareTo((Integer) l);
             else if (returnType.isAssignableFrom(Double.class) || returnType.isAssignableFrom(double.class))
-                type = 4;
+                comparator = (r, l) -> ((Double) r).compareTo((Double) l);
             else if (returnType.isAssignableFrom(Date.class))
-                type = 5;
+                comparator = (r, l) -> ((Date) r).compareTo((Date) l);
             else if (returnType.isAssignableFrom(Long.class) || returnType.isAssignableFrom(long.class))
-                type = 6;
+                comparator = (r, l) -> ((Long) r).compareTo((Long) l);
             else if (returnType.isAssignableFrom(Boolean.class) || returnType.isAssignableFrom(boolean.class))
-                type = 7;
+                comparator = (r, l) -> ((Boolean) r).compareTo((Boolean) l);
             else if (returnType.isAssignableFrom(Money.class))
-                type = 8;
+                comparator = (r, l) -> ((Money) r).compareTo((Money) l);
             else if (returnType.isAssignableFrom(Quote.class))
-                type = 9;
+                comparator = (r, l) -> ((Quote) r).compareTo((Quote) l);
             else
-                type = 0;
+                comparator = (r, l) -> TextUtil.compare(String.valueOf(r), String.valueOf(l));
         }
 
         private Method determineReadMethod(Class<?> clazz, String attribute)
@@ -158,7 +160,7 @@ public final class ColumnViewerSorter
                 catch (NoSuchMethodException e1)
                 {
                     PortfolioPlugin.log(Arrays.asList(e, e1));
-                    throw new IllegalArgumentException();
+                    throw new IllegalArgumentException("no read method found for " + camelCaseAttribute); //$NON-NLS-1$
                 }
             }
         }
@@ -188,29 +190,7 @@ public final class ColumnViewerSorter
                 else if (attribute2 == null)
                     return 1;
 
-                switch (type)
-                {
-                    case 1:
-                        return ((String) attribute1).compareToIgnoreCase((String) attribute2);
-                    case 2:
-                        return ((Enum<?>) attribute2).name().compareTo(((Enum<?>) attribute2).name());
-                    case 3:
-                        return ((Integer) attribute1).compareTo((Integer) attribute2);
-                    case 4:
-                        return ((Double) attribute1).compareTo((Double) attribute2);
-                    case 5:
-                        return ((Date) attribute1).compareTo((Date) attribute2);
-                    case 6:
-                        return ((Long) attribute1).compareTo((Long) attribute2);
-                    case 7:
-                        return ((Boolean) attribute1).compareTo((Boolean) attribute2);
-                    case 8:
-                        return ((Money) attribute1).compareTo((Money) attribute2);
-                    case 9:
-                        return ((Quote) attribute1).compareTo((Quote) attribute2);
-                    default:
-                        return String.valueOf(attribute1).compareToIgnoreCase(String.valueOf(attribute2));
-                }
+                return comparator.compare(attribute1, attribute2);
             }
             catch (IllegalAccessException | InvocationTargetException e)
             {
@@ -250,6 +230,10 @@ public final class ColumnViewerSorter
             else if (v2 == null)
                 return 1;
 
+            // note: values maybe of type string. Test for this using
+            // v1#getClass. And then use ColumnViewerSorter#createIgnoreCase
+            // instead
+
             return v1.compareTo(v2);
         }
     }
@@ -283,7 +267,7 @@ public final class ColumnViewerSorter
             else if (v2 == null)
                 return 1;
 
-            return v1.compareToIgnoreCase(v2);
+            return TextUtil.compare(v1, v2);
         }
     }
 
@@ -302,10 +286,10 @@ public final class ColumnViewerSorter
 
             Widget widget;
 
-            if (viewerColumn instanceof TableViewerColumn)
-                widget = ((TableViewerColumn) viewerColumn).getColumn();
-            else if (viewerColumn instanceof TreeViewerColumn)
-                widget = ((TreeViewerColumn) viewerColumn).getColumn();
+            if (viewerColumn instanceof TableViewerColumn tableViewerColumn)
+                widget = tableViewerColumn.getColumn();
+            else if (viewerColumn instanceof TreeViewerColumn treeViewerColumn)
+                widget = treeViewerColumn.getColumn();
             else
                 throw new UnsupportedOperationException();
 
@@ -318,19 +302,19 @@ public final class ColumnViewerSorter
 
             boolean columnIsCurrentlySorted;
 
-            if (viewerColumn instanceof TableViewerColumn)
+            if (viewerColumn instanceof TableViewerColumn tableViewerColumn)
             {
-                columnIsCurrentlySorted = ((TableViewer) columnViewer).getTable()
-                                .getSortColumn() == ((TableViewerColumn) viewerColumn).getColumn();
+                columnIsCurrentlySorted = ((TableViewer) columnViewer).getTable().getSortColumn() == tableViewerColumn
+                                .getColumn();
             }
-            else if (viewerColumn instanceof TreeViewerColumn)
+            else if (viewerColumn instanceof TreeViewerColumn treeViewerColumn)
             {
-                columnIsCurrentlySorted = ((TreeViewer) columnViewer).getTree()
-                                .getSortColumn() == ((TreeViewerColumn) viewerColumn).getColumn();
+                columnIsCurrentlySorted = ((TreeViewer) columnViewer).getTree().getSortColumn() == treeViewerColumn
+                                .getColumn();
             }
             else
             {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unsupported viewerColumn type " + viewerColumn); //$NON-NLS-1$
             }
 
             if (columnIsCurrentlySorted)
@@ -343,15 +327,15 @@ public final class ColumnViewerSorter
         {
             this.direction = direction;
 
-            if (viewerColumn instanceof TableViewerColumn)
+            if (viewerColumn instanceof TableViewerColumn tableViewerColumn)
             {
-                TableColumn c = ((TableViewerColumn) viewerColumn).getColumn();
+                TableColumn c = tableViewerColumn.getColumn();
                 c.getParent().setSortColumn(c);
                 c.getParent().setSortDirection(direction);
             }
-            else if (viewerColumn instanceof TreeViewerColumn)
+            else if (viewerColumn instanceof TreeViewerColumn treeViewerColumn)
             {
-                TreeColumn c = ((TreeViewerColumn) viewerColumn).getColumn();
+                TreeColumn c = treeViewerColumn.getColumn();
                 c.getParent().setSortColumn(c);
                 c.getParent().setSortDirection(direction);
             }
@@ -369,7 +353,7 @@ public final class ColumnViewerSorter
             {
                 setupSortingContext();
 
-                int dir = direction == SWT.DOWN ? 1 : -1;
+                int dir = direction == SWT.UP ? 1 : -1;
 
                 if (element1 == null && element2 == null)
                     return 0;
@@ -391,10 +375,10 @@ public final class ColumnViewerSorter
             SortingContext.setSortDirection(direction);
 
             Object option = null;
-            if (viewerColumn instanceof TableViewerColumn)
-                option = ((TableViewerColumn) viewerColumn).getColumn().getData(ShowHideColumnHelper.OPTIONS_KEY);
-            else if (viewerColumn instanceof TreeViewerColumn)
-                option = ((TreeViewerColumn) viewerColumn).getColumn().getData(ShowHideColumnHelper.OPTIONS_KEY);
+            if (viewerColumn instanceof TableViewerColumn tableViewerColumn)
+                option = tableViewerColumn.getColumn().getData(ShowHideColumnHelper.OPTIONS_KEY);
+            else if (viewerColumn instanceof TreeViewerColumn treeViewerColumn)
+                option = treeViewerColumn.getColumn().getData(ShowHideColumnHelper.OPTIONS_KEY);
             SortingContext.setOption(option);
         }
     }
@@ -420,6 +404,18 @@ public final class ColumnViewerSorter
     public static ColumnViewerSorter create(Function<Object, Comparable<?>> valueProvider)
     {
         return create(new ValueProviderComparator(valueProvider));
+    }
+
+    /**
+     * Creates a sorter that takes the row element and the row option as an
+     * input.
+     */
+    public static ColumnViewerSorter createWithOption(ElementOptionFunction<Comparable<?>> valueProvider)
+    {
+        return create(new ValueProviderComparator(element -> {
+            var option = ColumnViewerSorter.SortingContext.getColumnOption();
+            return valueProvider.apply(element, option);
+        }));
     }
 
     public static ColumnViewerSorter createIgnoreCase(Function<Object, String> valueProvider)
@@ -456,7 +452,7 @@ public final class ColumnViewerSorter
 
     public void attachTo(ColumnViewer viewer, ViewerColumn column, boolean makeDefault)
     {
-        attachTo(viewer, column, makeDefault ? SWT.DOWN : SWT.NONE);
+        attachTo(viewer, column, makeDefault ? SWT.UP : SWT.NONE);
     }
 
     public void attachTo(ColumnViewer viewer, ViewerColumn column, int direction)

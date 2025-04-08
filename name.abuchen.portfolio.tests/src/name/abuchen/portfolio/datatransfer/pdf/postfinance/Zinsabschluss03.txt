@@ -1,0 +1,33 @@
+PDF Autor: 'PostFinance'
+PDFBox Version: 1.8.16
+-----------------------------------------
+PostFinance AG
+Sie werden betreut von
+Max Mustermann und Team Post CH AG
+Telefon +41 000 000 000
+Fax +41 00 000 00 00 P.P. CH-0000 Stadt A-PRIORITY
+www.postfinance.ch
+Herr
+Vorname Nachname
+Nachname Vorname Strasse 01
+Gemeinde 1324 Gemeinde
+Privatkonto Seite: 1 / 1
+Zinsabschluss 01.01.2015 - 31.12.2015 Datum: 01.01.2016
+Kontonummer 11-22222-0 CHF
+IBAN CH11 0900 0000 1102 2222 0
+BIC POFICHBEXXX
+Datum Text Gutschrift Lastschrift Saldo
+31.12.2015 Kontostand 10 000.00
+HABENZINS
+010115 - 311215 0.01 % 1.00
+BRUTTOZINS 1.00
+ZINS VERRECHNUNGSSTEUERFREI 1.00
+NETTOZINS 1.00
+31.12.2015 Kontostand nach Zinsabschluss 10 001.00
+Gebührenausweis 01.01.2015 - 31.12.2015
+Zusammenstellung der belasteten Kontoführungsgebühr: CHF 60.00
+Bitte überprüfen Sie den Zinsabschluss. Ohne Ihren Gegenbericht innert 30 Tagen gilt er als genehmigt.
+Bitte aufbewahren! Dient als Nachweis für Ihre Steuererklärung.
+Freundliche Grüsse
+PostFinance AG
+00044  DE

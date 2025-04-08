@@ -1,0 +1,102 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1 von 3
+Herr Unsere Postanschrift:
+Max Mustermann onvista bank
+Muster-Straße 40 Postfach 10 08 60
+53129 Bonn 60008 Frankfurt
+Kundenservice:
+Telefon: +49 (0) 69 7107 - 530
+Fax +49 (0) 69 7107 - 100
+Mo-Fr 8:00 - 19:00 Uhr
+service@onvista-bank.de
+Ihre Bankverbindung für Überweisungen:
+IBAN DE44514108000286001046
+BIC BOURDEFF
+Kontoauszug Nr. 2018 / 1 zum 29.03.2018
+EUR - Verrechnungskonto: 0 286001 046
+Alter Saldo 200,00 H
+Neuer Saldo 100,00 H
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig.
+Nähere Informationen können dem "Informationsbogen für den Einleger", der unter www.onvista-bank.de
+im Menü "Service - Formulare" abgelegt ist, entnommen werden.
+Der Ihnen angezeigte Saldo kann Kontobewegungen berücksichtigen, deren tatsächliche
+Wertstellung (Valuta) noch nicht erfolgt ist. Bitte beachten Sie dies bei Ihrer Gelddisposition, da
+ansonsten Sollzinsen / Überziehungszinsen anfallen könnten. Das Datum der Wertstellung (Valuta)
+können Sie auf den folgenden Seiten zur jeweiligen Buchung entnehmen.
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit eines Rechnungsabschlusses sind gem. Nr. 7
+Abs. 2 unserer Allgemeinen Geschäftsbedingungen spätestens vor Ablauf von sechs Wochen nach
+Zugang des Rechnungsabschlusses zu erheben. Sofern Sie Ihre Einwendungen schriftlich geltend
+machen, richten Sie diese bitte unter Angabe der oben genannten Kontonummer an die onvista
+bank, Interne Revision, Wildunger Straße 6a, 60487 Frankfurt am Main. Es genügt die Absendung
+innerhalb der Sechs-Wochen-Frist. Das Unterlassen rechtzeitiger Einwendungen gilt als
+Genehmigung.
+Bei Zahlungen größer 12.500 EUR bitte Meldepflichten nach dem Außenwirtschaftsrecht beachten.
+Seite 2 von 3
+Kontoauszug Nr. 2018 / 1 zum 29.03.2018
+EUR - Verrechnungskonto: 0 286001 046
+Buchungs- Valuta Buchungstext Soll in EUR Haben in EUR
+datum
+Alter Kontostand vom 29.12.17 200,00+
+03.01. 04.01. REF: 000052847883 50,00-
+Wertpapierkauf
+COMS.-MSCI WORL.T.U.ETF I
+STK: 1,0187
+ISIN: LU0392494562
+ABR: 2170540420180102
+03.01. 04.01. REF: 000052847884 50,00-
+Wertpapierkauf
+COMS.-MSCI WORL.T.U.ETF I
+STK: 1,0187
+ISIN: LU0392494562
+ABR: 7998604020180102
+03.01. 04.01. REF: 000052850824 50,00-
+Wertpapierkauf
+COMS.-MSCI EM.M.T.U.ETF I
+STK: 1,1622
+ISIN: LU0635178014
+ABR: 8294244820180102
+05.01. 05.01. REF: 000052980183 50,00+
+Überweisungseingang SEPA
+sparen.onvista
+Sparen
+LTW180105000900002-008
+02.02. 05.02. REF: 000053907441 50,00-
+Wertpapierkauf
+COMS.-MSCI WORL.T.U.ETF I
+STK: 1,0001
+ISIN: LU0392494562
+ABR: 4705531320180201
+02.02. 05.02. REF: 000053907442 50,00-
+Wertpapierkauf
+COMS.-MSCI WORL.T.U.ETF I
+STK: 1,0001
+ISIN: LU0392494562
+ABR: 2991751320180201
+05.02. 05.02. REF: 000054023033 50,00+
+Überweisungseingang SEPA
+sparen.onvista
+Sparen
+LTW180205000800002-008
+Seite 3 von 3
+Kontoauszug Nr. 2018 / 1 zum 29.03.2018
+EUR - Verrechnungskonto: 0 286001 046
+Buchungs- Valuta Buchungstext Soll in EUR Haben in EUR
+datum
+02.03. 05.03. REF: 000054855486 50,00-
+Wertpapierkauf
+COMS.-MSCI WORL.T.U.ETF I
+STK: 1,028
+ISIN: LU0392494562
+ABR: 5951634220180301
+05.03. 05.03. REF: 000054947250 50,00+
+Überweisungseingang SEPA
+sparen.onvista
+Sparen
+LTW180305001000002-008
+05.03. 05.03. REF: 000054947251 50,00+
+Überweisungseingang SEPA
+sparen.onvista
+Sparen
+LTW180305001000002-008
+Neuer Kontostand zum 29.03.2018 100,00+

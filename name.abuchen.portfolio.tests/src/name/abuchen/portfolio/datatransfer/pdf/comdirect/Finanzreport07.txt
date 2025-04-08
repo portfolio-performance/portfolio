@@ -1,0 +1,48 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+comdirect bank AG, 25449 Quickborn 102 18 010
+Herrn Telefon: 04106 - 708 25 00
+Vorname Nachname Telefax: 04106 - 708 25 85
+Strasse 1 E-Mail: www.comdirect.de/kontakt
+11111 Stadt (E-Mail über Kontaktformular)
+Kundennummer: 222 2222222
+Finanzreport Nr. 1 per 01.02.2023 02.02.2023
+Sehr geehrter Herr Nachname,
+in Ihrem aktuellen Finanzreport finden Sie alle Informationen rund um Ihre Kundenverbindung.
+Haben Sie noch Fragen? Alle Informationen zu unseren Produkten und Services finden Sie unter
+www.comdirect.de
+Mit freundlichen Grüßen
+Ihre comdirect
+Aktuelle Informationen:
+Mit „Barzahlen“ fast überall Bargeld ein- und auszahlen: Über die Funktion der comdirect App
+können Sie unseren Bargeldservice bei über 12.000 Partnern im deutschen Einzelhandel nutzen.
+Jetzt informieren unter www.comdirect.de/barzahlen
+Inspiration für Ihr Depot gesucht? Dann schauen Sie doch mal was andere Anleger so machen.
+Wie? Mit hi!stocks. Jetzt mehr erfahren unter www.comdirect.de/histocks
+Sind Sie Fan von Derivate-Preis-Aktionen? Dann haben wir gute Neuigkeiten für Sie: unsere
+neuen Trading Specials für den börslichen und außerbörslichen Handel. Entdecken Sie unsere
+Derivate-Angebote mit tollen Emittenten und unglaublichen Preis-Aktionen auf
+www.comdirect.de/aktionen
+comdirect – eine Marke der Commerzbank AG USt-ID: DE 114 103 514
+25449 Quickborn
+Finanzreport Nr. 1 per 01.02.2023 - Seite 1
+Kundennummer 111 1111111
+Kontoübersicht
+Ihre aktuellen Salden IBAN Saldo in
+EUR
+Girokonto DE33 3333 3333 3333 3333 33 +10,00
+Visa-Karte 1111 +0,00
+Gesamtsaldo 01.02.2023 +10,00
+ 
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 31.12.2022 +10,00
+01.02.2023 Kontoführungse Entgelt -1,90
+31.01.2023 ntgelt Visa-Kreditkarte
+2X2C1LQ12E1O Zeitraum: 01.01.2023
+XXXX/111111 bis 31.01.2023
+01.02.2023 Entgelte Kontoführungsentgelt -4,90
+31.01.2023 1111111111111 Girokonto
+XXXX/111111 Zeitraum: 01.01.2023
+bis 31.01.2023
+Neuer Saldo 01.02.2023 +4,20

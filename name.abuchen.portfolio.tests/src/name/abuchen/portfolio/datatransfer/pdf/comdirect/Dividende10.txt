@@ -1,0 +1,49 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.2.qualifier
+-----------------------------------------
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+25449 Quickborn
+                                                                                                    
+                                                  
+                                                                      
+                                                                      
+                                                                      
+                   
+                        
+       
+                       
+Depotnr.:    507687489 
+     91268 010 BLZ:        200 867 24 
+Herrn                              
+                             
+hDGQCSr ObzK                 
+                             
+                             
+                                   
+Musterstr. 20                                                           
+                             
+75800 zOrbNCoOZJJN                                              
+23.06.2016
+ G u t s c h  ri f t fä  ll ig  e r W  e r t p a p i e r -E  r tr ä g e                                                                   
+Zinsgutschrift                                                                     
+Depotbestand             Zinssatz     Wertpapier-Bezeichnung               WKN/ISIN
+p  e r 2  2 .0  6 . 20  16             6 ,0  0          Co m  me  r zb  a nk   A G                          CN  2 V KP 
+E  U R           1 .  0 0 0, 0  0 0                AA L   P R OT E C  T 0  6 . 16  P  AH 3             D E 0 0 0C N  2 V K P 9
+                                      Zinstermin: 23JUNI                           
+                                      Emissionsland: DEUTSCHLAND                   
+5,40821917 % Zinsen zahlbar: 23.06.2016                                            
+                         Abrechnung Zinsgutschrift                                 
+Bruttobetrag:                                              EUR              54,08  
+Verrechnung über Konto (IBAN)           Valuta       Zu Ihren Gunsten vor Steuern  
+DE89 4059 6912 7546 5020 85   EUR       23.06.2016         EUR              54,08  
+Information zur steuerlichen Behandlung dieses Geschäftsvorganges und den auf      
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung      
+(Referenz-Nr. 22IAS84ET6700189).                                                   
+comdirect bank                                                                     
+Aktiengesellschaft                                                                 
+                                                                                   
+*Diese Abrechnung wird von der Bank nicht unterschrieben                           
+DD111/11/11
+
+```

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="name.abuchen.portfolio.util.ImageioSpiRegistration">
+		<reference bind="addImageReaderSpi" cardinality="0..n" interface="javax.imageio.spi.ImageReaderSpi" name="javax.imageio.spi.ImageReaderSpi" policy="dynamic"/>
+		<implementation class="name.abuchen.portfolio.util.ImageioSpiRegistration"/>
+</scr:component>

@@ -1,0 +1,171 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.66.2
+-----------------------------------------
+PO Box 28019
+Albuquerque, NM 87125-8019 Transaction Confirmation     Page 1 of 3
+Confirm Date: December 14, 2023
+Brokerage Account Number
+*****1234 INDIVIDUAL - TOD
+JOHN DOE
+9900012345 
+JOHN DOE
+1 Fidelity Place Customer Service 0800-200-288
+NEW YORK Dial 0800-200-288, when prompted to enter calling number,
+NY enter 800-544-6666.
+REFERENCE NO. TYPE REG.REP. TRADE DATE SETTLEMENT DATE CUSIP NO. ORDER NO.
+12345-XXX45X 1* WO# 12-14-23 12-18-23 12345A789 12345-XX72X
+DESCRIPTION and DISCLOSURES
+You Bought ALPHABET INC CAP STK CL C Principal Amount       3,990.00
+       30 WE HAVE ACTED AS AGENT. Settlement Amount       3,990.00
+       at    133.0000
+Symbol:
+GOOG
+ALL ORDERS ARE UNSOLICITED UNLESS SPECIFIED ABOVE 9900012345 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+If you are eligible to make a deposit, please use this form for
+JOHN DOE investments in your brokerage account *****1234 only.
+1 Fidelity Place
+NEW YORK
+NY AMOUNT OF INVESTMENT    $
+If there are sufficient funds in your brokerage core account
+(or margin account), Fidelity will use those funds to cover
+the trade(s) on this confirm.  If you wish to deposit
+FIDELITY INVESTMENTS additional money, use this deposit slip and make checks
+PO BOX 770001 payable to: NATIONAL FINANCIAL SERVICES LLC.
+CINCINNATI OH  45277-0003 Deposits will be made to the account listed above.  Please
+mail checks to the Fidelity address on this form. Refer to the
+last page for instructions on depositing certificates.
+FIDELITY BROKERAGE SERVICES LLC, MEMBER NYSE, SIPC
+099 0X12345678  00  000
+                       
+Transaction Confirmation     Page 2 of 3
+Confirm Date: December 14, 2023
+Brokerage Account Number
+*****1234 INDIVIDUAL - TOD
+JOHN DOE
+REFERENCE NO. TYPE REG.REP. TRADE DATE SETTLEMENT DATE CUSIP NO. ORDER NO.
+12345-XX78X 1* WO# 12-14-23 12-18-23 113004105 67890-I5XYZ
+DESCRIPTION and DISCLOSURES
+You Sold BROOKFIELD ASSET MANAGEMENT LTD CLASS Principal Amount       7,935.27
+      203 A LTD VOTING SHS ISIN #CA1130041058 Activity Assessmen t  F e e     0.07
+       at    39.0900 SEDOL #BPCPYH2 Settlement Amount       7,935.20
+Symbol: WE HAVE ACTED AS AGENT.
+BAM LOTS WITHOUT SPECIFIC SHARES
+INSTRUCTIONS WILL BE DEPLETED USING
+FIRST IN, FIRST OUT METHOD.
+PARTIAL EXECUTION
+REFERENCE NO. TYPE REG.REP. TRADE DATE SETTLEMENT DATE CUSIP NO. ORDER NO.
+12234-8OPOP 1* WO# 12-14-23 12-18-23 113004105 12345-I8ZZZ
+DESCRIPTION and DISCLOSURES
+You Sold BROOKFIELD ASSET MANAGEMENT LTD CLASS Principal Amount           1.25
+      .032 A LTD VOTING SHS ISIN #CA1130041058 Settlement Amount           1.25
+       at    39.0900 SEDOL #BPCPYH2
+Symbol: WE HAVE ACTED AS AGENT.
+BAM LOTS WITHOUT SPECIFIC SHARES
+INSTRUCTIONS WILL BE DEPLETED USING
+FIRST IN, FIRST OUT METHOD.
+PARTIAL EXECUTION
+ALL ORDERS ARE UNSOLICITED UNLESS SPECIFIED ABOVE 9900012345 
+REMITTANCE COUPON
+Transaction Confirmation     Page 3 of 3
+Confirm Date: December 14, 2023
+Brokerage Account Number
+*****1234 INDIVIDUAL - TOD
+JOHN DOE
+REFERENCE NO. TYPE REG.REP. TRADE DATE SETTLEMENT DATE CUSIP NO. ORDER NO.
+12345-1X2X3X 1* WO# 12-14-23 12-18-23 67077M108 12345-A1B2C
+DESCRIPTION and DISCLOSURES
+You Bought NUTRIEN LTD COM NPV ISIN #CA67077M1086 Principal Amount       4,427.59
+       80 SEDOL #BDRJLN0 Settlement Amount       4,427.59
+       at    55.3449 WE HAVE ACTED AS AGENT.
+Symbol:
+NTR
+ALL ORDERS ARE UNSOLICITED UNLESS SPECIFIED ABOVE 9900012345 
+In accordance with your instructions we are pleased to confirm the transaction or order for your In connection with (i) access to, purchase, sale, exchange or redemption of, and/or maintenance
+account and risk subject to terms listed below. of positions in mutual funds, ETFs and other investment products ("funds") such as alternative
+investments or private placements or (ii) infrastucture needed to support such funds, some funds,
+Please inform our office promptly if there is an error in this confirmation. Your failure to do so may or their investment affiliates, pay FBS and/or NFS sales loads and 12b-1 fees described in the
+result in the inability to amend a transaction. Please address all communications to the firm and Offering Materials as well as additional compensation for shareholder services, start-up fees,
+not to individuals and include your brokerage account number on all checks and platform support and maintenance, and marketing, engagement and analytics programs.
+communications. Additional information about the source(s) and amount(s) of compensation as well as other
+remuneration received by FBS or NFS will be furnished to you upon written request.
+It is understood and agreed that all transactions made for you are subject to the rules and
+customs of the exchange or market (and its clearing house, if any) where executed by us or by Currency exchanges may be effected by Fidelity FOREX, Inc. on a principal basis. Fidelity
+our agents, of the Financial Industry Regulatory Authority, Inc., as the case may be and to the FOREX, Inc., an affiliate of NFS, may impose a commission or markup on the prevailing
+Securities Exchange Act. It is further understood and agreed that on margin business all interbank market price. Fidelity FOREX may in turn share a portion of any foreign exchange
+securities or other things bought or held by us, are pledged as collateral security for any and all commission or markup with NFS and/or FBS. The currency exchange rate applicable to any
+claims and demands we then, or thereafter may have against the party giving such orders foreign security trade is available upon request.
+whether arising thereunder or not. It is further understood and agreed that we have the right to
+close transactions without further notice, at public or private sale, without liability for subsequent For trades of positions set up for average cost, the cost basis per share is calculated as the
+difference in value, when such a sale or purchase is deemed necessary by us for our protection, average price of all shares in the position and shares are depleted on a first-in-first-out basis.
+with the right upon our part of becoming the purchaser thereof free from all trust; that securities
+held by us in margin accounts (and in cash accounts until paid for in full) are or may be When there are multiple lots for the particular date indicated via versus purchase, the system
+hypothecated for the sum, due thereon, or for a greater sum, under circumstances which will depletes the lots starting with the highest quantity lot and moves through the lots in descending
+permit the commingling thereof with securities carried for the account of other customers; and order of quantity until the order is filled. If an order cannot be matched versus purchase, or if the
+that we have the right to loan such securities held by us. order quantity exceeds the matched lots, lots are depleted using the account-level default
+disposal method. If more than one lot has the same date and quantity, selection among such lots
+Confirm Date represents the day the trade was processed. Trade Date represents the day the is random.
+trade was or should have been executed. If Confirm Date is later than Trade Date--an "As Of"
+Trade--the price received is based on Trade Date. Please contact your broker-dealer if you have The local broker in a foreign securities transaction may be Fidelity Clearing Canada ULC, an
+any questions. affiliate of NFS and FBS.
+When-Issued, When-Distributed or TBA Transactions: The information contained herein is an Other remuneration may have been received and information will be furnished on request. At the
+estimate based upon information available at the time of your order. The final figures will be time you purchase shares of a no-load fund, those shares will be assigned either a transaction
+forwarded to you when obtainable upon issue, delivery or pool allocation. Such transactions shall fee (TF) or no transaction fee (NTF) status. When you subsequently sell those shares, any
+be settled at such time, place and in such manner and by delivery of such securities and/or other applicable fees will be assessed based on the status assigned to the shares at the time of
+property as determined by the exchange or association to whose requirements the transaction is purchase.
+subject, or shall be canceled if such exchange or association shall so determine. National
+Financial Services LLC, ("NFS"), may demand deposits to secure this transaction and reserves Certificates of deposit and certain securities, including bonds, preferred stocks, and common
+the right to close this transaction upon the failure of the customer to tender such deposit. stocks, may be subject to call or redemption (prior to maturity, if applicable). Call features may
+exist in addition to those which may appear on the front of the confirmation. Early call or
+With the exception of managed accounts, National Financial Services ("NFS"), an affiliate redemption could affect Yield. Complete information will be provided upon written request.
+broker-dealer, will execute the fractional component of a customer order in a principal capacity.
+This statement is computed for payment by bank draft on settlement date. If payment is made at
+Open Orders. An open order will remain in effect until executed or canceled. Customers may a later date, additional interest to date of payment will be charged.
+attempt to cancel open orders at any time prior to execution. NFS will cancel open orders after
+180 calendar days (or in accordance with standards set by your Employer) and we reserve the Name of the other party, time of execution and remuneration furnished on request. Fidelity
+right, but are not obligated to, cancel open orders when the limit price becomes unrealistic in Brokerage Services LLC, Member NYSE/SIPC. Account carried with National Financial Services
+relation to the market price. Limits on open orders to BUY and STOP ORDERS TO SELL, subject LLC.
+to the rules of the exchange or association where the securities are traded, may be automatically
+adjusted on the date the security trades "ex-dividend", "ex-rights", "ex-distribution", or * T - TYPE OF ACCOUNT
+"ex-interest". Unexecuted portions of an open order which are executed on subsequent days are 0 - Deliver / Receive vs. Payment 6 - Special Account
+treated as separate orders for commission purposes, in accordance with industry practices. 1 - Cash Account 8 - When Issued / TBA
+2 - Margin Account 9 - Income Account
+Orders marked "solicited" are not the result of "investment advice" from Fidelity, as that term is 3 - Short Account
+defined under ERISA and underlying U.S. Department of Labor Regulations, except to the extent
+that Fidelity utilizes an unaffiliated third party in obtaining such advice. If an odd-lot differential is indicated on the face of this confirmation, an amount of 12½ cents per
+share was added to the price of purchase or deducted from the price of sale.
+Payment for Order Flow Disclosure [Exchange Act Rule 10b-10(a)(2)(i)(C)]. Fidelity Brokerage
+Services LLC ("FBS") and/or NFS receives remuneration, compensation, or consideration for D1. Additional call features exist that may affect yield; complete information will be provided
+directing orders in equity securities to particular broker/dealers or market centers for execution.        upon request.
+The source and nature of any compensation received in connection with your particular D2. No periodic interest payments - callable below maturity value without notice by mail to holder
+transaction will be disclosed upon written request to FBS. Please review FBS's annual disclosure        unless registered.
+on payment for order flow policies and order routing policies. D3. For bonds callable and issued in bearer form, it may be difficult for you to determine whether
+       the securities have been called.
+The private placement memorandum, term sheet, prospectus or other disclosure documents D4. Asset-backed Securities. An asset-backed security represents an interest in or is secured by
+("Offering Materials") you previously received include important information concerning your        a pool of financial assets that may be subject to continuous prepayment. The actual yield
+alternative investment transaction (e.g., hedge funds, private equity funds, REITS). Please refer        may vary based on prepayment rates of the underlying receivable or other financial assets.
+to these materials for an explanation of the subscription (i.e., purchase) and redemption process        Information concerning factors that affect yield will be furnished upon written request.
+as well as information regarding compensation that FBS or NFS may receive from you and/or the
+alternative investment in connection with your transaction. The settlement date for these Ratings information, when provided, has been obtained from select ratings services which NFS
+transactions is often extended a number of days beyond the subscription (i.e., trade) or believes to be reliable, however, NFS cannot guarantee its timeliness, accuracy or
+redemption date. As part of the subscription process, your subscription funds could be held in completeness. Ratings are opinions and not recommendations or investment advice. Ratings or
+escrow until such time as your subscription is accepted by the alternative investment. Gross the absence of ratings should not alone be relied upon when assessing the credit quality of a
+proceeds are reflected on the statement and may not be realized at the time of the redemption if security or making an investment decision. Ratings are subject to change or withdrawal by the
+the fund is subject to a holdback. See the Offering Materials for more details. Any such assets ratings services at any time. Ratings information may not be provided for all debt securities.
+retained by the fund are held as a general obligation of the fund and are not protected by SIPC. When indicated, NR denotes that the security is not rated by the listed rating organization. The
+security may be rated by other rating services. Please contact your broker dealer if you need
+more information about a security.
+447970.29.0
+  
+INSTRUCTIONS FOR DEPOSITING CERTIFICATES
+Endorsement Instructions
+1) The signature on the back of the certificate must correspond exactly to the name as written upon the face of the certificate.
+2) Write "National Financial Services LLC" on the line between "appoint" and "attorney."
+3) Write your brokerage account number on the top right corner of the front of the certificate.
+4) Failure to properly prepare the Certificate may result in delays completing your transaction.
+MAIL CERTIFICATES TO THIS ADDRESS:
+NATIONAL FINANCIAL SERVICES LLC
+ATTN: Banking Services 9900012345 
+Mail Zone KC1N
+100 Crosby Parkway
+Covington, KY 41015

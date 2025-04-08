@@ -1,0 +1,90 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.1
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Kontoauszug-Nr. 3
+vom 04.05.2020
+Seite 1 von 2
+Herrn Konto-Nr. 3267126501
+Tufu mOqRjBv
+ZIsfrfw 06
+65811 cjlXdlwqN
+Kontoauszug für Ihr ebase Konto flex
+Kontostand alt: 01.04.2020 7.789,16 EUR
+Buchungstag Belegnummer Valuta Buchungstext/Zahlungsinformation Betrag Währung
+01.04.2020 013011007 30.03.2020 Wertpapiergutschrift 169,00 EUR
+ebase
+DEPOT-NR 99132734493
+AUFTR.-NR. 000059239770830
+ARGENTINA 05/38 PAR
+GA/EA 13 WKN A0DUDC
+03.04.2020 013014232 07.04.2020 Wertpapierbelastung -4.174,90 EUR
+DEPOT-NR 99132734493
+AUFTR.-NR. 000003219799700
+SEVERSTAL GDR S OCT2006 1
+GA/EA KV WKN A0LEJV
+06.04.2020 013015328 06.04.2020 SEPA Überweisung Gutschrift 5.000,00 EUR
+CvEv EKQQPrX
+. IP20094011522040
+06.04.2020 013016084 06.04.2020 Wertpapierbelastung -2,50 EUR
+DEPOT-NR 99132734493
+AUFTR.-NR. 000003248217000
+GAZPROM NEFT ADR5/RL-0016
+GA/EA KV WKN A0J4TC
+06.04.2020 013016591 08.04.2020 Wertpapierbelastung -3.738,40 EUR
+DEPOT-NR 99132734493
+AUFTR.-NR. 000003274015300
+GAZPROM NEFT ADR5/RL-0016
+GA/EA KV WKN A0J4TC
+07.04.2020 013017353 07.04.2020 SEPA Überweisung Gutschrift 10.000,00 EUR
+HuPh HcSrDCn
+Anlage
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+ebase - Amtsgericht München HRB 141 740 Fax: +49 89 45460-892 Vorsitzender des Aufsichtsrats:
+European Bank for Financial USt-ID Nr. DE 813330104 E-Mail: service@ebase.com Frank Strauß
+Services GmbH (ebase®) Gläubiger-ID: Web: www.ebase.com Geschäftsführung:
+80218 München DE68ZZZ00000025032 Kai Friedrich, Jürgen Keller
+Kontoauszug-Nr. 3
+vom 04.05.2020
+Seite 2 von 2
+Buchungstag Belegnummer Valuta Buchungstext/Zahlungsinformation Betrag Währung
+ 
+07.04.2020 013019002 09.04.2020 Wertpapierbelastung -4.906,22 EUR
+DEPOT-NR 99132734493
+AUFTR.-NR. 000003288416300
+COMPASS GROUP LS-,1105
+GA/EA KV WKN A2DR6K
+08.04.2020 013020563 14.04.2020 Wertpapierbelastung -5.618,50 EUR
+DEPOT-NR 99132734493
+AUFTR.-NR. 000003313618400
+INTL GAME TECH. DL-,10
+GA/EA KV WKN A14QUY
+14.04.2020 013026566 16.04.2020 Wertpapierbelastung -4.190,94 EUR
+DEPOT-NR 99132734493
+AUFTR.-NR. 000003343564800
+IMIII-I.EQ.NA.-100- AEOH
+GA/EA KV WKN A2DT9V
+16.04.2020 013032067 20.04.2020 Wertpapierbelastung -3,00 EUR
+SACHGEBIET 0500
+HANDELSTAG 16.04.2020
+AUFTR.-NR. 000000000001842
+GA/EA JABD WKN
+Kontostand neu: 04.05.2020 323,70 EUR
+IBAN: DE40 7001 3000 3267 1265 01, BIC: EBSGDEMXXXX
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere
+Informationen können dem "Informationsbogen für den Einleger" entnommen werden.
+Wir bitten Sie, den (Online-) Kontoauszug und die aufgeführten Buchungen und Berechnungen auf ihre Richtigkeit
+und Vollständigkeit hin zu überprüfen. Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieses (Online-)
+Kontoauszuges müssen Sie unverzüglich nach dessen Zugang gegenüber ebase bei der internen Revision unter Angabe
+der Kontonummer und des Datums des (Online-) Kontoauszuges erheben. Sofern Sie Ihre Einwendungen schriftlich
+geltend machen, genügt die unverzügliche Absendung. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmi-
+gung des (Online-) Kontoauszuges.
+Des Weiteren erfolgt die Gutschrift von Lastschriften und sonstiger Einzugspapiere zugunsten des Kontos bei ebase
+unter dem Vorbehalt Ihrer Einlösung.
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+ebase - Amtsgericht München HRB 141 740 Fax: +49 89 45460-892 Vorsitzender des Aufsichtsrats:
+European Bank for Financial USt-ID Nr. DE 813330104 E-Mail: service@ebase.com Frank Strauß
+Services GmbH (ebase®) Gläubiger-ID: Web: www.ebase.com Geschäftsführung:
+80218 München DE68ZZZ00000025032 Kai Friedrich, Jürgen Keller

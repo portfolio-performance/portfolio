@@ -1,0 +1,93 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.2
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Datum 28.02.2020
+Herrn Auszugsnummer 1
+Max Mustermann Eingeräumte Kontoüberziehung 0,00 Euro
+Musterstr. 12 Alter Saldo 0,00 Euro
+12345 Musterstadt Neuer Saldo 956,01 Euro
+IBAN DE36 5001 0517 1234 1234 12
+BIC INGDDEFFXXX
+Seite 1 von 1
+Girokonto Nummer 1234123412
+Kontoauszug Februar 2020
+Buchung Buchung / Verwendungszweck Betrag (EUR)
+Valuta
+12.02.2020 Gutschrift Max Mustermann 1.000,00
+12.02.2020 xyz
+13.02.2020 Gutschrift/Dauerauftrag Max Mustermann 1,01
+13.02.2020 XYZ
+14.02.2020 Dauerauftrag/Terminueberw. Max Mustermann -30,00
+14.02.2020 XYZ
+16.02.2020 Lastschrift XYZ GmbH -10,00
+16.02.2020 Danke
+Irgendein Verwendungszweck
+Mandat: 012345
+Referenz: 12345678901234567890123456
+22.02.2020 Ueberweisung XYZ GmbH -5,00
+22.02.2020 Irgendwelche Zahlen
+Neuer Saldo 956,01
+Kunden-Information
+Vorliegender Freistellungsauftrag 1,00
+Verbrauchter Sparer-Pauschbetrag 0,00
+Das Preis- und Leistungsverzeichnis für das Girokonto ändert sich zum 01.05.2020.
+Die neuen Bedingungen finden Sie in Ihrer Post-Box oder unter: www.ing.de/girokonto/neue-konditionen
+Schauen Sie mal rein.
+Bitte beachten Sie auch die Hinweise auf der Folgeseite.
+ING-DiBa AG
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzender des Aufsichtsrates: Dr. Claus Dieter Hoffmann · Vorstand: Nick Jue (Vorsitzender),
+Bernd Geilen (stellv. Vorsitzender), Željko Kaurin, Daniel Llano Manibardo, Dr. Joachim von Schorlemer, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main HRB 7727,
+Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+34GKKA5433249489_T
+Bitte beachten Sie die nachstehenden Hinweise:
+Kontoauszug ohne Rechnungsabschluss (Kontoübersicht)
+Wir bitten Sie, den Kontoauszug gemäß Ziffer 11 Absatz 4 unserer Allgemeinen Geschäftsbedingungen auf
+Vollständigkeit und Richtigkeit zu prüfen und uns Einwendungen in Textform unverzüglich mitzuteilen.
+Rechnungsabschluss inkl. Saldenmitteilung
+Wir bitten Sie, den Saldo Ihres Kontos/die Salden Ihrer Konten zu prüfen und uns Einwendungen in Textform
+unverzüglich, spätestens innerhalb von 6 Wochen nach Zugang, mitzuteilen. Werden innerhalb der Frist keine
+Einwendungen vorgebracht, so gilt der Saldo/gelten die Salden wie oben aufgeführt entsprechend unseren
+Allgemeinen Geschäftsbedingungen als von Ihnen anerkannt. Sie können zwar auch nach Fristablauf eine
+Berichtigung des Rechnungsabschlusses verlangen, müssen dann aber beweisen, dass Ihr Konto zu Unrecht
+belastet oder eine Ihnen zustehende Gutschrift nicht erteilt wurde.
+Einlagensicherung
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere
+Informationen können dem "Informationsbogen für den Einleger" (siehe auch www.ing.de/einlagensicherung)
+entnommen werden.
+Sollzins und effektiver Jahreszins (Änderung von Zinsen)
+Die Sollzinssätze für die eingeräumte Kontoüberziehung [Dispokredit] und die geduldete Kontoüberziehung
+sind variabel. Die ING ist gemäß der nachfolgenden Regelung berechtigt und verpflichtet, die Zinssätze anzupassen.
+Maßgeblich für Anpassungen sind Veränderungen des Zinssatzes der Europäischen Zentralbank für Haupt-
+refinanzierungsgeschäfte (nachfolgend EZB-Zinssatz genannt). Maßgeblich sind weiterhin die am 01.09.2010
+bestehenden Differenzen zwischen den Sollzinssätzen und dem EZB-Zinssatz (Äquivalenzverhältnisse). Sie betragen
+für die eingeräumte Kontoüberziehung [Dispokredit] 8,0 Prozentpunkte und die geduldete Kontoüberziehung
+11,5 Prozentpunkte.
+Die ING prüft die Entwicklung des EZB-Zinssatzes jeweils am 15. eines Monats (Prüfungstag). Veränderungen des
+EZB-Zinssatzes um mindestens 0,25 Prozentpunkte (relevante Veränderung) gegenüber dessen Niveau
+am 01.09.2010 bzw. danach gegenüber dessen Niveau zum Zeitpunkt der Feststellung der letzten relevanten
+EZB-Zinssatzänderung berechtigen die ING bei Erhöhungen und verpflichten die ING bei Ermäßigungen zur Anpassung
+der Sollzinssätze. Eine Ermäßigung der Sollzinssätze muss dabei mindestens der Ermäßigung des EZB-Zinssatzes
+entsprechen. Eine Erhöhung darf maximal der Erhöhung des EZB-Zinssatzes entsprechen. Eine Zinsanpassung wird
+3 Kalendermonate nach dem Prüfungstag, jeweils am 15. eines Monats, wirksam (Anpassungstag).
+Nutzt die ING - im Falle einer Erhöhung des EZB-Zinssatzes um mindestens 0,25 Prozentpunkte - ihr Recht zur
+Erhöhung der Sollzinssätze nicht oder nicht voll aus, werden dadurch die vereinbarten Äquivalenzverhältnisse zu
+Gunsten des Kunden unterschritten. Die ING kann die nicht ausgenutzte Erhöhung jeweils am 15. eines Monats
+unter Einhaltung der vereinbarten Äquivalenzverhältnisse nachholen. Bei einer nachfolgenden Ermäßigung des
+EZB-Zinssatzes (relevante Ermäßigung) ist sie erst dann zur Senkung der Sollzinssätze verpflichtet, wenn die
+im Rahmen des vereinbarten Äquivalenzverhältnisses bestehende Differenz von 8,0 Prozentpunkten (eingeräumte
+Kontoüberziehung [Dispokredit]) bzw. 11,5 Prozentpunkten (geduldete Kontoüberziehung) überschritten würde.
+Die ING wird den Kunden vorab über jede Sollzinssatzänderung informieren. Die Information darf auch per Konto-
+auszug erfolgen.
+Die Sollzinssätze sowie eine eventuelle, nicht ausgenutzte Erhöhung des EZB-Zinssatzes sind im Preis- und Leistungs-
+verzeichnis ausgewiesen. Die Höhe des EZB-Zinssatzes zum 01.09.2010, dessen Entwicklung sowie die Entwicklung
+einer nicht ausgenutzten Erhöhung können unter www.ing.de/zinsanpassungsklausel/ abgerufen werden.
+Buchungenmit der VISA Card [Debitkarte]
+Die Umsätze, die mit der VISA Card [Debitkarte] getätigt wurden, werden auf dem Girokonto am Tag des Eingangs
+bei uns mit dem Saldo des Girokontos verbucht und sofort verrechnet. Wir bitten Sie, den monatlichen Konto-
+auszug auf Richtigkeit und Vollständigkeit zu prüfen. Einwendungen gegen Buchungen müssen uns innerhalb von
+6Wochen ab Zugang des Kontoauszugs in Textform mitgeteilt werden. Die Unterlassung rechtzeitiger Einwendungen
+gilt als Genehmigung. Sie können zwar auch nach Fristablauf eine Berichtigung von Buchungen verlangen, müssen
+dann aber beweisen, dass Ihr Girokonto zu Unrecht belastet oder eine Ihnen zustehende Gutschrift nicht erteilt
+wurde.
+ING-DiBa AG

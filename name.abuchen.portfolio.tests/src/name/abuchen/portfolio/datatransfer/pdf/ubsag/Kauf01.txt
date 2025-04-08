@@ -1,0 +1,34 @@
+UBS Switzerland AG
+Postfach, CH-8098 Zürich
+www.ubs.com
+UBS Digital Banking Support +41 XXX XXX XXX
+XXX XXX XXX Portfolio-Nr.: XXXX XXXXXXXX XXXX
+XXXX Zürich ZH Per: 31.03.2022
+Bewertet in: CHF
+Whrg. Anzahl/Betrag Beschreibung Valor/ISIN Laufzeit
+USD 2'180 UBS (Lux) Fund Solutions - MSCI 21966836
+Emerging Markets UCITS ETF LU0950674175
+(USD) A-acc
+Transaktion
+Daten Beschreibung Whrg. Anzahl/Betrag Whrg. Trans.-Preis
+Abrechnungs-Nr. Devisenkurs
+Auftrags-Nr.
+Abschluss 08.03.2022  15:02:13 Börse Kauf Komptant 450 USD 10.868
+Buchung 10.03.2022 XXXXXXXXXXXXXXXX 0.9267
+Valuta 10.03.2022 XXXXXXXXXXXXXXXX
+Abschlüsse
+Zeit Anzahl/Betrag Whrg. Preis
+15:02:13 450 USD 10.87
+Abschlussort: SIX SWX
+IBAN Depot
+XXXX XXXX XXXX XXXX XXXX X XXXX XXXXXXXX.XX
+Auftragsdetails
+Auftragseingang 08.03.2022
+Abrechnungsdetails Bewertet in  CHF
+Transaktionswert USD 4'890.60 4'532
+Marchzinsen
+Diverse USD -7.34
+Courtage USD -22.01
+Abrechnungsbetrag USD -4'919.95
+in Kontowährung
+Angezeigt in UBS e-banking am 01.04.2022, 16:06:11 BST Seite 1/1

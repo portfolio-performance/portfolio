@@ -1,0 +1,76 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1.qualifier
+-----------------------------------------
+Wertpapierabrechnung
+Depot-Tagesauszug
+Depot: 0111111111
+Depotinhaber:
+Herrn Richard Mustermann
+Richard Mustermann
+Bankverbindung generell:
+Musterstraße
+IBAN:
+Frankenweg 7 DE07793517300000111111 
+11111  Stadt BIC: BYLADEM1HAS 
+Spk Ostunterfranken
+Kontoinhaber:
+Mustermann, Richard
+Vollmachten:
+Vollmacht Leben/Tod Karl Mustermann
+20. August 2015
+Ertragsabrechnung Auszug: 2 / Seite 1 von 2
+ 
+Sehr geehrter Herr Mustermann,
+folgende Buchung haben wir für Ihr Depot durchgeführt:
+ERTRAGSAUSSCHÜTTUNG / KAUF AUS ERTRAG
+Ertragstermin: 20.08.2015  
+Anteilbestand am Ertragstermin: 15,795  
+Ausschüttung (pro Anteil EUR 6,6600000): EUR 105,19
+Bezeichnung: DekaLux-PharmaTech TF 
+ISIN: LU0348413815 Unterdepot: 00 Auftragsnummer: 9310 0970
+Verwahrart: GiroSammel Abrechnungstag: 20.08.2015
+Abrechnungsbetrag Betrag in Währung Wertpapierdaten  B estandsdaten
+des Wertpapiers je Anteil in Stück
+ Ausschüttung EUR 105,19 Kurs Bestand alt: 15,795
+= Wiederanlagebetrag EUR 105,19 EUR 105,19 EUR 273,280000 Anteilumsatz: 0,385
+Bestand neu: 16,180
+Ihr erteilter Sparer-Pauschbetrag für Richard Mustermann beträgt EUR 600,00.
+Aktuelle steuerliche Daten
+Gezahlter Zwischengewinn, Stückzinsen und realisierte  E UR 0,00
+Veräußerungsverluste (sonstiger Verlusttopf)
+Verfügbarer Sparer-Pauschbetrag EUR 398,49
+Anrechenbare ausländische Quellensteuer EUR 9,49
+Alle steuerlich relevanten Informationen und Daten des aktuellen Jahres werden Ihnen mit der
+Steuerbescheinigung des Jahresdepotauszuges übersandt, den Sie bis spätestens Ende Januar des Folgejahres
+erhalten. Die erwirtschafteten Erträge der Vorsorgeprodukte Deka-BonusRente, Deka-BasisRente,
+Deka-ZukunftsPlan und Deka-RenteDirekt sind in der Ansparphase abgeltungsteuerfrei. Die Leistungen
+werden in der Regel erst in der Auszahlphase als sog. Sonstige Einkünfte versteuert. Leistungen, die auf
+geförderten Beiträgen beruhen, werden in der Auszahlungsphase voll besteuert (persönlicher Steuersatz).
+Eine evtl. Meldepflicht nach § 59ff. der Außenwirtschaftsverordnung (AWV) erfüllt die DekaBank.
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister: U  St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht  D E 114103563
+60625 Frankfurt www.deka.de F  rankfurt am Main
+HRA 16068
+Depot: 0111111111
+Auszug: 2 / Seite 2 von 2
+ 
+Zu Ihrer persönlichen Anlagestrategie beraten Sie gern die Berater der Sparkasse Ostunterfranken.
+ 
+Dort erhalten Sie ebenfalls die aktuellen Verkaufsunterlagen und Dokumentationen mit den Details Ihrer
+Vermögensanlage. Diese Unterlagen können Sie auch bei uns anfordern oder über www.deka.de abrufen.
+ 
+Capital-Fonds-Kompass 2015
+Das Wirtschaftsmagazin Capital hat die Deka zum dritten Mal in Folge mit der Höchstnote von fünf Sternen
+ausgezeichnet. Im "Capital-Fonds-Kompass" verbesserte die Deka das gute Vorjahresergebnis leicht auf 77,1
+Punkte und platzierte sich im Ranking der Universalanbieter auf Platz 7 (von 59). In allen Kategorien konnte
+die Deka an die sehr guten Ergebnisse der Vorjahre anknüpfen. Mit 166 getesteten Fonds und der damit
+zweitgrößten Angebotspalette wurde hier die Höchstpunktzahl von 10 Punkten erreicht. Capital konstatiert:
+Auch beim Service und der Managementqualität liegt die Gesellschaft weit vorn.
+(Quelle: Capital Heft 3/2015)
+Mit freundlichen Grüßen
+DekaBank
+Deutsche Girozentrale
+DekaBank Depotservice Telefon: (0 69) 71 47 - 6 52 Handelsregister:  U St-Id-Nr.:
+Deutsche Girozentrale DekaBank Depot Telefax: (0 69) 25 46 - 24 83 Amtsgericht D  E 114103563
+60625 Frankfurt www.deka.de  F rankfurt am Main
+HRA 16068

@@ -1,0 +1,69 @@
+PDF Autor: 'Unknown'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Wertpapierabrechnung
+Verkauf
+Referenz-Nr 90209278
+Datum 15.07.2019
+Depot 1234567890
+Herrn Mustermann, Max
+Max Mustermann
+Musterstrasse 1
+12345 Musterstadt Telefon +49 - (0) 69 - 1234567890
+E-Mail max.muller@muller.de
+Seite 1 von 2
+Wertpapierbezeichnung Wirecard AG Inhaber-Aktien o.N.
+ISIN DE0007472060
+WKN 747206
+Ausführungsplatz München
+Verwahrart Girosammelverwahrung
+Lagerland Deutschland
+Handelstag / Zeit 15.07.2019 12:37:35
+Nominal / Stück 180 ST
+Kurs EUR 148,05
+Kurswert EUR 26.649,00
+Bank-Provision EUR - 30,00
+Abwicklungsgebühren * EUR - 2,00
+Courtage * EUR - 10,66
+Spesen * EUR 0,00
+Kapitalertragsteuer EUR - 386,08
+Solidaritätszuschlag EUR - 21,23
+Ausmachender Betrag EUR 26.199,03
+Der Abrechnungsbetrag wird mit Valuta 17.07.2019 über Ihr Konto 1234567890 EUR gebucht.
+Keine Steuerbescheinigung!
+*Fremde Gebühren und Spesen
+Diese Mitteilung wurde maschinell erstellt und wird von der Bank nicht unterschrieben.
+V-Bank AG Telefon +49 (0)89 740 800-0 Aufsichtsratsvorsitzender: Vorstand:
+Arnulfstr. 58 - 80335 München Telefax +49 (0)89 740 800-222 Lars Hille Jens Hagemann
+Postfach 310340 - 80103 München USt-Id. DE 255554184 Stefan Lettmeier
+Gerichtsstand: München BIC VBANDEMMXXX
+Amtsgericht München HRB 167737 BLZ 700 123 00
+www.V-Bank.com
+MetaType: STEX / OrderType: S / Timestamp: 20190715 12:41:31
+Wertpapierabrechnung
+Verkauf
+Referenz-Nr 90209278
+Seite 2 von 2
+Steuerliche Informationen
+Kapitalertragsteuerpfl. Veräußerungsgewinn /-verlust: EUR 1.544,33
+Kapitalertragsteuerpflichtiger Betrag: EUR 1.544,33
+Stand Aktien-Verlustverrechnungstopf vor Veränderung: EUR 0,00
+Veränderung Aktien-Verlustverrechnungstopf: EUR 0,00
+Stand Aktien-Verlustverrechnungstopf nach Veränderung: EUR 0,00
+Stand allg. Verlustverrechnungstopf vor Veränderung: EUR 0,00
+Veränderung allg. Verlustverrechnungstopf: EUR 0,00
+Stand allg. Verlustverrechnungstopf nach Veränderung: EUR 0,00
+Stand Quellensteuerguthaben vor Veränderung: EUR 0,00
+Veränderung Quellensteuerguthaben: EUR 0,00
+Stand Quellensteuerguthaben nach Veränderung: EUR 0,00
+Bemessungsgrundlage für Kapitalertragsteuer: EUR 1.544,33
+Kapitalertragsteuer: EUR -386,08
+Solidaritätszuschlag: EUR -21,23
+Kirchensteuer: EUR 0,00
+V-Bank AG Telefon +49 (0)89 740 800-0 Aufsichtsratsvorsitzender: Vorstand:
+Arnulfstr. 58 - 80335 München Telefax +49 (0)89 740 800-222 Lars Hille Jens Hagemann
+Postfach 310340 - 80103 München USt-Id. DE 255554184 Stefan Lettmeier
+Gerichtsstand: München BIC VBANDEMMXXX
+Amtsgericht München HRB 167737 BLZ 700 123 00
+www.V-Bank.com
+MetaType: STEX / OrderType: S / Timestamp: 20190715 12:41:31

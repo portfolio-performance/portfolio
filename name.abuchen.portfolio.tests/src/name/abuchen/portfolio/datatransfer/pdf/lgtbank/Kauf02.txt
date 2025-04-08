@@ -1,0 +1,38 @@
+PDF Autor: 'LGT Bank AG'
+PDFBox Version: 1.8.16
+-----------------------------------------
+LGT Bank AG
+Herrengasse 12, FL-9490 Vaduz
+Tel. +423 235 11 22
+info@lgt.com, www.lgt.li, BIC BLFLLI2X
+HR Nr.: 1122356-7, Sitz: 9490 Vaduz, MWST-Nr. 50119
+UID: CHE-260.887.880
+Securities dealer no. 1012328
+Herr
+Max Mustermann
+Schlossallee 1
+12345 Buxte
+DEUTSCHLAND 1 / 1
+Vaduz, 14. April 2020
+ 
+Abrechnung Kauf Portfolio: 0032132.001
+Auftragsnummer: 323232609 Kundenportfolio
+Kunde: Cüneyt Beceren
+Titel Novo Nordisk A/S
+Namen-Aktien -B-
+ISIN DK0060534915
+Valorennummer 23159222
+Wertpapierkennnummer A1XA8R
+Abschlussdatum 14.04.2020 09:00:00
+Börsenplatz NASDAQ Copenhagen
+Anzahl 180 Stück
+Kurs DKK 396.00
+Kurswert DKK 71'280.00
+Eidg. Umsatzabgabe  DKK 106.90
+Courtage  DKK 1'414.16
+Broker Kommission  DKK 10.69
+Belastung DKK Konto 0032132.002 DKK 72'811.75
+Valuta 16.04.2020
+Wir haben die Titel in das oben genannte Depot eingebucht.
+Die Gutschrift im oben erwähnten Depot erfolgt vorbehaltlich der effektiven Lieferung.
+0048082 13E T VA I TRD1001 50784613 9:32 14.04.2020 %Media:XML-A4H

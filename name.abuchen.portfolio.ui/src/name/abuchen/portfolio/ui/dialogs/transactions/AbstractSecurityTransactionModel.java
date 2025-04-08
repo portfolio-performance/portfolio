@@ -2,14 +2,13 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -45,7 +44,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     protected Portfolio portfolio;
     protected Security security;
     protected LocalDate date = LocalDate.now();
-    protected LocalTime time = LocalTime.MIDNIGHT;
+    protected LocalTime time = PresetValues.getTime();
     protected long shares;
     protected BigDecimal quote = BigDecimal.ONE;
     protected long grossValue;
@@ -73,7 +72,16 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     public abstract boolean accepts(Type type);
 
+    /**
+     * Sets the source transaction that is being edited.
+     */
     public abstract void setSource(Object source);
+
+    /**
+     * Presets the values from the given source object, but creates a new
+     * transaction.
+     */
+    public abstract void presetFromSource(Object source);
 
     public abstract boolean hasSource();
 
@@ -89,6 +97,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         setForexFees(0);
         setForexTaxes(0);
         setNote(null);
+        setTime(PresetValues.getTime());
     }
 
     protected void fillFromTransaction(PortfolioTransaction transaction)
@@ -224,7 +233,9 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         if (t != total)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgIncorrectTotal, Values.Amount.format(t)));
 
-        if (total == 0L && type != PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+        if (total == 0L && type == PortfolioTransaction.Type.SELL)
+            return ValidationStatus.error(Messages.MsgHintUseOutboundDeliveryForZeroTotal);
+        else if (total == 0L && type != PortfolioTransaction.Type.DELIVERY_OUTBOUND)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnTotal));
 
         return ValidationStatus.ok();
@@ -271,10 +282,11 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     protected void updateSharesAndQuote()
     {
-        // do not auto-suggest shares and quote when editing an existing transaction
+        // do not auto-suggest shares and quote when editing an existing
+        // transaction
         if (hasSource())
             return;
-        
+
         if (type == PortfolioTransaction.Type.SELL || type == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
         {
             boolean hasPosition = false;
@@ -309,15 +321,18 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     protected void updateExchangeRate()
     {
-        // do not auto-suggest exchange rate when editing an existing transaction
-        if (hasSource())
-            return;
-
         if (getTransactionCurrencyCode().equals(getSecurityCurrencyCode()))
         {
             setExchangeRate(BigDecimal.ONE);
+            return;
         }
-        else if (!getTransactionCurrencyCode().isEmpty() && !getSecurityCurrencyCode().isEmpty())
+
+        // do not auto-suggest exchange rate when editing an existing
+        // transaction
+        if (hasSource())
+            return;
+
+        if (!getTransactionCurrencyCode().isEmpty() && !getSecurityCurrencyCode().isEmpty())
         {
             ExchangeRateTimeSeries series = getExchangeRateProviderFactory() //
                             .getTimeSeries(getSecurityCurrencyCode(), getTransactionCurrencyCode());
@@ -342,12 +357,14 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     public void setDate(LocalDate date)
     {
         firePropertyChange(Properties.date.name(), this.date, this.date = date);
+        updateSharesAndQuote();
         updateExchangeRate();
     }
 
     public void setTime(LocalTime time)
     {
         firePropertyChange(Properties.time.name(), this.time, this.time = time);
+        updateSharesAndQuote();
         updateExchangeRate();
     }
 
@@ -381,12 +398,15 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     public void setQuote(BigDecimal quote)
     {
-        firePropertyChange(Properties.quote.name(), this.quote, this.quote = quote);
+        var newValue = quote == null ? BigDecimal.ZERO : quote;
 
-        triggerGrossValue(Math.round(shares * quote.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
+        firePropertyChange(Properties.quote.name(), this.quote, this.quote = newValue); // NOSONAR
+
+        triggerGrossValue(
+                        Math.round(shares * newValue.doubleValue() * Values.Amount.factor() / Values.Share.divider()));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
-                        this.calculationStatus = calculateStatus());
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public long getGrossValue()
@@ -436,12 +456,18 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     public BigDecimal getInverseExchangeRate()
     {
-        return BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+        if (exchangeRate.compareTo(BigDecimal.ZERO) == 0)
+            return BigDecimal.ZERO;
+        else
+            return BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
     }
 
     public void setInverseExchangeRate(BigDecimal rate)
     {
-        setExchangeRate(BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN));
+        if (rate == null || rate.compareTo(BigDecimal.ZERO) == 0)
+            setExchangeRate(BigDecimal.ZERO);
+        else
+            setExchangeRate(BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN));
     }
 
     public long getConvertedGrossValue()

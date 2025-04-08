@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.model;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +18,8 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>,
 
     private Attributes attributes;
 
+    private Instant updatedAt;
+
     public Portfolio()
     {
         this.uuid = UUID.randomUUID().toString();
@@ -28,6 +31,13 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>,
         this.name = name;
     }
 
+    /* package */ Portfolio(String uuid, String name)
+    {
+        this.uuid = uuid;
+        this.name = name;
+    }
+
+    @Override
     public String getUUID()
     {
         return uuid;
@@ -49,6 +59,7 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>,
     public void setName(String name)
     {
         this.name = name;
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -61,6 +72,7 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>,
     public void setNote(String note)
     {
         this.note = note;
+        this.updatedAt = Instant.now();
     }
 
     public boolean isRetired()
@@ -71,6 +83,7 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>,
     public void setRetired(boolean isRetired)
     {
         this.isRetired = isRetired;
+        this.updatedAt = Instant.now();
     }
 
     public Account getReferenceAccount()
@@ -81,6 +94,7 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>,
     public void setReferenceAccount(Account referenceAccount)
     {
         this.referenceAccount = referenceAccount;
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -95,6 +109,17 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>,
     public void setAttributes(Attributes attributes)
     {
         this.attributes = attributes;
+        this.updatedAt = Instant.now();
+    }
+
+    public Instant getUpdatedAt()
+    {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt)
+    {
+        this.updatedAt = updatedAt;
     }
 
     @Override

@@ -1,0 +1,97 @@
+PDF author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+SUTOR BANK • Postfach 11 33 37 • 20433 Hamburg Kunden-Service:
+Tel.: 040 - 82 22 31 63
+Fax: 040 - 80 80 13 19
+Mail: info@sutorbank.de
+Herrn Max Mustermann Hamburg, 16.06.2021
+Musterstraße 0
+00000 Musterstadt
+Ausführungsbestätigung, 0000000000 MAX HEINR. SUTOR OHG
+ HERMANNSTRASSE 46
+Sehr geehrter Herr Mustermann, 20095 HAMBURG
+ 
+hiermit bestätigen wir Ihnen die Ausführung eines Auftrags. Details dazu entnehmen Sie bitte der INFO@SUTORBANK.DE
+anliegenden Umsatzliste. WWW.SUTORBANK.DE
+ 
+Wir sind zur Übersendung dieser Informationen verpflichtet, als Brief oder papierlos in digitaler Form über unser
+Kundenportal. Falls Sie noch nicht angemeldet sind, sprechen Sie gerne unseren GESCHÄFTSLEITUNG
+Kunden-Service an oder informieren sich auf: www.sutorbank.de/service/kundenportal ROBERT FREITAG
+THOMAS MEIER
+ 
+Die Aufstellung erfolgt automatisch vorbehaltlich Irrtum und wird von der Bank nicht unterschrieben.
+ MITGLIED IM EINLAGEN-
+Mit freundlichen Grüßen SICHERUNGSFONDS DES
+Ihre SUTOR BANK BUNDESVERBANDES
+ DEUTSCHER BANKEN
+ 
+ 
+Anlagen UNABHÄNGIG.
+PRODUKTNEUTRAL.
+INHABERGEFÜHRT.
+FINANZAMT HAMBURG
+STNR. 2761000074
+AMTSGERICHT HAMBURG
+HRA25379
+BANKLEITZAHL 202 308 00
+BIC MHSBDEHBXXX
+Seite 0 von 2
+Dies ist ein notwendiges Übel,
+  aber sonst klappt der Seitenumbruch nicht sauber!
+DIE PRIVATBANK FÜR ALLE.
+Übersicht mit Bewertung zum 15.06.2021
+Max Mustermann Freistellungsauftrag für Stamm-Nr. 00000000, unbefristet: 200,00 EUR
+"Investmentdepot" Nr. 0000000000 / IBAN: DE00 0000 0000 0000 0000 00 Ausgenutzter Freibetrag per 15.06.2021: 46,26 EUR
+Investment ISIN Lagerstelle Verwahrart Anlagequote Bestand  Einheit Kurs Währung Kurswert
+Fonds
+Xtr. (IE)-MSCI World ESG 1C IE00BZ02LR44 Deutschland Girosammelverwahrung 60,00 % 0,0000  Anteile 0,0000 US$* 0,00 EUR
+iShares Sustainable MSCI EM SRI acc IE00BYVJRP78 Irland Wertpapierrechnung 20,00 % 0,0000  Anteile 0,0000 US$* 0,00 EUR
+iShares MSCI Europe SRI UCITS acc IE00B52VJ196 Irland Wertpapierrechnung 20,00 % 0,0000  Anteile 0,0000 EUR 0,00 EUR
+* Währungskurs: 1,2108 US$
+Kurswert Gesamt 0,00 EUR
+Geldsaldo 0,00 EUR
+Erstellt im Juni 2021 Seite 1 von 2
+Umsätze vom 01.04.2021 bis 15.06.2021 in EUR
+Buchungs- Wertstellung Transaktion Umsatz / Finanz-Instrument Anteile / Gramm W-Kurs Betrag Betrag Kosten KESt KiSt
+datum Handelsplatz ISIN Kurs / Preis Währung (brutto) (netto) SolZ
+01.04.2021 01.04.2021 Einzahlung automatischer Lastschrifteinzug - 260,00
+-
+06.04.2021 01.04.2021 Kauf Kauf Xtr. (IE)-MSCI World ESG 1C 6,0208 1,1746 -156,00
+12:05 Tradegate IE00BZ02LR44 30,4339 US$
+06.04.2021 01.04.2021 Kauf Kauf iShares MSCI Europe SRI UCITS acc 0,9470 -52,00
+12:16 Tradegate IE00B52VJ196 54,9100 EUR
+06.04.2021 01.04.2021 Kauf Kauf iShares Sustainable MSCI EM SRI acc 7,1448 1,1746 -52,00
+12:45 Tradegate IE00BYVJRP78 8,5487 US$
+15.04.2021 12.04.2021 Kauf Kauf iShares MSCI Europe SRI UCITS acc 0,0994 -5,54
+12:08 Tradegate IE00B52VJ196 55,7500 EUR
+15.04.2021 12.04.2021 Kauf Kauf iShares Sustainable MSCI EM SRI acc 5,8650 1,1904 -41,46
+12:59 Tradegate IE00BYVJRP78 8,4149 US$
+15.04.2021 12.04.2021 Verkauf Verkauf Xtr. (IE)-MSCI World ESG 1C -1,7870 1,1904 47,00
+13:18 Tradegate IE00BZ02LR44 31,3075 US$
+14.05.2021 10.05.2021 Kauf Kauf Xtr. (IE)-MSCI World ESG 1C 0,7947 1,2169 -21,04
+10:50 Tradegate IE00BZ02LR44 32,2113 US$
+14.05.2021 10.05.2021 Kauf Kauf iShares Sustainable MSCI EM SRI acc 1,0382 1,2169 -7,48
+11:31 Tradegate IE00BYVJRP78 8,7702 US$
+14.05.2021 10.05.2021 Verkauf Verkauf iShares MSCI Europe SRI UCITS acc -0,5025 28,52
+11:42 Tradegate IE00B52VJ196 56,7600 EUR
+17.05.2021 13.05.2021 Verkauf Verkauf Xtr. (IE)-MSCI World ESG 1C -0,4634 1,2123 11,82
+08:00 TH IE00BZ02LR44 30,9274 US$
+17.05.2021 13.05.2021 Verkauf Verkauf iShares MSCI Europe SRI UCITS acc -0,3840 21,39
+08:00 TH IE00B52VJ196 55,7100 EUR
+17.05.2021 13.05.2021 Verkauf Verkauf iShares Sustainable MSCI EM SRI acc -1,7624 1,2123 12,11
+08:26 TH IE00BYVJRP78 8,3274 US$
+
+17.05.2021 17.05.2021 Gebühr anteilige Depot- u. Verwaltgebühr 1. Hj. 2021 - -6,55
+-
+17.05.2021 17.05.2021 Gebühr anteilige Kontoführungsgebühr 1. Hj.. 2021 - -15,00
+-
+15.06.2021 01.06.2021 Übertrag Übertrag Xtr. (IE)-MSCI World ESG 1C -241,0000 0,00
+IE00BZ02LR44 US$
+15.06.2021 01.06.2021 Übertrag Übertrag iShares MSCI Europe SRI UCITS acc -37,0000 0,00
+IE00B52VJ196 EUR
+15.06.2021 01.06.2021 Übertrag Übertrag iShares Sustainable MSCI EM SRI acc -295,0000 0,00
+IE00BYVJRP78 US$
+15.06.2021 15.06.2021 Umbuchung Umbuchung Geld - -23,77
+-
+Erstellt im Juni 2021 Seite 2 von 2

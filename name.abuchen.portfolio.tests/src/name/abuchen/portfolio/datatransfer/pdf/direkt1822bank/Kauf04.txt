@@ -1,0 +1,34 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postfach · 60255 Frankfurt am Main
+Depotnummer 1111111111
+Kundennummer 2222222
+Max Mustermann
+Auftragsnummer 333333/33.00
+Herrn Datum 09.07.2021
+Max Mustermann Ihr Berater 1822direkt
+Musterstraße 12 Telefon 012 34567-0
+12345 Musterstadt , Niederbay Rechnungsnummer W11111-2222222222/33
+Umsatzsteuer-ID DE111111111
+Wertpapier Abrechnung Kauf Direkthandel
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 100 LYXOR MSCI EMERG.MKTS U.ETF LU0635178014 (ETF127)
+INHABER-ANTEILE I O.N.
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Handelspartner Societe Generale
+Schlusstag 09.07.2021 Auftraggeber Mustermann, Max
+Ausführungskurs 40,000 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 4.000,00- EUR
+Provision 20,00- EUR
+Ausmachender Betrag 4.020,00- EUR
+Den Gegenwert buchen wir mit Valuta 13.07.2021 zu Lasten des Kontos 8888888888
+(IBAN DE?? 5005 0201 8888 8888 88), BLZ 50050201 (BIC HELADEF1822).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Mir/uns wurden Verkaufsunterlagen zur Verfügung gestellt.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+2222.00000000.1111111OR11

@@ -7,6 +7,7 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class AssetPosition
 {
@@ -15,7 +16,7 @@ public class AssetPosition
         @Override
         public int compare(AssetPosition p1, AssetPosition p2)
         {
-            return p1.getDescription().compareToIgnoreCase(p2.getDescription());
+            return TextUtil.compare(p1.getDescription(), p2.getDescription());
         }
     }
 
@@ -43,28 +44,6 @@ public class AssetPosition
     public double getShare()
     {
         return (double) getValuation().getAmount() / (double) this.totalAssets.getAmount();
-    }
-
-    public Money getFIFOPurchaseValue()
-    {
-        return position.getFIFOPurchaseValue(converter.getTermCurrency());
-    }
-
-    public Money getMovingAveragePurchaseValue()
-    {
-        return position.getMovingAveragePurchaseValue(converter.getTermCurrency());
-    }
-
-    public Money getProfitLoss()
-    {
-        // calculate profit/loss on the converted values to avoid rounding
-        // differences that can happen when converting the profit/loss value
-        // from the base currency
-
-        if (position.getInvestmentVehicle() instanceof Security)
-            return getValuation().subtract(getFIFOPurchaseValue());
-        else
-            return Money.of(converter.getTermCurrency(), 0);
     }
 
     public String getDescription()

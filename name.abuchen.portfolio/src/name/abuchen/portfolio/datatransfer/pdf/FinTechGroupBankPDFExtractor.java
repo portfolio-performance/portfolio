@@ -1,11 +1,18 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.getTickerSymbolForCrypto;
+import static name.abuchen.portfolio.util.TextUtil.concatenate;
+import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -13,1293 +20,3805 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.Transaction.Unit.Type;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
+@SuppressWarnings("nls")
 public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 {
-
     public FinTechGroupBankPDFExtractor(Client client)
     {
         super(client);
 
-        addBankIdentifier("biw AG"); //$NON-NLS-1$
-        addBankIdentifier("FinTech Group Bank AG"); //$NON-NLS-1$
-        addBankIdentifier("flatex Bank AG"); //$NON-NLS-1$
+        addBankIdentifier("biw AG");
+        addBankIdentifier("FinTech Group Bank AG");
+        addBankIdentifier("flatex Bank AG");
+        addBankIdentifier("flatexDEGIRO Bank AG");
 
         addBuySellTransaction();
-        addBuyTransaction();
-        addBuyfromSavingsplanTransaction();
-        addDepositAndWithdrawalTransaction();
-        addDividendTransaction();
-        addForeignDividendTransaction();
+        addBuySellCryptoTransaction();
+        addBuyStockDividendeTransaction();
+        addSummaryStatementBuySellTransaction();
         addSellTransaction();
-        addTransferInOutTransaction();
-        addTransferOutTransaction();
-        addRemoveTransaction();
-        addRemoveNewFormatTransaction();
-        addOverdraftinterestTransaction();
-        addTaxoptimisationTransaction();
-        addVorabpauschaleTransaction();
-    }
-
-    @SuppressWarnings("nls")
-    private void addBuySellTransaction()
-    {
-        DocumentType type = new DocumentType("Sammelabrechnung \\(Wertpapierkauf/-verkauf\\)");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("Nr.(\\d*)/(\\d*) *Kauf.*");
-        type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.BUY);
-                            return entry;
-                        })
-
-                        .section("wkn", "isin", "name")
-                        .match("Nr.[0-9A-Za-z]*/(\\d*) *Kauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        .section("shares", "date", "time")
-                        .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+.\\d+.\\d{4}+), (?<time>\\d+:\\d+)(.+)?")
-                        .assign((t, v) -> {
-                            t.setShares(asShares(v.get("shares")));
-                            if (v.get("time") != null)
-                                t.setDate(asDate(v.get("date"), v.get("time")));
-                            else
-                                t.setDate(asDate(v.get("date")));
-                        })
-
-                        .section("amount", "currency") //
-                        .match(".* Endbetrag *: *(?<amount>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        .section("fee", "currency").optional() //
-                        .match(".* Provision *: *(?<fee>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* Eigene Spesen *: *(?<fee>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* \\*Fremde Spesen *: *(?<fee>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .wrap(BuySellEntryItem::new));
-
-        block = new Block("Nr.(\\d*)/(\\d*) *Verkauf.*");
-        type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.SELL);
-                            return entry;
-                        })
-
-                        .section("wkn", "isin", "name")
-                        .match("Nr.(\\d*)/(\\d*) *Verkauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        .section("shares", "date", "time")
-                        .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+.\\d+.\\d{4}+), (?<time>\\d+:\\d+)(.+)?")
-                        .assign((t, v) -> {
-                            t.setShares(asShares(v.get("shares")));
-                            if (v.get("time") != null)
-                                t.setDate(asDate(v.get("date"), v.get("time")));
-                            else
-                                t.setDate(asDate(v.get("date")));
-                        })
-
-                        .section("amount", "currency") //
-                        .match(".* Endbetrag *: *(?<amount>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        .section("fee", "currency").optional() //
-                        .match(".* Provision *: *(?<fee>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* Eigene Spesen *: *(?<fee>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* \\*Fremde Spesen *: *(?<fee>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("tax", "currency").optional() //
-                        .match(".* \\*\\*Einbeh. Steuer *: *(?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.TAX,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("tax"))))))
-
-                        .section("taxreturn", "currency").optional()
-                        .match(".* \\*\\*Einbeh. Steuer *: *(?<taxreturn>-[\\d.]+,\\d+) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> t.setAmount(
-                                        t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxreturn"))))
-
-                        .wrap(BuySellEntryItem::new));
-        addTaxReturnBlock(type);
-    }
-
-    @SuppressWarnings("nls")
-    private void addBuyTransaction()
-    {
-        DocumentType type = new DocumentType("Wertpapierabrechnung Kauf Fonds/Zertifikate");
-        this.addDocumentTyp(type);
-
-        Block block = new Block(".*Auftragsdatum.*");
-        type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.BUY);
-                            return entry;
-                        })
-                        
-                        .section("time").optional()
-                        .match(".*Ausführungszeit[\\s:]*(?<time>\\d+:\\d+).+") //
-                        .assign((t, v) -> {
-                            type.getCurrentContext().put("time", v.get("time"));
-                        })
-
-                        .section("date")
-                        .match(".*[Schlusstag|Handelstag]\\s*(?<date>\\d+.\\d+.\\d{4}).*") //
-                        .assign((t, v) -> {
-                            if (type.getCurrentContext().get("time") != null)
-                            {
-                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
-                            }
-                            else
-                            {
-                                t.setDate(asDate(v.get("date")));
-                            }
-                        })
-
-                        .section("wkn", "isin", "name")
-                        .match("Nr.[0-9A-Za-z]*/(\\d*) *Kauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        .section("shares") //
-                        .match("^Ausgeführt[\\s:]*(?<shares>[\\.\\d]+(,\\d*)?) *St\\..*") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        .oneOf( //
-                                        section -> section.attributes("amount", "currency") //
-                                                        .match(".* Endbetrag[\\s:]*(?<currency>\\w{3}+) *(?<amount>[\\d.-]+,\\d+)") //
-                                                        .assign((t, v) -> {
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                        }),
-                                        section -> section.attributes("amount", "currency") //
-                                                        .match(".* Endbetrag[\\s:]*(?<amount>[\\d.-]+,\\d+)\\s(?<currency>\\w{3}+)") //
-                                                        .assign((t, v) -> {
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                        }))
-                        .section("fee", "currency").optional() //
-                        .match(".* Provision[\\s:]*(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* Provision[\\s:]*(?<fee>[\\d.-]+,\\d+) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* Eigene Spesen[\\s:]*(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* Eigene Spesen[\\s:]*(?<fee>[\\d.-]+,\\d+) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* \\*Fremde Spesen[\\s:]*(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* \\*Fremde Spesen[\\s:]*(?<fee>[\\d.-]+,\\d+) *(?<currency>\\w{3}+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .wrap(BuySellEntryItem::new));
-    }
-
-    
-    @SuppressWarnings("nls")
-    private void addBuyfromSavingsplanTransaction()
-    {
-        DocumentType type = new DocumentType("Sammelabrechnung aus Sparplan");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("Auftrags-Nr :.*");
-        type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.BUY);
-                            return entry;
-                        })
-                        
-                        .section("isin", "name")
-                        .match("ISIN *: (?<isin>[^/]*)") //
-                        .match("Bezeichnung *: (?<name>.*)")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        .section("date", "shares", "amount") //
-                        .match("^Kauf *(\\d+.\\d+.\\d{4}) *(?<date>\\d+.\\d+.\\d{4}) *(?<shares>[\\.\\d]+(,\\d*)?) *([\\d.-]+,\\d+) *(\\w{3}+) *(?<amount>[\\d.-]+,\\d+) *(?<currency>\\w{3}+)") //
-                        .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
-                            t.setShares(asShares(v.get("shares")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        .wrap(BuySellEntryItem::new));
-    }
-
-    
-    @SuppressWarnings("nls")
-    private void addDepositAndWithdrawalTransaction()
-    {
-        final DocumentType type = new DocumentType("Kontoauszug Nr:", (context, lines) -> {
-            Pattern pYear = Pattern.compile("Kontoauszug Nr:[ ]*\\d+/(\\d+).*");
-            Pattern pCurrency = Pattern.compile("Kontow.hrung:[ ]+(\\w{3}+)");
-            // read the current context here
-            for (String line : lines)
-            {
-                Matcher m = pYear.matcher(line);
-                if (m.matches())
-                {
-                    context.put("year", m.group(1));
-                }
-                m = pCurrency.matcher(line);
-                if (m.matches())
-                {
-                    context.put("currency", m.group(1));
-                }
-            }
-        });
-        this.addDocumentTyp(type);
-
-        // deposit, add value to account
-        // 01.01. 01.01. xyz 123,45+
-        Block block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+.berweisung[ ]+[\\d.-]+,\\d+[+-]");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.DEPOSIT);
-                            return t;
-                        })
-
-                        .section("valuta", "amount", "sign")
-                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+.berweisung[ ]+(?<amount>[\\d.-]+,\\d+)(?<sign>[+-])")
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            String date = v.get("valuta");
-                            if (date != null)
-                            {
-                                // create a long date from the year in the
-                                // context
-                                t.setDateTime(asDate(date + context.get("year")));
-                            }
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                            // check for withdrawals
-                            String sign = v.get("sign");
-                            if ("-".equals(sign))
-                            {
-                                // change type for withdrawals
-                                t.setType(AccountTransaction.Type.REMOVAL);
-                            }
-                        })
-
-                        .wrap(TransactionItem::new));
-
-        // somedevelopment
-        // Added "Lastschrift" as DEPOSIT option
-        block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+.Lastschrift[ ]+[\\d.-]+,\\d+[+-]");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.DEPOSIT);
-            return t;
-        })
-
-                        .section("valuta", "amount", "sign")
-                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Lastschrift[ ]+(?<amount>[\\d.-]+,\\d+)(?<sign>[+-])")
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            String date = v.get("valuta");
-                            if (date != null)
-                            {
-                                // create a long date from the year in the
-                                // context
-                                t.setDateTime(asDate(date + context.get("year")));
-                            }
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                        }).wrap(t -> new TransactionItem(t)));
-        // somedevelopment
-
-        // fees for foreign dividends, subtract value from account
-        block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+Geb.hr Kapitaltransaktion Ausland[ ]+[\\d.-]+,\\d+[-]");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.FEES);
-                            return t;
-                        })
-
-                        .section("valuta", "amount", "isin")
-                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Geb.hr Kapitaltransaktion Ausland[ ]+(?<amount>[\\d.-]+,\\d+)[-]")
-                        .match("\\s*(?<isin>\\w{12})")
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                            Map<String, String> context = type.getCurrentContext();
-                            String date = v.get("valuta");
-                            if (date != null)
-                            {
-                                // create a long date from the year in the
-                                // context
-                                t.setDateTime(asDate(date + context.get("year")));
-                            }
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                            t.setNote("Gebühr Kapitaltransaktion Ausland");
-                        }).wrap(TransactionItem::new));
-
-        // account fees 
-        block = new Block("\\d+.\\d+.[ ]+\\d+.\\d+.[ ]+Depotgeb.hren[ ]+\\d{2}.\\d{2}.\\d{4}[ -]+\\d{2}.\\d{2}.\\d{4},[ ]+[\\d.-]+,\\d+[-]");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.FEES);
-                            return t;
-                        })
-
-                        .section("valuta", "amount", "text")
-                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+(?<text>Depotgeb.hren[ ]+\\d{2}.\\d{2}.\\d{4}[ -]+\\d{2}.\\d{2}.\\d{4}),[ ]+(?<amount>[\\d.-]+,\\d+)[-]")
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            String date = v.get("valuta");
-                            if (date != null)
-                            {
-                                // create a long date from the year in the
-                                // context
-                                t.setDateTime(asDate(date + context.get("year")));
-                            }
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                            t.setNote(v.get("text"));
-                        }).wrap(TransactionItem::new));
-    }
-
-    @SuppressWarnings("nls")
-    private void addDividendTransaction()
-    {
-        DocumentType type1 = new DocumentType("([^ ]Dividendengutschrift für inländische Wertpapiere)|(Dividendengutschrift[^ ])");
-        DocumentType type2 = new DocumentType("Ertragsmitteilung");
-        DocumentType type3 = new DocumentType("Zinsgutschrift");
-        this.addDocumentTyp(type1);
-        this.addDocumentTyp(type2);
-        this.addDocumentTyp(type3);
-
-        Block block = new Block("Ihre Depotnummer.*");
-        type1.addBlock(block);
-        type2.addBlock(block);
-        type3.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.DIVIDENDS);
-                            return t;
-                        })
-
-                        .section("wkn", "isin", "name")
-                        .match("Nr\\.(\\d*) * (?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\).*") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        .section("shares") //
-                        .match("^St\\.[^:]+: *(?<shares>[\\.\\d]+(,\\d*)?).*")
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        .section("amount", "currency") //
-                        .match(".* Endbetrag *: *(?<amount>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        .section("tax", "currency").optional() //
-                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
-
-                        .section("date") //
-                        .match("Valuta * : *(?<date>\\d+.\\d+.\\d{4}+).*")
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
-                        // Devisenkurs     :         1,173000   *Einbeh. Steuer     :           12,99 EUR
-                        // Quellenst.-satz :            15,00 %  Gez. Quellensteuer :           18,28 USD
-                        .section("amountFx", "currencyFx", "exchangeRate").optional() //
-                        .match(".*Devisenkurs *: *(?<exchangeRate>[.\\d]+,\\d+).*") //
-                        .match(".*Gez. Quellenst.*: *(?<amountFx>[.\\d]+,\\d{2}) (?<currencyFx>\\w{3})") //
-                        .assign((t, v) -> {
-
-                            Money tax = Money.of(asCurrencyCode(v.get("currencyFx")), asAmount(v.get("amountFx")));
-
-                            if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
-                            {
-                                t.addUnit(new Unit(Unit.Type.TAX, tax));
-                            }
-                            else 
-                            {
-                                BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                                RoundingMode.HALF_DOWN);
-
-                                Money txTax = Money.of(t.getCurrencyCode(),
-                                                BigDecimal.valueOf(tax.getAmount()).multiply(inverseRate)
-                                                                .setScale(0, RoundingMode.HALF_UP).longValue());
-
-                                // store tax value in both currencies, if
-                                // security's currency
-                                // is different to transaction currency
-                                if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                                {
-                                    t.addUnit(new Unit(Unit.Type.TAX, txTax));
-                                }
-                                else
-                                {
-                                    t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, inverseRate));
-                                }
-                            }
-                        })
-                        
-                        .wrap(TransactionItem::new));
-    }
-
-    @SuppressWarnings("nls")
-    private void addForeignDividendTransaction()
-    {
-        DocumentType type = new DocumentType("[^ ](Dividendengutschrift für ausländische Wertpapiere)", (context, lines) -> {
-            Pattern pCurrencyFx = Pattern.compile(".* Bruttodividende *: *[.\\d]+,\\d{2} (?<currencyFx>\\w{3})");
-            Pattern pExchangeRate = Pattern.compile(".*Devisenkurs *: *(?<exchangeRate>[.\\d]+,\\d+).*");
-            // read the current context here
-            for (String line : lines)
-            {
-                Matcher m = pCurrencyFx.matcher(line);
-                if (m.matches())
-                {
-                    context.put("currencyFx", m.group(1));
-                }
-                m = pExchangeRate.matcher(line);
-                if (m.matches())
-                {
-                    context.put("exchangeRate", m.group(1));
-                }
-            }
-        });
-        this.addDocumentTyp(type);
-
-        Block block = new Block("Ihre Depotnummer.*");
-        type.addBlock(block);
-
-        block.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.DIVIDENDS);
-                            return t;
-                        })
-
-                        // Nr.111111111 STARBUCKS CORP. (US8552441094/884437)
-                        .section("wkn", "isin", "name") //
-                        .match("Nr\\.(\\d*) * (?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\).*") //
-                        .assign((t, v) -> {
-
-                            Map<String, String> context = type.getCurrentContext();
-
-                            // the security must be in Fx units, otherwise,
-                            // dividends and taxes cannot be in Fx units
-
-                            v.put("currency", context.get("currencyFx"));
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
-
-                        // St. : 105 Bruttodividende
-                        .section("shares") //
-                        .match("^St\\.[^:]+: *(?<shares>[\\.\\d]+(,\\d*)?).*") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        .section("amount", "currency") //
-                        .match(".* Endbetrag *: *(?<amount>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        // Extag : 08.08.2017 Bruttodividende : 26,25 USD
-                        .section("amountGrossFx", "currencyFx") //
-                        .match(".* Bruttodividende *: *(?<amountGrossFx>[.\\d]+,\\d{2}) (?<currencyFx>\\w{3})") //
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            // set currency of transaction (should be in EUR)
-                            String currencyCode = t.getCurrencyCode();
-
-                            // create gross value unit only, if transaction
-                            // currency is different to security currency
-                            if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                            {
-
-                                // get foreign currency (should be in Fx)
-                                String currencyCodeFx = asCurrencyCode(v.get("currencyFx"));
-                                // create a Unit only, if security and
-                                // transaction currency are different
-                                if (!currencyCode.equalsIgnoreCase(currencyCodeFx))
-                                {
-                                    // get exchange rate (in Fx/EUR) and
-                                    // calculate
-                                    // inverse exchange rate (in EUR/Fx)
-                                    BigDecimal exchangeRate = asExchangeRate(context.get("exchangeRate"));
-                                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                                    RoundingMode.HALF_DOWN);
-
-                                    // get gross amount and calculate equivalent
-                                    // in
-                                    // EUR
-                                    Money mAmountGrossFx = Money.of(currencyCodeFx, asAmount(v.get("amountGrossFx")));
-                                    BigDecimal amountGrossFxInEUR = BigDecimal.valueOf(mAmountGrossFx.getAmount())
-                                                    .divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
-                                                    .setScale(0, RoundingMode.HALF_DOWN);
-                                    Money mAmountGrossFxInEUR = Money.of(currencyCode, amountGrossFxInEUR.longValue());
-                                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, mAmountGrossFxInEUR, mAmountGrossFx,
-                                                    inverseRate));
-                                }
-                            }
-                        })
-
-                        // Quellenst.-satz : 30,00 % Gez. Quellenst. : 7,88 USD
-                        .section("amountFx", "currencyFx").optional() //
-                        .match(".*Gez. Quellenst.*: *(?<amountFx>[.\\d]+,\\d{2}) (?<currencyFx>\\w{3})") //
-                        .assign((t, v) -> {
-
-                            Money tax = Money.of(asCurrencyCode(v.get("currencyFx")), asAmount(v.get("amountFx")));
-
-                            if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
-                            {
-                                t.addUnit(new Unit(Unit.Type.TAX, tax));
-                            }
-                            else if (type.getCurrentContext().containsKey("exchangeRate"))
-                            {
-                                BigDecimal exchangeRate = asExchangeRate(type.getCurrentContext().get("exchangeRate"));
-                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                                RoundingMode.HALF_DOWN);
-
-                                Money txTax = Money.of(t.getCurrencyCode(),
-                                                BigDecimal.valueOf(tax.getAmount()).multiply(inverseRate)
-                                                                .setScale(0, RoundingMode.HALF_UP).longValue());
-
-                                // store tax value in both currencies, if
-                                // security's currency
-                                // is different to transaction currency
-                                if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                                {
-                                    t.addUnit(new Unit(Unit.Type.TAX, txTax));
-                                }
-                                else
-                                {
-                                    t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, inverseRate));
-                                }
-                            }
-                        })
-
-                        .section("tax", "currency").optional() //
-                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
-
-                        .section("date") //
-                        .match("Valuta * : *(?<date>\\d+.\\d+.\\d{4}+).*") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
-                        .wrap(TransactionItem::new));
-    }
-
-    @SuppressWarnings("nls")
-    private void addSellTransaction()
-    {
-        DocumentType type = new DocumentType("Wertpapierabrechnung Verkauf");
-        this.addDocumentTyp(type);
-
-        Block block = new Block(".*Auftragsdatum.*");
-        type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.SELL);
-                            return entry;
-                        })
-
-                        .section("date").optional() //
-                        .match(".*Schlusstag *(?<date>\\d+.\\d+.\\d{4}).*") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                        .section("date").optional() //
-                        .match(".*Handelstag *(?<date>\\d+.\\d+.\\d{4}).*") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                        .section("wkn", "isin", "name")
-                        .match("Nr.(\\d*)/(\\d*) *Verkauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        .section("shares", "notation")
-                        .match("^Ausgeführt[ :]*(?<shares>[\\.\\d]+(,\\d*)?) *(?<notation>St\\.|\\w{3}+).*") //
-                        .assign((t, v) -> {
-                            String notation = v.get("notation");
-                            if (notation != null && !notation.equalsIgnoreCase("St."))
-                            {
-                                // Prozent-Notierung, Workaround..
-                                t.setShares((asShares(v.get("shares")) / 100));
-                            }
-                            else
-                            {
-                                t.setShares(asShares(v.get("shares")));
-                            }
-                        })
-
-                        .oneOf( //
-                                        section -> section.attributes("amount", "currency") //
-                                                        .match(".* Endbetrag *(?<currency>\\w{3}+) *(?<amount>[\\d.-]+,\\d+)") //
-                                                        .assign((t, v) -> {
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                        }),
-                                        section -> section.attributes("amount", "currency") //
-                                                        .match(".* Endbetrag[ :]*(?<amount>[\\d.-]+,\\d+)\\s(?<currency>\\w{3}+)") //
-                                                        .assign((t, v) -> {
-                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                                            t.setAmount(asAmount(v.get("amount")));
-                                                        }))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* Provision[\\s:]*(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* Provision[\\s:]*(?<fee>[\\d.-]+,\\d+) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* Eigene Spesen[\\s:]*(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* Eigene Spesen[\\s:]*(?<fee>[\\d.-]+,\\d+) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* \\*Fremde Spesen[\\s:]*(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* \\*Fremde Spesen[\\s:]*(?<fee>[\\d.-]+,\\d+) *(?<currency>\\w{3}+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .wrap(BuySellEntryItem::new));
-    }
-
-    // example is from 2016-12-01
-    @SuppressWarnings("nls")
-    private void addTransferInOutTransaction()
-    {
-        DocumentType type = new DocumentType("Gutschrifts-/Belastungsanzeige");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("Depoteingang .*");
-        type.addBlock(block);
-        block.set(new Transaction<PortfolioTransaction>()
-
-                        .subject(() -> {
-                            PortfolioTransaction entry = new PortfolioTransaction();
-                            entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-                            return entry;
-                        })
-
-                        // Datum : 16.03.2015
-                        .section("date").match("Datum(\\s*):(\\s+)(?<date>\\d+.\\d+.\\d{4})") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
-                        // Depoteingang DEKAFONDS CF (DE0008474503)
-                        .section("isin", "name").match("Depoteingang *(?<name>.*) *\\((?<isin>[^/]*)\\)") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        // Stk./Nominale : 0,432000 Stk Einbeh. Steuer* : 0,00
-                        // EUR
-                        .section("shares", "notation")
-                        .match("^Stk\\.\\/Nominale(\\s*):(\\s+)(?<shares>[\\.\\d]+(,\\d*)?) *(?<notation>St\\.|\\w{3}+)(.*)") //
-                        .assign((t, v) -> {
-                            String notation = v.get("notation");
-                            if (notation != null && !notation.equalsIgnoreCase("Stk"))
-                            {
-                                // Prozent-Notierung, Workaround..
-                                t.setShares(asShares(v.get("shares")) / 100);
-                            }
-                            else
-                            {
-                                t.setShares(asShares(v.get("shares")));
-                            }
-                        })
-
-                        // Kurs : 115,740741 EUR Devisenkurs : 1,000000
-                        .section("rate", "currency")
-                        .match("^Kurs(\\s*):(\\s+)(?<rate>[\\d.]+,\\d+)(\\s+)(?<currency>\\w{3}+)(\\s+)(.*)")
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("rate")) * t.getShares() / Values.Share.factor());
-                        })
-
-                        // Stk./Nominale : 0,052000 Stk Einbeh. Steuer* : 0,00
-                        // EUR
-                        .section("tax", "currency").optional() //
-                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
-
-                        .wrap(TransactionItem::new));
-    }
-
-    @SuppressWarnings("nls")
-    private void addTransferOutTransaction()
-    {
-        DocumentType type = new DocumentType("Depotausgang");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("Depotausgang(.*)");
-        type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.SELL);
-                            return entry;
-                        })
-
-                        .section("date").match("Fälligkeitstag(\\s*):(\\s+)(?<date>\\d+.\\d+.\\d{4})(.*)") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                        .section("isin", "name").match("Depotausgang *(?<name>.*) *\\((?<isin>[^/]*)\\)") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        .section("shares", "notation")
-                        .match("^Stk\\.\\/Nominale(\\s*):(\\s+)(?<shares>[\\.\\d]+(,\\d*)?) *(?<notation>St\\.|\\w{3}+)(.*)") //
-                        .assign((t, v) -> {
-                            String notation = v.get("notation");
-                            if (notation != null && !notation.equalsIgnoreCase("Stk"))
-                            {
-                                // Prozent-Notierung, Workaround..
-                                t.setShares((asShares(v.get("shares")) / 100));
-                            }
-                            else
-                            {
-                                t.setShares(asShares(v.get("shares")));
-                            }
-                        })
-
-                        .section("amount", "currency")
-                        .match("(.*)Geldgegenwert\\*\\*(.*)(\\s*):(\\s*)(?<amount>[\\d.]+,\\d+)(\\s+)(?<currency>\\w{3}+)(.*)")
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        .section("fee", "currency").optional()
-                        //
-                        .match(".* Provision *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional()
-                        //
-                        .match(".* Eigene Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional()
-                        //
-                        .match(".* \\*Fremde Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("tax", "currency").optional() //
-                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.TAX,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("tax"))))))
-
-                        .wrap(BuySellEntryItem::new));
-    }
-
-    @SuppressWarnings("nls")
-    private void addRemoveTransaction()
-    {
-        DocumentType type = new DocumentType("Bestandsausbuchung");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("Bestandsausbuchung(.*)");
-        type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.SELL);
-                            return entry;
-                        })
-
-                        .section("date").match("Fälligkeitstag(\\s*):(\\s+)(?<date>\\d+.\\d+.\\d{4})(.*)") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                        .section("isin", "name").match("Bestandsausbuchung *(?<name>.*) *\\((?<isin>[^/]*)\\)") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        .section("shares", "notation")
-                        // Stk./Nominale**: 2.000,000000 Stk Einbeh. Steuer*:
-                        // 0,00 EUR
-                        .match("^Stk\\.\\/Nominale(.*):(\\s+)(?<shares>[\\.\\d]+(,\\d*)?)(\\s*)(?<notation>\\w{3}+)(.*)[Einbeh]+(.*)") //
-                        .assign((t, v) -> {
-                            String notation = v.get("notation");
-                            if (notation != null && !notation.equalsIgnoreCase("Stk"))
-                            {
-                                // Prozent-Notierung, Workaround..
-                                t.setShares((asShares(v.get("shares")) / 100));
-                            }
-                            else
-                            {
-                                t.setShares(asShares(v.get("shares")));
-                            }
-                        })
-
-                        .section("amount", "currency").optional()
-                        .match("(.*)Geldgegenwert\\*\\*(.*)(\\s*):(\\s*)(?<amount>[\\d.]+,\\d+)(\\s+)(?<currency>\\w{3}+)(.*)")
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        .section().optional() //
-                        .match("(.*)Bestand haben wir wertlos ausgebucht(.*)").assign((t, v) -> {
-                            t.setCurrencyCode(t.getAccountTransaction().getSecurity().getCurrencyCode());
-                            t.setAmount(0L);
-                            t.getPortfolioTransaction().setType(PortfolioTransaction.Type.TRANSFER_OUT);
-                            t.setType(PortfolioTransaction.Type.TRANSFER_OUT);
-                        })
-
-                        .section("fee", "currency").optional() //
-                        .match(".* Provision *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* Eigene Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional() //
-                        .match(".* \\*Fremde Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("tax", "currency").optional() //
-                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.TAX,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("tax"))))))
-
-                        .wrap(BuySellEntryItem::new));
-    }
-
-    // since ~2015
-    @SuppressWarnings("nls")
-    private void addRemoveNewFormatTransaction()
-    {
-        DocumentType type = new DocumentType("Gutschrifts- / Belastungsanzeige");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("Kundennummer(.*)");
-        type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.SELL);
-                            return entry;
-                        })
-
-                        // WKN ISIN Wertpapierbezeichnung Anzahl
-                        // SG0WRD DE000SG0WRD3 SG EFF. TURBOL ZS 83,00
-                        // Sehr geehrter
-                        .section("wkn", "isin", "name", "shares")
-                        // .match("(?s)WKN(\\s+)ISIN(\\s+)Wertpapierbezeichnung(\\s+)Anzahl(.{1})(?<wkn>\\w{6}+)(\\s+)(?<isin>\\w{12}+)(\\s+)(?<name>.*?)(\\s+)(?<shares>[\\.\\d]+(,\\d*)?)(.*)(Sehr
-                        // geehrte.*)") //
-                        .match("(?s)(?<wkn>\\w{6}+)(\\s+)(?<isin>\\w{12}+)(\\s+)(?<name>.*?)(\\s+)(?<shares>[\\.\\d]+(,\\d*)?)(.*)") //
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setShares(asShares(v.get("shares")));
-                        }).section("date").match("Fälligkeitstag(\\s*):(\\s+)(?<date>\\d+.\\d+.\\d{4})(.*)") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                        .section("amount", "currency").optional()
-                        .match("(.*)Geldgegenwert(\\*{1,3})(.*)(\\s*):(\\s*)(?<amount>[\\d.]+,\\d+)(\\s+)(?<currency>\\w{3}+)(.*)")
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        .section().optional().match("(.*)Bestand haben wir wertlos ausgebucht(.*)").assign((t, v) -> {
-                            t.setCurrencyCode(t.getAccountTransaction().getSecurity().getCurrencyCode());
-                            t.setAmount(0L);
-                            t.getPortfolioTransaction().setType(PortfolioTransaction.Type.TRANSFER_OUT);
-                            t.setType(PortfolioTransaction.Type.TRANSFER_OUT);
-                        })
-
-                        .section("fee", "currency").optional()
-                        //
-                        .match(".* Provision *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional()
-                        //
-                        .match(".* Eigene Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional()
-                        //
-                        .match(".* \\*Fremde Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-
-                        .section("tax", "currency").optional() //
-                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.TAX,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("tax"))))))
-
-                        .wrap(BuySellEntryItem::new));
-    }
-
-    @SuppressWarnings("nls")
-    private void addOverdraftinterestTransaction()
-    {
-        final DocumentType type = new DocumentType("Kontoauszug Nr:", (context, lines) -> {
-            Pattern pYear = Pattern.compile("Kontoauszug Nr:[ ]*\\d+/(\\d+).*");
-            Pattern pCurrency = Pattern.compile("Kontow.hrung:[ ]+(\\w{3}+)");
-            // read the current context here
-            for (String line : lines)
-            {
-                Matcher m = pYear.matcher(line);
-                if (m.matches())
-                {
-                    context.put("year", m.group(1));
-                }
-                m = pCurrency.matcher(line);
-                if (m.matches())
-                {
-                    context.put("currency", m.group(1));
-                }
-            }
-        });
-        this.addDocumentTyp(type);
-
-        Block block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+Zinsabschluss[ ]+(.*)");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.INTEREST_CHARGE);
-                            return t;
-                        })
-
-                        .section("valuta", "amount", "sign")
-                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Zinsabschluss[ ]+(\\d+.\\d+.\\d{4})(\\s+)-(\\s+)(\\d+.\\d+.\\d{4})(\\s+)(?<amount>[\\d.-]+,\\d+)(?<sign>[+-])")
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            String date = v.get("valuta");
-                            if (date != null)
-                            {
-                                // create a long date from the year in the
-                                // context
-                                t.setDateTime(asDate(date + context.get("year")));
-                            }
-                            t.setNote(v.get("text"));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                            String sign = v.get("sign");
-                            if ("+".equals(sign))
-                            {
-                                // change type for payed Taxes
-                                t.setType(AccountTransaction.Type.INTEREST);
-                            }
-
-                        }).wrap(t -> {
-                            if (t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
-    }
-
-    @SuppressWarnings("nls")
-    private void addTaxoptimisationTransaction()
-    {
-        final DocumentType type = new DocumentType("Kontoauszug Nr:", (context, lines) -> {
-            Pattern pYear = Pattern.compile("Kontoauszug Nr:[ ]*\\d+/(\\d+).*");
-            Pattern pCurrency = Pattern.compile("Kontow.hrung:[ ]+(\\w{3}+)");
-            // read the current context here
-            for (String line : lines)
-            {
-                Matcher m = pYear.matcher(line);
-                if (m.matches())
-                {
-                    context.put("year", m.group(1));
-                }
-                m = pCurrency.matcher(line);
-                if (m.matches())
-                {
-                    context.put("currency", m.group(1));
-                }
-            }
-        });
-        this.addDocumentTyp(type);
-
-        Block block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+Steuertopfoptimierung[ ]+(.*)");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.TAX_REFUND);
-                            return t;
-                        })
-
-                        .section("valuta", "amount", "sign")
-                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Steuertopfoptimierung[ ]+(\\d{4})(\\s+)(?<amount>[\\d.-]+,\\d+)(?<sign>[+-])")
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            String date = v.get("valuta");
-                            if (date != null)
-                            {
-                                // create a long date from the year in the
-                                // context
-                                t.setDateTime(asDate(date + context.get("year")));
-                            }
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                            String sign = v.get("sign");
-                            if ("-".equals(sign))
-                            {
-                                // change type for payed Taxes
-                                t.setType(AccountTransaction.Type.TAXES);
-                            }
-                        }).wrap(t -> {
-                            if (t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
-    }
-
-    @SuppressWarnings("nls")
-    private void addTaxReturnBlock(DocumentType type)
-    {
-
-        // optional: Steuererstattung
-        Block block = new Block("Nr.(\\d*)/(\\d*) *Verkauf.*");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.TAX_REFUND);
-                            return entry;
-                        })
-
-                        .section("taxreturn").optional()
-                        .match(".* \\*\\*Einbeh. Steuer *: *(?<taxreturn>-[\\d.]+,\\d+) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("taxreturn")));
-                        })
-
-                        .section("wkn", "isin", "name")
-                        .match("Nr.(\\d*)/(\\d*) *Verkauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        .section("date")
-                        .match("^davon ausgef\\. *: ([.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+.\\d+.\\d{4}+), \\d+:\\d+.+")
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
-                        .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
-    }
-    
-    @SuppressWarnings("nls")
-    private void addVorabpauschaleTransaction()
-    {
-        final DocumentType type = new DocumentType("Wertpapierabrechnung Vorabpauschale", (context, lines) -> {
-            Pattern pDate = Pattern.compile("Buchungsdatum +(?<date>\\d+.\\d+.\\d{4}+) *");
-            for (String line : lines)
-            {
-                Matcher m = pDate.matcher(line);
-                if (m.matches())
-                    context.put("buchungsdatum", m.group("date"));
-            }
-        });
-        this.addDocumentTyp(type);
-
-        Block block = new Block("Wertpapierabrechnung Vorabpauschale .*");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.TAXES);
-                            return t;
-                        })
-
-                        .section("wkn", "isin", "name") //
-                        .match("^Depotinhaber: .*") //
-                        .match("^(?<name>.*) +(?<isin>[^ ]+)/(?<wkn>[^ ]+) *$")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        .section("amount", "currency")
-                        .match(".* Einbeh. Steuer * (?<amount>[\\d.,]+) (?<currency>\\w{3}+) *") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode("currency"));
-                        })
-                        
-                        .section("date") //
-                        .match("Gesamtbestand .*zum +(?<date>\\d+.\\d+.\\d{4}+) *")
-                        .assign((t,v) -> {
-                            // prefer "buchungsdatum" over "date" if available
-                            String buchungsdatum = type.getCurrentContext().get("buchungsdatum");
-                            t.setDateTime(asDate(buchungsdatum != null ? buchungsdatum : v.get("date")));
-                        })
-
-                        .section("shares") //
-                        .match("Gesamtbestand * (?<shares>[\\d,.]+) St.*") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        .wrap(t -> {
-                            if (t.getAmount() != 0)
-                                return new TransactionItem(t);
-                            return null;
-                        }));
+        addSellForOptionsTransaction();
+        addDividendeTransaction();
+        addDividendeWithNegativeAmountTransaction();
+        addStockDividendeTransaction();
+        addDividendeReinvestFeesTransaction();
+        addDepotStatementTransaction();
+        addDeliveryInOutboundTransaction();
+        addAdvanceTaxTransaction();
+        addDepotServiceFeesTransaction();
+        addNonImportableTransaction();
     }
 
     @Override
     public String getLabel()
     {
-        return "FinTech Group Bank AG / flatex / Whitebox"; //$NON-NLS-1$
+        return "flatexDEGIRO Bank AG / FinTech Group Bank AG / biw AG";
+    }
+
+    private void addBuySellTransaction()
+    {
+        final var type = new DocumentType("Wertpapierabrechnung (Kauf|Verkauf)( Fonds\\/Zertifikate)?");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<BuySellEntry>();
+
+        var firstRelevantLine = new Block("^.* Auftragsdatum .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(?<type>(Kauf|Verkauf)) .*$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
+
+                        // Storno Wertpapierabrechnung Kauf Fonds/Zertifikate
+                        // Stornierung Wertpapierabrechnung Kauf Fonds
+                        .section("type").optional() //
+                        .match("^(?<type>(Storno|Stornierung)) Wertpapierabrechnung .*$") //
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Nr.121625906/1     Kauf        IS C.MSCI EMIMI U.ETF DLA (IE00BKM4GZ66/A111X9)
+                                        // Kurs          :       25,920000 EUR     Provision     :               5,90 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf)[\s]{1,}(?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Nr.76443716/1  Verkauf           UBS AG LONDON 14/16 RWE (DE000US9RGR9/US9RGR)
+                                        // Kurs           29,0000 %               Kurswert       EUR             7.250,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf)[\\s]{1,}(?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ %[\\s]{1,}Kurswert[\\s]{1,}(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Nr.230975068/1     Kauf                 FRAPORT AG 20/27 (XS2198879145/A3E444)
+                                        // Ausgeführt    :    1.000,000000 EUR     Kurswert      :           1.690,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf)[\\s]{1,}(?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^Ausgef.hrt([:\\s]+)?[\\s]{1,}[\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+
+                        // @formatter:off
+                        // Ausgeführt     25.000,00000 EUR
+                        // Ausgeführt    :              29 St.     Kurswert      :             751,68 EUR
+                        // Ausgeführt     10 St.
+                        // Ausgeführt     19,334524 St.           Kurswert       EUR             1.050,00
+                        // @formatter:on
+                        .section("shares", "notation") //
+                        .match("^Ausgef.hrt([:\\s]+)? (?<shares>[\\.,\\d]+)[\\s]{1,}(?<notation>(St\\.|Stk|[\\w]{3})).*$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Percentage quotation, workaround for bonds
+                            // @formatter:on
+                            if (v.get("notation") != null && !v.get("notation").startsWith("St"))
+                            {
+                                var shares = asBigDecimal(v.get("shares"));
+                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+
+                                if (t.getPortfolioTransaction().getType().isPurchase())
+                                    type.getCurrentContext().putBoolean("isPurchaseBonds", true);
+                            }
+                            else if ("St.".equals(v.get("notation")))
+                            {
+                                t.setShares(asShares(v.get("shares"), "de", "DE"));
+                            }
+                            else
+                            {
+                                t.setShares(asShares(v.get("shares")));
+                            }
+                        })
+
+                        // @formatter:off
+                        // An den  Ausführungszeit   13:59 Häusern 5
+                        // ZZZZ ZZ Ausführungszeit    17:30 Uhr.
+                        // Max Mu Stermann Schlusstag        17.01.2019u Ausführungszeit   17:52 Uhr
+                        // @formatter:on
+                        .section("time").optional() //
+                        .match("^.*Ausf.hrungszeit[\\s]{1,}(?<time>[\\d]{2}:[\\d]{2}).*$") //
+                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+
+                        // @formatter:off
+                        // Max Mustermann Schlusstag        03.12.2015o
+                        // ZZZZZ ZZZZ Handelstag         10.04.2019xan
+                        // Max Mu Stermann Schlusstag        17.01.2019u Ausführungszeit   17:52 Uhr
+                        // @formatter:on
+                        .section("date") //
+                        .match("^.*(Handelstag|Schlusstag)[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> {
+                            if (type.getCurrentContext().get("time") != null)
+                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                            else
+                                t.setDate(asDate(v.get("date")));
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Endbetrag      EUR               -50,30
+                                        // Gewinn/Verlust -267,59 EUR             Endbetrag      EUR            16.508,16
+                                        //                                        Endbetrag      EUR                 0,95
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount", "type") //
+                                                        .match("^.*Endbetrag[\\s]{1,}(?<currency>[\\w]{3})(?<type>[\\s|\\-]{1,})(?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            var isNegative = "-".equals(trim(v.get("type")));
+
+                                                            if (isNegative)
+                                                                type.getCurrentContext().putBoolean("isNegative", true);
+
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        //        Endbetrag                   -52,50 EUR
+                                        // Endbetrag     :            -760,09 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency", "type") //
+                                                        .match("^.*Endbetrag([:\\s]+)?(?<type>[\\s|\\-]{1,})(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            var isNegative = "-".equals(trim(v.get("type")));
+
+                                                            if (isNegative)
+                                                                type.getCurrentContext().putBoolean("isNegative", true);
+
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Ausgeführt : 80 St. Kurswert : 4.216,61 EUR
+                                        // Kurs : 55,080000 USD Provision : 0,00 EUR
+                                        // Devisenkurs : 1,045010 Eigene Spesen : 0,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("gross", "baseCurrency", "termCurrency", "exchangeRate") //
+                                                        .match("^.* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)[\\s]{1,}(?<baseCurrency>[\\w]{3})$") //
+                                                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<termCurrency>[\\w]{3}).*$") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Ausgeführt    :    2.000,000000 USD     Kurswert      :           1.126,29 EUR
+                                        // Kurs          :       60,690000 %       Provision     :               5,90 EUR
+                                        // Devisenkurs   :        1,077697         Eigene Spesen :               0,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("gross", "baseCurrency", "termCurrency", "exchangeRate") //
+                                                        .match("^Ausgef.hrt([:\\s]+)?[\\s]{1,}[\\.,\\d]+ (?<termCurrency>[\\w]{3})[\\s]{1,}Kurswert([:\\s]+)?(?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})$") //
+                                                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ %.*$") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
+
+                        // @formatter:off
+                        // If the taxes are negative, this is a tax refund transaction
+                        // and we add/subtract this from the amount and reset this.
+                        //
+                        // If the currency of the tax differs from the amount,
+                        // it will be converted and reset.
+                        // @formatter:on
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Gewinn/Verlust 0,00 EUR              **Einbeh. Steuer EUR                -1,00
+                                        // Gewinn/Verlust 0,00 EUR              **Einbeh. KESt   EUR                -1,00
+                                        //                                     ***Einbeh. SichSt EUR                -1,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "taxRefund") //
+                                                        .match("^.* [\\*]+Einbeh\\. (Steuer|KESt|SichSt)([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}\\-(?<taxRefund>[\\.,\\d]+)$") //
+                                                        .match("^.*Endbetrag[\\s]{1,}(?<currency>[\\w]{3})[\\s|\\-]{1,}(?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            var isLiquidation = t.getPortfolioTransaction().getType().isLiquidation();
+
+                                                            if (t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
+                                                            {
+                                                                type.getCurrentContext().putBoolean("negativeTax", true);
+
+                                                                var taxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
+
+                                                                if (isLiquidation && !type.getCurrentContext().getBoolean("isNegative"))
+                                                                    t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
+                                                                else
+                                                                    t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().add(taxRefund));
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Devisenkurs   : 1,192200(x)             Provision     :
+                                        // Gewinn/Verlust 0,00 EUR              **Einbeh. Steuer EUR                -1,00
+                                        // Devisenkurs   : 1,192200(x)             Provision     :
+                                        // Gewinn/Verlust 0,00 EUR              **Einbeh. KESt   EUR                -1,00
+                                        // Devisenkurs   : 1,192200(x)             Provision     :
+                                        //                                     ***Einbeh. SichSt EUR                -1,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exchangeRate", "currency", "taxRefund") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* [\\*]+Einbeh\\. (Steuer|KESt|SichSt)[\\s]{1,}(?<currency>[\\w]{3})[\\s]{1,}\\-(?<taxRefund>[\\.,\\d]+)$") //
+                                                        .match("^.*Endbetrag[\\s]{1,}(?<currency>[\\w]{3})[\\s|\\-]{1,}(?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            var isLiquidation = t.getPortfolioTransaction().getType().isLiquidation();
+
+                                                            if (t.getPortfolioTransaction().getType().isLiquidation() && !t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
+                                                            {
+                                                                type.getCurrentContext().putBoolean("negativeTax", true);
+
+                                                                var fxTaxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
+
+                                                                var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                                var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                                                                var taxRefund = Money.of(t.getPortfolioTransaction().getCurrencyCode(),
+                                                                                BigDecimal.valueOf(fxTaxRefund.getAmount()).multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
+
+                                                                if (isLiquidation && !type.getCurrentContext().getBoolean("isNegative"))
+                                                                    t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
+                                                                else
+                                                                    t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().add(taxRefund));
+                                                            }
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Gewinn/Verlust            0,00 EUR    **Einbeh. Steuer               -1,00 EUR
+                                        // Gewinn/Verlust:        1.112,18 EUR   **Einbeh. KESt  :            -305,85 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("taxRefund", "currency", "type") //
+                                                        .match("^.* [\\*]+Einbeh\\. (Steuer|KESt)([:\\s]+)? \\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^(.* )?Endbetrag([:\\s]+)?(?<type>[\\s|\\-]{1,})[\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            var isNegative = "-".equals(trim(v.get("type")));
+                                                            var isLiquidation = t.getPortfolioTransaction().getType().isLiquidation();
+
+                                                            if (t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
+                                                            {
+                                                                type.getCurrentContext().putBoolean("negativeTax", true);
+
+                                                                var taxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
+
+                                                                if (isLiquidation && !isNegative)
+                                                                    t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
+                                                                else
+                                                                    t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().add(taxRefund));
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Devisenkurs   : 1,192200(x)             Provision     :
+                                        // Gewinn/Verlust            0,00 EUR    **Einbeh. Steuer                -1,00 EUR
+                                        // Devisenkurs   : 1,192200(x)             Provision     :
+                                        // Gewinn/Verlust:            0,00 EUR   **Einbeh. Steuer:              -1,00 EUR
+                                        // Devisenkurs   : 1,192200(x)             Provision     :
+                                        // Gewinn/Verlust:        1.112,18 EUR   **Einbeh. KESt  :            -305,85 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("taxRefund", "currency", "exchangeRate", "type") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* [\\*]+Einbeh\\. (Steuer|KESt)([:\\s]+)? \\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^(.* )?Endbetrag([:\\s]+)?(?<type>[\\s|\\-]{1,})[\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            var isNegative = "-".equals(trim(v.get("type")));
+                                                            var isLiquidation = t.getPortfolioTransaction().getType().isLiquidation();
+
+                                                            if (!t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
+                                                            {
+                                                                type.getCurrentContext().putBoolean("negativeTax", true);
+
+                                                                var fxTaxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
+
+                                                                var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                                var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                                                                var taxRefund = Money.of(t.getPortfolioTransaction().getCurrencyCode(), BigDecimal.valueOf(fxTaxRefund.getAmount())
+                                                                                .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
+
+                                                                if (isLiquidation && !isNegative)
+                                                                    t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
+                                                                else
+                                                                    t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().add(taxRefund));
+                                                            }
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //   unter der Transaktion-Nr.: 132465978
+                                        //   unter der Transaktion-Nr. : 1111111111
+                                        // Transaktionsnummer: 921414163
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                        // 1301138113.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + v.get("note2"))))
+
+                        .wrap((t, ctx) -> {
+                            var item = new BuySellEntryItem(t);
+
+                            // @formatter:off
+                            // If in a sale the fees are higher than the amount, then the fees are handled in a separate transaction.
+                            // Finally, we remove the flag.
+                            // @formatter:on
+                            if (t.getPortfolioTransaction().getType().isLiquidation() && type.getCurrentContext().getBoolean("isNegative"))
+                            {
+                                t.setMonetaryAmount(t.getPortfolioTransaction().getUnitSum(Type.FEE).subtract(t.getPortfolioTransaction().getMonetaryAmount()));
+                                t.getPortfolioTransaction().removeUnits(Type.FEE);
+                                type.getCurrentContext().putBoolean("separateFeeTransaction", true);
+                            }
+                            type.getCurrentContext().remove("isNegative");
+
+                            // @formatter:off
+                            // If the taxes are negative, then this is a tax refund and has been marked so.
+                            // Finally, we remove the flag.
+                            // @formatter:on
+                            type.getCurrentContext().remove("negativeTax");
+
+                            // @formatter:off
+                            // If we purchase bonds, then the interest amount "Zinsbetrag" is fee and has been marked so.
+                            // Finally, we remove the flag.
+                            // @formatter:on
+                            type.getCurrentContext().remove("isPurchaseBonds");
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+        addBuySellTaxReturnBlock(type);
+        addBuySellFeeBlock(type);
+    }
+
+    private void addBuySellCryptoTransaction()
+    {
+        final var type = new DocumentType("Sammelabrechnung \\(Kauf\\/\\-verkauf Kryptowerte\\)");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<BuySellEntry>();
+
+        var firstRelevantLine = new Block("^Kundenservice(:)?$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(?<type>(Kauf|Verkauf)).*$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
+
+                        // @formatter:off
+                        // Nr.293999994/1    Kauf                           BITCOIN
+                        // Kurs           : 76.064,2600 EUR         Kurswert      :             10,65 EUR
+                        // @formatter:on
+                        .section("name", "currency") //
+                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf)[\\s]{1,}(?<name>.*)$") //
+                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> {
+                            var tickerSymbol = getTickerSymbolForCrypto(v.get("name"));
+                            v.put("tickerSymbol", tickerSymbol);
+
+                            t.setSecurity(getOrCreateCryptoCurrency(v));
+                        })
+
+                        // @formatter:off
+                        // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
+                        // davon ausgef. : 4.550,00 St.            Schlusstag    :  01.11.2017, 14:41 Uhr
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^davon ausgef\\.([:\\s]+)? (?<shares>[\\.,\\d]+) St\\..*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
+                        // davon ausgef. : 540,00 St.              Schlusstag    :      09.04.2019, 16:52
+                        // @formatter:on
+                        .section("date", "time") //
+                        .match("^.* Schlusstag([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), (?<time>[\\d]{2}:[\\d]{2}).*$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+
+                        // @formatter:off
+                        // Valuta       : 30.01.2014              Endbetrag      :          -5.893,10 EUR
+                        //                                         Endbetrag     :           4.773,36 USD
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^.* Endbetrag([:\\s]+)?[\\s|\\-]{1,}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // Kurs : 114,4700 USD Kurswert : 528,10 EUR
+                        // Devisenkurs : 1,083790 Provision : 5,90 EUR
+                        .section("termCurrency", "gross", "baseCurrency", "exchangeRate").optional() //
+                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<termCurrency>[\\w]{3}) .* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)[\\s]{1,}(?<baseCurrency>[\\w]{3})$") //
+                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+) .*$") //
+                        .assign((t, v) -> {
+                            var rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        // @formatter:off
+                        // Vorgangs-Nr.: KRY 000000123456
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^.*(?<note>(Vorgangs\\-Nr|Transaction No)\\.: .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addSummaryStatementBuySellTransaction()
+    {
+        final var type = new DocumentType("Sammelabrechnung \\(Wertpapierkauf\\/-verkauf\\)");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<BuySellEntry>();
+
+        var firstRelevantLine = new Block("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf).*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+
+                        // Is type --> "Verkauf" change from BUY to SELL
+                        .section("type").optional() //
+                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(?<type>(Kauf|Verkauf)).*$") //
+                        .assign((t, v) -> {
+                            if ("Verkauf".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.SELL);
+                        })
+
+                        // @formatter:off
+                        // Nr.60796942/1  Kauf               BAYWA AG VINK.NA. O.N. (DE0005194062/519406)
+                        // Kurs         : 39,2480 EUR             Kurswert       :           5.887,20 EUR
+                        // @formatter:on
+                        .section("name", "isin", "wkn", "currency").optional() //
+                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf)[\\s]{1,}(?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
+                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
+                        // davon ausgef. : 4.550,00 St.            Schlusstag    :  01.11.2017, 14:41 Uhr
+                        // @formatter:on
+                        .section("shares").optional() //
+                        .match("^davon ausgef\\.([:\\s]+)? (?<shares>[\\.,\\d]+) St\\..*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
+                        // davon ausgef. : 540,00 St.              Schlusstag    :      09.04.2019, 16:52
+                        // @formatter:on
+                        .section("date", "time").optional() //
+                        .match("^.* Schlusstag([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), (?<time>[\\d]{2}:[\\d]{2}).*$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+
+                        // @formatter:off
+                        // Devisenkurs   : 1,192200(x)             Provision     :
+                        // Devisenkurs   : 1,195010                Provision     :               5,90 EUR
+                        // @formatter:on
+                        .section("exchangeRate").optional() //
+                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> {
+                            var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                            type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
+                        })
+
+                        // @formatter:off
+                        // Valuta       : 30.01.2014              Endbetrag      :          -5.893,10 EUR
+                        //                                         Endbetrag     :           4.773,36 USD
+                        // @formatter:on
+                        .section("amount", "currency").optional() //
+                        .match("^.* Endbetrag([:\\s]+)?[\\s|\\-]{1,}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // Kurs : 114,4700 USD Kurswert : 528,10 EUR
+                        // Devisenkurs : 1,083790 Provision : 5,90 EUR
+                        .section("termCurrency", "gross", "baseCurrency", "exchangeRate").optional() //
+                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<termCurrency>[\\w]{3}) .* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+)[\\s]{1,}(?<baseCurrency>[\\w]{3})$") //
+                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+) .*$") //
+                        .assign((t, v) -> {
+                            var rate = asExchangeRate(v);
+                            type.getCurrentContext().putType(rate);
+
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                        })
+
+                        // @formatter:off
+                        // If the total amount is negative and the market value
+                        // is less than the fees, then we post the gross value.
+                        // The fees are processed in a separate transaction.
+                        //
+                        // If the currency of the fees differs from the final
+                        // amount, they are converted and reset.
+                        // @formatter:on
+
+                        .optionalOneOf( //
+                                        section -> section //
+                                                        .attributes("gross", "fxCurrency", "exchangeRate") //
+                                                        .match("^.* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            if (t.getPortfolioTransaction().getType().isLiquidation() && !t.getPortfolioTransaction().getCurrencyCode().equals(v.get("fxCurrency")))
+                                                            {
+                                                                type.getCurrentContext().putBoolean("negative", true);
+
+                                                                var fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("gross")));
+
+                                                                var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                                var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                                                                var gross = Money.of(t.getPortfolioTransaction().getCurrencyCode(), BigDecimal.valueOf(fxGross.getAmount())
+                                                                                .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
+
+                                                                t.setMonetaryAmount(gross);
+                                                            }
+                                                            else if (t.getPortfolioTransaction().getType().isLiquidation() && t.getPortfolioTransaction().getCurrencyCode().equals(v.get("fxCurrency")))
+                                                            {
+                                                                type.getCurrentContext().putBoolean("negative", true);
+
+                                                                t.setCurrencyCode(asCurrencyCode(v.get("fxCurrency")));
+                                                                t.setAmount(asAmount(v.get("gross")));
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Kurs          : 0,0010 EUR              Kurswert      :               1,19 EUR
+                                        // Devisenkurs   :                         Provision     :               5,90 EUR
+                                        //                                         Endbetrag     :              -4,71 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("gross", "fxCurrency") //
+                                                        .match("^.* Kurswert([:\\s]+)? (?<gross>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
+                                                        .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            if (t.getPortfolioTransaction().getType().isLiquidation() && t.getPortfolioTransaction().getCurrencyCode().equals(v.get("fxCurrency")))
+                                                            {
+                                                                type.getCurrentContext().putBoolean("negative", true);
+
+                                                                t.setCurrencyCode(asCurrencyCode(v.get("fxCurrency")));
+                                                                t.setAmount(asAmount(v.get("gross")));
+                                                            }
+                                                        }))
+
+                        // @formatter:off
+                        // If the taxes are negative,
+                        // this is a tax refund transaction
+                        // and we subtract this from the amount and reset this.
+                        //
+                        // If the currency of the tax differs from the amount,
+                        // it will be converted and reset.
+                        // @formatter:on
+
+                        .optionalOneOf( //
+                                        section -> section //
+                                                        .attributes("exchangeRate", "taxRefund", "currency") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+) \\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            if (t.getPortfolioTransaction().getType().isLiquidation() && !t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
+                                                            {
+                                                                type.getCurrentContext().putBoolean("negativeTax", true);
+
+                                                                var fxTaxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
+
+                                                                var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                                var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                                                                var taxRefund = Money.of(t.getPortfolioTransaction().getCurrencyCode(), BigDecimal.valueOf(fxTaxRefund.getAmount())
+                                                                                .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
+
+                                                                t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
+                                                                }
+                                                        }),
+                                        // @formatter:off
+                                        // Lagerland    : Deutschland           **Einbeh. Steuer :            -100,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("taxRefund", "currency") //
+                                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? \\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            if (t.getPortfolioTransaction().getType().isLiquidation() && t.getPortfolioTransaction().getCurrencyCode().equals(v.get("currency")))
+                                                            {
+                                                                type.getCurrentContext().putBoolean("negativeTax", true);
+
+                                                                var taxRefund = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
+                                                                t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(taxRefund));
+                                                            }
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //   unter der Transaktion-Nr.: 132465978
+                                        //   unter der Transaktion-Nr. : 1111111111
+                                        // Transaktionsnummer: 921414163
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                        // 1301138113.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2")))))
+
+                        .wrap(t -> {
+                            // If the taxes are negative, then this is a tax
+                            // refund and has been marked so.
+                            // Finally, we remove the flag.
+                            type.getCurrentContext().remove("negativeTax");
+
+                            // The final amount is negative. The fees incurred
+                            // are processed in a separate transaction.
+                            // Finally, we remove the flag.
+                            type.getCurrentContext().remove("negative");
+
+                            if (t.getPortfolioTransaction().getCurrencyCode() != null && t.getPortfolioTransaction().getAmount() != 0)
+                                return new BuySellEntryItem(t);
+                            return null;
+                        });
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+        addSummaryStatementTaxReturnBlock(type);
+        addSummaryStatementFeesBlock(type);
+    }
+
+    private void addSellTransaction()
+    {
+        final var type = new DocumentType("Spitzenregulierung in [A-Z]{2}[A-Z0-9]{9}[0-9]", //
+                        "Kontoauszug");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<BuySellEntry>();
+
+        var firstRelevantLine = new Block("^Kundenservice(:)?$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.SELL);
+                            return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // A12GS7  CA05156X1087  AURORA CANNABIS                 0,500000
+                        // Spitzenregulierung                                                    5,86 EUR
+                        // @formatter:on
+                        .section("wkn", "isin", "name", "currency") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^(?<wkn>[A-Z0-9]{6})[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}[\\.,\\d]+.*$") //
+                        .match("^Spitzenregulierung .* [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // A12GS7  CA05156X1087  AURORA CANNABIS                 0,500000
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^[A-Z0-9]{6}[\\s]{1,}[A-Z]{2}[A-Z0-9]{9}[0-9] .*[\\s]{1,}(?<shares>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        //     Frankfurt am Main,  22.06.2020
+                        // @formatter:on
+                        .section("date") //
+                        .match("^.*,[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Verrechnung über Ihr Konto: 1009999999 Gutschrift                     5,86 EUR
+                        // @formatter:on
+                        .section("currency", "amount") //
+                        .match("^.* Gutschrift[\\s]{1,}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Spitzenregulierung in CA05156X1087
+                        // @formatter:on
+                        .section("note") //
+                        .match("^(?<note>Spitzenregulierung in .*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        // @formatter:off
+                        // Transaktions-Nr.                                                3291805526
+                        // Transaktionsnummer: 921414163
+                        // @formatter:on
+                        .section("note").optional()//
+                        .match("^.*(?<note>Transaktions\\-Nr\\.([:\\s]+)? [\\d]+).*$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), replaceMultipleBlanks(v.get("note")), " | ")))
+
+                        .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDividendeTransaction()
+    {
+        final var type = new DocumentType("(Dividendengutschrift" //
+                        + "|(Storno )?Ertragsmitteilung" //
+                        + "|Zinsgutschrift" //
+                        + "|Best.tigung Dividendenaussch.ttung mit Neuanlage)");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^(Dividendengutschrift" //
+                        + "|(Storno )?Ertragsmitteilung" //
+                        + "|Zinsgutschrift" //
+                        + "|Best.tigung Dividendenaussch.ttung mit Neuanlage).*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Storno Ertragsmitteilung - ausschüttender/teilthesaurierender Fonds
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^(?<type>Storno) Ertragsmitteilung.*$") //
+                        .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Nr.716759781                   HANN.RUECK SE NA O.N.     (DE0008402215/840221)
+                                        // Extag           :  08.05.2014          Bruttodividende
+                                        // Zahlungstag     :  08.05.2014          pro Stück       :       3,0000 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+[\\s]{1,}(?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$") //
+                                                        .find(".* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)") //
+                                                        .match("^.* pro St.ck([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Nr.0123456789                  X(IE)-MSCI WRLD MOM. 1CDL (IE00BL25JP72/A1103G)
+                                        // St.             :        248,34        Bruttothesaurierung
+                                        //                                        pro Stück          :      -0,1323 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+[\\s]{1,}(?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$") //
+                                                        .find(".* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)") //
+                                                        .match("^.* pro St.ck([:\\s]+)? \\-[\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Nr.111111111                   ISH.FOOBAR 12345666 x.EFT (DE1234567890/AB1234)
+                                        // Zinstermin      :  28.04.2016          Zinsbetrag      :        73,75 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+[\\s]{1,}(?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$") //
+                                                        .match("^.* Zinsbetrag([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Bestätigung Dividendenausschüttung mit Neuanlage
+                                        // Siemens Share
+                                        // Ex-Datum: 9. Feb 2024 CUSIP: D69671218
+                                        // Zahlungsdatum: 13. Feb 2024 ISIN: DE0007236101
+                                        // Bruttoausschüttung pro Stück 4.7 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .find("Best.tigung Dividendenaussch.ttung mit Neuanlage") //")
+                                                        .match("^(?<name>.*)$") //
+                                                        .match("^.* CUSIP: (?<wkn>[A-Z0-9]{9})$") //
+                                                        .match("^.* ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .match("Bruttoaussch.ttung pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionAlternativeDocumentRequired);
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // St.             :         360
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^St\\.([:\\s]+)? (?<shares>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
+                                        // @formatter:off
+                                        // St./Nominale    :     10.000,00 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^St\\.\\/Nominale([:\\s]+)? (?<shares>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            var shares = asBigDecimal(v.get("shares"));
+                                                            t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                        }),
+                                        // @formatter:off
+                                        // Gesamt Stückzahl - Aktien 641.745 Stück
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^Gesamt St.ckzahl .* (?<shares>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                     // Valuta          :      17.06.2022      grundlage       :            0,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Valuta([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Zahlungsdatum: 13. Feb 2024
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^Zahlungsdatum: (?<date>[\\d]{2}\\. .* [\\d]{4})$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Extag           :    07.10.2021        Bruttothesaurierung:        78,81 USD
+                                        // Zuflusstag      :    08.10.2021        Devisenkurs        :         1,156200
+                                        //                                        Endbetrag          :       -15,24 EUR
+                                        //
+                                        // Extag           :    13.07.2023        Bruttothesaurierung:       -32,86 USD
+                                        // Zuflusstag      :    14.07.2023        Devisenkurs        :         1,118200
+                                        //                                        Endbetrag          :        -0,15 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("type", "fxGross", "termCurrency", "exchangeRate", "baseCurrency") //
+                                                        .match("^.*(?<type>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung|Zinsbetrag))([:\\s]+)? (\\-)?(?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3})$") //
+                                                        .match("^.*Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ (?<baseCurrency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // If we have a negative amount and no gross reinvestment,
+                                                            // we first book the dividends received and then the tax charge.
+                                                            // @formatter:on
+                                                            type.getCurrentContext().putBoolean("negative", true);
+
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                                                            if ("Bruttothesaurierung".equals(v.get("type")))
+                                                            {
+                                                                t.setAmount(0L);
+                                                            }
+                                                            else
+                                                            {
+                                                                var rate = asExchangeRate(v);
+                                                                type.getCurrentContext().putType(rate);
+
+                                                                var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                                var gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                                                                t.setMonetaryAmount(gross);
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Extag           :    20.01.2020        Bruttothesaurierung:        23,19 EUR
+                                        //                                        Endbetrag          :        -8,26 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("type", "amount", "currency") //
+                                                        .match("^.* (?<type>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung|Zinsbetrag))([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // If we have a negative amount and no gross reinvestment,
+                                                            // we first book the dividends received and then the tax charge.
+                                                            // @formatter:on
+                                                            type.getCurrentContext().putBoolean("negative", true);
+
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                                                            if ("Bruttothesaurierung".equals(v.get("type")))
+                                                                t.setAmount(0L);
+                                                            else
+                                                                t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        //                                        Endbetrag       :       795,15 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^.* Endbetrag([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // Nettoausschüttung 2 484.43 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Nettoaussch.ttung (?<amount>[\\.,\\d\\s]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Extag           :      20.05.2020      Bruttodividende :           25,50 USD
+                                        //                                       *Einbeh. Steuer  :            2,37 EUR
+                                        // Devisenkurs     :        1,134800
+                                        //
+                                        // Extag           :    13.07.2023        Bruttothesaurierung:       -32,86 USD
+                                        // Valuta          :    14.07.2023       *Einbeh. Steuer     :         0,15 EUR
+                                        // Zuflusstag      :    14.07.2023        Devisenkurs        :         1,118200
+                                        //
+                                        // Zinstermin      :    11.09.2023    Zinsbetrag         :         162,50 USD
+                                        // Valuta          :    11.09.2023   *Einbeh. Steuer     :          41,67 EUR
+                                        //                                    Devisenkurs        :       1,072400
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "termCurrency", "baseCurrency", "exchangeRate") //
+                                                        .match("^.*(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung|Zinsbetrag)([:\\s]+)? (\\-)?(?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$") //
+                                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? [\\.,\\d]+ (?<baseCurrency>[\\w]{3})$") //
+                                                        .match("^.*Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Extag           :  08.08.2017          Bruttodividende :        26,25 USD
+                                        // Devisenkurs     :    1,180800         *Einbeh. Steuer  :         1,11 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxGross", "termCurrency", "exchangeRate", "baseCurrency") //
+                                                        .match("^.*(Bruttoaussch.ttung|Bruttodividende|Bruttothesaurierung|Zinsbetrag)([:\\s]+)? (?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3}).*$") //
+                                                        .match("^.*Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+) ([\\*\\s]+)?Einbeh\\. Steuer([:\\s]+)? [\\.,\\d]+ (?<baseCurrency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //   unter der Transaktion-Nr.: 132465978
+                                        //   unter der Transaktion-Nr. : 1111111111
+                                        // Transaktionsnummer: 921414163
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                        // 1301138113.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2")))))
+
+                        .wrap((t, ctx) -> {
+                            var item = new TransactionItem(t);
+
+                            // The final amount is negative. The taxes incurred
+                            // are processed in a separate transaction.
+                            // Finally, we remove the flag.
+                            type.getCurrentContext().remove("negative");
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return item;
+                            return null;
+                        });
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDividendeWithNegativeAmountTransaction()
+    {
+        final var type = new DocumentType("Ertragsmitteilung \\- (aussch.ttender\\/teil)?thesaurierender( transparenter)? Fonds");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Ertragsmitteilung \\- (aussch.ttender\\/teil)?thesaurierender( transparenter)? Fonds$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Nr.1784953069                  PICTET-GL.MEGAT.SEL.P EO  (LU0386882277/A0RLJD)
+                                        // St.             :          10,0        Bruttothesaurierung
+                                        //                                        pro Stück          :       2,3189 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+[\\s]{1,}(?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$") //
+                                                        .find(".* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)") //
+                                                        .match("^.* pro St.ck([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Nr.0123456789                  X(IE)-MSCI WRLD MOM. 1CDL (IE00BL25JP72/A1103G)
+                                        // St.             :        248,34        Bruttothesaurierung
+                                        //                                        pro Stück          :      -0,1323 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+[\\s]{1,}(?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\).*$") //
+                                                        .find(".* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)") //
+                                                        .match("^.* pro St.ck([:\\s]+)? \\-[\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+
+                        // @formatter:off
+                        // St.             :         168,9        Bruttothesaurierung
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^(St\\.|St\\.\\/Nominale)([:\\s]+)? (?<shares>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Valuta          :      17.06.2022      grundlage       :            0,00 EUR
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Valuta([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Valuta          :    21.01.2020       *Einbeh. Steuer     :         8,26 EUR
+                        //                                       Endbetrag          :        -8,26 EUR
+                        //
+                        // Devisenkurs     :         1,110600   *Einbeh. Steuer     :           99,39 EUR
+                        //                                       Endbetrag          :        -8,26 EUR
+                        // @formatter:on
+                        .section("amount", "currency").optional() //
+                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$") //
+                        .assign((t, v) -> {
+                            type.getCurrentContext().putBoolean("negative", true);
+
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Extag           :       17.02.2022    Bruttoausschüttung :           34,66 USD
+                                        // Valuta          :       02.03.2022
+                                        //                                       Bemessungsgrundlage:          361,42 EUR
+                                        // Devisenkurs     :         1,110600   *Einbeh. Steuer     :           99,39 EUR
+                                        //                                       Endbetrag          :          -68,18 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("termCurrency", "exchangeRate", "gross", "baseCurrency") //
+                                                        .match("^.* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)([:\\s]+)? [\\.,\\d]+ (?<termCurrency>[\\w]{3})$") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).* [\\*]+Einbeh\\. Steuer([:\\s]+)? (?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})$") //
+                                                        .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Extag           :    13.07.2023        Bruttothesaurierung:       -32,86 USD
+                                        // Valuta          :    14.07.2023       *Einbeh. Steuer     :         0,15 EUR
+                                        // Zuflusstag      :    14.07.2023        Devisenkurs        :         1,118200
+                                        //                                        Endbetrag          :        -0,15 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("termCurrency", "gross", "baseCurrency", "exchangeRate") //
+                                                        .match("^.* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)([:\\s]+)? \\-[\\.,\\d]+ (?<termCurrency>[\\w]{3})$") //
+                                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? (?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})$") //
+                                                        .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // Extag           :    07.10.2021        Bruttothesaurierung:        78,81 USD
+                                        // Valuta          :    08.10.2021       *Einbeh. Steuer     :        15,24 EUR
+                                        // Zuflusstag      :    08.10.2021        Devisenkurs        :         1,156200
+                                        //                                        Endbetrag          :       -15,24 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("termCurrency", "gross", "baseCurrency", "exchangeRate") //
+                                                        .match("^.* (Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung)([:\\s]+)? [\\.,\\d]+ (?<termCurrency>[\\w]{3})$") //
+                                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? (?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})$") //
+                                                        .match("^(.* )?Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* Endbetrag([:\\s]+)? \\-[\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //   unter der Transaktion-Nr.: 132465978
+                                        //   unter der Transaktion-Nr. : 1111111111
+                                        // Transaktionsnummer: 921414163
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                        // 1301138113.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2")))))
+
+                        // @formatter:off
+                        // Extag           :    20.01.2020        Bruttothesaurierung:        23,19 EUR
+                        // Extag           :    07.10.2021        Bruttothesaurierung:        78,81 USD
+                        // Extag           :       17.02.2022    Bruttoausschüttung :           34,66 USD
+                        // Extag           :    13.07.2023        Bruttothesaurierung:       -32,86 USD
+                        // @formatter:on
+                        .section("note", "amount", "currency").optional() //
+                        .match("^.* (?<note>(Bruttodividende|Bruttoaussch.ttung|Bruttothesaurierung))([:\\s]+)? (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> t.setNote(concatenate(t.getNote(), v.get("note") + " " + v.get("amount") + " " + v.get("currency"), " | "))) //
+
+                        .wrap(t -> {
+                            // The final amount is negative. The taxes incurred
+                            // are processed in a separate transaction.
+                            // Finally, we remove the flag.
+                            type.getCurrentContext().remove("negative");
+
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
+    }
+
+    private void addStockDividendeTransaction()
+    {
+        final var type = new DocumentType("Stockdividende");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Stockdividende.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // A2QL01  NL00150001Q9  STELLANTIS BR RG                178,000000
+                        // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                        // Kurs vom 15.03.2021                   45,000000 EUR/Stc          135,00 EUR
+                        // @formatter:on
+                        .section("wkn", "isin", "name", "currency") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^(?<wkn>[A-Z0-9]{6})[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}[\\.,\\d]+.*$") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^Kurs vom .* [\\.,\\d]+ (?<currency>[\\w]{3})\\/.*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // A2QL01  NL00150001Q9  STELLANTIS BR RG                178,000000
+                        // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                        // @formatter:on
+                        .section("shares") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^[A-Z0-9]{6}[\\s]{1,}[A-Z]{2}[A-Z0-9]{9}[0-9] .*[\\s]{1,}(?<shares>[\\.,\\d]+).*$") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // 0,017029 mit Valuta 01.04.2021 in Ihr Depot eingebucht:
+                        // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                        // @formatter:on
+                        .section("date") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^.* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                        // Steuerpfl. Ertrag                                                   135,00 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^Steuerpfl\\. Ertrag .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //   unter der Transaktion-Nr.: 132465978
+                                        //   unter der Transaktion-Nr. : 1111111111
+                                        // Transaktionsnummer: 921414163
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                        // 1301138113.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2")))))
+
+                        .wrap(TransactionItem::new);
+
+        addStockDividendeTaxesBlock(type);
+    }
+
+    private void addStockDividendeTaxesBlock(DocumentType type)
+    {
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Stockdividende.*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // A2QL01  NL00150001Q9  STELLANTIS BR RG                178,000000
+                        // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                        // Kurs vom 15.03.2021                   45,000000 EUR/Stc          135,00 EUR
+                        // @formatter:on
+                        .section("wkn", "isin", "name", "currency") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^(?<wkn>[A-Z0-9]{6})[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}[\\.,\\d]+.*$") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^Kurs vom .* [\\.,\\d]+ (?<currency>[\\w]{3})\\/.*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // A2QL01  NL00150001Q9  STELLANTIS BR RG                178,000000
+                        // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                        // @formatter:on
+                        .section("shares") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^[A-Z0-9]{6}[\\s]{1,}[A-Z]{2}[A-Z0-9]{9}[0-9] .*[\\s]{1,}(?<shares>[\\.,\\d]+).*$") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // 0,017029 mit Valuta 01.04.2021 in Ihr Depot eingebucht:
+                        // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                        // @formatter:on
+                        .section("date") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^.* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                        // Kurs vom 15.03.2021                   45,000000 EUR/Stc          135,00 EUR
+                        // Verrechnung über Ihr Konto: 1009999999 Gutschrift                   -37,54 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("Verrechnung .ber Ihr Konto.* [\\d]+ .* \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //   unter der Transaktion-Nr.: 132465978
+                                        //   unter der Transaktion-Nr. : 1111111111
+                                        // Transaktionsnummer: 921414163
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                        // 1301138113.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2")))))
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
+    }
+
+    private void addBuyStockDividendeTransaction()
+    {
+        final var type = new DocumentType("Stockdividende");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<BuySellEntry>();
+
+        var firstRelevantLine = new Block("^Stockdividende$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
+                            return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // A2QL01  NL00150001Q9  STELLANTIS BR RG                178,000000
+                        // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                        // Kurs vom 15.03.2021                   45,000000 EUR/Stc          135,00 EUR
+                        // @formatter:on
+                        .section("wkn", "isin", "name", "currency") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^(?<wkn>[A-Z0-9]{6})[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}[\\.,\\d]+.*$") //
+                        .match("^Kurs vom .* [\\.,\\d]+ (?<currency>[\\w]{3})\\/.*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                        // 867025  FR0000121147  FAURECIA EU INH      EO 7                   3,000000
+                        // Kurs vom 15.03.2021                   45,000000 EUR/Stc          135,00 EUR
+                        // @formatter:on
+                        .section("shares") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^[A-Z0-9]{6}[\\s]{1,}[A-Z]{2}[A-Z0-9]{9}[0-9] .*[\\s]{1,}(?<shares>[\\.,\\d]+).*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // 0,017029 mit Valuta 01.04.2021 in Ihr Depot eingebucht:
+                        // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                        // @formatter:on
+                        .section("date") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^.* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+                        // Steuerpfl. Ertrag                                                   135,00 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^Steuerpfl\\. Ertrag .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //   unter der Transaktion-Nr.: 132465978
+                                        //   unter der Transaktion-Nr. : 1111111111
+                                        // Transaktionsnummer: 921414163
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                        // 1301138113.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + trim(v.get("note2")))))
+
+                .wrap(BuySellEntryItem::new);
+    }
+
+    private void addDividendeReinvestFeesTransaction()
+    {
+        final var type = new DocumentType("Stamp Duty aus Dividenden\\-Reinvestment");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Stamp Duty aus Dividenden-Reinvestment$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                        // 851247  GB0002374006  DIAGEO PLC                      1,000000
+                        // für die neu eingebuchten Stücke Stamp Duty i.H.v.         0,37 EUR fällig.
+                        // @formatter:on
+                        .section("wkn", "isin", "name", "currency") //
+                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                        .match("^(?<wkn>[A-Z0-9]{6})[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]{1,}(?<name>.*)[\\s]{1,}[\\.,\\d]+$") //
+                        .match("^.* [\\.,\\d]+ (?<currency>[\\w]{3}) f.llig\\.$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // 851247  GB0002374006  DIAGEO PLC                      1,000000
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^[A-Z0-9]{6}[\\s]{1,}[A-Z]{2}[A-Z0-9]{9}[0-9] .* (?<shares>[\\.,\\d]+)$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Diese wurde Ihrem Konto mit Valuta 07.11.2024 belastet.
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Diese wurde Ihrem Konto mit Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // für die neu eingebuchten Stücke Stamp Duty i.H.v.         0,37 EUR fällig.
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^.* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) f.llig\\.$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new);
+    }
+
+    private void addDepotStatementTransaction()
+    {
+        final var type = new DocumentType("Kontoauszug Nr:", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        // Kontowährung:      EUR
+                                        // @formatter:on
+                                        .section("currency") //
+                                        .match("^Kontow.hrung:[\\s]{1,}(?<currency>[\\w]{3})$") //
+                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
+
+                                        // @formatter:off
+                                        // Kontoauszug Nr:    004/2014                              Seite 1 von 2
+                                        // @formatter:on
+                                        .section("year") //
+                                        .match("^Kontoauszug Nr:[\\s]{1,}[\\d]+\\/(?<year>[\\d]{4}).*$") //
+                                        .assign((ctx, v) -> ctx.put("year", v.get("year"))));
+
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 29.01.     29.01.  Überweisung                                       1.100,00+
+        // 19.11.     19.11.  Lastschrift                                          50,00+
+        // 10.02.     10.02.  CASH / 0/377366                                   1.300,00+
+        // 01.10.     01.10.  EINZAHLUNG 4 FLATEX / 0/16765097                  2.000,00+
+        // 19.11.     19.11.  R-Transaktion                                       -53,00-
+        // 07.04.     07.04.  /REC/FC:MAX                                       2.250,00+
+        //                    MUSTERMANN,//MUSTERSTR 2 MUSTERHAUSEN GERMANY /
+        //                    SOGEFRPPHCM/
+        // 10.12.     07.12.  Prämie für die Teilnahme an der Morgan                6,00+
+        //                    Stanley-Aktion
+        // 13.02.     13.02.  Gutschrift aus Kulanz                                 1,88+
+        // @formatter:on
+        var depositRemovalblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                        + "(.berweisung" //
+                        + "|Lastschrift" //
+                        + "|CASH .*" //
+                        + "|EINZAHLUNG .*" //
+                        + "|AUSZAHLUNG .*" //
+                        + "|\\/REC\\/.*" //
+                        + "|Pr.mie .*" //
+                        + "|R\\-Transaktion" //
+                        + "|Gutschrift aus Kulanz) " //
+                        + "[\\s]{1,}[\\-\\.,\\d]+[\\+|\\-].*$");
+        type.addBlock(depositRemovalblock);
+        depositRemovalblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "note", "amount", "type") //
+                        .documentContext("year", "currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                        + "(?<note>(.berweisung" //
+                                        + "|Lastschrift" //
+                                        + "|CASH .*" //
+                                        + "|EINZAHLUNG .*" //
+                                        + "|AUSZAHLUNG .*" //
+                                        + "|\\/REC\\/.*" //
+                                        + "|Pr.mie .*" //
+                                        + "|[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+" //
+                                        + "|R\\-Transaktion"
+                                        + "|Gutschrift aus Kulanz))" //
+                                        + "[\\s]{1,}" //
+                                        + "(?<amount>[\\-\\.,\\d]+)" //
+                                        + "(?<type>[\\+|\\-])$") //
+                        .assign((t, v) -> {
+                            // Is type --> "-" change from DEPOSIT to REMOVAL
+                            if ("-".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.REMOVAL);
+
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+
+                            // Formatting some notes
+                            if (v.get("note").startsWith("Prämie"))
+                                v.put("note", "Prämie");
+
+                            t.setNote(trim(v.get("note")));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        var feeblock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                        + "(Depotgeb.hren .*," //
+                        + "|Depotservicegeb.hr .*" //
+                        + "|flatex trader [\\d]\\.[\\d] Basis" //
+                        + "|Geb.hr .*)" //
+                        + "[\\s]{1,}[\\.,\\d]+\\-$");
+        type.addBlock(feeblock);
+        feeblock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 19.07.     20.07.  Depotgebühren 01.04.2020 - 30.04.2020,                0,26-
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                                                        + "(?<note>Depotgeb.hren [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}),[\\s]{1,}" //
+                                                                        + "(?<amount>[\\.,\\d]+)\\-$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(replaceMultipleBlanks(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // 13.04.     04.03.  Depotservicegebühr US09075V1026                       0,09-
+                                        // 28.03.     28.03.  flatex trader 2.0 Basis                              10,00-
+                                        // 21.06.     21.06.  Gebühr Tax Voucher WKN A0NFN3                         5,90-
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                                                        + "(?<note>Depotservicegeb.hr .*" //
+                                                                        + "|flatex trader [\\d]\\.[\\d] Basis" //
+                                                                        + "|Geb.hr Tax Voucher.*)" //
+                                                                        + "[\\s]{1,}" //
+                                                                        + "(?<amount>[\\.,\\d]+)\\-$") //
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // 26.10.     25.10.  Gebühr Kapitaltransaktion Ausland                     5,90-
+                                        //               US17275R1023
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "isin") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                                                        + "(?<note>Geb.hr Kapitaltransaktion Ausland)" //
+                                                                        + "[\\s]{1,}" //
+                                                                        + "(?<amount>[\\.,\\d]+)\\-$") //
+                                                        .match("^.*(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$")
+                                                        .assign((t, v) -> {
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(concatenate(v.get("note"), v.get("isin"), " "));
+                                                        }))
+                        .wrap(t -> {
+                            var item = new TransactionItem(t);
+
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                            return item;
+                        }));
+
+        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                        + "(Zinsabschluss" //
+                        + "|[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+)" //
+                        + ".*$");
+        type.addBlock(interestBlock);
+        interestBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                            return accountTransaction;
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 30.12.     31.12.  Zinsabschluss   01.10.2014 - 31.12.2014               7,89+
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "type") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                                                        + "(?<note>Zinsabschluss[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} \\- [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})[\\s]{1,}" //
+                                                                        + "(?<amount>[\\-\\.,\\d]+)" //
+                                                                        + "(?<type>[\\+|\\-])$") //
+                                                        .assign((t, v) -> {
+                                                            // Is type --> "+" change from INTEREST_CHARGE to INTEREST
+                                                            if ("+".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.INTEREST);
+
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(replaceMultipleBlanks(v.get("note")));
+                                                        }),
+                                        // @formatter:off
+                                        // 02.08.     01.08.  3cb27cfd-0454-4dad-88bd-a60c6f1ba3f8                  0,11+
+                                        //                    ZINSPILOT Auszahlung FIMBank p.l.c.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "amount", "type", "note") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                                                        + "[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+\\-[\\w]+[\\s]{1,}" //
+                                                                        + "(?<amount>[\\-\\.,\\d]+)" //
+                                                                        + "(?<type>[\\+|\\-])$") //
+                                                        .match("^[\\s]{1,}(?<note>ZINSPILOT Auszahlung .*)$")
+                                                        .assign((t, v) -> {
+                                                            // Is type --> "+" change from INTEREST_CHARGE to INTEREST
+                                                            if ("+".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.INTEREST);
+
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }))
+
+                        .wrap(t -> {
+                            var item = new TransactionItem(t);
+
+                            if (t.getCurrencyCode() != null && t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                            return item;
+                        }));
+
+        // @formatter:off
+        // 09.10.     30.09.  Storno Zinsabschluss  01.07.2023 -                    0,68+
+        // @formatter:on
+        var interestCancellationBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}Storno Zinsabschluss .*$");
+        type.addBlock(interestCancellationBlock);
+        interestCancellationBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "note", "amount", "type") //
+                        .documentContext("year", "currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                        + "Storno (?<note>Zinsabschluss).*[\\s]{1,}" //
+                                        + "(?<amount>[\\.,\\d]+)" //
+                                        + "(?<type>[\\+|\\-])$") //
+                        .assign((t, v) -> {
+                            // Is type --> "+" change from INTEREST_CHARGE to INTEREST
+                            if ("+".equals(v.get("type")))
+                                t.setType(AccountTransaction.Type.INTEREST);
+
+                            // Set transaction cancellation
+                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
+
+                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.get("currency"));
+                            t.setNote(replaceMultipleBlanks(v.get("note")));
+                        })
+
+                        .wrap((t, ctx) -> {
+                            var item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        }));
+
+        var taxesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}(Steuertopfoptimierung|Steuerkorrektur) .*$");
+        type.addBlock(taxesBlock);
+        taxesBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return accountTransaction;
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 31.12.     31.12.  Steuertopfoptimierung 2016                            4,94+
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "type") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                                                        + "(?<note>Steuertopfoptimierung[\\s]{1,}([\\d]{4}))[\\s]{1,}" //
+                                                                        + "(?<amount>[\\.,\\d]+)(?<type>[\\+|\\-])$") //
+                                                        .assign((t, v) -> {
+                                                            // Is type --> "-" change from TAX_REFUND to TAXES
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.TAXES);
+
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
+                                                        }),
+                                        // @formatter:off
+                                        // 15.01.     15.01.  Steuerkorrektur aufgrund FSA-Thematik                22,98-
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "note", "amount", "type") //
+                                                        .documentContext("year", "currency") //
+                                                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\s]{1,}" //
+                                                                        + "(?<date>[\\d]{2}\\.[\\d]{2}\\.)[\\s]{1,}" //
+                                                                        + "(?<note>Steuerkorrektur.*)[\\s]{1,}" //
+                                                                        + "(?<amount>[\\.,\\d]+)(?<type>[\\+|\\-])$") //
+                                                        .assign((t, v) -> {
+                                                            // Is type --> "-" change from TAX_REFUND to TAXES
+                                                            if ("-".equals(v.get("type")))
+                                                                t.setType(AccountTransaction.Type.TAXES);
+
+                                                            t.setDateTime(asDate(v.get("date") + v.get("year")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(v.get("currency"));
+                                                            t.setNote(trim(replaceMultipleBlanks(v.get("note"))));
+                                                        }))
+
+                        .wrap(TransactionItem::new));
+    }
+
+    private void addSellForOptionsTransaction()
+    {
+        final var type = new DocumentType("(Depotausgang|Gutschrifts\\- \\/ Belastungsanzeige)", //
+                        documentContext -> documentContext //
+                                        // @formatter:off
+                                        //              Frankfurt, 18.09.2020
+                                        // @formatter:on
+                                        .section("date") //
+                                        .match("^.*, .*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                                        .assign((ctx, v) -> ctx.put("date", v.get("date"))));
+
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<BuySellEntry>();
+
+        var firstRelevantLine = new Block("^(Depotausgang|Gutschrifts\\- \\/ Belastungsanzeige).*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var portfolioTransaction = new BuySellEntry();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.SELL);
+                            return portfolioTransaction;
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Depotausgang                          COMMERZBANK INLINE09EO/SF (DE000CM31SV9)
+                                        // Rückzahlungsgrund: Ablauf der Optionsfrist     Betrag/Stk: 10,000000000000 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^Depotausgang[\\s]{1,}(?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
+                                                        .match("^.* Betrag\\/(Stk|Stck\\.)([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Depotausgang                          COMS.-MSCI WORL.T.U.ETF I (LU0392494562)
+                                        //                                          Geldgegenwert***:           0,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^Depotausgang[\\s]{1,}(?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
+                                                        .match("^.* Geldgegenwert([:\\*\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // WKN ISIN Wertpapierbezeichnung Anzahl
+                                        // SG0WRD DE000SG0WRD3 SG EFF. TURBOL ZS 83,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("wkn", "isin", "name", "currency") //
+                                                        .find("WKN[\\s]{1,}ISIN[\\s]{1,}Wertpapierbezeichnung[\\s]{1,}Anzahl") //
+                                                        .match("^(?<wkn>[A-Z0-9]{6})[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])[\\s]{1,}(?<name>.*)[\\s]{1,}[\\.,\\d]+$") //
+                                                        .match("^.* Betrag\\/(Stk|Stck\\.)([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Stk./Nominale  : 325,000000 Stk         Einbeh. Steuer*:            382,12 EUR
+                                        // St./Nominale      :      310,000000 St.  Bemessungs-
+                                        // Stk./Nominale**: 2.000,000000 Stk       Einbeh. Steuer*:              0,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "notation") //
+                                                        .match("^(St|Stk|Stck)\\.\\/Nominale([*:\\s]+)? (?<shares>[\\.,\\d]+)[\\s]{1,}(?<notation>(St\\.|Stk|[\\w]{3})) .*$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Percentage quotation, workaround for bonds
+                                                            // @formatter:on
+                                                            if (v.get("notation") != null && !v.get("notation").startsWith("St"))
+                                                            {
+                                                                var shares = asBigDecimal(v.get("shares"));
+                                                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                            }
+                                                            else if ("St.".equals(v.get("notation")))
+                                                            {
+                                                                t.setShares(asShares(v.get("shares"), "de", "DE"));
+                                                            }
+                                                            else
+                                                            {
+                                                                t.setShares(asShares(v.get("shares")));
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Stck./Nominale:          83,000000        Betrag/Stck.    :           1,34 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^(Stk|Stck)\\.\\/Nominale([:\\s]+)? (?<shares>[\\.,\\d]+) .* Betrag\\/Stck\\. .* [\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Fälligkeitstag   : 02.12.2009                  Letzter Handelstag:  20.11.2009
+                                        // Fälligkeitstag                                                  25.06.2021
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^F.lligkeitstag([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // It is possible that in case of collective billing the date
+                                        // is only in the header of the document.
+                                        //
+                                        //              Frankfurt, 18.09.2020
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("dummy") //
+                                                        .documentContext("date") //
+                                                        .match("^(?<dummy>Vorsitzender).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date")))))
+
+                        // @formatter:off
+                        // Verwahrart      : GS-Verwahrung        Geldgegenwert***:              0,20 EUR
+                        //                                           Geldgegenwert*  :         111,22 EUR
+                        // Geldgegenwert                                                       393,73 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^(.* )?Geldgegenwert([:\\*\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // If the taxes are negative, this is a tax refund transaction
+                        // and we subtract this from the amount and reset this.
+                        //
+                        // Stk./Nominale  : 325,000000 Stk         Einbeh. Steuer*:           -382,12 EUR
+                        //                                           Einbeh. Steuer**:         -10,00 EUR
+                        // Einbeh. Steuer**                                                    -88,53 EUR
+                        // @formatter:on
+                        .section("taxRefund", "currency").optional() //
+                        .match("^.*Einbeh\\. Steuer[:\\*\\s]+[\\s]{1,}\\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
+
+                            t.setMonetaryAmount(t.getPortfolioTransaction().getMonetaryAmount().subtract(amount));
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //   unter der Transaktion-Nr.: 132465978
+                                        //   unter der Transaktion-Nr. : 1111111111
+                                        // Transaktionsnummer: 921414163
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                        // 1301138113.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + v.get("note2"))))
+
+                        .wrap(BuySellEntryItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+        addTaxReturnBlockForOptions(type);
+    }
+
+    private void addDeliveryInOutboundTransaction()
+    {
+        final var type = new DocumentType("(Gutschrifts-\\/Belastungsanzeige|Bestandsausbuchung)");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
+
+        var firstRelevantLine = new Block("^(Depoteingang|Bestandsausbuchung).*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var portfolioTransaction = new PortfolioTransaction();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                            return portfolioTransaction;
+                        })
+
+                        // @formatter:off
+                        // Is type --> "wertlos" change from DELIVERY_INBOUND to DELIVERY_OUTBOUND
+                        // @formatter:on
+                        .section("type").optional() //
+                        .match("^.* (?<type>Bestand haben wir wertlos ausgebucht).*$") //
+                        .assign((t, v) -> {
+                            if ("Bestand haben wir wertlos ausgebucht".equals(v.get("type")))
+                                t.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Depoteingang DEKAFONDS CF (DE0008474503)
+                                        // Kurs           : 105,769231 EUR         Devisenkurs    :          1,000000
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("isin", "name", "currency") //
+                                                        .match("^Depoteingang[\\s]{1,}(?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
+                                                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}) .*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Bestandsausbuchung                       COMMERZBANK PUT10 EOLS (DE000CB81KN1)
+                                        // Rückzahlungsgrund: Ablauf der Optionsfrist     Betrag/Stk: 0,0000000000000 EUR
+                                        // @formatter:on
+                                        section -> section.attributes("name", "isin", "currency") //
+                                                        .match("^Bestandsausbuchung[\\s]{1,}(?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$") //
+                                                        .match("^.* Betrag\\/Stk([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+
+                        // @formatter:off
+                        // Stk./Nominale   : 25.000,000000 EUR    Einbeh. Steuer* :              0,00 EUR
+                        // Stk./Nominale**: 2.000,000000 Stk       Einbeh. Steuer*:              0,00 EUR
+                        // @formatter:on
+                        .section("shares", "notation") //
+                        .match("(St|Stk|Stck)\\.\\/Nominale([*\\s]+)?:[\\s]{1,}(?<shares>[\\.,\\d]+)[\\s]{1,}(?<notation>(St\\.|Stk|[\\w]{3})) .*$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Percentage quotation, workaround for bonds
+                            // @formatter:on
+                            if (v.get("notation") != null && !v.get("notation").startsWith("St"))
+                            {
+                                var shares = asBigDecimal(v.get("shares"));
+                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                            }
+                            else if ("St.".equals(v.get("notation")))
+                            {
+                                t.setShares(asShares(v.get("shares"), "de", "DE"));
+                            }
+                            else
+                            {
+                                t.setShares(asShares(v.get("shares")));
+                            }
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Datum : 16.03.2015
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("Datum([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))),
+                                        // @formatter:off
+                                        // Fälligkeitstag   : 02.12.2009                  Letzter Handelstag:  20.11.2009
+                                        // Fälligkeitstag                                                  25.06.2021
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date") //
+                                                        .match("^F.lligkeitstag([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .assign((t, v) -> t.setDateTime(asDate(v.get("date")))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Kurs           : 30,070360 EUR          Devisenkurs    :          1,000000
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Kurs([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")) * t.getShares() / Values.Share.factor());
+                                                        }),
+                                        // @formatter:off
+                                        // **oben genannten Bestand haben wir wertlos ausgebucht
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("type") //
+                                                        .match("^.* (?<type>Bestand haben wir wertlos ausgebucht).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(t.getSecurity().getCurrencyCode());
+                                                            t.setAmount(0L);
+                                                        }))
+
+                        // If the taxes are negative,
+                        // this is a tax refund transaction
+                        // and we subtract this from the amount and reset this.
+
+                        // @formatter:off
+                        //                                           Einbeh. Steuer**:          -1,00 EUR
+                        // @formatter:on
+                        .section("taxRefund", "currency").optional() //
+                        .match("^.*Einbeh\\. Steuer[:\\*\\s]+[\\s]{1,}\\-(?<taxRefund>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("taxRefund")));
+
+                            t.setMonetaryAmount(t.getMonetaryAmount().subtract(amount));
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //   unter der Transaktion-Nr.: 132465978
+                                        //   unter der Transaktion-Nr. : 1111111111
+                                        // Transaktionsnummer: 921414163
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                        // 1301138113.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + v.get("note2"))))
+
+                        .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addAdvanceTaxTransaction()
+    {
+        final var type = new DocumentType("Wertpapierabrechnung Vorabpauschale");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Kundenservice(:)?$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAXES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // ISHS MSCI EM USD-AC                 IE00BKM4GZ66/A111X9
+                        // @formatter:on
+                        .section("name", "isin", "wkn") //
+                        .match("^(?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6}).*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // Gesamtbestand       476,000000 St.  zum                             31.12.2019
+                        // @formatter:on
+                        .section("shares") //
+                        .match("^Gesamtbestand[\\s]{1,}(?<shares>[\\.,\\d]+) St\\..*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // Buchungsdatum        11.01.2020
+                        // 99999 Stadt Buchungsdatum        29.01.2024
+                        // @formatter:on
+                        .section("date") //
+                        .match("^.*Buchungsdatum[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        //                                  ** Einbeh. Steuer                    4,69 EUR
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^.* Einbeh\\. Steuer[\\s]{1,}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode("currency"));
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //   unter der Transaktion-Nr.: 132465978
+                                        //   unter der Transaktion-Nr. : 1111111111
+                                        // Transaktionsnummer: 921414163
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                        // 1301138113.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + v.get("note2"))))
+
+                        .wrap(t -> {
+                            var item = new TransactionItem(t);
+
+                            if (t.getAmount() == 0)
+                                item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+
+                            return item;
+                        });
+    }
+
+    private void addDepotServiceFeesTransaction()
+    {
+        // @formatter:off
+        // This transaction is not imported.
+        // The exchange rate is not shown once the security is held in foreign currency.
+        //
+        // We import these fees via the depot account statement.
+        // @formatter:off
+
+        final var type = new DocumentType("Depotservicegeb.hr [A-Z]{2}[A-Z0-9]{9}[0-9]");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Depotservicegeb.hr [A-Z]{2}[A-Z0-9]{9}[0-9]$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Wir belasten den Betrag Ihrem Konto 1009999999 per Valuta 23.03.2023.
+                        // @formatter:on
+                        .section("date") //
+                        .match("^.* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        //  die ausländische Lagerstelle hat eine Depotservicegebühr aus ISIN US09075V1026
+                        // in Höhe von 0.18 EUR erhoben.
+                        // @formatter:on
+                        .section("amount", "currency") //
+                        .match("^.* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}) .*$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        //  die ausländische Lagerstelle hat eine Depotservicegebühr aus ISIN US09075V1026
+                        // @formatter:on
+                        .section("note1", "note2") //
+                        .match("^.* (?<note1>Depotservicegebühr) .* ISIN (?<note2>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                        .assign((t, v) -> t.setNote(concatenate(v.get("note1"), v.get("note2"), " ")))
+
+                        .wrap(t -> {
+                            var item = new TransactionItem(t);
+
+                            item.setFailureMessage(Messages.PDFMsgFinTechGroup_DoNotProcess_MissingExchangeRateIfInForex);
+
+                            return item;
+                        });
+    }
+
+    private void addBuySellTaxReturnBlock(DocumentType type)
+    {
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^.* Auftragsdatum .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return accountTransaction;
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Nr.123441244/1  Kauf            C.S.-MSCI PACIF.T.U.ETF I (LU0392495023/ETF114)
+                                        // Kurs           4,424000 EUR           Kurswert       EUR             44,24
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf) (?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Nr.76443716/1  Verkauf           UBS AG LONDON 14/16 RWE (DE000US9RGR9/US9RGR)
+                                        // Kurs           29,0000 %               Kurswert       EUR             7.250,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf) (?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ %[\\s]{1,}Kurswert[\\s]{1,}(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Nr.230975068/1     Kauf                 FRAPORT AG 20/27 (XS2198879145/A3E444)
+                                        // Ausgeführt    :    1.000,000000 EUR     Kurswert      :           1.690,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf) (?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^Ausgef.hrt([:\\s]+)?[\\s]{1,}[\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+
+                        // @formatter:off
+                        // Ausgeführt     25.000,00000 EUR
+                        // Ausgeführt    :              29 St.     Kurswert      :             751,68 EUR
+                        // Ausgeführt     10 St.
+                        // Ausgeführt     19,334524 St.           Kurswert       EUR             1.050,00
+                        // @formatter:on
+                        .section("shares", "notation") //
+                        .match("^Ausgef.hrt ([:\\s]+)?(?<shares>[\\.,\\d]+)[\\s]{1,}(?<notation>(St\\.|Stk|[\\w]{3})).*$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Percentage quotation, workaround for bonds
+                            // @formatter:on
+                            if (v.get("notation") != null && !v.get("notation").startsWith("St"))
+                            {
+                                var shares = asBigDecimal(v.get("shares"));
+                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                            }
+                            else if ("St.".equals(v.get("notation")))
+                            {
+                                t.setShares(asShares(v.get("shares"), "de", "DE"));
+                            }
+                            else
+                            {
+                                t.setShares(asShares(v.get("shares")));
+                            }
+                        })
+
+                        // @formatter:off
+                        // An den  Ausführungszeit   13:59 Häusern 5
+                        // ZZZZ ZZ Ausführungszeit    17:30 Uhr.
+                        // Max Mu Stermann Schlusstag        17.01.2019u Ausführungszeit   17:52 Uhr
+                        // @formatter:on
+                        .section("time").optional() //
+                        .match("^.* Ausf.hrungszeit[\\s]{1,}(?<time>[\\d]{2}:[\\d]{2}).*$") //
+                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+
+                        // @formatter:off
+                        // Max Mustermann Schlusstag        03.12.2015o
+                        // ZZZZZ ZZZZ Handelstag         10.04.2019xan
+                        // Max Mu Stermann Schlusstag        17.01.2019u Ausführungszeit   17:52 Uhr
+                        // @formatter:on
+                        .section("date") //
+                        .match("^.* (Handelstag|Schlusstag)[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> {
+                            if (type.getCurrentContext().get("time") != null)
+                                t.setDateTime(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                            else
+                                t.setDateTime(asDate(v.get("date")));
+                        })
+
+                        // If the currency of the tax differs from the amount,
+                        // it will be converted and reset.
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Endbetrag      EUR               -50,30
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency") //
+                                                        .match("^.* Endbetrag[\\s]{1,}(?<currency>[\\w]{3})[\\s|\\-]{1,}[\\.,\\d]+$") //
+                                                        .assign((t, v) -> t.setCurrencyCode(asCurrencyCode(v.get("currency")))),
+                                        // @formatter:off
+                                        //        Endbetrag                   -52,50 EUR
+                                        // Endbetrag     :            -760,09 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency") //
+                                                        .match("^(.* )?Endbetrag([:\\s]+)?[\\s|\\-]{1,}[\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setCurrencyCode(asCurrencyCode(v.get("currency")))))
+
+                        .optionalOneOf( //
+                                        section -> section //
+                                                        .attributes("exchangeRate", "baseCurrency", "gross") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? (?<baseCurrency>[\\w]{3})[\\s]{1,}\\-(?<gross>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("termCurrency", t.getSecurity().getCurrencyCode());
+
+                                                            type.getCurrentContext().putBoolean("negativeTax", true);
+
+                                                            if (!t.getSecurity().getCurrencyCode().contentEquals(v.get("baseCurrency")))
+                                                            {
+                                                                var rate = asExchangeRate(v);
+                                                                type.getCurrentContext().putType(rate);
+
+                                                                var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                                var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                                                checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+
+                                                                t.setMonetaryAmount(gross);
+                                                            }
+                                                            else
+                                                            {
+                                                                t.setCurrencyCode(asCurrencyCode(v.get("baseCurrency")));
+                                                                t.setAmount(asAmount(v.get("gross")));
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Gewinn/Verlust 0,00 EUR              **Einbeh. Steuer EUR                -1,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}\\-(?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            type.getCurrentContext().putBoolean("negativeTax", true);
+
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Devisenkurs   : 1,192200(x)             Provision     :
+                                        // Gewinn/Verlust            0,00 EUR    **Einbeh. Steuer                -1,00 EUR
+                                        // Devisenkurs   :        1,000000         Eigene Spesen :               0,00 EUR
+                                        // Gewinn/Verlust:        1.112,18 EUR   **Einbeh. KESt  :             -305,85 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exchangeRate", "gross", "baseCurrency") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* [\\*]+Einbeh\\. (Steuer|KESt)([:\\s]+)? \\-(?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("termCurrency", t.getSecurity().getCurrencyCode());
+
+                                                            type.getCurrentContext().putBoolean("negativeTax", true);
+
+                                                            if (!t.getSecurity().getCurrencyCode().contentEquals(v.get("baseCurrency")))
+                                                            {
+                                                                var rate = asExchangeRate(v);
+                                                                type.getCurrentContext().putType(rate);
+
+                                                                var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                                var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
+                                                                checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+
+                                                                t.setMonetaryAmount(gross);
+                                                            }
+                                                            else
+                                                            {
+                                                                t.setCurrencyCode(asCurrencyCode(v.get("baseCurrency")));
+                                                                t.setAmount(asAmount(v.get("gross")));
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Gewinn/Verlust            0,00 EUR    **Einbeh. Steuer                -1,00 EUR
+                                        // Gewinn/Verlust:        1.112,18 EUR   **Einbeh. KESt  :            -305,85 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^.* [\\*]+Einbeh\\. (Steuer|KESt)([:\\s]+)? \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            type.getCurrentContext().putBoolean("negativeTax", true);
+
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //   unter der Transaktion-Nr.: 132465978
+                                        //   unter der Transaktion-Nr. : 1111111111
+                                        // Transaktionsnummer: 921414163
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                        // 1301138113.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + v.get("note2"))))
+
+                        .wrap(t -> {
+                            // Since it is a tax refund, we record it.
+                            // Finally, we remove the flag.
+                            type.getCurrentContext().remove("negativeTax");
+
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
+    }
+
+    private void addBuySellFeeBlock(DocumentType type)
+    {
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^.* Auftragsdatum .*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Nr.123441244/1  Kauf            C.S.-MSCI PACIF.T.U.ETF I (LU0392495023/ETF114)
+                                        // Kurs           4,424000 EUR           Kurswert       EUR             44,24
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf) (?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Nr.76443716/1  Verkauf           UBS AG LONDON 14/16 RWE (DE000US9RGR9/US9RGR)
+                                        // Kurs           29,0000 %               Kurswert       EUR             7.250,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf) (?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^.* Kurswert[\\s]{1,}(?<currency>[\\w]{3})[\\s]{1,}[\\.,\\d]+$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Nr.230975068/1     Kauf                 FRAPORT AG 20/27 (XS2198879145/A3E444)
+                                        // Ausgeführt    :    1.000,000000 EUR     Kurswert      :           1.690,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "wkn", "currency") //
+                                                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}(Kauf|Verkauf) (?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
+                                                        .match("^.* Kurswert([\\s]+)?:[\\s]{1,}[\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+
+                        // @formatter:off
+                        // Ausgeführt     25.000,00000 EUR
+                        // Ausgeführt    :              29 St.     Kurswert      :             751,68 EUR
+                        // Ausgeführt     10 St.
+                        // Ausgeführt     19,334524 St.           Kurswert       EUR             1.050,00
+                        // @formatter:on
+                        .section("shares", "notation") //
+                        .match("^Ausgef.hrt([:\\s]+)? (?<shares>[\\.,\\d]+)[\\s]{1,}(?<notation>(St\\.|Stk|[\\w]{3})).*$") //
+                        .assign((t, v) -> {
+                            // @formatter:off
+                            // Percentage quotation, workaround for bonds
+                            // @formatter:on
+                            if (v.get("notation") != null && !v.get("notation").startsWith("St"))
+                            {
+                                var shares = asBigDecimal(v.get("shares"));
+                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                            }
+                            else if ("St.".equals(v.get("notation")))
+                            {
+                                t.setShares(asShares(v.get("shares"), "de", "DE"));
+                            }
+                            else
+                            {
+                                t.setShares(asShares(v.get("shares")));
+                            }
+                        })
+
+                        // @formatter:off
+                        // An den  Ausführungszeit   13:59 Häusern 5
+                        // ZZZZ ZZ Ausführungszeit    17:30 Uhr.
+                        // Max Mu Stermann Schlusstag        17.01.2019u Ausführungszeit   17:52 Uhr
+                        // @formatter:on
+                        .section("time").optional() //
+                        .match("^.* Ausf.hrungszeit[\\s]{1,}(?<time>[\\d]{2}:[\\d]{2}).*$") //
+                        .assign((t, v) -> type.getCurrentContext().put("time", v.get("time")))
+
+                        // @formatter:off
+                        // Max Mustermann Schlusstag        03.12.2015o
+                        // ZZZZZ ZZZZ Handelstag         10.04.2019xan
+                        // Max Mu Stermann Schlusstag        17.01.2019u Ausführungszeit   17:52 Uhr
+                        // @formatter:on
+                        .section("date") //
+                        .match("^.* (Handelstag|Schlusstag)[\\s]{1,}(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> {
+                            if (type.getCurrentContext().get("time") != null)
+                                t.setDateTime(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                            else
+                                t.setDateTime(asDate(v.get("date")));
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Endbetrag      EUR               -50,30
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^.* Endbetrag[\\s]{1,}(?<currency>[\\w]{3})[\\s|\\-]{1,}(?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        //                                         Endbetrag     :              -2,42 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^(.* )?Endbetrag([:\\s]+)?[\\s|\\-]{1,}(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //   unter der Transaktion-Nr.: 132465978
+                                        //   unter der Transaktion-Nr. : 1111111111
+                                        // Transaktionsnummer: 921414163
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                        // 1301138113.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + v.get("note2"))))
+
+                        .wrap(t -> {
+                            // @formatter:off
+                            // Since it is a separate fee transaction, we record it.
+                            // @formatter:on
+                            if (type.getCurrentContext().getBoolean("separateFeeTransaction"))
+                            {
+                                t.setMonetaryAmount(t.getUnitSum(Type.FEE));
+                                t.clearUnits();
+                            }
+                            else
+                            {
+                                t.setAmount(0L);
+                            }
+
+                            // Finally, we remove the flag.
+                            type.getCurrentContext().remove("separateFeeTransaction");
+
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
+
+        addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addSummaryStatementTaxReturnBlock(DocumentType type)
+    {
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}?Verkauf (?<name>.*)[\\s]{1,}?\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Nr.60797017/1  Verkauf             HANN.RUECK SE NA O.N. (DE0008402215/840221)
+                        // Kurs         : 59,4890 EUR             Kurswert       :           5.948,90 EUR
+                        // @formatter:on
+                        .section("name", "isin", "wkn", "currency").optional() //
+                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}?Verkauf (?<name>.*)[\\s]{1,}?\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
+                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
+                        // @formatter:on
+                        .section("shares").optional() //
+                        .match("^davon ausgef\\.([:\\s]+)? (?<shares>[\\.,\\d]+) St\\. .*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
+                        // davon ausgef. : 540,00 St.              Schlusstag    :      09.04.2019, 16:52
+                        // @formatter:on
+                        .section("date", "time").optional() //
+                        .match("^.* Schlusstag([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), (?<time>[\\d]{2}:[\\d]{2}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
+
+                        // If the currency of the tax differs from the amount,
+                        // it will be converted and reset.
+
+                        // @formatter:off
+                        // Valuta       : 30.01.2014              Endbetrag      :          -5.893,10 EUR
+                        // @formatter:on
+                        .section("currency").optional() //
+                        .match("^.* Endbetrag([:\\s]+)? (\\-)?[\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> t.setCurrencyCode(asCurrencyCode(v.get("currency"))))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Devisenkurs   : 1,192200(x)             Provision     :
+                                        // Valuta        : 02.12.2020            **Einbeh. Steuer:              -0,84 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exchangeRate", "fxAmount", "fxCurrency") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? \\-(?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            type.getCurrentContext().putBoolean("negativeTax", true);
+
+                                                            if (!t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
+                                                            {
+                                                                var fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+
+                                                                var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                                var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                                                                var amount = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(fxAmount.getAmount())
+                                                                                .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
+
+                                                                t.setMonetaryAmount(amount);
+                                                            }
+                                                            else
+                                                            {
+                                                                t.setCurrencyCode(asCurrencyCode(v.get("fxCurrency")));
+                                                                t.setAmount(asAmount(v.get("fxAmount")));
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Lagerland    : Deutschland           **Einbeh. Steuer :            -100,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^.* [\\*]+Einbeh\\. Steuer([:\\s]+)? \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            type.getCurrentContext().putBoolean("negativeTax", true);
+
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //   unter der Transaktion-Nr.: 132465978
+                                        //   unter der Transaktion-Nr. : 1111111111
+                                        // Transaktionsnummer: 921414163
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                        // 1301138113.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + v.get("note2"))))
+
+                        .wrap(t -> {
+                            // Since it is a tax refund, we record it.
+                            // Finally, we remove the flag.
+                            type.getCurrentContext().remove("negativeTax");
+
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
+    }
+
+    private void addSummaryStatementFeesBlock(DocumentType type)
+    {
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}?Verkauf (?<name>.*)[\\s]{1,}?\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Nr.60797017/1  Verkauf             HANN.RUECK SE NA O.N. (DE0008402215/840221)
+                        // Kurs         : 59,4890 EUR             Kurswert       :           5.948,90 EUR
+                        // @formatter:on
+                        .section("name", "isin", "wkn", "currency").optional() //
+                        .match("^Nr\\.[\\d]+\\/[\\d]+[\\s]{1,}?Verkauf (?<name>.*)[\\s]{1,}?\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\/(?<wkn>[A-Z0-9]{6})\\)$") //
+                        .match("^Kurs([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3}).*$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        // @formatter:off
+                        // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
+                        // @formatter:on
+                        .section("shares").optional() //
+                        .match("^davon ausgef\\.([:\\s]+)? (?<shares>[\\.,\\d]+) St\\..*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        // @formatter:off
+                        // davon ausgef.: 150,00 St.              Schlusstag     :  28.01.2014, 12:50 Uhr
+                        // davon ausgef. : 540,00 St.              Schlusstag    :      09.04.2019, 16:52
+                        // @formatter:on
+                        .section("date", "time").optional() //
+                        .match("^.* Schlusstag([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}), (?<time>[\\d]{2}:[\\d]{2}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"), v.get("time"))))
+
+                        // If the currency of the fee differs from the amount,
+                        // it will be converted and reset.
+
+                        // @formatter:off
+                        // Valuta       : 30.01.2014              Endbetrag      :          -5.893,10 EUR
+                        // @formatter:on
+                        .section("negative", "currency").optional() //
+                        .match("^.* Endbetrag([:\\s]+)? (?<negative>(\\-)?[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                            if (v.get("negative").startsWith("-"))
+                                type.getCurrentContext().putBoolean("negative", true);
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Devisenkurs   : 1,192200(x)             Provision     :              5,90 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exchangeRate", "fxAmount", "fxCurrency") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).* Provision([:\\s]+)? (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().getBoolean("negative") && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
+                                                            {
+                                                                var fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+
+                                                                var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                                var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                                                                var amount = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(fxAmount.getAmount())
+                                                                                .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
+
+                                                                t.setMonetaryAmount(amount);
+                                                            }
+                                                            else if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                                            {
+                                                                t.setCurrencyCode(asCurrencyCode(v.get("fxCurrency")));
+                                                                t.setAmount(asAmount(v.get("fxAmount")));
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Devisenkurs   :                         Provision     :               5,90 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^.* Provision([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                                            {
+                                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                                t.setAmount(asAmount(v.get("amount")));
+                                                            }
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Devisenkurs   : 1,192200(x)             Provision      EUR                 5,90
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exchangeRate", "fxCurrency", "fxAmount") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).* Provision([:\\s]+)? (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().getBoolean("negative") && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
+                                                            {
+                                                                var fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+
+                                                                var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                                var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                                                                var amount = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(fxAmount.getAmount())
+                                                                                .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
+
+                                                                t.setMonetaryAmount(amount);
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Devisenkurs                            Provision      EUR                 5,90
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^.* Provision([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}?(?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                                            {
+                                                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                                t.setAmount(asAmount(v.get("amount")));
+                                                            }
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Devisenkurs   : 1,192200(x)             Provision     :              5,90 EUR
+                                        // Verwahrart    : GS-Verwahrung           Eigene Spesen :               1,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exchangeRate", "fxAmount", "fxCurrency") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* Eigene Spesen([:\\s]+)? (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().getBoolean("negative") && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
+                                                            {
+                                                                var fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+
+                                                                var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                                var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                                                                var amount = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(fxAmount.getAmount())
+                                                                                .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
+
+                                                                t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
+                                                            }
+                                                            else if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                                            {
+                                                                var amount = Money.of(asCurrencyCode(v.get("fxCurrency")),asAmount(v.get("fxAmount")));
+                                                                t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Verwahrart    : GS-Verwahrung           Eigene Spesen :               1,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^.* Eigene Spesen([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                                            {
+                                                                var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                                                                t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
+                                                            }
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Devisenkurs   : 1,192200(x)             Provision  EUR                    5,90
+                                        // Verwahrart    : GS-Verwahrung           Eigene Spesen  EUR                1,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exchangeRate", "fxCurrency", "fxAmount") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* Eigene Spesen([:\\s]+)? (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().getBoolean("negative") && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
+                                                            {
+                                                                var fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+
+                                                                var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                                var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                                                                var amount = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(fxAmount.getAmount())
+                                                                                .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
+
+                                                                t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
+                                                            }
+                                                            else if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                                            {
+                                                                var amount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+                                                                t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Verwahrart    : GS-Verwahrung            Eigene Spesen  EUR                1,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^.* Eigene Spesen([:\\s]+)? (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                                            {
+                                                                var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                                                                t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
+                                                            }
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Devisenkurs   : 1,192200(x)             Provision     :              5,90 EUR
+                                        // Verwahrart    : GS-Verwahrung          *Fremde Spesen :               1,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exchangeRate", "fxAmount", "fxCurrency") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* \\*Fremde Spesen([:\\s]+)? (?<fxAmount>[\\.,\\d]+) (?<fxCurrency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().getBoolean("negative") && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
+                                                            {
+                                                                var fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+
+                                                                var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                                var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                                                                var amount = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(fxAmount.getAmount())
+                                                                                .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
+
+                                                                t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
+                                                            }
+                                                            else if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                                            {
+                                                                var amount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+                                                                t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Verwahrart    : GS-Verwahrung          *Fremde Spesen :               1,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^.* \\*Fremde Spesen([:\\s]+)? (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                                            {
+                                                                var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                                                                t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
+                                                            }
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Devisenkurs   : 1,192200(x)             Provision  EUR                    5,90
+                                        // Verwahrart    : GS-Verwahrung          *Fremde Spesen  EUR                1,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("exchangeRate", "fxCurrency", "fxAmount") //
+                                                        .match("^Devisenkurs([:\\s]+)? (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^.* \\*Fremde Spesen([:\\s]+)? (?<fxCurrency>[\\w]{3}) (?<fxAmount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().getBoolean("negative") && !t.getCurrencyCode().contentEquals(v.get("fxCurrency")))
+                                                            {
+                                                                var fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+
+                                                                var exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                                                var inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                                                                var amount = Money.of(t.getCurrencyCode(), BigDecimal.valueOf(fxAmount.getAmount())
+                                                                                .multiply(inverseRate).setScale(0, RoundingMode.HALF_UP).longValue());
+
+                                                                t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
+                                                            }
+                                                            else if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                                            {
+                                                                var amount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+                                                                t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Verwahrart    : GS-Verwahrung          *Fremde Spesen   EUR                1,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "amount") //
+                                                        .match("^.* \\*Fremde Spesen([:\\s]+)? (?<currency>[\\w]{3}) (?<amount>[\\.,\\d]+)$") //
+                                                        .assign((t, v) -> {
+                                                            if (type.getCurrentContext().getBoolean("negative") && t.getCurrencyCode().contentEquals(v.get("currency")))
+                                                            {
+                                                                var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                                                                t.setMonetaryAmount(t.getMonetaryAmount().add(amount));
+                                                            }
+                                                        }))
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //   unter der Transaktion-Nr.: 132465978
+                                        //   unter der Transaktion-Nr. : 1111111111
+                                        // Transaktionsnummer: 921414163
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                        // 1301138113.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + v.get("note2"))))
+
+                        .wrap(t -> {
+                            // Because the final amount was negative, we record
+                            // the fees separately in this transaction.
+                            // Finally, we remove the flag.
+                            type.getCurrentContext().remove("negative");
+
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
+    }
+
+    private void addTaxReturnBlockForOptions(DocumentType type)
+    {
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^(Depoteingang|Depotausgang|Bestandsausbuchung|Gutschrifts\\- \\/ Belastungsanzeige).*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return accountTransaction;
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Depotausgang                          COMMERZBANK INLINE09EO/SF (DE000CM31SV9)
+                                        // Bestandsausbuchung                       COMMERZBANK PUT10 EOLS (DE000CB81KN1)
+                                        // Depoteingang                            UBS AG LONDON 14/16 RWE (DE000US9RGR9)
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^(Depoteingang|Depotausgang|Bestandsausbuchung) (?<name>.*)[\\s]{1,}\\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\)$")
+                                                        .match("^.* Betrag\\/(Stk|Stck\\.)([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // WKN ISIN Wertpapierbezeichnung Anzahl
+                                        // SG0WRD DE000SG0WRD3 SG EFF. TURBOL ZS 83,00
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("wkn", "isin", "name", "currency") //
+                                                        .find("WKN[\\s]{1,}ISIN[\\s]{1,}Wertpapierbezeichnung[\\s]{1,}Anzahl")
+                                                        .match("^(?<wkn>[A-Z0-9]{6})[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}[\\.,\\d]+$")
+                                                        .match("^.* Betrag\\/(Stk|Stck\\.)([:\\s]+)? [\\.,\\d]+ (?<currency>[\\w]{3})$")
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Stk./Nominale  : 325,000000 Stk         Einbeh. Steuer*:            382,12 EUR
+                                        // St./Nominale      :      310,000000 St.  Bemessungs-
+                                        // Stk./Nominale**: 2.000,000000 Stk       Einbeh. Steuer*:              0,00 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares", "notation") //
+                                                        .match("^(St|Stk|Stck)\\.\\/Nominale([*:\\s]+)? (?<shares>[\\.,\\d]+)[\\s]{1,}(?<notation>(St\\.|Stk|[\\w]{3})) .*$") //
+                                                        .assign((t, v) -> {
+                                                            // @formatter:off
+                                                            // Percentage quotation, workaround for bonds
+                                                            // @formatter:on
+                                                            if (v.get("notation") != null && !v.get("notation").startsWith("St"))
+                                                            {
+                                                                var shares = asBigDecimal(v.get("shares"));
+                                                                t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
+                                                            }
+                                                            else if ("St.".equals(v.get("notation")))
+                                                            {
+                                                                t.setShares(asShares(v.get("shares"), "de", "DE"));
+                                                            }
+                                                            else
+                                                            {
+                                                                t.setShares(asShares(v.get("shares")));
+                                                            }
+                                                        }),
+                                        // @formatter:off
+                                        // Stck./Nominale:          83,000000        Betrag/Stck.    :           1,34 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("shares") //
+                                                        .match("^(Stk|Stck)\\.\\/Nominale([:\\s]+)? (?<shares>[\\.,\\d]+) .* Betrag\\/Stck\\. .* [\\.,\\d]+ [\\w]{3}$") //
+                                                        .assign((t, v) -> t.setShares(asShares(v.get("shares")))))
+
+                        // @formatter:off
+                        // Fälligkeitstag   : 02.12.2009                  Letzter Handelstag:  20.11.2009
+                        // Datum          : 24.11.2015
+                        // Fälligkeitstag                                                  25.06.2021
+                        // Fälligkeitstag: 18.07.2011 letzter Handel am: 11.07.2011
+                        // @formatter:on
+                        .section("date").optional() //
+                        .match("^(F.lligkeitstag|Datum)([:\\s]+)? (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Stk./Nominale  : 325,000000 Stk         Einbeh. Steuer*:           -382,12 EUR
+                        //                                           Einbeh. Steuer**:         -10,00 EUR
+                        // @formatter:on
+                        .section("amount", "currency").optional() //
+                        .match("^.* Einbeh\\. Steuer([:\\s\\*]+)? \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Einbeh. Steuer**                                                    -88,53 EUR
+                        // @formatter:on
+                        .section("amount", "currency").optional() //
+                        .match("^Einbeh\\. Steuer([:\\s\\*]+)? \\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        //   unter der Transaktion-Nr.: 132465978
+                                        //   unter der Transaktion-Nr. : 1111111111
+                                        // Transaktionsnummer: 921414163
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note") //
+                                                        .match("^.*(?<note>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)? [\\d]+).*$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note")))),
+                                        // @formatter:off
+                                        //     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+                                        // 1301138113.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("note1", "note2") //
+                                                        .match("^.*(?<note1>(Transaktion\\-Nr\\.|Transaktionsnummer)([:\\s]+)?)$") //
+                                                        .match("^([\\s]+)?(?<note2>[\\d]+)\\.$") //
+                                                        .assign((t, v) -> t.setNote(trim(v.get("note1")) + " " + v.get("note2"))))
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        });
+    }
+
+    private void addNonImportableTransaction()
+    {
+        final var type = new DocumentType("(Kapitalherabsetzung" //
+                        + "|Kapitalerh.hung" //
+                        + "|Fusion" //
+                        + "|Wertpapiertausch)");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
+
+        var firstRelevantLine = new Block("^(Kapitalherabsetzung" //
+                        + "|Kapitalerh.hung" //
+                        + "|Fusion" //
+                        + "|Wertpapiertausch).*$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var portfolioTransaction = new PortfolioTransaction();
+                            portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                            return portfolioTransaction;
+                        })
+
+                        .oneOf( //
+                                        // @formatter:off
+                                        // WKN     ISIN          Wertpapierbezeichnung                        Anzahl
+                                        // A3DHHH  CH1175448666  STRAUMANN HLDG RG                          10,000000
+                                        // 1,000000 mit Valuta 18.04.2024 in Ihr Depot eingebucht:
+                                        // Verrechnung über Ihr Konto: 9999999999 Gutschrift                     4,13 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "wkn", "isin", "name", "shares", "amount", "currency") //
+                                                        .match("^.* Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                                                        .match("^(?<wkn>[A-Z0-9]{6})[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}(?<shares>[\\.,\\d]+)$") //
+                                                        .match("^Verrechnung .ber Ihr Konto: .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        // @formatter:off
+                                        // WKN     ISIN          Wertpapierbezeichnung           Anzahl
+                                        // A2JSDA  LU1861134382  AM IS M W SP UEDCC              101,910692
+                                        // Valuta 23.01.2024 in Ihr Depot eingebucht:
+                                        // Verrechnung über Ihr Konto: 4049530560 Belastung                     82,85 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "wkn", "isin", "name", "shares", "amount", "currency") //
+                                                        .find("WKN .*ISIN .*Wertpapierbezeichnung .*Anzahl.*") //
+                                                        .match("^(?<wkn>[A-Z0-9]{6})[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) (?<name>.*)[\\s]{1,}(?<shares>[\\.,\\d]+)$") //
+                                                        .match("^Valuta (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                                                        .match("^Verrechnung .ber Ihr Konto: .* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+
+                                                            v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported);
+
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setShares(asShares(v.get("shares")));
+                                                            t.setSecurity(getOrCreateSecurity(v));
+
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
+
+                        .wrap((t, ctx) -> {
+                            var item = new TransactionItem(t);
+
+                            if (ctx.getString(FAILURE) != null)
+                                item.setFailureMessage(ctx.getString(FAILURE));
+
+                            return item;
+                        });
+    }
+
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
+    {
+        // @formatter:off
+        // If the currency of the provision tax differs from the amount, it will
+        // be converted and reset.
+        //
+        // Example:
+        // **Einbeh. Steuer:           0,84 EUR
+        // Endbetrag     :             955,98 USD
+        // @formatter:on
+
+        transaction //
+
+                        // @formatter:off
+                        // Quellenst.-satz :           15,00 %    Gez. Quellenst. :            1,15 USD
+                        // Quellenst.-satz :            15,00 %  Gez. Quellensteuer :           18,28 USD
+                        // @formatter:on
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^.* Gez\\. (Quellenst\\.|Quellensteuer)([:\\s]+)? (?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
+                                processWithHoldingTaxEntries(t, v, "withHoldingTax", type);
+                        })
+
+                        // @formatter:off
+                        // Lagerland    : Deutschland           **Einbeh. Steuer :               0,00 EUR
+                        // Lagerland    : Deutschland           **Einbeh. Steuer                0,00 EUR
+                        // Gewinn/Verlust:        1.112,18 EUR   **Einbeh. KESt  :             305,85 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^.* \\*\\*Einbeh\\. (Steuer|KESt)([:\\s]+)? (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
+                            {
+                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
+                                if (!tax.getCurrencyCode().equals(((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction().getCurrencyCode()))
+                                {
+                                    var fxTax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
+                                    var exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
+
+                                    tax = Money.of(((BuySellEntry) t).getPortfolioTransaction().getCurrencyCode(),
+                                                    BigDecimal.valueOf(fxTax.getAmount()).multiply(exchangeRate)
+                                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                                }
+
+                                checkAndSetTax(tax, t, type.getCurrentContext());
+                            }
+                        })
+
+                        // @formatter:off
+                        // Lagerland    : Deutschland           **Einbeh. Steuer EUR               1,00
+                        // Gewinn/Verlust 0,00 EUR              **Einbeh. KESt   EUR               1,00
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^.* \\*\\*Einbeh\\. (Steuer|KESt)([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
+                            {
+                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
+                                if (!tax.getCurrencyCode().equals(((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction().getCurrencyCode()))
+                                {
+                                    var fxTax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
+                                    var exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
+
+                                    tax = Money.of(((BuySellEntry) t).getPortfolioTransaction().getCurrencyCode(),
+                                                    BigDecimal.valueOf(fxTax.getAmount()).multiply(exchangeRate)
+                                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                                }
+
+                                checkAndSetTax(tax, t, type.getCurrentContext());
+                            }
+                        })
+
+                        // @formatter:off
+                        //              ***Einbeh. SichSt EUR                1,00
+                        // @formatter:on
+                        .section("currency", "tax").optional() //
+                        .match("^.* \\*\\*\\*Einbeh\\. SichSt([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}(?<tax>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
+                            {
+                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
+                                if (!tax.getCurrencyCode().equals(((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction().getCurrencyCode()))
+                                {
+                                    var fxTax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
+                                    var exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
+
+                                    tax = Money.of(((BuySellEntry) t).getPortfolioTransaction().getCurrencyCode(),
+                                                    BigDecimal.valueOf(fxTax.getAmount()).multiply(exchangeRate)
+                                                                    .setScale(0, RoundingMode.HALF_UP).longValue());
+                                }
+
+                                checkAndSetTax(tax, t, type.getCurrentContext());
+                            }
+                        })
+
+                        // @formatter:off
+                        //                                      *Einbeh. Steuer  :       284,85 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^.* \\*Einbeh\\. Steuer([:\\s]+)? (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
+                                processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Stk./Nominale  : 325,000000 Stk         Einbeh. Steuer*:            382,12 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^.* Einbeh\\. Steuer\\*([:\\s]+)? (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
+                                processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Steuerbetrag**                                                        0,00 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Steuerbetrag\\*\\* .* (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negativeTax") && !type.getCurrentContext().getBoolean("negative"))
+                                processTaxEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Einbehaltene Kapitalertragsteuer -504.06 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Einbehaltene Kapitalertrags(s)?teuer[\s]{1,}\\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Einbehaltener Solidaritätszuschlag -27.71 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Einbehaltener Solidarit.tszuschlag[\\s]{1,}\\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Einbehaltener Kirchensteuer -X.XX EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Einbehaltene Kirchensteuer[\\s]{1,}\\-(?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type));
+    }
+
+    private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
+    {
+        // @formatter:off
+        // If the currency of the provision fee differs from the amount, it will
+        // be converted and reset.
+        // @formatter:on
+
+        transaction //
+
+                        // @formatter:off
+                        // Devisenkurs  :                         Provision      :               3,90 EUR
+                        // Kurs                 20,835000 EUR      Provision                     5,90 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^.* Provision([:\\s]+)? (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative"))
+                            {
+                                var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+
+                                if (t instanceof name.abuchen.portfolio.model.Transaction tx)
+                                    checkAndSetFee(fee, tx, type.getCurrentContext());
+                                else if (t instanceof BuySellEntry buysell)
+                                    checkAndSetFee(fee, buysell.getPortfolioTransaction(), type.getCurrentContext());
+                            }
+                        })
+
+                        // @formatter:off
+                        // Devisenkurs                            Provision      EUR                 5,90
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^.* Provision([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}(?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative"))
+                            {
+                                var fee = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")));
+
+                                if (t instanceof name.abuchen.portfolio.model.Transaction tx)
+                                    checkAndSetFee(fee, tx, type.getCurrentContext());
+                                else if (t instanceof BuySellEntry buysell)
+                                    checkAndSetFee(fee, buysell.getPortfolioTransaction(), type.getCurrentContext());
+                            }
+                        })
+
+                        // @formatter:off
+                        // Bew-Faktor   : 1,0000                  Eigene Spesen  :               1,00 EUR
+                        // Verwahrart     Wertpapierrechnung      Eigene Spesen                 2,71 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^.* Eigene Spesen([:\\s]+)? (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative"))
+                                processFeeEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Bew-Faktor   : 1,0000                  Eigene Spesen  EUR                 1,00
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^.* Eigene Spesen([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}(?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative"))
+                                processFeeEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Verwahrart   : GS-Verwahrung          *Fremde Spesen  :               1,00 EUR
+                        // Verwahrart     Wertpapierrechnung      *Fremde Spesen                 2,71 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^.* \\*Fremde Spesen([:\\s]+)? (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative"))
+                                processFeeEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Verwahrart   : GS-Verwahrung          *Fremde Spesen  EUR                 1,00
+                        // @formatter:on
+                        .section("currency", "fee").optional() //
+                        .match("^.* \\*Fremde Spesen([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}(?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative"))
+                                processFeeEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Fremdgeb./Stück :            0,02 USD  Gesamtgebühr    :            0,10 USD
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^.* Gesamtgeb.hr([:\\s]+)? (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative"))
+                                processFeeEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Lagerstelle   : Clearstream Nat.        Zinsbetrag    :              6,25 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^.* Zinsbetrag([:\\s]+)? (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative") && type.getCurrentContext().getBoolean("isPurchaseBonds"))
+                                processFeeEntries(t, v, type);
+                        })
+
+                        // @formatter:off
+                        // Lagerland      Deutschland             Zinsbetrag     EUR             9.264,06
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^.* Zinsbetrag([:\\s]+)? (?<currency>[\\w]{3})[\\s]{1,}(?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            if (!type.getCurrentContext().getBoolean("negative") && type.getCurrentContext().getBoolean("isPurchaseBonds"))
+                                processFeeEntries(t, v, type);
+                        });
+    }
+
+    @Override
+    protected long asAmount(String value)
+    {
+        var language = "de";
+        var country = "DE";
+
+        var lastDot = value.lastIndexOf(".");
+        var lastComma = value.lastIndexOf(",");
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en";
+            country = "US";
+        }
+
+        return ExtractorUtils.convertToNumberLong(value, Values.Amount, language, country);
+    }
+
+    @Override
+    protected long asShares(String value)
+    {
+        var language = "de";
+        var country = "DE";
+
+        var lastDot = value.lastIndexOf(".");
+        var lastComma = value.lastIndexOf(",");
+
+        // returns the greater of two int values
+        if (Math.max(lastDot, lastComma) == lastDot)
+        {
+            language = "en";
+            country = "US";
+        }
+
+        return ExtractorUtils.convertToNumberLong(value, Values.Share, language, country);
     }
 }

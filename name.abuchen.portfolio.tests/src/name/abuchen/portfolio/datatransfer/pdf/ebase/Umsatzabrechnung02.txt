@@ -1,0 +1,32 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Umsatzabrechnung-Nr. 19
+Depot-Nr. 1234567890
+Seite 1 von 12
+Ansparplan 50,00 EUR mit Kursdatum 02.01.2020 in Depotposition 1234567890.09
+iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile
+Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 02.01.2020
+ISIN Anteile Abrechnungskurs Betrag
+DE000A0F5UH1 1,705860 29,252100 EUR 49,90 EUR
+Entgelte zzgl. Entgelte
+ETF-Transaktionsentgelt 0,10 EUR
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE49132 ABC123 ABC123 ABC123 ABC123 50,00 EUR
+Wiederanlage Fondsertrag 0,37 EUR mit Kursdatum 20.01.2020 in Depotposition 1234567890.21
+iSh.DJ U.S.Select Div.U.ETF DE Inhaber-Anteile
+Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 20.01.2020
+Wiederanlage Fondsertrag erfolgt aus Depotposition 1234567890.21 mit Ref. Nr. XXXXXXXX/XXXXXXXX
+ISIN Anteile Abrechnungskurs Betrag
+DE000A0D8Q49 0,005395 68,580000 EUR 0,37 EUR
+Zahlungsbetrag 0,37 EUR
+Vorabpauschale zum Stichtag 31.12.2019 aus Depotposition XXXXXXXXXX.05
+Xtrackers MSCI Philippines Inhaber-Anteile 1C-USD o.N.
+Ref. Nr. XXXXXXXXXX/XXXXXXXXXX, Buchungsdatum 24.01.2020
+ISIN Betrag je Anteil
+LU0592215403 0,005674390 EUR
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer
+0,14 EUR 0,00 EUR 0,00 EUR
+Belastung der angefallenen Steuern in Höhe von 0,14 EUR erfolgt durch Verkauf aus Depotposition XXXXXXXXXX.05 mit Ref. Nr.
+XXXXXXXXXX/XXXXXXXXXX

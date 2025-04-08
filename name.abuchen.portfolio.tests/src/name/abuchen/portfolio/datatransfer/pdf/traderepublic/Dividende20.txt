@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+WrLne dETQGZkq bctGcFw SEITE 1 von 1
+vB GTm tM 17v DATUM 17.06.2024
+48713 ehaRSCwwDC DEPOT 1234567891
+DIVIDENDE
+ÜBERSICHT
+Dividende mit Ex-Datum03.06.2024.
+POSITION ANZAHL ERTRAG BETRAG
+Realty Income 6.28 USD
+US7561091049 23.908066 Stücke 0.26 USD
+GESAMT 6.28 USD
+ABRECHNUNG
+POSITION BETRAG
+Quellensteuer für US-Emittenten -0.94 USD
+Zwischensumme 5.34 USD
+Zwischensumme 1.0759 EUR/USD 4.97 EUR
+GESAMT 4.97 EUR
+BUCHUNG
+VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
+DE521234567891234567 14.06.2024 4.97 EUR
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich um eine umsatzsteuerfreie Leistung gemäß § 4 Nr. 8 UStG
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin DirektorenBrunnenstraße 19-21
+10119 Berlin service@traderepublic.com
+AG Charlottenburg HRB 244347 B Andreas Torner
+Umsatzsteuer-ID DE307510626 Gernot Mittendorfer

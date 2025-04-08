@@ -1,20 +1,29 @@
 package name.abuchen.portfolio.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
+import com.google.protobuf.NullValue;
+
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
+import name.abuchen.portfolio.model.proto.v1.PAnyValue;
+import name.abuchen.portfolio.model.proto.v1.PKeyValue;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.ColorConversion;
 
 public class Classification implements Named
 {
+    private static final String PORTFOLIO_CLASSIFICATION_KEY = "portfolioClassificationKey"; //$NON-NLS-1$
+
     public static class Assignment
     {
         private InvestmentVehicle investmentVehicle;
@@ -78,9 +87,30 @@ public class Classification implements Named
 
             return data.get(key);
         }
+
+        public Assignment copyWith(InvestmentVehicle vehicle)
+        {
+            Assignment copy = new Assignment(vehicle);
+            copy.setWeight(this.getWeight());
+            copy.setRank(this.getRank());
+            if (this.data != null)
+                copy.data = new HashMap<>(this.data);
+            return copy;
+        }
+
+        /* protobuf only */ List<PKeyValue> getData()
+        {
+            return toProtobuf(data);
+        }
+
+        /* protobuf only */ void setData(List<PKeyValue> list)
+        {
+            this.data = fromProtobuf(list);
+        }
     }
 
     public static final int ONE_HUNDRED_PERCENT = 100 * Values.Weight.factor();
+    public static final BigDecimal ONE_HUNDRED_PERCENT_BD = BigDecimal.valueOf(Values.Weight.factorize(100));
 
     public static final String UNASSIGNED_ID = "$unassigned$"; //$NON-NLS-1$
     public static final String VIRTUAL_ROOT = "$virtualroot$"; //$NON-NLS-1$
@@ -132,6 +162,16 @@ public class Classification implements Named
     public Classification(Classification parent, String id, String name)
     {
         this(parent, id, name, null);
+    }
+
+    public void setKey(String key)
+    {
+        setData(PORTFOLIO_CLASSIFICATION_KEY, key);
+    }
+
+    public String getKey()
+    {
+        return Objects.toString(getData(PORTFOLIO_CLASSIFICATION_KEY), ""); //$NON-NLS-1$
     }
 
     public String getId()
@@ -213,6 +253,11 @@ public class Classification implements Named
         assignments.remove(assignment);
     }
 
+    public void clearAssignments()
+    {
+        assignments.clear();
+    }
+
     public int getWeight()
     {
         return weight;
@@ -255,6 +300,16 @@ public class Classification implements Named
             return null;
 
         return data.get(key);
+    }
+
+    /* protobuf only */ List<PKeyValue> getData()
+    {
+        return toProtobuf(data);
+    }
+
+    /* protobuf only */ void setData(List<PKeyValue> list)
+    {
+        this.data = fromProtobuf(list);
     }
 
     public String getPathName(boolean includeParent, int limit)
@@ -480,14 +535,119 @@ public class Classification implements Named
 
         for (Assignment assignment : assignments)
         {
-            Assignment a = new Assignment(assignment.getInvestmentVehicle());
-            a.setWeight(assignment.getWeight());
-            a.setRank(assignment.getRank());
-            if (assignment.data != null)
-                a.data = new HashMap<>(assignment.data);
+            Assignment a = assignment.copyWith(assignment.getInvestmentVehicle());
             copy.addAssignment(a);
         }
 
         return copy;
     }
+
+    /**
+     * Returns a classification that is a copy of this classification, but all
+     * assignments are merged as direct children.
+     */
+    public Classification flattenAssignments()
+    {
+        var result = new Classification(null, id, name, this.color);
+        result.rank = this.rank;
+        result.weight = this.weight;
+        if (this.data != null)
+            result.data = new HashMap<>(this.data);
+
+        var stack = new LinkedList<Classification>();
+        stack.add(this);
+
+        while (!stack.isEmpty())
+        {
+            var c = stack.pop();
+            stack.addAll(c.getChildren());
+
+            for (Assignment assignment : c.getAssignments())
+            {
+                if (assignment.getWeight() == ONE_HUNDRED_PERCENT)
+                {
+                    result.addAssignment(assignment);
+                }
+                else
+                {
+                    Optional<Assignment> existing = result.assignments.stream()
+                                    .filter(a -> a.getInvestmentVehicle() == assignment.getInvestmentVehicle())
+                                    .findAny();
+
+                    if (existing.isPresent())
+                    {
+                        Assignment merged = new Assignment(assignment.getInvestmentVehicle());
+                        merged.weight = existing.get().getWeight() + assignment.getWeight();
+
+                        result.removeAssignment(existing.get());
+                        result.addAssignment(merged);
+                    }
+                    else
+                    {
+                        result.addAssignment(assignment);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private static List<PKeyValue> toProtobuf(Map<String, Object> data)
+    {
+        if (data == null || data.isEmpty())
+            return Collections.emptyList();
+
+        List<PKeyValue> answer = new ArrayList<>();
+
+        data.entrySet().stream().forEach(entry -> {
+            PKeyValue.Builder newEntry = PKeyValue.newBuilder();
+            newEntry.setKey(entry.getKey());
+
+            Object value = entry.getValue();
+            if (value == null)
+                newEntry.setValue(PAnyValue.newBuilder().setNullValue(NullValue.NULL_VALUE_VALUE).build());
+            else if (value instanceof String s)
+                newEntry.setValue(PAnyValue.newBuilder().setString(s));
+            else if (value instanceof Boolean b)
+                newEntry.setValue(PAnyValue.newBuilder().setBool(b));
+            else if (value instanceof Integer i)
+                newEntry.setValue(PAnyValue.newBuilder().setInt32(i));
+            else
+                throw new UnsupportedOperationException(value.getClass().getName());
+
+            answer.add(newEntry.build());
+        });
+
+        return answer;
+    }
+
+    private static Map<String, Object> fromProtobuf(List<PKeyValue> list)
+    {
+        if (list.isEmpty())
+            return null;
+
+        Map<String, Object> data = new HashMap<>();
+
+        list.forEach(entry -> {
+
+            String key = entry.getKey();
+
+            Object value = null;
+
+            if (entry.getValue().hasString())
+                value = entry.getValue().getString();
+            else if (entry.getValue().hasBool())
+                value = entry.getValue().getBool();
+            else if (entry.getValue().hasInt32())
+                value = entry.getValue().getInt32();
+
+            // ignore unknown types upon reading
+
+            data.put(key, value);
+        });
+
+        return data;
+    }
+
 }

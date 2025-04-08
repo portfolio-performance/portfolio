@@ -1,23 +1,26 @@
 package scenarios;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.hamcrest.number.OrderingComparison.lessThan;
-import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshotComparator;
 import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
@@ -46,6 +49,9 @@ public class SecurityTestCase
         TestCurrencyConverter converter = new TestCurrencyConverter();
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, period);
 
+        new SecurityPerformanceSnapshotComparator(snapshot,
+                        LazySecurityPerformanceSnapshot.create(client, converter, period)).compare();
+
         SecurityPerformanceRecord record = snapshot.getRecords().get(0);
 
         assertThat(record.getSecurity().getName(), is("Basf SE"));
@@ -55,9 +61,14 @@ public class SecurityTestCase
         // actually, in this simple scenario (no cash transfers involved), the
         // ttwror is easy to calculate:
 
-        double endvalue = delivery.getShares() * security.getSecurityPrice(LocalDate.parse("2014-12-04")).getValue()
-                        / Values.Share.divider() / Values.Quote.dividerToMoney();
+        double endvalue = BigDecimal.valueOf(delivery.getShares())
+                        .multiply(BigDecimal.valueOf(
+                                        security.getSecurityPrice(LocalDate.parse("2014-12-04")).getValue()), Values.MC)
+                        .divide(Values.Share.getBigDecimalFactor(), Values.MC)
+                        .divide(Values.Quote.getBigDecimalFactorToMoney(), Values.MC)
+                        .divide(BigDecimal.valueOf(delivery.getAmount()), Values.MC).subtract(BigDecimal.ONE)
+                        .doubleValue();
 
-        assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo((endvalue / delivery.getAmount()) - 1, 0.0001));
+        assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo(endvalue, 0.0001));
     }
 }

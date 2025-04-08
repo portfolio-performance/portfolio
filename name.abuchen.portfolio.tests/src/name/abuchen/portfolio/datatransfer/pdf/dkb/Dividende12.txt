@@ -1,0 +1,56 @@
+﻿PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+10919 Berlin Seite 1
+Depotnummer 111111111
+Kundennummer 111111111
+xxxx xxxx
+Abrechnungsnr. 111111111
+Herrn Datum 27.06.2019
+xxxx xxxx
+xxxx
+11111 xxxx
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 715 SEIKO EPSON CORP. JP3414750004 (471496)
+REGISTERED SHARES O.N.
+Zahlbarkeitstag 27.06.2019 Dividende pro Stück 31,00 JPY
+Bestandsstichtag 26.03.2019 Herkunftsland Japan
+Ex-Tag 27.03.2019 Art der Dividende Schlussdividende
+Geschäftsjahr 01.04.2018 - 31.03.2019
+Devisenkurs EUR / JPY 123,0200
+Devisenkursdatum 27.06.2019
+Dividendengutschrift 22.165,00 JPY 180,17+ EUR
+Umrechnung in EUR 180,17 EUR
+Einbehaltene Quellensteuer 15,315 % auf 22.165,00 JPY 27,59- EUR
+Anrechenbare Quellensteuer 15 % auf 180,17 EUR 27,03 EUR
+Kapitalertragsteuerpflichtige Dividende 180,17 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 27,03 EUR 108,12 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 72,05 EUR
+Kapitalertragsteuer 25 % auf 72,05 EUR 18,01- EUR
+Solidaritätszuschlag 5,5 % auf 18,01 EUR 0,99- EUR
+Ausmachender Betrag 133,58+ EUR
+0,315 % rückforderbare Quellensteuer 69,82 JPY
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Den Betrag buchen wir mit Wertstellung 01.07.2019 zu Gunsten des Kontos 11111 (IBAN DExxxx), BLZ 120 300 00 (BIC BYLADEM1001).
+Bitte ggf. Rückseite beachten.
+11111.11111.11111ER01
+
+Seite 2
+Depotnummer 111111111
+Kundennummer 111111111
+Abrechnungsnr. 111111111
+Datum 27.06.2019
+Keine Steuerbescheinigung.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2019 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 0,00
+Ertrag 0,00
+0,00 0,00 0,00 0,00 0,00
+Nachher 0,00 0,00 0,00 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+11111.11111.11111ER01

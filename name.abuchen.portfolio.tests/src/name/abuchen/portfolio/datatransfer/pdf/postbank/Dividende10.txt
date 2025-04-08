@@ -1,0 +1,59 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.2
+-----------------------------------------
+Postbank Köln · 51222 Köln    Seite 1
+Depotnummer
+ 442225555
+ Kundennummer 112223333
+NNN MMMM LLLL KKKKK
+ Abrechnungsnr. 75805627080
+Herrn und Frau Datum 15.09.2022
+LLLL KKKKK und
+NNN MMMM
+Vorort2
+An der Wiese 70h
+76189 Karlsruhe
+                                                        
+                                                        
+                                                         
+Zinsgutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+USD 19.000,00 KREDITANST.F.WIEDERAUFBAU US500769JD71 (A2YNRB)
+DL-ANLEIHE V.19(29)
+Zahlbarkeitstag 14.09.2022 Zinssatz p. a. 1,75 %
+Bestandsstichtag 13.09.2022 Laufzeit Zinsschein 180 Tag(e)     
+Kupon per 14.09.2022
+Zinstermin Monat(e) März/September      
+Devisenkurs EUR / USD  0,9997  
+Devisenkursdatum 15.09.2022
+Zinsertrag 166,25 USD 166,30+ EUR
+Umrechnung in EUR 166,30 EUR
+Kapitalertragsteuerpflichtiger Ertrag 166,30 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 166,30 EUR
+Anteilige Berechnungsgrundlage für NNN MMMM (50,00 %) entspricht 83,15 EUR
+Kapitalertragsteuer 25 % auf 83,15 EUR 20,79- EUR
+Solidaritätszuschlag 5,5 % auf 20,79 EUR 1,14- EUR
+Anteilige Berechnungsgrundlage für LLLL KKKKK (50,00 %) entspricht 83,15 EUR
+Kapitalertragsteuer 25 % auf 83,15 EUR 20,79- EUR
+Solidaritätszuschlag 5,5 % auf 20,79 EUR 1,14- EUR
+Ausmachender Betrag 122,44+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Den Betrag buchen wir mit Wertstellung 16.09.2022 zu Gunsten des Kontos 112223333 (IBAN DE12 2222 3333 4444 5555 
+11), BLZ 370 110 00 (BIC PBNKDEFFXXX). 
+Bitte ggf. Rückseite beachten.
+0860.09160100.0000282ER02
+
+Seite 2
+Depotnummer 442225555
+Kundennummer 112223333
+Abrechnungsnr. 75805627080
+Datum 15.09.2022
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2022 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien Sonstige
+Pauschbetrag Quellensteuer
+Nachher 13,45 0,00 0,00 0,00 0,00 35.061,34
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.09160100.0000283ER02

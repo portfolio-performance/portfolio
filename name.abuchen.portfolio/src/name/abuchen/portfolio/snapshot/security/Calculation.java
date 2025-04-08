@@ -82,20 +82,19 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     {
         for (CalculationLineItem item : lineItems)
         {
-            if (item instanceof CalculationLineItem.ValuationAtStart)
-                visit(converter, (CalculationLineItem.ValuationAtStart) item);
-            else if (item instanceof CalculationLineItem.ValuationAtEnd)
-                visit(converter, (CalculationLineItem.ValuationAtEnd) item);
-            else if (item instanceof CalculationLineItem.DividendPayment)
-                visit(converter, (CalculationLineItem.DividendPayment) item);
-            else if (item instanceof CalculationLineItem.TransactionItem)
+            if (item instanceof CalculationLineItem.ValuationAtStart atStart)
+                visit(converter, atStart);
+            else if (item instanceof CalculationLineItem.ValuationAtEnd atEnd)
+                visit(converter, atEnd);
+            else if (item instanceof CalculationLineItem.DividendPayment dividend)
+                visit(converter, dividend);
+            else if (item instanceof CalculationLineItem.TransactionItem txItem)
             {
-                Transaction tx = ((CalculationLineItem.TransactionItem) item).getTransaction()
-                                .orElseThrow(IllegalArgumentException::new);
-                if (tx instanceof PortfolioTransaction)
-                    visit(converter, (CalculationLineItem.TransactionItem) item, (PortfolioTransaction) tx);
-                else if (tx instanceof AccountTransaction)
-                    visit(converter, (CalculationLineItem.TransactionItem) item, (AccountTransaction) tx);
+                Transaction tx = txItem.getTransaction().orElseThrow(IllegalArgumentException::new);
+                if (tx instanceof PortfolioTransaction pt)
+                    visit(converter, (CalculationLineItem.TransactionItem) item, pt);
+                else if (tx instanceof AccountTransaction at)
+                    visit(converter, (CalculationLineItem.TransactionItem) item, at);
                 else
                     throw new UnsupportedOperationException();
             }

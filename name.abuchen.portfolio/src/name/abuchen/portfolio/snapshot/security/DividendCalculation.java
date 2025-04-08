@@ -12,11 +12,16 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord.Periodicity;
+import name.abuchen.portfolio.snapshot.security.BaseSecurityPerformanceRecord.Periodicity;
 import name.abuchen.portfolio.util.Dates;
 
 /* package */class DividendCalculation extends Calculation
 {
+    public record DividendCalculationResult(Money sum, LocalDate lastDividendPayment, int numOfEvents,
+                    Periodicity periodicity, double rateOfReturnPerYear)
+    {
+    }
+
     /**
      * A dividend payment.
      */
@@ -60,8 +65,17 @@ import name.abuchen.portfolio.util.Dates;
             double rr = Double.NaN;
             if (security != null)
             {
-                // try to get moving average/fifo price
-                rr = t.getPersonalDividendYieldMovingAverage();
+                // calculate the rate of return, but do NOT use the method on
+                // the DividendPayment class. Why? The DividendPayment looks
+                // only at the payment, but the payment might only be for a
+                // partial position (for example if the security is held in
+                // multiple accounts). The moving average cost is always the
+                // total costs.
+
+                Money movingAverageCost = t.getMovingAverageCost();
+                if (movingAverageCost != null && !movingAverageCost.isZero())
+                    rr = t.getGrossValueAmount() / (double) movingAverageCost.getAmount();
+
                 // check if it is valid (non 0)
                 if (rr == 0)
                 {
@@ -202,6 +216,12 @@ import name.abuchen.portfolio.util.Dates;
                 }
             }
         }
+    }
+
+    public DividendCalculationResult getResult()
+    {
+        return new DividendCalculationResult(sum.toMoney(), getLastDividendPayment(), payments.size(), periodicity,
+                        rateOfReturnPerYear);
     }
 
     public LocalDate getLastDividendPayment()

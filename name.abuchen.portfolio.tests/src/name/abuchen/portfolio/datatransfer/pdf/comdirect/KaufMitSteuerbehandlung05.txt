@@ -1,0 +1,182 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.2.qualifier
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+25449 Quickborn unverzüglich zu erheben.
+fon   : 04106-708 25 00                                                  Tele   
+                                                                              
+                             
+                                       
+                             
+    90861 781
+Depotnr.:        7932851 05 
+            BLZ:             200 411 55
+ewJnlXUHfC ykfApCawWu        
+                             
+                             
+Musterstr. 207                                         
+90294 lZSTnfp                                             
+                             
+                             
+                             
+                                                  
+                                                  
+GESCHÄFTSABRECHNUNG VOM 08.06.2017                                                   
+                                                                                                                                    
+*
+Wertpapierkauf                                                                                                                      
+Geschäftsnummer   : 23 551988                                                                                                       
+                    153797450590      Rechnungsnummer   : 424029016868D1B5                                                          
+Geschäftstag      : 07.06.2017        Ausführung          comdirect                                                                 
+                                                          (Festpreisgeschäft)                                                       
+                                                                                                                                    
+Wertpapier-Bezeichnung                                               WPKNR/ISIN                                                     
+BGF - World Gold Fund                                                    974119                                                     
+Act. Nom. A2RF USD o.N.                                            LU0055631609                                                     
+                                                                                                                                    
+                                                                                                                                    
+Nennwert                  Zum comdirect Preis von                                                                                   
+St.  0,843                USD  34,0935                                                                                              
+                          Kurswert                    : USD               28,74                                                     
+                                                                                                                                    
+                          Ausmachender Betrag         : USD               28,06                                                     
+           Umrechnung zum Devisenkurs 1,123400        : EUR               24,97                                                     
+                 2,38095% Reduktion Kaufaufschlag     : USD                0,68-                                                    
+                                                                                                                                    
+                                                                                                                                    
+IBAN                                  Valuta         Zu Ihren Lasten vor Steuern                                                    
+DE36 3955 9498 8929 0532 63   EUR     12.06.2017        EUR               24,97                                                     
+                                                                                                                                    
+Verwahrungs-Art: WERTPAPIERRECHNUNG LUXEMBURG (AKV)                                                                                 
+                                                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf                                                      
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.                                                      
+                                                                                                                                    
+                                                                                                                                    
+comdirect bank AG                                                                                                                   
+                                                                                                                                    
+Diese Abrechnung wird von der Bank nicht unterschrieben                                                                             
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 111 111 111                                                    
+A113
+DO15DD/16/04/2010
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Kundennr. /BLZ Bezeichnung
+3349235  kUziwHlzOr  LynvwcrDCo                             
+                                                  
+            
+200 411 55 Musterstr. 149                                 31839 fLhxnuu                                     
+abweichend wirtschaftlich Berechtigter
+                              
+                                              ----                    
+c  o  m   d  i r e  c  t   b  a  n  k    A  G               
+               
+ 2  5  4  5  1   Q  u  i c  k  b  o  r n                   
+0  1   0  9  7859
+                                                  
+T   e  le  f o  n  :             0   4  1  0  6   -  7  0 8 25 00
+                              
+Herrn                          D  a  t u  m   :                        0  8  . 0  6  .2017         
+ M  u  s  t e   r r rr  r   M   u  s  t  e  r uber         D   e  p  o  t  n  u  m   m  er:        1   1  1  1  1  1 1 11  
+M   u  s  t  er r r  r  s  t r .   1  4  9                  
+31839 fLhxnuu                 R   e  f e  r e  n  z  - N   u mmer:    1 C   I C   1  5  I R  S  RR000PS                           
+                                      
+                                                  
+                                                  
+                                                  
+Steuerliche Behandlung: Wertpapierkauf  Nr. 91032160  vom 07.06.2017                                                              
+Stk.               0,843 BGF-WORLD GOLD A2RF DL , WKN / ISIN: 974119  / LU0055631609                                              
+ Zu  Ih r e n L a s te n  v o r  S te u e r n:                                                                                                       E U R             -24,9 7   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+S  te u e rb e m  e ss u n g s g r u n d la g e                                                            E  U   R                                  0 , 0 0                          
+                                                                                                                                
+                                                                                                                                
+K  ap i ta le r tr a gs t e ue r                                                                        E  U   R                                  0 , 0 0                          
+S  ol id a ri tä t sz u s c hl a g                                                                      E  U   R                                  0 , 0 0                          
+K  irc h e n s te u e r                                                                              _E  _U   R_  _  _  _   _  _  _   _  _  _  _   _  _  _   _  0_ _, 0_ 0_                          
+a b g e f ü h rt e S t e u er n                                                                                                                    _E U_ _R _ _ _ _ _ _ _  _ _ _ _ __  _0__,_0 0_   
+                                                                                                                                
+ Zu  Ih r e n L a s te n  n a ch  S te u e r n :                                                                                                    E U R             -24,9 7   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+Die Belastung erfolgt mit Valuta 12.06.2017 auf Konto EUR mit der IBAN DE36 1183 6233 6547 6474 67                                                    
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2017 einbehaltene einbehaltener einbehaltene angerechneteKapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung
+                0,00                 0,00
+                0,00                 0,00
+nach Ermittlung
+                0,00 0,00                 0,00                 0,00                
+Verrechnungssalden in EUR (4)
+in 2017 Gewinne / Verluste sonstige anrechenbare verfügbareraus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung
+              -26,77                 0,34                 0,00                 0,00
+nach Ermittlung
+              -26,77                 0,34
+                0,00                 0,00
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+comdirect bank AG                                                                                                                                     
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.                                                                               
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.                                                                  
+KEINE STEUERBESCHEINIGUNG
+
+```

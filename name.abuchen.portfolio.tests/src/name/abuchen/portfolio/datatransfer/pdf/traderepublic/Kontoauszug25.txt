@@ -1,0 +1,43 @@
+```
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+VORNAME NACHNAME DATUM 01 Jan. 2025 - 31 Jan. 2025
+Straße 1, 12345 IBAN DE00000000000000000000
+Ort, DE BIC TRBKDEBBXXX
+KONTOÜBERSICHT
+PRODUKT ANFANGSSALDO ZAHLUNGSEINGANG ZAHLUNGSAUSGANG ENDSALDO
+Cashkonto 81,76 € 500,00 € 393,51 € 188,25 €
+UMSATZÜBERSICHT
+DATUM TYP BESCHREIBUNG ZAHLUNGSEINGANG ZAHLUNGSAUSGANG SALDO
+23 
+SEPA 
+Jan. Incoming transfer from Vorname Nachname 500,00 € 581,76 €
+Echtzeitüberweisung
+2025
+24 
+Jan. Kartentransaktion Lidl sagt Danke 34,14 € 547,62 €
+2025
+24 
+SEPA 
+Jan. Outgoing transfer for Möbel Heidenreich GmbH 359,37 € 188,25 €
+Echtzeitüberweisung
+2025
+Seite 3 von 4
+Erstellt am 01 Feb. 2025
+Trade Republic Bank GmbH
+HAFTUNGSAUSSCHLUSS
+Sehr geehrte Kundin, sehr geehrter Kunde
+Bitte überprüfe unbedingt deine Buchungen, Berechnungen und den Schlusssaldo auf dem Kontoauszug, der gleichzeitig deinen Rechnungsabschluss 
+darstellt. Der Rechnungsabschluss gilt als anerkannt, wenn du innerhalb von sechs Wochen nach Zugang keine Einwendungen erhebst. Einwendungen 
+gegen Kontoauszüge sind schriftlich an uns zu richten. Guthaben sind einlagefähig im Sinne des Einlagensicherungsgesetzes (EinSiG). Weitere 
+Informationen entnehme bitte dem Merkblatt für den Einleger, das zusammen mit unseren Allgemeinen Geschäftsbedingungen eingesehen werden kann.
+Trade Republic Bank GmbH Kontakt Sitz der Gesellschaft: Berlin
+Brunnenstraße 19-21 www.traderepublic.com AG Charlottenburg HRB 244347 B
+10119 Berlin service@traderepublic.com Umsatzsteuer-ID DE307510626
+Seite 4 von 4
+Erstellt am 01 Feb. 2025
+Trade Republic Bank GmbH
+
+```

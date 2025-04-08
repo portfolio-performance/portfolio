@@ -1,0 +1,184 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.3
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Umsatzabrechnung-Nr. 181
+Depot-Nr. 00158814314
+Seite 1 von 4
+Herrn
+fhwwXN tqyOIQQeF ZDIozP und
+Frau lZOUA pXRfeY
+mXLhtxNUvBgYv. 10
+26997 aWcELgDh
+02.08.2023
+Umsatzabrechnung für Ihr ebase Depot
+für den Zeitraum vom 01.07.2023 bis 01.08.2023
+Ansparplan 150,00 EUR mit Kursdatum 17.07.2023 in Depotposition 99123456789.28
+MUL-LYX.MSCI Wd.IN.T.TR UC.ETF Nam.-An. ACC EUR o.N.
+Ref. Nr. 0400084351/14072023, Buchungsdatum 17.07.2023
+ISIN Anteile Abrechnungskurs Betrag
+LU0533033667 0,263195 568,778900 EUR 149,70 EUR
+Belastete Entgelte zzgl. Entgelte
+Summe 0,30 EUR
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE42701500000123456789 Stadtsparkasse uyabBmt 150,00 EUR
+Entgelte Betrag offene Forderung belasteter Betrag
+ETF-Transaktionsentgelt 0,30 EUR 0,00 EUR 0,30 EUR
+Summe der belasteten Entgelte 0,30 EUR
+Ansparplan 100,00 EUR mit Kursdatum 17.07.2023 in Depotposition 99123456789.71
+Amundi.I.S. MSCI World3 Act.Nom. U.ETF USD Dis. oN
+Ref. Nr. 0400124334/14072023, Buchungsdatum 18.07.2023
+ISIN Anteile Abrechnungskurs Betrag
+LU2572257124 1,302784 76,605200 EUR 99,80 EUR
+gezahlte Vertriebsprovision 0,00 EUR (im Abrechnungskurs enthalten, 100,000 % Bonus)
+Belastete Entgelte zzgl. Entgelte
+Summe 0,20 EUR
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE42701500000123456789 Stadtsparkasse RILWUMO 100,00 EUR
+Entgelte Betrag offene Forderung belasteter Betrag
+ETF-Transaktionsentgelt 0,20 EUR 0,00 EUR 0,20 EUR
+Summe der belasteten Entgelte 0,20 EUR
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller, Web: www.ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Jens Wöhler, Jonathan Brander,
+80218 München DE68ZZZ00000025032 Peter Karst
+Aufsichtsratsvorsitzender:
+Frank Strauß
+Umsatzabrechnung-Nr. 181
+Depot-Nr. 07270341711
+Seite 2 von 4
+Kauf 2.000,00 EUR mit Kursdatum 31.07.2023 in Depotposition 99123456789.74
+iShs VII-Core S&P 500 U.ETF Reg. Shares USD (Acc) o.N.
+Ref. Nr. 0400000608/31072023, Buchungsdatum 01.08.2023
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00B5BMR087 4,563874 478,180000 USD 1,093358 1.996,01 EUR
+gezahlte Devisenkursmarge 8,98 EUR bei einem Mittelkurs von 1,098300 EUR/USD (im Devisenkurs enthalten)
+Belastete Entgelte zzgl. Entgelte
+Summe 3,99 EUR
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE42701500000123456789 Stadtsparkasse kAoKzgB 2.000,00 EUR
+Mandatsreferenz EBASEV0000105176, Fälligkeitstag 03.08.2023
+Entgelte Betrag offene Forderung belasteter Betrag
+ETF-Transaktionsentgelt 3,99 EUR 0,00 EUR 3,99 EUR
+Summe der belasteten Entgelte 3,99 EUR
+Kauf 2.000,00 EUR mit Kursdatum 31.07.2023 in Depotposition 99123456789.75
+Vanguard FTSE All-World U.ETF Registered Shares USD Dis.oN
+Ref. Nr. 0400001107/31072023, Buchungsdatum 01.08.2023
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+IE00B3RBWM25 18,818259 115,970000 USD 1,093358 1.996,01 EUR
+gezahlte Devisenkursmarge 8,98 EUR bei einem Mittelkurs von 1,098300 EUR/USD (im Devisenkurs enthalten)
+Belastete Entgelte zzgl. Entgelte
+Summe 3,99 EUR
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE42701500000123456789 Stadtsparkasse JzYAAzk 2.000,00 EUR
+Mandatsreferenz EBASEV0000105176, Fälligkeitstag 03.08.2023
+Entgelte Betrag offene Forderung belasteter Betrag
+ETF-Transaktionsentgelt 3,99 EUR 0,00 EUR 3,99 EUR
+Summe der belasteten Entgelte 3,99 EUR
+Bestand der Depotpositionen mit Umsatz nach Verbuchung
+Pos. Fonds Anteile Bewertungskurs zum Datum Devisenkurs Bestand
+28 LU0533033667 29,146924 581,712800 EUR 31.07.2023 16.955,14 EUR
+MUL-LYX.MSCI Wd.IN.T.TR UC.ETF Nam.-An. ACC EUR o.N.
+71 LU2572257124 188,171053 87,369700 USD 31.07.2023 1,103700 14.895,76 EUR
+Amundi.I.S. MSCI World3 Act.Nom. U.ETF USD Dis. oN
+74 IE00B5BMR087 4,563874 478,443200 USD 31.07.2023 1,103700 1.978,39 EUR
+iShs VII-Core S&P 500 U.ETF Reg. Shares USD (Acc) o.N.
+Verwahrart: Wertpapierrechnung, Lagerland: Irland
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller, Web: www.ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Jens Wöhler, Jonathan Brander,
+80218 München DE68ZZZ00000025032 Peter Karst
+Aufsichtsratsvorsitzender:
+Frank Strauß
+Umsatzabrechnung-Nr. 181
+Depot-Nr. 40534794202
+Seite 3 von 4
+Pos. Fonds Anteile Bewertungskurs zum Datum Devisenkurs Bestand
+75 IE00B3RBWM25 18,818259 115,857000 USD 31.07.2023 1,103700 1.975,38 EUR
+Vanguard FTSE All-World U.ETF Registered Shares USD Dis.oN
+Verwahrart: Wertpapierrechnung, Lagerland: Großbritannien
+Depotgesamtwert 70.304,06 EUR
+Ihre Depotbestände werden in der Girosammelverwahrung geführt - es sei denn, es ist ein besonderer Verwahrart-Hinweis in der
+Aufstellung vermerkt.
+Für die im Depot verbuchten und hier ausgewiesenen Fondsanteile besteht - soweit nicht abweichend gekennzeichnet - ein Eigentums-
+bzw. eigentumsähnlicher Schutz im Sinne der europäischen Finanzmarktrichtlinie 2014/65 (EU).
+4Ihr Freistellungsauftrag in Höhe von 2.000,00 EUR ist vorgemerkt.
+4Sie haben einen verbleibenden Freistellungsbetrag in Höhe von 0,00 EUR.
+Einzahlungen
+Sofern Sie nicht vom Einzugsverfahren Gebrauch machen, leisten Sie Ihre Zahlungen bitte auf folgendes Treuhandkonto der
+European Bank for Financial Services GmbH (ebase®): Commerzbank AG, München, IBAN: DE32 7004 0041 0212 2331 00,
+BIC: COBADEFFXXX.
+Bitte geben Sie bei Überweisungen immer zusätzlich im Verwendungszweck an:
+• Bei Nachkauf eines Fonds, den Sie bereits in Ihrem Investment Depot halten, die 13-stellige Depotpositionsnummer.
+• Bei Kauf eines neuen Fonds, den Sie noch nicht in Ihrem Investment Depot halten, die 11-stellige Depotnummer + ISIN.
+Für Einzahlungen auf verschiedenen Fonds verwenden Sie bitte jeweils separate Überweisungsformulare.
+Prüfung und Einwendungen
+Wir bitten Sie, die vorliegende Abrechnung und die darin aufgeführten Umsätze auf ihre Richtigkeit und Vollständigkeit zu über-
+prüfen. Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Abrechnung erheben Sie bitte unverzüglich nach
+dessen Zugang gegenüber ebase unter Nennung der Depotnummer und des Datums der Abrechnung. Das Unterlassen der recht-
+zeitigen Einwendung(en) gilt als Genehmigung der Abrechnung(en), gemäß Punkt "Prüfungen und Einwendungen bei Mit-
+teilungen der ebase" der Allgemeinen Geschäftsbedingungen der European Bank for Financial Services GmbH für Privatanleger.
+Bitte denken Sie daran, uns frühzeitig über Änderungen Ihrer persönlichen Daten zu informieren.
+Ausführung und Erfüllung von Aufträgen/ Ausschluss von Beratung/ Keine Risikoklassifizierung durch ebase
+ebase führt Aufträge über den Kauf und/oder Verkauf von Investmentfondsanteilen als Kommissionärin, ggf. unter Einschaltung
+eines Zwischenkommissionärs, mit der Kapitalverwaltungs-/Verwaltungsgesellschaft, als am besten geeignete Stelle im Sinne des
+§ 33a WpHG aus.
+ebase wird gemäß Punkt "Ausführung und Erfüllung von Aufträgen" der Bedingungen für das Investment Depot für Privat-
+anleger, die Aufträge ggf. unter Einbeziehung eines Zwischenkommissionärs ausschließlich über die jeweilige Kapitalverwaltungs-/
+Verwaltungsgesellschaft als am besten geeignete Stelle zur Beschaffung von Fondsanteilen abwickeln. Ihnen ist bekannt, dass
+durch ebase keine vorherige Beratung und/oder Angemessenheitsprüfung gemäß Punkt "Ausschluss von Beratung ("execution
+only")" sowie keine Risikoklassifizierung gemäß Punkt "keine Risikoklassifizierung durch ebase" der Bedingungen für das
+Investment Depot für Privatanleger bei der European Bank for Financial Services GmbH, erfolgt.
+Sofern es sich um einen Auftrag zum Kauf von Finanzinstrumenten im beratungsfreien Geschäft (z.B. komplexe Fonds) und außerhalb
+des reinen Ausführungsgeschäft handelt, wird ein Abgleich auf Ihre Kenntnisse und Erfahrungen vollzogen.
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller, Web: www.ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Jens Wöhler, Jonathan Brander,
+80218 München DE68ZZZ00000025032 Peter Karst
+Aufsichtsratsvorsitzender:
+Frank Strauß
+Umsatzabrechnung-Nr. 181
+Depot-Nr. 99123456789
+Seite 4 von 4
+Zurverfügungstellung von Verkaufsunterlagen
+Der Vermittler, die Kapitalverwaltungs-/Verwaltungsgesellschaft oder ebase haben dem Kunden für sämtlich Geschäfte die jeweils
+gültigen Verkaufsunterlagen (Wesentliche Anlegerinformationen/Key Investor Document [KID] und aktueller Verkaufsprospekt
+sowie der aktuelle Halbjahres-/Jahresbericht bei den unter das Kapitalanlagegesetzbuch [KAGB] fallenden Fonds) kostenlos recht-
+zeitig zur Verfügung gestellt. Zusätzlich können diese Verkaufsunterlagen auf der Homepage von ebase (www.ebase.com) einge-
+sehen und heruntergeladen werden. Bitte beachten Sie die Risikohinweise im jeweils aktuellen Verkaufsprospekt Ihres jeweiligen
+Fonds.
+Pflicht des Kunden zur Einholung von Beratung gemäß Punkt "Mitwirkungspflichten und Obliegenheit des Kunden"
+Ihnen obliegt die vertragliche Verpflichtung, das Erstgeschäft sowie jedes Folgegeschäft nur nach Rücksprache mit Ihrem
+Vermittler zu tätigen, nachdem Ihr Vermittler Ihnen eine anleger- und anlagegerechte Aufklärung und ggf. Beratung (auch
+hinsichtlich der Provisionsentgelte) erteilt hat.
+Hinweis auf Erhalt, Weiterleitung und Auskehr von Provisionen/Zuwendungen
+Sie wurden von ebase ausdrücklich auf den Erhalt, die Weiterleitung und die Auskehr von Provisionen/Zuwendungen gemäß
+Punkt "Hinweis auf den Erhalt und die Weiterleitung und die Auskehr von Provisionen/Zuwendungen" in den Bedingungen für
+das Investment Depot für Privatanleger bei der European Bank for Financial Services GmbH in dem jeweils aktuell gültigen Preis-
+und Leistungsverzeichnis hingewiesen.
+Hinweis Ihrer Verwaltungsgesellschaft zum Widerrufsrecht bei dem Kauf/Verkauf von Investmentanteilen/Organismen für gemein-
+same Anlagen in Wertpapieren (OGAW)/Alternative Investmentfonds (AIF)
+Wenn der Kauf von Anteilen aufgrund mündlicher Verhandlungen außerhalb der ständigen Geschäftsräume desjenigen, der die
+Anteile verkauft oder den Verkauf der Anteile vermittelt hat, zustande kommt, so ist der Käufer nach § 305 KAGB berechtigt, ohne
+Angabe von Gründen, seine Kauferklärung zu widerrufen (Widerrufsrecht). Dies gilt auch dann, wenn derjenige, der die Anteile
+verkauft oder den Verkauf vermittelt, keine ständigen Geschäftsräume hat. Der Widerruf hat innerhalb einer Frist von zwei Wochen
+gegenüber der Verwaltungsgesellschaft oder ihrem Repräsentanten im Sinne von § 319 KAGB in Textform zu erfolgen.
+Zur Wahrung der Frist genügt die rechtzeitige Absendung der Widerrufserklärung. Die vorstehenden Ausführungen gelten ent-
+sprechend beim Verkauf von Anteilen durch den Anleger. Die detaillierten Hinweise zum Widerrufsrecht bei dem Kauf/Verkauf von
+Investmentanteilen/OGAW/AIF finden sie unter Punkt 13 der Bedingungen für das Investmentdepot für Privatanleger bei der European
+Bank for Financial Services GmbH. Genaue Angaben zur Verwaltungsgesellschaft oder zu ihrem Repräsentanten entnehmen Sie den
+Verkaufsunterlagen. Die European Bank for Financial Services GmbH ist lediglich depotführende Stelle.
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller, Web: www.ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Jens Wöhler, Jonathan Brander,
+80218 München DE68ZZZ00000025032 Peter Karst
+Aufsichtsratsvorsitzender:
+Frank Strauß

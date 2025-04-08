@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.IntStream;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -14,7 +15,13 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -30,32 +37,29 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swtchart.LineStyle;
 import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
-import org.swtchart.LineStyle;
 
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.util.TextUtil;
 
 /**
  * A legend for charts to configure data series, e.g. color, area fill, and line
  * type.
  */
-public class DataSeriesChartLegend extends Composite
+public class DataSeriesChartLegend extends Composite implements ISelectionProvider
 {
     private final DataSeriesConfigurator configurator;
     private final LocalResourceManager resources;
 
-    /**
-     * Constructor.
-     *
-     * @param parent
-     *            the parent composite
-     * @param configurator
-     *            the chart configurator
-     */
+    private final List<ISelectionChangedListener> listeners = new ArrayList<>();
+
     public DataSeriesChartLegend(Composite parent, DataSeriesConfigurator configurator)
     {
         super(parent, SWT.NONE);
@@ -66,7 +70,11 @@ public class DataSeriesChartLegend extends Composite
         setLayout(new RowPlusChevronLayout(this));
 
         for (DataSeries series : configurator.getSelectedDataSeries())
-            new PaintItem(this, series);
+        {
+            PaintItem item = new PaintItem(this, series);
+            item.addMouseListener(MouseListener.mouseUpAdapter(e -> listeners.forEach(l -> l
+                            .selectionChanged(new SelectionChangedEvent(this, new StructuredSelection(series))))));
+        }
 
         this.configurator.addListener(this::onUpdate);
     }
@@ -78,15 +86,44 @@ public class DataSeriesChartLegend extends Composite
                 child.dispose();
 
         for (DataSeries series : configurator.getSelectedDataSeries())
-            new PaintItem(this, series);
+        {
+            PaintItem item = new PaintItem(this, series);
+            item.addMouseListener(MouseListener.mouseUpAdapter(e -> listeners.forEach(l -> l
+                            .selectionChanged(new SelectionChangedEvent(this, new StructuredSelection(series))))));
+        }
 
         layout();
         getParent().layout();
     }
 
+    @Override
+    public void addSelectionChangedListener(ISelectionChangedListener listener)
+    {
+        this.listeners.add(listener);
+    }
+
+    @Override
+    public void removeSelectionChangedListener(ISelectionChangedListener listener)
+    {
+        this.listeners.remove(listener);
+    }
+
+    @Override
+    public ISelection getSelection()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setSelection(ISelection selection)
+    {
+        throw new UnsupportedOperationException();
+    }
+
     private static final class PaintItem extends Canvas implements Listener // NOSONAR
     {
         private static final ResourceBundle LABELS = ResourceBundle.getBundle("name.abuchen.portfolio.ui.views.labels"); //$NON-NLS-1$
+        private static final int PADDING = 10;
 
         private final DataSeries series;
 
@@ -98,11 +135,22 @@ public class DataSeriesChartLegend extends Composite
 
             addListener(SWT.Paint, this);
             addListener(SWT.Resize, this);
+            addListener(SWT.MouseDoubleClick, this);
 
             MenuManager menuManager = new MenuManager();
             menuManager.setRemoveAllWhenShown(true);
             menuManager.addMenuListener(this::seriesMenuAboutToShow);
             setMenu(menuManager.createContextMenu(this));
+
+            if (series.getInstance() instanceof Security security)
+                setToolTipText(TextUtil.wordwrap(security.toInfoString()));
+            else if (series.getInstance() instanceof Classification classification)
+                setToolTipText(classification.getPathName(true));
+            else if (series.getInstance() instanceof DerivedDataSeries derived
+                            && derived.getBaseDataSeries().getInstance() instanceof Classification classification)
+                setToolTipText(derived.getAspect().getLabel() + ": " + classification.getPathName(true)); //$NON-NLS-1$
+            else
+                setToolTipText(series.getLabel());
         }
 
         @Override
@@ -115,6 +163,10 @@ public class DataSeriesChartLegend extends Composite
                     break;
                 case SWT.Resize:
                     redraw();
+                    break;
+                case SWT.MouseDoubleClick:
+                    series.setVisible(!series.isVisible());
+                    ((DataSeriesChartLegend) getParent()).configurator.fireUpdate();
                     break;
                 default:
                     break;
@@ -147,6 +199,9 @@ public class DataSeriesChartLegend extends Composite
             e.gc.setForeground(getForeground());
             e.gc.drawString(text, size.y + 2, 1, true);
 
+            if (!series.isVisible())
+                e.gc.drawLine(size.y + 2, size.y / 2 + 1, size.x - PADDING, size.y / 2 + 1);
+
             e.gc.setForeground(oldForeground);
             e.gc.setBackground(oldBackground);
         }
@@ -160,7 +215,7 @@ public class DataSeriesChartLegend extends Composite
             Point extentText = gc.stringExtent(text);
             gc.dispose();
 
-            return new Point(extentText.x + extentText.y + 12, extentText.y + 2);
+            return new Point(extentText.x + extentText.y + PADDING + 2, extentText.y + 2);
         }
 
         private void seriesMenuAboutToShow(IMenuManager manager) // NOSONAR
@@ -206,6 +261,19 @@ public class DataSeriesChartLegend extends Composite
                 });
                 actionShowArea.setChecked(series.isShowArea());
                 manager.add(actionShowArea);
+
+                MenuManager lineWidth = new MenuManager(Messages.ChartSeriesPickerLineWidth);
+                IntStream.range(1, 4).forEach(i -> {
+                    Action action = new SimpleAction(i + " px", a -> { //$NON-NLS-1$
+                        series.setLineWidth(i);
+                        configurator.fireUpdate();
+                    });
+                    action.setChecked(i == series.getLineWidth());
+                    lineWidth.add(action);
+
+                });
+                manager.add(lineWidth);
+
             }
 
             if (configurator.getSelectedDataSeries().size() > 1)
@@ -261,6 +329,12 @@ public class DataSeriesChartLegend extends Composite
                     configurator.fireUpdate();
                 }));
             }
+
+            manager.add(new Separator());
+            manager.add(new SimpleAction(series.isVisible() ? Messages.LabelHide : Messages.LabelUnhide, a -> {
+                series.setVisible(!series.isVisible());
+                configurator.fireUpdate();
+            }));
 
             manager.add(new Separator());
             manager.add(new SimpleAction(Messages.ChartSeriesPickerRemove, a -> configurator.doDeleteSeries(series)));
@@ -433,8 +507,8 @@ public class DataSeriesChartLegend extends Composite
             int index = 0;
             for (int ii = 0; ii < children.length; ii++)
             {
-                if (children[ii] instanceof PaintItem)
-                    answer[index++] = (PaintItem) children[ii];
+                if (children[ii] instanceof PaintItem paintItem)
+                    answer[index++] = paintItem;
             }
 
             return answer;

@@ -1,0 +1,30 @@
+PDF Autor: '3BankenEDV'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Wertpapier-Abrechnu n g                        Dividende
+607208 - 18.01.2021
+Depotnummer Betreuer
+Nachname Vorname 123-456789 123
+Wertpapiernummer Bezeichnung Nominale/Stück
+US6802231042 OLD REPUBLIC INTL CORP. Stk .               7,00
+Registered Shares DL 1
+Ertrag 1 USD Kurswert USD                7,00Quellensteuer USD               -1,05
+Auslands-KESt USD               -0,88
+Zwischensumme USD                5,07
+15 % QUSt a 1,2205 v. 13.01.2021 EUR                4,16
+Extag 04.01.2021
+Verrechnung
+Verwahrart, Positionsdaten
+Wertpapierrechnung Wert 15.01.2021 EUR                4,16
+München zu Gunsten Konto AT12 3456 7890 1234 5678
+      Seite 1 von 2
+Rechtsform: Aktiengesellschaft, Sitz: Klagenfurt, Firmenbuch-Nr.: FN 91810s/Klagenfurt, DVR 0063703, UID-Nr. ATU 25231503
+Wertpapier-Abrechnung
+607208 - 18.01.2021
+Depotbezeichnung Depotnummer Betreuer
+Nachname Vorname 123-456789 123
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden                           7,00 STK
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG
+---------------------------------------------------------------------------------------------
+Die KESt wird an das Finanzamt Klagenfurt abgeführt.
+Rechtsform: Aktiengesellschaft, Sitz: Klagenfurt, Firmenbuch-Nr.: FN 91810s/Klagenfurt, DVR 0063703, UID-Nr. ATU 25231503       Seite 2 von 2

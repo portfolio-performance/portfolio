@@ -1,0 +1,32 @@
+PDF author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+BH Schelhammer & Schattera AG vom 03.08.2021
+68273
+Kundennummer
+Alter Saldo per 05.07.2021 527,91
+Summe der Gutschriften 78,27
+Summe der Lastschriften 0,00
+BH Schelhammer, PF 1000, 5021 Salzburg
+Neuer Saldo zu Ihren Gunsten
+Max Moritz EUR 606,18
+Mühlengasse 08/15
+1010 Wien
+Konto-Nr.: 012345123450 Bankleitzahl: 19190
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+03.08 Ertrag                           Depot    0123456700/20210802-1234567 02.08 63,05
+ISIN US00206R1023 AT + T INC.          DL 1             200,00000 STK
+Kurs                      0,520000  ZINSERTRAG              104,00 USD
+QUELLENSTEUER           -15,60 USD  Auslands-KESt           -13,00 USD
+DevKurs        1,195900/30.7.2021
+03.08 Ertrag                           Depot    0123456700/20210802-1234568 02.08 15,22
+ISIN US92343V1044 VERIZON COMM. INC. DL-,10              40,00000 STK
+Kurs                      0,627500  ZINSERTRAG               25,10 USD
+QUELLENSTEUER            -3,77 USD  Auslands-KESt            -3,13 USD
+DevKurs        1,195900/30.7.2021
+Neuer Saldo zu Ihren Gunsten 606,18
+AT21 1919 0000 1234 5678 BSSWATWW 01 0037 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0092 12342 Doknr.: EK00-045-1000000008

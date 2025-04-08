@@ -29,8 +29,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.LogoManager;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.Type;
 
 public class DataSeriesSelectionDialog extends Dialog
@@ -55,8 +58,8 @@ public class DataSeriesSelectionDialog extends Dialog
         @Override
         public Object[] getElements(Object inputElement)
         {
-            if (inputElement instanceof Node[])
-                return (Node[]) inputElement;
+            if (inputElement instanceof Node[] nodeArray)
+                return nodeArray;
             return new Object[0];
         }
 
@@ -108,6 +111,7 @@ public class DataSeriesSelectionDialog extends Dialog
         }
     }
 
+    private boolean isTreeExpanded = true;
     private boolean isMultiSelection = true;
 
     private Node[] elements;
@@ -116,15 +120,23 @@ public class DataSeriesSelectionDialog extends Dialog
     private TreeViewer treeViewer;
     private ElementFilter elementFilter;
     private Text searchText;
+    private final Client client;
 
-    public DataSeriesSelectionDialog(Shell parentShell)
+    public DataSeriesSelectionDialog(Shell parentShell, Client client)
     {
         super(parentShell);
+
+        this.client = client;
     }
 
     public void setMultiSelection(boolean isMultiSelection)
     {
         this.isMultiSelection = isMultiSelection;
+    }
+
+    public void setExpandTree(boolean isTreeExpanded)
+    {
+        this.isTreeExpanded = isTreeExpanded;
     }
 
     public void setElements(List<DataSeries> elements)
@@ -134,7 +146,7 @@ public class DataSeriesSelectionDialog extends Dialog
 
         for (DataSeries series : elements)
         {
-            Node child = new Node(series.getSearchLabel());
+            Node child = new Node(series.getDialogLabel());
             child.dataSeries = series;
 
             Node parent = type2node.computeIfAbsent(map(series.getType()), Node::new);
@@ -143,6 +155,50 @@ public class DataSeriesSelectionDialog extends Dialog
             {
                 Node group = group2node.computeIfAbsent(series.getGroup(), g -> {
                     Node n = new Node(g.toString());
+                    n.parent = parent;
+                    parent.children.add(n);
+                    return n;
+                });
+                child.parent = group;
+                group.children.add(child);
+            }
+            else
+            {
+                child.parent = parent;
+                parent.children.add(child);
+            }
+        }
+
+        this.elements = type2node.values().toArray(new Node[0]);
+    }
+
+    public void setElementsDerivedData(List<DataSeries> elements)
+    {
+        Map<String, Node> type2node = new HashMap<>();
+        Map<Object, Node> group2node = new HashMap<>();
+
+        for (DataSeries series : elements)
+        {
+            Node child = new Node(series.getDialogLabel());
+            child.dataSeries = series;
+
+            DerivedDataSeries derivedDataSeries = (DerivedDataSeries) series.getInstance();
+
+            String topLevelNodeLabel = derivedDataSeries.getAspect().getLabel();
+            Node gdparent = type2node.computeIfAbsent(topLevelNodeLabel, Node::new);
+
+            String secondLevelNodeLabel = map(derivedDataSeries.getBaseDataSeries().getType());
+            Node parent = group2node.computeIfAbsent(topLevelNodeLabel + "|" + secondLevelNodeLabel, g -> { //$NON-NLS-1$
+                Node n = new Node(secondLevelNodeLabel);
+                n.parent = gdparent;
+                gdparent.children.add(n);
+                return n;
+            });
+
+            if (series.getGroup() != null) // for taxonomy
+            {
+                Node group = group2node.computeIfAbsent(topLevelNodeLabel + "|" + series.getGroup(), g -> { //$NON-NLS-1$
+                    Node n = new Node(series.getGroup().toString());
                     n.parent = parent;
                     parent.children.add(n);
                     return n;
@@ -238,6 +294,7 @@ public class DataSeriesSelectionDialog extends Dialog
         if (isMultiSelection)
             style |= SWT.MULTI;
         treeViewer = new TreeViewer(treeArea, style);
+        CopyPasteSupport.enableFor(treeViewer);
         final Tree table = treeViewer.getTree();
         table.setHeaderVisible(false);
         table.setLinesVisible(false);
@@ -251,7 +308,25 @@ public class DataSeriesSelectionDialog extends Dialog
             public Image getImage(Object element)
             {
                 Node node = (Node) element;
-                return node.dataSeries != null ? node.dataSeries.getImage() : Images.UNASSIGNED_CATEGORY.image();
+
+                if (node.dataSeries == null)
+                    return Images.UNASSIGNED_CATEGORY.image();
+
+                if (node.dataSeries.getType() == DataSeries.Type.SECURITY
+                                || node.dataSeries.getType() == DataSeries.Type.SECURITY_BENCHMARK)
+                    return LogoManager.instance().getDefaultColumnImage(node.dataSeries.getInstance(),
+                                    client.getSettings());
+
+                if (node.dataSeries.getType() == DataSeries.Type.DERIVED_DATA_SERIES
+                                && ((DerivedDataSeries) node.dataSeries.getInstance()).getBaseDataSeries()
+                                                .getType() == DataSeries.Type.SECURITY)
+                    return LogoManager.instance()
+                                    .getDefaultColumnImage(
+                                                    ((DerivedDataSeries) node.dataSeries.getInstance())
+                                                                    .getBaseDataSeries().getInstance(),
+                                                    client.getSettings());
+                else
+                    return node.dataSeries.getImage();
             }
 
             @Override
@@ -267,7 +342,8 @@ public class DataSeriesSelectionDialog extends Dialog
 
         hookListener();
 
-        treeViewer.expandAll();
+        if (isTreeExpanded)
+            treeViewer.expandAll();
 
         return composite;
     }
@@ -295,7 +371,7 @@ public class DataSeriesSelectionDialog extends Dialog
         });
 
         searchText.addModifyListener(e -> {
-            String pattern = searchText.getText().trim();
+            String pattern = Pattern.quote(searchText.getText().trim());
             if (pattern.length() == 0)
                 elementFilter.setSearchPattern(null);
             else

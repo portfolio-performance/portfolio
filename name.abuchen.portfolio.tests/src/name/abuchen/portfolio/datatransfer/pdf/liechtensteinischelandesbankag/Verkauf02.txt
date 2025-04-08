@@ -1,0 +1,32 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.6
+-----------------------------------------
+wiLLBe powered by
+Liechtensteinische Landesbank
+Aktiengesellschaft
+Städtle 44 · Postfach 384
+9490 Vaduz · Liechtenstein
+Sitz Vaduz
+Registerbehörde: AJU
+HR FL-0001.000.289-1
+service@willbe-invest.com
+Name Nachname www.willbe-invest.com
+Straße X
+XXXXX Stadt Vaduz, 20. November 2023
+DEUTSCHLAND 
+Portfolionummer XXXX.XXXX.XXXX
+Börsenabrechnung - Ihr Verkauf
+Auftragsnummer XXXXXXXXX
+N Akt Sandoz Grp AG
+Anzahl / Nominal 0.36666
+Kurs CHF 24.8925
+ISIN CH1243598427
+Valorennummer 124359842
+Handelsplatz SIX Swiss Exchange
+Abschlussdatum 05.10.2023 / 09:20:31 CET
+Bruttobetrag CHF 9.13
+Eidgenössische Stempelsteuer CHF -0.01
+Zu Ihren Gunsten Valuta 9. Oktober 2023 CHF 9.12
+Den Betrag haben wir gutgeschrieben: Konto XXXX.XXXX.XXXX wiLLBe Investmentkonto CHF.
+Elektronisch zugestellt
+STEX XXXXXXX XXXXXXX XXXXXXX-XXXXXXX-XXXXXXX EBANKING

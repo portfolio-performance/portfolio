@@ -1,0 +1,44 @@
+PDF Autor: 'ING-DiBa'
+PDFBox Version: 1.8.16
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: Max M
+Herrn Scalable-Depot Nr.: 1234
+Max M Datum: 12.01.2021
+ABC Str. Seite: 1 von 2
+12345 Stadt
+Vorabpauschale
+ISIN (WKN) IE00BKPT2S34 (A2P1KU)
+Wertpapierbezeichnung iShsIII-Gl.Infl.L.Gov.Bd U.ETF
+Reg. Shs HGD EUR Acc. oN
+Nominale 378,00 Stück
+Vorabpauschale per Stück 0,00245279 EUR
+Ex-Tag 04.01.2021
+Zahltag 04.01.2021
+Kapitalertragsteuer 25,00% EUR 0,16
+Gesamtbetrag zu Ihren Lasten EUR - 0,16
+Abrechnungs-IBAN DE69 5001 0517 5567 5089 23
+Valuta 04.01.2021
+Jahressteuerbescheinigung folgt.
+Weitere steuerliche Informationen entnehmen Sie bitte der Rückseite.
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzender des Aufsichtsrates: Dr. Claus Dieter Hoffmann · Vorstand: Nick Jue (Vorsitzender),
+Dr. Joachim von Schorlemer (stellv. Vorsitzender), Zeljko Kaurin, Sigrid Kozmiensky, Daniel Llano Manibardo, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main
+HRB 7727, Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+Depotinhaber: Max M
+Scalable-Depot Nr.: 12345
+Datum: 12.01.2021
+Seite: 2 von 2
+ISIN (WKN) IE00BKPT2S34 (A2P1KU)
+Vorabpauschale gem. § 18 InvStG 0,62 EUR
+Vorabpauschale nach Teilfreistellung 0,62 EUR
+KapSt-pflichtiger Kapitalertrag 0,62 EUR
+Bemessungsgrundlage für KapSt vor QuSt 0,62 EUR
+Bemessungsgrundlage für KapSt 0,62 EUR
+Sparer-Pauschbetrag vor Ertrag 0,00 EUR
+Sparer-Pauschbetrag nach Ertrag 0,00 EUR
+Es wurde keine Kirchensteuer einbehalten.
+Wenn Sie Anteile unter dem Jahr erworben haben, fällt die Vorabpauschale nur für die seit
+Kauf angefangenen Monate an. Jeder vorherige Monate mindert die Vorabpauschale damit
+um ein Zwölftel.
+Bei Fragen besuchen Sie uns einfach unter www.ing.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing.de .

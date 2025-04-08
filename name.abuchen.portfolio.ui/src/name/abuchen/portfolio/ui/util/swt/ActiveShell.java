@@ -23,8 +23,8 @@ public class ActiveShell
         shell = display.getActiveShell();
 
         display.addFilter(SWT.Activate, e -> {
-            if (e.widget instanceof Shell)
-                shell = (Shell) e.widget;
+            if (e.widget instanceof Shell s)
+                shell = s;
         });
     }
 

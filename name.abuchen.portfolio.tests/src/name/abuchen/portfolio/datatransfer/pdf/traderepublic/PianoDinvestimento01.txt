@@ -1,0 +1,30 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.73.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Matteo Ballan PAGINA 1 dal 1
+cpu UTDijb 64 DATA 16.12.2024
+34648 rSisfHJVRxqI dzvqiw ESECUZIONE b61b-9U71
+PIANO D'INVESTIMENTO d9I1-588y
+CONTO TITOLI 2673008477
+PIANO D'INVESTIMENTO PER IL REGOLAMENTO DEI TITOLI
+PANORAMICA
+Esecuzione del piano d'accumulo il 16.12.2024 su Lang und Schwarz Exchange.
+La controparte della transazione è Lang & Schwarz TradeCenter AG & Co. KG.
+POSIZIONE QUANTITÀ PREZZO MEDIO IMPORTO
+Factor MSCI USA Quality ESG EUR Hedged (Acc) 6,236285 Pz. 43,295 EUR 270,00 EUR
+ISIN: IE00BWT3KN65
+TOTALE 270,00 EUR
+PRENOTAZIONE
+CONTO DI TRANSITO DATA VALUTA IMPORTO
+DE72502109007015593118 2024-12-18 -270,00 EUR
+Factor MSCI USA Quality ESG EUR Hedged (Acc) in custodia collettiva in Germania
+Questo regolamento viene creato automaticamente e quindi non è firmato.
+Se non viene mostrata l'IVA, si tratta di un servizio esente da imposte sulle vendite in conformità con la regolamentazione UStG § 4 n. 8.
+Trade Republic Bank GmbH www.traderepublic.com Sede centrale: Berlin Direttore Generale
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin PARTITA IVA DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+epDa / 89L0-2W2F

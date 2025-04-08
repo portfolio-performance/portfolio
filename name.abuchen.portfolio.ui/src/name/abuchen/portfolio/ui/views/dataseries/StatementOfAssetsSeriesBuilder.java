@@ -1,7 +1,8 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
-import org.swtchart.IBarSeries;
-import org.swtchart.ILineSeries;
+import static name.abuchen.portfolio.util.ArraysUtil.accumulateAndToDouble;
+import static name.abuchen.portfolio.util.ArraysUtil.add;
+import static name.abuchen.portfolio.util.ArraysUtil.toDouble;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
@@ -18,15 +19,18 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
 
     public void build(DataSeries series, Interval reportingPeriod)
     {
+        if (!series.isVisible())
+            return;
+
         PerformanceIndex index = getCache().lookup(series, reportingPeriod);
 
-        if (series.getType() == DataSeries.Type.CLIENT)
+        if (series.getType() == DataSeries.Type.CLIENT || series.getType() == DataSeries.Type.DERIVED_DATA_SERIES)
         {
             addClient(series, index);
         }
         else
         {
-            ILineSeries lineSeries = getChart().addDateSeries(index.getDates(),
+            var lineSeries = getChart().addDateSeries(series.getUUID(), index.getDates(),
                             toDouble(index.getTotals(), Values.Amount.divider()), series.getLabel());
             configure(series, lineSeries);
         }
@@ -36,13 +40,17 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
     {
         double[] values;
 
-        switch ((ClientDataSeries) series.getInstance())
+        switch (series.getInstance() instanceof DerivedDataSeries derived ? derived.getAspect()
+                        : (ClientDataSeries) series.getInstance())
         {
             case TOTALS:
                 values = toDouble(clientIndex.getTotals(), Values.Amount.divider());
                 break;
             case TRANSFERALS:
                 values = toDouble(clientIndex.getTransferals(), Values.Amount.divider());
+                break;
+            case TRANSFERALS_ACCUMULATED:
+                values = accumulateAndToDouble(clientIndex.getTransferals(), Values.Amount.divider());
                 break;
             case INVESTED_CAPITAL:
                 values = toDouble(clientIndex.calculateInvestedCapital(), Values.Amount.divider());
@@ -57,6 +65,9 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
                 values = toDouble(clientIndex.calculateAbsoluteDelta(), Values.Amount.divider());
                 break;
             case TAXES:
+                values = toDouble(clientIndex.getTaxes(), Values.Amount.divider());
+                break;
+            case TAXES_ACCUMULATED:
                 values = accumulateAndToDouble(clientIndex.getTaxes(), Values.Amount.divider());
                 break;
             case DIVIDENDS:
@@ -84,51 +95,27 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
                 values = accumulateAndToDouble(add(clientIndex.getDividends(), clientIndex.getInterest()),
                                 Values.Amount.divider());
                 break;
+            case FEES:
+                values = toDouble(clientIndex.getFees(), Values.Amount.divider());
+                break;
+            case FEES_ACCUMULATED:
+                values = accumulateAndToDouble(clientIndex.getFees(), Values.Amount.divider());
+                break;
             default:
                 throw new IllegalArgumentException(String.valueOf(series.getInstance()));
         }
 
         if (series.isLineChart())
         {
-            ILineSeries lineSeries = getChart().addDateSeries(clientIndex.getDates(), values, series.getLabel());
+            var lineSeries = getChart().addDateSeries(series.getUUID(), clientIndex.getDates(), values,
+                            series.getLabel());
             configure(series, lineSeries);
         }
         else
         {
-            IBarSeries barSeries = getChart().addDateBarSeries(clientIndex.getDates(), values, series.getLabel());
+            var barSeries = getChart().addDateBarSeries(series.getUUID(), clientIndex.getDates(), values,
+                            series.getLabel());
             configure(series, barSeries);
         }
-    }
-
-    private long[] add(long[] a, long[] b)
-    {
-        if (a.length != b.length)
-            throw new IllegalArgumentException();
-
-        long[] result = new long[a.length];
-        for (int ii = 0; ii < result.length; ii++)
-            result[ii] = a[ii] + b[ii];
-
-        return result;
-    }
-
-    private double[] toDouble(long[] input, double divider)
-    {
-        double[] answer = new double[input.length];
-        for (int ii = 0; ii < answer.length; ii++)
-            answer[ii] = input[ii] / divider;
-        return answer;
-    }
-
-    private double[] accumulateAndToDouble(long[] input, double divider)
-    {
-        double[] answer = new double[input.length];
-        long current = 0;
-        for (int ii = 0; ii < answer.length; ii++)
-        {
-            current += input[ii];
-            answer[ii] = current / divider;
-        }
-        return answer;
     }
 }

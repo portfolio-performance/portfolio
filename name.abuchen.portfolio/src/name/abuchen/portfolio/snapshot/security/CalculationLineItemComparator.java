@@ -52,8 +52,8 @@ import name.abuchen.portfolio.model.Transaction;
             return true;
 
         Optional<Transaction> transaction = data.getTransaction();
-        if (transaction.isPresent() && transaction.get() instanceof PortfolioTransaction)
-            return ((PortfolioTransaction) transaction.get()).getType().isPurchase();
+        if (transaction.isPresent() && transaction.get() instanceof PortfolioTransaction pt)
+            return pt.getType().isPurchase();
 
         return false;
     }

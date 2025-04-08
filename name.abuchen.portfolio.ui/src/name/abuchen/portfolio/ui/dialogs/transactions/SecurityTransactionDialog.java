@@ -3,23 +3,24 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 import static name.abuchen.portfolio.ui.util.FormDataFactory.startingWith;
 import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
+import static name.abuchen.portfolio.ui.util.SWTHelper.getAverageCharWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.e4.ui.services.IStylingEngine;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -30,19 +31,22 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AbstractSecurityTransactionModel.Properties;
 import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.SecurityNameLabelProvider;
 
-@SuppressWarnings("restriction")
 public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSONAR
 {
+    @Inject
+    private IStylingEngine stylingEngine;
+
     @Inject
     private Client client;
 
@@ -92,6 +96,7 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
 
         ComboInput securities = new ComboInput(editArea, Messages.ColumnSecurity);
         securities.value.setInput(including(client.getActiveSecurities(), model().getSecurity()));
+        securities.value.setLabelProvider(new SecurityNameLabelProvider(client));
         securities.bindValue(Properties.security.name(), Messages.MsgMissingSecurity);
         securities.bindCurrency(Properties.securityCurrencyCode.name());
 
@@ -101,18 +106,19 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         portfolio.value.setInput(including(client.getActivePortfolios(), model().getPortfolio()));
         portfolio.bindValue(Properties.portfolio.name(), Messages.MsgMissingPortfolio);
 
-        ComboInput comboInput = new ComboInput(editArea, null);
-        if (model() instanceof BuySellModel)
+        Object currencyInput;
+        if (model() instanceof BuySellModel buySellModel)
         {
-            comboInput.value.setInput(including(client.getActiveAccounts(), ((BuySellModel) model()).getAccount()));
+            ComboInput comboInput = new ComboInput(editArea, null);
+            comboInput.value.setInput(including(client.getActiveAccounts(), buySellModel.getAccount()));
             comboInput.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
+            currencyInput = comboInput;
         }
         else
         {
-            List<CurrencyUnit> availableCurrencies = CurrencyUnit.getAvailableCurrencyUnits();
-            Collections.sort(availableCurrencies);
-            comboInput.value.setInput(availableCurrencies);
-            comboInput.bindValue(Properties.transactionCurrency.name(), Messages.MsgMissingAccount);
+            CurrencyInput comboInput = new CurrencyInput(editArea);
+            comboInput.bindValue(Properties.transactionCurrency.name());
+            currencyInput = comboInput;
         }
 
         // date + time
@@ -194,7 +200,6 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         lblNote.setText(Messages.ColumnNote);
         Text valueNote = new Text(editArea, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
         IObservableValue<?> targetNote = WidgetProperties.text(SWT.Modify).observe(valueNote);
-        @SuppressWarnings("unchecked")
         IObservableValue<?> noteObservable = BeanProperties.value(Properties.note.name()).observe(model);
         context.bindValue(targetNote, noteObservable);
 
@@ -202,14 +207,23 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         // form layout
         //
 
+        // measuring the width requires that the font has been applied before
+        stylingEngine.style(editArea);
+
         int width = amountWidth(grossValue.value);
         int currencyWidth = currencyWidth(grossValue.currency);
         int labelWidth = widest(securities.label, portfolio.label, dateTime.label, shares.label, lblNote);
 
-        startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
-                        .thenBelow(portfolio.value.getControl()).label(portfolio.label)
-                        .suffix(comboInput.value.getControl()) //
-                        .thenBelow(dateTime.date.getControl()).label(dateTime.label).thenRight(dateTime.time)
+        var factory = startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
+                        .thenBelow(portfolio.value.getControl()).label(portfolio.label);
+
+        if (currencyInput instanceof ComboInput input)
+            factory.suffix(input.value.getControl());
+        else if (currencyInput instanceof CurrencyInput input)
+            factory.thenRight(input.currencyCode).width((int) Math.round(10 * getAverageCharWidth(input.currencyCode)))
+                            .suffix(input.description);
+
+        factory.thenBelow(dateTime.date.getControl()).label(dateTime.label).thenRight(dateTime.time)
                         .thenRight(dateTime.button, 0);
 
         startingWith(securities.label).width(labelWidth);
@@ -330,15 +344,33 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
 
     public void setBuySellEntry(BuySellEntry entry)
     {
-        if (!model().accepts(entry.getPortfolioTransaction().getType()))
-            throw new IllegalArgumentException();
+        Type type = entry.getPortfolioTransaction().getType();
+        if (!model().accepts(type))
+            throw new IllegalArgumentException("type " + type + " not accepted for this model"); //$NON-NLS-1$ //$NON-NLS-2$
         model().setSource(entry);
+    }
+
+    public void presetBuySellEntry(BuySellEntry entry)
+    {
+        Type type = entry.getPortfolioTransaction().getType();
+        if (!model().accepts(type))
+            throw new IllegalArgumentException("type " + type + " not accepted for this model"); //$NON-NLS-1$ //$NON-NLS-2$
+        model().presetFromSource(entry);
     }
 
     public void setDeliveryTransaction(TransactionPair<PortfolioTransaction> pair)
     {
-        if (!model().accepts(pair.getTransaction().getType()))
-            throw new IllegalArgumentException();
+        Type type = pair.getTransaction().getType();
+        if (!model().accepts(type))
+            throw new IllegalArgumentException("type " + type + " not accepted for this model"); //$NON-NLS-1$ //$NON-NLS-2$
         model().setSource(pair);
+    }
+
+    public void presetDeliveryTransaction(TransactionPair<PortfolioTransaction> pair)
+    {
+        Type type = pair.getTransaction().getType();
+        if (!model().accepts(type))
+            throw new IllegalArgumentException("type " + type + " not accepted for this model"); //$NON-NLS-1$ //$NON-NLS-2$
+        model().presetFromSource(pair);
     }
 }

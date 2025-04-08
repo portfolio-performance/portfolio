@@ -1,0 +1,224 @@
+PDF Author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=XXXXXX
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=XXXXXX
+Verkauf ADRESSZEILE3=XXXXXX
+Kommissionsgeschäft ADRESSZEILE4=XXXXXX
+Herr ADRESSZEILE5=
+XXXXXX ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+XXXXXX BELEGNUMMER=9114
+Depotinhaber
+XXXXXX
+Frankfurt am Main, 10.11.2017
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+Goldman Sachs Wertpapier GmbH TuBear 24.11.17 DAX 13410 DE000GD8RHG7
+Nominal Kurs
+STK 200,000 EUR 2,6230
+Handelstag 10.11.2017 Kurswert EUR 524,60 
+Handelszeit 09:56 Orderprovision EUR 5,00-
+Börse außerbörslich Goldman Sachs Handelsplatzgebühr EUR 1,50-
+Verwahrart Girosammelverwahrung Kapitalertragsteuer EUR 31,22-
+Solidaritätszuschlag EUR 1,72-
+Kirchensteuer EUR 2,50-
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+13.11.2017 237584042 EUR 482,66
+Es folgt Seite 2
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=XXXXXX
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=XXXXXX
+XXXXXX 12108319 2 ADRESSZEILE3=XXXXXX
+ADRESSZEILE4=XXXXXX
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=9114
+Jahressteuerbescheinigung folgt SEITENNUMMER=2
+STEUERERSTATTUNG=N
+Wir werden in Ihrem Depot wie angegeben buchen.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=XXXXXX
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=XXXXXX
+Kauf ADRESSZEILE3=XXXXXX
+Kommissionsgeschäft ADRESSZEILE4=XXXXXX
+Herr ADRESSZEILE5=
+XXXXXX ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+XXXXXX BELEGNUMMER=XXXX
+XXXXXX XXXXXX XXXXXX / 10.11.2017 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+XXXXXX
+Frankfurt am Main, 10.11.2017
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Lang & Schwarz AG Turbo 31.01.18 DAX DE000LS27QS5
+Nominal Kurs
+STK 200,000 EUR 2,0900
+Handelstag 10.11.2017 Kurswert EUR 418,00-
+Handelszeit 10:54 Orderprovision EUR 5,00-
+Börse außerbörslich Lang & Schwarz Handelsplatzgebühr EUR 1,50-
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+13.11.2017 237584042 EUR 424,50
+Wir werden in Ihrem Depot wie angegeben buchen.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=XXXXXX
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=XXXXXX
+Verkauf ADRESSZEILE3=XXXXXX
+Kommissionsgeschäft ADRESSZEILE4=XXXXXX
+Herr ADRESSZEILE5=
+XXXXXX ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+XXXXXX BELEGNUMMER=9116
+XXXXXX XXXXXX XXXXXX / 10.11.2017 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+XXXXXX
+Frankfurt am Main, 10.11.2017
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+BNP Paribas Em.-u.Handelsg.mbH TurboL 30.11.17 S&P500 2550 DE000PP09P16
+Nominal Kurs
+STK 1.000,000 EUR 0,3100
+Handelstag 09.11.2017 Kurswert EUR 310,00 
+Handelszeit 12:55 Orderprovision EUR 5,00-
+Börse außerbörslich BNP Paribas Handelsplatzgebühr EUR 1,50-
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+13.11.2017 237584042 EUR 303,50
+Es folgt Seite 2
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=XXXXXX
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=XXXXXX
+XXXXXX XXXXXX 2 ADRESSZEILE3=XXXXXX
+ADRESSZEILE4=XXXXXX
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=XXXX
+Jahressteuerbescheinigung folgt
+Wir werden in Ihrem Depot wie angegeben buchen.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=XXXXXX
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=XXXXXX
+Verkauf ADRESSZEILE3=XXXXXX
+Kommissionsgeschäft ADRESSZEILE4=XXXXXX
+Herr ADRESSZEILE5=
+XXXXXX ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+XXXXXX BELEGNUMMER=9117
+XXXXXX XXXXXX XXXXXX / 10.11.2017 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+XXXXXX
+Frankfurt am Main, 10.11.2017
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+BNP Paribas Em.-u.Handelsg.mbH TurboL 18.12.17 DAX 13170 DE000PP1BEF0
+Nominal Kurs
+STK 100,000 EUR 1,4600
+Handelstag 09.11.2017 Kurswert EUR 146,00 
+Handelszeit 12:56 Orderprovision EUR 5,00-
+Börse außerbörslich BNP Paribas Handelsplatzgebühr EUR 1,50-
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+13.11.2017 237584042 EUR 139,50
+Es folgt Seite 2
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=XXXXXX
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=XXXXXX
+XXXXXX XXXXXX 2 ADRESSZEILE3=XXXXXX
+ADRESSZEILE4=XXXXXX
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=XXXX
+Wir werden in Ihrem Depot wie angegeben buchen.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=XXXXXX
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=XXXXXX
+Kauf ADRESSZEILE3=XXXXXX
+Kommissionsgeschäft ADRESSZEILE4=XXXXXX
+Herr ADRESSZEILE5=
+XXXXXX ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+XXXXXX BELEGNUMMER=XXXX
+XXXXXX XXXXXX XXXXXX / 10.11.2017 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+XXXXXX
+Frankfurt am Main, 10.11.2017
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Amundi ETF MSCI Emerging Mkts Actions au Porteur o.N. FR0010959676
+Nominal Kurs
+STK 700,000 EUR 4,2000
+Handelstag 09.11.2017 Kurswert EUR 2.940,00-
+Handelszeit 13:43 Orderprovision EUR 5,00-
+Börse außerbörslich Baader Bank Handelsplatzgebühr EUR 1,50-
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+13.11.2017 237584042 EUR 2.946,50
+Die jährlich zu zahlende Verwaltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den
+Vertragsbedingungen zu entnehmen.
+Wir werden in Ihrem Depot wie angegeben buchen.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.

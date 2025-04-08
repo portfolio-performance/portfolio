@@ -1,0 +1,68 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+FinTech Group Bank AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+Frankfurt,        06.12.2017
+0003432000000123780230
+Herr Auftragsdatum     01.12.2017n
+Max Mustermann Schlusstag        04.12.2017r
+Str 1 Ausführungszeit   00:00 Uhr. 
+12345 Stadt Valuta            07.12.2017
+Auftragsnummer    12345678/1
+Ausf.platz/-art   KAG/außerbörsl.
+Wertpapierabrechnung Kauf Fonds/Zertifikate
+Ihre Depotnummer  123456789
+Depotinhaber      Mustermann, Max
+Nr.12345678/1  Kauf            COMS.-MSCI WORL.T.U.ETF I (LU0392494562/ETF110)
+Ausgeführt     8,205431 St.            Kurswert       EUR               400,00
+Kurs           48,748200 EUR           Provision
+Devisenkurs                            Eigene Spesen
+Verwahrart     GS-Verwahrung          *Fremde Spesen
+Lagerstelle    Clearstream Nat.
+Lagerland      Deutschland
+                                       Bemessungs-
+Gewinn/Verlust 0,00 EUR                grundlage      EUR                 0,00
+                                     **Einbeh. Steuer EUR                -0,01
+                                       Endbetrag      EUR              -399,99
+* Enthalten sind folgende Gebühren     Courtage       EUR                 0,00
+                                       Tradinggebühr  EUR                 0,00
+                                       Regulierung    EUR                 0,00
+                                       Schlussnoten   EUR                 0,00
+                                       Sonstige       EUR                 0,00
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  EUR                -0,01
+                                 Solidaritätszuschlag EUR                 0,00
+                                 Kirchensteuer        EUR                 0,00
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1321692761.
+Der Kurswert enthält 0,000% regulären Ausgabeaufschlag (AA).
+Rabattierung   keine                   gezahlter AA   EUR                 0,00
+Kurs           48,7482 EUR             Kurswert       EUR               400,00
+               Zwischengewinn je Anteil               USD               0,0018
+               Zwischengewinn Gesamt                  USD               0,0200
+Die Verrechnung des Endbetrags erfolgt über Ihr Konto Nr.: 123456788
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+
+

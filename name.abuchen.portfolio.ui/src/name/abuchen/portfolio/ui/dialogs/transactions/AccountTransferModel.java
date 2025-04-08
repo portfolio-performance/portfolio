@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -9,8 +10,6 @@ import java.util.Optional;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
-
-import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -39,7 +38,7 @@ public class AccountTransferModel extends AbstractModel
     private Account sourceAccount;
     private Account targetAccount;
     private LocalDate date = LocalDate.now();
-    private LocalTime time = LocalTime.MIDNIGHT;
+    private LocalTime time = PresetValues.getTime();
 
     private long fxAmount;
     private BigDecimal exchangeRate = BigDecimal.ONE;
@@ -132,11 +131,17 @@ public class AccountTransferModel extends AbstractModel
         setFxAmount(0);
         setAmount(0);
         setNote(null);
+        setTime(PresetValues.getTime());
     }
 
     public void setSource(AccountTransferEntry entry)
     {
         this.source = entry;
+        presetFromSource(entry);
+    }
+    
+    public void presetFromSource(AccountTransferEntry entry)
+    {
         this.sourceAccount = (Account) entry.getOwner(entry.getSourceTransaction());
         this.targetAccount = (Account) entry.getOwner(entry.getTargetTransaction());
 
@@ -160,6 +165,7 @@ public class AccountTransferModel extends AbstractModel
             this.exchangeRate = BigDecimal.ONE;
         }
     }
+
 
     @Override
     public IStatus getCalculationStatus()
@@ -231,25 +237,24 @@ public class AccountTransferModel extends AbstractModel
 
     private void updateExchangeRate()
     {
+        if (getSourceAccountCurrency().equals(getTargetAccountCurrency()))
+        {
+            setExchangeRate(BigDecimal.ONE);
+            return;
+        }
+
         // do not auto-suggest exchange rate when editing an existing
         // transaction
         if (source != null)
             return;
 
-        if (getSourceAccountCurrency().equals(getTargetAccountCurrency()))
-        {
-            setExchangeRate(BigDecimal.ONE);
-        }
-        else
-        {
-            ExchangeRateTimeSeries series = getExchangeRateProviderFactory() //
-                            .getTimeSeries(getSourceAccountCurrency(), getTargetAccountCurrency());
+        ExchangeRateTimeSeries series = getExchangeRateProviderFactory() //
+                        .getTimeSeries(getSourceAccountCurrency(), getTargetAccountCurrency());
 
-            if (series != null)
-                setExchangeRate(series.lookupRate(date).orElse(new ExchangeRate(date, BigDecimal.ONE)).getValue());
-            else
-                setExchangeRate(BigDecimal.ONE);
-        }
+        if (series != null)
+            setExchangeRate(series.lookupRate(date).orElse(new ExchangeRate(date, BigDecimal.ONE)).getValue());
+        else
+            setExchangeRate(BigDecimal.ONE);
     }
 
     public LocalDate getDate()
@@ -309,12 +314,18 @@ public class AccountTransferModel extends AbstractModel
 
     public BigDecimal getInverseExchangeRate()
     {
-        return BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+        if (exchangeRate.compareTo(BigDecimal.ZERO) == 0)
+            return BigDecimal.ZERO;
+        else
+            return BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
     }
 
     public void setInverseExchangeRate(BigDecimal rate)
     {
-        setExchangeRate(BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN));
+        if (rate == null || rate.compareTo(BigDecimal.ZERO) == 0)
+            setExchangeRate(BigDecimal.ZERO);
+        else
+            setExchangeRate(BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN));
     }
 
     public long getAmount()

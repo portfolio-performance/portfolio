@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Adaptable;
+import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -28,16 +30,18 @@ import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.security.CapitalGainsRecord;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.trail.Trail;
 import name.abuchen.portfolio.snapshot.trail.TrailProvider;
 import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class ClientPerformanceSnapshot
 {
-    public static class Position implements TrailProvider
+    public static class Position implements TrailProvider, Adaptable
     {
         public static final String TRAIL_VALUE = "value"; //$NON-NLS-1$
         public static final String TRAIL_FOREX_GAIN = "forexGain"; //$NON-NLS-1$
@@ -110,6 +114,12 @@ public class ClientPerformanceSnapshot
                     return Optional.empty();
             }
         }
+
+        @Override
+        public <T> T adapt(Class<T> type)
+        {
+            return Adaptor.adapt(type, security);
+        }
     }
 
     public static class Category
@@ -158,6 +168,7 @@ public class ClientPerformanceSnapshot
     private final Interval period;
     private ClientSnapshot snapshotStart;
     private ClientSnapshot snapshotEnd;
+    private boolean useFifo = true;
 
     private final EnumMap<CategoryType, Category> categories = new EnumMap<>(CategoryType.class);
     private final List<TransactionPair<?>> earnings = new ArrayList<>();
@@ -167,11 +178,17 @@ public class ClientPerformanceSnapshot
 
     public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, LocalDate startDate, LocalDate endDate)
     {
-        this(client, converter, Interval.of(startDate, endDate));
+        this(client, converter, Interval.of(startDate, endDate), true);
     }
 
     public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, Interval period)
     {
+        this(client, converter, period, true);
+    }
+
+    public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, Interval period, boolean useFifo)
+    {
+        this.useFifo = useFifo;
         this.client = client;
         this.converter = converter;
         this.period = period;
@@ -209,6 +226,18 @@ public class ClientPerformanceSnapshot
     public Money getValue(CategoryType categoryType)
     {
         return categories.get(categoryType).getValuation();
+    }
+
+    public Money getValue(CategoryType categoryType, CategoryType... more)
+    {
+        MutableMoney answer = MutableMoney.of(converter.getTermCurrency());
+
+        answer.add(categories.get(categoryType).getValuation());
+
+        for (CategoryType t : more)
+            answer.add(categories.get(t).getValuation());
+
+        return answer.toMoney();
     }
 
     public List<TransactionPair<?>> getEarnings()
@@ -257,6 +286,47 @@ public class ClientPerformanceSnapshot
         return delta.toMoney();
     }
 
+    /**
+     * Returns taxes / (capital gains + realized capital gains + earnings -
+     * fees)
+     * 
+     * @return returns Double.POSITIVE_INFINITY if the denominator is zero,
+     *         returns Double.NaN if either taxes or denominator are negative
+     */
+    public double getPortfolioTaxRate()
+    {
+        Money numerator = getValue(CategoryType.TAXES);
+        Money denominator = getValue(CategoryType.CAPITAL_GAINS, CategoryType.REALIZED_CAPITAL_GAINS,
+                        CategoryType.EARNINGS).subtract(getValue(CategoryType.FEES));
+
+        if (denominator.isZero())
+            return Double.POSITIVE_INFINITY;
+        if (numerator.isNegative() || denominator.isNegative())
+            return Double.NaN;
+
+        return numerator.getAmount() / (double) denominator.getAmount();
+    }
+
+    /**
+     * Returns fees / (capital gains + realized capital gains + earnings)
+     * 
+     * @return returns Double.POSITIVE_INFINITY if the denominator is zero,
+     *         returns Double.NaN if either fees or denominator are negative
+     */
+    public double getPortfolioFeeRate()
+    {
+        Money numerator = getValue(CategoryType.FEES);
+        Money denominator = getValue(CategoryType.CAPITAL_GAINS, CategoryType.REALIZED_CAPITAL_GAINS,
+                        CategoryType.EARNINGS);
+
+        if (denominator.isZero())
+            return Double.POSITIVE_INFINITY;
+        if (numerator.isNegative() || denominator.isNegative())
+            return Double.NaN;
+
+        return numerator.getAmount() / (double) denominator.getAmount();
+    }
+
     private void calculate()
     {
         categories.put(CategoryType.INITIAL_VALUE,
@@ -282,7 +352,11 @@ public class ClientPerformanceSnapshot
 
         irr = ClientIRRYield.create(client, snapshotStart, snapshotEnd).getIrr();
 
-        addCapitalGains();
+        if (useFifo)
+            addCapitalGainsFifo();
+        else
+            addCapitalGainsMovingAverage();
+
         addEarnings();
         addCurrencyGains();
     }
@@ -293,10 +367,10 @@ public class ClientPerformanceSnapshot
      * are calculated, i.e. the change in value if the investment would have
      * been in cash in the foreign currency.
      */
-    private void addCapitalGains()
+    private void addCapitalGainsFifo()
     {
         SecurityPerformanceSnapshot securityPerformance = SecurityPerformanceSnapshot.create(client, converter, period,
-                        snapshotStart, snapshotEnd);
+                        snapshotStart, snapshotEnd, SecurityPerformanceIndicator.CapitalGains.class);
 
         Category realizedCapitalGains = categories.get(CategoryType.REALIZED_CAPITAL_GAINS);
         addCapitalGains(realizedCapitalGains, securityPerformance, record -> record.getRealizedCapitalGains());
@@ -307,11 +381,31 @@ public class ClientPerformanceSnapshot
         addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGains());
     }
 
+    /**
+     * Calculates realized and unrealized capital gains using the Moving Average
+     * method. If the security is traded in forex then additionally the currency
+     * gains are calculated, i.e. the change in value if the investment would
+     * have been in cash in the foreign currency.
+     */
+    private void addCapitalGainsMovingAverage()
+    {
+        SecurityPerformanceSnapshot securityPerformance = SecurityPerformanceSnapshot.create(client, converter, period,
+                        snapshotStart, snapshotEnd, SecurityPerformanceIndicator.CapitalGains.class);
+
+        Category realizedCapitalGains = categories.get(CategoryType.REALIZED_CAPITAL_GAINS);
+        addCapitalGains(realizedCapitalGains, securityPerformance, record -> record.getRealizedCapitalGainsMovingAvg());
+
+        // create position for unrealized capital gains
+
+        Category capitalGains = categories.get(CategoryType.CAPITAL_GAINS);
+        addCapitalGains(capitalGains, securityPerformance, record -> record.getUnrealizedCapitalGainsMovingAvg());
+    }
+
     private void addCapitalGains(Category category, SecurityPerformanceSnapshot securityPerformance,
                     Function<SecurityPerformanceRecord, CapitalGainsRecord> mapper)
     {
         category.positions = securityPerformance.getRecords().stream()
-                        .sorted((p1, p2) -> p1.getSecurityName().compareToIgnoreCase(p2.getSecurityName())) //
+                        .sorted((p1, p2) -> TextUtil.compare(p1.getSecurityName(), p2.getSecurityName())) //
                         .map(mapper)
                         .filter(gains -> !gains.getCapitalGains().isZero() || !gains.getForexCaptialGains().isZero())
                         .map(gains -> new Position(gains.getSecurity(), gains.getCapitalGains(),
@@ -351,7 +445,8 @@ public class ClientPerformanceSnapshot
                 {
                     case DIVIDENDS:
                     case INTEREST:
-                        addEarningTransaction(account, t, mEarnings, earningsBySecurity, mTaxes, taxesBySecurity);
+                        addEarningTransaction(account, t, mEarnings, earningsBySecurity, mFees, mTaxes, feesBySecurity,
+                                        taxesBySecurity);
                         break;
                     case INTEREST_CHARGE:
                         mEarnings.subtract(value);
@@ -451,7 +546,7 @@ public class ClientPerformanceSnapshot
                                 return p2.getSecurity() == null ? 0 : 1;
                             if (p2.getSecurity() == null)
                                 return -1;
-                            return p1.getLabel().compareToIgnoreCase(p2.getLabel());
+                            return TextUtil.compare(p1.getLabel(), p2.getLabel());
                         }) //
                         .collect(Collectors.toList());
 
@@ -473,14 +568,23 @@ public class ClientPerformanceSnapshot
     }
 
     private void addEarningTransaction(Account account, AccountTransaction transaction, MutableMoney mEarnings,
-                    Map<Security, MutableMoney> earningsBySecurity, MutableMoney mTaxes,
-                    Map<Security, MutableMoney> taxesBySecurity)
+                    Map<Security, MutableMoney> earningsBySecurity, MutableMoney mFees, MutableMoney mTaxes,
+                    Map<Security, MutableMoney> feesBySecurity, Map<Security, MutableMoney> taxesBySecurity)
     {
         Money earned = transaction.getGrossValue().with(converter.at(transaction.getDateTime()));
         mEarnings.add(earned);
         this.earnings.add(new TransactionPair<AccountTransaction>(account, transaction));
         earningsBySecurity.computeIfAbsent(transaction.getSecurity(), k -> MutableMoney.of(converter.getTermCurrency()))
                         .add(earned);
+
+        Money fee = transaction.getUnitSum(Unit.Type.FEE, converter).with(converter.at(transaction.getDateTime()));
+        if (!fee.isZero())
+        {
+            mFees.add(fee);
+            this.fees.add(new TransactionPair<AccountTransaction>(account, transaction));
+            feesBySecurity.computeIfAbsent(transaction.getSecurity(), s -> MutableMoney.of(converter.getTermCurrency()))
+                            .add(fee);
+        }
 
         Money tax = transaction.getUnitSum(Unit.Type.TAX, converter).with(converter.at(transaction.getDateTime()));
         if (!tax.isZero())

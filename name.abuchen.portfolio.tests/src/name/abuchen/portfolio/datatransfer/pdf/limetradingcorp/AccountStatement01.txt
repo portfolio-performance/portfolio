@@ -1,0 +1,200 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Lime Trading Corp. ACCOUNT NUMBER: 33333333
+One Penn Plaza, 16th FL, Suite 1614
+New York, NY 10119 Return Service Requested STATEMENT PERIOD: March 1 - 31, 2022
+FINANCIAL ADVISOR Lime Trading Corp.
+ACCOUNT STATEMENT FOR QUESTIONS CALL: 855.274.4934
+support@scorepriority.com
+In an effort to make sure that we have correct and up to date information,
+please take a few minutes to review your account information that is listed at
+the end of this statement.  Should you note anything that is incorrect or needs
+to be updated or changed, please follow the instructions on how to notify AAAAA AAAAA
+Vision.  This request for updated information is part of our requirement as your NY 33-33
+broker-dealer under SEA Rule 17a-3(a)(17).  If you have any questions, please NY, OO 22233
+contact your Account Representative.
+ Asset Allocation
+Total Assets AllocationPercentage
+Total Portfolio $104,777.56 Cash & Cash Equivalents $275.15 0.26%
+Equities $104,502.41 99.74%
+ Account Value Summary Total Portfolio $104,777.56 100.00%
+Beginning Value as of February 28 ................................................ $92,511.90
+Net Additions ........................................................................................ 17,449.19 Cash & Cash Equivalents 0.26%
+Net Withdrawals .................................................................................. (17,243.98)
+Change In Investment Value ................................................................ 12,060.45
+Ending Value as of March 31 ........................................................ $104,777.56
+ Income Summary
+Description Current Year to Date
+Dividends $155.25 $202.09
+Credit Interest $0.19 $0.19 Equities 99.74%
+Dividend Withheld ($0.50) ($0.50)
+Accounts are introduced by Lime Trading Corp. and carried by Vision Financial Markets LLC, a SEC-registered broker/dealer, member FINRA and SIPC.
+Page 1 of 6
+ACCOUNT NUMBER: 33333333
+AAAAA aAAAA STATEMENT PERIOD: March 1 - 31, 2022
+ Account Activity Summary  Gain / Loss Summary
+Unrealized Gain / Loss Current Year to Date
+Assets bought ........................................................................................ ($17,197.50) Long-Term
+Assets sold/redeemed ............................................................................... $8,293.75 Equities $3,193.06 $3,193.06
+Dividends taxable/non-taxable ..................................................................... $155.25 Total Unrealized Gain / Loss $3,193.06 $3,193.06
+Interest taxable/non-taxable ............................................................................. $0.19
+Other Deposits/Withdrawals ...................................................................... $9,000.00
+Withholding ................................................................................................... ($46.48)
+ Cash Management Summary
+Current Year to Date
+Deposits $9,000.00 $9,000.00
+Income and Distributions $155.44 $202.28
+Securities Sold and Redeemed $8,293.75 $15,627.93
+Net Additions To Cash $17,449.19 $24,830.21
+Withdrawals ($46.48) ($60.52)
+Securities Purchased ($17,197.50) ($25,070.87)
+Net Subtractions From Cash ($17,243.98) ($25,131.39)
+Total Cash / Funds on March 31 $205.21 ($301.18)
+Page 2 of 6
+ACCOUNT NUMBER: 33333333
+AAAA aAAAA STATEMENT PERIOD: March 1 - 31, 2022
+Cash & Cash Equivalents 0.26%
+Description Quantity Market Market Value Adjusted Cost / Current EstimatedPrice Original Cost Yield Annual Income
+Cash
+US Dollar 275.15 1.00 275.15 275.15 0.00 0.00
+Total Cash & Cash Equivalents $275.15 $275.15 $0.00
+Equities 99.74 %
+Symbol Description Quantity Market Market Value Unit Cost Cost Basis Unrealized Div EstimatedPrice Gain (Loss) Yield % Annual Income
+PPLT Aberdeen Std Platinum Etf Tr 3 91.760 275.28 98.13 294.40 (19.12)
+JETS Etf Ser Solutions 14 21.760 304.64 25.81 361.30 (56.66)
+ET Energy Transfer Operating L P 200 11.190 2,238.00 7.09 1,419.00 819.00 6.25 140.00
+QQQ Invesco QQQ Tr 86 362.540 31,178.44 311.42 26,781.75 4,396.69 0.47 149.28
+IEMG Ishares Inc 404 55.550 22,442.20 66.21 26,747.70 (4,305.50) 3.29 740.12
+PLTR Palantir Technologies Inc 4 13.730 54.92 23.95 95.80 (40.88)
+O Realty Income Corp 24 69.300 1,663.20 59.80 1,435.16 228.04 4.27 71.13
+TTWO Take-two Interactive Software 10 153.740 1,537.40 176.74 1,767.42 (230.02)
+VT Vanguard Intl Equity Index Fd 12 101.290 1,215.48 103.07 1,236.88 (21.40) 1.93 23.50
+VOO Vanguard Index Fds 105 415.170 43,592.85 392.09 41,169.94 2,422.91 1.33 582.53
+Total Equities $104,502.41 $101,309.35 $3,193.06 $1,706.56
+Page 3 of 6
+ACCOUNT NUMBER: 33333333
+AAAAA aAAAA STATEMENT PERIOD: March 1 - 31, 2022
+Account Activity Details
+Settlement
+Effective Description CUSIP Type of Activity Quantity Market Price Net Settlement
+Date Amount
+Mar 01 Wire In Ref #: Mm-00003314 Journal 9,000.00
+Mar 11 Barrick Gold Corp 067901108 Sell 20 24.0901 481.79
+Com
+Mar 11 Spdr Gold Trust 78463V107 Sell 42 186 7,811.96
+Gold Shs
+Mar 11 Vanguard Index Fds 922908363 Buy 23 393 (9,039.00)
+S P 500 Etf Shs
+Mar 16 Vanguard Index Fds 922908363 Buy 21 388.50 (8,158.50)
+S P 500 Etf Shs
+Mar 17 Barrick Gold Co             20 067901108 Qualified Dividend 2.00
+Mar 17 For Sec Withhold: Div   .25000 067901108 Foreign Withholding (0.50)
+Barrick Gold Corp
+Mar 15 Realty Income C             24 756109104 Dividend 5.92
+Mar 15 Nra Withhold: Dividend 756109104 NRA Withhold (1.78)
+Realty Income Corp
+Mar 24 Vanguard Intl E             12 922042742 Dividend 3.09
+Mar 24 Nra Withhold: Dividend 922042742 NRA Withhold (0.93)
+Vanguard Intl Equity Index Fd
+Mar 29 Vanguard Index             105 922908363 Dividend 144.24
+Mar 29 Nra Withhold: Dividend 922908363 NRA Withhold (43.27)
+Vanguard Index Fds
+Mar 31 .05000%31 Days,Bal=    $4367 Credit Interest 0.19
+Page 4 of 6
+General Information Tax Information
+This account  statement  contains  important information about your brokerage  account carried and cleared If  you  are  subject  to  1099  reporting,  all  applicable  1099  Forms  will  be  provided  at  year  end.   For  1099B
+by Vision Financial Markets LLC. Please review this statement carefully.  If you disagree with any transaction, purposes,  proceeds  of  sales,  redemptions  or  exchanges  of  securities  will  be  reported  to  the  Internal
+if  there  are  any  errors,  omissions or discrepancies  on this statement,  or if  you do not understand  any of  the Revenue  Service  on a trade  date  basis.   To  avoid  backup  withholding,  we must be in receipt  of  Form  W-9.
+information  in  this  statement,  please  contact  your  Financial  Advisor  or  your  brokerage  firm,  in  writing Cost data and realized capital gains and losses are provided for informational purposes only.   Please review
+immediately,  or  contact  us  orally  and  reconfirm  in  writing.  If  you  do  not  object  to  the  accuracy  of  the for  accuracy.    We  are  not  responsible  for  omitted  or  restated  data.   Please  consult  your  tax  advisor  to
+information reported on this statement  within 10 business days,  we will consider it conclusive.  In other words, determine  the  tax  consequences  of  your  securities  transactions.  Vision  Financial  Markets  LLC  is  not  a
+by failing  to object within 10 business days  of the date of this statement,  you agree that you have ratified  as registered tax advisor.
+accurate  all of the transactions and activities reported in this statement.  If this statement shows that we have
+mailed or delivered security certificate(s)  that you have not received,  notify us immediately in writing. We will Portfolio Pricing
+arrange  for  a  stop  order  and  replacement  certificate(s).  If  you  do  not  notify  us  promptly,  you  may  be
+responsible  for  contacting  the  transfer  agent  directly  for  replacement.  Inquiries  concerning  positions  and Market  Value  of  your  account  is  the value  of  your  settled  positions for  which the quotation  services  were
+balances  in  your  account  may  be  directed  to  your  Financial  Advisor  or  Vision  Financial  Markets,  Attention: able  to  obtain  closing  prices  and/or  the  mean  bid  and  ask  price  on  the  statement  date.   Because  of  the
+Chief  Compliance  Officer,  120  Long  Ridge  Road,  3  North,  Stamford,  CT  06902- 1839.  All  other  inquiries  or nature  of  the data provided  by  the quotation  services,  the accuracy  of  such prices  cannot  be guaranteed.
+complaints regarding your account or the activity therein should be directed to the address and number listed Those securities for which prices are not available are not included in the market value calculation and are
+on the front of this statement. shown  as  unpriced  on  the  statement.   Figures  are  subject  to  change  at  any  time  and  they  should  not  be
+relied upon for investment or trading decisions.
+All  transactions  are  subject  to  the  rules,  regulations,  requirements  (including  margin  requirements)  and
+customs of the Federal  Reserve Board, the Securities and Exchange Commission, the exchange or market (and Transaction Charges
+its  clearing  house,  if  any)  where  executed,  and  any  association  whose  rules  and  regulations  govern
+transactions  in  said  market,  and  to  all  the  terms  of  your  customer  account  agreement,  and  all  written Further  information  with  respect  to  commissions  and  other  charges  related  to  the  execution  of  listed
+agreements between you and us. options and other transactions has been included in confirmation of such transactions previously furnished
+to you and such information will be made available to you promptly upon request.
+If this is a margin account, this is a combined statement of your general account and of a special memorandum
+account  maintained  for  you  under  Section  220.6  of  Regulation  T  issued  by  the  Board  of  Governors  of  the Credit and Debit Interest
+Federal  Reserve  System.   The  permanent  record  of  the  special  memorandum  account  as  required  by If  you  participate  in our money  market  sweep  program,  funds are swept  automatically  from available  free
+Regulation T is available for your inspection upon request.
+credit  balances into a selected money market fund.  Money fund balances must earn at least $0.01  per day
+All  transactions  are  reported  on  a  trade- date  basis.   Security  and  cash  position  balances  will  reflect  trades of  interest  in  order  to  be  credited  on  a  monthly  basis.   Free  credit  balances  created  by  check  and  other
+executed but not settled as of the date of the current statement. deposits are subject to a hold prior to earning interest.   We charge debit interest  as permitted according to
+our customer account agreement.  The debit interest rate is subject to change without prior notice based on
+Any  free  credit  balance  represents  funds  payable  upon  demand  (subject  to  any  open  commitments  in  your changes  in  the  broker  call  rate.   Debit  interest  is  calculated  on  a  settlement  date  basis,  with  free  credit
+account)  which,  although  properly  accounted  for  on  our  books  of  record,  are  not  segregated,  unless  federal balances  offset  against  any  debit  balances,  and  the  interest  is  calculated  on  the  average  daily  net  debit
+and/or state law compliance dictates otherwise, and may be used in the conduct of our business. balance  based  on  a  360- day  basis,  accrued  from  the  next  to  last  business  day  of  the  prior  month  to  the
+second to last business day of the current month.
+Our financial statement is available upon written request.
+Change of Address
+Statements  will  be  mailed  monthly  to  customers  who  have  transactions  affecting  money  balances  and/or Please  notify  your  Financial  Advisor  or  your  brokerage  firm  promptly  of  any  changes  in  your  address  or
+security  positions.   All  other  accounts  will  receive  statements  quarterly  as  long  as  the  account  contains  a contact  information.  Failure  to  notify  us,  and  our  resulting  inability  to  send  you  important  notifications,
+money or security balance.   Please retain this statement for your records,  as it contains information that may could result in restrictions or other issues in your account.
+be needed to verify entries appearing on subsequent statements or for income tax purposes.  A charge may be
+incurred by you should duplicate copies of statements be requested at a later date. Securities Investor Protection Corporation (SIPC) and Excess SIPC Coverage
+Short Account Balances We are a member of the Securities Investor  Protection Corporation (SIPC), which protects the client assets
+of  its  members  up to  $500,000  (including  a  maximum of  $250,000  for  claims for  cash).   An explanatory
+We  maintain  all  securities  sold  short in  a  segregated  short account.   These  securities  are  marked- to-market, brochure is available upon request and by visiting http://www.sipc.org.
+and we transfer  any increase or decrease from the short sale price to your margin account on a weekly basis.
+We represent your short account balance as the balance of your short account as of the last weekly market-to- PROMPTLY  ADVISE  YOUR  FINANCIAL  ADVISOR  OR  YOUR  BROKERAGE  FIRM  IN  WRITING  OF  ANY
+market, not as of the statement end date. MATERIAL  CHANGES  IN  YOUR  INVESTMENT  OBJECTIVES  OR  FINANCIAL  SITUATION  OR  IF  THIS
+STATEMENT  IS NOT IN ACCORDANCE WITH YOUR RECORDS.
+Custody of Securities
+Fully paid for securities held by us for you, but which are not registered in your name, may be commingled with
+identical securities being held for other clients by us, or the Depository Trust  and Clearing Company or similar
+depositories.   Securities  held  for  accounts  of  customers  with  outstanding  obligations,  or  deposited  to  secure
+same,  may  from  time  to  time  and  without  notice  to  such  customer,  be  commingled  with  securities  of  other
+customers  and  used  by  us  for  pledge  or  re- pledge,  hypothecation  or  re- hypothecation,  loans  or  delivery  on
+contracts for other customers without our having in possession and control for delivery a like amount of similar
+securities.  When you pledge securities to your margin account, some or all of the securities acting as collateral
+in that account may be used, lent or pledged by us in accordance  with SEC rules.  When this happens, certain
+rights of your ownership related to such securities may be transferred  to us or transferred by us to  others.  In
+certain  circumstances,  such pledges  may limit,  in  whole  or  in  part,  your  ability  to  exercise  voting  rights  with
+respect to such securities.
+Page 5 of 6
+ACCOUNT NUMBER: 33333333
+AAAaaaa AAAAA STATEMENT PERIOD: March 1 - 31, 2022
+Important Account Information
+Our records show the following information about your account.  If any of the information is incomplete, incorrect or needs modifications, please call your financial advisor or download
+the Account Information Change Request Form here:http://www.vfmarkets.com/accountchangeform  Additionally, clients now have the option of appointing a Trusted Contact Person
+on their account by completing the required form here: http://www.vfmarkets.com/trustedcontactperson All forms should be returned to Client services at clientservices@vfmarkets.com
+or to the below address.
+Vision Financial Markets LLC
+Attn: Client Services
+120 Long Ridge Road, 3 North
+Stamford, CT 06902-1839
+ General Account Information, Primary Owner  General Account Information, Joint Owner (If applicable)
+Account Holder: AAaaaa AAAA Joint Account Holder:
+Name / Address: NY 33-33 Name / Address:
+NY, OO 22233
+Home Telephone Number: Home Telephone Number:
+Employment Status: Yes Employment Status:
+Employee of FINRA  or other Exchange Firm: <Please Provide> Employee of FINRA or other Exchange Firm:
+Occupation: Unemployed Occupation:
+ Financial Information (Aggregate if joint account)
+Annual Income: $ 0 - $ 24,999
+Net Worth (excluding value of primary residence): $ 150,000 - $ 499,999
+Account Primary Investment Objective(s): Income
+If no investment objective is indicated, please review the descriptions below and insert the objective that best describes your goal for this account.
+Description of Investment Objectives
+Preservation of Capital: An investment objective of Preservation of Capital indicates you seek to historically demonstrated a moderate to above average degree of risk of loss of principal value to
+maintain  the  principal  value  of  your  investments  and  are  interested  in  investments  that  have pursue this objective.
+historically demonstrated a very low degree of risk of loss of principal value. Speculation:  An  investment  objective  of  Speculation indicates you seek a significant increase in
+Income:  An  investment  objective  of  Income  indicates  you  seek  to  generate  income  from the principal value of your investments and are willing to accept a corresponding greater degree of
+investments and are interested in investments that have historically demonstrated a low degree of risk  by  investing in  securities  that  have historically  demonstrated a  high  degree of  risk  of  loss of
+risk of loss of principal value. principal  value  to  pursue  this  objective.   You  may  seek  to  take  advantage  of  short- term  trading
+Capital Appreciation:  An investment objective of Capital Appreciation indicates you seek to grow opportunities, which may involve establishing and liquidating positions quickly.
+the principal value of your investments over time and are willing to invest in securities that have
+Please promptly notify us of any future changes to this information.
+Page 6 of 6

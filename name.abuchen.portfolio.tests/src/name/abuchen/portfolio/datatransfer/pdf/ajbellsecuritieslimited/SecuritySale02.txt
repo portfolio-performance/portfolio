@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+XXXXXX CONTNOTE                      17082022 XXXXXX     000000113903746 44622C8M779
+Tel: 0345 54 32 600
+Email: dealingservices@youinvest.co.uk
+Mr X Y
+200
+10 Some Street
+London
+United Kingdom
+XXXX YYY
+CONTRACT NOTE
+Account No. XXXXXX AJ Bell Youinvest ISA for Mr X Y
+     Deal date           Time Settlement date Bought or Sold          Sedol Reference
+17/08/22 09.01 19/08/22 Sold  B7NLLS3 C8M779
+We have sold for you as agent
+VANGUARD FUNDS PLC S&P 500 UCITS E T F INC NAV GBP
+Venue Quantity Price Consideration
+XLON                   470 67.3483        31,653.70 GBP
+Dealing charge          9.95 GBP
+                     _____________    
+
+Total credit     31,643.75 GBP
+Order type: Market order
+This transaction is subject to the rules of the London Stock Exchange
+Dealing services for AJ Bell Youinvest are provided by AJ Bell Securities Limited (company number 2723420)
+whose registered office is: 4 Exchange Quay, Salford Quays, Manchester M5 3EE .
+AJ Bell Securities Limited is a member of the London Stock Exchange and is authorised and regulated by the Financial Conduct Authority (number 155593)

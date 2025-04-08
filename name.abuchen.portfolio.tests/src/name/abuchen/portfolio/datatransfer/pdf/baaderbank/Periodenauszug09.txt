@@ -1,0 +1,217 @@
+﻿PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+Seite 1/4
+München
+01.12.2020
+Scalable Capital Vermögensverw.GmbH
+Scalable Capital 
+Seitzstr. 8 e Vermögensverwaltung GmbH 
+Seitzstraße 8e
+80538 München
+80538 München 
+service@scalable.capital
+Max Mustermann
+Stamm-Nr.: 1234567    Portfolio: 1
+Konto-Nr.: 1234567891
+IBAN: DE99 9999 9999 9999 9999 99
+BLZ: 700 331 00
+BIC: BDWBDEMM
+Vorgangs-Nr.: 33983419
+Referenz-Nr.: 78083285
+Perioden-Kontoauszug: EUR-Konto KOPIE
+Periodenauszugs-Nr. 020002
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Kontostand in EUR am 30.10.2020 1,00
+02.11.2020 Lastschrift aktiv 02.11.2020 25,00
+Max Mustermann
+AT999999999999999999
+GIBAATWWXXX
+Scalable Capital Sparplan IE00BFNM3
+P36
+End to end Referenz:
+9DRP1XVGTBJVO2VR7A175D
+Mandatsreferenz:
+ETOMMSJMKR4PEEBCI3LXIH
+Mandatsdatum:
+16.10.2020
+Gläubiger-ID:
+DE63MUC00000000000
+Vorgangs-Nr.: 902139911
+Übertrag: 26,00
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz | HRB 217778, Amtsgericht 
+München | USt-IdNr. DE300434774 | www.scalable.capital 
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. KKTKK801-036.038
+Perioden-Kontoauszug: EUR-Konto KOPIE
+Periodenauszugs-Nr. 020002
+Fortsetzung: Seite 2/4
+Konto-Nr.: 1234567891   BLZ: 700 331 00   IBAN: DE99 9999 9999 9999 9999 99   BIC: BDWBDEMM
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Übertrag: 26,00
+02.11.2020 Lastschrift aktiv 02.11.2020 100,00
+Max Mustermann
+AT999999999999999999
+GIBAATWWXXX
+Scalable Capital Sparplan LU1563454
+310
+End to end Referenz:
+5STCURH4NFSAPBDFLFAKF4
+Mandatsreferenz:
+ETOMMSJMKR4PEEBCI3LXIH
+Mandatsdatum:
+16.10.2020
+Gläubiger-ID:
+DE63MUC00000000000
+Vorgangs-Nr.: 902141758
+02.11.2020 Lastschrift aktiv 02.11.2020 25,00
+Max Mustermann
+AT999999999999999999
+GIBAATWWXXX
+Scalable Capital Sparplan IE00BFXR5
+W90
+End to end Referenz:
+9ACQVDP7Y1X1DEWPZMX1A7
+Mandatsreferenz:
+ETOMMSJMKR4PEEBCI3LXIH
+Mandatsdatum:
+16.10.2020
+Gläubiger-ID:
+DE63MUC00000000000
+Vorgangs-Nr.: 902143290
+02.11.2020 Lastschrift aktiv 02.11.2020 25,00
+Max Mustermann
+AT999999999999999999
+GIBAATWWXXX
+Scalable Capital Sparplan IE00BFNM3
+L97
+End to end Referenz:
+GQHHFI6MSXCTUS9BQVM5WK
+Mandatsreferenz:
+ETOMMSJMKR4PEEBCI3LXIH
+Mandatsdatum:
+16.10.2020
+Gläubiger-ID:
+DE63MUC00000000000
+Vorgangs-Nr.: 902143631
+Übertrag: 176,00
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz | HRB 217778, Amtsgericht 
+München | USt-IdNr. DE300434774 | www.scalable.capital 
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. KKTKK801-036.038
+Perioden-Kontoauszug: EUR-Konto KOPIE
+Periodenauszugs-Nr. 020002
+Fortsetzung: Seite 3/4
+Konto-Nr.: 1234567891   BLZ: 700 331 00   IBAN: DE99 9999 9999 9999 9999 99   BIC: BDWBDEMM
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Übertrag: 176,00
+02.11.2020 Lastschrift aktiv 02.11.2020 35,00
+Max Mustermann
+AT999999999999999999
+GIBAATWWXXX
+Scalable Capital Sparplan IE00BFMNP
+S42
+End to end Referenz:
+AVYXCGHTZPKWBMLHC5ETHY
+Mandatsreferenz:
+ETOMMSJMKR4PEEBCI3LXIH
+Mandatsdatum:
+16.10.2020
+Gläubiger-ID:
+DE63MUC00000000000
+Vorgangs-Nr.: 902144242
+02.11.2020 Lastschrift aktiv 02.11.2020 40,00
+Max Mustermann
+AT999999999999999999
+GIBAATWWXXX
+Scalable Capital Sparplan IE00BFNM3
+D14
+End to end Referenz:
+VTMWVSFRDTT7EDBVD3S93S
+Mandatsreferenz:
+ETOMMSJMKR4PEEBCI3LXIH
+Mandatsdatum:
+16.10.2020
+Gläubiger-ID:
+DE63MUC00000000000
+Vorgangs-Nr.: 902144386
+02.11.2020 Lastschrift aktiv 02.11.2020 50,00
+Max Mustermann
+AT999999999999999999
+GIBAATWWXXX
+Scalable Capital Sparplan LU1215461
+325
+End to end Referenz:
+PDKLUXPHRHX13IQR4JTAE4
+Mandatsreferenz:
+ETOMMSJMKR4PEEBCI3LXIH
+Mandatsdatum:
+16.10.2020
+Gläubiger-ID:
+DE63MUC00000000000
+Vorgangs-Nr.: 902155210
+Übertrag: 301,00
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz | HRB 217778, Amtsgericht 
+München | USt-IdNr. DE300434774 | www.scalable.capital 
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. KKTKK801-036.038
+Perioden-Kontoauszug: EUR-Konto KOPIE
+Periodenauszugs-Nr. 020002
+Fortsetzung: Seite 4/4
+Konto-Nr.: 1234567891   BLZ: 700 331 00   IBAN: DE99 9999 9999 9999 9999 99   BIC: BDWBDEMM
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Übertrag: 301,00
+03.11.2020 Kauf 05.11.2020 99,96 -
+MUL-LYXOR GREEN BD(DR) A
+ISIN LU1563454310
+STK               1,796
+Vorgangs-Nr.: WWUM 24311635
+03.11.2020 Kauf 05.11.2020 34,99 -
+X(IE)-MSCI USA ESG 1C
+ISIN IE00BFMNPS42
+STK               1,211
+Vorgangs-Nr.: WWUM 24317637
+03.11.2020 Kauf 05.11.2020 25,00 -
+ISHSIV-MSCI JAP.ESG S.DLA
+ISIN IE00BFNM3L97
+STK               5,351
+Vorgangs-Nr.: WWUM 24318948
+03.11.2020 Kauf 05.11.2020 24,99 -
+ISHSIV-MSCI EM IMI ES.DLA
+ISIN IE00BFNM3P36
+STK               4,77
+Vorgangs-Nr.: WWUM 24333247
+03.11.2020 Kauf 05.11.2020 40,00 -
+ISHSIV-MSCI EUR.ESG S.EOA
+ISIN IE00BFNM3D14
+STK               7,671
+Vorgangs-Nr.: WWUM 24339183
+03.11.2020 Kauf 05.11.2020 49,98 -
+UBS-BBMSCIUSLCSUETF AAHEO
+ISIN LU1215461325
+STK               2,871
+Vorgangs-Nr.: WWUM 24346496
+03.11.2020 Kauf 05.11.2020 24,99 -
+L+G-AP.EX JN EQ DLA
+ISIN IE00BFXR5W90
+STK               2,703
+Vorgangs-Nr.: WWUM 24346768
+Kontostand in EUR am 30.11.2020 1,09
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz | HRB 217778, Amtsgericht 
+München | USt-IdNr. DE300434774 | www.scalable.capital 
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. KKTKK801-036.038

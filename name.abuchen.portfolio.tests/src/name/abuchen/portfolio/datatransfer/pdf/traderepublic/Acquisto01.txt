@@ -1,0 +1,33 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.3
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KÖPENICKER STRASSE 40C  10179 BERLIN
+mRXWPxWr rYTgBw IJLoT soUgLTO PAGINA 1 dal 1
+DLF TRUI INYUjUB 515 DATA 01.06.2023
+51670 cyuzKxpHr ORDINE cY43-6m6l
+ESECUZIONE V711-7789
+CONTO TITOLI 5505511218
+REGOLAMENTO TITOLI
+PANORAMICA
+Market-OrderAcquisto il 01.06.2023 alle 10:46 (Europe/Berlin) su Lang & Schwarz Exchange.
+La controparte della transazione è Lang & Schwarz TradeCenter AG & Co. KG.
+POSIZIONE QUANTITÀ PREZZO IMPORTO
+zjBAM Corp. 125 Pz. 29,75 EUR 3.718,75 EUR
+Registered Shares DL -,001
+ISIN: US3281404601
+TOTALE 3.718,75 EUR
+FATTURAZIONE
+POSIZIONE IMPORTO
+Supplemento spese di terzi -1,00 EUR
+TOTALE -3.719,75 EUR
+PRENOTAZIONE
+CONTO DI TRANSITO DATA VALUTA IMPORTO
+DE76502107645011478092 05.06.2023 -3.719,75 EUR
+zjBAM Corp. Registered Shares DL -,001 in giro collection storage in Germania.
+Questo regolamento viene creato automaticamente e quindi non è firmato.
+Se non viene mostrata l'IVA, si tratta di un servizio esente da imposte sulle vendite in conformità con la 
+regolamentazione UStG § 4 n. 8.
+Trade Republic Bank GmbH www.traderepublic.com Sede centrale: Berlin Direttore Generale
+Köpenicker Straße 40c service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10179 Berlin PARTITA IVA DE307510626 Gernot Mittendorfer
+ABRE / 01.06.2023 / 70254581 / 15b2-ec38

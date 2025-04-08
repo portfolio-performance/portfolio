@@ -30,34 +30,64 @@ public final class LogoManager
 
     public Image getDefaultColumnImage(Object object, ClientSettings settings)
     {
-        Image logo = getLogoImage(object, settings);
-        return logo != null ? logo : getFallbackColumnImage(object);
+        return getDefaultColumnImage(object, settings, false);
     }
 
-    private Image getLogoImage(Object object, ClientSettings settings)
+    public Image getDefaultColumnImage(Object object, ClientSettings settings, boolean disabled)
     {
-        if (object instanceof Attributable)
+        Image logo = getLogoImage(object, settings, disabled);
+        return logo != null ? logo : getFallbackColumnImage(object, disabled);
+    }
+
+    public boolean hasCustomLogo(Attributable object, ClientSettings settings)
+    {
+        if (object == null)
+            return false;
+
+        Optional<AttributeType> logoAttr = settings.getOptionalLogoAttributeType(object.getClass());
+        if (!logoAttr.isPresent())
+            return false;
+
+        if (!object.getAttributes().exists(logoAttr.get()))
+            return false;
+
+        return object.getAttributes().get(logoAttr.get()) != null;
+    }
+
+    public void clearCustomLogo(Attributable object, ClientSettings settings)
+    {
+        if (object == null)
+            return;
+
+        Optional<AttributeType> logoAttr = settings.getOptionalLogoAttributeType(object.getClass());
+        if (!logoAttr.isPresent())
+            return;
+
+        object.getAttributes().remove(logoAttr.get());
+    }
+
+    private Image getLogoImage(Object object, ClientSettings settings, boolean disabled)
+    {
+        if (object instanceof Attributable target)
         {
-            Attributable target = (Attributable) object;
             Optional<AttributeType> logoAttr = settings.getOptionalLogoAttributeType(target.getClass());
-            Image logo = logoAttr.isPresent() ? ImageManager.instance().getImage(target, logoAttr.get()) : null;
-            return logo;
+            return logoAttr.isPresent() ? ImageManager.instance().getImage(target, logoAttr.get(), disabled) : null;
         }
         return null;
     }
 
-    private Image getFallbackColumnImage(Object object)
+    private Image getFallbackColumnImage(Object object, boolean disabled)
     {
         if (object instanceof Account)
-            return Images.ACCOUNT.image();
-        else if (object instanceof Security)
-            return ((Security) object).isRetired() ? Images.SECURITY_RETIRED.image() : Images.SECURITY.image();
+            return Images.ACCOUNT.image(disabled);
+        else if (object instanceof Security security)
+            return security.isRetired() ? Images.SECURITY_RETIRED.image(disabled) : Images.SECURITY.image(disabled);
         else if (object instanceof Portfolio)
-            return Images.PORTFOLIO.image();
+            return Images.PORTFOLIO.image(disabled);
         else if (object instanceof InvestmentPlan)
-            return Images.INVESTMENTPLAN.image();
+            return Images.INVESTMENTPLAN.image(disabled);
         else if (object instanceof Classification)
-            return Images.CATEGORY.image();
+            return Images.CATEGORY.image(disabled);
         else
             return null;
     }

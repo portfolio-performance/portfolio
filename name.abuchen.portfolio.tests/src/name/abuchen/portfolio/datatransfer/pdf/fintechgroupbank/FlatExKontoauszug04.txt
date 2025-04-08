@@ -1,0 +1,79 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.5.qualifier
+-----------------------------------------
+flatex Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatex Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+             Frankfurt, 02.10.2019
+0101012000001300091880
+Herr 
+Max Mustermann 
+Musterstr. 2 
+54321 Musterhausen
+Kontoauszug Nr:    003/2019                              Seite 1 von 2
+Kontonummer :      1003232541      IBAN: DE31 1013 0800 1002 4598 75
+Kontenart   :      Kontokorrentkonto
+Kontowährung:      EUR
+Alter Saldo vom    30.06.2019                     in EUR               495,55+
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+01.07.     30.06.  Zinsabschluss  01.04.2019 - 30.06.2019                0,50-
+02.07.     02.07.  Überweisung                                        -495,05-
+                   FIMBankTG                                                  
+                   BIWBDE33XXX                                                
+                   DE49101308001007829609                                     
+                   flatex Bank AG                                             
+02.08.     01.08.  3cb27cfd-0454-4dad-88bd-a60c6f1ba3f8                  0,11+
+                   ZINSPILOT Auszahlung FIMBank p.l.c.
+                   3cb27c
+19.08.     16.08.  b8b6264d-52d3-45da-a53e-1f36501e1473                  0,09+
+                   ZINSPILOT Auszahlung FIMBank p.l.c.                        
+                   b8b626                                                     
+03.09.     02.09.  8fd250cd-bd3d-4261-851b-5ed0fb6842a6                  0,11+
+                   ZINSPILOT Auszahlung FIMBank p.l.c.
+                   8fd250
+17.09.     16.09.  02677bb0-badd-4291-8373-e058d2933cd3                  0,09+
+                   ZINSPILOT Auszahlung FIMBank p.l.c.                        
+                   02677b                                                     
+Neuer Saldo 30.09.2019 Nr. 003/2019         Währung EUR                  0,40+
+Der ausgewiesene Kontosaldo kann durch abweichende Wertstellung (Valuta) vom
+wertmäßigen Kontostand abweichen. Die Wertstellung von Buchungen ist auch
+relevant für die Berechnung von Zinsen.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann
+2000001300091880 0113101010000101
+Kontoauszug Nr:    003/2019                              Seite 2 von 2
+Gemäß § 11 Außenwirtschaftsgesetz (AWG) in Verbindung mit §§ 67 ff. Außen-
+wirtschaftsverordnung (AWV) haben Inländer (in Deutschland ansässige
+natürliche und juristische Personen) Zahlungen von mehr als 12 500 Euro oder
+Gegenwert zu melden, die sie von Ausländern (im Ausland ansässige natürliche
+und juristische Personen) oder für deren Rechnung von Inländern entgegennehmen
+(eingehende Zahlungen) oder an Ausländer oder für deren Rechnung an Inländer
+leisten (ausgehende Zahlungen). Die Deutsche Bundesbank und ihre Filialen
+erteilen dazu gern die notwendigen Auskünfte.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes
+entschädigungsfähig. Nähere Informationen können dem "Informationsbogen für
+den Einleger" entnommen werden.
+Der Rechnungsabschluss wird Ihnen als separates Dokument zur Verfügung
+gestellt.
+Beanstandungen  gegen Rechnungsabschlüsse sind unverzüglich und schriftlich zu
+senden an:
+      flatex Bank AG
+      Revision
+      Postfach 100551
+      41405 Neuss.
+Der Abschlusssaldo gilt als genehmigt, wenn ihm nicht innerhalb von 6 Wochen
+ab Zugang schriftlich widersprochen  wird. Zur Fristwahrung genügt die
+rechtzeitige Absendung der Einwendung.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann
+2000001300091880
+
+```

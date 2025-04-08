@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.handlers;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -9,6 +9,7 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ExportWizard;
 
 public class ExportHandler
@@ -25,9 +26,8 @@ public class ExportHandler
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
     {
         MenuHelper.getActiveClientInput(part)
-                        .ifPresent(input -> new WizardDialog(shell,
-                                        new ExportWizard(input.getClient(), input.getExchangeRateProviderFacory()))
-                                                        .open());
+                        .ifPresent(input -> new WizardDialog(shell, new ExportWizard((PortfolioPart) part.getObject(),
+                                        input.getClient(), input.getExchangeRateProviderFacory())).open());
     }
 
 }

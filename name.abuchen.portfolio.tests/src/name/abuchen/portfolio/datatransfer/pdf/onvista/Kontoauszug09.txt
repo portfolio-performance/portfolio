@@ -1,0 +1,88 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1 von 2
+Herr Unsere Postanschrift:
+Max Mustermann onvista bank
+Musterstr. 18 Postfach 10 08 60
+47051 Duisburg 60008 Frankfurt
+Kundenservice:
+Telefon: +49 (0) 69 7107 - 530
+Fax +49 (0) 69 7107 - 100
+Mo-Fr 8:00 - 19:00 Uhr
+service@onvista-bank.de
+Ihre Bankverbindung für Überweisungen:
+IBAN DE44514108000286001046
+BIC BOURDEFF
+Kontoauszug Nr. 2020 / 1 und Rechnungsabschluss zum 31.03.2020
+EUR - Verrechnungskonto: 0 286001 046
+Alter Saldo 0,00 H
+Neuer Saldo 1.000,00 H
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig.
+Nähere Informationen können dem "Informationsbogen für den Einleger", der unter www.onvista-bank.de
+im Menü "Service - Formulare" abgelegt ist, entnommen werden.
+Der Ihnen angezeigte Saldo kann Kontobewegungen berücksichtigen, deren tatsächliche
+Wertstellung (Valuta) noch nicht erfolgt ist. Bitte beachten Sie dies bei Ihrer Gelddisposition, da
+ansonsten Sollzinsen / Überziehungszinsen anfallen könnten. Das Datum der Wertstellung (Valuta)
+können Sie auf den folgenden Seiten zur jeweiligen Buchung entnehmen.
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit eines Rechnungsabschlusses sind gem. Nr. 7
+Abs. 2 unserer Allgemeinen Geschäftsbedingungen spätestens vor Ablauf von sechs Wochen nach
+Zugang des Rechnungsabschlusses zu erheben. Sofern Sie Ihre Einwendungen schriftlich geltend
+machen, richten Sie diese bitte unter Angabe der oben genannten Kontonummer an die onvista
+bank, Interne Revision, Wildunger Straße 6a, 60487 Frankfurt am Main. Es genügt die Absendung
+innerhalb der Sechs-Wochen-Frist. Das Unterlassen rechtzeitiger Einwendungen gilt als
+Genehmigung.
+Bei Zahlungen größer 12.500 EUR bitte Meldepflichten nach dem Außenwirtschaftsrecht beachten.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+Seite 2 von 2
+Kontoauszug Nr. 2020 / 1 und Rechnungsabschluss zum 31.03.2020
+EUR - Verrechnungskonto: 0 286001 046
+Buchungs- Valuta Buchungstext Soll in EUR Haben in EUR
+datum
+Alter Kontostand vom 31.12.19 0,00+
+03.02. 03.02. REF: 000086194996 350,00+
+Überweisungseingang SEPA
+sparen.onvista
+NOTPROVIDED
+LTW200340002400003-008
+18.02. 19.02. REF: 000086975309 250,00-
+Wertpapierkauf
+COMS.-MSCI WORL.T.U.ETF I
+STK: 3,9374
+ISIN: LU0392494562
+ABR: 5699874120200217
+18.02. 19.02. REF: 000086975310 100,00-
+Wertpapierkauf
+COMS.-MSCI EM.M.T.U.ETF I
+STK: 2,1929
+ISIN: LU0635178014
+ABR: 6410900020200217
+02.03. 02.03. REF: 000087958971 350,00+
+Überweisungseingang SEPA
+sparen.onvista
+NOTPROVIDED
+LTW200620001200002-008
+18.03. 18.03. REF: 000089463847 250,00-
+Wertpapierkauf
+COMS.-MSCI WORL.T.U.ETF I
+STK: 5,5693
+ISIN: LU0392494562
+ABR: 9928753620200317
+18.03. 18.03. REF: 000089463848 100,00-
+Wertpapierkauf
+COMS.-MSCI EM.M.T.U.ETF I
+STK: 2,9946
+ISIN: LU0635178014
+ABR: 4675525420200317
+23.03. 23.03. REF: 000089854792 1.000,00+
+Überweisungseingang SEPA
+sparen.onvista
+NOTPROVIDED
+LTW200830001100002-008
+Neuer Kontostand zum 31.03.2020 1.000,00+
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor

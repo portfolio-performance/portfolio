@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -9,11 +10,11 @@ import java.time.LocalTime;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 
-import com.ibm.icu.text.MessageFormat;
-
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -23,6 +24,7 @@ import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
 
@@ -31,7 +33,7 @@ public class AccountTransactionModel extends AbstractModel
     public enum Properties
     {
         security, account, date, time, shares, fxGrossAmount, dividendAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
-        fxTaxes, taxes, total, note, exchangeRateCurrencies, inverseExchangeRateCurrencies, // NOSONAR
+        fxTaxes, taxes, fxFees, fees, total, note, exchangeRateCurrencies, inverseExchangeRateCurrencies, // NOSONAR
         accountCurrencyCode, securityCurrencyCode, fxCurrencyCode, calculationStatus; // NOSONAR
     }
 
@@ -43,10 +45,13 @@ public class AccountTransactionModel extends AbstractModel
     private Account sourceAccount;
     private AccountTransaction sourceTransaction;
 
+    /** if given, it can be used to pre-fill the number of shares */
+    private Portfolio portfolio;
+
     private Security security;
     private Account account;
     private LocalDate date = LocalDate.now();
-    private LocalTime time = LocalTime.MIDNIGHT;
+    private LocalTime time = PresetValues.getTime();
     private long shares;
 
     private long fxGrossAmount;
@@ -56,6 +61,8 @@ public class AccountTransactionModel extends AbstractModel
 
     private long fxTaxes;
     private long taxes;
+    private long fxFees;
+    private long fees;
     private long total;
 
     private String note;
@@ -80,20 +87,9 @@ public class AccountTransactionModel extends AbstractModel
     {
         switch (type)
         {
-            case DEPOSIT:
-            case REMOVAL:
-            case FEES:
-            case FEES_REFUND:
-            case TAXES:
-            case TAX_REFUND:
-            case INTEREST:
-            case INTEREST_CHARGE:
-            case DIVIDENDS:
+            case DEPOSIT, REMOVAL, FEES, FEES_REFUND, TAXES, TAX_REFUND, INTEREST, INTEREST_CHARGE, DIVIDENDS:
                 return;
-            case BUY:
-            case SELL:
-            case TRANSFER_IN:
-            case TRANSFER_OUT:
+            case BUY, SELL, TRANSFER_IN, TRANSFER_OUT:
             default:
                 throw new UnsupportedOperationException();
         }
@@ -137,6 +133,9 @@ public class AccountTransactionModel extends AbstractModel
 
         t.clearUnits();
 
+        if (fees != 0)
+            t.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, Money.of(getAccountCurrencyCode(), fees)));
+
         if (taxes != 0)
             t.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, Money.of(getAccountCurrencyCode(), taxes)));
 
@@ -148,6 +147,12 @@ public class AccountTransactionModel extends AbstractModel
                             Money.of(getSecurityCurrencyCode(), fxGrossAmount), //
                             getExchangeRate());
             t.addUnit(forex);
+
+            if (fxFees != 0)
+                t.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
+                                Money.of(getAccountCurrencyCode(), Math.round(fxFees * exchangeRate.doubleValue())), //
+                                Money.of(getSecurityCurrencyCode(), fxFees), //
+                                exchangeRate));
 
             if (fxTaxes != 0)
                 t.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, //
@@ -166,9 +171,12 @@ public class AccountTransactionModel extends AbstractModel
         setFxGrossAmount(0);
         setDividendAmount(BigDecimal.ZERO);
         setGrossAmount(0);
+        setFees(0);
+        setFxFees(0);
         setTaxes(0);
         setFxTaxes(0);
         setNote(null);
+        setTime(PresetValues.getTime());
     }
 
     public boolean supportsShares()
@@ -178,31 +186,19 @@ public class AccountTransactionModel extends AbstractModel
 
     public boolean supportsSecurity()
     {
-        switch (type)
-        {
-            case DIVIDENDS:
-            case TAXES:
-            case TAX_REFUND:
-            case FEES:
-            case FEES_REFUND:
-                return true;
-            default:
-                return false;
-        }
+        return type == Type.DIVIDENDS //
+                        || type == Type.TAXES //
+                        || type == Type.TAX_REFUND //
+                        || type == Type.FEES //
+                        || type == Type.FEES_REFUND;
     }
 
     public boolean supportsOptionalSecurity()
     {
-        switch (type)
-        {
-            case TAXES:
-            case TAX_REFUND:
-            case FEES:
-            case FEES_REFUND:
-                return true;
-            default:
-                return false;
-        }
+        return type == Type.TAXES //
+                        || type == Type.TAX_REFUND //
+                        || type == Type.FEES //
+                        || type == Type.FEES_REFUND;
     }
 
     public boolean supportsTaxUnits()
@@ -210,11 +206,21 @@ public class AccountTransactionModel extends AbstractModel
         return type == AccountTransaction.Type.DIVIDENDS || type == AccountTransaction.Type.INTEREST;
     }
 
+    public boolean supportsFees()
+    {
+        return type == AccountTransaction.Type.DIVIDENDS;
+    }
+
     public void setSource(Account account, AccountTransaction transaction)
     {
         this.sourceAccount = account;
         this.sourceTransaction = transaction;
 
+        presetFromSource(account, transaction);
+    }
+
+    public void presetFromSource(Account account, AccountTransaction transaction)
+    {
         this.security = transaction.getSecurity();
         if (this.security == null && supportsOptionalSecurity())
             this.security = EMPTY_SECURITY;
@@ -230,6 +236,8 @@ public class AccountTransactionModel extends AbstractModel
         this.exchangeRate = BigDecimal.ONE;
         this.taxes = 0;
         this.fxTaxes = 0;
+        this.fees = 0;
+        this.fxFees = 0;
 
         transaction.getUnits().forEach(unit -> {
             switch (unit.getType())
@@ -244,6 +252,12 @@ public class AccountTransactionModel extends AbstractModel
                         this.fxTaxes += unit.getForex().getAmount();
                     else
                         this.taxes += unit.getAmount().getAmount();
+                    break;
+                case FEE:
+                    if (unit.getForex() != null)
+                        this.fxFees += unit.getForex().getAmount();
+                    else
+                        this.fees += unit.getAmount().getAmount();
                     break;
                 default:
                     throw new UnsupportedOperationException();
@@ -298,7 +312,7 @@ public class AccountTransactionModel extends AbstractModel
         String oldExchangeRateCurrencies = getExchangeRateCurrencies();
         String oldInverseExchangeRateCurrencies = getInverseExchangeRateCurrencies();
 
-        firePropertyChange(Properties.account.name(), this.account, this.account = account);
+        firePropertyChange(Properties.account.name(), this.account, this.account = account); // NOSONAR
 
         firePropertyChange(Properties.accountCurrencyCode.name(), oldCurrencyCode, getAccountCurrencyCode());
         firePropertyChange(Properties.fxCurrencyCode.name(), oldFxCurrencyCode, getFxCurrencyCode());
@@ -315,6 +329,16 @@ public class AccountTransactionModel extends AbstractModel
         return security;
     }
 
+    public void setPortfolio(Portfolio portfolio)
+    {
+        this.portfolio = portfolio;
+    }
+
+    public Portfolio getPortfolio()
+    {
+        return portfolio;
+    }
+
     public void setSecurity(Security security)
     {
         if (!supportsSecurity())
@@ -325,7 +349,7 @@ public class AccountTransactionModel extends AbstractModel
         String oldExchangeRateCurrencies = getExchangeRateCurrencies();
         String oldInverseExchangeRateCurrencies = getInverseExchangeRateCurrencies();
 
-        firePropertyChange(Properties.security.name(), this.security, this.security = security);
+        firePropertyChange(Properties.security.name(), this.security, this.security = security); // NOSONAR
 
         firePropertyChange(Properties.securityCurrencyCode.name(), oldCurrencyCode, getSecurityCurrencyCode());
         firePropertyChange(Properties.fxCurrencyCode.name(), oldFxCurrencyCode, getFxCurrencyCode());
@@ -340,17 +364,20 @@ public class AccountTransactionModel extends AbstractModel
 
     private void updateExchangeRate()
     {
+        // set exchange rate to 1, if account and security have the same
+        // currency or no security is selected
+        if (getAccountCurrencyCode().equals(getSecurityCurrencyCode()) || getSecurityCurrencyCode().isEmpty())
+        {
+            setExchangeRate(BigDecimal.ONE);
+            return;
+        }
+
         // do not auto-suggest exchange rates when editing an existing
         // transaction
         if (sourceTransaction != null)
             return;
 
-        // set exchange rate to 1, if account and security have the same currency or no security is selected
-        if (getAccountCurrencyCode().equals(getSecurityCurrencyCode()) || getSecurityCurrencyCode().isEmpty())
-        {
-            setExchangeRate(BigDecimal.ONE);
-        }
-        else if (!getSecurityCurrencyCode().isEmpty())
+        if (!getSecurityCurrencyCode().isEmpty())
         {
             ExchangeRateTimeSeries series = getExchangeRateProviderFactory() //
                             .getTimeSeries(getSecurityCurrencyCode(), getAccountCurrencyCode());
@@ -374,6 +401,21 @@ public class AccountTransactionModel extends AbstractModel
 
         CurrencyConverter converter = new CurrencyConverterImpl(getExchangeRateProviderFactory(),
                         client.getBaseCurrency());
+
+        // if a portfolio is given, then let's prefill the number of shares with
+        // the holdings of that given portfolio. If none exist, fallback to the
+        // total holdings.
+        if (portfolio != null)
+        {
+            PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, converter, date);
+            SecurityPosition p = snapshot.getPositionsBySecurity().get(security);
+            if (p != null && p.getShares() != 0)
+            {
+                setShares(p.getShares());
+                return;
+            }
+        }
+
         ClientSnapshot snapshot = ClientSnapshot.create(client, converter, date);
         SecurityPosition p = snapshot.getJointPortfolio().getPositionsBySecurity().get(security);
         setShares(p != null ? p.getShares() : 0);
@@ -386,7 +428,7 @@ public class AccountTransactionModel extends AbstractModel
 
     public void setDate(LocalDate date)
     {
-        firePropertyChange(Properties.date.name(), this.date, this.date = date);
+        firePropertyChange(Properties.date.name(), this.date, this.date = date); // NOSONAR
         updateShares();
         updateExchangeRate();
     }
@@ -398,7 +440,7 @@ public class AccountTransactionModel extends AbstractModel
 
     public void setTime(LocalTime time)
     {
-        firePropertyChange(Properties.time.name(), this.time, this.time = time);
+        firePropertyChange(Properties.time.name(), this.time, this.time = time); // NOSONAR
     }
 
     public long getShares()
@@ -408,10 +450,10 @@ public class AccountTransactionModel extends AbstractModel
 
     public void setShares(long shares)
     {
-        firePropertyChange(Properties.shares.name(), this.shares, this.shares = shares);
+        firePropertyChange(Properties.shares.name(), this.shares, this.shares = shares); // NOSONAR
 
         firePropertyChange(Properties.dividendAmount.name(), this.dividendAmount,
-                        this.dividendAmount = calculateDividendAmount());
+                        this.dividendAmount = calculateDividendAmount()); // NOSONAR
     }
 
     public long getFxGrossAmount()
@@ -422,15 +464,15 @@ public class AccountTransactionModel extends AbstractModel
     public void setFxGrossAmount(long foreignCurrencyAmount)
     {
         firePropertyChange(Properties.fxGrossAmount.name(), this.fxGrossAmount,
-                        this.fxGrossAmount = foreignCurrencyAmount);
+                        this.fxGrossAmount = foreignCurrencyAmount); // NOSONAR
 
         triggerGrossAmount(Math.round(exchangeRate.doubleValue() * foreignCurrencyAmount));
 
         firePropertyChange(Properties.dividendAmount.name(), this.dividendAmount,
-                        this.dividendAmount = calculateDividendAmount());
+                        this.dividendAmount = calculateDividendAmount()); // NOSONAR
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
-                        this.calculationStatus = calculateStatus());
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public BigDecimal getDividendAmount()
@@ -440,14 +482,17 @@ public class AccountTransactionModel extends AbstractModel
 
     public void setDividendAmount(BigDecimal amount)
     {
-        triggerDividendAmount(amount);
+        // if the users deletes the input, amount can be null
+        var dividend = amount != null ? amount : BigDecimal.ZERO;
+
+        triggerDividendAmount(dividend);
         long myGrossAmount = calculateGrossAmount4Dividend();
         setFxGrossAmount(myGrossAmount);
     }
 
     public void triggerDividendAmount(BigDecimal amount)
     {
-        firePropertyChange(Properties.dividendAmount.name(), this.dividendAmount, this.dividendAmount = amount);
+        firePropertyChange(Properties.dividendAmount.name(), this.dividendAmount, this.dividendAmount = amount); // NOSONAR
     }
 
     public BigDecimal getExchangeRate()
@@ -460,23 +505,29 @@ public class AccountTransactionModel extends AbstractModel
         BigDecimal newRate = exchangeRate == null ? BigDecimal.ZERO : exchangeRate;
         BigDecimal oldInverseRate = getInverseExchangeRate();
 
-        firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newRate);
+        firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newRate); // NOSONAR
         firePropertyChange(Properties.inverseExchangeRate.name(), oldInverseRate, getInverseExchangeRate());
 
         triggerGrossAmount(Math.round(newRate.doubleValue() * fxGrossAmount));
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
-                        this.calculationStatus = calculateStatus());
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public BigDecimal getInverseExchangeRate()
     {
-        return BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+        if (exchangeRate.compareTo(BigDecimal.ZERO) == 0)
+            return BigDecimal.ZERO;
+        else
+            return BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
     }
 
     public void setInverseExchangeRate(BigDecimal rate)
     {
-        setExchangeRate(BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN));
+        if (rate == null || rate.compareTo(BigDecimal.ZERO) == 0)
+            setExchangeRate(BigDecimal.ZERO);
+        else
+            setExchangeRate(BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN));
     }
 
     public long getGrossAmount()
@@ -493,17 +544,17 @@ public class AccountTransactionModel extends AbstractModel
             BigDecimal newExchangeRate = BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(fxGrossAmount), 10,
                             RoundingMode.HALF_UP);
             BigDecimal oldInverseRate = getInverseExchangeRate();
-            firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newExchangeRate);
+            firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newExchangeRate); // NOSONAR
             firePropertyChange(Properties.inverseExchangeRate.name(), oldInverseRate, getInverseExchangeRate());
         }
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
-                        this.calculationStatus = calculateStatus());
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public void triggerGrossAmount(long amount)
     {
-        firePropertyChange(Properties.grossAmount.name(), this.grossAmount, this.grossAmount = amount);
+        firePropertyChange(Properties.grossAmount.name(), this.grossAmount, this.grossAmount = amount); // NOSONAR
         triggerTotal(calculateTotal());
     }
 
@@ -512,13 +563,27 @@ public class AccountTransactionModel extends AbstractModel
         return fxTaxes;
     }
 
+    public long getFxFees()
+    {
+        return fxFees;
+    }
+
     public void setFxTaxes(long fxTaxes)
     {
-        firePropertyChange(Properties.fxTaxes.name(), this.fxTaxes, this.fxTaxes = fxTaxes);
+        firePropertyChange(Properties.fxTaxes.name(), this.fxTaxes, this.fxTaxes = fxTaxes); // NOSONAR
         triggerTotal(calculateTotal());
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
-                        this.calculationStatus = calculateStatus());
+                        this.calculationStatus = calculateStatus()); // NOSONAR
+    }
+
+    public void setFxFees(long fxFees)
+    {
+        firePropertyChange(Properties.fxFees.name(), this.fxFees, this.fxFees = fxFees); // NOSONAR
+        triggerTotal(calculateTotal());
+
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public long getTaxes()
@@ -526,13 +591,27 @@ public class AccountTransactionModel extends AbstractModel
         return taxes;
     }
 
+    public long getFees()
+    {
+        return fees;
+    }
+
     public void setTaxes(long taxes)
     {
-        firePropertyChange(Properties.taxes.name(), this.taxes, this.taxes = taxes);
+        firePropertyChange(Properties.taxes.name(), this.taxes, this.taxes = taxes); // NOSONAR
         triggerTotal(calculateTotal());
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
-                        this.calculationStatus = calculateStatus());
+                        this.calculationStatus = calculateStatus()); // NOSONAR
+    }
+
+    public void setFees(long fees)
+    {
+        firePropertyChange(Properties.fees.name(), this.fees, this.fees = fees); // NOSONAR
+        triggerTotal(calculateTotal());
+
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public long getTotal()
@@ -545,21 +624,21 @@ public class AccountTransactionModel extends AbstractModel
         triggerTotal(total);
 
         firePropertyChange(Properties.grossAmount.name(), this.grossAmount,
-                        this.grossAmount = calculateGrossAmount4Total());
+                        this.grossAmount = calculateGrossAmount4Total()); // NOSONAR
 
         firePropertyChange(Properties.fxGrossAmount.name(), this.fxGrossAmount,
-                        this.fxGrossAmount = Math.round(grossAmount / exchangeRate.doubleValue()));
+                        this.fxGrossAmount = Math.round(grossAmount / exchangeRate.doubleValue())); // NOSONAR
 
         firePropertyChange(Properties.dividendAmount.name(), this.dividendAmount,
-                        this.dividendAmount = calculateDividendAmount());
+                        this.dividendAmount = calculateDividendAmount()); // NOSONAR
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
-                        this.calculationStatus = calculateStatus());
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public void triggerTotal(long total)
     {
-        firePropertyChange(Properties.total.name(), this.total, this.total = total);
+        firePropertyChange(Properties.total.name(), this.total, this.total = total); // NOSONAR
     }
 
     protected BigDecimal calculateDividendAmount()
@@ -573,20 +652,21 @@ public class AccountTransactionModel extends AbstractModel
 
     protected long calculateGrossAmount4Total()
     {
+        long totalFees = fees + Math.round(exchangeRate.doubleValue() * fxFees);
         long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * fxTaxes);
-        return total + totalTaxes;
+        return total + totalFees + totalTaxes;
     }
 
     protected long calculateGrossAmount4Dividend()
     {
-        return Math.round((shares * dividendAmount.doubleValue() * Values.Amount.factor())
-                        / (double) Values.Share.factor());
+        return Math.round((shares * dividendAmount.doubleValue() * Values.Amount.factor()) / Values.Share.factor());
     }
 
     private long calculateTotal()
     {
+        long totalFees = fees + Math.round(exchangeRate.doubleValue() * fxFees);
         long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * fxTaxes);
-        return Math.max(0, grossAmount - totalTaxes);
+        return Math.max(0, grossAmount - totalTaxes - totalFees);
     }
 
     public String getNote()
@@ -596,7 +676,7 @@ public class AccountTransactionModel extends AbstractModel
 
     public void setNote(String note)
     {
-        firePropertyChange(Properties.note.name(), this.note, this.note = note);
+        firePropertyChange(Properties.note.name(), this.note, this.note = note); // NOSONAR
     }
 
     public String getAccountCurrencyCode()

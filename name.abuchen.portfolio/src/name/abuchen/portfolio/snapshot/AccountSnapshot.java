@@ -55,7 +55,7 @@ public class AccountSnapshot
     
     /* package */ Account unwrapAccount()
     {
-        return account instanceof ReadOnlyAccount ? ((ReadOnlyAccount) account).unwrap() : account;
+        return account instanceof ReadOnlyAccount readOnly ? readOnly.unwrap() : account;
     }
 
     public Account getAccount()

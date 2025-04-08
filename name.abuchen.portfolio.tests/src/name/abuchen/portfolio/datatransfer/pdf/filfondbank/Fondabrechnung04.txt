@@ -1,0 +1,49 @@
+PDF Author: ''
+
+PDFBox Version: 1.8.16
+-----------------------------------------
+Depotführung: Ihr der FFB benannte Vermittler:
+Firma GmbH
+Vorname Nachname
+Straße 1-2
+01111 Stadt
+Tel. 0333 / 11111-0
+Herrn Fax: 0333 / 11111-2
+Vorname nachname vorname.nachname@firma.de
+Strasse. 11
+01111 Stadt
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 09. August 2019
+Fondsabrechnung
+Auszug  2 Blatt 1
+Depotinhaber Vorname Nachname
+Depotnummer 1111111111 (Privatvermögen)
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. WKN / ISIN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Wiederanlage Fidelity F.- Europ.Growth F. A 15,67 EUR 14,9400 EUR 1,049
+2539291225 973270 / LU0048578792 09.08.2019 10,299
+FIL (Luxemburg) S.A. 0,0000 EUR 11,348
+Wertpapierrechnung, Luxemburg 14,9400 EUR
+Abrechnungsbetrag 15,67 EUR
+Ausgabeaufschlag / Provision (0,00 %) 0,00 EUR
+Anlagen in Investmentfonds können erst nach Kenntnisnahme der gesetzlichen Verkaufsunterlagen (aktueller Verkaufsprospekt, wesentliche 
+Anlegerinformationen, Halb-/Jahresbericht) erfolgen. Diese Unterlagen haben Sie direkt von Ihrem Vermittler erhalten. Sofern Sie keine 
+elektronischen Orderwege nutzen, verwenden Sie bitte für Investmentfonds-Aufträge ausschließlich die Serviceformulare der FFB, die Sie 
+online oder über Ihren Vermittler erhalten.
+Steuerliche Informationen
+Erteilter Freistellungsauftrag 000,00 EUR gültig bis: unbefristet Verlustverrechnungstopf neu 0,00 EUR
+davon noch verfügbar 00,00 EUR Quellensteuertopf neu 0,00 EUR
+Hinweise:
+Auslandzahlungen, die 12.500 EUR übersteigen, sind gemäß der Außenwirtschaftsverordnung (AWV) durch Sie meldepflichtig. Weitergehende Informationen zur 
+Meldepflicht nach AWV erhalten Sie direkt von der Deutschen Bundesbank, unter www.bundesbank.de oder unter der Rufnummer 0800 1234 111.
+Einwendungen gegen diese Fondsabrechnung wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte schriftlich spätestens einen Monat nach Zugang an:
+FIL Fondsbank GmbH, Revision, Postfach 11 06 63, 60041 Frankfurt am Main, Telefax (069) 7 70 60 - 444.
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Gerhard Oehne (Sprecher) Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Ferdinand-Alexander Leisten Peter Nonner Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Gerald Rink Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 DE213709602
+ABGST_V1.0

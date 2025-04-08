@@ -1,0 +1,54 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+Wertpapierabrechnung
+DEPOTNUMMER=111/2222/012
+DEPOTUNTERBEZEICHNUNG=
+Kauf
+VERSANDARTENSCHLUESSEL=0000
+Kommissionsgeschäft
+ADRESSZEILE1=Herrn
+ADRESSZEILE2=Clark Kenk
+ADRESSZEILE3=Main streat 23
+Depot-Nr. Abrechnungs-Nr.
+Herrn ADRESSZEILE4=Capitol City
+ADRESSZEILE5=
+Clark Kenk
+111/2222/012 54229911
+ADRESSZEILE6=
+Main streat 23
+BELEGNUMMER=7687
+Capitol City
+SEITENNUMMER=1
+STEUERERSTATTUNG=N
+Depotinhaber
+Clark Kenk
+Wiesbaden, 12.04.2021
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Deka MSCI Em. Mkts. UCITS ETF Inhaber-Anteile DE000ETFL342
+Nominal Kurs
+STK 66,000 EUR 48,0500
+Handelstag 12.04.2021 EUR 3.171,30-
+Kurswert
+EUR 14,40-
+Handelszeit 10:06
+Orderentgelt
+EUR 0,71-
+Handelsplatz Xetra Fremde Spesen
+Verwahrart Girosammelverwahrung
+Wert Konto-Nr. Betrag zu Ihren Lasten
+14.04.2021 22/5029/008 EUR 3.186,41
+Fremde Spesen beinhalten ggf. gesetzliche MwSt.
+Die Höhe des von der Kapitalverwaltungsgesellschaft (KVG) festgelegten Ausgabeauf- bzw. Rücknahmeabschlages sowie
+die jährlich zu zahlende Verwaltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den
+Vertragsbedingungen zu entnehmen.
+Wir werden in Ihrem Depot wie angegeben buchen.
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.18/ABREABHNHANDKFDI/GAAASAFG/007687/130421/004803

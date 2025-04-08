@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
+import java.text.MessageFormat;
 import java.util.function.Predicate;
 
 import org.eclipse.jface.viewers.CellEditor;
@@ -7,13 +8,12 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
-import com.ibm.icu.text.MessageFormat;
-
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
 import name.abuchen.portfolio.ui.util.NumberVerifyListener;
 import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
+import name.abuchen.portfolio.ui.util.text.DecimalKeypadSupport;
 
 public class ValueEditingSupport extends PropertyEditingSupport
 {
@@ -47,8 +47,10 @@ public class ValueEditingSupport extends PropertyEditingSupport
     public CellEditor createEditor(Composite composite)
     {
         TextCellEditor textEditor = new TextCellEditor(composite);
-        ((Text) textEditor.getControl()).setTextLimit(20);
-        ((Text) textEditor.getControl()).addVerifyListener(new NumberVerifyListener());
+        var text = (Text) textEditor.getControl();
+        text.setTextLimit(20);
+        text.addVerifyListener(new NumberVerifyListener());
+        DecimalKeypadSupport.configure(text);
         return textEditor;
     }
 

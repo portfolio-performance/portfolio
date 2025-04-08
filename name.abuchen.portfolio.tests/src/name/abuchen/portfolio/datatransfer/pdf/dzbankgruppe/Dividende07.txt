@@ -1,0 +1,46 @@
+﻿PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+GLS Bank · 44774 Bochum    Seite 1
+Depotnummer
+ XXXXXXXXX
+ Kundennummer XXXXXXXX
+Max Mustermann und Sabine Mustermann
+ Abrechnungsnr. 77355072222
+Max Mustermann und Datum 30.09.2022
+Sabine Mustermann
+Glücksstr. 2
+11111 Glücksburg
+ 
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 1.400 SEKISUI HOUSE LTD. JP3420600003 (850022)
+REGISTERED SHARES O.N.
+Zahlbarkeitstag 30.09.2022 Dividende pro Stück 52,00 JPY
+Bestandsstichtag 27.07.2022 Herkunftsland Japan
+Ex-Tag 28.07.2022 Art der Dividende Zwischendividende
+Geschäftsjahr 01.02.2022 - 31.01.2023
+Devisenkurs EUR / JPY  141,4250
+Devisenkursdatum 30.09.2022
+Dividendengutschrift 72.800,00 JPY 514,76+ EUR
+Umrechnung in EUR 514,76 EUR
+Einbehaltene Quellensteuer 15,315 % auf 72.800,00 JPY 78,84- EUR
+Anrechenbare Quellensteuer 15 % auf 514,76 EUR 77,21 EUR
+Kapitalertragsteuerpflichtige Dividende 514,76 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 77,21 EUR 308,84 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 205,92 EUR
+Anteilige Berechnungsgrundlage für Sabine Mustermann (50,00 %) entspricht 102,96 EUR
+Kapitalertragsteuer 24,45 % auf 102,96 EUR 25,18- EUR
+Solidaritätszuschlag 5,5 % auf 25,18 EUR 1,39- EUR
+Kirchensteuer 9 % auf 25,18 EUR 2,27- EUR
+Anteilige Berechnungsgrundlage für Max Mustermann (50,00 %) entspricht 102,96 EUR
+Kapitalertragsteuer 24,45 % auf 102,96 EUR 25,18- EUR
+Solidaritätszuschlag 5,5 % auf 25,18 EUR 1,39- EUR
+Kirchensteuer 9 % auf 25,18 EUR 2,27- EUR
+Ausmachender Betrag 378,24+ EUR
+Lagerstelle CBFI (999999 / 99999)
+Den Betrag buchen wir mit Wertstellung 30.09.2022 zu Gunsten des Kontos 999999 (IBAN DE99 9999 9999 9999 9999
+99), BLZ 999 999 99 (BIC XYXYZYX9XYZ). 
+Bitte ggf. Rückseite beachten.
+7657.10010102.0000190ER01

@@ -1,8 +1,11 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -10,18 +13,22 @@ import java.util.function.Supplier;
 import org.eclipse.core.databinding.AggregateValidationStatus;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
-import org.eclipse.core.databinding.beans.PojoProperties;
-import org.eclipse.core.databinding.conversion.NumberToStringConverter;
-import org.eclipse.core.databinding.conversion.StringToNumberConverter;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.PojoProperties;
+import org.eclipse.core.databinding.conversion.IConverter;
+import org.eclipse.core.databinding.conversion.text.NumberToStringConverter;
+import org.eclipse.core.databinding.conversion.text.StringToNumberConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
-import org.eclipse.jface.databinding.viewers.ViewersObservables;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
+import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
@@ -29,6 +36,9 @@ import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -39,21 +49,21 @@ import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 
-import com.ibm.icu.text.DecimalFormat;
-import com.ibm.icu.text.NumberFormat;
-
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.CurrencyProposalProvider;
 import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
 import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.IValidatingConverter;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeTimeSelectionProperty;
 import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
+import name.abuchen.portfolio.ui.util.text.DecimalKeypadSupport;
 
 public abstract class AbstractTransactionDialog extends TitleAreaDialog
 {
@@ -77,6 +87,8 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
                 }
             });
 
+            DecimalKeypadSupport.configure(value);
+
             currency = new Label(editArea, SWT.NONE);
         }
 
@@ -95,10 +107,8 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
                                                                 .format(Messages.MsgDialogInputRequired, description)));
             }
 
-            @SuppressWarnings("unchecked")
             IObservableValue<String> targetObservable = WidgetProperties.text(SWT.Modify).observe(value);
-            @SuppressWarnings("unchecked")
-            IObservableValue<Long> modelObservable = BeanProperties.value(property).observe(model);
+            IObservableValue<Long> modelObservable = BeanProperties.value(property, Long.class).observe(model);
 
             context.bindValue(targetObservable, modelObservable, strategy, new UpdateValueStrategy<Long, String>()
                             .setConverter(new CurrencyToStringConverter(values)));
@@ -106,10 +116,8 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
         public void bindCurrency(String property)
         {
-            @SuppressWarnings("unchecked")
             IObservableValue<String> targetObservable = WidgetProperties.text().observe(currency);
-            @SuppressWarnings("unchecked")
-            IObservableValue<String> modelObservable = BeanProperties.value(property).observe(model);
+            IObservableValue<String> modelObservable = BeanProperties.value(property, String.class).observe(model);
             context.bindValue(targetObservable, modelObservable);
         }
 
@@ -120,15 +128,14 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
             IValidatingConverter<Object, BigDecimal> converter = IValidatingConverter
                             .wrap(StringToNumberConverter.toBigDecimal());
 
-            @SuppressWarnings("unchecked")
-            IObservableValue<Object> targetObservable = WidgetProperties.text(SWT.Modify).observe(value);
-            @SuppressWarnings("unchecked")
-            IObservableValue<BigDecimal> modelObservable = BeanProperties.value(property).observe(model);
+            IObservableValue<String> targetObservable = WidgetProperties.text(SWT.Modify).observe(value);
+            IObservableValue<BigDecimal> modelObservable = BeanProperties.value(property, BigDecimal.class)
+                            .observe(model);
 
             context.bindValue(targetObservable, modelObservable, //
-                            new UpdateValueStrategy<Object, BigDecimal>().setAfterGetValidator(converter)
+                            new UpdateValueStrategy<String, BigDecimal>().setAfterGetValidator(converter)
                                             .setConverter(converter),
-                            new UpdateValueStrategy<BigDecimal, Object>()
+                            new UpdateValueStrategy<BigDecimal, String>()
                                             .setConverter(NumberToStringConverter.fromBigDecimal(format)));
         }
 
@@ -167,9 +174,8 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
             UpdateValueStrategy<Object, Object> strategy = new UpdateValueStrategy<>();
             strategy.setAfterConvertValidator(
                             v -> v != null ? ValidationStatus.ok() : ValidationStatus.error(missingValueMessage));
-            @SuppressWarnings("unchecked")
-            IObservableValue<Object> targetObservable = ViewersObservables.observeSingleSelection(value);
-            @SuppressWarnings("unchecked")
+
+            IObservableValue<Object> targetObservable = ViewerProperties.singleSelection().observe(value);
             IObservableValue<Object> modelObservable = BeanProperties.value(property).observe(model);
 
             context.bindValue(targetObservable, modelObservable, strategy, null);
@@ -179,9 +185,64 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         public void bindCurrency(String property)
         {
             IObservableValue<?> targetObservable = WidgetProperties.text().observe(currency);
-            @SuppressWarnings("unchecked")
             IObservableValue<?> modelObservable = BeanProperties.value(property).observe(model);
             context.bindValue(targetObservable, modelObservable);
+        }
+    }
+
+    public class CurrencyInput
+    {
+        public final Text currencyCode;
+        public final Label description;
+
+        public CurrencyInput(Composite editArea)
+        {
+            List<CurrencyUnit> units = new ArrayList<>();
+            units.addAll(CurrencyUnit.getAvailableCurrencyUnits());
+
+            currencyCode = new Text(editArea, SWT.BORDER);
+            currencyCode.setTextLimit(3);
+            currencyCode.addFocusListener(FocusListener.focusGainedAdapter(e -> currencyCode.selectAll()));
+            description = new Label(editArea, SWT.NONE);
+
+            IContentProposalProvider provider = new CurrencyProposalProvider(units);
+            ContentProposalAdapter adapter = new ContentProposalAdapter(currencyCode, new TextContentAdapter(),
+                            provider, null, null);
+            adapter.setPropagateKeys(true);
+            adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+
+            currencyCode.addKeyListener(KeyListener.keyPressedAdapter(e -> {
+                if (e.keyCode == SWT.BS)
+                    adapter.openProposalPopup();
+            }));
+
+            currencyCode.addMouseListener(MouseListener.mouseUpAdapter(e -> adapter.openProposalPopup()));
+
+            currencyCode.addModifyListener(e -> {
+                String code = currencyCode.getText();
+                CurrencyUnit unit = CurrencyUnit.getInstance(code);
+                description.setText(unit != null ? unit.getDisplayName() : ""); //$NON-NLS-1$
+            });
+        }
+
+        public IObservableValue<String> bindValue(String property)
+        {
+            UpdateValueStrategy<String, CurrencyUnit> fieldToModel = new UpdateValueStrategy<>();
+            fieldToModel.setAfterGetValidator(c -> CurrencyUnit.getInstance(c) != null ? ValidationStatus.ok()
+                            : ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired,
+                                            Messages.ColumnCurrency)));
+            fieldToModel.setConverter(IConverter
+                            .create(selected -> selected.isEmpty() ? null : CurrencyUnit.getInstance(selected)));
+
+            UpdateValueStrategy<CurrencyUnit, String> modelToField = new UpdateValueStrategy<>();
+            modelToField.setConverter(IConverter.create(unit -> unit != null ? unit.getCurrencyCode() : null));
+
+            IObservableValue<CurrencyUnit> modelObservable = BeanProperties.value(property, CurrencyUnit.class)
+                            .observe(model);
+            IObservableValue<String> fieldObservable = WidgetProperties.text(SWT.Modify).observe(currencyCode);
+            context.bindValue(fieldObservable, modelObservable, fieldToModel, modelToField);
+
+            return fieldObservable;
         }
     }
 
@@ -209,16 +270,29 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
                 }
             };
             time.setFormat(CDT.TIME_SHORT);
+            adjustTimePattern();
             time.setButtonImage(Images.CLOCK.image());
 
             button = new ImageHyperlink(editArea, SWT.NONE);
             button.setImage(Images.CLOCK.image());
         }
 
+        /*
+         * Modify pattern to always create enough space for two hour-digits.
+         * 'h:mm a' => 'hh:mm a'
+         */
+        private void adjustTimePattern()
+        {
+            String pattern = time.getPattern();
+            if (pattern.length() > 1 && pattern.charAt(1) == ':')
+            {
+                time.setPattern(pattern.substring(0, 1) + pattern);
+            }
+        }
+
         public void bindDate(String property)
         {
             IObservableValue<?> targetObservable = new SimpleDateTimeDateSelectionProperty().observe(date.getControl());
-            @SuppressWarnings("unchecked")
             IObservableValue<?> modelObservable = BeanProperties.value(property).observe(model);
             context.bindValue(targetObservable, modelObservable);
         }
@@ -226,7 +300,6 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         public void bindTime(String property)
         {
             IObservableValue<?> targetObservable = new SimpleDateTimeTimeSelectionProperty().observe(time);
-            @SuppressWarnings("unchecked")
             IObservableValue<?> modelObservable = BeanProperties.value(property).observe(model);
             context.bindValue(targetObservable, modelObservable);
         }
@@ -371,8 +444,8 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
         createFormElements(editArea);
 
-        @SuppressWarnings("unchecked")
-        IObservableValue<IStatus> calculationStatus = BeanProperties.value("calculationStatus").observe(model); //$NON-NLS-1$
+        IObservableValue<IStatus> calculationStatus = BeanProperties.value("calculationStatus", IStatus.class) //$NON-NLS-1$
+                        .observe(model);
         this.context.addValidationStatusProvider(new MultiValidator()
         {
             @Override
@@ -382,7 +455,6 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
             }
         });
 
-        @SuppressWarnings("unchecked")
         IObservableValue<?> observable = PojoProperties.value("status").observe(status); //$NON-NLS-1$
         context.bindValue(observable, new AggregateValidationStatus(context, AggregateValidationStatus.MAX_SEVERITY));
 

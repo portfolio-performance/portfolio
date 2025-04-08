@@ -1,0 +1,32 @@
+PDF author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+SelfWealth Limited ABN: 52 154 324 428 AFSL 421789 W: www.selfwealth.com.au E: support@selfwealth.com.au
+This trade was executed and cleared by OpenMarkets Australia Ltd ABN 38 090 472 012,
+AFSL 246 705, Market Particpant of ASX, CHI­X and NSX.
+Sell Confirmation
+MR JOHN DOE  Account Number: 1234567
+JOHN DOE A/C Reference No: T20210701123456­1
+1 LONG ROAD Trade Date: 24 May 2021
+SYDNEY NSW Settlement Date: 26 May 2021
+2000, AUS Market: ASX
+WE HAVE SOLD ON YOUR ACCOUNT
+Quantity Security Code Security Description Price +1 Consideration Currency
+397 WPL WOODSIDE PETROLEUM 21.88 $8,686.36 AUD
+Brokerage* $9.50 AUD
+Adviser Fee* $0.00 AUD
+Net Value $8,695.86 AUD
+GST included in this invoice is $0.86
+The confirmation is a tax invoice ­ please retain for tax purposes. If this confirmation does not correspond with your records please contact us immediately at
+support@selfwealth.com.au
+Settlement Instructions All documents and security holder information (including a HIN or SRN) must be provided to OpenMarkets by 9am AEST on the Settlement Date.
+This transaction will be settled in to your linked cash account or in accordance with your instructions on the Settlement Date.
+Contract Comments			
+* Inclusive of GST
++1 Standard Financial Rounding Applied (if applicable)
+This confirmation is provided to you by each of SelfWealth and OpenMarkets. The Brokerage and Adviser fees set out in this confirmation are charged by SelfWealth.
+OpenMarkets has not charged you any fees for the above transaction(s). The above transaction(s) and this confirmation are issued subject to the directions, decisions
+and requirements of the operator of the relevant Market, ASIC Market Integrity Rules, the operating rules of the relevant Market, and, where relevant, the Clearing
+Rules of the relevant Clearing Facility and the Settlement Rules of the relevant Settlement Facility, the customs and usages of the relevant Market and the correction of
+errors and omissions. If this confirmation relates to multiple transactions, those transactions may have been completed on ASX or CHI­X.”
+Generated At: 26 May 2021 18:29:01 PM Page: 1 of 1  

@@ -1,0 +1,25 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.66.2
+-----------------------------------------
+Findependent AG
+Bannhaldenweg 11
+5600 Lenzburg
+www.findependent.ch
+service@findependent.ch
+Max Muster Kunden-Nr. 111111 
+Zürichstrasse 99 Portfolio-Nr. 123456789 
+1234 Dorf IBAN CH1234567891234567890
+Lenzburg, 29.11.2023
+ETF-Kauf
+Für deine Anlagelösung wurde folgende ETF-Transaktion getätigt:
+ETF-Name Vanguard FTSE All World ETF
+ISIN IE00B3RBWM25
+Valuta 01.12.2023
+Anzahl Anteile 2
+Preis pro Anteil CHF 100.040
+Kaufpreis CHF CHF 200.08
+Börsenabgaben CHF 0.05
+Stempelabgaben CHF 0.30
+Verrechneter Betrag CHF 200.43
+Dein findependent Team
+Erstellt am: 14.12.2023 1 von 1

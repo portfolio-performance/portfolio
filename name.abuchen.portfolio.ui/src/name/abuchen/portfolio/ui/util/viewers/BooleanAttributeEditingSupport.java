@@ -15,8 +15,9 @@ public class BooleanAttributeEditingSupport extends AttributeEditingSupport
     {
         super(attribute);
 
-        if (attribute.getType() != Boolean.class)
-            throw new IllegalArgumentException();
+        Class<?> type = attribute.getType();
+        if (type != Boolean.class)
+            throw new IllegalArgumentException("attritbute is not of type Boolean but " + type); //$NON-NLS-1$
     }
 
     @Override

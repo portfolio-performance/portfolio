@@ -23,11 +23,15 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Isin;
-import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class CSVExtractor implements Extractor
 {
     public abstract List<Field> getFields();
+
+    public Field getField(String code)
+    {
+        return getFields().stream().filter(f -> f.getCode().equals(code)).findFirst().orElse(null);
+    }
 
     public abstract List<Item> extract(int skipLines, List<String[]> rawValues, Map<String, Column> field2column,
                     List<Exception> errors);
@@ -101,9 +105,8 @@ public abstract class CSVExtractor implements Extractor
 
         try
         {
-            Number num = (Number) field2column.get(name).getFormat().getFormat()
-                            .parseObject(TextUtil.stripNonNumberCharacters(value));
-            return Long.valueOf((long) Math.round(num.doubleValue() * values.factor()));
+            Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
+            return Long.valueOf(Math.round(num.doubleValue() * values.factor()));
         }
         catch (ParseException e)
         {

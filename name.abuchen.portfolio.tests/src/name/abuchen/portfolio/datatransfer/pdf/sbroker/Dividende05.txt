@@ -1,0 +1,50 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+~$~|ER03|265484||||||||ERTRAEGE.D220103.AFP||||20220103||4128|0000|||||~$~
+S Broker AG & Co. KG ´ Postfach 90 01 50 ´ 39133 Magdeburg Seite 1
+Depotnummer 
+Abrechnungsnr. 
+Datum 03.01.2022
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 150 LTC PROPERTIES INC. US5021751020 (884625)
+REGISTERED SHARES DL -,01
+Zahlbarkeitstag 31.12.2021 Ausschüttung pro St. 0,190000000 USD
+Bestandsstichtag 21.12.2021 Herkunftsland USA
+Ex-Tag 22.12.2021
+Geschäftsjahr 01.07.2021 - 30.06.2022
+Devisenkurs EUR / USD 1,1396
+Devisenkursdatum 03.01.2022
+Ausschüttung 28,50 USD 25,01+ EUR
+Einbehaltene Quellensteuer 15 % auf 28,50 USD 3,75- EUR
+Anrechenbare Quellensteuer pro Stück 0,0285 USD 4,28 USD
+Kapitalertragsteuerpflichtiger Ertrag 28,50 USD
+Umrechnung in EUR 25,01 EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 3,76 EUR 15,04 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 9,97 EUR
+Kapitalertragsteuer 24,51 % auf 9,97 EUR 2,44- EUR
+Solidaritätszuschlag 5,5 % auf 2,44 EUR 0,13- EUR
+Kirchensteuer 8 % auf 2,44 EUR 0,19- EUR
+Ausmachender Betrag 18,50+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Jahressteuerbescheinigung folgt.
+Bitte ggf. Rückseite beachten.
+5500.01032142.0010227ER03
+SBRO_ER03_v10.7P.ERTRAEGE.D220103.AFP_4128
+
+Seite 2
+Depotnummer 
+Abrechnungsnr. 
+Datum 03.01.2022
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2021 ohne Vorjahressaldo Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 258,54
+Ertrag 3,76
+0,00 0,00 0,00 3,76- 9,97
+Nachher 0,00 0,00 0,00 0,00 268,51
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+5500.01032142.0010228ER03

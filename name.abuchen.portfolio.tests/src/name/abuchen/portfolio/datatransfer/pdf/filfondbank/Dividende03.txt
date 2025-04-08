@@ -1,0 +1,61 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.1
+-----------------------------------------
+Depotführung: Ihr der FFB benannte Vermittler:
+Max Maxen
+Maxenweg 1A
+01234 Stadt
+Tel.: 01234 56789
+Fax: 01234 56789
+eMail: Max@Maxen.de
+Herrn
+Vorname Nachname
+An der Brücke 1
+01234 Stadt
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 08. Juli 2022 
+Ausschüttungsanzeige
+FFB FondsdepotPlus Blatt 1
+Depotinhaber Vorname Nachname
+Depotnummer 11111111 (Privatvermögen)
+Fondsname Fil. Fd-Gbl.Div.Fd.A Mln.EUR Datum der Ausschüttung 08.07.2022
+WKN / ISIN A1JSY2 / LU0731782826 Turnus monatlich
+Fondsgesellschaft FIL (Luxemburg) S.A. Anteilsbestand per 01.07.2022 427,272 St.
+je Anteil gesamt
+Ausschüttung vor Teilfreistellung               0,045000000 EUR 19,23 EUR
+Berechnung der steuerlichen Bemessungsgrundlage
+steuerpflichtiger Ertrag nach Teilfreistellung               0,031500000 EUR              13,46 EUR
+abzüglich Verlustverrechnungstopf               0,00 EUR
+abzüglich verrechneter Freistellungsauftrag               0,00 EUR
+abzüglich verrechneter Quellensteuertopf               0,00 EUR
+steuerliche Bemessungsgrundlage              13,46 EUR
+Abgeführte Steuern (auf Basis der steuerlichen Bemessungsgrundlage)
+Kapitalertragsteuer               3,29 EUR
+Solidaritätszuschlag               0,18 EUR
+Kirchensteuer               0,30 EUR
+Folgender Betrag wurde auf Ihr Abwicklungskonto überwiesen 15,46 EUR
+Bank FIL Fondsbank Frankfurt
+BIC FFBKDEFFKRN
+IBAN DE123456789101112
+Steuerliche Informationen
+Freistellungsauftrag 260,00 EUR gültig: unbefristet
+Freistellungsauftrag vorher 0,00 EUR Freistellungsauftrag nachher 0,00 EUR
+Verlustverrechnungstopf vorher 0,00 EUR Verlustverrechnungstopf nachher 0,00 EUR
+Quellensteuertopf vorher 0,00 EUR Quellensteuertopf nachher 0,00 EUR
+Hinweis: Bei einer Ausschüttung werden die Erträge der abgelaufenen Periode an die Anteilsinhaber ausgekehrt. Diese sind im Privatvermögen steuerpflichtig. Steht 
+ein Verlustverrechnungstopf, ein ausreichender Freistellungsauftrag bzw. eine Nichtveranlagungsbescheinigung oder anrechenbare Quellensteuer zur Verfügung, 
+kann die Ausschüttung zzgl. der erstatteten Steuern wieder angelegt werden. Ist dies nicht der Fall, müssen Kapitalertragsteuern zzgl. Solidaritätszuschlag und ggf. 
+Kirchensteuer von dem Ausschüttungsbetrag abgezogen werden. 
+Seit Januar 2018 wird bei Ausschüttungen eines Fonds eine sogenannte Teilfreistellung gewährt. Die Höhe der Teilfreistellung ist abhängig von der Fondskategorie 
+sowie der Art des Anlegers und wird automatisch bei der Berechnung der steuerlichen Bemessungsgrundlage für den Steuerabzug berücksichtigt. Für Zwecke 
+des Steuerabzugs wird dabei immer die Kategorie "Privatanleger" zugrundegelegt. Betriebliche Anleger bzw. Körperschaften erreichen die Freistellung, die darüber 
+hinaus geht, im Rahmen ihrer Steuerveranlagung.
+Einwendungen gegen diese Anzeige wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte schriftlich spätestens einen Monat nach Zugang an:
+FIL Fondsbank GmbH, Revision, Postfach 11 06 63, 60041 Frankfurt am Main, Telefax (069) 7 70 60 - 444.
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Peter Nonner Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Ferdinand-Alexander Leisten Oliver Schulte Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 DE213709602
+EM_V1.0

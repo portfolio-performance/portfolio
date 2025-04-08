@@ -1,0 +1,78 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=270749000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Gesamtfälligkeit ADRESSZEILE1=Herr
+ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Straße 123
+ADRESSZEILE4=12345 Musterstadt
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Straße 123 BELEGNUMMER=567
+12345 Musterstadt 123456000 10283354 / 24.09.2020 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 24.09.2020
+Gutschriftsanzeige
+Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+Morgan Stanley & Co. Intl PLC DIZ 25.09.20 25.09.2020 DE000MC55366
+Fres. SE
+Nominal Einlösung zu:
+STK 65,000 EUR 39,4400
+Verwahrart Girosammelverwahrung Kurswert EUR 2.563,60 
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+25.09.2020 123456789 EUR 2.563,60
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsverlust Sonstige EUR 266,55
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 123,45) EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern (negativ) EUR 266,55
+Steuerausgleich nach § 43a EStG:
+Kapitalertragsteuer EUR 65,18
+Solidaritätszuschlag EUR 3,59
+Kirchensteuer EUR 5,86
+Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+24.09.2020 270749047 18633554 EUR 74,63
+Es folgt Seite 2
+onvista bank ist eine Marke der comdirekt bank AG Wildunger Straße 6a 60487 Frankfurt am Main
+Kundenservice: +49 (0)69-7107-530 T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.20/ABREEREITILG/GDBTILAN/000567/250920/004041
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=270749000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Max Mustermann
+123456000 10283354 2 ADRESSZEILE3=Straße 123
+ADRESSZEILE4=12345 Musterstadt
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=567
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 476,67 SEITENNUMMER=2
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 26,21 STEUERERSTATTUNG=N
+im laufenden Jahr einbehaltene Kirchensteuer EUR 42,90
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Musterort, Steuernummer 12/345/12345.
+Jahressteuerbescheinigung folgt
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank ist eine Marke der comdirekt bank AG Wildunger Straße 6a 60487 Frankfurt am Main
+Kundenservice: +49 (0)69-7107-530 T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Frauke Hegemann (Vorsitzende), Matthias Hach Vorsitzender des Aufsichtsrates: Dr. Jochen Sutor
+3.20/ABREEREITILG/GDBTILAN/000567/250920/004041

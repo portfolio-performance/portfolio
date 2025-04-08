@@ -5,8 +5,9 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.IStylingEngine;
@@ -18,7 +19,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.swtchart.ISeries;
 
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
@@ -33,6 +33,8 @@ import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.AbstractTabbedView;
 
@@ -87,6 +89,7 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
         container.setLayout(layout);
 
         indeces = new TableViewer(container, SWT.FULL_SELECTION);
+        CopyPasteSupport.enableFor(indeces);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(ExchangeRatesListTab.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         preferences, indeces, layout);
@@ -101,7 +104,7 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
             }
         });
         ColumnViewerSorter.create(ExchangeRateTimeSeries.class, "baseCurrency", "termCurrency") //$NON-NLS-1$ //$NON-NLS-2$
-                        .attachTo(column, SWT.DOWN);
+                        .attachTo(column, SWT.UP);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTermCurrency, SWT.None, 80);
@@ -131,21 +134,14 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
         support.addColumn(column);
 
         column = new Column(Messages.ColumnDateLatestExchangeRate, SWT.None, 150);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                ExchangeRateTimeSeries series = (ExchangeRateTimeSeries) element;
-                List<ExchangeRate> rates = series.getRates();
-                return rates.isEmpty() ? null : Values.Date.format(rates.get(rates.size() - 1).getTime());
-            }
-        });
-        ColumnViewerSorter.create(element -> {
+
+        Function<Object, LocalDate> dataProvider = element -> {
             ExchangeRateTimeSeries series = (ExchangeRateTimeSeries) element;
             List<ExchangeRate> rates = series.getRates();
             return rates.isEmpty() ? null : rates.get(rates.size() - 1).getTime();
-        }).attachTo(column);
+        };
+        column.setLabelProvider(new DateLabelProvider(dataProvider));
+        ColumnViewerSorter.create(dataProvider::apply).attachTo(column);
         support.addColumn(column);
 
         support.createColumns();
@@ -166,7 +162,7 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
     {
         chart = new TimelineChart(parent);
         stylingEngine.style(chart);
-        chart.getToolTip().setValueFormat(new DecimalFormat("0.0000")); //$NON-NLS-1$
+        chart.getToolTip().setDefaultValueFormat(new DecimalFormat(Values.ExchangeRate.pattern()));
         refreshChart(null);
     }
 
@@ -175,7 +171,7 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
         try
         {
             chart.suspendUpdate(true);
-            for (ISeries s : chart.getSeriesSet().getSeries())
+            for (var s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             if (series == null || series.getRates().isEmpty())
@@ -204,7 +200,7 @@ public class ExchangeRatesListTab implements AbstractTabbedView.Tab
                             provider.isPresent() ? provider.get().getName() : "-"); //$NON-NLS-1$
 
             chart.getTitle().setText(title);
-            chart.addDateSeries(dates, values, Colors.ICON_BLUE, title);
+            chart.addDateSeries(title, dates, values, Colors.ICON_BLUE, title);
 
             chart.adjustRange();
         }

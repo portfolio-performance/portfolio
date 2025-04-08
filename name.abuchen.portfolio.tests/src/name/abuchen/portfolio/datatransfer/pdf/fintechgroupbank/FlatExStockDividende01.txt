@@ -1,0 +1,57 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+flatex Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatex Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+0302402000001960506100
+Herrn
+Max Mustermann
+Straße Str. 8
+99999 Stadt
+    Frankfurt am Main,  07.04.2021
+Stockdividende
+Kundennummer: 9999999
+Kontonummer : 1009999999
+Depotnummer : 1009999999
+Inhaber     : Max Mustermann
+WKN     ISIN          Wertpapierbezeichnung           Anzahl
+A2QL01  NL00150001Q9  STELLANTIS BR RG                178,000000
+Sehr geehrter Herr Mustermann,
+im Rahmen einer Stockdividende haben wir Ihnen im Verhältnis 1,000000 zu
+0,017029 mit Valuta 01.04.2021 in Ihr Depot eingebucht:
+WKN     ISIN          Wertpapierbezeichnung                             Anzahl
+867025  FR0000121147  FAURECIA EU INH      EO 7                   3,000000
+Kurs vom 15.03.2021                   45,000000 EUR/Stc          135,00 EUR
+Steuerpfl. Ertrag                                                   135,00 EUR
+Einbeh. Steuer**                                                     37,54 EUR
+**Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+Kapitalertragsteuer                                                  33,09 EUR
+Solidaritätszuschlag                                                  1,81 EUR
+Kirchensteuer                                                         2,64 EUR
+Verrechnung über Ihr Konto: 1009999999 Gutschrift                   -37,54 EUR
+Die Gutschrift erfolgt unter Vorbehalt des Eingangs. Einwendungen müssen
+unverzüglich nach Zugang erhoben werden. Die Unterlassung rechtzeitiger
+Einwendungen gilt als Genehmigung.
+**Einbehaltene Kapitalertragsteuer zuzüglich Solidaritätszuschlag und ggf.
+Kirchensteuer (negative Werte bedeuten Steuererstattung). Evtl. Details dazu
+______________________________________________________________________________
+                                                                     Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann, Steffen Jentsch
+2000001960506100 0113302400000101
+finden Sie im Steuerreport unter der Transaktion-Nr.: 2289444861
+Dieser Beleg ist keine Steuerbescheinigung. Kapitalerträge sind
+einkommensteuerpflichtig. Diese Mitteilung ist maschinell erstellt und wird
+nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann, Steffen Jentsch
+2000001960506100

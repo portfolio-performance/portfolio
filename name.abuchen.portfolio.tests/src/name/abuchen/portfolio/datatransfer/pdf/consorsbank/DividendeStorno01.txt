@@ -1,0 +1,30 @@
+PDF Autor: 'Consorsbank'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 0888069782
+1002451917/00
+Vermerk der Bank: 1000
+2
+Carsten XXX
+XXX-Str. YZ Datum: 27.01.2020
+XXXXX XYZ Seite: 1 von 1
+STORNO
+Ertragsgutschrift
+Wertpapierbezeichnung WKN ISIN
+SEB IMMOINVEST Inhaber-Anteile P 980230 DE0009802306
+Bestand
+230 Stück
+Ertragsausschüttung je Anteil 0,83 EUR Schlusstag 14.07.2019
+Brutto 190,90 EUR
+abzgl. Kapitalertragsteuer 24,45 % von 160,79 EUR 39,31 EUR
+abzgl. Solidaritätszuschlag 5,50 % von 39,31 EUR 2,16 EUR
+abzgl. Kirchensteuer 9,00 % von 39,31 EUR 3,53 EUR
+Netto zulasten IBAN DEXX XXXX XXXX XXXX XXXX XX 145,90 EUR
+Valuta 27.01.2020 BIC CSDBDE71XXX
+Storno wegen geänderten steuerrelevanten Daten. Neuabrechnung folgt.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+PrØsident du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur GØnØral (Generaldirektor): Jean-Laurent BonnafØ

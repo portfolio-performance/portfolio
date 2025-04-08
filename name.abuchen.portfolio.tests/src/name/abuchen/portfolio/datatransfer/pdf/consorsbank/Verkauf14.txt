@@ -1,0 +1,62 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.3
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 1234 567 890
+1345678901/00
+Vermerk der Bank: 2000
+2
+Vorname Nachname
+Adressenstr. 123
+10000 Stadtname Datum: 13.09.2023Seite: 1 von 2
+Ordernummer 345678901.001
+Orderdatum 13.09.2023
+ORDERABRECHNUNG
+VERKAUF AM 13.09.2023 UM 15:22:30 INL.AUSSERBOERSLICH NR. 345678901.001
+Bezeichnung WKN ISIN
+SG EFF. CALL23 VOW3 SQ6N9E DE000SQ6N9E4
+Einheit Umsatz Fälligkeit
+ST 3.000,00000 Letzte Fälligkeit 15.09.2023
+Preis pro Anteil 0,001000 EUR
+Kurswert 3,00 EUR
+abzgl. Grundgebühr 3,95 EUR
+zulasten Konto-Nr. 9876543210 0,95 EUR
+Valuta 15.09.2023
+Bestand zulasten Girosammelverwahrung
+CBF 2126
+Limitkurs 0,001000 EUR
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+Depotnummer: 1234 567 890
+1345678901/00
+Vermerk der Bank: 2000
+2
+Datum: 13.09.2023
+Seite: 2 von 2
+Ordernummer 345678901.001
+Orderdatum 13.09.2023
+Informationen bei Käufen bzw. Verlust Wertpapiere ungleich Aktien
+Veräusserungsverlust nach Differenzmethode - 9.999,99 EUR
+Bemessungsgrundlage für Kapitalertragsteuer 0,00 EUR
+Stand Ihrer Töpfe und Freibeträge nach dem Geschäft
+Sparerpauschbetrag nach dem Geschäft 0,00 EUR
+Verrechnungstopf Aktien nach dem Geschäft 0,00 EUR
+Verrechnungstopf Allg. nach dem Geschäft 0,00 EUR
+Verrechnungstopf QUST nach dem Geschäft 0,00 EUR
+Der Verkaufserlös unterliegt nicht dem Kapitalertragssteuerabzug.
+Es wurde keine Kirchensteuer einbehalten.
+Der Verlust wurde nicht in den Verrechnungstopf eingestellt.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwa

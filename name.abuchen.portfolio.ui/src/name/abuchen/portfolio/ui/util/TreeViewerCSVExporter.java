@@ -72,18 +72,18 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
             // treatment as there is no easy #getText method
             IBaseLabelProvider blp = viewer.getLabelProvider(ii);
 
-            if (blp instanceof ILabelProvider)
+            if (blp instanceof ILabelProvider labelProvider)
             {
-                labels[ii] = (ILabelProvider) blp;
+                labels[ii] = labelProvider;
             }
-            else if (blp instanceof SharesLabelProvider)
+            else if (blp instanceof SharesLabelProvider labelProvider)
             {
                 labels[ii] = new LabelProvider()
                 {
                     @Override
                     public String getText(Object element)
                     {
-                        Long value = ((SharesLabelProvider) blp).getValue(element);
+                        Long value = labelProvider.getValue(element);
                         return value != null ? Values.Share.format(value) : null;
                     }
                 };

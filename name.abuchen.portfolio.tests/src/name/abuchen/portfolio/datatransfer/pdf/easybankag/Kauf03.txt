@@ -1,0 +1,36 @@
+Abrechnung Dauerauftrag
+easybank Service Center 36534791-14.6.2022
+BAWAG P.S.K. AG Depot-Nr.: 98765432109
+Wiedner Gürtel 11 Mustermann               
+1100 Wien 35/9835
+BAWAG P.S.K. AG                    
+An
+Mustermann
+Straße 74
+1234 Ort                                                                                                                                                                                         
+Wir haben für Sie am 14.6.2022 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Kauf aus Dauerauftrag
+Auftrags-Nr.: 36338031-3.5.2017
+Auftragseingang: 11.6.2022-01:30:02
+Zugang: 15,75 Stk
+Titel: IE00BYWQWR46  V a n E c k  V i d  eSports UC. ETF         
+Reg. Shares A USD Acc. o.N.        
+Fondsgesellschaft: VanEck UCITS ETFs PLC
+Kurs: 29,95 EUR 
+Handelsplatz: XETR     Deutsche Börse - Frankfurt Xetra
+Handelszeit: 13.6.2022 um 09:05:00 Uhr
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt                          
+Kurswert: -471,71 EUR 
+Eigene Spesen: -1,30 EUR 
+Grundgebühr: -3,-- EUR 
+Zu Lasten IBAN AT34 1234 1234 1234 1234 -476,01 EUR 
+Valuta 15.6.2022
+Kunden UID: ATU62276316    
+Es wurde keine Umsatzsteuer verrechnet.
+Schlusstag: 13.6.2022
+Kassatag: 15.6.2022
+1.7.2022 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten!
+00797 Doknr.: ON00-036-0000000001

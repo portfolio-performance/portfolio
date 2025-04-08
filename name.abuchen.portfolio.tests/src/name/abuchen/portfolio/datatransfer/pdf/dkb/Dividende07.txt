@@ -1,0 +1,39 @@
+10919 Berlin
+Depotnummer 500229442
+Kundennummer 51812597
+Max Muster
+Abrechnungsnr. 86508012450
+Herrn Datum 31.12.2013
+Max Muster
+Musterstr. 2
+54321 Musterhausen
+Zinsgutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+EUR 10.000,00 PCC SE DE000A1R1AN5 (A1R1AN)
+INH.-TEILSCHULDV. V.13(13/17)
+Zahlbarkeitstag 02.01.2014 Zinssatz p. a. 7,25 %
+Bestandsstichtag 31.12.2013 Laufzeit Zinsschein 92 Tag(e)
+Kupon per 01.01.2014
+Zinstermin Monat(e) Jan./April/Juli/Okt.
+Zinsertrag 181,25+ EUR
+Kapitalertragsteuerpflichtiger Ertrag 181,25 EUR
+Verrechneter Sparer-Pauschbetrag 150,00 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 31,25 EUR
+Kapitalertragsteuer 25 % auf 31,25 EUR 7,81- EUR
+Solidaritätszuschlag 5,5 % auf 7,81 EUR 0,42- EUR
+Ausmachender Betrag 173,02+ EUR
+Den Betrag buchen wir mit Wertstellung 02.01.2014 zu Gunsten des Kontos 16765097 (IBAN DE30 1203 0000 0026 6741 
+97), BLZ 120 300 00 (BIC BYLADEM1001).
+Keine Steuerbescheinigung.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2014 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 150,00 0,00 0,00
+Ertrag 0,00 0,00 150,00- 0,00 31,25
+Nachher 0,00 0,00 0,00 0,00 31,25
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+0883.01010103.0000176ER02
+

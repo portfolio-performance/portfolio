@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.snapshot.filter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -31,8 +33,8 @@ public class PortfolioClientFilter implements ClientFilter
 
     public PortfolioClientFilter(List<Portfolio> portfolios, List<Account> accounts)
     {
-        this.portfolios = Objects.requireNonNull(portfolios);
-        this.accounts = Objects.requireNonNull(accounts);
+        this.portfolios = new ArrayList<>(Objects.requireNonNull(portfolios));
+        this.accounts = new ArrayList<>(Objects.requireNonNull(accounts));
     }
 
     public PortfolioClientFilter(Portfolio portfolio)
@@ -43,6 +45,37 @@ public class PortfolioClientFilter implements ClientFilter
     public PortfolioClientFilter(Portfolio portfolio, Account account)
     {
         this(Arrays.asList(portfolio), Arrays.asList(account));
+    }
+
+    public void removeElement(Object element)
+    {
+        portfolios.remove(element);
+        accounts.remove(element);
+    }
+
+    public void addElement(Object element)
+    {
+        if (element instanceof Portfolio portfolio)
+            portfolios.add(portfolio);
+        else if (element instanceof Account account)
+            accounts.add(account);
+        else
+            throw new IllegalArgumentException("element is null or of wrong type: " + element); //$NON-NLS-1$
+    }
+    
+    public boolean hasElement(Object element)
+    {
+        if (element instanceof Portfolio portfolio)
+            return portfolios.contains(portfolio);
+        else if (element instanceof Account account)
+            return accounts.contains(account);
+        else
+            throw new IllegalArgumentException("element is null or of wrong type: " + element); //$NON-NLS-1$
+    }
+
+    public Object[] getAllElements()
+    {
+        return Stream.concat(portfolios.stream(), accounts.stream()).toArray();
     }
 
     @Override

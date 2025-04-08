@@ -1,16 +1,16 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.PortfolioBuilder;
-import name.abuchen.portfolio.SecurityBuilder;
-import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.junit.PortfolioBuilder;
+import name.abuchen.portfolio.junit.SecurityBuilder;
+import name.abuchen.portfolio.junit.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -37,8 +37,13 @@ public class SecurityPerformanceSnapshotTest
                         .sell(security, "2018-05-08", Values.Share.factorize(500000), Values.Amount.factorize(494500))
                         .addTo(client);
 
+        final Interval interval = Interval.of(LocalDate.parse("2018-04-01"), LocalDate.parse("2018-06-01"));
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
-                        Interval.of(LocalDate.parse("2018-04-01"), LocalDate.parse("2018-06-01")));
+                        interval);
+
+        new SecurityPerformanceSnapshotComparator(snapshot,
+                        LazySecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(), interval))
+                                        .compare();
 
         assertThat(snapshot.getRecords(), hasSize(1));
 
@@ -70,6 +75,10 @@ public class SecurityPerformanceSnapshotTest
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
                         reportingPeriod);
 
+        new SecurityPerformanceSnapshotComparator(snapshot,
+                        LazySecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(), reportingPeriod))
+                                        .compare();
+
         assertThat(snapshot.getRecords(), hasSize(1));
 
         SecurityPerformanceRecord record = snapshot.getRecords().get(0);
@@ -85,15 +94,10 @@ public class SecurityPerformanceSnapshotTest
         assertThat(record.getMovingAverageCostPerSharesHeld(),
                         is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(0.9))));
 
-        SecurityPosition position = ClientSnapshot
-                        .create(client, new TestCurrencyConverter(), reportingPeriod.getEnd())
+        SecurityPosition position = ClientSnapshot.create(client, new TestCurrencyConverter(), reportingPeriod.getEnd())
                         .getPositionsByVehicle().get(security).getPosition();
 
-        assertThat(position.getFIFOPurchaseValue(), is(record.getFifoCost()));
-        assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.9))));
-
-        assertThat(position.getMovingAveragePurchaseValue(), is(record.getMovingAverageCost()));
-        assertThat(position.getMovingAveragePurchasePrice(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.9))));
+        assertThat(position.getShares(), is(record.getSharesHeld()));
+        assertThat(position.calculateValue(), is(record.getMarketValue()));
     }
 }

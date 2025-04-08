@@ -1,0 +1,35 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Trade Confirmation
+Generated on the 02 Nov 2021
+Vorname Nachname
+Straße 1
+Account name Vorname Nachname
+Stadt Account number Kontonummer
+Postleitzahl Confirmation date 01 Nov 2021
+DE
+Order details
+Symbol Company ISIN Type Quantity Price Settlement date
+TSLA Tesla US88160R1014 Sell 2.1451261 $1,166.12 03 Nov 2021
+Fees summary
+Commission $0
+Charged in EUR *FX Rate USD/EUR used is 1.159
+FINRA Fee (TAF) $0.01
+SEC Fee $0.01
+Total Fee charged $0.02
+Execution details
+Your order may have been executed in multiple fills at various prices, at multiple venues. Details can be obtained upon request.
+Symbol Company Type Quantity Price Execution time Execution venue
+TSLA Tesla Sell 2 1,166.121 01 Nov 2021 15:51:47 GMT XOFF
+TSLA Tesla Sell 0.145 1,166.12 01 Nov 2021 15:51:47 GMT XOFF
+Report lost or stolen card This transaction confirmation is provided by Revolut Trading Ltd. (Revolut) in respect of your Order which Revolut has transmitted to its third party broker, DriveWealth 
++44 20 322 8352 LLC (DriveWealth) for execution or onward transmission for execution by one of DriveWealth executing brokers. Unless expressly stated otherwise, the information in this 
+Get help directly In app transaction confirmation relates to the transaction arising from the execution of your Order by DriveWealth or one of its executing brokers.
+Scan the QR code This trade confirmation is subject to the Revolut Terms of Business. Revolut Trading Ltd is an appointed representative of Resolution Compliance Ltd (FRN 574048) which 
+is authorised and regulated by the Financial Conduct Authority.
+Revolut Trading Ltd LEI: 213800F913L5VYSWEJ15, 7 Westferry Circus, Canary Wharf, London, E14 4HD, United Kingdom, Company registration number: 11567840
+Revolut Trading Ltd LEI: 213800F913L5VYSWEJ15
+DriveWeath, LLC LEI: 875500PNFZENVO437436
+* FX Rate is the spot exchange rate at the time of receiving the order used to convert the fee amount to USD.
+* XOFF means that the order was executed outside of the exchange (NYSE or NASDAQ), i.e. by DriveWealth or one if its non-exchange liquidity providers.

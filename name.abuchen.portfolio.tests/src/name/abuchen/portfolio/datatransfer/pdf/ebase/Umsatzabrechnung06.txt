@@ -1,0 +1,20 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Depotauszug-Nr. 5
+Depot-Nr. 11111111111
+Herrn Seite 1 von 4
+Max Mustermann
+Musterstraße 1
+12345 Stadt
+02.01.2018
+Depotauszug für Ihr VL-FondsDepot bei ebase
+für den Zeitraum vom 05.04.2017 bis 31.12.2017
+Verkauf 60,000000 Anteile mit Kursdatum 03.06.2016 aus Depotposition XXXXXXXXXXX.XX
+Lyxor ETF MSCI WORLD FCP Actions au Port.D-EUR o.N.
+Ref. Nr. XXXXXXXXX/XXXXXXXX, Buchungsdatum 04.06.2016
+ISIN Anteile Abrechnungskurs Betrag
+FR0010315770 -60,000000 103,230000 EUR 6.193,80 EUR
+Abwicklung über IBAN Institut Zahlungsbetrag
+DE00000000000000000000 XXXXXXXXXXXXXXXXXXXXX 6.193,80 EUR

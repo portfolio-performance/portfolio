@@ -1,0 +1,193 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+comdirect bank AG, 25449 Quickborn 978 56 010
+Frau Erika Musterfrau Telefon: 04106 - 708 25 00
+Herrn Max Mustermann Telefax: 04106 - 708 25 85
+Musterstr. 123 E-Mail: www.comdirect.de/kontakt
+12345 Musterhausen (E-Mail über Kontaktformular)
+Kundennummer: 123 4567890
+Finanzreport Nr. 2 per 03.07.2017
+Sehr geehrte Frau Musterfrau,
+sehr geehrter Herr Mustermann,
+ 
+in Ihrem aktuellen Finanzreport finden Sie alle Informationen rund um Ihre Konten und Ihr
+Depot.
+Für Fragen zum Finanzreport oder unseren Leistungen stehen Ihnen unsere Kundenbetreuer
+telefonisch unter 04106 - 708 25 00 rund um die Uhr gerne zur Verfügung.
+Mit freundlichen Grüßen
+comdirect bank AG
+Aktuelle Informationen:
+Den comdirect Ratenkredit haben wir für Sie noch einmal verbessert: Ab sofort können Inhaber
+eines Gemeinschaftskontos zusammen von unseren Top-Konditionen profitieren. Mehr
+Informationen: www.comdirect.de/ratenkredit
+Urlaubsplanung für Ihr Depot, damit Ihr Wertpapiervermögen nicht buchstäblich in das Wasser
+fällt. Nutzen Sie vor Urlaubsantritt unsere Komfortorders und sichern Sie Ihr Depot ab. Mehr
+dazu unter www.comdirect.de/komfortorders
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 2 per 03.07.2017 - Seite 2
+Kundennummer 123 4567890
+Kontoübersicht
+Ihre aktuellen Salden IBAN Saldo in
+EUR
+Girokonto DE33 2004 1155 1234 5678 00 +3.429,77
+Tagesgeld PLUS-Konto DE92 2004 1155 1234 5678 05 +0,00
+Visa-Karte ZZZZ +0,00
+Visa-Karte YYYY +0,00
+Gesamtsaldo 03.07.2017 +3.429,77
+ 
+Girokonto Dispositionskredit girocard Tages-/WochenlimitEUR 2.500 EUR 1.000/EUR 2.000
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 01.06.2017 +2.132,00
+05.06.2017 Übertrag/Über Blablafirma Re.-Nr. 155225 -49,66
+05.06.2017 weisung DE92701500000058269614 End-to-End-Ref.: nicht
+IQ217156I54558 SSKMDEMMXXX angegeben
+45/2
+27.06.2017 Lastschrift/Bela Online .Mktplce -22,89
+27.06.2017 st. EUROPE S.C.A. EU-DE 1549105113467146
+JN21717793657 End-to-End-Ref.:
+406/5503 1549105113467146
+CORE / Mandatsref.:
+UHIBgrQG+ZpAW?d0AnTOzR+GaTYdCl
+Gläubiger-ID:
+DE94ZZZ00000561653
+28.06.2017 Lastschrift/Bela Online .Mktplce -264,99
+28.06.2017 st. NIEDERLASSUNG D 16631140993
+JC217178G134 EUTSCHLAND End-to-End-Ref.:
+7990/15986 1271916631140993
+CORE / Mandatsref.:
+UHIBgrQG+ZpAW?d0AnTOzR+GaTYdCl
+Gläubiger-ID:
+DE24ZZZ00000561652
+28.06.2017 Übertrag/Über Erika Musterfrau Bliblablup +816,00
+28.06.2017 weisung 44
+IW21717910413 End-to-End-Ref.: nicht
+253/1 angegeben
+28.06.2017 Übertrag/Über Max Mustermann Blaebloeblue +816,00
+28.06.2017 weisung End-to-End-Ref.: nicht
+HT217179F0431 angegeben
+317/13923
+28.06.2017 Übertrag/Über Max Mustermann Laufende Kosten +250,00
+28.06.2017 weisung End-to-End-Ref.: nicht
+HT217179F0431 angegeben
+317/13924
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 2 per 03.07.2017 - Seite 3
+Kundennummer 123 4567890
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+29.06.2017 Lastschrift/Bela Online.de 12719 -199,00
+29.06.2017 st. NIEDERLASSUNG D 18234543192
+I8217178M0926 EUTSCHLAND End-to-End-Ref.:
+826/21151 1271918234543192
+CORE / Mandatsref.:
+UHIBgrQG+ZpAW?d0AnTOzR+GaTYdCl
+Gläubiger-ID:
+DE24ZZZ00000561652
+03.07.2017 Lastschrift/Bela Analog GmbH Telefon -29,90
+03.07.2017 st. VERTRAG: 06/2017 Max Mustermann
+HF217179G170 End-to-End-Ref.:
+7082/38227 0000A20170628143053280617300312660
+CORE / Mandatsref.:
+312660
+Gläubiger-ID:
+DE28ZZZ00000112082
+03.07.2017 Lastschrift/Bela comdirect VISA-KARTE NR. 4263YYYYXXXXZZZZ -9,14
+03.07.2017 st. Visa-Monatsabrechnung SUMME MONATSABRECHNUNG VISA
+HC2171827344 Max Mustermann
+6110/350752
+03.07.2017 Lastschrift/Bela DROGERIEMARKT SAGT Kartenzahlung DM -8,65
+03.07.2017 st. DANKE FIL.2820 H:65293//MUSTERSTDT/DE
+16A17184C2727 2017-07-01T17:47:15 KFN 0 VJ 2012
+594/117642
+Neuer Saldo 03.07.2017 +3.429,77
+Tagesgeld PLUS-Konto
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 01.06.2017 +0,00
+Neuer Saldo 03.07.2017 +0,00
+Visa-Karte ZZZZ Visa Limit Verfügungslimit am GeldautomatEUR 2.000/Monat EUR 600/Tag
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 01.06.2017 +0,00
+Neuer Saldo 03.07.2017 +0,00
+Visa-Karte YYYY Visa Limit Verfügungslimit am GeldautomatEUR 2.000/Monat EUR 600/Tag
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+Alter Saldo 01.06.2017 +0,00
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 2 per 03.07.2017 - Seite 4
+Kundennummer 123 4567890
+Buchungstag Vorgang Auftraggeber/Empfänger Buchungstext Ausgang
+Valuta Referenz IBAN/BIC Eingang
+22.06.2017 Auslandsentgelt 1.75 PROZ.AUSLANDSENTGELT -0,16
+22.06.2017 1170622391837
+01
+22.06.2017 Visa-Umsatz Filmefirma 400 Betrag: -8,98
+21.06.2017 1170622391836 -9,99 USD Kurs: 1,1119
+01
+30.06.2017 Visa-Kartenabre SUMME MONATSABRECHNUNG VISA +9,14
+30.06.2017 chnung
+1170630763863
+01
+Neuer Saldo 03.07.2017 +0,00
+Steuerübersicht1
+Steuerliche Daten EUR
+Gewinne/Verluste aus Aktien (Verrechnungssaldo) +0,00
+Gewinne/Verluste Sonstige (Verrechnungssaldo) +0,00
+Eingereichter Freibetrag 0,00
+In Anspruch genommener Freibetrag 0,00
+Verbleibender Freibetrag 0,00
+Anrechenbare ausländische Quellensteuer 0,00
+Abgeführte Kapitalertragsteuer 0,00
+Abgeführter Solidaritätszuschlag 0,00
+Abgeführte Kirchensteuer 0,00
+Angerechnete ausländische Quellensteuer 0,00
+1 Dies ist keine Steuerbescheinigung.
+Zinsübersicht
+Girokonto
+Zinssatz für die Inanspruchnahme des Dispositionskredites: 6,50 % p. a. (gültig ab: 03.04.2017)
+Zinssatz für geduldete Überziehungen: 11,00 % p. a. (gültig ab: 03.04.2017)
+Verrechnungskonto/Tagesgeld PLUS-Konto/O&F-Konto
+Zinssatz für geduldete Überziehungen: 11,00 % p. a. (gültig ab: 03.04.2017)
+Zinsgleitklausel für variable Sollzinssätze:
+Die Bank wird variable Sollzinssätze entsprechend den Änderungen des Hauptrefinanzierungszinssatzes der Europäischen Zentralbank
+(nachfolgend EZB-Zinssatz) nach folgender Maßgabe anpassen: Sofern am letzten Bankarbeitstag vor dem 15. eines Kalendermonats von der
+Bank eine Erhöhung des EZB-Zinssatzes um mindestens 0,25 Prozentpunkte gegenüber dem EZB-Zinssatz im Monat der letzten Zinsanpassung
+festgestellt wird, erhöht die Bank den variablen Sollzinssatz entsprechend. Die Bank verpflichtet sich dagegen zur Senkung des variablen
+Sollzinssatzes um die Veränderung des EZB-Zinssatzes, wenn der EZB-Zinssatz um mindestens 0,25 Prozentpunkte gesunken ist. Die
+Zinsanpassungen werden 5 Bankarbeitstage nach dem 15. eines Kalendermonats ohne gesonderte Erklärung gegenüber dem Kontoinhaber bei
+der comdirect bank AG wirksam. Die comdirect bank AG wird den Kontoinhaber in regelmäßigen Zeitabständen im Finanzreport unterrichten.
+Der Kontoinhaber kann die Höhe des EZB-Zinssatzes jederzeit auf der Webseite der comdirect bank AG bzw. in anderen öffentlich zugänglichen
+Medien (insbesondere www.bundesbank.de) einsehen.
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn
+Finanzreport Nr. 2 per 03.07.2017 - Seite 5
+Kundennummer 123 4567890
+Wichtige Hinweise
+1. Ihre individuellen Vergünstigungen
+Informieren Sie sich jetzt über unser attraktives Preismodell und profitieren Sie von vielen individuellen Vergünstigungen.
+Details finden Sie unter www.comdirect.de/konditionen. Es gilt das aktuelle Preis- und Leistungsverzeichnis.
+2. Einwendungen gegen den Rechnungsabschluss
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieses Rechnungsabschlusses sind gem. Nr. 7.2 unserer allgemeinen
+Geschäftsbedingungen spätestens vor Ablauf von sechs Wochen nach Zugang des Rechnungsabschlusses zu erheben. Sofern
+Sie Ihre Einwendungen schriftlich geltend machen, richten Sie diese bitte unter Angabe Ihrer Kundennummer an die comdirect
+bank AG, Innenrevision, 25449 Quickborn. Es genügt die Absendung innerhalb der Sechs-Wochen-Frist. Das Unterlassen
+rechtzeitiger Einwendungen gilt als Genehmigung.
+3. Ihre Kontodisposition
+Der Kontostand berücksichtigt nicht die Valuta (Wertstellung) der einzelnen Buchungen. Das bedeutet, dass der angezeigte
+Kontostand nicht dem tatsächlichen Kontoguthaben entsprechen muss und bei Verfügungen möglicherweise Zinsen für die
+Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können. Bitte berücksichtigen Sie bei Ihrer
+Disposition daher ggf. die Wertstellungen der Kontoumsätze der letzten Tage.
+4. Hinweis zur Einlagensicherung
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen
+können dem "Informationsbogen für den Einleger" entnommen werden. Diesen finden Sie unter www.comdirect.de/infobogen
+5. Übersicht Ihrer Kontodaten IBAN BIC
+Girokonto DE33 2004 1155 1234 5678 00 COBADEHD055
+Tagesgeld PLUS-Konto DE92 2004 1155 1234 5678 05
+comdirect bank AG USt-ID: DE 812 279 461
+25449 Quickborn

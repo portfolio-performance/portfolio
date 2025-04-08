@@ -241,6 +241,11 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
     {
         this.minimumJavaVersionRequired = minimumJavaVersionRequired;
     }
+    
+    public String getMinimumJavaVersionRequired()
+    {
+        return minimumJavaVersionRequired;
+    }
 
     public boolean requiresNewJavaVersion()
     {

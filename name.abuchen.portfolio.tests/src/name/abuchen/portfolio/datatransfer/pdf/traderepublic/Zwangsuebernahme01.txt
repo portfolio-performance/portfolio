@@ -1,0 +1,30 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+OdiELL AHVAYoZ SEITE 1 von 1
+HRQPMRC Str. 28 DATUM 17.02.2024
+39440 qKXTCF DEPOT 1493721849
+ZWANGSÜBERNAHME
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+1 Ausbuchung Quantafuel AS 17 Stk.
+Navne-Aksjer NK -,01
+NO0010785967
+ABRECHNUNG
+NR. POSITION BETRAG
+1 Barausgleich 108,46 NOK
+Zwischensumme 108,46 NOK
+Zwischensumme 11,370137 EUR/NOK 9,54 EUR
+GESAMT 9,54 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DExxxxxxxxxxxxxxxxxxxxxx 12.02.2024 9,54 EUR
+Quantafuel AS Navne-Aksjer NK -,01 in Wertpapierrechnung in Deutschland.
+Lagerland: Norwegen
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
+ABRE / 17.02.2024 / 45506328 / 53ad-18b1

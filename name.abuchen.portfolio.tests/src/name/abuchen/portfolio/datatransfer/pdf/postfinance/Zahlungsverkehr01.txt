@@ -1,0 +1,21 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 1426412 - TRADING
+Herrn Muster Mueller
+Musterstrasse 10
+DE-40524 Beispielort
+Bern, 02.05.2023
+Zahlungsverkehr - Gutschrift Unsere Referenz: 391377700
+Wir haben Ihrem Konto den folgenden Betrag gutgeschrieben:
+Kontonummer 780794567
+Valutadatum 02.05.2023
+Gutgeschriebener Betrag CHF 1'200.00
+Total CHF 1'200.00
+Mitteilung Übertrag auf 780794567 CHF
+Bitte prüfen Sie dieses Dokument und benachrichtigen Sie uns bei Unstimmigkeiten innert Monatsfrist.
+PostFinance AG, Mingerstrasse 20, 3030 Bern
+Kontaktcenter E-Trading: 0848 800 000 (Mo-Fr: 08.00-18.00 Uhr, ab Festnetz CHF 0.08/Min.)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.302.542

@@ -1,0 +1,51 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/2
+München
+12.03.2021
+Herrn
+Scalable Capital 
+xxxxxxxxxxx Vermögensverwaltung GmbH 
+Seitzstraße 8e
+xxxxxxxxxxxxxx
+80538 München 
+55411 Bingen am Rhein service@scalable.capital
+Hans Brozek
+Stamm-Nr.: yyyyyyy    Portfolio: 1
+Depot-Nr.: yyyyyyyyyy 
+Vorgangs-Nr.: yyyyyyy
+Referenz-Nr.: yyyyyyyy
+Buchungsanzeige
+Zeichnung
+Ex-Tag: 09.03.2021
+Nominale ISIN: DE000A255G02 WKN: A255G0
+STK 46 Enapter AG
+Inhaber-Aktien o.N.
+Einbuchung in Depot yyyyyyyyyy per 09.03.2021
+Nominale ISIN: DE000A3H3MG0 WKN: A3H3MG Bezugspreis
+STK 46 Enapter AG EUR 22,00 p.STK
+junge Inhaber-Aktien o.N.
+Verhältnis: 1 : 1 
+Bruttobetrag EUR 1.012,00
+Zu Lasten Konto yyyyyyyyyy Valuta: 09.03.2021 EUR 1.012,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz | HRB 217778, Amtsgericht 
+München | USt-IdNr. DE300434774 | www.scalable.capital 
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland
+service@baaderbank.de www.baaderbank.de 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. KNEU-039.041
+Zeichnung
+Fortsetzung: Seite 2/2
+Einbuchung
+Stück 46,00 Enapter AG
+ISIN: DE000A3H3MG0
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten
+WP Einbuchung CA 4444205 11.03.2021 STK 46,00 0,00
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz | HRB 217778, Amtsgericht 
+München | USt-IdNr. DE300434774 | www.scalable.capital 
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland
+service@baaderbank.de www.baaderbank.de 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. KNEU-039.041

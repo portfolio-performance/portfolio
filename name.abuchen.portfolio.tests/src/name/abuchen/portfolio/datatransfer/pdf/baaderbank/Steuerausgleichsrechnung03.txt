@@ -1,0 +1,53 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Scalable Capital 
+Vermögensverwaltung GmbH 
+Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Herrn Seite 1/2
+München
+Max Mustermann
+22.10.2021
+Musterstraße 1
+12345 Musterstadt Max Mustermann
+Stamm-Nr.: 1234567    Portfolio: 1
+Vorgangs-Nr.: 1234567
+Referenz-Nr.: 123456789
+Steuerausgleichsrechnung
+Sehr geehrter Herr Mustermann,
+wir haben für Sie eine Steuerausgleichsrechnung durchgeführt, die der Optimierung der Steuerbelastung 
+dient. Dadurch haben sich folgende Anpassungen ergeben:
+Rückerstattung bereits gezahlter:
+Kapitalertragsteuer EUR 0,61
+Kirchensteuer EUR 0,05
+Solidaritätszuschlag EUR 0,03
+Erstattung EUR 0,69
+Den Betrag in Höhe von 0,69 EUR erstatten wir dem Konto 1234567890.
+Grundlage für die Steuerausgleichsrechnung waren folgende Bestände und Anpassungen in den 
+Verrechnungstöpfen, die zu einer neuen Berechnungsgrundlage geführt haben:
+Verrechnungstöpfe Saldo vorher Anpassung Saldo nachher
+Freistellungsauftrag EUR 2,50 EUR 2,50 - EUR 0,00
+Ausgleich der Steuerlast
+Aufgrund der neuen Bemessungsgrundlage wird gemäß den gesetzlichen Vorgaben bereits gezahlte 
+Kapitalertragsteuer wie folgt umgebucht und korrigiert:
+Bezahlte Kapitalertragsteuer Saldo vorher Anpassung Saldo nachher
+bezahlte Kapitalertragsteuer EUR 13,88 EUR 0,61 - EUR 13,27
+Ausnutzung FSA EUR 347,50 - EUR 2,50 - EUR 350,00 -
+Bitte prüfen Sie diese Mitteilung. Etwaige Einwendungen bitten wir unverzüglich zu erheben. 
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz | HRB 217778, Amtsgericht 
+München | USt-IdNr. DE300434774 | www.scalable.capital
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland
+service@baaderbank.de www.baaderbank.de
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. TOPF-027.017
+Steuerausgleichsrechnung
+Fortsetzung: Seite 2/2
+Mit freundlichen Grüßen 
+Ihr Scalable-Capital-Team
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Peter Gaubatz | HRB 217778, Amtsgericht 
+München | USt-IdNr. DE300434774 | www.scalable.capital
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland
+service@baaderbank.de www.baaderbank.de
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. TOPF-027.017

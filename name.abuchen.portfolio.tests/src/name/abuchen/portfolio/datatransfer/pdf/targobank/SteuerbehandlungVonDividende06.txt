@@ -1,0 +1,47 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.60.0
+-----------------------------------------
+TARGOBANK AG
+Postfach 10 02 30
+47002 Duisburg
+TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg www.targobank.de
+HERR
+MAX MUSTERMANN
+MUSTER LANDSTR. 98
+12345 MUSTERDORF
+Depotnummer 11111111111111
+........................................................................................................................................................................................................
+Ertragsgutschrift (Steuerbeilage) 15.12.2022
+MAX MUSTERMANN
+Wertpapier iSh.STOXX Europe 600 U.ETF DE - Inhaber-Anteile
+WKN / ISIN 263530 / DE0002635307
+Stück 1.227
+Ausschüttung pro Stück 0,177415 EUR
+Ex-Tag 15.12.2022
+Ursprungsland Deutschland
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuersatz
+25,00 % * 5,50 % 9,00 %
+Transaktionsreferenz INDTBK34822CG020886O00
+Steuerliche Bemessungsgrundlagen - keine Steuerbescheinigung
+Teilfreistellung (§ 20 InvStG) 30,00 % - 65,31 EUR
+Erträge/Verluste 152,38 EUR
+Auf- oder Abbau von steuerlichen Verrechnungsmöglichkeiten
+Verlustverrechnung aus Aktienhandel: 0,00 EUR
+Verlustverrechnung aus sonstigen Geschäften: 0,00 EUR
+Nutzung des Sparerpauschbetrages/Freistellungsauftrages 0,00 EUR
+Anrechnung ausländischer Quellensteuer ** 0,00 EUR
+Bemessungsgrundlage 152,38 EUR
+Kapitalertragsteuer (KESt): 37,26 EUR
+Solidaritätszuschlag auf KESt: 2,04 EUR
+Kirchensteuer auf KESt: 3,35 EUR
+Gesamtsumme Steuern 42,65 EUR
+Belastung Ihres Kontos 1111111111 mit Wertstellung zum 15. Dezember 2022.
+* KESt grundsätzlich 25%. Bei Einbehalt von Kirchensteuer ändert sich der KESt-Satz entsprechend Ihres Kirchensteuersatzes.
+** Quellensteuer multipliziert mit 4 als Ertragsäquivalent
+Dieser Beleg wurde maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
+Seite 1
+TARGOBANK AG | Vorstand: Isabelle Chevelard (Vorsitzende); Christophe Jéhan (stellv. Vorsitzender); Berthold Rüsing; Maria Topaler
+Vorsitzender des Aufsichtsrates:  René Dangel | Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+KH.20221216.083348.5002.0005.2338 X 0 R

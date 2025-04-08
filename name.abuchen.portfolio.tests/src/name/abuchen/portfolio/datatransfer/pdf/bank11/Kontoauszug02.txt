@@ -1,0 +1,164 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.4.qualifier
+-----------------------------------------
+Bank11 für Privatkunden und Handel GmbH
+Hammer Landstr. 91, 41460 Neuss
+Bank11-Tagesgeld
+EUR-Konto Kontonummer 764783800
+Bank11 für Privatkunden und Handel GmbH
+Hammer Landstr. 91, 41460 Neuss Kontoauszug Nr.  1/2023
+erstellt am 30.12.2023 02:54 Blatt  1 von 3
+IBAN: DE27 3053 0500 0764 7838 00 BIC: WEFZDED1XXX
+Herrn
+Max Muster
+Musterstr. 2
+04668 Musterhausen
+Bu-Tag Wert Vorgang
+alter Kontostand vom 30.12.2022                      22.402,66 H
+02.01. 02.01. Überweisungsauftrag                                               3.500,00 S
+              Max Muster
+              Auszahlung 009 Bank11 TAN1:515837 IBAN: DE301203000000
+              18886054 BIC: BYLADEM1001
+05.01. 05.01. Überweisungsgutschr.                                                        1.300,00 H
+              MAX MUSTER
+              Einzahlung 006 Bank11
+09.01. 09.01. Überweisungsauftrag                                                 100,00 S
+              Max Muster
+              Auszahlung 010 Bank11 TAN1:084390 IBAN: DE301203000000
+              18886054 BIC: BYLADEM1001
+16.01. 16.01. Überweisungsgutschr.                                                        4.600,00 H
+              MAX MUSTER
+              Einzahlung 007 Bank11
+17.01. 17.01. Überweisungsauftrag                                                 100,00 S
+              Max Muster
+              Auszahlung 011 Bank11 TAN1:167668 IBAN: DE301203000000
+              18886054 BIC: BYLADEM1001
+24.01. 24.01. Überweisungsgutschr.                                                          500,00 H
+              MAX MUSTER
+              Einzahlung 008 Bank11
+25.01. 25.01. Überweisungsauftrag                                              17.500,00 S
+              Muster*Max
+              Umbuchung IBAN
+              DE35305305000946965650     Max Muster
+30.01. 30.01. Überweisungsauftrag                                               4.000,00 S
+              Max Muster
+              Auszahlung 012 Bank11 TAN1:305163 IBAN: DE301203000000
+              18886054 BIC: BYLADEM1001
+13.02. 13.02. Überweisungsauftrag                                                 150,00 S
+              Max Muster
+              Auszahlung 013 Bank11 TAN1:883990 IBAN: DE301203000000
+              18886054 BIC: BYLADEM1001
+15.02. 15.02. Überweisungsgutschr.                                                        4.200,00 H
+              MAX MUSTER
+              Einzahlung 009 Bank11
+                                            Übertrag auf Blatt 2                          7.652,66 H
+1890
+000
+K00021332
+8M Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Bank11 für Privatkunden und Handel GmbH
+Hammer Landstr. 91, 41460 Neuss
+Bank11-Tagesgeld
+EUR-Konto Kontonummer 764783800
+Max Muster
+Kontoauszug Nr.  1/2023
+erstellt am 30.12.2023 02:54 Blatt  2 von 3
+Bu-Tag Wert Vorgang
+                                            Übertrag von Blatt 1                          7.652,66 H
+28.02. 28.02. Überweisungsauftrag                                               3.000,00 S
+              Max Muster
+              Auszahlung 014 Bank11 TAN1:154137 IBAN: DE301203000000
+              18886054 BIC: BYLADEM1001
+08.03. 08.03. Überweisungsauftrag                                                 800,00 S
+              Max Muster
+              Auszahlung 015 Bank11 TAN1:901032 IBAN: DE301203000000
+              18886054 BIC: BYLADEM1001
+09.03. 09.03. Überweisungsauftrag                                               1.100,00 S
+              Max Muster
+              Auszahlung 016 Bank11 TAN1:135204 IBAN: DE301203000000
+              18886054 BIC: BYLADEM1001
+16.03. 16.03. Überweisungsgutschr.                                                        4.200,00 H
+              MAX MUSTER
+              Einzahlung 010 Bank11
+30.03. 30.03. Überweisungsauftrag                                               6.900,00 S
+              Max Muster
+              Auszahlung 017 Bank11 TAN1:822468 IBAN: DE301203000000
+              18886054 BIC: BYLADEM1001
+31.03. 31.03. Abschluss                                                                      56,88 H
+              Muster*Max
+              Umbuchung Abrechnung
+              Abrechnung per 31.03.2023  von Konto        946965650
+              Kontoinhaber(in)           Max Muster
+27.04. 28.04. Abschluss                                                                      24,50 H
+              Muster*Max
+              Umbuchung Abrechnung
+              Abrechnung per 28.04.2023  von Konto        946965650
+              Kontoinhaber(in)           Max Muster
+28.04. 28.04. Überweisungsgutschr.                                                       17.500,00 H
+              Muster*Max
+              Gesamtkündigung
+02.05. 02.05. Überweisungsauftrag                                              17.600,00 S
+              Max Muster
+              Auszahlung 018 Bank11 TAN1:423278 IBAN: DE301203000000
+              18886054 BIC: BYLADEM1001
+29.12. 31.12. Abschluss lt. Anlage 1                                                         29,52 H
+                                    neuer Kontostand vom 29.12.2023                          63,56 H
+1890
+000
+K00021332 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Bank11 für Privatkunden und Handel GmbH
+Hammer Landstr. 91, 41460 Neuss
+Bank11-Tagesgeld
+EUR-Konto Kontonummer 764783800
+Max Muster
+Kontoauszug Nr.  1/2023
+erstellt am 30.12.2023 02:54 Blatt  3 von 3
+Bu-Tag Wert Vorgang
+Anlage 1
+Buchungstag:   29.12.2023
+Wert:          31.12.2023
+Kontoabschluss vom 01.01.2023 bis 31.12.2023 für Konto  764783800
+ 1,40000% Habenzins                                       bis 12.02.                         24,36 H
+ 0,50000% Habenzins                                       bis 01.05.                          4,62 H
+ 0,75000% Habenzins                                       bis 31.12.                          0,54 H
+Rechnung Nr.  0764783800.20231231.001
+USt. IdNr. - DE 815101474
+USt.-befreite Finanzdienstleistung
+                                 Summe Abschlussposten in EUR                                29,52 H
+1890
+000
+K00021332 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Sehr geehrte Kundin, sehr geehrter Kunde,
+Sie haben eine Bankmitteilung erhalten, z. B. einen Kontoauszug, einen Sparkontoauszug oder eine Dividendenabrechnung. Bitte 
+prüfen Sie diese genau: Ist alles korrekt? Falls nicht, sprechen Sie uns bitte an. Damit Sie immer gut informiert sind und wissen, wie 
+Sie Ihre Bankmitteilung "richtig lesen", haben wir diese nützlichen Hinweise für Sie zusammengestellt:
+Falls in diesem Dokument Bankdienstleistungen aufgeführt sind, sind diese umsatzsteuerfrei - sofern nichts Abweichendes angegeben
+ist. Der im Kontoauszug ausgewiesene Betrag muss nicht dem tatsächlichen Kontoguthaben entsprechen, weil z. B. die Wertstellung
+einzelner Buchungen nicht berücksichtigt wurde oder noch Zinsen für eine Kontoüberziehung bei einer Verfügung anfallen können.
+Rechnungsabschlüsse
+Ihr Kontoauszug ist mit dem Hinweis "Rechnungsabschluss" versehen?
+Dann haben wir für Ihr Konto einen Rechnungsabschluss durchgeführt, einschließlich Zinsen und Entgelte. Alle weiteren, nach dem
+Erstellungsdatum dieser Mitteilung anfallenden Umsätze und Kontoauszüge werden erst in der folgenden Abrechnung
+berücksichtigt - auch wenn sie sich auf den Abrechnungssaldo des abgelaufenen Abrechnungszeitraumes auswirken.
+Korrekturen werden gekennzeichnet. Den Rechnungsabschluss können Sie beim Finanzamt vorlegen.
+Einwendungen
+Sie haben Einwendungen gegen den Rechnungsabschluss Ihres Kontokorrentkontos oder den Inhalt des Sparkontoauszugs? Dann
+haben Sie nach Erhalt sechs Wochen Zeit, uns zu informieren. Sonst gilt der Rechnungsabschluss zum Kontokorrentkonto oder der
+Sparkontoauszug als genehmigt. Wenn Sie ihre Einwendungen in Textform geltend machen, z. B. per E-Mail oder Brief, so genügt die
+Absendung innerhalb von sechs Wochen nach Erhalt.
+Einzugsaufträge
+Einzugspapiere wie z. B. Schecks und Lastschriften werden unter dem Vorbehalt des Eingangs gutgeschrieben, und zwar auch
+dann, wenn diese Papiere bei uns selbst zahlbar sind. 
+Schecks und Lastschriften sind erst eingelöst, wenn die Belastungsbuchung nicht spätestens am zweiten Bankarbeitstag - bei 
+Lastschriften im SEPA-Firmen-Lastschriftverfahren nicht spätestens am dritten Bankarbeitstag - nach ihrer Vornahme rückgängig
+gemacht wird. Barschecks sind bereits mit Zahlung an den Scheckvorleger eingelöst. Schecks sind auch schon dann eingelöst,
+wenn wir im Einzelfall eine Bezahltmeldung absenden.
+Guthaben
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem
+"Informationsbogen für den Einleger" entnommen werden.
+Sie haben noch Fragen? Dann kontaktieren Sie uns bitte. Wir sind gern für Sie da.
+Mit freundlichen Grüßen
+Ihre Bank
+
+```

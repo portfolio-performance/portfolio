@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CellEditor;
@@ -12,6 +13,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 
 import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.AttributeType.Converter;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.util.ImageUtil;
@@ -22,8 +24,9 @@ public class ImageAttributeEditingSupport extends AttributeEditingSupport
     {
         super(attribute);
 
-        if (!(attribute.getConverter() instanceof ImageConverter))
-            throw new IllegalArgumentException();
+        Converter conv = attribute.getConverter();
+        if (!(conv instanceof ImageConverter))
+            throw new IllegalArgumentException("unsupported converter " + conv); //$NON-NLS-1$
     }
 
     @Override
@@ -62,8 +65,15 @@ public class ImageAttributeEditingSupport extends AttributeEditingSupport
             {
                 try
                 {
-                    return ImageUtil.loadAndPrepare(filename, ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE,
+                    String image = ImageUtil.instance().loadAndPrepare(filename,
+                                    ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE,
                                     ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE);
+
+                    if (image == null)
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(), Messages.MsgInvalidImage,
+                                        MessageFormat.format(Messages.MsgInvalidImageDetail, filename));
+
+                    return image;
                 }
                 catch (IOException ex)
                 {

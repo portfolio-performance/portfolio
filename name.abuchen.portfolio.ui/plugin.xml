@@ -20,6 +20,23 @@
             </systemTest>
          </not>
       </definition>
+      <definition
+            id="name.abuchen.portfolio.ui.expression.IsUpdateNotDisabled">
+         <and>
+            <not>
+               <systemTest
+                  property="os.name"
+                  value="Mac OS X">
+               </systemTest>
+            </not>
+            <not>
+               <systemTest
+                  property="name.abuchen.portfolio.in-app-update"
+                  value="disable">
+               </systemTest>
+            </not>
+         </and>
+      </definition>
    </extension>
    <extension
          point="org.eclipse.e4.ui.css.core.propertyHandler">
@@ -50,6 +67,9 @@
          <property-name
                name="highlight-color">
          </property-name>
+         <property-name
+               name="measurement-color">
+         </property-name>
       </handler>
       <handler
             adapter="name.abuchen.portfolio.ui.theme.ColorsThemeElementAdapter"
@@ -76,6 +96,9 @@
                name="green-foreground">
          </property-name>
          <property-name
+               name="gray-foreground">
+         </property-name>
+         <property-name
                name="hyperlink">
          </property-name>
       </handler>
@@ -91,6 +114,56 @@
             handler="name.abuchen.portfolio.ui.theme.ColumnViewerCSSHandler">
          <property-name
                name="swt-lines-visible">
+         </property-name>
+      </handler>
+      <handler
+            adapter="name.abuchen.portfolio.ui.theme.SecuritiesChartElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.SecuritiesChartCSSHandler">
+         <property-name
+               name="quote-color">
+         </property-name>
+         <property-name
+               name="quote-area-positive-color">
+         </property-name>
+         <property-name
+               name="quote-area-negative-color">
+         </property-name>
+         <property-name
+               name="purchase-event-color">
+         </property-name>
+         <property-name
+               name="sale-event-color">
+         </property-name>
+         <property-name
+               name="dividend-event-color">
+         </property-name>
+         <property-name
+               name="extreme-marker-high-color">
+         </property-name>
+         <property-name
+               name="extreme-marker-low-color">
+         </property-name>
+         <property-name
+               name="non-trading-color">
+         </property-name>
+         <property-name
+               name="shares-held-color">
+         </property-name>
+      </handler>
+      <handler
+            adapter="name.abuchen.portfolio.ui.theme.PortfolioBalanceChartElementAdapter"
+            handler="name.abuchen.portfolio.ui.theme.PortfolioBalanceChartCSSHandler">
+         <property-name
+               name="invested-capital-color">
+         </property-name>
+         <property-name
+               name="absolute-delta-color">
+         </property-name>
+         <property-name
+               name="delta-area-positive-color">
+         </property-name>
+         <property-name
+               name="delta-area-negative-color">
          </property-name>
       </handler>
    </extension>
@@ -111,7 +184,7 @@
                class="name.abuchen.portfolio.ui.editor.Sidebar">
          </widget>
          <widget
-               class="org.swtchart.Chart">
+               class="org.eclipse.swtchart.Chart">
          </widget>
          <widget
                class="name.abuchen.portfolio.ui.util.Colors$Theme">
@@ -121,6 +194,12 @@
          </widget>
          <widget
                class="org.eclipse.swt.widgets.Tree">
+         </widget>
+         <widget
+               class="name.abuchen.portfolio.ui.views.SecuritiesChart">
+         </widget>
+         <widget
+               class="name.abuchen.portfolio.ui.views.PortfolioBalanceChart">
          </widget>
       </provider>
    </extension>

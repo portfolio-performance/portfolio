@@ -1,9 +1,10 @@
 package name.abuchen.portfolio.online.impl.variableurl;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 
 import org.junit.Test;
 
@@ -47,5 +48,18 @@ public class TodayMacroTest
     {
         Today today = new Today("TODAY:yyyy-MM-dd:-P2M");
         assertThat(today.resolve(new Security()), is(LocalDate.now().minusMonths(2).toString()));
+    }
+
+    @Test
+    public void testUnixTimestamp()
+    {
+        Today today = new Today("TODAY:unixtime");
+        assertThat(today.resolve(new Security()),
+                        is("" + LocalDate.now().atStartOfDay().atZone(ZoneId.of("UTC")).toInstant().getEpochSecond()));
+
+        Today minus2months = new Today("TODAY:unixtime:-P2M");
+        assertThat(minus2months.resolve(new Security()), is("" + LocalDate.now().minusMonths(2).atStartOfDay()
+                        .atZone(ZoneId.of("UTC")).toInstant().getEpochSecond()));
+
     }
 }

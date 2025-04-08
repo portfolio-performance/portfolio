@@ -1,0 +1,50 @@
+PDF author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Dhr. <firstname1 firstname2>
+<firstname3 secondname>
+<address >
+<zipcode, City >
+Gebruikersnaam: *******xxx
+(1172470)
+Rekeningoverzicht van 03-08-2021 t/m 02-09-2021
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+02-09-2021 21:29 31-08-2021 DEGIRO Aansluitingskosten 2021 (Borsa Italiana S.p.A. - EUR -2,50 EUR 12,91
+MIL)
+27-08-2021 10:16 26-08-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 15,41
+4,59 EUR
+27-08-2021 10:16 26-08-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 4,59 EUR 20,00
+26-08-2021 12:16 25-08-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 15,41
+1.210 EUR
+26-08-2021 12:16 25-08-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 1.210,00 EUR 1.225,41
+26-08-2021 08:41 25-08-2021 iDEAL Deposit EUR 20,00 EUR 15,41
+26-08-2021 08:41 25-08-2021 Reservation iDEAL / Sofort Deposit EUR -20,00 EUR -4,59
+25-08-2021 12:03 24-08-2021 Overboeking van uw geldrekening bij flatexDEGIRO Bank EUR 15,41
+4,05 EUR
+25-08-2021 12:03 24-08-2021 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 4,05 EUR 19,46
+25-08-2021 11:55 25-08-2021 RIZE CYBERSECUR AND DA IE00BJXRZJ40 Koop 95 @ 6,325 EUR EUR -600,88 EUR 15,41
+25-08-2021 09:55 25-08-2021 Reservation iDEAL / Sofort Deposit EUR 20,00 EUR 616,29
+25-08-2021 08:42 24-08-2021 iDEAL Deposit EUR 10,00 EUR 596,29
+25-08-2021 08:42 24-08-2021 Reservation iDEAL / Sofort Deposit EUR -10,00 EUR 586,29
+25-08-2021 08:41 24-08-2021 iDEAL Deposit EUR 1.200,00 EUR 596,29
+25-08-2021 08:41 24-08-2021 Reservation iDEAL / Sofort Deposit EUR -1.200,00 EUR -603,71
+24-08-2021 13:43 24-08-2021 Reservation iDEAL / Sofort Deposit EUR 10,00 EUR 596,29
+24-08-2021 09:57 24-08-2021 VANGUARD FTSE AW IE00B3RBWM25 Koop 6 @ 102,96 EUR EUR -617,76 EUR 586,29
+flatex DEGIRO Bank flatex DEGIRO Bank Dutch Branch,
+Dutch Branch E klanten@degiro.nl handelend onder de naam DEGIRO, is
+Amstelplein 1 I www.degiro.nl de Nederlandse vestiging van Pagina 1 / 2
+1096 HA Amsterdam flatexDEGIRO Bank AG. flatexDEGIRO Rekeningoverzicht 2021-09-02
+Bank AG staat primair
+Dhr. <firstname1 firstname2>
+<firstname3 secondname>
+<address >
+<zipcode, City >
+Gebruikersnaam: *******xxx
+(1172470)
+Datum Tijd Valutadatum Product ISIN Omschrijving FX Mutatie Saldo
+24-08-2021 01:26 24-08-2021 Reservation iDEAL / Sofort Deposit EUR 1.200,00 EUR 1.204,05
+flatex DEGIRO Bank flatex DEGIRO Bank Dutch Branch,
+Dutch Branch E klanten@degiro.nl handelend onder de naam DEGIRO, is
+Amstelplein 1 I www.degiro.nl de Nederlandse vestiging van Pagina 2 / 2
+1096 HA Amsterdam flatexDEGIRO Bank AG. flatexDEGIRO Rekeningoverzicht 2021-09-02
+Bank AG staat primair

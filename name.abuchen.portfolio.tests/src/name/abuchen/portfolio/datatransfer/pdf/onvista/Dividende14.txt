@@ -1,0 +1,51 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123123000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=NNNN NNNNN
+ADRESSZEILE3=NNN NNNN NN
+ADRESSZEILE4=NNNN NNNNN
+Herr ADRESSZEILE5=
+NNN NNNN ADRESSZEILE6=Depot-Nr. Abrechnungs-Nr.
+NNN NNNN NN BELEGNUMMER=3070
+NNNN NNNN 123123000 59788848 / 17.12.2021 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+NNNNN NNNNN
+Frankfurt am Main, 17.12.2021
+Dividendengutschrift
+Gattungsbezeichnung ISIN
+Fidus Investment Corp. Registered Shares DL -,001 US3165001070
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 1.000,000 02.12.2021 17.12.2021 USD 0,410000
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+17.12.2021 237692041 EUR/USD 1,1321 EUR 269,63
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+ausländische Dividende EUR 362,16
+US-Quellensteuer 15% USD 61,50
+davon anrechenbare US-Quellensteuer 15% EUR 54,32
+Aktienverlusttopf EUR 1,86 1,86
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 144,88
+einbehaltene Kapitalertragsteuer EUR 36,22
+einbehaltener Solidaritätszuschlag EUR 1,99
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 1,98
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 1,74
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Frankfurt am Main V Steuernummer: 047/220/06016.
+Steuerlicher Stichtag: 17.12.2021
+Verwahrart: Wertpapierrechnung Lagerland: USA
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvist a bank - eine M arke der Com merzbank AG · Solmsst raße 83 · 6 0 486 Frankfur t a m M ain
+Kundenservice: +49 ( 0 )69-710 7-53 0 · T: +49 ( 0 )69-710 7- 0 · F: +49 ( 0 )69-710 7-10 0 · E: in fo@onvist a -bank.de · W: w w w.onvist a -bank.de
+Commerzbank AG · 60261 Frankfur t am Main · AG Frankfur t am Main HRB 32000 · Vorstand: Manf red Knof (Vorsitzender),
+Marcus Chromik, Michael Kotzbauer, Bet t ina Orlopp, Thomas Schaufler, Sabine Schmit t roth · Vorsitzender des Aufsichtsrates: Helmut Got tschalk
+3.20/ABREEREIERTR/GDBERTRG/003070/171221/014313

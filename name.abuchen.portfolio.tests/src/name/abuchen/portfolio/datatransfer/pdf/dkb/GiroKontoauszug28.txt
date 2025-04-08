@@ -1,0 +1,117 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+Deutsche Kreditbank AG
+Herrn
+Internes Zeichen:
+yaqxsw cdevfr
+180 44 00
+ghargafa 44
+ 
+65894 haghagha  
+ 
+ 
+ 
+ 
+ 
+ 
+5. Februar 2024
+ 
+Kontoauszug 2/2024 Seite 1 von 2
+Girokonto 2626262662, DE11 1111 1111 1111 1111 11, DKB-Cash
+  
+Datum Erläuterung Betrag Soll EUR Betrag Haben EUR
+            4.053,05
+ Kontostand am 04.01.2024, Auszug Nr.    1   
+           -2.501,50
+08.01.2024 Wertpapierabrechnung / Wert: 09.01.2024
+Depot 2525325252 Wertp.Abrechn. 05.01.2024 
+000006617842600 WKN A2PKXG Gesch.Art KV VANG.FTSE 
+A.W. DLA ISIN IE00BK5BQT80 Ihr Fondssparplan Preis 
+106,08000000 EUR Stück 23,5671
+              -11,88
+15.01.2024 sonstige Entgelte / Wert: 13.01.2024
+Rechnung DEUTSCHE KREDITBANK AG Entgelt Girokarte 
+für 2024/KartNr.******1234 yaqxsw cdevfr 
+20240115-BY111-00262626264
+             -150,69
+16.01.2024 Wertpapierabrechnung / Wert: 04.01.2024
+Depot 2525325252 Wertpapierertrag 15.01.2024 
+000053456860780 WKN A2PKXG VANG.FTSE A.W. DLA ISIN 
+IE00BK5BQT80
+              -65,28
+16.01.2024 Kartenzahlung
+xxx 
+2024-01-15T17:16 Debitk.0 2024-12
+              -52,33
+17.01.2024 Kartenzahlung
+xxx
+ME0 IC-1612552553769 61725532525252551730 
+Gläubiger-ID: yyyy
+              -50,00
+24.01.2024 Kartenzahlung
+xxx
+Debitk.0 2024-12
+               -4,75
+26.01.2024 Kartenzahlung FW
+xxx
+2024-01-25T23:26 Debitk.79 2099-12 Original 5,15 USD 1 
+Euro=1,08421050 USD Zahl.System VISA Debit
+            2.600,00
+01.02.2024 Zahlungseingang
+yaqxsw cdevfr Einzahlung DKB
+            3.816,62
+ Kontostand am 02.02.2024 um 18:05 Uhr   
+Ihr Dispositionskredit EUR: 500,00
+Gesamtumsatzsummen Summe Soll EUR Anzahl Summe Haben EUR Anzahl
+-2.836,43 7 2.600,00 1
+ .
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Stefan Unterlandstättner (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Mikenberg (HRB 34165 B)
+Kontoauszug 2/2024 Seite 2 von 2
+Girokonto 2626262662, DE11 1111 1111 1111 1111 11, DKB-Cash, yaqxsw cdevfr
+Hinweise zum Kontoauszug:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können 
+dem Informationsbogen für Einleger entnommen werden, den Sie auch unter www.dkb.de/kundenservice/einlagensicherung 
+einsehen können. Bitte beachten Sie nachstehenden Auszug aus unseren Allgemeinen Geschäftsbedingungen, sowie die mit Ihnen 
+getroffene Regelung über die Erteilung von Rechnungsabschlüssen:
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte 
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise 
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Schreibt die Bank den Gegenwert von Schecks, Lastschriften oder anderen Einzugspapieren schon vor ihrer Einlösung gut, so 
+geschieht dies unter dem Vorbehalt der Einlösung und des Einganges des Gegenwertes (E.v.Gutschrift). Das gilt auch dann, wenn 
+die Schecks, Lastschriften oder anderen Einzugspapiere bei der Bank selbst zahlbar sind. Werden Schecks oder Lastschriften 
+nicht eingelöst oder geht der Bank der Gegenwert aus einem anderen Einzugspapier nicht zu, so macht sie die Gutschrift gemäß 
+Nr. 23 dieser AGB rückgängig (Stornobuchung), und zwar auch nach einem zwischenzeitlich erfolgten Rechnungsabschluss.
+l Schecks und andere Einzugspapiere sind erst eingelöst, wenn die Belastungsbuchung nicht bis zum Ablauf des übernächsten 
+Bankarbeitstages rückgängig gemacht wird. Sie sind auch eingelöst, wenn die Bank ihren Einlösungswillen schon vorher Dritten 
+gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für Lastschriften gelten die Einlöseregeln in den hierfür 
+vereinbarten besonderen Bedingungen. Über die Abrechnungsstelle der Bundesbank eingezogene Schecks sind eingelöst, wenn 
+  
+sie nach deren Allgemeinen Geschäftsbedingungen nicht mehr zurückgegeben werden können. Barschecks sind mit Zahlung an 
+den Scheckvorleger eingelöst.
+l Aufgrund gesetzlicher Bestimmungen (§ 355 HGB) sind wir verpflichtet, Ihnen in regelmäßigen Abständen einen 
+Rechnungsabschluss zu erteilen. Wir haben festgelegt, dass dies bei Kontoabrechnungsbuchungen (Zinsen und/oder sonstige 
+Entgelte), zumindest aber einmal jährlich geschieht. Beachten Sie bitte, dass dieser Kontoauszug einen Rechnungsabschluss 
+darstellt, wenn er als solcher bezeichnet ist. Im Abschlusssaldo sind Zinsen und/oder sonstige Entgelte bis zum letzten 
+Zinsabschlusstermin berücksichtigt.
+l Bitte prüfen Sie den Abschlusssaldo des Rechnungsabschlusses. Rechnungsabschlüsse gelten als genehmigt, sofern Sie 
+innerhalb von 6 Wochen nach Zugang keine Einwendungen erheben. Einwendungen gegen Rechnungsabschlüsse müssen der 
+Deutsche Kreditbank AG, Bereich Revision, Taubenstraße 7-9, 10117 Berlin schriftlich oder, wenn im Rahmen der 
+Geschäftsbeziehung der elektronische Kommunikationsweg vereinbart wurde (z. B. Onlinebanking), auf diesem Wege zugehen. 
+Zur Fristwahrung genügt die rechtzeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+Dieser Kontoauszug gilt im Zusammenhang mit dem zugrunde liegenden Vertrag laut angegebener Kontonummer als Rechnung im 
+Sinne des UStG.
+Mit freundlichen Grüßen
+Ihre Deutsche Kreditbank AG
+Deutsche Kreditbank AG Vorsitzender des Aufsichtsrats Telefon 030 120 300 00 BIC: BYLADEM1001 
+Taubenstraße 7 - 9 Stephan Winkelmeier Telefax 030 120 300 01  
+10117 Berlin Vorstand  USt-ID-Nr.: DE137178746 
+ Stefan Unterlandstättner (Vorsitzender) info@dkb.de Handelsregister 
+Ein Unternehmen der Tilo Hacke, Jan Walther, www.dkb.de Berlin-Charlottenburg 
+Bayerischen Landesbank Arnulf Keese, Kristina Mikenberg (HRB 34165 B)

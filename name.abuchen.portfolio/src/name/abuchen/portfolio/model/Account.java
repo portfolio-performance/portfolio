@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.model;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,8 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
 
     private Attributes attributes;
 
+    private Instant updatedAt;
+
     public Account()
     {
         this.uuid = UUID.randomUUID().toString();
@@ -27,6 +30,12 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public Account(String name)
     {
         this();
+        this.name = name;
+    }
+
+    /* package */ Account(String uuid, String name)
+    {
+        this.uuid = uuid;
         this.name = name;
     }
 
@@ -52,6 +61,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void setName(String name)
     {
         this.name = name;
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -64,6 +74,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void setCurrencyCode(String currencyCode)
     {
         this.currencyCode = currencyCode;
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -76,6 +87,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void setNote(String note)
     {
         this.note = note;
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -88,6 +100,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void setRetired(boolean isRetired)
     {
         this.isRetired = isRetired;
+        this.updatedAt = Instant.now();
     }
 
     @Override
@@ -102,6 +115,17 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void setAttributes(Attributes attributes)
     {
         this.attributes = attributes;
+        this.updatedAt = Instant.now();
+    }
+
+    public Instant getUpdatedAt()
+    {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt)
+    {
+        this.updatedAt = updatedAt;
     }
 
     @Override
@@ -114,7 +138,11 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void addTransaction(AccountTransaction transaction)
     {
         if (!currencyCode.equals(transaction.getCurrencyCode()))
-            throw new IllegalArgumentException();
+        {
+            throw new IllegalArgumentException("Unable to add transaction '" + transaction.toString() + "' to account '" //$NON-NLS-1$ //$NON-NLS-2$
+                            + getName() + "' (uuid " + transaction.getUUID() + "): " + currencyCode + " <> " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                            + transaction.getCurrencyCode());
+        }
 
         this.transactions.add(transaction);
     }
@@ -149,7 +177,8 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
                                 case TRANSFER_OUT:
                                     return -t.getAmount();
                                 default:
-                                    throw new UnsupportedOperationException();
+                                    throw new UnsupportedOperationException("unsupported transaction type '" //$NON-NLS-1$
+                                                    + t.getType() + "' for transaction " + t); //$NON-NLS-1$
                             }
                         }).sum();
     }

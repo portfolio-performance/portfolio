@@ -1,0 +1,56 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.3
+-----------------------------------------
+Herrn
+Mag. Max Mustermann
+Musterstraße 2
+8020 Musterstadt
+Wien, den 02.11.2022
+Wir haben für Sie am 02.11.2022 unten angeführtes Geschäft abgerechnet:
+Depot: 11111-222-333
+Verlusttopf Nr.: 111111111111
+Geschäftsart: Ertrag
+Bestand: Stk 16
+davon
+KESt-Neubestand mit Anschaffungskosten: Stk 16
+Titel: US46625H1005 JPMorgan Chase & Co.
+Registered Shares DL 1
+Dividende: 1 USD
+Verwahrart: WR Wertpapierrechnung
+Positionsdaten: Loco: Düsseldorf
+Ertrag: 16,00 USD
+Auslands-KESt neu: -2,00 USD
+Quellensteuer: -2,40 USD
+11,60 USD
+Devisenkurs: 0,99975 (31.10.2022) 11,60 EUR
+Devisenprovision: -0,04 EUR
+Zu Gunsten IBAN AT11 1111 1111 1111 1111 Valuta 02.11.2022 11,56 EUR
+Eingang vorbehalten
+QUSt pro Stück: 15%
+KESt-pflichtiges Wertpapier
+Extag: 05.10.2022
+Record-Tag: 06.10.2022
+Steuerrelevante Hinweise finden Sie auf der Rückseite.
+Seite 1 von 2
+easybank Service Center | +43 (0) 5 70 05-500 | easy@easybank.at | www.easybank.at | Wiedner Gürtel 11 | 1100 Wien
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postsparkasse Aktiengesellschaft | Handelsgericht Wien | FN 205340x
+GEODRU02 WGEWTGSDR15ABREP2022110203115P02_a/1373
+Hinweis für KESt aus Neubestand mit Anschaffungskosten:
+Steuerrelevanter Anschaffungswert: 2.240,00 EUR
+Steuerrelevanter Anschaffungswert aktuell: 2.240,00 EUR
+Hinweis für den Verlustausgleichstopf:
+Bisheriger Stand KESt bezahlt: 427,98 EUR
+KESt bezahlt: 2,00 EUR
+Aktueller Stand KESt bezahlt: 429,98 EUR
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe.
+Die BAWAG erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle steuerliche
+Nachteile im Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen ihrer
+Kunden. Die Besteuerung der Kapitaleinkünfte hängt von den persönlichen Verhältnissen des Anlegers
+ab und kann künftigen Änderungen unterworfen sein. Vor einer Veranlagungsentscheidung sollten Sie
+sich bei Ihrem Steuerberater über die damit verbundenen steuerlichen Konsequenzen und
+Meldepflichten informieren.
+Mit freundlichen Grüßen
+Ihr easybank Service Center
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 2 von 2
+GEODRU02 WGEWTGSDR15ABREP2022110203115P02_a/1374

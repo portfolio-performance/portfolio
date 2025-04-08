@@ -1,10 +1,12 @@
 package name.abuchen.portfolio.ui.jobs;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -19,6 +21,7 @@ import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.DivvyDiaryDividendFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public final class UpdateDividendsJob extends AbstractClientJob
 {
@@ -28,6 +31,11 @@ public final class UpdateDividendsJob extends AbstractClientJob
     public UpdateDividendsJob(Client client)
     {
         this(client, client.getSecurities());
+    }
+
+    public UpdateDividendsJob(Client client, Predicate<Security> filter)
+    {
+        this(client, client.getSecurities().stream().filter(filter).toList());
     }
 
     public UpdateDividendsJob(Client client, Security security)
@@ -61,7 +69,8 @@ public final class UpdateDividendsJob extends AbstractClientJob
                 {
                     List<DividendEvent> current = security.getEvents().stream()
                                     .filter(event -> event.getType() == SecurityEvent.Type.DIVIDEND_PAYMENT)
-                                    .map(event -> (DividendEvent) event).collect(Collectors.toList());
+                                    .map(DividendEvent.class::cast) //
+                                    .collect(toMutableList());
 
                     for (DividendEvent dividendEvent : dividends)
                     {
@@ -76,14 +85,18 @@ public final class UpdateDividendsJob extends AbstractClientJob
                         }
                     }
 
-                    security.removeEventIf(event -> current.contains(event));
+                    security.removeEventIf(current::contains);
 
                     isDirty = isDirty || !current.isEmpty();
                 }
             }
+            catch (WebAccessException e)
+            {
+                PortfolioPlugin.log(security.getName() + ": " + e.getMessage()); //$NON-NLS-1$
+            }
             catch (IOException e)
             {
-                PortfolioPlugin.log(e);
+                PortfolioPlugin.log(security.getName(), e);
             }
         }
 

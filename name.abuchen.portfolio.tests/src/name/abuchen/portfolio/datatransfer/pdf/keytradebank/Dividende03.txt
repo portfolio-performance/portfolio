@@ -1,0 +1,19 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Keytrade Bank Luxembourg S.A. T +352 45 04 39
+62, Rue Charles Martel F +352 45 04 49
+L-2134 - Luxembourg info@keytradebank.lu
+Grand Duché de Luxembourg www.keytradebank.lu
+RCS B69935 Skype keytradebank.lu
+Betrag: 1,01 EUR
+Zuteilungsjahr 2016
+Einkommensart: DVE - Dividend US Company
+Guthaben Kupons Record date 08/12/2016
+25 NEWMONT MINING CORPORATION NR 161208 0,05 USD
+Bruttobetrag 1,25 USD
+Verrechnungssteuer 15,00 % 0,19 USD
+Wechselkurs 1,05 1,01 EUR
+Steuerliche Bemessungsgrundlage falls zutreffend 1,01 EUR
+Nettoguthaben 1,06 USD Datum  29/12/2016
+Wertschriftenkonto:4/260745 Wertpapier:80007171/US6516391066 Belegnr.: CPN / 389876

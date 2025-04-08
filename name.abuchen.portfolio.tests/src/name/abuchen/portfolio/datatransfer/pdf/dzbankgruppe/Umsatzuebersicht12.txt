@@ -1,0 +1,176 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Gern betreut Sie:
+Volksbank Münsterland Nord eG
+Union Investment - Kundenservice
+Telefon: 069 58998-6000
+Telefax: 069 58998-9000
+Herrn E-Mail: service@union-investment.de
+Max Mustermann
+Straße. 1 UnionDepot: 123456789
+12345 Musterstadt Depotinhaber:
+Max Mustermann
+2. März 2022
+Abrechnung Nr. 33
+Unterdepot-Nr.: 123456789
+Fonds: UniMultiAsset: Exklusiv ISIN: DE000A2H9A01 Verwaltungsvergütung: 0,50 % p. a.
+UniMultiAsset: Chance I ISIN: DE000A2H9A19 Verwaltungsvergütung: 0,40 % p. a.
+LMGF-L.M.Mart.Cu.Gl.L.T.Uncon. Reg. ISIN: IE00BMDQ4622 Verwaltungsvergütung: 0,40 % p. a.
+iShares III- Core EO Govt Bond UCIT ISIN: IE00B4WXJJ64 Verwaltungsvergütung: 0,20 % p. a.
+J O H.C.M.U.Fd-Glob.Opport.Fd ISIN: IE00B7MR5575 Verwaltungsvergütung: 0,75 % p. a.
+SISF EURO Corporate Bond C Acc EUR ISIN: LU0113258742 Verwaltungsvergütung: 0,45 % p. a.
+BGF Euro Corporate Bond Fund D2 EUR ISIN: LU0368266499 Verwaltungsvergütung: 0,40 % p. a.
+UBS(L)F.S-MSCI EM.MKTS UC ETF A USD ISIN: LU0480132876 Verwaltungsvergütung: 0,225 % p. a.
+Xtrackers MSCI World Swap ISIN: LU0659579733 Verwaltungsvergütung: 0,42 % p. a.
+DWS Inv.-Euro-Gov Bonds ISIN: LU1663883681 Verwaltungsvergütung: 0,35 % p. a.
+Hinweis: VermögenPlus Strategie I
+Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+Preisdatum aufschlag %
+Vortrag UniMultiAsset: Exklusiv vom 25.02.2022 16,082
+Vortrag UniMultiAsset: Chance I vom 02.02.2022 16,286
+Vortrag LMGF-L.M.Mart.Cu.Gl.L.T.Uncon. Reg. vom 02.02.2022 0,554
+Vortrag iShares III- Core EO Govt Bond UCIT vom 01.02.2022 1,699
+Vortrag J O H.C.M.U.Fd-Glob.Opport.Fd vom 13.10.2021 0,000
+Vortrag SISF EURO Corporate Bond C Acc EUR vom 02.02.2022 3,178
+Vortrag BGF Euro Corporate Bond Fund D2 EUR vom 25.02.2022 3,988
+Vortrag UBS(L)F.S-MSCI EM.MKTS UC ETF A USD vom 14.02.2022 0,356
+Vortrag Xtrackers MSCI World Swap vom 25.02.2022 5,053
+Vortrag DWS Inv.-Euro-Gov Bonds vom 02.02.2022 1,552
+UniMultiAsset: Exklusiv
+02.03.2022
+01.03.2022 Anlage 55,39 60,54 0,915
+UniMultiAsset: Chance I
+02.03.2022
+01.03.2022 Anlage 51,30 55,37 0,926
+LMGF-L.M.Mart.Cu.Gl.L.T.Uncon. Reg.
+02.03.2022
+01.03.2022 Anlage 2,04 93,84 0,022
+iShares III- Core EO Govt Bond UCIT
+01.03.2022
+01.03.2022 Anlage 12,20 129,0707 0,095
+Handelszeit: 15:48 UTC, Handelsort: OTC via RFQ MM
+Fortsetzung auf Seite 2
+Union Investment Service Bank AG · 60621 Frankfurt am Main
+Tel.: 069 58998-0, Fax: 069 58998-9000 · E-Mail: service@union-investment.de · Internet: www.union-investment.de · Registergericht: Amtsgericht Frankfurt am Main HRB 54979
+Vorstand: Rainer Kobusch, Christoph Pöhlsen, Barbara Resch · Aufsichtsratsvorsitzender: Alexander Lichtenberg · Gläubiger-ID: DE81USB00000002100  
+Einzahlungen: DZ BANK AG Deutsche Zentral-Genossenschaftsbank, Frankfurt am Main, IBAN: DE34 5006 0400 0000 0006 86 (BIC: GENODEFFXXX)
+ññ ññ
+Seite 2 von 4 Datenschutzfeld
+zum Schreiben vom 2. März 2022 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+UnionDepot: 123456789 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Depotinhaber: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Max MustermannXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Buchungs-/ Umsatzart Betrag/EUR Ausgabe- Preis/EUR Anteile
+Preisdatum aufschlag %
+SISF EURO Corporate Bond C Acc EUR
+02.03.2022
+01.03.2022 Anlage 4,24 25,5849 0,166
+BGF Euro Corporate Bond Fund D2 EUR
+02.03.2022
+01.03.2022 Anlage 4,05 17,88 0,227
+UBS(L)F.S-MSCI EM.MKTS UC ETF A USD
+01.03.2022
+01.03.2022 Anlage 3,46 103,137 0,034
+Handelszeit: 15:44 UTC, Handelsort: OTC via RFQ MM
+Xtrackers MSCI World Swap
+01.03.2022
+01.03.2022 Anlage 9,09 31,4661 0,289
+Handelszeit: 15:46 UTC, Handelsort: OTC via RFQ MM
+DWS Inv.-Euro-Gov Bonds
+02.03.2022
+01.03.2022 Anlage 8,23 95,48 0,086
+Kauf 150,00 0,00
+Bestand UniMultiAsset: Exklusiv am 02.03.2022 16,997
+Bestand UniMultiAsset: Chance I am 02.03.2022 17,212
+Bestand LMGF-L.M.Mart.Cu.Gl.L.T.Uncon. Reg. am 02.03.2022 0,576
+Bestand iShares III- Core EO Govt Bond UCIT am 02.03.2022 1,794
+Bestand J O H.C.M.U.Fd-Glob.Opport.Fd am 02.03.2022 0,000
+Bestand SISF EURO Corporate Bond C Acc EUR am 02.03.2022 3,344
+Bestand BGF Euro Corporate Bond Fund D2 EUR am 02.03.2022 4,215
+Bestand UBS(L)F.S-MSCI EM.MKTS UC ETF A USD am 02.03.2022 0,390
+Bestand Xtrackers MSCI World Swap am 02.03.2022 5,342
+Bestand DWS Inv.-Euro-Gov Bonds am 02.03.2022 1,638
+Die Anteilspreise für einige der aufgeführten Fonds werden mit 4 oder sogar 5 Nachkommastellen berechnet. In unserer Darstellung zeigen wir
+jedoch nur 3 Nachkommastellen. Alle Berechnungen wurden jedoch mit allen Nachkommastellen vorgenommen.
+Fortsetzung auf Seite 3
+Seite 3 von 4
+zum Schreiben vom 2. März 2022
+UnionDepot: 123456789
+Depotinhaber:
+Max Mustermann
+Steuerübersicht per 02.03.2022
+Es liegt kein Freistellungsauftrag vor.
+Verlustverrechnungstopf für Kapitalerträge in EUR: -1,63
+gezahlte Kapitalertragsteuer in EUR: 6,07
+gezahlte Kirchensteuer in EUR*: 0,49
+gezahlter Solidaritätszuschlag in EUR: 0,29
+* Wir führen die Kirchensteuer an die Religionsgemeinschaft ab, die uns das Bundeszentralamt für Steuern (BZSt) mit Ihrem Kirchensteuerab-
+zugsmerkmal (KISTAM) übermittelt hat. Aus Gründen des Datenschutzes dürfen wir keine konkreten Daten zu Ihrer Religionszugehörigkeit
+ausweisen.
+Depotübersicht zum 02.03.2022
+Unterdepot- Fondsname/Produktname Anteil- Rücknahme- Depotwert/
+Nr. ISIN/Ertragsverwendung bestand preis/Währung Währung
+Verwahrart/Lagerland
+123456789 VermögenPlus Strategie I 2.791,98 EUR
+UniMultiAsset: Exklusiv 16,997 60,54 EUR
+DE000A2H9A01/thesaurierend
+Girosammelverwahrung/Bundesrepublik Deutschland
+UniMultiAsset: Chance I 17,212 55,37 EUR
+DE000A2H9A19/thesaurierend
+Girosammelverwahrung/Bundesrepublik Deutschland
+LMGF-L.M.Mart.Cu.Gl.L.T.Uncon. Reg. 0,576 93,84 EUR
+IE00BMDQ4622/thesaurierend
+Wertpapierrechnung/CBL - Luxemburg
+iShares III- Core EO Govt Bond UCIT 1,794 128,1312 EUR
+IE00B4WXJJ64/ausschüttend
+Wertpapierrechnung/CBL - Luxemburg
+J O H.C.M.U.Fd-Glob.Opport.Fd 0,000 2,625 EUR
+IE00B7MR5575/ausschüttend
+Wertpapierrechnung/CBL - Luxemburg
+SISF EURO Corporate Bond C Acc EUR 3,344 25,5849 EUR
+LU0113258742/thesaurierend
+Wertpapierrechnung/CBL - Luxemburg
+BGF Euro Corporate Bond Fund D2 EUR 4,215 17,88 EUR
+LU0368266499/thesaurierend
+Wertpapierrechnung/CBL - Luxemburg
+UBS(L)F.S-MSCI EM.MKTS UC ETF A USD 0,390 102,32 EUR
+LU0480132876/ausschüttend
+Wertpapierrechnung/CBL - Luxemburg
+Xtrackers MSCI World Swap 5,342 31,60 EUR
+LU0659579733/thesaurierend
+Wertpapierrechnung/CBL - Luxemburg
+DWS Inv.-Euro-Gov Bonds 1,638 95,48 EUR
+LU1663883681/ausschüttend
+Wertpapierrechnung/CBL - Luxemburg
+Gesamt-Depotwert 2.791,98 EUR
+Fortsetzung auf Seite 4
+ñ ñ
+Seite 4 von 4
+zum Schreiben vom 2. März 2022
+UnionDepot: 123456789
+Depotinhaber:
+Max Mustermann
+Die Bewertung der Fonds erfolgt zum jeweils letzten verfügbaren Rücknahmepreis. In der Depotübersicht sind alle Fondsanteile enthalten, die
+am Tag der Erstellung dieser Abrechnung in Ihrem Depotbestand sind.
+In manchen Fällen weichen die Werte der Depotübersicht von der Abrechnungsübersicht ab. Das kann dann vorkommen, wenn zum Beispiel
+Fonds betroffen sind, die nicht taggleich abgerechnet werden. Das ist bei den meisten Drittfonds oder Finanzportfolioverwaltungen der Fall.
+Hier können Transaktionen zwar bereits für einen der betroffenen Fonds gebucht und abgerechnet sein, für den anderen betroffenen Fonds
+aber noch nicht. In Ihrer nächsten Depotübersicht ist die ausstehende Buchung berücksichtigt.
+Bei Fragen sind wir gern für Sie da. Rufen Sie uns einfach an! Sie erreichen uns montags bis freitags zwischen 08:00 und 18:00 Uhr.

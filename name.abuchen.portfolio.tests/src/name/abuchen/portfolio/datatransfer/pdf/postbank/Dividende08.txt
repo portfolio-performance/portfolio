@@ -1,0 +1,55 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+Postbank Köln · 51222 Köln    Seite 1
+Depotnummer
+ 876543210
+ Kundennummer 123456789
+Max Mustermann
+ Abrechnungsnr. 11223344550
+Herr Datum 12.09.2022
+Max Musterman
+Musterstr. 1
+11222 Musterstadt
+                                                        
+                                                        
+                                                        
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 1.700 CIVITAS SOCIAL HOUSING PLC GB00BD8HBD32 (A2AN2J)
+REGISTERED SHARES LS -,01
+Zahlbarkeitstag 09.09.2022 Ausschüttung pro St. 0,014250000 GBP
+Bestandsstichtag 17.08.2022 Herkunftsland Großbritannien und Nordirland
+Ex-Tag 18.08.2022
+Geschäftsjahr 01.04.2022 - 31.03.2023
+Devisenkurs EUR / GBP  0,8728
+Devisenkursdatum 12.09.2022
+Ausschüttung 19,38 GBP 22,20+ EUR
+Einbehaltene Quellensteuer 20 % auf 19,38 GBP 4,44- EUR
+Anrechenbare Quellensteuer pro Stück 0,0021375 GBP 3,63 GBP
+Kapitalertragsteuerpflichtiger Ertrag 24,23 GBP
+Umrechnung in EUR 27,76 EUR
+Verrechneter Sparer-Pauschbetrag 27,76 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 17,76+ EUR
+5 % rückforderbare Quellensteuer 0,97 GBP
+Lagerstelle CBL w/Sonderheiten (860973 / 60045)
+Den Betrag buchen wir mit Wertstellung 13.09.2022 zu Gunsten des Kontos 222444488 (IBAN DE43 3701 1000 0222 4444
+88), BLZ 370 110 00 (BIC PBNKDEFFXXX). 
+Keine Steuerbescheinigung. 
+Bitte ggf. Rückseite beachten.
+0880.09999000.00066664400
+
+Seite 2
+Depotnummer 876543210
+Kundennummer 123456789
+Abrechnungsnr. 11223344550
+Datum 12.09.2022
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2022 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien Sonstige
+Pauschbetrag Quellensteuer
+Nachher 0,00 0,00 111,11 22,22 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.09130100.0002500ER03

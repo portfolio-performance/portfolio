@@ -1,0 +1,31 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+IqkGn IdLWw QjVNVX SEITE 1 von 1
+isJhUTKreA 7 DATUM 14.06.2024
+44954 EedkCXNDMFzc DEPOT 7366255744
+DIVIDENDE
+ÜBERSICHT
+Dividende mit Ex-Datum12.06.2024.
+POSITION ANZAHL ERTRAG BETRAG
+Porsche Holding
+DE000PAH0038 45.671650 Stücke 2.56 EUR
+116.92 EUR
+GESAMT 116.92 EUR
+ABRECHNUNG
+POSITION BETRAG
+Zwischensumme 116.92 EUR
+Kapitalertragssteuer -13.33 EUR
+Solidaritätszuschlag -0.73 EUR
+Kapitalertragssteuer 13.33 EUR
+Solidaritätszuschlag 0.73 EUR
+GESAMT 116.92 EUR
+BUCHUNG
+VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
+DE06120700700112345678 14.06.2024 116.92 EUR
+DE000PAH0038 im Girosammelverwahrung in Deutschland
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Wird keine Umsatzsteuer ausgewiesen, handelt es sich um eine umsatzsteuerfreie Leistung gemäß § 4 Nr. 8 UStG
+Trade Republic Bank GmbH Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 www.traderepublic.comservice@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer

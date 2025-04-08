@@ -1,0 +1,39 @@
+PDF author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Abrechnung Dauerauftrag
+BNP Paribas S.A. Niederlassung Österreich 36506930-12.5.2021
+Hello bank! Depot-Nr.: DEPOTNUMMER
+Oberndorfer Straße 35 DEPOTINHABER                       
+5020 Salzburg 88/9865
+Hello bank!                        
+Herrn
+DEPOTINHABER
+STRASSE
+PLZ ORT                                                                                                                                                                                                      
+Wir haben für Sie am 12.5.2021 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Kauf aus Dauerauftrag
+Auftrags-Nr.: 3604XXXX-8.4.2021
+Auftragseingang: 10.5.2021-22:47:55
+Zugang: 7,97 Stk
+Titel: IE00BKM4GZ66  i S h s  C o r e  M SCI EM IMI U.ETF        
+Registered Shares o.N.             
+Fondsgesellschaft: iShares PLC
+Kurs: 30,524 EUR 
+Handelsplatz: XETR     Deutsche Börse - Frankfurt Xetra
+Handelszeit: 11.5.2021
+Verwahrart: WR
+Positionsdaten: Loco: Frankfurt                          
+Kurswert: -243,28 EUR 
+Zu Lasten IBAN AT97 1925 XXXX XXXX XXXX -243,28 EUR 
+Valuta 12.5.2021
+Schlusstag: 11.5.2021
+Kassatag: 13.5.2021
+Bestand nach Buchung:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden 
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 7,97 Stk
+steuerlicher Anschaffungswert: 243,28 EUR
+9.7.2021 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten! DVR: 1026XXX
+10919 Doknr.: EK00-036-0190000879

@@ -1,0 +1,37 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+Wertpapierabrechnung 
+Auschüttung 
+Auftragsnummer 
+680ZY015-5cfb-4240-961c-865127t5147j 
+GiKOolr RnNR 
+emhoTrrXiguXrX 25 
+12406 RZRghU Depotinhaber Depotnummer - Konto 
+Deutschland RQDmxIo OSBB 361743483-1 
+Sie haben eine Dividende erhalten Berlin, 26.06.2024 
+Wertpapier ISIN 
+VANG.FTSE DEV.EU.UETF EOD IE00B945VV12 
+Positionsgröße / Anteile Auszahlung pro Stück Gesamteinnahme 
+154,9996 Stück 0,7397 EUR 114,66 EUR 
+Dividende: 114,67 EUR 
+Gezahlte ausländische Quellensteuer: 0,00 EUR 
+Anrechenbare ausländische Quellensteuer: 0,00 EUR 
+Zwischensumme: 114,67 EUR 
+Gesamteinnahme: 114,67 EUR 
+Reduktion der Bemessungsgrundlage durch ausländische Quellensteuer: 0,00 EUR 
+Teilfreistellung Investmentfonds (30%): -34,40 EUR 
+Steuerliche Bemessungsgrundlage: 80,27 EUR 
+Einbehaltene deutsche Kapitalertragsteuer: 19,63 EUR 
+Einbehaltener deutscher Solidaritätszuschlag: 1,07 EUR 
+Einbehaltene deutsche Kirchensteuer: 1,76 EUR 
+Gesamtbetrag der einbehaltenen Steuern: 22,46 EUR 
+Valuta Betrag zu Ihren Gunsten 
+26.06.2024 92,21 EUR 
+Dokument ID: 60e7cq86-d737-4118-abbd-t37Z91Y550g0
+© Raisin Bank AG
+Raisin Bank AG Niedenau 61-63 60325 Frankfurt am Main
+Sitz der Gesellschaft/Registered Office: Frankfurt am Main
+Registergericht/Commercial Register: Amtsgericht Frankfurt am Main, HRB 13305
+Vorstand/Member of the Board of Directors: Marco Lindgens, Mirko Siepmann, Dr. Andreas Wolf
+Vorsitzender des Aufsichtsrats/Chairman of the Supervisory Board: Dr. Frank Freund

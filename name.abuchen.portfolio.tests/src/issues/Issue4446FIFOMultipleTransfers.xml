@@ -1,0 +1,310 @@
+<client>
+  <version>66</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>a504a7fa-decd-4d41-a7eb-ce5720d2e753</uuid>
+      <onlineId>32877218877048ed8cadff71747b7e6a</onlineId>
+      <name>ADIDAS AG NA O.N.</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE000A1EWWW0</isin>
+      <tickerSymbol>ADS</tickerSymbol>
+      <wkn>A1EWWW</wkn>
+      <feed>PORTFOLIO-REPORT</feed>
+      <prices/>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+      <updatedAt>2025-03-05T00:44:48.387142724Z</updatedAt>
+    </security>
+  </securities>
+  <watchlists/>
+  <accounts>
+    <account>
+      <uuid>dd73113a-16d3-4476-8b27-824e08a299c7</uuid>
+      <name>Konto</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <uuid>e873154f-ad66-43bb-99c3-8232ac254ade</uuid>
+          <date>2020-09-21T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>50000</amount>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>fa5e4ffd-65d5-4bd4-9e66-350c8fa5d554</uuid>
+              <name>Depot 1</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <uuid>6f53af57-202a-449a-9611-36d3d1451cbe</uuid>
+                  <date>2020-09-21T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>50000</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>500000000</shares>
+                  <updatedAt>2025-03-05T17:34:29.970806547Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>7ecc9057-0ba4-4129-89f4-2643c67ee18c</uuid>
+                  <date>2020-11-05T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>200000</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="portfolio-transfer">
+                    <portfolioFrom reference="../../../.."/>
+                    <transactionFrom reference="../.."/>
+                    <portfolioTo>
+                      <uuid>6dddbc37-634c-4d8d-b0d3-93e5041a79ec</uuid>
+                      <name>Depot 3</name>
+                      <isRetired>false</isRetired>
+                      <referenceAccount reference="../../../../../../../../.."/>
+                      <transactions>
+                        <portfolio-transaction>
+                          <uuid>00938efe-f541-40b9-a38a-d305a2a38387</uuid>
+                          <date>2020-11-02T00:00</date>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>200000</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security"/>
+                          <crossEntry class="portfolio-transfer">
+                            <portfolioFrom>
+                              <uuid>672e3a96-06c5-47a3-9394-712272f4ba0e</uuid>
+                              <name>Depot 2</name>
+                              <isRetired>false</isRetired>
+                              <referenceAccount reference="../../../../../../../../../../../../.."/>
+                              <transactions>
+                                <portfolio-transaction>
+                                  <uuid>e7d7bab0-4ec3-448e-a59e-421cb739d254</uuid>
+                                  <date>2020-09-22T00:00</date>
+                                  <currencyCode>EUR</currencyCode>
+                                  <amount>50000</amount>
+                                  <security reference="../../../../../../../../../../../../../../../../../securities/security"/>
+                                  <crossEntry class="buysell">
+                                    <portfolio reference="../../../.."/>
+                                    <portfolioTransaction reference="../.."/>
+                                    <account reference="../../../../../../../../../../../../../../../.."/>
+                                    <accountTransaction>
+                                      <uuid>0a5955c1-dbbb-445b-9138-be63775bb66b</uuid>
+                                      <date>2020-09-22T00:00</date>
+                                      <currencyCode>EUR</currencyCode>
+                                      <amount>50000</amount>
+                                      <security reference="../../../../../../../../../../../../../../../../../../../securities/security"/>
+                                      <crossEntry class="buysell" reference="../.."/>
+                                      <shares>0</shares>
+                                      <updatedAt>2025-03-05T17:34:21.513371311Z</updatedAt>
+                                      <type>BUY</type>
+                                    </accountTransaction>
+                                  </crossEntry>
+                                  <shares>500000000</shares>
+                                  <updatedAt>2025-03-05T17:34:21.513372137Z</updatedAt>
+                                  <type>BUY</type>
+                                </portfolio-transaction>
+                                <portfolio-transaction>
+                                  <uuid>2fce61ab-aef8-4879-a3e3-f6de5fc92ec9</uuid>
+                                  <date>2020-11-02T00:00</date>
+                                  <currencyCode>EUR</currencyCode>
+                                  <amount>200000</amount>
+                                  <security reference="../../../../../../../../../../../../../../../../../securities/security"/>
+                                  <crossEntry class="portfolio-transfer" reference="../../../.."/>
+                                  <shares>1000000000</shares>
+                                  <updatedAt>2025-03-05T20:54:37.698816102Z</updatedAt>
+                                  <type>TRANSFER_OUT</type>
+                                </portfolio-transaction>
+                                <portfolio-transaction>
+                                  <uuid>deb4d553-c081-4717-a1e3-1718d4cc3e35</uuid>
+                                  <date>2020-10-22T00:00</date>
+                                  <currencyCode>EUR</currencyCode>
+                                  <amount>100000</amount>
+                                  <security reference="../../../../../../../../../../../../../../../../../securities/security"/>
+                                  <crossEntry class="buysell">
+                                    <portfolio reference="../../../.."/>
+                                    <portfolioTransaction reference="../.."/>
+                                    <account reference="../../../../../../../../../../../../../../../.."/>
+                                    <accountTransaction>
+                                      <uuid>fdf86fd7-128c-4983-bc02-8b1ab294ace2</uuid>
+                                      <date>2020-10-22T00:00</date>
+                                      <currencyCode>EUR</currencyCode>
+                                      <amount>100000</amount>
+                                      <security reference="../../../../../../../../../../../../../../../../../../../securities/security"/>
+                                      <crossEntry class="buysell" reference="../.."/>
+                                      <shares>0</shares>
+                                      <updatedAt>2025-03-05T17:33:42.498891551Z</updatedAt>
+                                      <type>BUY</type>
+                                    </accountTransaction>
+                                  </crossEntry>
+                                  <shares>500000000</shares>
+                                  <updatedAt>2025-03-05T17:33:42.498898290Z</updatedAt>
+                                  <type>BUY</type>
+                                </portfolio-transaction>
+                              </transactions>
+                              <attributes>
+                                <map/>
+                              </attributes>
+                              <updatedAt>2025-03-05T00:49:49.011126500Z</updatedAt>
+                            </portfolioFrom>
+                            <transactionFrom reference="../portfolioFrom/transactions/portfolio-transaction[2]"/>
+                            <portfolioTo reference="../../../.."/>
+                            <transactionTo reference="../.."/>
+                          </crossEntry>
+                          <shares>1000000000</shares>
+                          <updatedAt>2025-03-05T20:54:37.698860866Z</updatedAt>
+                          <type>TRANSFER_IN</type>
+                        </portfolio-transaction>
+                        <portfolio-transaction>
+                          <uuid>d50aa3cf-8507-4487-9db6-4b3b45da8cb0</uuid>
+                          <date>2020-11-05T00:00</date>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>200000</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security"/>
+                          <crossEntry class="portfolio-transfer" reference="../../../.."/>
+                          <shares>1000000000</shares>
+                          <updatedAt>2025-03-05T20:54:39.642155883Z</updatedAt>
+                          <type>TRANSFER_IN</type>
+                        </portfolio-transaction>
+                        <portfolio-transaction>
+                          <uuid>19ef92fb-89db-40f9-9bba-82f7f5cade2a</uuid>
+                          <date>2020-11-15T00:00</date>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>200000</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security"/>
+                          <crossEntry class="portfolio-transfer">
+                            <portfolioFrom reference="../../../.."/>
+                            <transactionFrom reference="../.."/>
+                            <portfolioTo>
+                              <uuid>8423c98a-345b-49fc-8741-64817fcd08b7</uuid>
+                              <name>Depot 4</name>
+                              <isRetired>false</isRetired>
+                              <referenceAccount reference="../../../../../../../../../../../../.."/>
+                              <transactions>
+                                <portfolio-transaction>
+                                  <uuid>1a821f62-d22e-4e1f-9ce8-907b25c11365</uuid>
+                                  <date>2020-11-15T00:00</date>
+                                  <currencyCode>EUR</currencyCode>
+                                  <amount>200000</amount>
+                                  <security reference="../../../../../../../../../../../../../../../../../securities/security"/>
+                                  <crossEntry class="portfolio-transfer" reference="../../../.."/>
+                                  <shares>1000000000</shares>
+                                  <updatedAt>2025-03-05T17:35:12.945888505Z</updatedAt>
+                                  <type>TRANSFER_IN</type>
+                                </portfolio-transaction>
+                                <portfolio-transaction>
+                                  <uuid>cb507bd5-2d03-422e-9b43-defb306098f8</uuid>
+                                  <date>2020-12-24T00:00</date>
+                                  <currencyCode>EUR</currencyCode>
+                                  <amount>300000</amount>
+                                  <security reference="../../../../../../../../../../../../../../../../../securities/security"/>
+                                  <crossEntry class="buysell">
+                                    <portfolio reference="../../../.."/>
+                                    <portfolioTransaction reference="../.."/>
+                                    <account reference="../../../../../../../../../../../../../../../.."/>
+                                    <accountTransaction>
+                                      <uuid>5f6e48b9-67fa-499f-b2da-74d5f444e6f9</uuid>
+                                      <date>2020-12-24T00:00</date>
+                                      <currencyCode>EUR</currencyCode>
+                                      <amount>300000</amount>
+                                      <security reference="../../../../../../../../../../../../../../../../../../../securities/security"/>
+                                      <crossEntry class="buysell" reference="../.."/>
+                                      <shares>0</shares>
+                                      <note>buy-in should be 1000</note>
+                                      <updatedAt>2025-03-05T20:54:36.358753688Z</updatedAt>
+                                      <type>SELL</type>
+                                    </accountTransaction>
+                                  </crossEntry>
+                                  <shares>1000000000</shares>
+                                  <note>buy-in should be 1000</note>
+                                  <updatedAt>2025-03-05T18:05:51.663893258Z</updatedAt>
+                                  <type>SELL</type>
+                                </portfolio-transaction>
+                              </transactions>
+                              <attributes>
+                                <map/>
+                              </attributes>
+                              <updatedAt>2025-03-05T00:54:03.447110919Z</updatedAt>
+                            </portfolioTo>
+                            <transactionTo reference="../portfolioTo/transactions/portfolio-transaction"/>
+                          </crossEntry>
+                          <shares>1000000000</shares>
+                          <updatedAt>2025-03-05T17:35:12.945888244Z</updatedAt>
+                          <type>TRANSFER_OUT</type>
+                        </portfolio-transaction>
+                      </transactions>
+                      <attributes>
+                        <map/>
+                      </attributes>
+                      <updatedAt>2025-03-05T00:50:04.620362631Z</updatedAt>
+                    </portfolioTo>
+                    <transactionTo reference="../portfolioTo/transactions/portfolio-transaction[2]"/>
+                  </crossEntry>
+                  <shares>1000000000</shares>
+                  <updatedAt>2025-03-05T20:54:39.642142887Z</updatedAt>
+                  <type>TRANSFER_OUT</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>5599666b-0e48-4a56-8762-87bda7ce6290</uuid>
+                  <date>2020-10-21T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>100000</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>3447e432-f035-4918-9f15-882e12c48376</uuid>
+                      <date>2020-10-21T00:00</date>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>100000</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <updatedAt>2025-03-05T17:34:06.726678133Z</updatedAt>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>500000000</shares>
+                  <updatedAt>2025-03-05T17:34:06.726679827Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+              </transactions>
+              <attributes>
+                <map/>
+              </attributes>
+              <updatedAt>2025-03-05T00:44:48.387102081Z</updatedAt>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <updatedAt>2025-03-05T17:34:29.970805265Z</updatedAt>
+          <type>BUY</type>
+        </account-transaction>
+        <account-transaction reference="../account-transaction/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/portfolioTo/transactions/portfolio-transaction/crossEntry/portfolioFrom/transactions/portfolio-transaction/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/portfolioTo/transactions/portfolio-transaction/crossEntry/portfolioFrom/transactions/portfolio-transaction[3]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction/crossEntry/portfolio/transactions/portfolio-transaction[3]/crossEntry/accountTransaction"/>
+        <account-transaction reference="../account-transaction/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/portfolioTo/transactions/portfolio-transaction[3]/crossEntry/portfolioTo/transactions/portfolio-transaction[2]/crossEntry/accountTransaction"/>
+      </transactions>
+      <attributes>
+        <map/>
+      </attributes>
+      <updatedAt>2025-03-05T00:49:14.128885410Z</updatedAt>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio reference="../../accounts/account/transactions/account-transaction/crossEntry/portfolio"/>
+    <portfolio reference="../../accounts/account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/portfolioTo/transactions/portfolio-transaction/crossEntry/portfolioFrom"/>
+    <portfolio reference="../../accounts/account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/portfolioTo"/>
+    <portfolio reference="../../accounts/account/transactions/account-transaction/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/portfolioTo/transactions/portfolio-transaction[3]/crossEntry/portfolioTo"/>
+  </portfolios>
+  <plans/>
+  <taxonomies/>
+  <dashboards/>
+  <properties/>
+</client>

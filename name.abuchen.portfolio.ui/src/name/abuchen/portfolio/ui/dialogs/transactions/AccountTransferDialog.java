@@ -9,18 +9,19 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.e4.ui.services.IStylingEngine;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -38,7 +39,6 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferModel.Prope
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 
-@SuppressWarnings("restriction")
 public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
 {
     private final class AccountsMustBeDifferentValidator extends MultiValidator
@@ -62,6 +62,9 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
                             : ValidationStatus.error(Messages.MsgAccountMustBeDifferent);
         }
     }
+
+    @Inject
+    private IStylingEngine stylingEngine;
 
     @Inject
     private Client client;
@@ -152,7 +155,6 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
         lblNote.setText(Messages.ColumnNote);
         Text valueNote = new Text(editArea, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
         IObservableValue<?> targetNote = WidgetProperties.text(SWT.Modify).observe(valueNote);
-        @SuppressWarnings("unchecked")
         IObservableValue<?> noteObservable = BeanProperties.value(Properties.note.name()).observe(model);
         context.bindValue(targetNote, noteObservable);
 
@@ -181,6 +183,9 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
                         .suffix(amount.currency, currencyWidth) //
                         .thenBelow(valueNote).height(SWTHelper.lineHeight(valueNote) * 3)
                         .left(target.value.getControl()).right(amount.value).label(lblNote);
+
+        // measuring the width requires that the font has been applied before
+        stylingEngine.style(editArea);
 
         int widest = widest(source.label, target.label, dateTime.label, fxAmount.label, lblNote);
         startingWith(source.label).width(widest);
@@ -218,6 +223,11 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
     public void setEntry(AccountTransferEntry entry)
     {
         model().setSource(entry);
+    }
+
+    public void presetEntry(AccountTransferEntry entry)
+    {
+        model().presetFromSource(entry);
     }
 
 }

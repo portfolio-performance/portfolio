@@ -22,6 +22,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 /* package */ class MarkSecurityAsIndexPage extends AbstractWizardPage
@@ -71,6 +72,9 @@ import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
         tableArea.setLayout(layout);
 
         tableViewer = CheckboxTableViewer.newCheckList(tableArea, SWT.BORDER | SWT.CHECK | SWT.MULTI);
+
+        CopyPasteSupport.enableFor(tableViewer);
+
         final Table table = tableViewer.getTable();
         table.setHeaderVisible(false);
         table.setLinesVisible(false);

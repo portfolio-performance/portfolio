@@ -1,0 +1,10 @@
+/*
+Hide lines in macOS dark mode because SWT table and trees flash white
+when dragging columns and/or expanding/collapsing nodes.
+
+See https://github.com/eclipse-platform/eclipse.platform.swt/issues/273
+*/
+Table,
+Tree {
+	swt-lines-visible: false;
+}

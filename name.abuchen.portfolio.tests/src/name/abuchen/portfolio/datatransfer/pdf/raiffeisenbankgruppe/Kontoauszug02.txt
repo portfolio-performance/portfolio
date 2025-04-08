@@ -1,0 +1,246 @@
+PDF Autor: 'User'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Volksbank Raiffeisenbank VR Bank Bayreuth Hof eG
+Hauptstr. 14, 92586 Hof
+www.vrbank-bayreuth-hof.de
+Kontokorrent
+EUR-Konto Kontonummer 12364567
+Volksbank Raiffeisenbank Bayreuth Hof eG
+Postfach 1234, 92586 Hof Kontoauszug Nr. 8/2021
+erstellt am 31.08.2021 22:55 Blatt 1 von 4
+IBAN: DE19 9999 0000 0001 2345 67  BIC: GENOXXXXXXX
+Herrn
+Max Mustermann
+Bu-Tag Wert Vorgang
+alter Kontostand vom 30.07.2021                      	1.000,31 H
+02.08. 02.08. Kartenzahlung girocard PN:931                                       10,00 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+02.08. 02.08. BASISLASTSCHRIFT PN:931                                             20,00 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+02.08. 02.08. BASISLASTSCHRIFT PN:931                                              10,00 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+02.08. 02.08. BASISLASTSCHRIFT PN:931                                             100,00 S
+              BEISPIEL
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+02.08. 02.08. Kartenzahlung girocard PN:931                                       20,00 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+02.08. 02.08. BASISLASTSCHRIFT PN:931                                             30,00 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+02.08. 02.08. DAUERAUFTRAG PN:900                                                  60,00 S
+              BEISPIEL
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+03.08. 03.08. BASISLASTSCHRIFT PN:931                                              50,00 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+                                            Übertrag auf Blatt 2                         700,31 H
+0701
+062
+K00041448
+5M  62 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Volksbank Raiffeisenbank VR Bank Bayreuth Hof eG
+Hauptstr. 14, 92586 Hof
+www.vrbank-bayreuth-hof.de
+Kontokorrent
+EUR-Konto Kontonummer 12364567
+Max Mustermann
+Kontoauszug Nr. 8/2021
+erstellt am 31.08.2021 22:55 Blatt 2 von 4
+Bu-Tag Wert Vorgang
+                                            Übertrag von Blatt 1                          700,31 H
+03.08. 03.08. BASISLASTSCHRIFT PN:931                                              50,00 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+04.08. 04.08. BASISLASTSCHRIFT PN:931                                              40,94 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+09.08. 09.08. Kartenzahlung V PAY PN:931                                           30,20 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+09.08. 09.08. Kartenzahlung girocard PN:931                                        10,70 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+12.08. 12.08. Kartenzahlung girocard PN:931                                        15,16 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+16.08. 16.08. Kartenzahlung girocard PN:931                                        25,00 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+16.08. 16.08. DAUERAUFTRAG PN:900                                                  80,00 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+17.08. 17.08. Kartenzahlung girocard PN:931                                         3,58 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+18.08. 18.08. BASISLASTSCHRIFT PN:931                                              10,00 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+18.08. 18.08. BASISLASTSCHRIFT PN:931                                              10,00 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+                                            Übertrag auf Blatt 3                            424,73 H
+0701
+062
+K00041448 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Volksbank Raiffeisenbank VR Bank Bayreuth Hof eG
+Hauptstr. 14, 92586 Hof
+www.vrbank-bayreuth-hof.de
+Kontokorrent
+EUR-Konto Kontonummer 12364567
+Max Mustermann
+Kontoauszug Nr. 8/2021
+erstellt am 31.08.2021 22:55 Blatt 3 von 4
+Bu-Tag Wert Vorgang
+                                            Übertrag von Blatt 2                            424,73 H
+19.08. 19.08. Kartenzahlung girocard PN:931                                        50,60 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+19.08. 19.08. BASISLASTSCHRIFT PN:931                                              10,00 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+19.08. 19.08. BASISLASTSCHRIFT PN:931                                              10,00 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+19.08. 19.08. BASISLASTSCHRIFT PN:931                                              10,00 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+19.08. 19.08. BASISLASTSCHRIFT PN:931                                              20,00 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+23.08. 23.08. Kartenzahlung girocard PN:931                                         7,01 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+23.08. 23.08. Kartenzahlung girocard PN:931                                        11,68 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+26.08. 26.08. BASISLASTSCHRIFT PN:931                                              14,99 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+27.08. 27.08. Kartenzahlung girocard PN:931                                        20,08 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+27.08. 27.08. Kartenzahlung girocard PN:931                                        14,00 S
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+27.08. 27.08. Auszahlung girocard PN:931                                           20,00 S
+                                            Übertrag auf Blatt 4                            236,37 H
+0701
+062
+K00041448 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Volksbank Raiffeisenbank VR Bank Bayreuth Hof eG
+Hauptstr. 14, 92586 Hof
+www.vrbank-bayreuth-hof.de
+Kontokorrent
+EUR-Konto Kontonummer 12364567
+Max Mustermann
+Kontoauszug Nr. 8/2021
+erstellt am 31.08.2021 22:55 Blatt 4 von 4
+Bu-Tag Wert Vorgang
+                                            Übertrag von Blatt 3                            236,37 H
+              BEISPIEL
+              D3939 Buxtehude 29.07.2021 09:58 EREF: ELV88809340
+              29.07.2021 09.58 ME0 MREF: 8098109834098210348 CRED: D
+              E080834E80808080
+30.08. 30.08. LOHN/GEHALT PN:931                                                          1.200,00 H
+              Beispiel AG
+              Lohn/Gehalt 80802830808/2348080
+31.08. 31.08. Abschluss PN:905                                                      1,95 S
+                        Buchungen automatisch    23 2345       0,00H
+                        Kontoführungsentgelt        2345       1,95S
+              Abschluss vom 30.07.2021 bis 31.08.2021
+              für Konto    1234567
+              Rechnung Nr.  0001234567.20210831.001
+              USt. IdNr. - DE 999999999
+              USt.-befreite Finanzdienstleistung
+                                    neuer Kontostand vom 31.08.2021                        1.434,43 H
+0701
+062
+K00041448 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Sehr geehrte Kundin, sehr geehrter Kunde,
+Sie haben eine Bankmitteilung erhalten, z. B. einen Kontoauszug, einen Sparkontoauszug oder eine Dividendenabrechnung. Bitte 
+prüfen Sie diese genau: Ist alles korrekt? Falls nicht, sprechen Sie uns bitte an. Damit Sie immer gut informiert sind und wissen, wie 
+Sie Ihre Bankmitteilung "richtig lesen", haben wir diese nützlichen Hinweise für Sie zusammengestellt:
+Falls in diesem Dokument Bankdienstleistungen aufgeführt sind, sind diese umsatzsteuerfrei - sofern nichts Abweichendes angegeben
+ist. Der im Kontoauszug ausgewiesene Betrag muss nicht dem tatsächlichen Kontoguthaben entsprechen, weil z. B. die Wertstellung
+einzelner Buchungen nicht berücksichtigt wurde oder noch Zinsen für eine Kontoüberziehung bei einer Verfügung anfallen können.
+Rechnungsabschlüsse
+Ihr Kontoauszug ist mit dem Hinweis "Rechnungsabschluss" versehen?
+Dann haben wir für Ihr Konto einen Rechnungsabschluss durchgeführt, einschließlich Zinsen und Entgelte. Alle weiteren, nach dem
+Erstellungsdatum dieser Mitteilung anfallenden Umsätze und Kontoauszüge werden erst in der folgenden Abrechnung
+berücksichtigt - auch wenn sie sich auf den Abrechnungssaldo des abgelaufenen Abrechnungszeitraumes auswirken.
+Korrekturen werden gekennzeichnet. Den Rechnungsabschluss können Sie beim Finanzamt vorlegen.
+Einwendungen
+Sie haben Einwendungen gegen den Rechnungsabschluss Ihres Kontokorrentkontos oder den Inhalt des Sparkontoauszugs? Dann
+haben Sie nach Erhalt sechs Wochen Zeit, uns schriftlich zu informieren. Sonst gilt der Rechnungsabschluss als genehmigt.
+Einzugsaufträge
+Einzugspapiere wie z. B. Schecks und Lastschriften werden unter dem Vorbehalt des Eingangs gutgeschrieben, und zwar auch
+dann, wenn diese Papiere bei uns selbst zahlbar sind. 
+Schecks und Lastschriften sind erst eingelöst, wenn die Belastungsbuchung nicht spätestens am zweiten Bankarbeitstag - bei 
+Lastschriften im SEPA-Firmen-Lastschriftverfahren nicht spätestens am dritten Bankarbeitstag - nach ihrer Vornahme rückgängig
+gemacht wird. Barschecks sind bereits mit Zahlung an den Scheckvorleger eingelöst. Schecks sind auch schon dann eingelöst,
+wenn wir im Einzelfall eine Bezahltmeldung absenden.
+Guthaben
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. 
+Nähere Informationen können dem "Informationsbogen für den Einleger" entnommen werden.
+Sie haben noch Fragen? Dann kontaktieren Sie uns bitte. Wir sind gern für Sie da.
+Mit freundlichen Grüßen
+Ihre Bank

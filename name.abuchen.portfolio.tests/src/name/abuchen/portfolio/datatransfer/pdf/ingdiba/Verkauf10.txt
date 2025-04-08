@@ -1,0 +1,50 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.0
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: zxrSeXEUBo quAI
+sMyzuCt HgUJ
+dttwGxnGjA pZAW
+und LRYWGHP PvBs Direkt-Depot Nr.: 2175870200
+ciEpzAGv 2 Datum: 16.08.2023
+13446 lNUmnGpZm Seite: 1 von 2
+Wertpapierabrechnung Verkauf aus Kapitalmaßnahme
+Ordernummer 123654987.456
+ISIN (WKN) US62526P3073 (A3ER8P)
+Wertpapierbezeichnung Mullen Automotive Inc.
+Registered Shares DL -,001
+Nominale Stück 0,77778
+Kurs EUR 0,8974
+Handelsplatz Direktgeschäft Inl.
+Ausführungstag 14.08.2023
+Kurswert EUR 0,70
+Zwischensumme EUR 0,70
+Endbetrag zu Ihren Gunsten EUR 0,70
+Abrechnungs-IBAN XY12 3456 7890 1234 5678 90
+Valuta 16.08.2023
+Wertpapiere zulasten Wertpapierrechnung USA.
+Durch den Umtausch sind in dem neuen Bestand Bruchteile entstanden.
+Da diese nicht an der Börse handelbar sind, erhalten Sie den Gegenwert dafür.
+Weiter geht es auf Seite 2.
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzende des Aufsichtsrates: Susanne Klöß-Braekler · Vorstand: Nick Jue (Vorsitzender),
+Michael Clijdesdale, Eddy Henning, Sigrid Kozmiensky, Daniel Llano Manibardo, Dr. Ralph Müller, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main · HRB 7727
+Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+34WAAD8006273099_T
+Depotinhaber: qHTOpUSyma kjvv
+akWVILN HbXZ
+Direkt-Depot Nr.: 2175870200
+Datum: 16.08.2023
+Seite: 2 von 2
+Ordernummer 123654987.456
+ISIN (WKN) US62526P3073 (A3ER8P)
+Veräußerungsverlust nach Differenzmethode -118,95 EUR
+Mit Verrechnungstopf Aktien verrechnet 118,95 EUR
+Verrechnungstopf Aktien vor Geschäft 0,00 EUR
+Verrechnungstopf Aktien nach Geschäft 118,95 EUR
+Verrechnungstopf Allgemein vor Geschäft 0,00 EUR
+Verrechnungstopf Allgemein nach Geschäft 0,00 EUR
+Verrechnungstopf ausländ. Quellensteuer vor Geschäft 23,73 EUR
+Verrechnungstopf ausländ. Quellensteuer nach Geschäft 23,73 EUR
+Sparer-Pauschbetrag nach Geschäft 222,36 EUR
+Bei Fragen besuchen Sie uns einfach unter www.ing.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing.de .

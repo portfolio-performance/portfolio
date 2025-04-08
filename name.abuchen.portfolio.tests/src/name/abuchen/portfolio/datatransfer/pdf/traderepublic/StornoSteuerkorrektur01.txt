@@ -1,0 +1,30 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Vorname Nachname SEITE 1 von 1
+Straße 1 DATUM 05.03.2024
+12345 Ort DEPOT 0000000000
+STORNO STEUERKORREKTUR
+ÜBERSICHT
+POSITION ANZAHL
+W.P. Carey Inc. 38,4597 Stk.
+Registered Shares DL -,01
+ISIN: US92936U1097
+ABRECHNUNG
+POSITION BETRAG
+Quellensteuer für US-Emittent 6,94 USD
+Zwischensumme 6,94 USD
+Zwischensumme 1,102055 EUR/USD 6,30 EUR
+GESAMT 6,30 EUR
+BUCHUNG
+VERRECHNUNGSKONTO WERTSTELLUNG BETRAG
+DE00000000000000000000 02.11.2023 6,30 EUR
+W.P. Carey Inc. Registered Shares DL -,01 in Wertpapierrechnung in Deutschland.
+Lagerland: Vereinigte Staaten
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Brunnenstraße 19-21 service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin USt-ID DE307510626 Gernot Mittendorfer
+ABRE / 05.03.2024 / 76087116 / 990b-f517

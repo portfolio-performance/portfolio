@@ -1,0 +1,1656 @@
+{
+	"name": "Xtrackers Stoxx Global Select Dividend 100 Swap UCITS ETF 1D",
+	"symbol": "XGSD",
+	"isin": "LU0292096186",
+	"wkn": "DBX1DG",
+	"exchange": "XETR",
+	"dividendFrequency": "quarterly",
+	"dividendRate": 2.0318,
+	"dividendCurrency": "EUR",
+	"dividendYield": 0.0739,
+	"price": 27.4925,
+	"currency": "EUR",
+	"popularity": 262,
+	"sector": "mixed",
+	"sectorWeightings": [
+		{
+			"sector": "Financials",
+			"weight": 0.362015
+		},
+		{
+			"sector": "Energy",
+			"weight": 0.134944
+		},
+		{
+			"sector": "Materials",
+			"weight": 0.095561
+		},
+		{
+			"sector": "Consumer Discretionary",
+			"weight": 0.094434
+		},
+		{
+			"sector": "Utilities",
+			"weight": 0.076724
+		},
+		{
+			"sector": "Real Estate",
+			"weight": 0.068213
+		},
+		{
+			"sector": "Industrials",
+			"weight": 0.063879
+		},
+		{
+			"sector": "Communication Services",
+			"weight": 0.044813
+		},
+		{
+			"sector": "Consumer Staples",
+			"weight": 0.029438
+		},
+		{
+			"sector": "Health Care",
+			"weight": 0.01978
+		},
+		{
+			"sector": "Information Technology",
+			"weight": 0.010199
+		}
+	],
+	"securityType": "ETF",
+	"country": "mixed",
+	"countryWeightings": [
+		{
+			"country": "US",
+			"weight": 0.196167
+		},
+		{
+			"country": "HK",
+			"weight": 0.136669
+		},
+		{
+			"country": "AU",
+			"weight": 0.110688
+		},
+		{
+			"country": "GB",
+			"weight": 0.08735
+		},
+		{
+			"country": "CA",
+			"weight": 0.072411
+		},
+		{
+			"country": "NL",
+			"weight": 0.060308
+		},
+		{
+			"country": "DE",
+			"weight": 0.054096
+		},
+		{
+			"country": "SG",
+			"weight": 0.053849
+		},
+		{
+			"country": "FR",
+			"weight": 0.049988
+		},
+		{
+			"country": "JP",
+			"weight": 0.03554
+		},
+		{
+			"country": "IT",
+			"weight": 0.020124
+		},
+		{
+			"country": "CN",
+			"weight": 0.019275
+		},
+		{
+			"country": "DK",
+			"weight": 0.018551
+		},
+		{
+			"country": "CH",
+			"weight": 0.015301
+		},
+		{
+			"country": "PL",
+			"weight": 0.014729
+		},
+		{
+			"country": "NO",
+			"weight": 0.01369
+		},
+		{
+			"country": "BE",
+			"weight": 0.01268
+		},
+		{
+			"country": "SE",
+			"weight": 0.010687
+		},
+		{
+			"country": "ES",
+			"weight": 0.009671
+		},
+		{
+			"country": "NZ",
+			"weight": 0.008227
+		}
+	],
+	"originalDividendCurrency": "EUR",
+	"dividendExchangeRate": 1,
+	"lynx": null,
+	"aktienfinderStockProfile": null,
+	"aktienfinderDividendProfile": null,
+	"dividends": [
+		{
+			"id": 1019885,
+			"exDate": "2024-02-21",
+			"payDate": "2024-03-07",
+			"amount": 0.5579,
+			"currency": "EUR"
+		},
+		{
+			"id": 989955,
+			"exDate": "2023-11-15",
+			"payDate": "2023-11-30",
+			"amount": 0.567,
+			"currency": "EUR"
+		},
+		{
+			"id": 958139,
+			"exDate": "2023-08-23",
+			"payDate": "2023-09-07",
+			"amount": 0.5561,
+			"currency": "EUR"
+		},
+		{
+			"id": 931036,
+			"exDate": "2023-05-24",
+			"payDate": "2023-06-07",
+			"amount": 0.4694,
+			"currency": "EUR"
+		},
+		{
+			"id": 789188,
+			"exDate": "2023-02-08",
+			"payDate": "2023-02-24",
+			"amount": 0.4393,
+			"currency": "EUR"
+		},
+		{
+			"id": 742260,
+			"exDate": "2022-11-09",
+			"payDate": "2022-11-25",
+			"amount": 0.429,
+			"currency": "EUR"
+		},
+		{
+			"id": 736489,
+			"exDate": "2022-08-10",
+			"payDate": "2022-08-25",
+			"amount": 0.4319,
+			"currency": "EUR"
+		},
+		{
+			"id": 693827,
+			"exDate": "2022-06-08",
+			"payDate": "2022-06-17",
+			"amount": 0.3962,
+			"currency": "EUR"
+		},
+		{
+			"id": 649115,
+			"exDate": "2022-04-27",
+			"payDate": "2022-05-03",
+			"amount": 1.2741,
+			"currency": "EUR"
+		},
+		{
+			"id": 649116,
+			"exDate": "2021-05-21",
+			"payDate": "2021-05-28",
+			"amount": 1.4288,
+			"currency": "EUR"
+		},
+		{
+			"id": 167220,
+			"exDate": "2020-04-22",
+			"payDate": "2020-04-27",
+			"amount": 1.4331,
+			"currency": "EUR"
+		},
+		{
+			"id": 167219,
+			"exDate": "2019-04-11",
+			"payDate": "2019-04-18",
+			"amount": 1.3019,
+			"currency": "EUR"
+		},
+		{
+			"id": 167218,
+			"exDate": "2018-04-09",
+			"payDate": "2018-04-18",
+			"amount": 1.2608,
+			"currency": "EUR"
+		},
+		{
+			"id": 167217,
+			"exDate": "2017-04-06",
+			"payDate": "2017-04-19",
+			"amount": 1.0875,
+			"currency": "EUR"
+		},
+		{
+			"id": 167216,
+			"exDate": "2016-04-04",
+			"payDate": "2016-04-13",
+			"amount": 0.87,
+			"currency": "EUR"
+		},
+		{
+			"id": 167215,
+			"exDate": "2015-04-02",
+			"payDate": "2015-04-15",
+			"amount": 0.57,
+			"currency": "EUR"
+		},
+		{
+			"id": 167214,
+			"exDate": "2014-07-24",
+			"payDate": "2014-07-31",
+			"amount": 1.06,
+			"currency": "EUR"
+		},
+		{
+			"id": 167213,
+			"exDate": "2013-07-25",
+			"payDate": "2013-07-31",
+			"amount": 1.02,
+			"currency": "EUR"
+		},
+		{
+			"id": 167212,
+			"exDate": "2012-07-25",
+			"payDate": "2012-07-30",
+			"amount": 0.95,
+			"currency": "EUR"
+		},
+		{
+			"id": 167211,
+			"exDate": "2011-07-22",
+			"payDate": "2011-07-29",
+			"amount": 1.1,
+			"currency": "EUR"
+		},
+		{
+			"id": 167210,
+			"exDate": "2010-07-23",
+			"payDate": "2010-07-30",
+			"amount": 1.3,
+			"currency": "EUR"
+		},
+		{
+			"id": 167209,
+			"exDate": "2009-07-27",
+			"payDate": "2009-07-31",
+			"amount": 0.5321,
+			"currency": "EUR"
+		},
+		{
+			"id": 167208,
+			"exDate": "2008-08-22",
+			"payDate": "2008-08-29",
+			"amount": 0.8433,
+			"currency": "EUR"
+		}
+	],
+	"splits": [],
+	"similar": [
+		{
+			"name": "iShares STOXX Global Select Dividend 100 UCITS ETF (DE)",
+			"symbol": "ISPA",
+			"isin": "DE000A0F5UH1",
+			"wkn": "A0F5UH",
+			"exchange": "XFRA",
+			"dividendFrequency": "quarterly",
+			"dividendRate": 1.644,
+			"dividendCurrency": "EUR",
+			"dividendYield": 0.0586,
+			"price": 28.0575,
+			"currency": "EUR",
+			"popularity": 26,
+			"sector": "mixed",
+			"sectorWeightings": [
+				{
+					"sector": "Financials",
+					"weight": 0.356608
+				},
+				{
+					"sector": "Energy",
+					"weight": 0.13993
+				},
+				{
+					"sector": "Materials",
+					"weight": 0.095651
+				},
+				{
+					"sector": "Consumer Discretionary",
+					"weight": 0.091722
+				},
+				{
+					"sector": "Utilities",
+					"weight": 0.076518
+				},
+				{
+					"sector": "Industrials",
+					"weight": 0.06889
+				},
+				{
+					"sector": "Real Estate",
+					"weight": 0.066401
+				},
+				{
+					"sector": "Communication Services",
+					"weight": 0.045112
+				},
+				{
+					"sector": "Consumer Staples",
+					"weight": 0.030922
+				},
+				{
+					"sector": "Health Care",
+					"weight": 0.018516
+				},
+				{
+					"sector": "Information Technology",
+					"weight": 0.009731
+				}
+			],
+			"securityType": "ETF",
+			"country": "mixed",
+			"countryWeightings": [
+				{
+					"country": "US",
+					"weight": 0.192994
+				},
+				{
+					"country": "HK",
+					"weight": 0.13995
+				},
+				{
+					"country": "AU",
+					"weight": 0.10791
+				},
+				{
+					"country": "GB",
+					"weight": 0.08871
+				},
+				{
+					"country": "CA",
+					"weight": 0.069648
+				},
+				{
+					"country": "NL",
+					"weight": 0.060664
+				},
+				{
+					"country": "DE",
+					"weight": 0.053516
+				},
+				{
+					"country": "SG",
+					"weight": 0.053017
+				},
+				{
+					"country": "FR",
+					"weight": 0.050352
+				},
+				{
+					"country": "JP",
+					"weight": 0.03454
+				},
+				{
+					"country": "CN",
+					"weight": 0.0215
+				},
+				{
+					"country": "IT",
+					"weight": 0.020162
+				},
+				{
+					"country": "DK",
+					"weight": 0.01935
+				},
+				{
+					"country": "PL",
+					"weight": 0.015435
+				},
+				{
+					"country": "CH",
+					"weight": 0.014508
+				},
+				{
+					"country": "NO",
+					"weight": 0.014484
+				},
+				{
+					"country": "BE",
+					"weight": 0.012844
+				},
+				{
+					"country": "SE",
+					"weight": 0.012284
+				},
+				{
+					"country": "ES",
+					"weight": 0.009908
+				},
+				{
+					"country": "NZ",
+					"weight": 0.008221
+				}
+			],
+			"originalDividendCurrency": "EUR",
+			"dividendExchangeRate": 1,
+			"lynx": null,
+			"aktienfinderStockProfile": null,
+			"aktienfinderDividendProfile": null
+		},
+		{
+			"name": "Vanguard FTSE All-World High Dividend Yield UCITS ETF USD Distributing",
+			"symbol": "VGWD",
+			"isin": "IE00B8GKDB10",
+			"wkn": "A1T8FV",
+			"exchange": "XETR",
+			"dividendFrequency": "quarterly",
+			"dividendRate": 2.0334,
+			"dividendCurrency": "USD",
+			"dividendYield": 0.0315,
+			"price": 60.56,
+			"currency": "EUR",
+			"popularity": 20,
+			"sector": "mixed",
+			"sectorWeightings": [
+				{
+					"sector": "Financials",
+					"weight": 0.258938
+				},
+				{
+					"sector": "Consumer Staples",
+					"weight": 0.107361
+				},
+				{
+					"sector": "Industrials",
+					"weight": 0.103564
+				},
+				{
+					"sector": "Health Care",
+					"weight": 0.098958
+				},
+				{
+					"sector": "Energy",
+					"weight": 0.097393
+				},
+				{
+					"sector": "Information Technology",
+					"weight": 0.088836
+				},
+				{
+					"sector": "Consumer Discretionary",
+					"weight": 0.087356
+				},
+				{
+					"sector": "Materials",
+					"weight": 0.055904
+				},
+				{
+					"sector": "Utilities",
+					"weight": 0.053315
+				},
+				{
+					"sector": "Communication Services",
+					"weight": 0.040757
+				},
+				{
+					"sector": "Real Estate",
+					"weight": 0.007618
+				}
+			],
+			"securityType": "ETF",
+			"country": "mixed",
+			"countryWeightings": [
+				{
+					"country": "US",
+					"weight": 0.439639
+				},
+				{
+					"country": "JP",
+					"weight": 0.08739
+				},
+				{
+					"country": "GB",
+					"weight": 0.068363
+				},
+				{
+					"country": "CH",
+					"weight": 0.04787
+				},
+				{
+					"country": "CA",
+					"weight": 0.036097
+				},
+				{
+					"country": "AU",
+					"weight": 0.034937
+				},
+				{
+					"country": "DE",
+					"weight": 0.034481
+				},
+				{
+					"country": "FR",
+					"weight": 0.031404
+				},
+				{
+					"country": "CN",
+					"weight": 0.028065
+				},
+				{
+					"country": "TW",
+					"weight": 0.021638
+				},
+				{
+					"country": "KR",
+					"weight": 0.019583
+				},
+				{
+					"country": "ES",
+					"weight": 0.014888
+				},
+				{
+					"country": "BR",
+					"weight": 0.01171
+				},
+				{
+					"country": "IT",
+					"weight": 0.011434
+				},
+				{
+					"country": "SE",
+					"weight": 0.011317
+				},
+				{
+					"country": "IN",
+					"weight": 0.011242
+				},
+				{
+					"country": "HK",
+					"weight": 0.009481
+				},
+				{
+					"country": "NL",
+					"weight": 0.008635
+				},
+				{
+					"country": "SG",
+					"weight": 0.007042
+				},
+				{
+					"country": "FI",
+					"weight": 0.005716
+				},
+				{
+					"country": "MX",
+					"weight": 0.005685
+				},
+				{
+					"country": "ZA",
+					"weight": 0.005168
+				},
+				{
+					"country": "ID",
+					"weight": 0.004214
+				},
+				{
+					"country": "MY",
+					"weight": 0.003654
+				},
+				{
+					"country": "NO",
+					"weight": 0.003327
+				},
+				{
+					"country": "DK",
+					"weight": 0.003077
+				},
+				{
+					"country": "TH",
+					"weight": 0.002712
+				},
+				{
+					"country": "IL",
+					"weight": 0.001882
+				},
+				{
+					"country": "BE",
+					"weight": 0.001641
+				},
+				{
+					"country": "TR",
+					"weight": 0.001556
+				},
+				{
+					"country": "PL",
+					"weight": 0.001522
+				},
+				{
+					"country": "AT",
+					"weight": 0.001227
+				},
+				{
+					"country": "CL",
+					"weight": 0.001172
+				},
+				{
+					"country": "IE",
+					"weight": 0.001161
+				},
+				{
+					"country": "NZ",
+					"weight": 8.4E-4
+				},
+				{
+					"country": "PT",
+					"weight": 8.31E-4
+				},
+				{
+					"country": "PH",
+					"weight": 7.98E-4
+				},
+				{
+					"country": "HU",
+					"weight": 6.33E-4
+				},
+				{
+					"country": "GR",
+					"weight": 5.96E-4
+				},
+				{
+					"country": "PE",
+					"weight": 4.08E-4
+				},
+				{
+					"country": "CO",
+					"weight": 2.88E-4
+				},
+				{
+					"country": "PK",
+					"weight": 6.0E-6
+				}
+			],
+			"originalDividendCurrency": "USD",
+			"dividendExchangeRate": 0.937875150060024,
+			"lynx": null,
+			"aktienfinderStockProfile": null,
+			"aktienfinderDividendProfile": null
+		},
+		{
+			"name": "SPDR S&P Global Dividend Aristocrats UCITS ETF",
+			"symbol": "ZPRG",
+			"isin": "IE00B9CQXS71",
+			"wkn": "A1T8GD",
+			"exchange": "XFRA",
+			"dividendFrequency": "quarterly",
+			"dividendRate": 1.2945,
+			"dividendCurrency": "USD",
+			"dividendYield": 0.0421,
+			"price": 28.8325,
+			"currency": "EUR",
+			"popularity": 77,
+			"sector": "mixed",
+			"sectorWeightings": [
+				{
+					"sector": "Financials",
+					"weight": 0.255874
+				},
+				{
+					"sector": "Utilities",
+					"weight": 0.255167
+				},
+				{
+					"sector": "Real Estate",
+					"weight": 0.108266
+				},
+				{
+					"sector": "Communication Services",
+					"weight": 0.086278
+				},
+				{
+					"sector": "Industrials",
+					"weight": 0.059428
+				},
+				{
+					"sector": "Consumer Discretionary",
+					"weight": 0.056477
+				},
+				{
+					"sector": "Energy",
+					"weight": 0.046356
+				},
+				{
+					"sector": "Materials",
+					"weight": 0.04475
+				},
+				{
+					"sector": "Consumer Staples",
+					"weight": 0.036163
+				},
+				{
+					"sector": "Health Care",
+					"weight": 0.030976
+				},
+				{
+					"sector": "Information Technology",
+					"weight": 0.020265
+				}
+			],
+			"securityType": "ETF",
+			"country": "mixed",
+			"countryWeightings": [
+				{
+					"country": "US",
+					"weight": 0.535337
+				},
+				{
+					"country": "CA",
+					"weight": 0.084765
+				},
+				{
+					"country": "CH",
+					"weight": 0.066956
+				},
+				{
+					"country": "GB",
+					"weight": 0.047598
+				},
+				{
+					"country": "JP",
+					"weight": 0.04507
+				},
+				{
+					"country": "KR",
+					"weight": 0.043034
+				},
+				{
+					"country": "IT",
+					"weight": 0.029594
+				},
+				{
+					"country": "HK",
+					"weight": 0.02836
+				},
+				{
+					"country": "BE",
+					"weight": 0.027317
+				},
+				{
+					"country": "DE",
+					"weight": 0.019457
+				},
+				{
+					"country": "TW",
+					"weight": 0.01882
+				},
+				{
+					"country": "FR",
+					"weight": 0.016942
+				},
+				{
+					"country": "FI",
+					"weight": 0.014523
+				},
+				{
+					"country": "CN",
+					"weight": 0.013671
+				},
+				{
+					"country": "PT",
+					"weight": 0.008545
+				},
+				{
+					"country": "NL",
+					"weight": 7.0E-6
+				},
+				{
+					"country": "SG",
+					"weight": 2.0E-6
+				}
+			],
+			"originalDividendCurrency": "USD",
+			"dividendExchangeRate": 0.937875150060024,
+			"lynx": null,
+			"aktienfinderStockProfile": null,
+			"aktienfinderDividendProfile": null
+		},
+		{
+			"name": "iShares EM Dividend UCITS ETF USD (Dist)",
+			"symbol": "EUNY",
+			"isin": "IE00B652H904",
+			"wkn": "A1JNZ9",
+			"exchange": "XFRA",
+			"dividendFrequency": "quarterly",
+			"dividendRate": 1.1645,
+			"dividendCurrency": "USD",
+			"dividendYield": 0.0793,
+			"price": 13.806,
+			"currency": "EUR",
+			"popularity": 116,
+			"sector": "mixed",
+			"sectorWeightings": [
+				{
+					"sector": "Materials",
+					"weight": 0.226328
+				},
+				{
+					"sector": "Financials",
+					"weight": 0.220379
+				},
+				{
+					"sector": "Energy",
+					"weight": 0.19451
+				},
+				{
+					"sector": "Industrials",
+					"weight": 0.099184
+				},
+				{
+					"sector": "Utilities",
+					"weight": 0.096317
+				},
+				{
+					"sector": "Consumer Discretionary",
+					"weight": 0.059613
+				},
+				{
+					"sector": "Information Technology",
+					"weight": 0.056363
+				},
+				{
+					"sector": "Real Estate",
+					"weight": 0.030663
+				},
+				{
+					"sector": "Consumer Staples",
+					"weight": 0.010107
+				},
+				{
+					"sector": "Communication Services",
+					"weight": 0.006537
+				},
+				{
+					"sector": "Health Care",
+					"weight": 0
+				}
+			],
+			"securityType": "ETF",
+			"country": "mixed",
+			"countryWeightings": [
+				{
+					"country": "CN",
+					"weight": 0.240319
+				},
+				{
+					"country": "BR",
+					"weight": 0.23304
+				},
+				{
+					"country": "TW",
+					"weight": 0.09322
+				},
+				{
+					"country": "ID",
+					"weight": 0.078939
+				},
+				{
+					"country": "IN",
+					"weight": 0.068399
+				},
+				{
+					"country": "CL",
+					"weight": 0.050303
+				},
+				{
+					"country": "ZA",
+					"weight": 0.041769
+				},
+				{
+					"country": "TH",
+					"weight": 0.027978
+				},
+				{
+					"country": "GR",
+					"weight": 0.025145
+				},
+				{
+					"country": "MY",
+					"weight": 0.018472
+				},
+				{
+					"country": "PL",
+					"weight": 0.017508
+				},
+				{
+					"country": "CO",
+					"weight": 0.016234
+				},
+				{
+					"country": "HK",
+					"weight": 0.012279
+				},
+				{
+					"country": "SG",
+					"weight": 0.009021
+				},
+				{
+					"country": "TR",
+					"weight": 0.004783
+				},
+				{
+					"country": "RU",
+					"weight": 3.8E-5
+				}
+			],
+			"originalDividendCurrency": "USD",
+			"dividendExchangeRate": 0.937875150060024,
+			"lynx": null,
+			"aktienfinderStockProfile": null,
+			"aktienfinderDividendProfile": null
+		},
+		{
+			"name": "VanEck Morningstar Developed Markets Dividend Leaders UCITS ETF",
+			"symbol": "TDIV",
+			"isin": "NL0011683594",
+			"wkn": "A2JAHJ",
+			"exchange": "XAMS",
+			"dividendFrequency": "quarterly",
+			"dividendRate": 1.79,
+			"dividendCurrency": "EUR",
+			"dividendYield": 0.0463,
+			"price": 38.6775,
+			"currency": "EUR",
+			"popularity": 91,
+			"sector": "mixed",
+			"sectorWeightings": [
+				{
+					"sector": "Financials",
+					"weight": 0.418094
+				},
+				{
+					"sector": "Energy",
+					"weight": 0.109873
+				},
+				{
+					"sector": "Materials",
+					"weight": 0.107774
+				},
+				{
+					"sector": "Health Care",
+					"weight": 0.094671
+				},
+				{
+					"sector": "Consumer Discretionary",
+					"weight": 0.071539
+				},
+				{
+					"sector": "Communication Services",
+					"weight": 0.06447
+				},
+				{
+					"sector": "Information Technology",
+					"weight": 0.044432
+				},
+				{
+					"sector": "Industrials",
+					"weight": 0.036845
+				},
+				{
+					"sector": "Utilities",
+					"weight": 0.034696
+				},
+				{
+					"sector": "Real Estate",
+					"weight": 0.009937
+				},
+				{
+					"sector": "Consumer Staples",
+					"weight": 0.007669
+				}
+			],
+			"securityType": "ETF",
+			"country": "mixed",
+			"countryWeightings": [
+				{
+					"country": "US",
+					"weight": 0.224041
+				},
+				{
+					"country": "FR",
+					"weight": 0.123655
+				},
+				{
+					"country": "GB",
+					"weight": 0.099435
+				},
+				{
+					"country": "DE",
+					"weight": 0.098159
+				},
+				{
+					"country": "CA",
+					"weight": 0.095556
+				},
+				{
+					"country": "IT",
+					"weight": 0.071044
+				},
+				{
+					"country": "JP",
+					"weight": 0.05689
+				},
+				{
+					"country": "AU",
+					"weight": 0.050454
+				},
+				{
+					"country": "CH",
+					"weight": 0.039475
+				},
+				{
+					"country": "SG",
+					"weight": 0.031993
+				},
+				{
+					"country": "ES",
+					"weight": 0.017858
+				},
+				{
+					"country": "FI",
+					"weight": 0.016649
+				},
+				{
+					"country": "NL",
+					"weight": 0.014905
+				},
+				{
+					"country": "SE",
+					"weight": 0.01435
+				},
+				{
+					"country": "HK",
+					"weight": 0.011215
+				},
+				{
+					"country": "NO",
+					"weight": 0.009157
+				},
+				{
+					"country": "BE",
+					"weight": 0.008297
+				},
+				{
+					"country": "AT",
+					"weight": 0.006152
+				},
+				{
+					"country": "IL",
+					"weight": 0.005577
+				},
+				{
+					"country": "PL",
+					"weight": 0.005143
+				}
+			],
+			"originalDividendCurrency": "EUR",
+			"dividendExchangeRate": 1,
+			"lynx": null,
+			"aktienfinderStockProfile": null,
+			"aktienfinderDividendProfile": null
+		},
+		{
+			"name": "iShares Dow Jones Asia Pacific Select Dividend 50 UCITS ETF (DE)",
+			"symbol": "EXXW",
+			"isin": "DE000A0H0744",
+			"wkn": "A0H074",
+			"exchange": "XFRA",
+			"dividendFrequency": "quarterly",
+			"dividendRate": 1.4068,
+			"dividendCurrency": "EUR",
+			"dividendYield": 0.0576,
+			"price": 24.425,
+			"currency": "EUR",
+			"popularity": 210,
+			"sector": "mixed",
+			"sectorWeightings": [
+				{
+					"sector": "Financials",
+					"weight": 0.315723
+				},
+				{
+					"sector": "Materials",
+					"weight": 0.213924
+				},
+				{
+					"sector": "Real Estate",
+					"weight": 0.146574
+				},
+				{
+					"sector": "Industrials",
+					"weight": 0.114189
+				},
+				{
+					"sector": "Energy",
+					"weight": 0.059203
+				},
+				{
+					"sector": "Consumer Discretionary",
+					"weight": 0.041795
+				},
+				{
+					"sector": "Communication Services",
+					"weight": 0.036299
+				},
+				{
+					"sector": "Utilities",
+					"weight": 0.03435
+				},
+				{
+					"sector": "Consumer Staples",
+					"weight": 0.025768
+				},
+				{
+					"sector": "Information Technology",
+					"weight": 0.012177
+				},
+				{
+					"sector": "Health Care",
+					"weight": 0
+				}
+			],
+			"securityType": "ETF",
+			"country": "mixed",
+			"countryWeightings": [
+				{
+					"country": "AU",
+					"weight": 0.458242
+				},
+				{
+					"country": "HK",
+					"weight": 0.240221
+				},
+				{
+					"country": "SG",
+					"weight": 0.201263
+				},
+				{
+					"country": "GB",
+					"weight": 0.031569
+				},
+				{
+					"country": "CN",
+					"weight": 0.026487
+				},
+				{
+					"country": "JP",
+					"weight": 0.02465
+				},
+				{
+					"country": "NZ",
+					"weight": 0.017565
+				}
+			],
+			"originalDividendCurrency": "EUR",
+			"dividendExchangeRate": 1,
+			"lynx": null,
+			"aktienfinderStockProfile": null,
+			"aktienfinderDividendProfile": null
+		},
+		{
+			"name": "Global X NASDAQ 100 Covered Call UCITS ETF Dis",
+			"symbol": "QYLD",
+			"isin": "IE00BM8R0J59",
+			"wkn": "A2QR39",
+			"exchange": "XLON",
+			"dividendFrequency": "monthly",
+			"dividendRate": 1.8967,
+			"dividendCurrency": "USD",
+			"dividendYield": 0.1167,
+			"price": 15.253,
+			"currency": "EUR",
+			"popularity": 241,
+			"sector": "mixed",
+			"sectorWeightings": [
+				{
+					"sector": "Financials",
+					"weight": 0.209566
+				},
+				{
+					"sector": "Information Technology",
+					"weight": 0.153901
+				},
+				{
+					"sector": "Materials",
+					"weight": 0.123722
+				},
+				{
+					"sector": "Industrials",
+					"weight": 0.11054
+				},
+				{
+					"sector": "Communication Services",
+					"weight": 0.098847
+				},
+				{
+					"sector": "Consumer Discretionary",
+					"weight": 0.085025
+				},
+				{
+					"sector": "Real Estate",
+					"weight": 0.079977
+				},
+				{
+					"sector": "Energy",
+					"weight": 0.070759
+				},
+				{
+					"sector": "Health Care",
+					"weight": 0.067664
+				},
+				{
+					"sector": "Utilities",
+					"weight": 0
+				},
+				{
+					"sector": "Consumer Staples",
+					"weight": 0
+				}
+			],
+			"securityType": "ETF",
+			"country": "mixed",
+			"countryWeightings": [
+				{
+					"country": "US",
+					"weight": 0.978912
+				},
+				{
+					"country": "BR",
+					"weight": 0.021088
+				}
+			],
+			"originalDividendCurrency": "USD",
+			"dividendExchangeRate": 0.937875150060024,
+			"lynx": null,
+			"aktienfinderStockProfile": null,
+			"aktienfinderDividendProfile": null
+		},
+		{
+			"name": "Invesco Morningstar US Energy Infrastructure MLP UCITS ETF (Dist)",
+			"symbol": "MLPD",
+			"isin": "IE00B8CJW150",
+			"wkn": "A1T96S",
+			"exchange": "XLON",
+			"dividendFrequency": "quarterly",
+			"dividendRate": 4.228,
+			"dividendCurrency": "USD",
+			"dividendYield": 0.0847,
+			"price": 46.7975,
+			"currency": "EUR",
+			"popularity": 422,
+			"sector": "mixed",
+			"sectorWeightings": [
+				{
+					"sector": "Energy",
+					"weight": 0.957737
+				},
+				{
+					"sector": "Utilities",
+					"weight": 0.042263
+				},
+				{
+					"sector": "Real Estate",
+					"weight": 0
+				},
+				{
+					"sector": "Communication Services",
+					"weight": 0
+				},
+				{
+					"sector": "Health Care",
+					"weight": 0
+				},
+				{
+					"sector": "Consumer Discretionary",
+					"weight": 0
+				},
+				{
+					"sector": "Industrials",
+					"weight": 0
+				},
+				{
+					"sector": "Consumer Staples",
+					"weight": 0
+				},
+				{
+					"sector": "Information Technology",
+					"weight": 0
+				},
+				{
+					"sector": "Materials",
+					"weight": 0
+				},
+				{
+					"sector": "Financials",
+					"weight": 0
+				}
+			],
+			"securityType": "ETF",
+			"country": "mixed",
+			"countryWeightings": [
+				{
+					"country": "US",
+					"weight": 1
+				}
+			],
+			"originalDividendCurrency": "USD",
+			"dividendExchangeRate": 0.937875150060024,
+			"lynx": null,
+			"aktienfinderStockProfile": null,
+			"aktienfinderDividendProfile": null
+		},
+		{
+			"name": "Global X SuperDividend UCITS ETF USD Dis",
+			"symbol": "SDIV",
+			"isin": "IE00077FRP95",
+			"wkn": "A3DEKS",
+			"exchange": "XLON",
+			"dividendFrequency": "monthly",
+			"dividendRate": 1.2695,
+			"dividendCurrency": "USD",
+			"dividendYield": 0.1454,
+			"price": 8.2005,
+			"currency": "EUR",
+			"popularity": 294,
+			"sector": "mixed",
+			"sectorWeightings": [
+				{
+					"sector": "Real Estate",
+					"weight": 0.333749
+				},
+				{
+					"sector": "Energy",
+					"weight": 0.205463
+				},
+				{
+					"sector": "Materials",
+					"weight": 0.114398
+				},
+				{
+					"sector": "Industrials",
+					"weight": 0.110487
+				},
+				{
+					"sector": "Financials",
+					"weight": 0.09548
+				},
+				{
+					"sector": "Communication Services",
+					"weight": 0.041771
+				},
+				{
+					"sector": "Consumer Discretionary",
+					"weight": 0.041003
+				},
+				{
+					"sector": "Utilities",
+					"weight": 0.037759
+				},
+				{
+					"sector": "Consumer Staples",
+					"weight": 0.010188
+				},
+				{
+					"sector": "Information Technology",
+					"weight": 0.009703
+				},
+				{
+					"sector": "Health Care",
+					"weight": 0
+				}
+			],
+			"securityType": "ETF",
+			"country": "mixed",
+			"countryWeightings": [
+				{
+					"country": "US",
+					"weight": 0.348526
+				},
+				{
+					"country": "CN",
+					"weight": 0.114075
+				},
+				{
+					"country": "BR",
+					"weight": 0.063852
+				},
+				{
+					"country": "HK",
+					"weight": 0.052605
+				},
+				{
+					"country": "AU",
+					"weight": 0.045028
+				},
+				{
+					"country": "ZA",
+					"weight": 0.039818
+				},
+				{
+					"country": "SG",
+					"weight": 0.033478
+				},
+				{
+					"country": "NO",
+					"weight": 0.032672
+				},
+				{
+					"country": "ID",
+					"weight": 0.029678
+				},
+				{
+					"country": "FR",
+					"weight": 0.029178
+				},
+				{
+					"country": "BE",
+					"weight": 0.022626
+				},
+				{
+					"country": "ES",
+					"weight": 0.020833
+				},
+				{
+					"country": "GR",
+					"weight": 0.019802
+				},
+				{
+					"country": "GB",
+					"weight": 0.019024
+				},
+				{
+					"country": "TH",
+					"weight": 0.017558
+				},
+				{
+					"country": "IT",
+					"weight": 0.01204
+				},
+				{
+					"country": "CL",
+					"weight": 0.010556
+				},
+				{
+					"country": "NL",
+					"weight": 0.010032
+				},
+				{
+					"country": "DE",
+					"weight": 0.010003
+				},
+				{
+					"country": "MX",
+					"weight": 0.009825
+				},
+				{
+					"country": "DK",
+					"weight": 0.00963
+				},
+				{
+					"country": "IL",
+					"weight": 0.007072
+				}
+			],
+			"originalDividendCurrency": "USD",
+			"dividendExchangeRate": 0.937875150060024,
+			"lynx": null,
+			"aktienfinderStockProfile": null,
+			"aktienfinderDividendProfile": null
+		},
+		{
+			"name": "Invesco FTSE Emerging Markets High Dividend Low Volatility UCITS ETF",
+			"symbol": "EMHD",
+			"isin": "IE00BYYXBF44",
+			"wkn": "A2AHZU",
+			"exchange": "XLON",
+			"dividendFrequency": "quarterly",
+			"dividendRate": 1.435,
+			"dividendCurrency": "USD",
+			"dividendYield": 0.0619,
+			"price": 21.745,
+			"currency": "EUR",
+			"popularity": 161,
+			"sector": "mixed",
+			"sectorWeightings": [
+				{
+					"sector": "Financials",
+					"weight": 0.246493
+				},
+				{
+					"sector": "Energy",
+					"weight": 0.191825
+				},
+				{
+					"sector": "Materials",
+					"weight": 0.186833
+				},
+				{
+					"sector": "Utilities",
+					"weight": 0.085782
+				},
+				{
+					"sector": "Industrials",
+					"weight": 0.075902
+				},
+				{
+					"sector": "Consumer Discretionary",
+					"weight": 0.067302
+				},
+				{
+					"sector": "Information Technology",
+					"weight": 0.060407
+				},
+				{
+					"sector": "Real Estate",
+					"weight": 0.041527
+				},
+				{
+					"sector": "Consumer Staples",
+					"weight": 0.02968
+				},
+				{
+					"sector": "Communication Services",
+					"weight": 0.013621
+				},
+				{
+					"sector": "Health Care",
+					"weight": 6.28E-4
+				}
+			],
+			"securityType": "ETF",
+			"country": "mixed",
+			"countryWeightings": [
+				{
+					"country": "CN",
+					"weight": 0.351601
+				},
+				{
+					"country": "BR",
+					"weight": 0.21016
+				},
+				{
+					"country": "TW",
+					"weight": 0.095551
+				},
+				{
+					"country": "IN",
+					"weight": 0.047408
+				},
+				{
+					"country": "TH",
+					"weight": 0.045698
+				},
+				{
+					"country": "ZA",
+					"weight": 0.035267
+				},
+				{
+					"country": "MX",
+					"weight": 0.026373
+				},
+				{
+					"country": "GR",
+					"weight": 0.026115
+				},
+				{
+					"country": "ID",
+					"weight": 0.01404
+				},
+				{
+					"country": "MY",
+					"weight": 0.012111
+				},
+				{
+					"country": "CO",
+					"weight": 0.011752
+				},
+				{
+					"country": "CL",
+					"weight": 0.006891
+				},
+				{
+					"country": "PK",
+					"weight": 0.001878
+				}
+			],
+			"originalDividendCurrency": "USD",
+			"dividendExchangeRate": 0.937875150060024,
+			"lynx": null,
+			"aktienfinderStockProfile": null,
+			"aktienfinderDividendProfile": null
+		}
+	]
+}

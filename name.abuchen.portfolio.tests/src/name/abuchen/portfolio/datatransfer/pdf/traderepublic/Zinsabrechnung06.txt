@@ -1,0 +1,36 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.1
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+VXavQjh uexcjT SEITE 1 von 1
+akjsd-aad-Tkas-pCiqaa 9D DATUM 01.10.2024
+19654 PoiYbaeZD VERRECHNUNGSKONTO 4734808137
+STEUER-ID 55893941735
+ABRECHNUNG ZINSEN
+zum 30.09.2024
+ÜBERSICHT
+VERMÖGENSWERT EINKOMMENSART RATE DATUM GESAMT
+Cash Zinsen 3,75% 01.09.2024 - 17.09.2024 59,40 EUR
+Cash Zinsen 3,50% 18.09.2024 - 30.09.2024 42,38 EUR
+Geldmarkt Dividende 3,75% 01.09.2024 - 17.09.2024 8,05 EUR
+Geldmarkt Dividende 3,50% 18.09.2024 - 30.09.2024 8,03 EUR
+Gesamt 117,87 EUR
+ABRECHNUNG - ZINSEN
+POSITION BETRAG
+Besteuerungsgrundlage 101,79 EUR
+Kapitalertragssteuer -25,45 EUR
+Solidaritätszuschlag -1,39 EUR
+Gesamt 74,95 EUR
+ABRECHNUNG - DIVIDENDE
+POSITION BETRAG
+Besteuerungsgrundlage 16,08 EUR
+Kapitalertragssteuer -4,02 EUR
+Solidaritätszuschlag -0,22 EUR
+Gesamt 11,84 EUR
+BUCHUNG
+IBAN BUCHUNGSDATUM GUTSCHRIFT NACH STEUERN
+DE123456789012345678 01.10.2024 86,79 EUR
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin DirektorenBrunnenstraße 19-21
+10119 Berlin service@traderepublic.com
+AG Charlottenburg HRB 244347 B Andreas Torner
+Umsatzsteuer-ID DE307510626 Gernot Mittendorfer

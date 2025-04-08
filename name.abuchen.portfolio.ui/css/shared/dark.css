@@ -1,0 +1,110 @@
+
+/* Common DARK styles */
+
+.MPartStack {
+    padding: 0px;
+}
+
+.MPartStack {
+	swt-unselected-hot-tab-color-background: #383A3D;
+    padding: 0px;
+}
+
+.MPartStack.active {
+	swt-selected-tab-highlight: none;
+}
+
+CTabFolder {
+    padding: 0px;
+}
+
+.MPart .sidebar,
+.MPart .sidebar Label {
+	color: #D7D8D8;
+	background-color: #1D1F21;
+	selection-color: #D7D8D8;
+	selection-background-color: #383A3D;
+}
+
+.MPart .sidebarBorder {
+	background-color: #15171A;
+}
+
+.tooltip Label,
+.tooltip Composite,
+.tooltip Text {
+	color: #EEEEEE;
+	background-color: #515658;
+}
+
+.hoverbutton Shell,
+.hoverbutton ImageHyperlink {
+	background-color: #302E30;
+}
+
+.chart {
+	background-color: #515658;
+	axis-color: #A0A0A0;
+	grid-color: #606060;
+	highlight-color: white;
+	measurement-color: #ffd562;
+}
+
+CustomColors {
+	default-foreground: #EEEEEE;
+	default-background: #302E30;
+	warning-background: #6F6345;
+	red-background: #960000;
+	green-background: #004B00;
+
+	red-foreground: #fe2b05;
+	green-foreground: #02f500;
+	gray-foreground: #808080;
+	
+	hyperlink: #6FC5EE;
+}
+
+SecuritiesChart {
+	quote-color: #4ddaff;
+	quote-area-positive-color: #23b0d7;
+	quote-area-negative-color: #e25b5a;
+
+	purchase-event-color: #1fd127;
+	sale-event-color: #ff2b30;
+	dividend-event-color: #8063A8;
+
+	extreme-marker-high-color: #1aad21;
+	extreme-marker-low-color: #A8272A;
+
+	non-trading-color: #8c4b31;
+	
+	shares-held-color: #ffaf4d;
+}
+
+PortfolioBalanceChart {
+	invested-capital-color: #ffaf4d;
+	absolute-delta-color: #4ddaff;
+	delta-area-positive-color: #23b0d7;
+	delta-area-negative-color: #e25b5a;
+}
+
+* {
+	font-family: "#systemfont";
+}
+
+.heading1 {
+	font-family: "#org.eclipse.jface.headerfont";
+	font-weight: bold;
+	color: #D7D8D8;
+}
+
+.heading2 {
+	font-family: "#systemfont";
+	font-weight: bold;
+	color: #D7D8D8;
+}
+
+.kpi {
+	font-family: "#systemfont";
+	font-weight: normal;
+}

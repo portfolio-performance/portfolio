@@ -24,4 +24,9 @@ public class PageBook extends Composite
         stackLayout.topControl = page;
         layout(true);
     }
+
+    public Control getPage()
+    {
+        return stackLayout.topControl;
+    }
 }

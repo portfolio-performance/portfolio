@@ -1,0 +1,35 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.71.2
+-----------------------------------------
+nbFAyAMw YbMskC DATE 01 Sep 2024 - 30 Sep 2024
+nkKIKOHZ 6, 91101 IBAN DE12345678901234567890
+rkzlIAus, SK BIC CITIDEFF
+ACCOUNT STATEMENT SUMMARY
+PRODUCT OPENING BALANCE MONEY IN MONEY OUT ENDING BALANCE
+Securities Account €0.00 €220.01 €220.01 €0.00
+ACCOUNT TRANSACTIONS
+DATE TYPE DESCRIPTION MONEY IN MONEY OUT BALANCE
+20 Sep 2024 Transfer Google Pay Top up €100.00 €100.00
+24 Sep 2024 Trade Buy trade IE00B4L5Y983 iShares III plc - iShares Core MSCI World UCITS ETF USD (Acc), quantity: 1 €97.00 €3.00
+24 Sep 2024 Transfer Deposit accepted: DE12345678901234567890 to DE12345678901234567890 €100.00 €103.00
+24 Sep 2024 Referral Refund for your gift €10.01 €113.01
+24 Sep 2024 Trade Buy trade IE00B4L5Y983 iShares III plc - iShares Core MSCI World UCITS ETF USD (Acc), quantity: 1 €97.01 €16.00
+24 Sep 2024 Trade Buy trade US2546871060 DISNEY (WALT) CO., quantity: 0.1195 €10.01 €5.99
+25 Sep 2024 Trade Sell trade US2546871060 DISNEY (WALT) CO., quantity: 0.1195 €10.00 €15.99
+26 Sep 2024 Transfer PayOut to transit €15.99 €0.00
+Page 1 of 2
+Generated on 09 Oct 2024
+Trade Republic Bank GmbH
+DISCLAIMER
+Dear Customer
+Please make sure to review your account bookings, calculations and closing balance in the bank statement, which also constitutes your clearance of 
+accounts. Clearance of account is considered accepted if you do not raise any objection within six weeks after receipt. Objections regarding account 
+statements have to be submitted in written form to our support team. Credit balances are eligible as deposits in accordance with the German Law on 
+Deposit Insurance (Einlagensicherungsgesetz ? EinSiG). Further information can be found in the information sheet for the depositor, which can be 
+viewed, together with our Terms & Conditions.
+Trade Republic Bank GmbH Contacts Headquarters: Berlin
+Brunnenstraße 19-21 www.traderepublic.com AG Charlottenburg HRB 244347 B
+10119 Berlin service@traderepublic.com VAT-ID DE307510626
+Page 2 of 2
+Generated on 09 Oct 2024
+Trade Republic Bank GmbH

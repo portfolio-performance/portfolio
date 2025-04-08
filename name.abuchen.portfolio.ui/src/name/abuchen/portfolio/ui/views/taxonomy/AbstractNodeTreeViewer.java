@@ -11,8 +11,10 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
@@ -20,6 +22,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TreeColumnLayout;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -40,6 +43,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+
+import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -64,6 +69,7 @@ import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
@@ -73,8 +79,9 @@ import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
+import name.abuchen.portfolio.util.TextUtil;
 
-@SuppressWarnings("restriction")
 /* package */abstract class AbstractNodeTreeViewer extends Page implements ModificationListener
 {
     private static class ItemContentProvider implements ITreeContentProvider
@@ -138,10 +145,10 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             // then also enable the drag and drop of securities into a watchlist
 
             Assignment assignment = nodes.size() == 1 ? nodes.get(0).getAssignment() : null;
-            if (assignment != null && assignment.getInvestmentVehicle() instanceof Security)
+            if (assignment != null && assignment.getInvestmentVehicle() instanceof Security security)
             {
                 List<Security> securities = new ArrayList<>();
-                securities.add((Security) assignment.getInvestmentVehicle());
+                securities.add(security);
                 SecurityTransfer.getTransfer().setSecurities(securities);
             }
             else
@@ -256,10 +263,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         @Override
         public boolean validateDrop(Object target, int operation, TransferData transferType)
         {
-            if (!(target instanceof TaxonomyNode))
+            if (!(target instanceof TaxonomyNode targetNode))
                 return false;
-
-            TaxonomyNode targetNode = (TaxonomyNode) target;
 
             int location = determineLocation(this.getCurrentEvent());
 
@@ -270,6 +275,11 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             else
                 return false;
         }
+    }
+
+    private enum SortCriterion
+    {
+        TYPE, NAME, ACTUAL
     }
 
     protected static final String MENU_GROUP_DEFAULT_ACTIONS = "defaultActions"; //$NON-NLS-1$
@@ -363,13 +373,14 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
         ColumnEditingSupport.prepare(nodeViewer);
         ColumnViewerToolTipSupport.enableFor(nodeViewer, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(nodeViewer);
 
         support = new ShowHideColumnHelper(getClass().getSimpleName() + '-' + getModel().getTaxonomy().getId(),
                         getPreferenceStore(), nodeViewer, layout);
 
         addColumns(support);
 
-        support.createColumns();
+        support.createColumns(true);
 
         nodeViewer.getTree().setHeaderVisible(true);
         nodeViewer.getTree().setLinesVisible(true);
@@ -388,18 +399,57 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             {
                 TaxonomyNode node = (TaxonomyNode) element;
 
-                for (Predicate<TaxonomyNode> predicate : getModel().getNodeFilters())
-                    if (!predicate.test(node))
-                        return false;
+                if (node.isAssignment())
+                {
+                    // is assignment = leaf node
+                    for (Predicate<TaxonomyNode> predicate : getModel().getNodeFilters())
+                        if (!predicate.test(node))
+                            return false;
 
+                    Pattern filterPattern = getModel().getFilterPattern();
+                    if (filterPattern != null)
+                    {
+                        String label = node.getName();
+                        return filterPattern.matcher(label).matches();
+                    }
+                }
+                else
+                {
+                    // is classification = not a leaf node -> search children
+                    Pattern filterPattern = getModel().getFilterPattern();
+                    if (filterPattern != null)
+                    {
+                        if (filterPattern.matcher(node.getName()).matches())
+                            return true;
+
+                        ITreeContentProvider provider = (ITreeContentProvider) nodeViewer.getContentProvider();
+                        for (Object child : provider.getChildren(element))
+                        {
+                            if (select(viewer, element, child))
+                                return true;
+                        }
+
+                        return false;
+                    }
+                }
                 return true;
             }
         });
 
         nodeViewer.addSelectionChangedListener(event -> {
             TaxonomyNode node = ((TaxonomyNode) ((IStructuredSelection) event.getSelection()).getFirstElement());
-            if (node != null && node.getBackingSecurity() != null)
-                selectionService.setSelection(new SecuritySelection(getModel().getClient(), node.getBackingSecurity()));
+            view.setInformationPaneInput(node);
+
+            // use a set because securities can show up multiple times in the
+            // hierarchy of the taxonomy
+            var securities = event.getStructuredSelection().stream()
+                            .filter(e -> ((TaxonomyNode) e).getBackingSecurity() != null)
+                            .map(e -> ((TaxonomyNode) e).getBackingSecurity()).collect(Collectors.toSet());
+            if (!securities.isEmpty())
+                selectionService.setSelection(
+                                new SecuritySelection(getModel().getClient(), new ArrayList<>(securities)));
+            else
+                selectionService.setSelection(null);
         });
 
         nodeViewer.setInput(getModel());
@@ -423,6 +473,21 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                     return Images.UNASSIGNED_CATEGORY.image();
                 return super.getImage(e);
             }
+
+            @Override
+            public String getToolTipText(Object e)
+            {
+                TaxonomyNode node = (TaxonomyNode) e;
+
+                if (!node.isClassification())
+                    return super.getToolTipText(e);
+
+                String note = node.getClassification().getNote();
+
+                return Strings.isNullOrEmpty(note) ? super.getToolTipText(e)
+                                : TextUtil.wordwrap(node.getName() + "\n\n" + note); //$NON-NLS-1$
+            }
+
         });
         new StringEditingSupport(Named.class, "name") //$NON-NLS-1$
         {
@@ -438,6 +503,31 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         column.setRemovable(false);
         // drag & drop sorting does not work well with auto sorting
         column.setSorter(null);
+        support.addColumn(column);
+
+        column = new Column("classificationKey", Messages.ColumnCategoryKey, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+
+                if (node.isClassification())
+                    return node.getClassification().getKey();
+                return null;
+            }
+        });
+        new StringEditingSupport(TaxonomyNode.class, "key") //$NON-NLS-1$
+                        .setMandatory(false).setCanEditCheck(n -> (((TaxonomyNode) n).isClassification()))
+                        .addListener(this).attachTo(column);
+        column.setSorter(null);
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new SymbolColumn();
+        column.setSorter(null);
+        column.setVisible(false);
         support.addColumn(column);
 
         column = new IsinColumn();
@@ -774,8 +864,13 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             manager.add(new Separator());
 
             MenuManager sorting = new MenuManager(Messages.MenuTaxonomySortTreeBy);
-            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByTypName, a -> doSort(node, true)));
-            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByName, a -> doSort(node, false)));
+            sorting.add(new SimpleAction(
+                            String.join(", ", Messages.MenuTaxonomySortByType, Messages.MenuTaxonomySortByName), //$NON-NLS-1$
+                            a -> doSort(node, SortCriterion.TYPE, SortCriterion.NAME)));
+            sorting.add(new SimpleAction(String.join(", ", Messages.MenuTaxonomySortByType, Messages.ColumnActualValue), //$NON-NLS-1$
+                            a -> doSort(node, SortCriterion.TYPE, SortCriterion.ACTUAL)));
+            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByName, a -> doSort(node, SortCriterion.NAME)));
+            sorting.add(new SimpleAction(Messages.ColumnActualValue, a -> doSort(node, SortCriterion.ACTUAL)));
 
             manager.add(sorting);
 
@@ -785,6 +880,12 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                 manager.add(new SimpleAction(Messages.MenuTaxonomyClassificationDelete,
                                 a -> doDeleteClassification(node)));
             }
+
+            manager.add(new Separator());
+            manager.add(new SimpleAction(Messages.LabelExpandAll,
+                            a -> nodeViewer.expandToLevel(node, AbstractTreeViewer.ALL_LEVELS)));
+            manager.add(new SimpleAction(Messages.LabelCollapseAll,
+                            a -> nodeViewer.collapseToLevel(node, AbstractTreeViewer.ALL_LEVELS)));
         }
         else
         {
@@ -823,8 +924,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                 public void run()
                 {
                     assignment.moveTo(targetNode);
-                    nodeViewer.setExpandedState(targetNode, true);
                     onTaxnomyNodeEdited(targetNode);
+                    nodeViewer.setExpandedState(targetNode, true);
                 }
             });
         }
@@ -914,7 +1015,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         // do not fire model change -> called within modification listener
     }
 
-    private void doSort(TaxonomyNode node, final boolean byType) // NOSONAR
+    private void doSort(TaxonomyNode node, SortCriterion... criteria) // NOSONAR
     {
         Collections.sort(node.getChildren(), (node1, node2) -> { // NOSONAR
             // unassigned category always stays at the end of the list
@@ -923,12 +1024,32 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             if (node2.isUnassignedCategory())
                 return -1;
 
-            if (byType && node1.isClassification() && !node2.isClassification())
-                return -1;
-            if (byType && !node1.isClassification() && node2.isClassification())
-                return 1;
+            for (int ii = 0; ii < criteria.length; ii++)
+            {
+                switch (criteria[ii])
+                {
+                    case TYPE:
+                        if (node1.isClassification() && !node2.isClassification())
+                            return -1;
+                        if (!node1.isClassification() && node2.isClassification())
+                            return 1;
+                        break;
+                    case NAME:
+                        int cn = TextUtil.compare(node1.getName(), node2.getName());
+                        if (cn != 0)
+                            return cn;
+                        break;
+                    case ACTUAL:
+                        int ca = node2.getActual().compareTo(node1.getActual());
+                        if (ca != 0)
+                            return ca;
+                        break;
+                    default:
 
-            return node1.getName().compareToIgnoreCase(node2.getName());
+                }
+            }
+
+            return 0;
         });
 
         int rank = 0;

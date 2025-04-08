@@ -1,0 +1,154 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+S Sparkasse
+Schweinfurt-Haßberge
+Herrn Ihr Ansprechpartner:
+Max Mustermann Kundenberatung Hofheim
+Strasse Manuel Jahna
+Strasse 7 Marktplatz 7
+99999 Stadt 97461 Hofheim
+ Telefon 09521 58-764
+ Telefax 09521 58-499
+ manuel.jahna@sparkasse-sw-has.de
+ 
+  
+  
+10. Mai 2018
+. Kontoauszug 9/2018 Seite 1 von 3
+Giro Sm@rt 743781, DE07 7935 1730 0000 9999 99 
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+ Kontostand am 23.04.2018, Auszug Nr. 8             5.699,45+
+24.04.2018 24.04.2018 Kartenzahlung               87,59-  
+KREDITKARTENABRECHNUNG
+23.04.18 5490018130099999
+27.04.2018 27.04.2018 Lohn, Gehalt, Rente             1.111,11+
+ZF FRIEDRICHSHAFEN A
+. Lohn/Gehalt 99999999/201804 
+30.04.2018 30.04.2018 Überweisung              400,00-  
+Mustermann Max
+DATUM 29.04.2018, 10.15 UHR
+1.TAN 408690
+ec1a77b-592311468-10151311-20180429
+ 
+30.04.2018 30.04.2018 Überweisung               91,35-  
+Mustermann Winfried
+DATUM 29.04.2018, 10.14 UHR
+1.TAN 294958
+3f4d143-592256781-10141841-20180429
+ 
+02.05.2018 02.05.2018 Basislastschrift              260,00-  
+HFH Hamburger Fern-Hochschule gemei
+200076987616991110428001Nr.1110428/
+1.4.2018Studiengebuehren Monat 04/2
+018
+2000769876
+16991110428001
+Gläubiger-ID: DE88ZZZ00000410829
+ 
+Sparkasse Schweinfurt-Haßberge Handelsregister Telefon 09721/721-0 BIC: BYLADEM1KSW
+Jägersbrunnen 1-7 Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 BLZ: 793 501 01
+97421 Schweinfurt www.sparkasse-sw-has.de USt.-Id.Nr.: DE133906578
+Anstalt des öffentlichen Rechts info@sparkasse-sw-has.de Steuer-Nr. 249/114/70590
+Sparkassen-Finanzgruppe
+900 908.000 (Fassung November 2013) - (V1) 
+Finanz Informatik *0000743781100381005180*
+Urheberrechtlich geschützt 0000743781100381005180
+S Sparkasse
+Schweinfurt-Haßberge
+Kontoauszug 9/2018 Seite 2 von 3
+Giro Sm@rt 743781, DE07 7935 1730 0000 9999 99 Max Mustermann
+ 
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+02.05.2018 02.05.2018 Basislastschrift               33,48-  
+IGM Schweinfurt
+Industriegewerkschaft Metall
+BEITRAG BIS 04/18 MANDATSREF 114089
+3701 GLAEUBIGER-ID DE71ZZZ000000535
+93 NAECHSTER BEITRAGSEINZUG IN BEKA
+NNTER HOEHE UND VEREINBARTEM TURNUS
+87944923
+1140893701
+Gläubiger-ID: DE71ZZZ00000053593
+ 
+02.05.2018 01.05.2018 Entgeltabrechnung                4,40-  
+siehe Anlage Nr.   1
+. 03.05.2018 03.05.2018 Überweisung            4.000,00-  
+Max Mustermann
+83000
+DATUM 03.05.2018, 19.19 UHR
+1.TAN 447033
+60952cd-204973031-19192999-20180503
+ 
+03.05.2018 03.05.2018 Basislastschrift               11,90-  
+Telefonica Germany GmbH + Co. OHG
+Kd-Nr.:6031605875,Rg-Nr.:1776321613
+/5,Mehr Infos unter:Ihre Mobilfunkr
+. echnung.
+3600563032320001776321613005RCUR
+T0010001B000006031605875
+Gläubiger-ID: DE9700000000142462
+ 
+ Kontostand am 10.05.2018 um 11:17 Uhr             3.916,94+
+Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
+Anzahl Anlagen 1
+Ihr Dispositionskredit EUR: 2.000,00
+Aktuelle Wertstellung EUR: +3.916,94
+Sparkasse Schweinfurt-Haßberge Handelsregister Telefon 09721/721-0 BIC: BYLADEM1KSW
+Jägersbrunnen 1-7 Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 BLZ: 793 501 01
+97421 Schweinfurt www.sparkasse-sw-has.de USt.-Id.Nr.: DE133906578
+Anstalt des öffentlichen Rechts info@sparkasse-sw-has.de Steuer-Nr. 249/114/70590
+Sparkassen-Finanzgruppe
+900 908.000 (Fassung November 2013) - (V1) 
+Finanz Informatik 
+Urheberrechtlich geschützt
+S Sparkasse
+Schweinfurt-Haßberge
+Kontoauszug 9/2018 Seite 3 von 3
+Giro Sm@rt 743781, DE07 7935 1730 0000 9999 99 Max Mustermann
+ 
+Entgeltabschluss: Anlage     1
+Entgelte vom 30.03.2018 bis 30.04.2018                               4,40-
+Entgelte / Auslagen                                    4,40-
+                                                            --------------
+Abrechnung 30.04.2018                                                4,40-
+Rechnungsnummer: 20180502-BY036-00002748324
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+Hinweise zum Kontoauszug:
+.
+Sehr geehrte Kundin, sehr geehrter Kunde,
+bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug. Eventuelle Rückfragen besprechen Sie bitte mit Ihrem 
+Kundenberater.
+l Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere Revisionsabteilung. Unsere Anschrift(en) 
+entnehmen Sie bitte unserem Preis- und Leistungsverzeichnis.
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte 
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise 
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs Wochen nach Zugang keine Einwendungen 
+. erheben. Einwendungen gegen Rechnungsabschlüsse müssen der Sparkasse zugehen. Zur Fristwahrung genügt die rechtzeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+l Gutschriften aus eingereichten Schecks, Lastschriften und anderen Einzugspapieren erfolgen unter dem Vorbehalt der 
+Einlösung.
+l Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht bis zum Ablauf des übernächsten Bankarbeitstages 
+storniert oder korrigiert werden. Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren Einlösungswillen schon vorher 
+Dritten gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für Lastschriften gelten die Einlösungsregeln in den 
+hierfür vereinbarten besonderen Bedingungen.
+l Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+l Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen laut angegebener Kontonummer als 
+Rechnung im Sinne des UStG.
+l Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen 
+können dem Informationsbogen für den Einleger entnommen werden.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäftsbedingungen und besonderen Bedingungen stellen 
+wir Ihnen auf Wunsch gern zur Verfügung.
+Mit freundlichen Grüßen
+Ihre Sparkasse Schweinfurt-Haßberge
+Sparkasse Schweinfurt-Haßberge Handelsregister Telefon 09721/721-0 BIC: BYLADEM1KSW
+Jägersbrunnen 1-7 Nr. A/1124 (AG Schweinfurt) Telefax 09721/721-3229 BLZ: 793 501 01
+97421 Schweinfurt www.sparkasse-sw-has.de USt.-Id.Nr.: DE133906578
+Anstalt des öffentlichen Rechts info@sparkasse-sw-has.de Steuer-Nr. 249/114/70590
+Sparkassen-Finanzgruppe
+900 908.000 (Fassung November 2013) - (V1) 
+Finanz Informatik 
+Urheberrechtlich geschützt
+
+```

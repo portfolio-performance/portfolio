@@ -27,6 +27,10 @@ import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
+import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.util.Interval;
 
 /**
  * Special exporter for the VINIS-App
@@ -73,6 +77,9 @@ public class VINISExporter
         MutableMoney buyTotalValue = MutableMoney.of(baseCurrency);
         MutableMoney currentTotalValue = MutableMoney.of(baseCurrency);
 
+        SecurityPerformanceSnapshot securityPerformance = SecurityPerformanceSnapshot.create(client, converter,
+                        Interval.of(LocalDate.MIN, LocalDate.now()), SecurityPerformanceIndicator.Costs.class);
+
         List<AssetPosition> assets = performanceCurrentYear.getEndClientSnapshot().getAssetPositions()
                         .collect(Collectors.toList());
 
@@ -80,11 +87,13 @@ public class VINISExporter
 
         for (AssetPosition asset : assets)
         {
-            Money fifo = asset.getFIFOPurchaseValue().with(toBaseCurrency);
             Money valuation = asset.getValuation().with(toBaseCurrency);
 
             if (asset.getSecurity() != null)
             {
+                Money fifo = securityPerformance.getRecord(asset.getSecurity())
+                                .map(SecurityPerformanceRecord::getFifoCost).orElse(Money.of(baseCurrency, 0))
+                                .with(toBaseCurrency);
                 buySecurityValue.add(fifo);
                 currentSecurityValue.add(valuation);
                 buyTotalValue.add(fifo);

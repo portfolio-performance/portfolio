@@ -1,0 +1,25 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+Client: MR XXXX XXXX
+Account no.: O-XXXXXX.001
+Transaction no.: 797075451 | Publication date: 04.08.2022
+SECURITY EVENT
+Distribution
+Ordinary dividend
+QUANTITY HELD in portfolio O-XXXXXX.001 ADDITIONAL INFORMATION
+UBS(LUX)-MSCI WOR.SOC.RES.A USD-INC 2'420 GeneralTrade date 01.08.2022
+ISIN: LU0629459743    Telekurs ID: 13042150          Value date 04.08.2022Booking date 04.08.2022
+Security event
+Frequency Half-yearly
+CASH EFFECT in portfolio O-XXXXXX.001 Ex date 01.08.2022Payment date 04.08.2022
+Gross amount USD 2'304.81 Dividend - UBS(LUX)-MSCI WOR.SOC.RES.A USD-INCType Ordinary dividend
+2'304.81 Quantity held 2'420Net amount USD Income per unit USD 0.9524Gross amount USD 2'304.81
+Current account O-XXXXXX.001.00.USD/Ordinary          IBAN CH0111111011111111111 Other
+Last distribution date 01.02.2022
+Deposit SIX SIS AG
+Yours faithfully
+Banque Pictet & Cie SA
+E. & O. E. Advice without signature
+0A01 Banque Pictet & Cie SA / Route des Acacias 60 / 1211 Genève 73 / Switzerland 1/1  
+Tel. +41 58 323 23 23 / Fax +41 58 323 23 24 / group.pictet

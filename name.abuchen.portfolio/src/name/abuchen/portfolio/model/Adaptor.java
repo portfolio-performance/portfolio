@@ -12,8 +12,8 @@ public final class Adaptor
         if (type.isAssignableFrom(subject.getClass()))
             return type.cast(subject);
 
-        if (subject instanceof Adaptable)
-            return ((Adaptable) subject).adapt(type);
+        if (subject instanceof Adaptable adaptable)
+            return adaptable.adapt(type);
 
         return null;
     }

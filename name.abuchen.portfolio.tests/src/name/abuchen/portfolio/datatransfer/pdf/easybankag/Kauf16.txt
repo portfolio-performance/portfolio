@@ -1,0 +1,46 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.3
+-----------------------------------------
+Herrn
+Mag. Max Mustermann
+Musterstraße 2
+8020 Musterstadt
+Wien, den 27.12.2021
+Wir haben für Sie am 27.12.2021 unten angeführtes Geschäft abgerechnet:
+Depot: 11111-222-333
+Geschäftsart: Kauf Auftrags-Nr.: 25484466 - 27.12.2021
+Zugang: Stk 27
+Titel: DE0006204407 KUKA AG
+Inhaber-Aktien o.N.
+Kurs: 73,4 EUR
+Verwahrart: WR Wertpapierrechnung
+Positionsdaten: Loco: Düsseldorf
+Kurswert: -1.981,80 EUR
+Fremde Spesen: -2,00 EUR
+Eigene Spesen: -14,00 EUR
+Zu Lasten IBAN AT11 1111 1111 1111 1111 Valuta 29.12.2021 -1.997,80 EUR
+Handelsplatz: Frankfurt
+Eingang vorbehalten
+Schlusstag/-zeit: 27.12.2021 09:11:22
+Kassatag: 29.12.2021
+Wertpapier-Risiko: 3_hoch
+Limit: 73,400000
+KESt-pflichtiges Wertpapier
+Steuerrelevante Hinweise finden Sie auf der Rückseite.
+Seite 1 von 2
+easybank Service Center | +43 (0) 5 70 05-500 | easy@easybank.at | www.easybank.at | Wiedner Gürtel 11 | 1100 Wien
+BAWAG P.S.K. Bank für Arbeit und Wirtschaft und Österreichische Postsparkasse Aktiengesellschaft | Handelsgericht Wien | FN 205340x
+GEODRU02 WGEWTGSDR15ABREP2021122700564P27_a/593
+Steuerrelevanter Anschaffungswert für den Gesamtbestand: 1.981,80 EUR
+Eine allfällige KESt-Abfuhr erfolgt an das Finanzamt für Großbetriebe.
+Die BAWAG P.S.K. erbringt keine Steuerberatung und übernimmt keine Haftung für eventuelle
+steuerliche Nachteile im Zusammenhang mit Wertpapiertransaktionen und Wertpapierveranlagungen
+ihrer Kunden. Die Besteuerung der Kapitaleinkünfte hängt von den persönlichen Verhältnissen des
+Anlegers ab und kann künftigen Änderungen unterworfen sein. Vor einer Veranlagungsentscheidung
+sollten Sie sich bei Ihrem Steuerberater über die damit verbundenen steuerlichen Konsequenzen und
+Meldepflichten informieren.
+Mit freundlichen Grüßen
+Ihr easybank Service Center
+Dieser Beleg wird von der Bank nicht unterfertigt.
+Seite 2 von 2
+GEODRU02 WGEWTGSDR15ABREP2021122700564P27_a/594

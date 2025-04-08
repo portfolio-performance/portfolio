@@ -1,0 +1,78 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Kontonummer 0820011111
+Kontotyp Verrechnungskonto
+Kontoinhaber Max Mustermann
+Max Mustermann
+Musterstr. 77 Vermerk der Bank 2000
+44144 Stadt 021108088888/00
+Soll Haben
+Buchungssaldo alt
+2.089,08+
+Buchungssaldo neu
+666,39+
+Kontostand zum 31.12.21
+8.470,89+
+Kontoauszug 12 Konto-Nr. 0820011111 Blatt 1 / 2
+Datum 31.12.21 Bankleitzahl 760 300 80 Kontowährung EUR
+BIC CSDBDE71XXX
+IBAN DE03760300800820011111
+Text/Verwendungszweck Datum PNNr Wert Soll Haben
+ZINS/DIVID. 10.12. 8809 09.12. 11,66+
+MICROSOFT DL-,00000625
+WKN: 870747
+*** Kontostand zum 09.12. *** 2.100,74+
+EFFEKTEN NR.0000000000001 20.12. 8808 22.12. 4.877,81+
+WP-ABRECHNUNG 0000000000001
+Verkauf WKN: 918422
+NVIDIA CORP. DL-,001
+*** Kontostand zum 22.12. *** 8.469,81+
+EURO-UEBERW. 21.12. 8420 21.12. 6.000,00-
+Max Mustermann
+<COBADEFFXXX> DE77100000000111100000
+Realisation of Nvidia sale
+*** Kontostand zum 21.12. *** 3.899,26-
+ZINS/DIVID. 27.12. 8809 23.12. 0,60+
+NVIDIA CORP. DL-,001
+WKN: 918422
+*** Kontostand zum 23.12. *** 8.470,41+
+EFFEKTEN NR.0000000000002 29.12. 8808 22.12. 7.491,26+
+WP-ABRECHNUNG 0000000000002
+Verkauf WKN: A14Y6F
+ALPHABET INC.CL.A DL-,001
+*** Kontostand zum 22.12. *** 8.469,81+
+EFFEKTEN NR.0000000000003 30.12. 8808 03.01. 7.804,50-
+WP-ABRECHNUNG 0000000000003
+Kauf WKN: 893953
+MCKESSON DL-,01
+*** Kontostand zum 03.01. *** 666,39+
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+Kontoauszug 12 Konto-Nr. 0820011111 Blatt 2 / 2
+Datum 31.12.21 Bankleitzahl 760 300 80 Kontowährung EUR
+BIC CSDBDE71XXX
+IBAN DE03760300800820011111
+Text/Verwendungszweck Datum PNNr Wert Soll Haben
+EFFEKTEN 31.12. 8807 31.12. 1,70+
+Gesamtfaellig
+WKN: SD22XY SG EFF. FAKTS TL0
+ABSCHLUSS 31.12. 8800 31.12. 1,22-
+*** Kontostand zum 31.12. *** 8.470,89+
+Hinweis für Kontoauszüge
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken). Umsätze und Kontobuchungen, die nach dem Erstellungsdatum anfallen und sich auf den Abrechnungssaldo
+des abgelaufenen Abrechnungszeitraumes auswirken, werden erst mit dem folgenden Kontoauszug ausgewiesen. Korrekturen werden seitens der Bank
+gekennzeichnet.
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem Informationsbogen für den
+Einleger entnommen werden.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé

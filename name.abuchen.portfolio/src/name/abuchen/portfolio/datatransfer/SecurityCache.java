@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -19,7 +20,7 @@ import name.abuchen.portfolio.model.Security;
 
 public class SecurityCache
 {
-    private static final Security DUPLICATE_SECURITY_MARKER = new Security();
+    private static final Security DUPLICATE_SECURITY_MARKER = new Security(null, null);
 
     private static final List<String> MESSAGES = Arrays.asList(Messages.MsgErrorDuplicateISIN,
                     Messages.MsgErrorDuplicateTicker, Messages.MsgErrorDuplicateWKN, Messages.MsgErrorDuplicateName);
@@ -28,30 +29,43 @@ public class SecurityCache
 
     private final List<Map<String, Security>> localMaps = new ArrayList<>();
 
-    public SecurityCache(Client client)
+    public SecurityCache(Client client) // NOSONAR
     {
         this.client = client;
 
+        BinaryOperator<Security> mergeFunction = (l, r) -> {
+
+            if (l == DUPLICATE_SECURITY_MARKER)
+                return r.isRetired() ? DUPLICATE_SECURITY_MARKER : r;
+
+            if (r == DUPLICATE_SECURITY_MARKER)
+                return l.isRetired() ? DUPLICATE_SECURITY_MARKER : l;
+
+            if (l.isRetired() ^ r.isRetired())
+                return !l.isRetired() ? l : r;
+
+            return DUPLICATE_SECURITY_MARKER;
+        };
+
         this.localMaps.add(client.getSecurities().stream().filter(s -> s.getIsin() != null && !s.getIsin().isEmpty())
-                        .collect(Collectors.toMap(Security::getIsin, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
+                        .collect(Collectors.toMap(Security::getIsin, s -> s, mergeFunction)));
 
         this.localMaps.add(client.getSecurities().stream()
-                        .filter(s -> s.getTickerSymbol() != null && !s.getTickerSymbol().isEmpty()) //
-                        .collect(Collectors.toMap(Security::getTickerSymbol, s -> s,
-                                        (l, r) -> DUPLICATE_SECURITY_MARKER)));
+                        .filter(s -> s.getTickerSymbol() != null && !s.getTickerSymbol().isEmpty())
+                        .collect(Collectors.toMap(Security::getTickerSymbolWithoutStockMarket, s -> s, mergeFunction)));
 
         this.localMaps.add(client.getSecurities().stream().filter(s -> s.getWkn() != null && !s.getWkn().isEmpty())
-                        .collect(Collectors.toMap(Security::getWkn, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
+                        .collect(Collectors.toMap(Security::getWkn, s -> s, mergeFunction)));
 
         this.localMaps.add(client.getSecurities().stream().filter(s -> s.getName() != null && !s.getName().isEmpty())
-                        .collect(Collectors.toMap(Security::getName, s -> s, (l, r) -> DUPLICATE_SECURITY_MARKER)));
+                        .collect(Collectors.toMap(Security::getName, s -> s, mergeFunction)));
 
     }
 
     public Security lookup(String isin, String tickerSymbol, String wkn, String name,
                     Supplier<Security> creationFunction)
     {
-        List<String> attributes = Arrays.asList(isin, tickerSymbol, wkn, name);
+        List<String> attributes = Arrays.asList(isin, prefix(tickerSymbol), wkn, name);
 
         int idOfAttributeWithDuplicateSecurities = -1;
 
@@ -72,7 +86,7 @@ public class SecurityCache
         // message is only returned to the user if the other attributes also did
         // not match
         if (idOfAttributeWithDuplicateSecurities >= 0)
-            throw new IllegalArgumentException(MessageFormat.format(MESSAGES.get(idOfAttributeWithDuplicateSecurities),
+            throw new DuplicateSecurityException(MessageFormat.format(MESSAGES.get(idOfAttributeWithDuplicateSecurities),
                             attributes.get(idOfAttributeWithDuplicateSecurities)));
 
         // second: check the name. But: even if the name matches, we also must
@@ -99,6 +113,15 @@ public class SecurityCache
         return security;
     }
 
+    private String prefix(String tickerSymbol)
+    {
+        if (tickerSymbol == null || tickerSymbol.isEmpty())
+            return null;
+
+        int p = tickerSymbol.indexOf('.');
+        return p >= 0 ? tickerSymbol.substring(0, p) : tickerSymbol;
+    }
+
     private Security lookupSecurityByName(String isin, String tickerSymbol, String wkn, String name)
     {
         Security security = localMaps.get(3).get(name);
@@ -109,10 +132,22 @@ public class SecurityCache
 
         if (doNotMatchIfGiven(isin, security.getIsin()))
             return null;
+
         if (doNotMatchIfGiven(tickerSymbol, security.getTickerSymbol()))
             return null;
+
+        // In some countries there is no ISIN or WKN, only the ticker symbol.
+        // However, as soon as the historical prices are pulled from the stock
+        // exchange, the ticker symbol is expanded.
+        // PDF importers that use this are for example the SelfWealth and the
+        // CommSec
+        // Example UMAX --> UMAX.AX
+        if (doNotMatchIfGiven(prefix(tickerSymbol), prefix(security.getTickerSymbol())))
+            return null;
+
         if (doNotMatchIfGiven(wkn, security.getWkn()))
             return null;
+
         return security;
     }
 

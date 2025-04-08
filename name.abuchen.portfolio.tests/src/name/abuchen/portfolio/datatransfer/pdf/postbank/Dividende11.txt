@@ -1,0 +1,46 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.5
+-----------------------------------------
+Postbank Köln · 51222 Köln    
+Depotnummer
+ 123456789
+ Kundennummer 1234567890
+Vorname Nachname
+ Abrechnungsnr. 83904157190
+Herr Datum 05.12.2019
+Vorname Nachname
+Stadtteil
+Strasse 12
+12345 Wohnort
+                                                        
+                                                        
+                                                        
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 13,3024 VANGUARD USD CORPORATE B.U.ETF IE00BZ163K21 (A143JM)
+REGISTERED SHARES USD DIS.ON
+Zahlbarkeitstag 04.12.2019 Ausschüttung pro St. 0,130478000 USD
+Bestandsstichtag 20.11.2019 Herkunftsland Irland
+Ex-Tag 21.11.2019
+Geschäftsjahr 01.07.2019 - 30.06.2020
+Devisenkurs EUR / USD  1,1130
+Devisenkursdatum 05.12.2019
+Ausschüttung 1,74 USD 1,56+ EUR
+Kapitalertragsteuerpflichtiger Ertrag 1,74 USD
+Umrechnung in EUR 1,56 EUR
+Verrechneter Sparer-Pauschbetrag 1,56 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 1,56+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Den Betrag buchen wir mit Wertstellung 06.12.2019 zu Gunsten des Kontos 123456789 (IBAN DE00 0000 0000 0000 0000
+13), BLZ 370 110 00 (BIC PBNKDEFFXXX). 
+Keine Steuerbescheinigung. 
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2019 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien Sonstige
+Pauschbetrag Quellensteuer
+Nachher 0,00 0,00 186,79 0,00 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+0860.12060100.0000989ER03

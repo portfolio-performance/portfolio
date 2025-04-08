@@ -11,6 +11,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.Transaction.Unit.Type;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -57,15 +58,17 @@ import name.abuchen.portfolio.util.Interval;
         interestCharge = new long[size];
         buys = new long[size];
         sells = new long[size];
+        fees = new long[size];
 
         collectTransferalsAndTaxes(interval);
+
+        var snapshot = new ClientSnapshotIterator(getClient(), getCurrencyConverter());
 
         // first value = reference value
         dates[0] = interval.getStart();
         delta[0] = 0;
         accumulated[0] = 0;
-        ClientSnapshot snapshot = ClientSnapshot.create(getClient(), getCurrencyConverter(), dates[0]);
-        long valuation = totals[0] = snapshot.getMonetaryAssets().getAmount();
+        long valuation = totals[0] = snapshot.nextValuation(dates[0]);
 
         // calculate series
         int index = 1;
@@ -74,8 +77,7 @@ import name.abuchen.portfolio.util.Interval;
         {
             dates[index] = date;
 
-            snapshot = ClientSnapshot.create(getClient(), getCurrencyConverter(), dates[index]);
-            long thisValuation = totals[index] = snapshot.getMonetaryAssets().getAmount();
+            long thisValuation = totals[index] = snapshot.nextValuation(dates[index]);
 
             if (valuation + inboundTransferals[index] == 0)
             {
@@ -144,13 +146,23 @@ import name.abuchen.portfolio.util.Interval;
                                         addValue(taxes, t.getCurrencyCode(), t.getUnitSum(Unit.Type.TAX).getAmount(),
                                                         interval, d);
                                         addValue(dividends, t.getCurrencyCode(), t.getAmount(), interval, d);
+                                        addValue(fees, t.getCurrencyCode(), t.getUnitSum(Type.FEE).getAmount(),
+                                                        interval, d);
                                         break;
                                     case INTEREST:
+                                        addValue(taxes, t.getCurrencyCode(), t.getUnitSum(Unit.Type.TAX).getAmount(),
+                                                        interval, d);
                                         addValue(interest, t.getCurrencyCode(), t.getAmount(), interval, d);
                                         break;
                                     case INTEREST_CHARGE:
                                         addValue(interest, t.getCurrencyCode(), -t.getAmount(), interval, d);
                                         addValue(interestCharge, t.getCurrencyCode(), t.getAmount(), interval, d);
+                                        break;
+                                    case FEES:
+                                        addValue(fees, t.getCurrencyCode(), t.getAmount(), interval, d);
+                                        break;
+                                    case FEES_REFUND:
+                                        addValue(fees, t.getCurrencyCode(), -t.getAmount(), interval, d);
                                         break;
                                     default:
                                         // do nothing
@@ -170,6 +182,10 @@ import name.abuchen.portfolio.util.Interval;
                                 LocalDate d = t.getDateTime().toLocalDate();
                                 // collect taxes
                                 addValue(taxes, t.getCurrencyCode(), t.getUnitSum(Unit.Type.TAX).getAmount(), //
+                                                interval, d);
+
+                                // collect fees
+                                addValue(fees, t.getCurrencyCode(), t.getUnitSum(Unit.Type.FEE).getAmount(), //
                                                 interval, d);
 
                                 // collect transferals

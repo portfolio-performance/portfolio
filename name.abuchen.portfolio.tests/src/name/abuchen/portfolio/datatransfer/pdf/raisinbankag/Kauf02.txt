@@ -1,0 +1,34 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+Wertpapierabrechnung 
+Kauf 
+Abrechnungsnummer 
+acc8e2cf-f87f-4372-8b11-8cd3eea151ce 
+sMmDtas TYxrPnjMt eCFUpf 
+Straße 40 
+30655 Hannover Depotinhaber Depotnummer - Konto 
+Deutschland BOvZOOp LqaWDKjiD 127691188-1 
+eLCTGr 
+Wir haben für Sie gekauft Berlin, 27.05.2024 
+Wertpapier ISIN 
+VAN.INVT-GL SC IDX EOA IE00B42W4L06 
+Nominal/Anzahl Kurs Kurswert 
+0,03178 Stück 314,66 EUR 10,00 EUR 
+Handel 
+Handelsdatum: 24.05.2024 
+Handelsplatz: Außerbörslich, via Kapitalverwaltungsgesellschaft 
+Ordertyp: Market Order 
+Verwahrung 
+Verwahrart: Wertpapierrechnung 
+Lagerstelle: Brown Brothers Harriman Trustee Services (Ireland) Limited 
+Lagerland: Irland 
+Valuta Betrag zu Ihren Lasten 
+28.05.2024 10,00 EUR 
+Dokument ID: 6ff88a03-7394-4e14-b1dd-b0bb8cc88124
+© Raisin Bank AG
+Raisin Bank AG Niedenau 61-63 60325 Frankfurt am Main
+Sitz der Gesellschaft/Registered Office: Frankfurt am Main
+Registergericht/Commercial Register: Amtsgericht Frankfurt am Main, HRB 13305
+Vorstand/Member of the Board of Directors: Marco Lindgens, Mirko Siepmann, Dr. Andreas Wolf
+Vorsitzender des Aufsichtsrats/Chairman of the Supervisory Board: Dr. Frank Freund

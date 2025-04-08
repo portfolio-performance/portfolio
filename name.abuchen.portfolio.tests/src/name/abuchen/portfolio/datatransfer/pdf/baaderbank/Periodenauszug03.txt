@@ -1,0 +1,146 @@
+Seite 1/3
+Unterschleißheim, 01.06.2017
+T 00800 00 222 337*
+Scalable Capital Vermögensverw.GmbH
+F +49 89 5150 2442
+Prinzregentenstr. 48 service@baaderbank.de
+80538 München Maximiliane Musterfrau
+Stamm-Nr.: 12345    Portfolio: 1
+Konto-Nr.: 12345004
+IBAN: DE65 7003 3100 0012 3450 04
+BLZ: 700 331 00
+BIC: BDWBDEMM
+Vorgangs-Nr.: 1234567
+Referenz-Nr.: 12345678
+Perioden-Kontoauszug: EUR-Konto KOPIE
+Periodenauszugs-Nr. 017003
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Kontostand in EUR am 28.04.2017 63,96
+02.05.2017 Coupons/Dividende 28.04.2017 4,25
+ISHSII-JPM DL EM BD DLDIS
+IE00B2NPKV68
+00042843
+STK               9
+Vorgangs-Nr.: WWEK 12345678
+04.05.2017 Lastschrift aktiv 04.05.2017 100,00
+Maximiliane Musterfrau
+DE14500105171234567899
+INGDDEFFXXX
+Scalable Capital Monatliche Einzahl
+ung
+End to end Referenz:
+XXXXXXXXXXXXXXXXXXXXXX
+Mandatsreferenz:
+XXXXXXXXXXXXXXXXXXXXXX
+Mandatsdatum:
+12.03.2017
+Gläubiger-ID:
+DE63MUC00001787612
+Vorgangs-Nr.: 123456789
+10.05.2017 Kauf 12.05.2017 444,04 -
+ISHS CORE DAX UCITS ETF
+ISIN DE0005933931
+STK               4
+Vorgangs-Nr.: WWUM 12345678
+Übertrag: 275,83 -
+Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537 
+Weihenstephaner Straße 4 F +49 89 5150 2442 Dieter Brichmann (stv. Vorsitzender), Sitz der Gesellschaft: Unterschleißheim 
+85716 Unterschleißheim service@baaderbank.de Christian Bacherl, Oliver Riedel StNr. 143/107/04009 
+Deutschland www.baaderbank.de Vorsitzender des Aufsichtsrates: USt-IdNr. DE114123893
+Dr. Horst Schiessl
+* Kostenfreie Telefonnummer (ohne Ländervorwahl)  aus dem deutschen und internationalen Festnetz, 
+abweichende Preise für Anrufe aus dem Mobilfunknetz möglich. KKTKK801-027.037
+Perioden-Kontoauszug: EUR-Konto KOPIE
+Periodenauszugs-Nr. 017003
+Fortsetzung: Seite 2/3
+Konto-Nr.: 12345004 BLZ: 700 331 00 IBAN: DE65 7003 3100 0012 3450 04 BIC: BDWBDEMM
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Übertrag: 275,83 -
+10.05.2017 Kauf 12.05.2017 514,53 -
+ISH.STOX.EUROPE 600 U.ETF
+ISIN DE0002635307
+STK              13
+Vorgangs-Nr.: WWUM 12345678
+11.05.2017 Verkauf 12.05.2017 397,76
+HSBC S+P 500 UCITS ETF DZ
+ISIN DE000A1C22M3
+STK              18    -
+Vorgangs-Nr.: WWUM 12345678
+11.05.2017 Kauf 12.05.2017 449,95 -
+UBS-ETF-MSCI EMERG.MKTS A
+ISIN LU0480132876
+STK               5
+Vorgangs-Nr.: WWUM 12345678
+11.05.2017 Verkauf 12.05.2017 267,17
+UBS-ETF-MSCI JAPAN INH.A
+ISIN LU0136240974
+STK               7    -
+Vorgangs-Nr.: WWUM 12345678
+11.05.2017 Verkauf 12.05.2017 75,92
+UBS-ETF-MSCI PAC.EX JAP.A
+ISIN LU0446734526
+STK               2    -
+Vorgangs-Nr.: WWUM 12345678
+11.05.2017 Verkauf 12.05.2017 129,89
+ISHSIII-C.EO CORP.B.EODIS
+ISIN IE00B3F81R35
+STK               1    -
+Vorgangs-Nr.: WWUM 12345678
+11.05.2017 Verkauf 12.05.2017 121,41
+ISHSIII-C.EO GOV. B.EODIS
+ISIN IE00B4WXJJ64
+STK               1    -
+Vorgangs-Nr.: WWUM 12345678
+11.05.2017 Verkauf 12.05.2017 103,92
+ISHSII-JPM DL EM BD DLDIS
+ISIN IE00B2NPKV68
+STK               1    -
+Vorgangs-Nr.: WWUM 12345678
+11.05.2017 Verkauf 12.05.2017 154,61
+ISHSIII-EO COV.BD EO DIS
+ISIN IE00B3B8Q275
+STK               1    -
+Vorgangs-Nr.: WWUM 12345678
+Übertrag: 10,37
+Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537 
+Weihenstephaner Straße 4 F +49 89 5150 2442 Dieter Brichmann (stv. Vorsitzender), Sitz der Gesellschaft: Unterschleißheim 
+85716 Unterschleißheim service@baaderbank.de Christian Bacherl, Oliver Riedel StNr. 143/107/04009 
+Deutschland www.baaderbank.de Vorsitzender des Aufsichtsrates: USt-IdNr. DE114123893
+Dr. Horst Schiessl
+* Kostenfreie Telefonnummer (ohne Ländervorwahl)  aus dem deutschen und internationalen Festnetz, 
+abweichende Preise für Anrufe aus dem Mobilfunknetz möglich. KKTKK801-027.037
+Perioden-Kontoauszug: EUR-Konto KOPIE
+Periodenauszugs-Nr. 017003
+Fortsetzung: Seite 3/3
+Konto-Nr.: 12345004 BLZ: 700 331 00 IBAN: DE65 7003 3100 0012 3450 04 BIC: BDWBDEMM
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Übertrag: 10,37
+11.05.2017 Kauf 12.05.2017 46,37 -
+ISHSII-DEV.MKT.PR.Y.DLDIS
+ISIN IE00B1FZS350
+STK               2
+Vorgangs-Nr.: WWUM 12345678
+12.05.2017 Verkauf 12.05.2017 105,31
+LYX.C.T.R./C.CRB TRUECEO
+ISIN FR0010270033
+STK               7    -
+Vorgangs-Nr.: WWUM 12345678
+15.05.2017 Coupons/Dividende 12.05.2017 1,24
+ISHS CORE DAX UCITS ETF
+DE0005933931
+00043592
+STK              11
+Vorgangs-Nr.: WWEK 12345678
+Kontostand in EUR am 31.05.2017 70,55
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 59 AWV.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537 
+Weihenstephaner Straße 4 F +49 89 5150 2442 Dieter Brichmann (stv. Vorsitzender), Sitz der Gesellschaft: Unterschleißheim 
+85716 Unterschleißheim service@baaderbank.de Christian Bacherl, Oliver Riedel StNr. 143/107/04009 
+Deutschland www.baaderbank.de Vorsitzender des Aufsichtsrates: USt-IdNr. DE114123893
+Dr. Horst Schiessl
+* Kostenfreie Telefonnummer (ohne Ländervorwahl)  aus dem deutschen und internationalen Festnetz, 
+abweichende Preise für Anrufe aus dem Mobilfunknetz möglich. KKTKK801-027.037

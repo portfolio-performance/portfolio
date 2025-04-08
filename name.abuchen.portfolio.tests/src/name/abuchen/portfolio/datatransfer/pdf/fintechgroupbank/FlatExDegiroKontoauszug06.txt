@@ -1,0 +1,137 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 9221 7035898
+E-Mail: info@flatex.de
+flatexDEGIRO Bank AG -  Hammfelddamm 4 - 41460 Neuss, Deutschland
+             Frankfurt, 01.04.2024
+0101019999999999999999
+Herrn
+Max Max
+stasse
+strassse 999
+99999 Stadt
+Kontoauszug Nr:    001/2024                              Seite 1 von 3
+Kontonummer :      1999999999      IBAN: DE52 9999 9999 9999 9999 99
+Kontenart   :      Kontokorrentkonto
+Kontowährung:      EUR
+Alter Saldo vom    31.12.2023                     in EUR            37.889,43+
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+01.01.     02.01.  Zinsabschluss  01.10.2023 - 31.12.2023                0,00+
+03.01.     04.01.  Ausführung ORDER Kauf FR0010510800                1.250,00-
+                   238555878                                                  
+03.01.     04.01.  Ausführung ORDER Kauf IE000NM0ALX6                  250,00-
+                   238557221
+03.01.     04.01.  Ausführung ORDER Kauf LU0533033238                  250,00-
+                   238599722                                                  
+03.01.     04.01.  Ausführung ORDER Kauf LU1829221024                  250,00-
+                   238604433
+15.01.     15.01.  Steuerkorrektur aufgrund FSA-Thematik                22,98-
+                   (Kundeninfo v.11.01.2024)                                  
+29.01.     26.01.  Dividendenzahlung US2358511028                        4,09+
+29.01.     04.01.  Storno Ausführung ORDER Kauf                        250,00+
+                   IE000NM0ALX6 238557221                                     
+29.01.     29.01.  Vorabpauschale IE000NM0ALX6                           0,47-
+29.01.     04.01.  Ausführung ORDER Kauf IE000NM0ALX6                  250,00-
+                   238557221                                                  
+01.02.     31.01.  Dividendenzahlung US92338C1036                        0,50+
+01.02.     05.02.  Ausführung ORDER Kauf FR0010510800                1.250,00-
+                   239531793                                                  
+01.02.     05.02.  Ausführung ORDER Kauf LU0533033238                  250,00-
+                   239577084
+02.02.     05.02.  Ausführung ORDER Kauf LU1829221024                  250,00-
+                   239581564                                                  
+02.02.     05.02.  Ausführung ORDER Kauf IE000NM0ALX6                  250,00-
+                   239533213
+02.02.     02.02.  Vorabpauschale LU1900068328                          37,01-
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Dr. Benon Janos,
+Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang, Jens Möbitz
+9999999999999999 0113101010000101
+Kontoauszug Nr:    001/2024                              Seite 2 von 3
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+16.02.     05.02.  Storno Ausführung ORDER Kauf                      1.250,00+
+                   FR0010510800 239531793
+16.02.     04.01.  Storno Ausführung ORDER Kauf                      1.250,00+
+                   FR0010510800 238555878                                     
+16.02.     16.02.  Vorabpauschale FR0010510800                          21,84-
+16.02.     04.01.  Ausführung ORDER Kauf FR0010510800                1.250,00-
+                   238555878                                                  
+16.02.     05.02.  Ausführung ORDER Kauf FR0010510800                1.250,00-
+                   239531793
+22.02.     26.02.  Ausführung ORDER Kauf FR0010510800               21.414,80-
+                   240252131                                                  
+26.02.     28.02.  Ausführung ORDER Kauf US0378331005                8.407,90-
+                   240334151
+26.02.     28.02.  Ausführung ORDER Verkauf LU1861132840             6.845,11+
+                   240254049                                                  
+01.03.     05.03.  Ausführung ORDER Kauf LU0533033238                  250,00-
+                   240531431
+01.03.     05.03.  Ausführung ORDER Kauf LU1829221024                  250,00-
+                   240535974                                                  
+02.03.     05.03.  Ausführung ORDER Kauf IE000NM0ALX6                  250,00-
+                   240487255
+02.03.     05.03.  Ausführung ORDER Kauf FR0010510800                1.250,00-
+                   240485795                                                  
+05.03.     28.02.  Storno Ausführung ORDER Verkauf                   6.845,11-
+                   LU1861132840 240254049
+05.03.     05.03.  Vorabpauschale LU1861132840                          17,71-
+05.03.     28.02.  Ausführung ORDER Verkauf LU1861132840             6.862,82+
+                   240254049
+08.03.     08.03.  Vorabpauschale IE00BJGWQN72                           4,02-
+09.03.     05.03.  Storno Ausführung ORDER Kauf                        250,00+
+                   LU1829221024 240535974
+09.03.     05.02.  Storno Ausführung ORDER Kauf                        250,00+
+                   LU1829221024 239581564                                     
+09.03.     04.01.  Storno Ausführung ORDER Kauf                        250,00+
+                   LU1829221024 238604433
+09.03.     09.03.  Vorabpauschale LU1829221024                           1,10-
+09.03.     04.01.  Ausführung ORDER Kauf LU1829221024                  250,00-
+                   238604433
+09.03.     05.02.  Ausführung ORDER Kauf LU1829221024                  250,00-
+                   239581564                                                  
+09.03.     05.03.  Ausführung ORDER Kauf LU1829221024                  250,00-
+                   240535974
+Neuer Saldo 31.03.2024 Nr. 001/2024         Währung EUR              8.829,01+
+Der ausgewiesene Kontosaldo kann durch abweichende Wertstellung (Valuta) vom
+wertmäßigen Kontostand abweichen. Die Wertstellung von Buchungen ist auch
+relevant für die Berechnung von Zinsen.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Dr. Benon Janos,
+Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang, Jens Möbitz
+2000099999903610
+Kontoauszug Nr:    001/2024                              Seite 3 von 3
+Gemäß § 11 Außenwirtschaftsgesetz (AWG) in Verbindung mit §§ 67 ff. Außen-
+wirtschaftsverordnung (AWV) haben Inländer (in Deutschland ansässige
+natürliche und juristische Personen) Zahlungen von mehr als 12.500 Euro oder
+Gegenwert zu melden, die sie von Ausländern (im Ausland ansässige natürliche
+und juristische Personen) oder für deren Rechnung von Inländern entgegennehmen
+(eingehende Zahlungen) oder an Ausländer oder für deren Rechnung an Inländer
+leisten (ausgehende Zahlungen). Die Deutsche Bundesbank und ihre Filialen
+erteilen dazu gern die notwendigen Auskünfte.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes
+entschädigungsfähig. Nähere Informationen können dem "Informationsbogen für
+den Einleger" entnommen werden.
+Der Rechnungsabschluss wird Ihnen als separates Dokument zur Verfügung
+gestellt.
+Beanstandungen  gegen Rechnungsabschlüsse sind unverzüglich und schriftlich zu
+senden an:
+      flatexDEGIRO Bank AG
+      Beschwerdemanagement
+      Postfach 100551
+      41405 Neuss
+Der Abschlusssaldo gilt als genehmigt, wenn ihm nicht innerhalb von 6 Wochen
+ab Zugang schriftlich widersprochen  wird. Zur Fristwahrung genügt die
+rechtzeitige Absendung der Einwendung.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Dr. Benon Janos,
+Dr. Matthias Heinrich, Steffen Jentsch, Stephan Simmang, Jens Möbitz
+9999999999999999

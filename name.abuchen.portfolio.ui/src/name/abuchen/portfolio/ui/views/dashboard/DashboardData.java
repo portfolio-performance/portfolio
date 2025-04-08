@@ -1,12 +1,10 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -19,6 +17,7 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.editor.ReportingPeriods;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSet;
@@ -32,13 +31,13 @@ public class DashboardData
     private final IPreferenceStore preferences;
     private final IStylingEngine stylingEngine;
     private final ExchangeRateProviderFactory factory;
-    private final CurrencyConverter converter;
 
     private final Map<Object, Object> cache = Collections.synchronizedMap(new HashMap<>());
 
-    private List<ReportingPeriod> defaultReportingPeriods = new ArrayList<>();
+    private ReportingPeriods defaultReportingPeriods;
     private ReportingPeriod defaultReportingPeriod;
 
+    private CurrencyConverter converter;
     private DataSeriesSet dataSeriesSet;
     private DataSeriesCache dataSeriesCache;
 
@@ -64,7 +63,6 @@ public class DashboardData
     {
         return client;
     }
-
     public IPreferenceStore getPreferences()
     {
         return preferences;
@@ -85,12 +83,12 @@ public class DashboardData
         this.dashboard = dashboard;
     }
 
-    public void setDefaultReportingPeriods(List<ReportingPeriod> defaultReportingPeriods)
+    public void setDefaultReportingPeriods(ReportingPeriods periods)
     {
-        this.defaultReportingPeriods = defaultReportingPeriods;
+        this.defaultReportingPeriods = periods;
     }
 
-    public List<ReportingPeriod> getDefaultReportingPeriods()
+    public ReportingPeriods getDefaultReportingPeriods()
     {
         return defaultReportingPeriods;
     }
@@ -121,6 +119,8 @@ public class DashboardData
         dataSeriesCache.clear();
 
         clearResultCache();
+
+        converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
     }
 
     /**
@@ -144,6 +144,11 @@ public class DashboardData
     public CurrencyConverter getCurrencyConverter()
     {
         return converter;
+    }
+
+    public String getTermCurrency()
+    {
+        return converter.getTermCurrency();
     }
 
     public PerformanceIndex calculate(DataSeries dataSeries, Interval reportingPeriod)

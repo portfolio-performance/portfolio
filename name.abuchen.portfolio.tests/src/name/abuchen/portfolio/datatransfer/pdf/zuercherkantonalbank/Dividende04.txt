@@ -1,0 +1,43 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+Kontakt Personalbank
+Telefon 0844 850 820
+E-Mail personalbank@zkb.ch
+Adresse Bahnhofstrasse 9
+8001 Zürich
+Briefadresse Postfach, 8010 Zürich
+Clearing-Nr. 700
+BIC (SWIFT) ZKBKCHZZ80A
+UID CHE-123.456.789 MWST
+Konto-Nr. 1234-5678.901
+IBAN CH38 0070 0123 4567 89017 1
+Produkt ZKB Kontokorrent Fremdwährung
+Lautend auf Max Muster
+Depot-Nr. 1-2600-12345678
+Produkt ZKB Wertschriftendepot
+Lautend auf Max Muster
+Zürich, 24. Januar 2024
+Ertragsabrechnung (Eingang vorbehalten)
+Abwicklungs-Nr. 754899061 / Buchungstag 24.01.2024
+Stück 930 Shs USD iShares PLC - iShares MSCI Japan UCITS ETF USD (Dist)
+Valor 1965564 / ISIN IE00B02KXH56
+Dividendensatz USD 0.1066
+Ex-Tag 11.01.2024
+Zahlbar 24.01.2024
+USD
+Bruttobetrag 99.14
+Total zu Ihren Gunsten Valuta 24.01.2024 99.14
+Freundliche Grüsse
+Zürcher Kantonalbank
+Ohne manuelle Ergänzung
+gültig ohne Unterschrift
+ANAMHKENFKCNFPAJGKAJDNELELHJGNGNEIGK
+AJCJFIGDAKKPNANJJKAEJKIMIIFOPOJHEBLK
+AMJPMBPEIKEHIIIEFKAOIDJBIPDCJDMEGOKK OY4005 3.606.972-4 18359
+ADKCKNCGGDGKFFOBBKAAOAKLFGPFNFCINJHK
+ADBKJDAKIDJLADICBKALIDBCILAKIKACBLAK 202401240001291405064352415001 - Zürcher Kantonalbank
+ACAJPCMECJJOMMNDPKAGJIPAIGHFOLLGMJHK
+ACDHCOBMOFEICIKPDKADIFHMMIOPNIKHLBJK
+AGLHJFLKLPDGHONMLKADGCGBDFJPFBLBCPNK 12159569642 1/1
+AIKAACIGKIOMCIMIMKACAMAMGKACCOCGMEGK

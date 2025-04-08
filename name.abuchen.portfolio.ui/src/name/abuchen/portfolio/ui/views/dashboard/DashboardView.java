@@ -1,22 +1,23 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -64,6 +65,14 @@ import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.AbstractHistoricView;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesDataQualityPane;
+import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
+import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
+import name.abuchen.portfolio.ui.views.panes.SecurityPriceChartPane;
+import name.abuchen.portfolio.ui.views.panes.TradesPane;
+import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
+import name.abuchen.portfolio.util.Pair;
 
 public class DashboardView extends AbstractHistoricView
 {
@@ -110,15 +119,13 @@ public class DashboardView extends AbstractHistoricView
         private final DashboardView dashboardView;
         private final LocalSelectionTransfer transfer;
         private final Composite dropTarget;
-        private final Consumer<Dashboard.Widget> listener;
 
         private WidgetDropTargetAdapter(DashboardView dashboardView, LocalSelectionTransfer transfer,
-                        Composite dropTarget, Consumer<Dashboard.Widget> listener)
+                        Composite dropTarget)
         {
             this.dashboardView = dashboardView;
             this.transfer = transfer;
             this.dropTarget = dropTarget;
-            this.listener = listener;
         }
 
         @Override
@@ -126,40 +133,87 @@ public class DashboardView extends AbstractHistoricView
         {
             Object droppedElement = ((StructuredSelection) transfer.getSelection()).getFirstElement();
 
-            if (!(droppedElement instanceof Composite))
+            if (!(droppedElement instanceof Composite droppedComposite))
                 return;
 
             // check if dropped upon itself
-            Composite droppedComposite = (Composite) droppedElement;
             if (droppedComposite.equals(dropTarget))
                 return;
 
             Dashboard.Widget droppedWidget = (Dashboard.Widget) droppedComposite.getData();
             if (droppedWidget == null)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("dropped widget is null"); //$NON-NLS-1$
 
             Composite oldParent = droppedComposite.getParent();
             Dashboard.Column oldColumn = (Dashboard.Column) oldParent.getData();
             if (oldColumn == null)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("old column is null"); //$NON-NLS-1$
 
             Composite newParent = dropTarget;
             while (!(newParent.getData() instanceof Dashboard.Column))
                 newParent = newParent.getParent();
             Dashboard.Column newColumn = (Dashboard.Column) newParent.getData();
 
+            if ((event.detail & DND.DROP_MOVE) != 0)
+                doDropMove(droppedComposite, droppedWidget, oldColumn, newColumn, newParent);
+
+            if ((event.detail & DND.DROP_COPY) != 0)
+                doDropCopy(droppedWidget.copy(), newColumn, newParent);
+
+            dashboardView.markDirty();
+
+            oldParent.layout();
+            newParent.layout();
+        }
+
+        private void doDropCopy(Dashboard.Widget copiedWidget, Dashboard.Column newColumn, Composite newParent)
+        {
+            Composite elementToMoveAbove = null;
+            Object data = dropTarget.getData();
+            if (data instanceof Dashboard.Widget dropTargetWidget)
+            {
+                // dropped on another widget, place above drop target
+                elementToMoveAbove = dropTarget;
+                newColumn.getWidgets().add(newColumn.getWidgets().indexOf(dropTargetWidget), copiedWidget);
+            }
+            else if (data instanceof Dashboard.Column)
+            {
+                // dropped on another column, place above filler
+                elementToMoveAbove = (Composite) newParent.getData(FILLER_KEY);
+                newColumn.getWidgets().add(copiedWidget);
+            }
+            else
+            {
+                throw new IllegalArgumentException("unsupported data " + data); //$NON-NLS-1$
+            }
+
+            String type = copiedWidget.getType();
+            WidgetFactory factory = WidgetFactory.valueOf(type);
+            if (factory == null)
+                throw new IllegalArgumentException("no widget factory for type " + type); //$NON-NLS-1$
+
+            Pair<WidgetDelegate<?>, Composite> newDelegateWithComposite = dashboardView
+                            .buildDelegateAndMoveAboveElement(newParent, factory, copiedWidget, elementToMoveAbove);
+
+            newDelegateWithComposite.getLeft().update();
+            newDelegateWithComposite.getRight().setParent(newParent);
+        }
+
+        private void doDropMove(Composite droppedComposite, Dashboard.Widget droppedWidget, Dashboard.Column oldColumn,
+                        Dashboard.Column newColumn, Composite newParent)
+        {
             droppedComposite.setParent(newParent);
 
-            if (dropTarget.getData() instanceof Dashboard.Widget)
+            Object data = dropTarget.getData();
+            if (data instanceof Dashboard.Widget dropTargetWidget)
             {
                 // dropped on another widget
                 droppedComposite.moveAbove(dropTarget);
 
-                Dashboard.Widget dropTargetWidget = (Dashboard.Widget) dropTarget.getData();
                 oldColumn.getWidgets().remove(droppedWidget);
                 newColumn.getWidgets().add(newColumn.getWidgets().indexOf(dropTargetWidget), droppedWidget);
             }
-            else if (dropTarget.getData() instanceof Dashboard.Column)
+            else if (data instanceof Dashboard.Column)
             {
                 // dropped on another column
                 Composite filler = (Composite) newParent.getData(FILLER_KEY);
@@ -170,13 +224,8 @@ public class DashboardView extends AbstractHistoricView
             }
             else
             {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("unsuppoerted data type " + data); //$NON-NLS-1$
             }
-
-            listener.accept(droppedWidget);
-
-            oldParent.layout();
-            newParent.layout();
         }
 
         @Override
@@ -336,7 +385,7 @@ public class DashboardView extends AbstractHistoricView
         int[] index = { 0 };
         getClient().getDashboards().forEach(board -> toolBar.add(createToolItem(index[0]++, board)));
 
-        Action newAction = new SimpleAction(Messages.MenuNewDashboard, a -> createNewDashboard(null));
+        Action newAction = new SimpleAction(Messages.MenuNewDashboard, a -> createNewDashboard());
         newAction.setImageDescriptor(Images.VIEW_PLUS.descriptor());
         toolBar.add(newAction);
     }
@@ -353,7 +402,7 @@ public class DashboardView extends AbstractHistoricView
                 manager.add(new Separator());
             }
 
-            manager.add(new SimpleAction(Messages.ConfigurationDuplicate, a -> createNewDashboard(board)));
+            manager.add(new SimpleAction(Messages.ConfigurationDuplicate, a -> duplicateDashboard(board)));
             manager.add(new SimpleAction(Messages.ConfigurationRename, a -> renameDashboard(board)));
             manager.add(new ConfirmAction(Messages.ConfigurationDelete,
                             MessageFormat.format(Messages.ConfigurationDeleteConfirm, board.getName()),
@@ -423,12 +472,12 @@ public class DashboardView extends AbstractHistoricView
         scrolledComposite.addDisposeListener(e -> parent.getParent().removeControlListener(listener));
 
         container.addDisposeListener(e -> persistedState.setValue(SELECTED_DASHBOARD_KEY,
-                        getClient().getDashboards().collect(Collectors.toList()).indexOf(dashboard)));
+                        getClient().getDashboards().toList().indexOf(dashboard)));
 
         return scrolledComposite;
     }
 
-    private void updateScrolledCompositeMinSize()
+    public void updateScrolledCompositeMinSize()
     {
         // because this method can be called *after* calculating data in the
         // background, all widgets can already be disposed
@@ -492,7 +541,7 @@ public class DashboardView extends AbstractHistoricView
                 if (factory == null)
                     continue;
 
-                buildDelegate(columnControl, factory, widget);
+                buildDelegateAndMoveAboveFiller(columnControl, factory, widget);
             }
             catch (IllegalArgumentException e)
             {
@@ -518,7 +567,8 @@ public class DashboardView extends AbstractHistoricView
                 subMenu.add(groupMenu);
                 return groupMenu;
             });
-            mm.add(new SimpleAction(type.getLabel(), a -> addNewWidget(columnControl, type)));
+            mm.add(new SimpleAction(type.getLabel(), type.getImage() != null ? type.getImage().descriptor() : null,
+                            a -> addNewWidget(columnControl, type)));
         }
 
         manager.add(new Separator());
@@ -543,22 +593,31 @@ public class DashboardView extends AbstractHistoricView
         MenuManager applyToAll = new MenuManager(Messages.MenuApplyToAllWidgets);
         manager.add(applyToAll);
         new ReportingPeriodApplyToAll(this.dashboardData).menuAboutToShow(applyToAll, columnControl);
+        new DataSeriesApplyToAll(this.dashboardData).menuAboutToShow(applyToAll, columnControl);
 
         manager.add(new Separator());
         manager.add(new SimpleAction(Messages.MenuDeleteDashboardColumn, a -> deleteColumn(columnControl)));
     }
 
-    private WidgetDelegate<?> buildDelegate(Composite columnControl, WidgetFactory widgetType, Dashboard.Widget widget)
+    private Pair<WidgetDelegate<?>, Composite> buildDelegateAndMoveAboveFiller(Composite columnControl,
+                    WidgetFactory widgetType, Dashboard.Widget widget)
     {
-        WidgetDelegate<?> delegate = widgetType.create(widget, dashboardData);
+        Composite filler = (Composite) columnControl.getData(FILLER_KEY);
+        return buildDelegateAndMoveAboveElement(columnControl, widgetType, widget, filler);
+    }
+
+    private Pair<WidgetDelegate<?>, Composite> buildDelegateAndMoveAboveElement(Composite columnControl,
+                    WidgetFactory widgetType, Dashboard.Widget widget, Composite elementToMoveAbove)
+    {
+        WidgetDelegate<?> delegate = widgetType.constructDelegate(widget, dashboardData);
         inject(delegate);
 
         Composite element = delegate.createControl(columnControl, resources);
         element.setData(widget);
         element.setData(DELEGATE_KEY, delegate);
 
-        Composite filler = (Composite) columnControl.getData(FILLER_KEY);
-        element.moveAbove(filler);
+        if (elementToMoveAbove != null)
+            element.moveAbove(elementToMoveAbove);
 
         new ContextMenu(delegate.getTitleControl(), manager -> widgetMenuAboutToShow(manager, delegate)).hook();
         InfoToolTip.attach(delegate.getTitleControl(), () -> buildToolTip(delegate));
@@ -570,7 +629,7 @@ public class DashboardView extends AbstractHistoricView
             addDragListener(child);
 
         GridDataFactory.fillDefaults().grab(true, false).applyTo(element);
-        return delegate;
+        return new Pair<>(delegate, element);
     }
 
     private String buildToolTip(WidgetDelegate<?> delegate)
@@ -591,13 +650,13 @@ public class DashboardView extends AbstractHistoricView
         manager.add(new SimpleAction(Messages.MenuDeleteWidget, a -> {
             Composite composite = findCompositeFor(delegate);
             if (composite == null)
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("composite is null"); //$NON-NLS-1$
 
             Composite parent = composite.getParent();
             Dashboard.Column column = (Dashboard.Column) parent.getData();
 
             if (!column.getWidgets().remove(delegate.getWidget()))
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("column doesn't contain widget"); //$NON-NLS-1$
 
             composite.dispose();
             parent.layout();
@@ -641,7 +700,7 @@ public class DashboardView extends AbstractHistoricView
     {
         LocalSelectionTransfer transfer = LocalSelectionTransfer.getTransfer();
 
-        DropTargetAdapter dragAdapter = new WidgetDropTargetAdapter(this, transfer, parent, w -> markDirty());
+        DropTargetAdapter dragAdapter = new WidgetDropTargetAdapter(this, transfer, parent);
 
         DropTarget dropTarget = new DropTarget(parent, DND.DROP_MOVE | DND.DROP_COPY);
         dropTarget.setTransfer(transfer);
@@ -712,9 +771,23 @@ public class DashboardView extends AbstractHistoricView
         updateWidgets();
     }
 
-    private void createNewDashboard(Dashboard template)
+    private void createNewDashboard()
     {
-        Dashboard newDashboard = template != null ? template.copy() : createDefaultDashboard();
+        NewDashboardDialog dialog = new NewDashboardDialog(Display.getCurrent().getActiveShell());
+        if (dialog.open() != Window.OK)
+            return;
+
+        Dashboard newDashboard = dialog.createDashboard();
+
+        getClient().addDashboard(newDashboard);
+        getClient().touch();
+
+        selectDashboard(newDashboard);
+    }
+
+    private void duplicateDashboard(Dashboard template)
+    {
+        Dashboard newDashboard = template.copy();
 
         InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.ConfigurationNew,
                         Messages.ColumnName, newDashboard.getName(), null);
@@ -773,12 +846,10 @@ public class DashboardView extends AbstractHistoricView
     {
         Dashboard.Column column = (Dashboard.Column) columnControl.getData();
 
-        Dashboard.Widget widget = new Dashboard.Widget();
-        widget.setLabel(widgetType.getLabel());
-        widget.setType(widgetType.name());
+        Dashboard.Widget widget = widgetType.constructWidget();
         column.getWidgets().add(widget);
 
-        WidgetDelegate<?> delegate = buildDelegate(columnControl, widgetType, widget);
+        WidgetDelegate<?> delegate = buildDelegateAndMoveAboveFiller(columnControl, widgetType, widget).getLeft();
 
         getClient().touch();
         delegate.update();
@@ -826,13 +897,7 @@ public class DashboardView extends AbstractHistoricView
         Dashboard.Column newColumn = new Dashboard.Column();
         dashboard.getColumns().add(index, newColumn);
 
-        newColumn.setWidgets(column.getWidgets().stream().map(widget -> {
-            Widget copy = new Widget();
-            copy.setLabel(widget.getLabel());
-            copy.setType(widget.getType());
-            copy.getConfiguration().putAll(widget.getConfiguration());
-            return copy;
-        }).collect(Collectors.toList()));
+        newColumn.setWidgets(column.getWidgets().stream().map(Widget::copy).collect(toMutableList()));
 
         getClient().touch();
 
@@ -859,97 +924,23 @@ public class DashboardView extends AbstractHistoricView
 
     private Dashboard createDefaultDashboard()
     {
-        Dashboard newDashboard = new Dashboard();
+        Dashboard newDashboard = new Dashboard(UUID.randomUUID().toString());
         newDashboard.setName(Messages.LabelDashboard);
 
-        newDashboard.getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(), "L1Y0"); //$NON-NLS-1$
-
-        Dashboard.Column column = new Dashboard.Column();
-        newDashboard.getColumns().add(column);
-
-        Dashboard.Widget widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel(Messages.LabelKeyIndicators);
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.TTWROR.name());
-        widget.setLabel(WidgetFactory.TTWROR.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.IRR.name());
-        widget.setLabel(WidgetFactory.IRR.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.ABSOLUTE_CHANGE.name());
-        widget.setLabel(WidgetFactory.ABSOLUTE_CHANGE.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.DELTA.name());
-        widget.setLabel(WidgetFactory.DELTA.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel(Messages.LabelTTWROROneDay);
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.TTWROR.name());
-        widget.setLabel(WidgetFactory.TTWROR.getLabel());
-        widget.getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(), "T1"); //$NON-NLS-1$
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.ABSOLUTE_CHANGE.name());
-        widget.setLabel(WidgetFactory.ABSOLUTE_CHANGE.getLabel());
-        widget.getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(), "T1"); //$NON-NLS-1$
-        column.getWidgets().add(widget);
-
-        column = new Dashboard.Column();
-        newDashboard.getColumns().add(column);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel(Messages.LabelRiskIndicators);
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.MAXDRAWDOWN.name());
-        widget.setLabel(WidgetFactory.MAXDRAWDOWN.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.MAXDRAWDOWNDURATION.name());
-        widget.setLabel(WidgetFactory.MAXDRAWDOWNDURATION.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.VOLATILITY.name());
-        widget.setLabel(WidgetFactory.VOLATILITY.getLabel());
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.SEMIVOLATILITY.name());
-        widget.setLabel(WidgetFactory.SEMIVOLATILITY.getLabel());
-        column.getWidgets().add(widget);
-
-        column = new Dashboard.Column();
-        newDashboard.getColumns().add(column);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.HEADING.name());
-        widget.setLabel(Messages.PerformanceTabCalculation);
-        column.getWidgets().add(widget);
-
-        widget = new Dashboard.Widget();
-        widget.setType(WidgetFactory.CALCULATION.name());
-        widget.setLabel(WidgetFactory.CALCULATION.getLabel());
-        column.getWidgets().add(widget);
+        NewDashboardDialog.buildIndicatorDashboard(newDashboard);
 
         return newDashboard;
+    }
+
+    @Override
+    protected void addPanePages(List<InformationPanePage> pages)
+    {
+        super.addPanePages(pages);
+        pages.add(make(SecurityPriceChartPane.class));
+        pages.add(make(HistoricalPricesPane.class));
+        pages.add(make(TransactionsPane.class));
+        pages.add(make(TradesPane.class));
+        pages.add(make(SecurityEventsPane.class));
+        pages.add(make(HistoricalPricesDataQualityPane.class));
     }
 }

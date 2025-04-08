@@ -1,0 +1,72 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+flatexDEGIRO Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatexDEGIRO Bank AG - Hammfelddamm 4 - 41460 Neuss, Deutschland
+Frankfurt, 13.05.2022
+0202282000002579408270
+Herr Max Mustermann oder Auftragsdatum 10.05.2022n e
+F Maxima Mustermann Handelstag 12.05.2022rau
+Musterstraße 1 Ausführungszeit 00:00 Uhr
+11111 Musterhausen Valuta 17.05.2022
+Wechselkurs des Bruttowertes fehlt (Buchungswährung EUR und Wertpapierwährung USD)
+Auftragsnummer 220519338/1
+Ausf.platz/-art KAG/außerbörsl.
+Wertpapierabrechnung Verkauf Fonds/Zertifikate
+Ihre Depotnummer: 1009436681
+Depotinhaber: Mustermann, Maxima oder Mustermann, Max
+Nr.220519338/1 Verkauf COMGEST GROWTH ASIA (IE00BQ3D6V05/A12GPB)
+Ausgeführt : 80 St. Kurswert : 4.216,61 EUR
+Kurs : 55,080000 USD Provision : 0,00 EUR
+Devisenkurs : 1,045010 Eigene Spesen : 0,00 EUR
+*Fremde Spesen : 0,00 EUR
+Verwahrart : Wertpapierrechnung
+Lagerstelle : Clearstream Lux.
+Lagerland : Irland Bemessungs-
+grundlage : 64,01 EUR
+Kumulierte Ertrag aus fikt.
+Vorabpauschale: 10,15 EUR Veräußerung : 0,00 EUR
+Teilfrei- 30,00 %
+stellung : 27,43 EUR
+Gewinn/Verlust: 101,59 EUR **Einbeh. Steuer: 16,88 EUR
+Endbetrag : 4.199,73 EUR
+* Enthalten sind folgende Gebühren Courtage : 0,00 EUR
+Tradinggebühr : 0,00 EUR
+Regulierung : 0,00 EUR
+Schlussnoten : 0,00 EUR
+LS-Umlegung : 0,00 EUR
+Finanztransaktionssteuer : 0,00 EUR
+Sonstige : 0,00 EUR
+** Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+Kapitalertragsteuer : 16,00 EUR
+Solidaritätszuschlag : 0,88 EUR
+Kirchensteuer : 0,00 EUR
+Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+2831966689.
+______________________________________________________________________________
+Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX - Aktiengesellschaft, Sitz Frankfurt - Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher - Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002579408270 0113202280000102
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 1000000000
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX - Aktiengesellschaft, Sitz Frankfurt - Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher - Vorstand: Frank Niehage (Vorsitzender), Muhamad Said Chahrour, Dr. Benon Janos, Jörn Engelmann, Steffen Jentsch
+2000002579408270 0113202280000202

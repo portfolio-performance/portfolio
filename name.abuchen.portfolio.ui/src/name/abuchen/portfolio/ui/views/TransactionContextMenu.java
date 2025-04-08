@@ -82,6 +82,15 @@ public class TransactionContextMenu
             tx.withAccountTransaction().ifPresent(t -> createEditAccountTransactionAction(t).run());
             tx.withPortfolioTransaction().ifPresent(t -> createEditPortfolioTransactionAction(t).run());
         }
+        if (e.keyCode == 'd' && e.stateMask == SWT.MOD1)
+        {
+            if (selection.isEmpty())
+                return;
+
+            TransactionPair<?> tx = (TransactionPair<?>) selection.getFirstElement();
+            tx.withAccountTransaction().ifPresent(t -> createCopyAccountTransactionAction(t).run());
+            tx.withPortfolioTransaction().ifPresent(t -> createCopyPortfolioTransactionAction(t).run());
+        }
     }
 
     private void fillContextMenuPortfolioTxList(IMenuManager manager, IStructuredSelection selection)
@@ -124,11 +133,16 @@ public class TransactionContextMenu
         }
     }
 
-    private void fillContextMenuAccountTx(IMenuManager manager, boolean fullContextMenu, TransactionPair<AccountTransaction> tx)
+    private void fillContextMenuAccountTx(IMenuManager manager, boolean fullContextMenu,
+                    TransactionPair<AccountTransaction> tx)
     {
         Action action = createEditAccountTransactionAction(tx);
         action.setAccelerator(SWT.MOD1 | 'E');
         manager.add(action);
+
+        Action duplicateAction = createCopyAccountTransactionAction(tx);
+        duplicateAction.setAccelerator(SWT.MOD1 | 'D');
+        manager.add(duplicateAction);
 
         if (fullContextMenu)
         {
@@ -138,13 +152,19 @@ public class TransactionContextMenu
         }
     }
 
-    private void fillContextMenuPortfolioTx(IMenuManager manager, boolean fullContextMenu, TransactionPair<PortfolioTransaction> tx)
+    private void fillContextMenuPortfolioTx(IMenuManager manager, boolean fullContextMenu,
+                    TransactionPair<PortfolioTransaction> tx)
     {
         PortfolioTransaction ptx = tx.getTransaction();
 
         Action editAction = createEditPortfolioTransactionAction(tx);
         editAction.setAccelerator(SWT.MOD1 | 'E');
         manager.add(editAction);
+
+        Action duplicateAction = createCopyPortfolioTransactionAction(tx);
+        duplicateAction.setAccelerator(SWT.MOD1 | 'D');
+        manager.add(duplicateAction);
+
         manager.add(new Separator());
 
         if (fullContextMenu)
@@ -156,16 +176,14 @@ public class TransactionContextMenu
     private Action createEditAccountTransactionAction(TransactionPair<AccountTransaction> tx)
     {
         // buy / sell
-        if (tx.getTransaction().getCrossEntry() instanceof BuySellEntry)
+        if (tx.getTransaction().getCrossEntry() instanceof BuySellEntry entry)
         {
-            BuySellEntry entry = (BuySellEntry) tx.getTransaction().getCrossEntry();
             return new OpenDialogAction(owner, Messages.MenuEditTransaction)
                             .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
                             .parameters(entry.getPortfolioTransaction().getType());
         }
-        else if (tx.getTransaction().getCrossEntry() instanceof AccountTransferEntry)
+        else if (tx.getTransaction().getCrossEntry() instanceof AccountTransferEntry entry)
         {
-            AccountTransferEntry entry = (AccountTransferEntry) tx.getTransaction().getCrossEntry();
             return new OpenDialogAction(owner, Messages.MenuEditTransaction) //
                             .type(AccountTransferDialog.class, d -> d.setEntry(entry));
         }
@@ -178,19 +196,40 @@ public class TransactionContextMenu
         }
     }
 
+    private Action createCopyAccountTransactionAction(TransactionPair<AccountTransaction> tx)
+    {
+        // buy / sell
+        if (tx.getTransaction().getCrossEntry() instanceof BuySellEntry entry)
+        {
+            return new OpenDialogAction(owner, Messages.MenuDuplicateTransaction)
+                            .type(SecurityTransactionDialog.class, d -> d.presetBuySellEntry(entry))
+                            .parameters(entry.getPortfolioTransaction().getType());
+        }
+        else if (tx.getTransaction().getCrossEntry() instanceof AccountTransferEntry entry)
+        {
+            return new OpenDialogAction(owner, Messages.MenuDuplicateTransaction) //
+                            .type(AccountTransferDialog.class, d -> d.presetEntry(entry));
+        }
+        else
+        {
+            return new OpenDialogAction(owner, Messages.MenuDuplicateTransaction) //
+                            .type(AccountTransactionDialog.class,
+                                            d -> d.presetTransaction((Account) tx.getOwner(), tx.getTransaction())) //
+                            .parameters(tx.getTransaction().getType());
+        }
+    }
+
     private Action createEditPortfolioTransactionAction(TransactionPair<PortfolioTransaction> tx)
     {
         // buy / sell
-        if (tx.getTransaction().getCrossEntry() instanceof BuySellEntry)
+        if (tx.getTransaction().getCrossEntry() instanceof BuySellEntry entry)
         {
-            BuySellEntry entry = (BuySellEntry) tx.getTransaction().getCrossEntry();
             return new OpenDialogAction(owner, Messages.MenuEditTransaction)
                             .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
                             .parameters(entry.getPortfolioTransaction().getType());
         }
-        else if (tx.getTransaction().getCrossEntry() instanceof PortfolioTransferEntry)
+        else if (tx.getTransaction().getCrossEntry() instanceof PortfolioTransferEntry entry)
         {
-            PortfolioTransferEntry entry = (PortfolioTransferEntry) tx.getTransaction().getCrossEntry();
             return new OpenDialogAction(owner, Messages.MenuEditTransaction) //
                             .type(SecurityTransferDialog.class, d -> d.setEntry(entry));
         }
@@ -198,6 +237,28 @@ public class TransactionContextMenu
         {
             return new OpenDialogAction(owner, Messages.MenuEditTransaction) //
                             .type(SecurityTransactionDialog.class, d -> d.setDeliveryTransaction(tx)) //
+                            .parameters(tx.getTransaction().getType());
+        }
+    }
+
+    private Action createCopyPortfolioTransactionAction(TransactionPair<PortfolioTransaction> tx)
+    {
+        // buy / sell
+        if (tx.getTransaction().getCrossEntry() instanceof BuySellEntry entry)
+        {
+            return new OpenDialogAction(owner, Messages.MenuDuplicateTransaction)
+                            .type(SecurityTransactionDialog.class, d -> d.presetBuySellEntry(entry))
+                            .parameters(entry.getPortfolioTransaction().getType());
+        }
+        else if (tx.getTransaction().getCrossEntry() instanceof PortfolioTransferEntry entry)
+        {
+            return new OpenDialogAction(owner, Messages.MenuDuplicateTransaction) //
+                            .type(SecurityTransferDialog.class, d -> d.presetEntry(entry));
+        }
+        else
+        {
+            return new OpenDialogAction(owner, Messages.MenuDuplicateTransaction) //
+                            .type(SecurityTransactionDialog.class, d -> d.presetDeliveryTransaction(tx)) //
                             .parameters(tx.getTransaction().getType());
         }
     }

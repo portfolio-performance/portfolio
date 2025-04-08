@@ -1,0 +1,56 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.2.qualifier
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Depotnummer: 1234567890
+1504753979/00
+Vermerk der Bank: 2000
+2
+Vorname Nachname
+Adrstraße. 123 Datum: 07.03.2024
+12345 Ort Seite: 1 von 2
+Ertragsgutschrift / Neuabrechnung
+Wertpapierbezeichnung WKN ISIN
+Xtr.Stoxx Gbl Sel.Div.100 Swap Inhaber-Anteile 1D o.N. DBX1DG LU0292096186
+Bestand
+100,4205 Stück
+Ertragsausschüttung je Anteil 0,5579 EUR Schlusstag 20.02.2024
+Brutto 56,02 EUR
+abzgl. Kapitalertragsteuer 25,00 % von 39,22 EUR 9,80 EUR
+abzgl. Solidaritätszuschlag 5,50 % von 9,80 EUR 0,54 EUR
+Netto zugunsten IBAN DE12 3456 7890 1234 5678 01 45,68 EUR
+Valuta 07.03.2024 BIC DABBDEMMXXX
+Bitte beachten Sie die weiteren Informationen auf Seite 2.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+1EE3F5A1-39F0-C59A-1189-45159B0B93B5
+Depotnummer: 1234567890
+1504753979/00
+Vermerk der Bank: 2000
+2
+Datum: 07.03.2024
+Seite: 2 von 2
+Details zur Abrechnung
+Informationen zum Investmentsteuergesetz
+Ausschüttung gem. §2 Abs. 11 InvStG 56,02 EUR
+abzgl. Teilfreistellung 30,00 % von 56,02 EUR 17,65 EUR
+Ertragsausschüttung mit Teilfreistellung 41,18 EUR
+Steuerpflichtiger Gesamtertrag 41,18 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Mit Quellensteuer verrechnet 0,00 EUR
+somit verrechnete Quellensteuer 0,00 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 41,18 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf "Allgemein" vor der Abrechnung 0,00 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Verrechnungstopf "Allgemein" nach der Abrechnung 0,00 EUR
+Sparerpauschbetrag vor der Abrechnung 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Sparerpauschbetrag nach der Abrechnung 0,00 EUR
+Verrechnungstopf "Quellensteuer" vor der Abrechnung 0,00 EUR
+Änderung Verrechnungstopf "Quellensteuer" 0,00 EUR
+Verrechnungstopf "Quellensteuer" nach der Abrechnung 0,00 EUR

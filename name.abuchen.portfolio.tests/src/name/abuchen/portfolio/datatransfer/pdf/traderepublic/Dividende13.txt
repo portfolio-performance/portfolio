@@ -1,0 +1,31 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Max Muster SEITE 1 von 1
+Str 1 DATUM 27.10.2021
+12345 S1 DEPOT 123456
+AUSSCHÜTTUNG
+ÜBERSICHT
+Ausschüttung mit dem Ex-Tag 14.10.2021.
+POSITION ANZAHL ERTRÄGNIS BETRAG
+iShsIII-Core MSCI World U.ETF 100 Stk. 0,0235 EUR 2,35 EUR
+Reg. Shares EUR Hgd (Dis) o.N.
+ISIN: IE00BKBF6H24
+GESAMT 2,35 EUR
+ABRECHNUNG
+POSITION BETRAG
+Kapitalertragsteuer -0,41 EUR
+Solidaritätszuschlag -0,02 EUR
+GESAMT 1,92 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE123456 27.10.2021 1,92 EUR
+iShsIII-Core MSCI World U.ETF Reg. Shares EUR Hgd (Dis) o.N. in Wertpapierrechnung in Deutschland.
+Lagerland: Irland
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 28.10.2021 / 42475485 / 88d0-5158

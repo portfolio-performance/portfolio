@@ -1,0 +1,42 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+Consorsbank  90318 Nürnberg
+Kontonummer 0123456789
+IBAN DE99760300800123456789
+BIC CSDBDE71XXX
+Max Mustermann
+Musterstr. 123 Kontotyp Tagesgeldkonto
+01234 Musterstadt Kontoinhaber Max Mustermann
+Vermerk der Bank 1000
+02
+123456789012/00
+** ABSCHLUSS FÜR KONTO 0123 456 789 VOM 30.06.2023 BIS 30.09.2023/EUR **
+ZINSEN
+0,80000 % HABENZINS 31.08.23-30.09.23 19,25 H
+2,70000 % FRESH MONEY HABENZINS 31.08.23-30.09.23 64,96 H
+SUMME DER ABSCHLUSSPOSTEN 84,21 H
+25,000% KAPITALERTRAGSTEUER AUS EUR 84,21 H 21,05 S
+5,500% SOLIDARITAETSZUSCHLAG AUS EUR 21,05 S 1,15 S
+SUMME STEUERN 22,20 S
+RECHNUNGSABSCHLUSSSALDO PER 30.09.2023 39.412,01 H
+WIR HABEN DEN ABSCHLUSSBETRAG AUF KONTO 0123456789 GUTGESCHRIEBEN.
+Rechnungsabschluss
+Ist der Kontoauszug mit dem Hinweis Abschluss/Rechnungsabschluss versehen oder eine gesonderte Anlage als Rechnungsabschluss beigefügt, wurde für das
+Konto ein Rechnungsabschluss erstellt. Damit sind die im Abrechnungszeitraum entstandenen beiderseitigen Ansprüche (einschließlich Zinsen und Entgelte)
+verrechnet. Einwendungen gegen Rechnungsabschlüsse sind in Textform spätestens vor Ablauf von sechs Wochen nach Zugang des Rechnungsabschlusses zu
+erheben, siehe Nummer B, Ziffer I. 7 (2) der Allgemeinen Geschäftsbedingungen (AGB Banken). Das Unterlassen rechtzeitiger Einwendungen gilt als
+Genehmigung.
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Der Rechnungsabschluss dient gegebenenfalls zur Vorlage beim Finanzamt.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem Informationsbogen für den
+Einleger entnommen werden.
+Der Rechnungsabschlusssaldo entspricht dem Kontosaldo zum Zeitpunkt der Abschlussermittlung. Bedingt durch den 24-Stundenbetrieb sind im Nachgang zum
+Kontoabschluss weitere Buchungen am Monatsende möglich. Diese zusätzlichen Umsätze und der dadurch vom Rechnungsabschlusssaldo abweichende,
+tatsächliche Kontosaldo sind in den Kontoauszügen ausgewiesen.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé

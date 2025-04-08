@@ -1,0 +1,32 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.1
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 9699242 - TRADING
+IBAN: CH4408781000108724800
+Herrn kYnWQW WZVmbK uVeCf numXIVMpaq
+TXn psY SaoClUQiSNx 13
+DE-99520 xLwZGTKNQTm
+Gland, 03.03.2025
+Dividende Unsere Referenz: 532146499 
+Im Hinblick auf folgenden Titel:
+Titel
+Bezeichnung Anzahl
+GLOBAL X RUSSELL 2000 CVRED CALL ET F ISIN: US37954Y4594 300
+NKN: 47537082
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben: 
+Kontonummer 108724801
+Ausführungsdatum 24.02.2025
+Valutadatum 03.03.2025
+Anzahl 300
+Dividende pro Aktie USD 0.1627 
+Bezeichnung Währung Referenzwährung
+Betrag USD 48.81 CHF 44.05
+Quellensteuer 15.00% (US) USD 7.32 CHF 6.61
+Total USD 41.49 CHF 37.44
+Wechselkurs USD / CHF : 0.90247
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland  Formular ohne Unterschrift | SE&O.
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+CHE-116.310.079 MwSt

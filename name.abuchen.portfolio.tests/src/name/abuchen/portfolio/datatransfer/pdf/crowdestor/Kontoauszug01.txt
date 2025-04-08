@@ -1,0 +1,35 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.0
+-----------------------------------------
+   
+FLEX STATEMENT - CR-26903
+Summary
+Opening balance €0.00
+Incoming transactions €+50.27
+Outgoing transactions €-0.27
+Closing balance €50.00
+Date Goal Type Amount (€) Balance (€)
+14.07.2022 CRF-6-4911 Deposit +50.00 50.00
+16.07.2022 CRF-6-4911 Profit +0.03 50.03
+16.07.2022 CRF-6-4911 Automatic
+withdrawal -0.03 50.00
+17.07.2022 CRF-6-4911 Profit +0.03 50.03
+17.07.2022 CRF-6-4911 Automaticithdrawal -0.03 50.00w
+18.07.2022 CRF-6-4911 Profit +0.03 50.03
+18.07.2022 CRF-6-4911 Automaticithdrawal -0.03 50.00w
+19.07.2022 CRF-6-4911 Profit +0.03 50.03
+19.07.2022 CRF-6-4911 Automatic
+withdrawal -0.03 50.00
+20.07.2022 CRF-6-4911 Profit +0.03 50.03
+20.07.2022 CRF-6-4911 Automatic
+withdrawal -0.03 50.00
+21.07.2022 CRF-6-4911 Profit +0.03 50.03
+21.07.2022 CRF-6-4911 Automaticithdrawal -0.03 50.00w
+22.07.2022 CRF-6-4911 Profit +0.03 50.03
+22.07.2022 CRF-6-4911 Automaticithdrawal -0.03 50.00w
+23.07.2022 CRF-6-4911 Profit +0.03 50.03
+Date Goal Type Amount (€) Balance (€)
+23.07.2022 CRF-6-4911 Automatic -0.03 50.00
+withdrawal
+24.07.2022 CRF-6-4911 Profit +0.03 50.03
+24.07.2022 CRF-6-4911 Automaticithdrawal -0.03 50.00w

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.events;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyClient;
 
 public class ChangeEvent
 {
@@ -28,6 +29,6 @@ public class ChangeEvent
      */
     public boolean appliesTo(Client client)
     {
-        return this.client.equals(client);
+        return ReadOnlyClient.unwrap(this.client).equals(ReadOnlyClient.unwrap(client));
     }
 }

@@ -1,0 +1,44 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.0
+-----------------------------------------
+Wertpapierabrechnung 
+Verkauf 
+Abrechnungsnummer 
+IzFqnHk IyBqtsnat XKGoEM bf7448fe-2a12-4c8e-bc98-e6b7411fb56b 
+Straße 4
+30655 Hannover 
+Deutschland Depotinhaber Depotnummer - Konto 
+lFRnGNi jVXquisFo 
+674260313-1 
+TmSVWH 
+Wir haben für Sie verkauft Berlin, 02.07.2024 
+Wertpapier ISIN 
+VANG.FTSE N.AME.U.ETF DLD IE00BKX55R35 
+Nominal/Anzahl Kurs Kurswert 
+0,0075 Stück 123,14 EUR 0,92 EUR 
+Handel 
+Handelsdatum, Uhrzeit: 02.07.2024 12:11:16 
+Handelsplatz: Tradegate 
+Ordertyp: Market Order 
+Steuererrechnung 
+Realisierter Gewinn: 0,21 EUR 
+Teilfreistellung Investmentfonds (30%): -0,06 EUR 
+Steuerlicher Bruttoertrag: 0,15 EUR 
+Abrechnung 
+Kurswert: 0,92 EUR 
+Kapitalertragssteuer: 0,04 EUR 
+Solidaritätszuschlag: 0,00 EUR 
+Kirchensteuer: 0,00 EUR 
+Valuta Betrag zu Ihren Gunsten 
+04.07.2024 0,88 EUR 
+Im Rahmen dieses Geschäfts wurden: 
+1. 0,00 EUR des vorhandenen Verlustverrechnungstopf - Allgemein verbraucht. Der verbleibende Betrag beläuft sich damit 
+auf 0,00 EUR. 
+2. 0,00 EUR des vorhandenen Sparer-Pauschbetrags verbraucht. Der verbleibende Betrag beläuft sich damit auf 0,00 EUR. 
+Dokument ID: d8aea04b-f0c0-4e78-b853-be7a299fd9c7
+© Raisin Bank AG
+Raisin Bank AG Niedenau 61-63 60325 Frankfurt am Main
+Sitz der Gesellschaft/Registered Office: Frankfurt am Main
+Registergericht/Commercial Register: Amtsgericht Frankfurt am Main, HRB 13305
+Vorstand/Member of the Board of Directors: Marco Lindgens, Mirko Siepmann, Dr. Andreas Wolf
+Vorsitzender des Aufsichtsrats/Chairman of the Supervisory Board: Dr. Frank Freund

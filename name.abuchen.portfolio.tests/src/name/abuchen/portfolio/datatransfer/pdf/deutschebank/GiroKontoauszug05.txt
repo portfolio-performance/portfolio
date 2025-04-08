@@ -1,0 +1,36 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.1
+-----------------------------------------
+Deutsche Bank AG
+Filiale
+Stadt
+Straße 99
+Herrn 99999 Stadt
+Max Mustermann Beratungsteam
+Frankenweg 7 Telefon (09561) 5558-31
+99999 Stadt Straße
+24h-Kundenservice (069) 910-10000
+30. Juni 2023
+Kontoauszug vom 01.02.2023 bis 30.06.2023
+Kontoinhaber: Max Mustermann
+Auszug Seite von IBAN Alter Saldo per 31.01.2023
+2 1 1 DE81 9999 9999 9999 9999 00 EUR + 2.500,00
+Buchung Valuta Vorgang Soll Haben
+01.06. 02.06. Verwendungszweck/ Kundenreferenz - 1.073,65
+2023 2023 WERTPAPIER-KAUF STK/NOM: 35
+INMODE LTD.REGISTERED SHARES IS -,01
+BELEGNR: 1477534525
+Filialnummer Kontonummer Neuer Saldo
+999 9999999 00 EUR + 1.426,35
+BIC (SWIFT)
+DEUTDEDB760
+Wichtige Hinweise
+Bitte erheben Sie Einwendungen gegen einzelne Buchungen unverzüglich. Schecks, Wechsel und sonstige Lastschriften schreiben wir unter dem Vorbehalt
+des Eingangs gut. Der angegebene Kontostand berücksichtigt nicht die Wertstellung der Buchungen (siehe oben unter "Valuta").
+Somit können bei Verfügungen1) möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen.
+Die abgerechneten Leistungen sind als Bank- oder Finanzdienstleistungen von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert
+ausgewiesen ist. Umsatzsteuer ID Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem "Informationsbogen
+für den Einleger" entnommen werden.
+1) Der Begriff umfasst unter anderem die relevanten Zahlungskontendienste "Bargeldauszahlung" und "Überweisung".
+0000000003 / 09999900 / 20230702

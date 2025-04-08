@@ -1,0 +1,28 @@
+﻿DAB Bank
+Verkauf  ADRESSZEILE2=Vorname Nachname
+
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+Silgan Holdings Inc. Registered Shares DL -,01 US8270481091
+Nominal Kurs
+STK 100,000 USD 52,0800
+Handelstag 24.08.2015 Kurswert USD 5.208,00
+Handelszeit 16:38* Provision USD 18,78-
+Börse USA/NAN Handelsplatzentgelt USD 17,44-
+Verwahrart Wertpapierrechnung Abwicklungskosten Ausland USD 0,10-
+Lagerland USA Ausmachender Betrag USD 5.171,68
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+27.08.2015 0000000000 EUR/USD 1,162905 EUR 4.447,21
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsverlust Aktien EUR 371,85
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 801,00) EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern (negativ) EUR 371,85
+Steuerausgleich nach § 43a Abs. 3 Satz 2 EStG:
+Kapitalertragsteuer EUR 92,97
+Solidaritätszuschlag EUR 5,11
+Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+24.08.2015 0000000000 77641543 EUR 98,08
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.

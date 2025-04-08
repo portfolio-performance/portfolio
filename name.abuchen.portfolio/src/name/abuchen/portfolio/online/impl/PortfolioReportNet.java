@@ -1,159 +1,49 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.osgi.framework.FrameworkUtil;
 
-import com.google.gson.Gson;
-
+import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityProperty;
-import name.abuchen.portfolio.model.SecurityProperty.Type;
-import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.util.WebAccess;
 
 public class PortfolioReportNet
 {
-    /* package */ static class SymbolInfo
-    {
-        private static final String SYMBOL_KEY = "symbol"; //$NON-NLS-1$
-
-        private String exchange;
-        private String symbol;
-
-        static List<SymbolInfo> from(JSONObject json)
-        {
-            if (json == null)
-                return Collections.emptyList();
-
-            @SuppressWarnings("unchecked")
-            Set<Map.Entry<Object, Object>> set = json.entrySet();
-
-            return set.stream() //
-                            .filter(entry -> entry.getKey().toString().startsWith(SYMBOL_KEY)) //
-                            .map(entry -> {
-                                SymbolInfo m = new SymbolInfo();
-                                String key = entry.getKey().toString();
-                                m.exchange = key.substring(SYMBOL_KEY.length()).toUpperCase(Locale.US);
-                                m.symbol = entry.getValue() == null ? null : entry.getValue().toString();
-                                return m;
-                            }) //
-                            .filter(m -> m.getSymbol() != null && !m.getSymbol().isEmpty())
-                            .collect(Collectors.toList());
-        }
-
-        private SymbolInfo()
-        {
-        }
-
-        public String getExchange()
-        {
-            return exchange;
-        }
-
-        public String getSymbol()
-        {
-            return symbol;
-        }
-    }
-
-    /* package */ static class MarketInfo
-    {
-        private String marketCode;
-        private String currencyCode;
-        private LocalDate firstPriceDate;
-        private LocalDate lastPriceDate;
-
-        static List<MarketInfo> from(JSONArray json)
-        {
-            if (json == null)
-                return Collections.emptyList();
-
-            List<MarketInfo> answer = new ArrayList<>();
-
-            for (Object obj : json)
-            {
-                JSONObject market = (JSONObject) obj;
-
-                MarketInfo info = new MarketInfo();
-                info.marketCode = (String) market.get("marketCode"); //$NON-NLS-1$
-                info.currencyCode = (String) market.get("currencyCode"); //$NON-NLS-1$
-                info.firstPriceDate = YahooHelper.fromISODate((String) market.get("firstPriceDate")); //$NON-NLS-1$
-                info.lastPriceDate = YahooHelper.fromISODate((String) market.get("lastPriceDate")); //$NON-NLS-1$
-                answer.add(info);
-            }
-
-            return answer;
-        }
-
-        private MarketInfo()
-        {
-        }
-
-        public String getMarketCode()
-        {
-            return marketCode;
-        }
-
-        public String getCurrencyCode()
-        {
-            return currencyCode;
-        }
-
-        public LocalDate getFirstPriceDate()
-        {
-            return firstPriceDate;
-        }
-
-        public LocalDate getLastPriceDate()
-        {
-            return lastPriceDate;
-        }
-    }
-
-    /* package */ static class OnlineItem implements ResultItem
+    public static class OnlineItem implements ResultItem
     {
         private String id;
         private String name;
-        private String type;
+        private String securityType;
+        private boolean pricesAvailable;
 
         private String isin;
         private String wkn;
-        private List<SymbolInfo> symbols;
-        private List<MarketInfo> markets;
+        private String code;
 
         /* package */ static OnlineItem from(JSONObject jsonObject)
         {
             OnlineItem vehicle = new OnlineItem();
             vehicle.id = (String) jsonObject.get("uuid"); //$NON-NLS-1$
             vehicle.name = (String) jsonObject.get("name"); //$NON-NLS-1$
-
-            String t = (String) jsonObject.get("securityType"); //$NON-NLS-1$
-            if (TYPE_SHARE.equals(t))
-                vehicle.type = SecuritySearchProvider.Type.SHARE.toString();
-            else if (TYPE_BOND.equals(t))
-                vehicle.type = SecuritySearchProvider.Type.BOND.toString();
-            else
-                vehicle.type = t;
+            vehicle.securityType = (String) jsonObject.get(PROPERTY_SECURITY_TYPE);
 
             vehicle.isin = (String) jsonObject.get("isin"); //$NON-NLS-1$
             vehicle.wkn = (String) jsonObject.get("wkn"); //$NON-NLS-1$
-            vehicle.symbols = SymbolInfo.from(jsonObject);
-            vehicle.markets = MarketInfo.from((JSONArray) jsonObject.get("markets")); //$NON-NLS-1$
+            vehicle.code = (String) jsonObject.get("code"); //$NON-NLS-1$
+
+            vehicle.pricesAvailable = (boolean) jsonObject.get("pricesAvailable"); //$NON-NLS-1$
             return vehicle;
         }
 
@@ -188,13 +78,28 @@ public class PortfolioReportNet
         @Override
         public String getSymbol()
         {
-            return symbols.stream().map(SymbolInfo::getSymbol).reduce((r, l) -> r + "," + l).orElse(null); //$NON-NLS-1$
+            return code;
+        }
+
+        @Override
+        public String getCurrencyCode()
+        {
+            return "EUR, USD, AED, AUD, BGN, BRL, CAD, CHF, CNY, CZK, DKK, GBP, GBX, HKD, HRK, HUF, IDR, ILS, INR, ISK, JPY, KRW, MXN, MYR, NOK, NZD, PHP, PLN, RON, RUB, SEK, SGD, THB, TRY, ZAR"; //$NON-NLS-1$
         }
 
         @Override
         public String getType()
         {
-            return type;
+            if (TYPE_SHARE.equals(securityType))
+                return Messages.LabelSearchShare;
+            else if (TYPE_BOND.equals(securityType))
+                return Messages.LabelSearchBond;
+            else if (TYPE_FUND.equals(securityType))
+                return Messages.LabelSearchFund;
+            else if (TYPE_CRYPTO.equals(securityType))
+                return Messages.LabelCryptocurrency;
+            else
+                return securityType;
         }
 
         @Override
@@ -206,32 +111,30 @@ public class PortfolioReportNet
         @Override
         public boolean hasPrices()
         {
-            return !markets.isEmpty();
+            return pricesAvailable;
         }
 
         @Override
-        public Security create()
+        public Security create(Client client)
         {
-            Security security = new Security();
+            Security security = new Security(name, client.getBaseCurrency());
 
             security.setOnlineId(id);
-
-            security.setName(name);
-
             security.setIsin(isin);
             security.setWkn(wkn);
-            security.setTickerSymbol(symbols.stream().map(SymbolInfo::getSymbol).findAny().orElse(null));
-            symbols.forEach(symbolInfo -> security.addProperty(new SecurityProperty(SecurityProperty.Type.MARKET,
-                            symbolInfo.getExchange(), symbolInfo.getSymbol())));
+            security.setTickerSymbol(code);
 
-            security.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKETS_PROPERTY_NAME,
-                            markets.isEmpty() ? null : new Gson().toJson(markets));
-
-            if (!markets.isEmpty())
+            if (pricesAvailable)
             {
                 security.setFeed(PortfolioReportQuoteFeed.ID);
-                security.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME,
-                                markets.get(0).getMarketCode());
+                security.setLatestFeed(QuoteFeed.MANUAL);
+            }
+
+            if (!TYPE_CRYPTO.equals(securityType))
+            {
+                // for the time being, we set the currency to EUR for all other
+                // instruments. We know that the primary currency is EUR.
+                security.setCurrencyCode(CurrencyUnit.EUR);
             }
 
             return security;
@@ -253,79 +156,51 @@ public class PortfolioReportNet
                 isDirty = true;
             }
 
-            List<SecurityProperty> local = security.getProperties()
-                            .filter(property -> property.getType() == SecurityProperty.Type.MARKET)
-                            .collect(Collectors.toList());
+            return isDirty;
+        }
 
-            // we can collect the list into a map because the original JSON data
-            // structure is actually a map
-            Map<String, String> remote = symbols.stream()
-                            .collect(Collectors.toMap(SymbolInfo::getExchange, SymbolInfo::getSymbol));
-
-            for (SecurityProperty property : local)
-            {
-                String symbol = remote.remove(property.getName());
-                if (symbol == null)
-                {
-                    security.removeProperty(property);
-                    isDirty = true;
-                }
-                else if (!symbol.equals(property.getValue()))
-                {
-                    security.removeProperty(property);
-                    security.addProperty(new SecurityProperty(Type.MARKET, property.getName(), symbol));
-                    isDirty = true;
-                }
-            }
-
-            remote.forEach((k, v) -> security.addProperty(new SecurityProperty(Type.MARKET, k, v)));
-
-            if (security.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKETS_PROPERTY_NAME,
-                            markets.isEmpty() ? null : new Gson().toJson(markets)))
-                isDirty = true;
-
-            return isDirty || !remote.isEmpty();
+        @Override
+        public String getSource()
+        {
+            return "Porfolio Report"; //$NON-NLS-1$
         }
     }
 
-    private static final String TYPE_SHARE = "share"; //$NON-NLS-1$
-    private static final String TYPE_BOND = "bond"; //$NON-NLS-1$
+    private static final String PROPERTY_SECURITY_TYPE = "securityType"; //$NON-NLS-1$
 
-    private static final String HOST = "www.portfolio-report.net"; //$NON-NLS-1$
+    static final String TYPE_SHARE = "share"; //$NON-NLS-1$
+    static final String TYPE_BOND = "bond"; //$NON-NLS-1$
+    static final String TYPE_FUND = "fund"; //$NON-NLS-1$
+    static final String TYPE_CRYPTO = "crypto"; //$NON-NLS-1$
 
-    public List<ResultItem> search(String query, SecuritySearchProvider.Type type) throws IOException
+    private static final String HOST = "api.portfolio-report.net"; //$NON-NLS-1$
+
+    public List<ResultItem> search(String query, String type) throws IOException
     {
-        WebAccess webAccess = new WebAccess(HOST, "/api/securities/search/" + query) //$NON-NLS-1$
-                        .addUserAgent("PortfolioPerformance/" //$NON-NLS-1$
-                                        + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString());
+        var version = FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString();
 
-        switch (type)
-        {
-            case SHARE:
-                webAccess.addParameter("securityType", TYPE_SHARE); //$NON-NLS-1$
-                break;
-            case BOND:
-                webAccess.addParameter("securityType", TYPE_BOND); //$NON-NLS-1$
-                break;
-            case ALL:
-            default:
-                // do nothing
-        }
+        WebAccess webAccess = new WebAccess(HOST, "/v1/securities/search") //$NON-NLS-1$
+                        .addUserAgent("PortfolioPerformance/" + version); //$NON-NLS-1$
+
+        webAccess.addParameter("q", query); //$NON-NLS-1$
+
+        if (type != null)
+            webAccess.addParameter(PROPERTY_SECURITY_TYPE, type);
 
         return readItems(webAccess.get());
     }
 
     public Optional<ResultItem> getUpdatedValues(String onlineId) throws IOException
     {
+        var version = FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString();
+
         @SuppressWarnings("nls")
-        String html = new WebAccess(HOST, "/api/securities/uuid/" + onlineId)
-                        .addUserAgent("PortfolioPerformance/"
-                                        + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString())
-                        .addHeader("X-Source",
-                                        "Portfolio Peformance " + FrameworkUtil.getBundle(PortfolioReportNet.class)
-                                                        .getVersion().toString())
+        String html = new WebAccess(HOST, "/securities/uuid/" + onlineId)
+                        .addUserAgent("PortfolioPerformance/" + version)
+                        .addHeader("X-Source", "Portfolio Peformance " + version)
                         .addHeader("X-Reason", "periodic update")
-                        .addHeader("Content-Type", "application/json;chartset=UTF-8").get();
+                        .addHeader("Content-Type", "application/json;chartset=UTF-8") //
+                        .get();
 
         Optional<ResultItem> onlineItem = Optional.empty();
         JSONObject response = (JSONObject) JSONValue.parse(html);
@@ -350,9 +225,21 @@ public class PortfolioReportNet
 
     public static boolean updateWith(Security security, ResultItem item)
     {
-        if (!(item instanceof OnlineItem))
-            throw new IllegalArgumentException();
+        if (!(item instanceof OnlineItem oItem))
+            throw new IllegalArgumentException("result item is null or of wrong type: " + item); //$NON-NLS-1$
 
-        return ((OnlineItem) item).update(security);
+        return oItem.update(security);
+    }
+
+    public static Security createFrom(ResultItem item, Client client)
+    {
+        if (item instanceof OnlineItem onlineItem)
+        {
+            return onlineItem.create(client);
+        }
+        else
+        {
+            throw new IllegalArgumentException("result item is null or of wrong type: " + item); //$NON-NLS-1$
+        }
     }
 }

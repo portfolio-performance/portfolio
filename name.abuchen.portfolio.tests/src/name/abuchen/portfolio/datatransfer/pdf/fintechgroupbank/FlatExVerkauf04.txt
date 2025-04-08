@@ -1,0 +1,47 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+flatex Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatex Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+0302402000001562272140
+Herrn
+Max Mustermann
+Strasse
+Strasse 7
+99999 Stadt
+    Frankfurt am Main,  22.06.2020
+Spitzenregulierung in CA05156X1087
+Kundennummer: 9999999
+Kontonummer : 1009999999
+Depotnummer : 1009999999
+Inhaber     : Max Mustermann
+WKN     ISIN          Wertpapierbezeichnung           Anzahl
+A12GS7  CA05156X1087  AURORA CANNABIS                 0,500000
+Sehr geehrter Herr Mustermann,
+Spitzenregulierung                                                    5,86 EUR
+Steuerpfl. Ertrag                                                     0,00 EUR
+Steuerbetrag**                                                        0,00 EUR
+**Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+Kapitalertragsteuer                                                   0,00 EUR
+Solidaritätszuschlag                                                  0,00 EUR
+Kirchensteuer                                                         0,00 EUR
+Verrechnung über Ihr Konto: 1009999999 Gutschrift                     5,86 EUR
+Transaktions-Nr.                                                1942669999
+Die Gutschrift erfolgt unter Vorbehalt des Eingangs. Einwendungen müssen
+unverzüglich nach Zugang erhoben werden. Die Unterlassung rechtzeitiger
+Einwendungen gilt als Genehmigung.
+Dieser Beleg ist keine Steuerbescheinigung. Kapitalerträge sind
+einkommensteuerpflichtig. Diese Mitteilung ist maschinell erstellt und wird
+nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                     Seite 1/1
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann
+2000001562272140 0113302400000101

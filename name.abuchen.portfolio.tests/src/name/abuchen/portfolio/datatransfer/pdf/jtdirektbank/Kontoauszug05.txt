@@ -1,0 +1,105 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+J&T Tagesgeld
+EUR-Konto Kontonummer 12345678
+J&T Direktbank - Postfach 232
+45952 Gladbeck Kontoauszug Nr.  1/2024
+erstellt am 31.01.2024 22:04 Blatt  1 von 2
+IBAN: DE30 1234 5678 9012 3456 78 BIC: JTBPDEFFXXX
+Herrn
+Total Egal
+Dumdideldumweg 19
+12345 Investcity
+Bu-Tag Wert Vorgang
+alter Kontostand vom 29.12.2023  15.806,23 H
+02.01. 02.01. Spar/Fest/Termingeld 5.000,00 S
+ Egal*Total
+ Konto: 0012345622 BLZ: 50015001
+ Kto. 12345622 Neuanlage
+ J&T Festgeld
+15.01. 15.01. Überweisungsgutschr. 1.000,00 H
+ Total Egal
+ von XYZ zu JT
+15.01. 15.01. Überweisungsgutschr. 1.500,00 H
+ Total Egal
+ von XYZ zu JT
+16.01. 16.01. Überweisungsgutschr. 2.500,00 H
+ Total Egal
+ von XYZ zu JT
+17.01. 17.01. Überweisungsgutschr. 2.000,00 H
+ Total Egal
+ von XYZ zu JT
+23.01. 23.01. Überweisungsgutschr. 3.000,00 H
+ Total Egal
+ von XYZ zu JT
+24.01. 24.01. Überweisungsgutschr. 1.000,00 H
+ Total Egal
+ von XYZ zu JT
+29.01. 29.01. Spar/Fest/Termingeld 5.000,00 S
+ Egal*Total
+ Konto: 0012345623 BLZ: 50015001
+ Kto. 12345623 Neuanlage
+ J&T Festgeld
+31.01. 31.01. Solid.-Zuschlag aus 1,91 S
+ EUR 34,81-KapSt per 30.01.2024 KT 12345678
+31.01. 31.01. Kapitalertragsteuer aus 34,81 S
+ EUR 139,23 Habenzins per 30.01.2024 KT 12345678
+31.01. 31.01. Abschluss lt. Anlage 1 139,23 H
+ neuer Kontostand vom 31.01.2024 16.908,74 H
+0189
+000
+K00007289
+5M Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+J&T Tagesgeld
+EUR-Konto Kontonummer 12345678
+Total Egal
+Kontoauszug Nr.  1/2024
+erstellt am 31.01.2024 22:04 Blatt  2 von 2
+Bu-Tag Wert Vorgang
+Anlage 1
+Buchungstag: 31.01.2024
+Wert: 31.01.2024
+Kontoabschluss vom 01.01.2024 bis 31.01.2024 für Konto 12345678
+ 3,70000% Habenzins bis 31.01. 139,23 H
+Rechnung Nr. 12345678.20240131.001
+USt. IdNr. - DE 357997630
+USt.-befreite Finanzdienstleistung
+> Kapitalertragsteuer 34,81 S
+> aus 139,23 Habenzins
+> Solidaritätszuschlag 1,91 S
+ Summe Abschlussposten in EUR 139,23 H
+0189
+000
+K00007289 Bitte beachten Sie die Hinweise auf der Rückseite oder am Ende des Dokuments
+Sehr geehrte Kundin, sehr geehrter Kunde,
+Sie haben eine Bankmitteilung erhalten, z. B. einen Kontoauszug, einen Sparkontoauszug oder eine Dividendenabrechnung. Bitte 
+prüfen Sie diese genau: Ist alles korrekt? Falls nicht, sprechen Sie uns bitte an. Damit Sie immer gut informiert sind und wissen, wie 
+Sie Ihre Bankmitteilung "richtig lesen", haben wir diese nützlichen Hinweise für Sie zusammengestellt:
+Falls in diesem Dokument Bankdienstleistungen aufgeführt sind, sind diese umsatzsteuerfrei - sofern nichts Abweichendes angegeben
+ist. Der im Kontoauszug ausgewiesene Betrag muss nicht dem tatsächlichen Kontoguthaben entsprechen, weil z. B. die Wertstellung
+einzelner Buchungen nicht berücksichtigt wurde oder noch Zinsen für eine Kontoüberziehung bei einer Verfügung anfallen können.
+Rechnungsabschlüsse
+Ihr Kontoauszug ist mit dem Hinweis "Rechnungsabschluss" versehen?
+Dann haben wir für Ihr Konto einen Rechnungsabschluss durchgeführt, einschließlich Zinsen und Entgelte. Alle weiteren, nach dem
+Erstellungsdatum dieser Mitteilung anfallenden Umsätze und Kontoauszüge werden erst in der folgenden Abrechnung
+berücksichtigt - auch wenn sie sich auf den Abrechnungssaldo des abgelaufenen Abrechnungszeitraumes auswirken.
+Korrekturen werden gekennzeichnet. Den Rechnungsabschluss können Sie beim Finanzamt vorlegen.
+Einwendungen
+Sie haben Einwendungen gegen den Rechnungsabschluss Ihres Kontokorrentkontos oder den Inhalt des Sparkontoauszugs? Dann
+haben Sie nach Erhalt sechs Wochen Zeit, uns zu informieren. Sonst gilt der Rechnungsabschluss zum Kontokorrentkonto oder der
+Sparkontoauszug als genehmigt. Wenn Sie ihre Einwendungen in Textform geltend machen, z. B. per E-Mail oder Brief, so genügt die
+Absendung innerhalb von sechs Wochen nach Erhalt.
+Einzugsaufträge
+Einzugspapiere wie z. B. Schecks und Lastschriften werden unter dem Vorbehalt des Eingangs gutgeschrieben, und zwar auch
+dann, wenn diese Papiere bei uns selbst zahlbar sind. 
+Schecks und Lastschriften sind erst eingelöst, wenn die Belastungsbuchung nicht spätestens am zweiten Bankarbeitstag - bei 
+Lastschriften im SEPA-Firmen-Lastschriftverfahren nicht spätestens am dritten Bankarbeitstag - nach ihrer Vornahme rückgängig
+gemacht wird. Barschecks sind bereits mit Zahlung an den Scheckvorleger eingelöst. Schecks sind auch schon dann eingelöst,
+wenn wir im Einzelfall eine Bezahltmeldung absenden.
+Guthaben
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem
+"Informationsbogen für den Einleger" entnommen werden.
+Sie haben noch Fragen? Dann kontaktieren Sie uns bitte. Wir sind gern für Sie da.
+Mit freundlichen Grüßen
+Ihre Bank

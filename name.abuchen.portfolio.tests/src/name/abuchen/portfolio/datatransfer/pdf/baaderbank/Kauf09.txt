@@ -1,0 +1,47 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/1
+Unterschleißheim
+07.09.2019
+Herrn
+T  00800 00 586336*
+Max Mustermann F  +49 89 5150 2442
+Poststraße 1 service@baaderbank.de
+11111 Stadt
+Max Mustermann
+Stamm-Nr.: 1111111    Portfolio: 1
+Depot-Nr.: 1111111111
+Vorgangs-Nr.: 11111111
+Referenz-Nr.: 11111111
+Wertpapierabrechnung: Kauf
+Auftragsdatum: 06.09.2019 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 12:38:37:12
+Nominale ISIN: LU0908500753 WKN: LYX0Q0 Kurs 
+STK 0,118 Lyxor Index-L.Co.St.EO 600(DR) EUR 157,38
+Actions Nom.UCITS ETF Acc oN
+Auftraggeber: ext.Vermögensverw.
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 18,57
+Zu Lasten Konto 1111111111 Valuta: 10.09.2019 EUR 18,57
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung:
+Handelsdatum Handelsuhrzeit
+06.09.2019 12:39:33:59
+Verwahrart: Girosammelverwahrung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 100 MIC des Ausführungsplatzes: MUNC
+Lagerland: Deutschland
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Bitte prüfen Sie diese Auftragsbestätigung/Abrechnung auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese 
+Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden.
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank 
+erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537
+Weihenstephaner Straße 4 F +49 89 5150 2442 Dieter Brichmann (stv. Vorsitzender), Sitz der Gesellschaft: Unterschleißheim
+85716 Unterschleißheim service@baaderbank.de Oliver Riedel StNr. 143/107/04009
+Deutschland www.baaderbank.de Vorsitzender des Aufsichtsrates: USt-IdNr. DE114123893
+Dr. Horst Schiessl LEI: 529900JFOPPEDUR61H13
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. WPABRECHNUNG-049.108

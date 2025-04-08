@@ -4,19 +4,20 @@ import static name.abuchen.portfolio.ui.util.FormDataFactory.startingWith;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.beans.typed.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jface.databinding.swt.WidgetProperties;
-import org.eclipse.jface.databinding.viewers.ViewersObservables;
+import org.eclipse.e4.ui.services.IStylingEngine;
+import org.eclipse.jface.databinding.swt.typed.WidgetProperties;
+import org.eclipse.jface.databinding.viewers.typed.ViewerProperties;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -30,21 +31,25 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.DatePicker;
+import name.abuchen.portfolio.ui.util.SecurityNameLabelProvider;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class AddCustomEventPage extends AbstractWizardPage
 {
+    private IStylingEngine stylingEngine;
+
     private CustomEventModel model;
     private BindingHelper bindings;
 
-    public AddCustomEventPage(CustomEventModel model)
+    public AddCustomEventPage(IStylingEngine stylingEngine, CustomEventModel model)
     {
         super("add-custom-event"); //$NON-NLS-1$
 
         setTitle(Messages.EventWizardTitle);
         setDescription(Messages.EventWizardDescription);
 
+        this.stylingEngine = stylingEngine;
         this.model = model;
 
         bindings = new BindingHelper(model)
@@ -66,7 +71,7 @@ public class AddCustomEventPage extends AbstractWizardPage
         setControl(container);
         container.setLayout(new FormLayout());
 
-        Label labelSecurity = new Label(container, SWT.NONE);
+        Label labelSecurity = new Label(container, SWT.RIGHT);
         labelSecurity.setLayoutData(new FormData());
         labelSecurity.setText(Messages.ColumnSecurity);
 
@@ -78,14 +83,7 @@ public class AddCustomEventPage extends AbstractWizardPage
         Combo combo = comboSecurity.getCombo();
         combo.setLayoutData(new FormData());
         comboSecurity.setContentProvider(ArrayContentProvider.getInstance());
-        comboSecurity.setLabelProvider(new LabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                return ((Security) element).getName();
-            }
-        });
+        comboSecurity.setLabelProvider(new SecurityNameLabelProvider(model.getClient()));
         comboSecurity.setInput(securities);
 
         Label labelDate = new Label(container, SWT.NONE);
@@ -106,7 +104,10 @@ public class AddCustomEventPage extends AbstractWizardPage
 
         // form layout data
 
-        int labelWidth = widest(labelSecurity, labelDate);
+        // measuring the width requires that the font has been applied before
+        stylingEngine.style(container);
+
+        int labelWidth = widest(labelSecurity, labelDate, labelMessage);
 
         startingWith(comboSecurity.getControl(), labelSecurity) //
                         .thenBelow(boxDate.getControl()).label(labelDate) //
@@ -117,23 +118,20 @@ public class AddCustomEventPage extends AbstractWizardPage
         // model binding
 
         DataBindingContext context = bindings.getBindingContext();
-        IObservableValue<?> targetObservable = ViewersObservables.observeSingleSelection(comboSecurity);
-        @SuppressWarnings("unchecked")
+        IObservableValue<?> targetObservable = ViewerProperties.singleSelection().observe(comboSecurity);
         IObservableValue<?> securityObservable = BeanProperties.value("security").observe(model); //$NON-NLS-1$
         context.bindValue(targetObservable, securityObservable, null, null);
 
-        @SuppressWarnings("unchecked")
-        IObservableValue<Object> targetExDate = new SimpleDateTimeDateSelectionProperty().observe(boxDate.getControl());
-        @SuppressWarnings("unchecked")
-        IObservableValue<Object> modelExDate = BeanProperties.value("date").observe(model); //$NON-NLS-1$
-        context.bindValue(targetExDate, modelExDate, new UpdateValueStrategy<Object, Object>() //
+        IObservableValue<LocalDate> targetExDate = new SimpleDateTimeDateSelectionProperty()
+                        .observe(boxDate.getControl());
+        IObservableValue<LocalDate> modelExDate = BeanProperties.value("date", LocalDate.class).observe(model); //$NON-NLS-1$
+        context.bindValue(targetExDate, modelExDate, new UpdateValueStrategy<LocalDate, LocalDate>() //
                         .setAfterConvertValidator(value -> value != null ? ValidationStatus.ok()
                                         : ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired,
                                                         Messages.ColumnExDate))),
                         null);
 
         IObservableValue<?> messageTargetObservable = WidgetProperties.text(SWT.Modify).observe(text);
-        @SuppressWarnings("unchecked")
         IObservableValue<?> messageModelObservable = BeanProperties.value("message").observe(model); //$NON-NLS-1$
         context.bindValue(messageTargetObservable, messageModelObservable);
     }

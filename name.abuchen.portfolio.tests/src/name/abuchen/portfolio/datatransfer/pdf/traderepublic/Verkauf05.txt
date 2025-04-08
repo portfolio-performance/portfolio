@@ -1,0 +1,30 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+[NAME] SEITE 1 von 1
+[STRAẞE] DATUM 26.02.2021
+[ORT] DEPOT [DEPOTNUMMER]
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Verkauf am 26.02.2021, um 11:44 Uhr.
+POSITION ANZAHL KURS BETRAG
+HAMBORNER REIT AG 0,3632 Stk. 8,72 EUR 3,17 EUR
+Namens-Aktien o.N.
+ISIN: DE000A3H2333
+GESAMT 3,17 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+GESAMT 2,17 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+[IBAN Verrechnungskonto] 02.03.2021 2,17 EUR
+HAMBORNER REIT AG Namens-Aktien o.N. in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 26.02.2021 / 54246505 / 1227-6572

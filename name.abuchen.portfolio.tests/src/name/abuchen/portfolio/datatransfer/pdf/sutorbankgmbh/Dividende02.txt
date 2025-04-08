@@ -1,0 +1,44 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+justTRADE
+Ein Service der Sutor Bank
+JT Technologies GmbH
+Kaiserhofstraße 16
+Herr 60313 Frankfurt am Main
+Max Mustermann Email: service@justtrade.com
+Musterweg 13 Web: www.justtrade.com
+55555 Musterstadt
+Name des Kunden: Max Mustermann
+Depotnummer: 123456789
+16. April 2021
+Dividende - Vierteljährlich
+Produktbezeichnung - W.P. Carey Inc.:
+Internationale Wertpapierkennnummer US92936U1097
+(ISIN)
+Anzahl/Nominale 20,00
+Referenz 1111
+Ex Datum - Tag 30. März 2021
+Zahlbarkeitstag 15. April 2021
+Valutadatum 15. April 2021
+Dividende pro Stück/Nominal EUR 0,872810
+Devisenkurs (EUR/ USD) 1,2007
+Dividendengutschrift EUR 17,46
+Einbehaltende Quellensteuer EUR 2,62
+Anrechenbare Quellensteuer EUR 2,62
+Verrechnete anrechenbare EUR 10,48
+Quellensteuer
+Berechnungsgrundlage EUR 6,98
+Kapitalertragssteuer
+Kapitalertragssteuer EUR 1,75
+Solidaritätszuschlag EUR 0,09
+Ausmachender Betrag EUR 13,00
+Bei Fragen oder im Falle einer fehlerhaften Abrechnung wenden Sie sich bitte an den justTRADE -
+Kundenservice. Sie finden die Kontaktdetails im Briefkopf dieser Abrechnung.
+Der Gegenwert der Transaktion wird per Valutatag gebucht. Keine Steuerbescheinigung.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+MAX HEINR. SUTOR OHG TELEFON 040-8090685-0 GESCHÄFTSLEITUNG FINANZAMT HAMBURG AMTSGERICHT HAMBURG
+HERMANNSTRASSE 46 TELEFAX 040-8090685-810 ROBERT FREITAG STNR: 2761000074 HRA 25379
+20095 HAMBURG THOMAS MEIER UST-IDNR: DE155617009
+POSTFACH 11 33 37 INFO@SUTORBANK.DE BANKLEITZAHL 202 308 00
+20433 HAMBURG WWW.SUTORBANK.DE BIC CODE: MHSBDEHBXXX

@@ -1,0 +1,29 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+DADAT-Bank KONTOAUSZUG
+BH Schelhammer & Schattera AG vom 08.01.2020
+Alter Saldo per 31.12.2019 8,38-
+Summe der Gutschriften 0,00
+Online Summe der Lastschriften 1,34-
+BH Schelhammer, PF 1000, 5021 Salzburg
+Neuer Saldo zu Ihren Lasten
+Max Musterman EUR 9,72-
+Straße 10/11
+PLZ Ort
+Konto-Nr.: 00078000000 Bankleitzahl: 19190
+Empfängerhinweis: 
+Datum Buchungstext Wert Betrag
+02.01 Einlagen auf diesem Konto sind grundsätzlich 31.12 0,00
+erstattungsfähig. Ihre Sicherungseinrichtung ist
+die Einlagensicherung AUSTRIA Ges.m.b.H.
+Nähere Informationen finden Sie im Informationsbogen
+gem. §37a BWG(Homepage bzw. Filiale)
+08.01 Steuern ausschüttungsgl. Erträge Depot    7800000000/20200107-45942704 03.01 1,34-
+ISIN LU0378449770 COMST.-NASDAQ-100 U.ETF I               1,22000 STK
+Kurs                      0,000000  KEST                     -1,51 USD
+DevKurs        1,123200/2.1.2020
+Neuer Saldo zu Ihren Lasten 9,72-
+AT40 1919 0000 0000 0000 BSSWATWW 01 0001 1/1
+IBAN BIC Filiale Auszug Blatt/Gesamt
+R0042 07170 Doknr.: EK00-045-0008003307

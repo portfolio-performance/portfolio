@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.util.chart;
 
+import java.util.Objects;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -10,7 +12,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.swtchart.Chart;
+import org.eclipse.swtchart.Chart;
 
 import name.abuchen.portfolio.ui.UIConstants;
 
@@ -19,19 +21,28 @@ public abstract class AbstractChartToolTip implements Listener
     public static final int PADDING = 5;
 
     private Chart chart = null;
+
     private Shell tip = null;
     private Object focus = null;
+
+    private boolean isActive = true;
+    private boolean showToolTip = false;
     private boolean isAltPressed = false;
 
-    public AbstractChartToolTip(Chart chart)
+    protected AbstractChartToolTip(Chart chart)
     {
         this.chart = chart;
 
-        Composite plotArea = chart.getPlotArea();
+        Composite plotArea = getPlotArea();
         plotArea.addListener(SWT.MouseDown, this);
         plotArea.addListener(SWT.MouseMove, this);
         plotArea.addListener(SWT.MouseUp, this);
         plotArea.addListener(SWT.Dispose, this);
+    }
+
+    public void setActive(boolean isActive)
+    {
+        this.isActive = isActive;
     }
 
     protected abstract Object getFocusObjectAt(Event event);
@@ -56,19 +67,27 @@ public abstract class AbstractChartToolTip implements Listener
     @Override
     public void handleEvent(Event event)
     {
+        if (!isActive)
+            return;
+
         switch (event.type)
         {
-            case SWT.Dispose:
-            case SWT.MouseUp:
+            case SWT.Dispose, SWT.MouseUp:
+                showToolTip = false;
                 closeToolTip();
                 break;
             case SWT.MouseMove:
-                moveToolTip(event);
+                if (showToolTip)
+                    moveToolTip(event);
                 break;
             case SWT.MouseDown:
-                if (event.button == 1 && (event.stateMask & SWT.MOD1) != SWT.MOD1)
+                // open tooltip only on left-click or on left click with MOD3
+                // (Alt on most platforms, Option on macOS)
+                var isValidKey = event.stateMask == 0 || event.stateMask == SWT.MOD3;
+                if (event.button == 1 && isValidKey)
                 {
-                    isAltPressed = (event.stateMask & SWT.MOD3) == SWT.MOD3;
+                    showToolTip = true;
+                    isAltPressed = event.stateMask == SWT.MOD3;
                     showToolTip(event);
                 }
                 break;
@@ -116,26 +135,34 @@ public abstract class AbstractChartToolTip implements Listener
 
     private void moveToolTip(Event event)
     {
-        if (tip == null || tip.isDisposed())
-            return;
+        Object newFocusObject = getFocusObjectAt(event);
+        boolean focusObjectChanged = !Objects.equals(focus, newFocusObject);
 
-        Object newTipDate = getFocusObjectAt(event);
-        boolean dateChanged = focus != null && !focus.equals(newTipDate);
+        boolean exists = tip != null && !tip.isDisposed();
 
-        if (dateChanged)
+        if (newFocusObject == null)
+        {
+            focus = null;
+            closeToolTip();
+        }
+        else if (focusObjectChanged && exists)
         {
             // delete composite
             for (Control c : tip.getChildren())
                 c.dispose();
 
             // re-create labels
-            focus = newTipDate;
+            focus = newFocusObject;
             Point size = createAndMeasureTooltip();
 
             Rectangle bounds = calculateBounds(event, size);
             tip.setBounds(bounds);
         }
-        else
+        else if (focusObjectChanged && !exists)
+        {
+            showToolTip(event);
+        }
+        else if (exists)
         {
             Point size = tip.getSize();
             Rectangle bounds = calculateBounds(event, size);
@@ -145,17 +172,23 @@ public abstract class AbstractChartToolTip implements Listener
 
     private Rectangle calculateBounds(Event event, Point size)
     {
-        Rectangle plotArea = chart.getPlotArea().getClientArea();
+        Rectangle plotArea = getPlotArea().getClientArea();
 
         int x = event.x + (size.x / 2) > plotArea.width ? plotArea.width - size.x : event.x - (size.x / 2);
         x = Math.max(x, 0);
 
-        int y = event.y + size.y + PADDING > plotArea.height ? event.y - size.y - PADDING : event.y + PADDING;
-        y = Math.max(y, 0);
-        y = Math.min(y, plotArea.height - size.y - PADDING);
+        Point pt = getPlotArea().toDisplay(x, event.y);
+        // show above
+        int y = pt.y - size.y - PADDING;
 
-        Point pt = chart.getPlotArea().toDisplay(x, y);
-        return new Rectangle(pt.x, pt.y, size.x, size.y);
+        return new Rectangle(pt.x, y, size.x, size.y);
     }
 
+    protected final Composite getPlotArea()
+    {
+        if (chart != null)
+            return (Composite) chart.getPlotArea();
+        else
+            throw new IllegalArgumentException("no plot area found"); //$NON-NLS-1$
+    }
 }

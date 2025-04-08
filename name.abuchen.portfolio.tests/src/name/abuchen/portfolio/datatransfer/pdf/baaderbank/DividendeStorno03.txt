@@ -1,0 +1,60 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.3
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Scalable Capital GmbH 
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Seitzstraße 8e
+80538 München 
+service@scalable.capital
+Seite 1/2
+Herrn München
+02.09.2023
+XXXXXX
+ADRESSE NAME
+PLZ Stadt Stamm-Nr.: 1841623    Portfolio: 1
+Depot-Nr.: 123456
+ÖSTERREICH Vorgangs-Nr.: 2546
+Referenz-Nr.: 42566
+Fondsausschüttung STORNO
+Ex-Tag: 30.09.2022
+Nominale ISIN: US7561091049 WKN: 899744 Ausschüttung
+STK 5,683 Realty Income Corp. USD 0,232934 p.STK
+Zahlungszeitraum: 01.10.2021 - 30.09.2022 
+Zahltag: 14.10.2022
+Umrechnungskurs: EUR/USD 0,9818
+Bruttobetrag USD 1,32
+Bruttobetrag EUR 1,34
+US-Quellensteuer EUR 0,20 -
+Zu Gunsten Konto 324325 Valuta: 14.10.2022 EUR 1,14
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • HRB 217778, Amtsgericht 
+München • USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de DCUP-055.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Fondsausschüttung STORNO
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Ausschüttung sonstiger Fonds vor Teilfreistellung EUR 1,34 EUR 1,34
+Ausschüttung sonstiger Fonds nach Teilfreistellung EUR 1,34 EUR 1,34
+anrechenbare Quellensteuer EUR 0,20 - EUR 0,20 -
+Dividende Quellensteuer
+US-Quellensteuer 15,00 % EUR 0,20 - EUR 0,20 -
+Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital GmbH • Geschäftsführung: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • HRB 217778, Amtsgericht 
+München • USt-IdNr. DE300434774 • www.scalable.capital
+ 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft • Weihenstephaner Straße 4 • 85716 Unterschleißheim • Deutschland
+Vorstand: Nico Baader (Vorsitzender), Oliver Riedel (stv. Vorsitzender) • Vorsitzender des Aufsichtsrates: Helmut Schreyer • Amtsgericht München HRB 
+121537 • Sitz der Gesellschaft: Unterschleißheim • StNr. 143/107/04009 • USt-IdNr. DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336*
+service@baaderbank.de DCUP-055.048
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.

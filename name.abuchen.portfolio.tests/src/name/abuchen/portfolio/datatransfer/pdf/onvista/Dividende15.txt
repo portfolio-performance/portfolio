@@ -1,0 +1,49 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=Hans Mustermann
+ADRESSZEILE3=Beispielstr 12
+ADRESSZEILE4=12345 Stadt
+Ausschüttung für
+Herr ADRESSZEILE5=01.04.2017 - 06.10.2017
+Hans Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Beispielstr 12 BELEGNUMMER=123
+12345 Stadt 123456789 12345678 / 19.10.2017 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Hans Mustermann
+Ertragsthesaurierung Frankfurt am Main, 19.10.2017
+Gattungsbezeichnung ISIN
+iS.EO Go.B.C.2.5-5.5y.U.ETF DE Inhaber-Anteile DE000A0H08A8
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 0,4512 06.10.2017 20.10.2017 EUR 0,169895
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+20.10.2017 123456789 EUR 0,00
+Ertrag für 2017 EUR 0,08
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zinsanteil (Thesaurierung) EUR 0,08
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+Steuerliquidität EUR 0,02
+zu versteuern EUR 0,08
+einbehaltene Kapitalertragsteuer EUR 0,02
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 2,65
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,14
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Itzehoe, Steuernummer 18/297/13562.
+Steuerlicher Stichtag 06.10.2017
+Die KAG entnimmt KESt, SolZ und ggf. KiSt dem Sondervermögen und stellt den auszahlenden Stellen diesen Betrag in
+Form der Steuerliquidität zur Verfügung. Abhängig von der tatsächlich abzuführenden Steuer wird ein möglicher
+Differenzbetrag dem Kundenkonto erstattet.
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung      
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/ABREEREIERTR/GDBERTRG/000123/102027/004465

@@ -1,0 +1,55 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+Postbank Köln · 51222 Köln    Seite 1 von 2
+Depotnummer
+ 876543210
+ Kundennummer 123456789
+Max Mustermann
+ Auftragsnummer 69123/22.01
+Herr Datum 01.08.2022
+Max Mustermann Rechnungsnummer W00860-0001110044/11
+Stadtgebiet Umsatzsteuer-ID DE222103339   
+Max Musterman
+Musterstr. 1
+11222 Musterstadt
+                    
+Wertpapier Abrechnung Kauf 
+Mischkursabrechnung
+Auftrag vom 29.07.2022 17:34:38 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 1.700 CIVITAS SOCIAL HOUSING PLC         GB00BD8HBD32 (A2AN2J)
+REGISTERED SHARES LS -,01          
+Handels-/Ausführungsplatz London (gemäß Weisung)
+Börsensegment XLON
+Limit-Order
+Limit 0,84 GBP 
+Schlusstag/-Zeit 29.07.2022 17:35:23
+Ortszeit 29.07.2022 16:35:23
+Ausführungskurs 0,828 GBP
+Wertpapierrechnung Lagerland Grossbritannien
+Devisenkurs (EUR/GBP) 0,8328 vom 01.08.2022
+Kurswert 1.690,20- EUR
+Provision 42,95- EUR
+Fremde Auslagen 16,86- EUR
+Übertragungs-/Liefergebühr 15,15- EUR
+Ausmachender Betrag 1.765,16- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 02.08.2022 zu Lasten des Kontos 222444488
+(IBAN DE43 3701 1000 0222 4444 88), BLZ 37011000 (BIC PBNKDEFFXXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Der Abrechnungsmischkurs/-preis ergibt sich wie folgt:
+0860.08022777.0001111OR07                                                             
+Seite 2 von 2
+Depotnummer 876543210
+Kundennummer 123456789
+Auftragsnummer 69123/22.01
+Datum 01.08.2022
+Stück Kurs Zeit Stück Kurs Zeit
+1.547 0,828 17:35:23 153 0,828 17:35:23
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Auf Risiken gemäß WpHG wurde hingewiesen.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0860.08011908.0005292OR07

@@ -1,0 +1,33 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+Munsbach, 4. Juni 2024
+Kontoauszug Advanziakonto: 11111111111111
+Datum Beschreibung Betrag (EUR)
+01.05.2024 ALTER SALDO 92.925,59
+06.05.2024 EINZAHLUNG 190,00
+06.05.2024 EINZAHLUNG 562,00
+13.05.2024 AUSZAHLUNG -350,00
+21.05.2024 AUSZAHLUNG -140,00
+28.05.2024 AUSZAHLUNG -604,00
+31.05.2024 ZINSERTRAG 308,76
+31.05.2024 NEUER SALDO 92.892,35
+Der aktuelle Zinssatz auf Ihrem Advanziakonto beträgt 3,97 % p.a. effektiv (3,9000 % nom.).
+Überweisen Sie bitte unter folgenden Angaben:
+Begünstigter: Ihr Vor- und Nachname
+Kreditinstitut: Advanzia Bank S.A.
+IBAN: LU111111111111111111 – BIC: ADVZLULL
+Verwendungszweck: 1111111111111
+Im Allgemeinen sind alle Einleger durch das Luxemburger Einlagensicherungssystem abgesichert. Für bestimmte
+Einlagen gelten Ausnahmen, die auf der Webseite des Fonds de garantie des dépôts (FGDL) aufgeführt sind. Auf
+Anfrage teilt die Advanzia Bank S.A. Ihnen ebenfalls mit, ob bestimmte Produkte unter die Sicherung fallen oder
+nicht.
+Unser Serviceteam steht Ihnen montags bis freitags von 9:00 bis 17:00 Uhr unter der gebührenfreien Rufnummer
+0800 880 21 20 zur Verfügung.
+Advanzia Bank S.A.
+Gesetzliche Vertreter: Nishant Fafalia, Kaj Larsen, Patrick Thilges 14, rue Gabriel Lippmann L-5365 Munsbach
+Luxembourg
+Telefon: +352 26 38 75 75 RCS Lux: B 109 476 VAT: LU 20992462 advanziakonto.com
+
+```

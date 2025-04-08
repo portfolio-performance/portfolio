@@ -1,0 +1,172 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Kontoauszug von 01-04-2022 bis 15-06-2022
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+13-06-2022 17:18 13-06-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 4,97 EUR EUR 1.232,66
+13-06-2022 17:18 13-06-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -4,97 EUR 1.227,69
+11-06-2022 07:35 10-06-2022 Währungswechsel (Einbuchung) EUR 4,97 EUR 1.232,66
+11-06-2022 07:35 10-06-2022 Währungswechsel (Ausbuchung) 1,0546 USD -5,24 USD -0,00
+10-06-2022 17:03 10-06-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 0,99 EUR EUR 1.227,69
+10-06-2022 17:03 10-06-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -0,99 EUR 1.226,70
+10-06-2022 09:04 10-06-2022 EXXON MOBIL CORPORATIO US30231G1022 Dividende USD 6,16 USD 5,24
+10-06-2022 09:04 10-06-2022 EXXON MOBIL CORPORATIO US30231G1022 Dividendensteuer USD -0,92 USD -0,92
+10-06-2022 07:38 09-06-2022 Währungswechsel (Einbuchung) EUR 0,99 EUR 1.227,69
+10-06-2022 07:38 09-06-2022 Währungswechsel (Ausbuchung) 1,0643 USD -1,05 USD -0,00
+09-06-2022 16:33 09-06-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 59,27 EUR 1.226,70
+EUR
+09-06-2022 16:33 09-06-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -59,27 EUR 1.167,43
+09-06-2022 09:44 09-06-2022 MICROSOFT CORPORATION US5949181045 Dividende USD 1,24 USD 1,05
+09-06-2022 09:44 09-06-2022 MICROSOFT CORPORATION US5949181045 Dividendensteuer USD -0,19 USD -0,19
+09-06-2022 09:37 08-06-2022 PHILIPS KON NL0000009538 Dividende EUR 17,00 EUR 1.226,70
+09-06-2022 09:37 08-06-2022 PHILIPS KON NL0000009538 Dividendensteuer EUR -2,55 EUR 1.209,70
+09-06-2022 09:20 25-05-2022 VONOVIA SE DE000A1ML7J1 Dividende EUR 44,82 EUR 1.212,25
+flatex DEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO www.degiro.de Konto
+handelt, ist die niederländische Niederlassung der flatexDEGIRO kundenservice@degiro.de 2022-06-15
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen
+Finanzaufsicht (BaFin) beaufsichtigt und ist bei der DNB in den Amstelplein 1 1096 HA Seite 1 / 7
+Niederlanden registriert.
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+08-06-2022 16:48 08-06-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 1,79 EUR EUR 1.167,43
+08-06-2022 16:48 08-06-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -1,79 EUR 1.165,64
+08-06-2022 07:33 07-06-2022 Währungswechsel (Einbuchung) EUR 1,79 EUR 1.167,43
+08-06-2022 07:33 07-06-2022 Währungswechsel (Ausbuchung) 1,0731 USD -1,92 USD -0,00
+07-06-2022 09:08 07-06-2022 JOHNSON & JOHNSON COMM US4781601046 Dividende USD 2,26 USD 1,92
+07-06-2022 09:08 07-06-2022 JOHNSON & JOHNSON COMM US4781601046 Dividendensteuer USD -0,34 USD -0,34
+06-06-2022 08:04 06-06-2022 AMAZON.COM INC US0231351067 AKTIENSPLIT: Kauf 40 zu je 113,875 EUR (US0231351067) EUR -4.555,00 EUR 1.165,64
+06-06-2022 08:04 06-06-2022 AMAZON.COM INC US0231351067 AKTIENSPLIT: Verkauf 2 zu je 2.277,5 EUR EUR 4.555,00 EUR 5.720,64
+(US0231351067)
+02-06-2022 16:48 02-06-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 6,4 EUR EUR 1.165,64
+02-06-2022 16:48 02-06-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -6,40 EUR 1.159,24
+02-06-2022 07:35 01-06-2022 Währungswechsel (Einbuchung) EUR 6,40 EUR 1.165,64
+02-06-2022 07:35 01-06-2022 Währungswechsel (Ausbuchung) 1,0680 USD -6,83 USD -0,00
+01-06-2022 08:23 01-06-2022 INTEL CORPORATION - CO US4581401001 Dividende USD 8,03 USD 6,83
+01-06-2022 08:23 01-06-2022 INTEL CORPORATION - CO US4581401001 Dividendensteuer USD -1,20 USD -1,20
+23-05-2022 17:03 23-05-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 18,04 EUR 1.159,24
+EUR
+23-05-2022 17:03 23-05-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -18,04 EUR 1.141,20
+23-05-2022 07:58 23-05-2022 SAP SE DE0007164600 Dividende EUR 24,50 EUR 1.159,24
+23-05-2022 07:58 23-05-2022 SAP SE DE0007164600 Dividendensteuer EUR -6,46 EUR 1.134,74
+20-05-2022 08:50 20-05-2022 flatex Einzahlung EUR 600,00 EUR 1.141,20
+flatex DEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO www.degiro.de Konto
+handelt, ist die niederländische Niederlassung der flatexDEGIRO kundenservice@degiro.de 2022-06-15
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen
+Finanzaufsicht (BaFin) beaufsichtigt und ist bei der DNB in den Amstelplein 1 1096 HA Seite 2 / 7
+Niederlanden registriert.
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+18-05-2022 16:48 18-05-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 2,2 EUR EUR 541,20
+18-05-2022 16:48 18-05-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -2,20 EUR 539,00
+18-05-2022 07:33 17-05-2022 Währungswechsel (Einbuchung) EUR 2,20 EUR 541,20
+18-05-2022 07:33 17-05-2022 Währungswechsel (Ausbuchung) 1,0577 USD -2,33 USD -0,00
+17-05-2022 18:03 17-05-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 25,79 EUR 539,00
+EUR
+17-05-2022 18:03 17-05-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -25,79 EUR 513,21
+17-05-2022 11:36 17-05-2022 VOLKSWAGEN AG DE0007664039 Dividende EUR 30,24 EUR 539,00
+17-05-2022 11:36 17-05-2022 VOLKSWAGEN AG DE0007664039 Dividendensteuer EUR -7,98 EUR 508,76
+17-05-2022 11:35 17-05-2022 HEIDELBERGCEMENT AG DE0006047004 Dividende EUR 4,80 EUR 516,74
+17-05-2022 11:35 17-05-2022 HEIDELBERGCEMENT AG DE0006047004 Dividendensteuer EUR -1,27 EUR 511,94
+17-05-2022 07:40 16-05-2022 PROCTER & GAMBLE COMPA US7427181091 Dividende USD 2,74 USD 2,33
+17-05-2022 07:40 16-05-2022 PROCTER & GAMBLE COMPA US7427181091 Dividendensteuer USD -0,41 USD -0,41
+16-05-2022 11:48 13-05-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 2,91 EUR EUR 513,21
+16-05-2022 11:48 13-05-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -2,91 EUR 510,30
+13-05-2022 18:17 13-05-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 0,37 EUR EUR 513,21
+13-05-2022 18:17 13-05-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -0,37 EUR 512,84
+13-05-2022 16:03 12-05-2022 DANONE FR0000120644 Dividende EUR 3,88 EUR 513,21
+13-05-2022 16:03 12-05-2022 DANONE FR0000120644 Dividendensteuer EUR -0,97 EUR 509,33
+13-05-2022 07:38 12-05-2022 Währungswechsel (Einbuchung) EUR 0,37 EUR 510,30
+flatex DEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO www.degiro.de Konto
+handelt, ist die niederländische Niederlassung der flatexDEGIRO kundenservice@degiro.de 2022-06-15
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen
+Finanzaufsicht (BaFin) beaufsichtigt und ist bei der DNB in den Amstelplein 1 1096 HA Seite 3 / 7
+Niederlanden registriert.
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+13-05-2022 07:38 12-05-2022 Währungswechsel (Ausbuchung) 1,0406 USD -0,39 USD -0,00
+12-05-2022 10:34 12-05-2022 APPLE INC. - COMMON ST US0378331005 Dividende USD 0,46 USD 0,39
+12-05-2022 10:34 12-05-2022 APPLE INC. - COMMON ST US0378331005 Dividendensteuer USD -0,07 USD -0,07
+05-05-2022 18:17 05-05-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 92,17 EUR 509,93
+EUR
+05-05-2022 18:17 05-05-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -92,17 EUR 417,76
+05-05-2022 10:54 04-05-2022 BASF SE DE000BASF111 Dividende EUR 44,20 EUR 509,93
+05-05-2022 10:54 04-05-2022 BASF SE DE000BASF111 Dividendensteuer EUR -11,66 EUR 465,73
+05-05-2022 10:19 04-05-2022 MERCEDES-BENZ GROUP AG DE0007100000 Dividende EUR 55,00 EUR 477,39
+05-05-2022 10:19 04-05-2022 MERCEDES-BENZ GROUP AG DE0007100000 Dividendensteuer EUR -14,51 EUR 422,39
+05-05-2022 08:41 04-05-2022 BAYER AG DE000BAY0017 Dividende EUR 26,00 EUR 436,90
+05-05-2022 08:41 04-05-2022 BAYER AG DE000BAY0017 Dividendensteuer EUR -6,86 EUR 410,90
+03-05-2022 18:47 03-05-2022 Auszahlung von Ihrem Geldkonto bei der flatex Bank: EUR 417,76
+2.320,38 EUR
+03-05-2022 18:47 03-05-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 2.320,38 EUR 2.738,14
+03-05-2022 14:15 03-05-2022 AMAZON.COM INC US0231351067 DEGIRO Transaktionsgebühren und/oder Fremdkosten EUR -0,47 EUR 417,76
+03-05-2022 14:15 03-05-2022 AMAZON.COM INC US0231351067 DEGIRO Transaktionsgebühren und/oder Fremdkosten EUR -3,90 EUR 418,23
+03-05-2022 14:15 03-05-2022 AMAZON.COM INC US0231351067 Kauf 1 zu je 2.349 EUR (US0231351067) EUR -2.349,00 EUR 422,13
+03-05-2022 09:00 03-05-2022 flatex Einzahlung EUR 1.000,00 EUR 2.771,13
+03-05-2022 08:18 02-05-2022 Währungswechsel (Einbuchung) EUR 0,60 EUR 1.771,13
+03-05-2022 08:18 02-05-2022 Währungswechsel (Ausbuchung) 1,0534 USD -0,64 USD -0,00
+flatex DEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO www.degiro.de Konto
+handelt, ist die niederländische Niederlassung der flatexDEGIRO kundenservice@degiro.de 2022-06-15
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen
+Finanzaufsicht (BaFin) beaufsichtigt und ist bei der DNB in den Amstelplein 1 1096 HA Seite 4 / 7
+Niederlanden registriert.
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+03-05-2022 07:27 03-05-2022 MUENCHENER RUECKVERSICHERUNGS DE0008430026 Dividende EUR 44,00 EUR 1.770,53
+GESELLS...
+03-05-2022 07:27 03-05-2022 MUENCHENER RUECKVERSICHERUNGS DE0008430026 Dividendensteuer EUR -11,61 EUR 1.726,53
+GESELLS...
+02-05-2022 08:50 02-05-2022 flatex Einzahlung EUR 1.500,00 EUR 1.738,14
+02-05-2022 08:05 29-04-2022 DANAHER CORPORATION CO US2358511028 Dividende USD 0,75 USD 0,64
+02-05-2022 08:05 29-04-2022 DANAHER CORPORATION CO US2358511028 Dividendensteuer USD -0,11 USD -0,11
+29-04-2022 19:47 29-04-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 0,6 EUR EUR 238,14
+29-04-2022 19:47 29-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -0,60 EUR 237,54
+29-04-2022 07:35 28-04-2022 Währungswechsel (Einbuchung) EUR 0,60 EUR 238,14
+29-04-2022 07:35 28-04-2022 Währungswechsel (Ausbuchung) 1,0525 USD -0,64 USD -0,00
+28-04-2022 15:33 27-04-2022 JINKOSOLAR HOLDING COM US47759T1007 ADR/GDR Weitergabegebühr USD -0,01 USD 0,64
+28-04-2022 08:10 27-04-2022 CISCO SYSTEMS INC. - US17275R1023 Dividende USD 0,76 USD 0,65
+28-04-2022 08:10 27-04-2022 CISCO SYSTEMS INC. - US17275R1023 Dividendensteuer USD -0,11 USD -0,11
+22-04-2022 16:47 22-04-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 3,61 EUR EUR 237,54
+22-04-2022 16:47 22-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -3,61 EUR 233,93
+22-04-2022 12:14 21-04-2022 BEIERSDORF AG DE0005200000 Dividende EUR 4,90 EUR 237,54
+22-04-2022 12:14 21-04-2022 BEIERSDORF AG DE0005200000 Dividendensteuer EUR -1,29 EUR 232,64
+22-04-2022 09:47 21-04-2022 Auszahlung von Ihrem Geldkonto bei der flatex Bank: 985,17 EUR 233,93
+EUR
+22-04-2022 09:47 21-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR 985,17 EUR 1.219,10
+21-04-2022 15:30 21-04-2022 SHOPIFY INC. CLASS A S CA82509L1076 Währungswechsel (Einbuchung) 1,0867 USD 1.070,02 USD -0,00
+flatex DEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO www.degiro.de Konto
+handelt, ist die niederländische Niederlassung der flatexDEGIRO kundenservice@degiro.de 2022-06-15
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen
+Finanzaufsicht (BaFin) beaufsichtigt und ist bei der DNB in den Amstelplein 1 1096 HA Seite 5 / 7
+Niederlanden registriert.
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+21-04-2022 15:30 21-04-2022 SHOPIFY INC. CLASS A S CA82509L1076 Währungswechsel (Ausbuchung) EUR -984,67 EUR 233,93
+21-04-2022 15:30 21-04-2022 SHOPIFY INC. CLASS A S CA82509L1076 DEGIRO Transaktionsgebühren und/oder Fremdkosten EUR -0,50 EUR 1.218,60
+21-04-2022 15:30 21-04-2022 SHOPIFY INC. CLASS A S CA82509L1076 Kauf 2 zu je 535,01 USD (CA82509L1076) USD -1.070,02 USD -1.070,02
+13-04-2022 16:33 13-04-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 16 EUR EUR 1.219,10
+13-04-2022 16:33 13-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -16,00 EUR 1.203,10
+13-04-2022 14:02 12-04-2022 DEUTSCHE TELEKOM AG DE0005557508 Dividende EUR 16,00 EUR 1.219,10
+12-04-2022 15:15 11-04-2022 WARNER BROS DISCOVERY INC US9344231041 ISIN-ÄNDERUNG: Kauf 5 zu je 24,42 USD (US9344231041) USD -122,10 USD -0,00
+12-04-2022 15:15 11-04-2022 DISCOVERY COMMUNICATIO US25470F3029 ISIN-ÄNDERUNG: Verkauf 5 zu je 24,42 USD USD 122,10 USD 122,10
+(US25470F3029)
+08-04-2022 18:47 08-04-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 4,09 EUR EUR 1.203,10
+08-04-2022 18:47 08-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -4,09 EUR 1.199,01
+08-04-2022 11:45 07-04-2022 HENKEL AG & CO. KGAA VZ DE0006048432 Dividende EUR 5,55 EUR 1.203,10
+08-04-2022 11:45 07-04-2022 HENKEL AG & CO. KGAA VZ DE0006048432 Dividendensteuer EUR -1,46 EUR 1.197,55
+08-04-2022 08:50 08-04-2022 flatex Einzahlung EUR 600,00 EUR 1.199,01
+05-04-2022 17:17 05-04-2022 Überweisung auf Ihr Geldkonto bei der flatex Bank: 6,82 EUR EUR 599,01
+05-04-2022 17:17 05-04-2022 FLATEX EURO BANKACCOUNT NLFLATEXACNT Degiro Cash Sweep Transfer EUR -6,82 EUR 592,19
+05-04-2022 07:34 04-04-2022 Währungswechsel (Einbuchung) EUR 6,82 EUR 599,01
+05-04-2022 07:34 04-04-2022 Währungswechsel (Ausbuchung) 1,0998 USD -7,51 USD -0,00
+04-04-2022 08:17 01-04-2022 COCA-COLA COMPANY (THE US1912161007 Dividende USD 1,76 USD 7,51
+04-04-2022 08:17 01-04-2022 COCA-COLA COMPANY (THE US1912161007 Dividendensteuer USD -0,26 USD 5,75
+flatex DEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO www.degiro.de Konto
+handelt, ist die niederländische Niederlassung der flatexDEGIRO kundenservice@degiro.de 2022-06-15
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen
+Finanzaufsicht (BaFin) beaufsichtigt und ist bei der DNB in den Amstelplein 1 1096 HA Seite 6 / 7
+Niederlanden registriert.
+Datum Uhrze Valutadatum Produkt ISIN Beschreibung FX Änderung Saldo
+04-04-2022 07:31 01-04-2022 NIKE INC. COMMON STOC US6541061031 Dividende USD 2,75 USD 6,01
+04-04-2022 07:31 01-04-2022 NIKE INC. COMMON STOC US6541061031 Dividendensteuer USD -0,41 USD 3,26
+04-04-2022 07:04 01-04-2022 PARAMOUNT GLOBAL US92556H2067 Dividende USD 4,32 USD 3,67
+04-04-2022 07:04 01-04-2022 PARAMOUNT GLOBAL US92556H2067 Dividendensteuer USD -0,65 USD -0,65
+02-04-2022 08:10 31-03-2022 Flatex Interest EUR -0,88 EUR 592,19
+flatex DEGIRO Bank Dutch Branch, die unter dem Namen DEGIRO www.degiro.de Konto
+handelt, ist die niederländische Niederlassung der flatexDEGIRO kundenservice@degiro.de 2022-06-15
+Bank AG. Die flatexDEGIRO Bank AG wird primär von der deutschen
+Finanzaufsicht (BaFin) beaufsichtigt und ist bei der DNB in den Amstelplein 1 1096 HA Seite 7 / 7
+Niederlanden registriert.

@@ -1,0 +1,41 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.69.1
+-----------------------------------------
+Deutsche Bank AG
+Zentrale Frankfurt
+60262 Frankfurt
+RdYpBF BIJukCSTg
+uIlWAYlQG Str. 41 Claudia Sieber
+Telefon 030 3407-4399
+86597 fvnQQm
+24/7-Kundenservice (069) 910-10000
+23. Juli 2024
+Abrechnung: Kauf von Wertpapieren
+Depotinhaber: xxxxxx yyyyyyyyy
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+123 1234567 01 DWS VERMÖGENSBG.FONDS I INHABER-ANTEILE LD 1/1
+WKN 847652 Nominal ST 0,6413
+ISIN DE0008476524 Kurs EUR 319,49
+Verwahrart Girosammeldepot
+Geschäft Festpreisgeschäft
+Belegnummer 1522788379 / 181373046 Schlusstag 23.07.2024 18:21
+Ihre Referenz DBM01 Ausgabeaufschlag 5,00 %
+Auftragsart sonstiger Auftrag
+Abrechnung Währung Betrag
+Kurswert EUR 204,89
+Preisnachlass EUR -4,88
+Belastung
+Buchung auf Kontonummer 2674565 01 mit Wertstellung 25.07.2024 EUR 200,01
+DieWertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen
+und die Sonderbedingungen fürWertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen
+in den Geschäftsräumen der Bank oder schriftlich an Deutsche Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt.
+Die unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert
+ausgewiesen ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat hat und die Bank
+und Finanzdienstleistungen nach dortigem Recht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers. Umsatzsteuer ID
+Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+Vorsitzender des Aufsichtsrats: Alexander R. Wynaendts
+Vorstand: Christian Sewing (Vorsitzender), James von Moltke, Fabrizio Campelli, Bernd Leukert, Alexander von zur Mühlen, Laura Padovani, Claudio de Sanctis,
+Rebecca Short, Stefan Simon, Olivier Vigneron
+Deutsche Bank Aktiengesellschaft mit Sitz in Frankfurt am Main; Amtsgericht Frankfurt am Main, HRB Nr. 30 000; Umsatzsteuer-Id.-Nr. DE114103379;
+www.db.com/de, www.deutsche-bank.de
+TR00000001 20240723 379_000_

@@ -1,0 +1,44 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Gesamtfälligkeit ADRESSZEILE1=Herr
+ADRESSZEILE2=Max MUSTERMANN
+ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+Herr ADRESSZEILE5=
+Max MUSTERMANN ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstr. 2 BELEGNUMMER=18
+54321 Musterhausen 173458000 25720768 / 17.11.2014 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max MUSTERMANN
+Frankfurt am Main, 17.11.2014
+Gutschriftsanzeige
+Gattungsbezeichnung Fälligkeit näch. Zinstermin ISIN
+TUI AG Wandelanl.v.2009(2014) 17.11.2014 DE000TUAG117
+Nominal Einlösung zu:
+STK 1,000 EUR 56,3000
+Verwahrart Girosammelverwahrung Kurswert EUR 56,30 
+Kapitalertragsteuer EUR 4,22-
+Solidaritätszuschlag EUR 0,23-
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+17.11.2014 172306238 EUR 51,85
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsgewinn Sonstige (pauschal) EUR 16,89
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 16,89
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 11,40
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,62
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Köln-Porz, Steuernummer 216/5881/1238.
+Jahressteuerbescheinigung folgt
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/ABREEREITILG/X200005/000018/181114/000956

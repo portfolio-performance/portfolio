@@ -1,0 +1,37 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.1
+-----------------------------------------
+   
+GENO Broker GmbH Kundenservice · Postfach 30 30 · 48016 Münster
+Depotnummer
+ 000000000 
+ Kundennummer Mustermann 
+ Auftragsnummer
+Mustermann 00000000     Datum
+Musterstrasse  30.06.2023 . 2 Rechnungsnummer W07700-0000223056/23
+000000 Stadt Umsatzsteuer-ID DE00000000   
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 30 Carbios SA Anrechte Aktie FR001400IRI9 (A3EJEH)
+Handels-/Ausführungsplatz Frankfurt (gemäß Weisung)
+Börsensegment FRAB
+Market-Order
+Limit billigst
+Schlusstag/-Zeit 30.06.2023 09:57:4 Fällig am 07.07.2023 
+1Ausführungskurs 30,88 EUR Auftraggeber Mustermann 
+Auftragserteilung/ -ort Online-Banking
+Girosammelverwahrung Sammelurkunde
+Kurswert 926,40-EUR 
+Provision 32,95-EUR
+Transaktionsentgelt Börse 5,60- EUR
+Handelsentgelt 2,52- EUR 
+Ausmachender Betrag 967,47 EUR 
+ 
+Den Gegenwert buchen wir mit Valuta 00.00.2023 zu Lasten des Kontos 000000 (IBAN DE05 0000 0000 0000 0000 00),B
+LZ 00000000 (BIC GENODEFBBBB). 
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.  
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7700.06301726.0001042OR07

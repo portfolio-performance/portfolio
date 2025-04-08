@@ -1,0 +1,13 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Zusammenfassung
+Vorname Name Zu Beginn 0 €
+Einzahlungen 1.000 €
+Datum 13.12.2021 - 27.12.2021 Auszahlungen 0 €
+Referenznummer GG288868 Ergebnis 1.000 €
+Zusätzliches Einkommen
+Datum Zahlungsart Eingänge Ausgänge Guthaben
+25.12.2021 Überweisen 5 € 5 €
+27.12.2021 Überweisen 15 € 20 €
+27.12.2021 Überweisen 980 € 1.000 €
+Gesamt 1.000 €

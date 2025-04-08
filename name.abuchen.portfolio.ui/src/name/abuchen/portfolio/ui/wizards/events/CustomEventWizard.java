@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.events;
 
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
@@ -10,10 +11,12 @@ import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class CustomEventWizard extends Wizard
 {
+    private IStylingEngine stylingEngine;
     private CustomEventModel model;
 
-    public CustomEventWizard(Client client, Security security)
+    public CustomEventWizard(IStylingEngine stylingEngine, Client client, Security security)
     {
+        this.stylingEngine = stylingEngine;
         this.model = new CustomEventModel(client, security);
     }
 
@@ -26,7 +29,7 @@ public class CustomEventWizard extends Wizard
     @Override
     public void addPages()
     {
-        addPage(new AddCustomEventPage(model));
+        addPage(new AddCustomEventPage(stylingEngine, model));
 
         AbstractWizardPage.attachPageListenerTo(this.getContainer());
     }

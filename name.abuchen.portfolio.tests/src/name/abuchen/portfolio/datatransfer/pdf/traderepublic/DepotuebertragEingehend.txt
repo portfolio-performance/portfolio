@@ -1,0 +1,21 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.4.qualifier
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KÖPENICKER STRASSE 40C  10179 BERLIN
+Vorname Nachname SEITE 1 von 1
+Strasse 1 DATUM 08.11.2022
+12345 Ort DEPOT 1111111111
+DEPOTÜBERTRAG EINGEHEND
+ÜBERSICHT
+NR. BUCHUNG WERTPAPIER BETRAG
+1 Depotübertrag eingehend Knorr-Bremse AG 13 Stk.
+Inhaber-Aktien o.N.
+DE000KBX1006
+Knorr-Bremse AG Inhaber-Aktien o.N. in Girosammelverwahrung in Deutschland.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Geschäftsführer
+Köpenicker Straße 40c service@traderepublic.com AG Charlottenburg HRB 244347 B Andreas Torner
+10179 Berlin USt-ID DE307510626 Gernot Mittendorfer
+ABRE / 08.11.2022 / 66234269 / dda2-e5ae

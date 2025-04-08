@@ -1,0 +1,41 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+UniCredit Bank AG
+W e r t p a p i e r - A b r e c h n u n g   V e r k a u f   
+- Geschäftsbestätigung vor steuerlicher Behandlung - Festpreisgeschäft
+Depotnummer Abrechnungstag Blatt
+123   123456789     16.04.2021  1
+Depotart Filiale   
+Depot Filiale Stuttgart   
+Kontonummer 0711 1234-1234
+1234 123 123   123456789     Herr Bankmann
+Herrn    R e c h n u n g s n u m m e r    
+Max Mustermann Ordernummer    Abrechnungsnr. Urspr. Abrechnungsnr.    
+Musterstrasse 11 9-WPV- 1234567   123456    
+07173 Stuttgart     Depotinhaber
+Max Mustermann
+Nennbetrag Wertpapierbezeichnung    Wertpapierkennnummer/ISIN 
+ST 90 BEIERSDORF AG 520000   INHABER-AKTIEN O.N. DE0005200000
+Zum Kurs von Ausführungstag/Zeit Ausführungsort Verwahrart
+EUR 91,30 16.04.2021  12.38.47 Girosammelverwahrung
+Abrechnung
+Kurswert EUR 8.217,00  
+Wertpapierprovision* EUR 41,09- 
+----------------------- 
+Gutschrift (vor Steuern) EUR 8.175,91  
+Valuta 20.04.2021 ----------------------- 
+* Die Wertpapierprovision setzt sich aus der Ausführungspauschale
+und dem Transaktionsentgelt zusammen.
+Umsatzreferenz: 20210416WAB1798426394
+Diese Abrechnung erfolgt ohne Berücksichtigung der Kapitalertragsteuer.
+Eine eventuell anfallende Kapitalertragsteuer oder Kapitalertragsteuer-Gutschrift    
+wird separat auf Ihrem Kontoauszug ausgewiesen.
+Kontrahent ist die UniCredit Bank AG oder ein Konzernunternehmen.
+Die Leistung ist umsatzsteuerbefreit nach § 4 Nr. 8 UStG.
+Unsere Umsatzsteuer-Identifikationsnummer: DE 129 273 380.
+Keine Steuerbescheinigung
+Bitte Rückseite beachten.     
+Bitte bewahren Sie diese Geschäftsbestätigung sowie einen eventuell gesondert erstellten Steuer-Informationsbeleg auf.
+BV0081/VK0081/03.2008
+Eingestellt am: 20210417 03:28:352 -F1 03 300 G1L4H4TT 161862071    00000388704918 000000008945  

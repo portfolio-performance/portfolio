@@ -1,0 +1,24 @@
+PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.1
+-----------------------------------------
+Client: MR XXXX XXXX
+Account no.: O-XXXXXX.001
+Transaction no.: 794448726 | Publication date: 14.07.2022
+STOCK EXCHANGE
+Redemption
+Sale -74.620 AGIF-CHINA A-SHARES PT GBP-ACC. at GBP 1'565.99
+OUT of portfolio O-XXXXXX.001 ADDITIONAL INFORMATION
+AGIF-CHINA A-SHARES PT GBP-ACC. 74.620 GeneralTrade date 14.07.2022
+ISIN: LU2093580772    Telekurs ID: 51654410          Value date 20.07.2022Booking date 14.07.2022
+Instruction
+Order date 14.07.2022 at 10:31:43 am
+CASH EFFECT in portfolio O-XXXXXX.001 Order type At MarketExecution
+Gross amount GBP 116'854.17 Operation type SaleMarket place Over the counter
+Brokerage GBP -127.25 Execution date 14.07.2022 at 07:37:30 pmExecuted quantity -74.620
+Net amount GBP 116'726.92 Execution price GBP 1'565.99Gross amount GBP 116'854.17
+Current account O-XXXXXX.001.00.GBP/Ordinary          IBAN CH0111111011111111111 OtherCustodian CLEARSTREAM VESTIMA
+Yours faithfully
+Banque Pictet & Cie SA
+E. & O. E. Advice without signature
+0A01 Banque Pictet & Cie SA / Route des Acacias 60 / 1211 Genève 73 / Switzerland 1/1  
+Tel. +41 58 323 23 23 / Fax +41 58 323 23 24 / group.pictet

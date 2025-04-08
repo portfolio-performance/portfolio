@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.3
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+E-Mail info@viac.ch
+Telefon 0800 80 40 40
+www.viac.ch
+Vertrag 1.123.456.789
+Portfolio 2.234.567.890.04
+Herr
+XXXX XXXXXX
+XXstrasse 1
+8000 Zürich
+Basel, 08.09.2023
+Börsenabrechnung - Verkauf Swisscanto World ex CH Small Cap Responsible - IPF
+Wir haben für Sie folgenden Auftrag ausgeführt:
+Order: Verkauf
+0.148 Anteile Swisscanto World ex CH Small Cap Responsible - IPF
+ISIN: CH1220910934
+Kurs: USD 110.25
+Betrag USD 16.30
+Umrechnungskurs CHF/USD 0.88393 CHF 14.41
+Verrechneter Betrag: Valuta 08.09.2023 CHF 14.41
+S. E. & O.
+Freundliche Grüsse
+Terzo Vorsorgestiftung
+Anzeige ohne Unterschrift

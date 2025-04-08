@@ -1,12 +1,14 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import name.abuchen.portfolio.math.Risk;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -32,62 +34,9 @@ import name.abuchen.portfolio.snapshot.trail.TrailProvider;
 import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 import name.abuchen.portfolio.util.Interval;
 
-public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
+public final class SecurityPerformanceRecord extends BaseSecurityPerformanceRecord
+                implements Adaptable, TrailProvider, SecurityPerformanceIndicator.Costs
 {
-    public enum Periodicity
-    {
-        UNKNOWN, NONE, INDEFINITE, ANNUAL, SEMIANNUAL, QUARTERLY, MONTHLY, IRREGULAR;
-
-        private static final ResourceBundle RESOURCES = ResourceBundle
-                        .getBundle("name.abuchen.portfolio.snapshot.labels"); //$NON-NLS-1$
-
-        @Override
-        public String toString()
-        {
-            return RESOURCES.getString("dividends." + name()); //$NON-NLS-1$
-        }
-    }
-
-    public interface Trails // NOSONAR
-    {
-        String FIFO_COST = "fifoCost"; //$NON-NLS-1$
-        String REALIZED_CAPITAL_GAINS = "realizedCapitalGains"; //$NON-NLS-1$
-        String REALIZED_CAPITAL_GAINS_FOREX = "realizedCapitalGainsForex"; //$NON-NLS-1$
-        String UNREALIZED_CAPITAL_GAINS = "unrealizedCapitalGains"; //$NON-NLS-1$
-        String UNREALIZED_CAPITAL_GAINS_FOREX = "unrealizedCapitalGainsForex"; //$NON-NLS-1$
-    }
-
-    /* package */ static final class Builder
-    {
-        private final Security security;
-        private final List<CalculationLineItem> lineItems = new ArrayList<>();
-
-        public Builder(Security security)
-        {
-            this.security = security;
-        }
-
-        public void addLineItem(CalculationLineItem item)
-        {
-            this.lineItems.add(item);
-        }
-
-        public boolean isEmpty()
-        {
-            return this.lineItems.isEmpty();
-        }
-
-        public SecurityPerformanceRecord build(Client client, CurrencyConverter converter, Interval interval)
-        {
-            SecurityPerformanceRecord record = new SecurityPerformanceRecord(security, lineItems);
-            record.calculate(client, converter, interval);
-            return record;
-        }
-    }
-
-    private final Security security;
-    private final List<CalculationLineItem> lineItems;
-
     /**
      * internal rate of return of security {@link #calculateIRR()}
      */
@@ -98,6 +47,12 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
      * {@link #calculatePerformance(ReportingPeriod)}
      */
     private double twror;
+
+    /**
+     * Annualized True time-weighted rate of return
+     * {@link #calculatePerformance(ReportingPeriod)}
+     */
+    private double twrorpa;
 
     /**
      * Max Drawdown and Max Drawdown Duration
@@ -220,21 +175,13 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
 
     private CapitalGainsRecord realizedCapitalGains;
     private CapitalGainsRecord unrealizedCapitalGains;
+    private CapitalGainsRecord realizedCapitalGainsMovingAvg;
+    private CapitalGainsRecord unrealizedCapitalGainsMovingAvg;
 
-    private SecurityPerformanceRecord(Security security, List<CalculationLineItem> lineItems)
+    /* package */ SecurityPerformanceRecord(Client client, Security security, CurrencyConverter converter,
+                    Interval interval)
     {
-        this.security = security;
-        this.lineItems = lineItems;
-    }
-
-    public Security getSecurity()
-    {
-        return security;
-    }
-
-    public String getSecurityName()
-    {
-        return getSecurity().getName();
+        super(client, security, converter, interval);
     }
 
     public String getNote()
@@ -250,6 +197,11 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
     public double getTrueTimeWeightedRateOfReturn()
     {
         return twror;
+    }
+
+    public double getTrueTimeWeightedRateOfReturnAnnualized()
+    {
+        return twrorpa;
     }
 
     public double getMaxDrawdown()
@@ -297,11 +249,13 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
         return quote;
     }
 
+    @Override
     public Money getFifoCost()
     {
         return fifoCost;
     }
 
+    @Override
     public Money getMovingAverageCost()
     {
         return movingAverageCost;
@@ -342,11 +296,13 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
         return sharesHeld;
     }
 
+    @Override
     public Quote getFifoCostPerSharesHeld()
     {
         return fifoCostPerSharesHeld;
     }
 
+    @Override
     public Quote getMovingAverageCostPerSharesHeld()
     {
         return movingAverageCostPerSharesHeld;
@@ -408,9 +364,14 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
         return unrealizedCapitalGains;
     }
 
-    public List<CalculationLineItem> getLineItems()
+    public CapitalGainsRecord getRealizedCapitalGainsMovingAvg()
     {
-        return lineItems;
+        return realizedCapitalGainsMovingAvg;
+    }
+
+    public CapitalGainsRecord getUnrealizedCapitalGainsMovingAvg()
+    {
+        return unrealizedCapitalGainsMovingAvg;
     }
 
     @Override
@@ -450,22 +411,42 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
         }
     }
 
-    /* package */
-    void calculate(Client client, CurrencyConverter converter, Interval interval)
+    @SafeVarargs
+    /* package */ final void calculate(Class<? extends SecurityPerformanceIndicator>... indicators)
     {
-        Collections.sort(lineItems, new CalculationLineItemComparator());
+        Set<Class<? extends SecurityPerformanceIndicator>> flags = new HashSet<>();
+        Arrays.stream(indicators).forEach(flags::add);
 
         if (!lineItems.isEmpty())
         {
-            calculateSharesHeld(converter);
-            calculateMarketValue(converter, interval);
-            calculateIRR(converter);
-            calculateTTWROR(client, converter, interval);
-            calculateDelta(converter);
-            calculateFifoAndMovingAverageCosts(converter);
-            calculateDividends(converter);
-            calculatePeriodicity(client, converter);
-            calculateCapitalGains(converter);
+            if (flags.isEmpty() || flags.contains(SecurityPerformanceIndicator.Costs.class))
+            {
+                calculateSharesHeld(converter);
+                calculateMarketValue(converter, interval);
+            }
+
+            if (flags.isEmpty())
+            {
+                calculateIRR(converter);
+                calculateTTWROR(client, converter, interval);
+                calculateDelta(converter);
+            }
+
+            if (flags.isEmpty() || flags.contains(SecurityPerformanceIndicator.Costs.class))
+            {
+                calculateFifoAndMovingAverageCosts(converter);
+            }
+
+            if (flags.isEmpty())
+            {
+                calculateDividends(converter);
+                calculatePeriodicity(client, converter);
+            }
+
+            if (flags.isEmpty() || flags.contains(SecurityPerformanceIndicator.CapitalGains.class))
+            {
+                calculateCapitalGains(converter);
+            }
         }
     }
 
@@ -477,10 +458,14 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
 
     private void calculateMarketValue(CurrencyConverter converter, Interval interval)
     {
+        // in order to minimize rounding error, first sum up individual values
+        // and convert only then into the term currency
+
         this.marketValue = this.lineItems.stream() //
                         .filter(data -> data instanceof CalculationLineItem.ValuationAtEnd)
-                        .map(data -> data.getValue().with(converter.at(data.getDateTime())))
-                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+                        .map(CalculationLineItem::getValue) //
+                        .collect(MoneyCollectors.sum(security.getCurrencyCode())) //
+                        .with(converter.at(interval.getEnd()));
 
         this.quote = security.getSecurityPrice(interval.getEnd());
     }
@@ -493,8 +478,9 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
     private void calculateTTWROR(Client client, CurrencyConverter converter, Interval interval)
     {
         PerformanceIndex index = PerformanceIndex.forInvestment(client, converter, security, interval,
-                        new ArrayList<Exception>());
+                        new ArrayList<>());
         this.twror = index.getFinalAccumulatedPercentage();
+        this.twrorpa = index.getFinalAccumulatedAnnualizedPercentage();
         this.drawdown = index.getDrawdown();
         this.volatility = index.getVolatility();
     }
@@ -514,12 +500,13 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
         this.movingAverageCost = cost.getMovingAverageCost();
 
         Money netFifoCost = cost.getNetFifoCost();
+
         this.fifoCostPerSharesHeld = Quote.of(netFifoCost.getCurrencyCode(), Math.round(netFifoCost.getAmount()
-                        * Values.Share.factor() * Values.Quote.factorToMoney() / (double) sharesHeld));
+                        / (double) sharesHeld * Values.Share.factor() * Values.Quote.factorToMoney()));
         Money netMovingAverageCost = cost.getNetMovingAverageCost();
         this.movingAverageCostPerSharesHeld = Quote.of(netMovingAverageCost.getCurrencyCode(),
-                        Math.round(netMovingAverageCost.getAmount() * Values.Share.factor()
-                                        * Values.Quote.factorToMoney() / (double) sharesHeld));
+                        Math.round(netMovingAverageCost.getAmount() / (double) sharesHeld * Values.Share.factor()
+                                        * Values.Quote.factorToMoney()));
 
         this.fees = cost.getFees();
         this.taxes = cost.getTaxes();
@@ -560,7 +547,7 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
                             return type == Type.DIVIDENDS;
                         }) //
                         .map(CalculationLineItem::of) //
-                        .collect(Collectors.toList());
+                        .collect(toMutableList());
 
         DividendCalculation allDividends = Calculation.perform(DividendCalculation.class, converter, security,
                         allDividendPayments);
@@ -573,5 +560,12 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
                         lineItems);
         this.realizedCapitalGains = calculation.getRealizedCapitalGains();
         this.unrealizedCapitalGains = calculation.getUnrealizedCapitalGains();
+
+        CapitalGainsCalculationMovingAverage calculationMovingAvg = Calculation
+                        .perform(CapitalGainsCalculationMovingAverage.class,
+                        converter, security, lineItems);
+
+        this.realizedCapitalGainsMovingAvg = calculationMovingAvg.getRealizedCapitalGains();
+        this.unrealizedCapitalGainsMovingAvg = calculationMovingAvg.getUnrealizedCapitalGains();
     }
 }

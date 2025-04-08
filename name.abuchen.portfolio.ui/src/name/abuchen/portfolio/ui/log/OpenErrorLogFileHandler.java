@@ -3,7 +3,7 @@ package name.abuchen.portfolio.ui.log;
 import java.io.File;
 import java.text.MessageFormat;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.internal.workbench.E4Workbench;

@@ -1,0 +1,78 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.67.3
+-----------------------------------------
+European Bank for Financial Services GmbH, 80218 München
+Kontoauszug-Nr. 6
+vom 01.07.2021
+Seite 1 von 2
+Herrn Konto-Nr. 3267126501
+qSPe qeSAHFy
+vKneypd 89
+09097 XyoSFmLUr
+Kontoauszug für Ihr ebase Konto flex
+Kontostand alt: 01.06.2021 1.233,87 EUR
+Buchungstag Belegnummer Valuta Buchungstext/Zahlungsinformation Betrag Währung
+21.06.2021 014852180 21.06.2021 SEPA Überweisung -1.231,37 EUR
+tztztztz, caoI
+Auszahlung Konto flex
+21.06.2021 014852181 21.06.2021 Entgeltbuchung -2,50 EUR
+Transaktionsentgelt
+21.06.2021 014854053 22.06.2021 Wertpapiergutschrift 184,42 EUR
+ebase
+DEPOT-NR 99132734493
+AUFTR.-NR. 000067240582000
+SEVERSTAL GDR S OCT2006 1
+GA/EA 10 WKN A0LEJV
+21.06.2021 014854054 22.06.2021 Wertpapiergutschrift 143,02 EUR
+ebase
+DEPOT-NR 99132734493
+AUFTR.-NR. 000067240581990
+SEVERSTAL GDR S OCT2006 1
+GA/EA 10 WKN A0LEJV
+24.06.2021 014860779 24.06.2021 Wertpapiergutschrift 491,76 EUR
+ebase
+DEPOT-NR 99132734493
+AUFTR.-NR. 000067541734500
+MMC NOR.NICK.PJSC ADR RL1
+GA/EA 10 WKN A140M9
+Kontostand neu: 01.07.2021 819,20 EUR
+IBAN: DE40 7001 3000 3267 1265 01, BIC: EBSGDEMXXXX
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller Web: www.ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Aufsichtsratsvorsitzender:
+80218 München DE68ZZZ00000025032 Frank Strauß
+Kontoauszug-Nr. 6
+vom 01.07.2021
+Seite 2 von 2
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere
+Informationen können dem "Informationsbogen für den Einleger" entnommen werden.
+Wir bitten Sie, den (Online-) Kontoauszug mit Rechnungsabschluss und die aufgeführten Buchungen und
+Berechnungen auf ihre Richtigkeit und Vollständigkeit hin zu überprüfen. Einwendungen wegen Unrichtigkeit oder
+Unvollständigkeit dieses (Online-) Kontoauszuges mit Rechnungsabschluss müssen Sie spätestens nach Ablauf von
+sechs Wochen nach dessen Zugang gegenüber der European Bank for Financial Services GmbH (ebase) bei der
+internen Revision unter Angabe der Kontonummer und des Datums des (Online-) Kontoauszuges mit Rechnungs-
+abschluss erheben. Sofern Sie Ihre Einwendungen schriftlich geltend machen, genügt die Absendung innerhalb der
+sechs Wochenfrist. Bei Unterlassen der Geltendmachung rechtzeitiger Einwendungen gegen die Richtigkeit und
+Vollständigkeit gilt gemäß der Ziffer "Rechnungsabschlüsse bei einem Konto bei ebase" der Bedingungen für das
+Konto bei ebase der (Online-) Kontoauszug mit Rechnungsabschluss als genehmigt.
+Des Weiteren erfolgt die Gutschrift von Lastschriften und sonstiger Einzugspapiere zugunsten des Kontos bei ebase
+unter dem Vorbehalt Ihrer Einlösung.
+Kontoinformation gemäß Verbraucherkreditrichtlinie: Der Sollzinssatz für geduldete Überziehungen ist variabel.
+ebase wird den variablen Sollzinssatz entsprechend den Änderungen des Hauptrefinanzierungszinssatzes der Euro-
+päischen Zentralbank (nachfolgend EZB-Zinssatz) nach folgender Maßgabe anpassen: Sofern am letzten
+Bankarbeitstag vor dem 15. eines Kalendermonats von ebase eine Erhöhung des EZB-Zinssatzes um mindestens 0,25
+Prozentpunkte gegenüber dem EZB-Zinssatz im Monat der letzten Zinsanpassung festgestellt wird, erhöht ebase den
+variablen Sollzinssatz entsprechend. ebase verpflichtet sich dagegen zur Senkung des variablen Sollzinssatzes um die
+Veränderung des EZB-Zinssatzes, wenn der EZB-Zinssatz um mindestens 0,25 Prozentpunkte gesunken ist. Die
+Zinsanpassungen werden 5 Bankarbeitstage nach dem 15. eines Kalendermonats ohne gesonderte Erklärung
+gegenüber dem Kontoinhaber bei ebase wirksam. ebase wird den Kontoinhaber in regelmäßigen Zeitabständen auf
+dem Kontoauszug unterrichten.
+Der Sollzinssatz für geduldete Überziehungen beträgt derzeit 10,250 % p.a.
+Für Fragen steht Ihnen Ihr Berater oder ebase unter der Rufnummer +49 89 45460-890 gerne zur Verfügung.
+Diese Mitteilung wird nicht unterschrieben.
+European Bank for Financial Amtsgericht München HRB 141 740 Geschäftsführung: Fax: +49 89 45460-892
+Services GmbH (ebase®) - Ein USt-ID Nr. DE 813330104 Kai Friedrich, Jürgen Keller Web: www.ebase.com
+Unternehmen der FNZ Group Gläubiger-ID: Aufsichtsratsvorsitzender:
+80218 München DE68ZZZ00000025032 Frank Strauß

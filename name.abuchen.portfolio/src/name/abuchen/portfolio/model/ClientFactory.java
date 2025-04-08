@@ -14,7 +14,11 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.charset.StandardCharsets;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
@@ -22,13 +26,23 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.text.MessageFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
@@ -46,24 +60,34 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.XStreamException;
+import com.thoughtworks.xstream.converters.collections.MapConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionConverter;
 import com.thoughtworks.xstream.converters.reflection.ReflectionProvider;
 import com.thoughtworks.xstream.mapper.Mapper;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
+import name.abuchen.portfolio.util.TextUtil;
+import name.abuchen.portfolio.util.XStreamArrayListConverter;
+import name.abuchen.portfolio.util.XStreamInstantConverter;
 import name.abuchen.portfolio.util.XStreamLocalDateConverter;
 import name.abuchen.portfolio.util.XStreamLocalDateTimeConverter;
+import name.abuchen.portfolio.util.XStreamSecurityPriceConverter;
 
 @SuppressWarnings("deprecation")
 public class ClientFactory
@@ -91,13 +115,30 @@ public class ClientFactory
 
     }
 
-    private static class XmlSerialization
+    /* package */ static class XmlSerialization
     {
+        private boolean idReferences;
+
+        public XmlSerialization(boolean idReferences)
+        {
+            this.idReferences = idReferences;
+        }
+
+        private XStream makeXStream(boolean isReading)
+        {
+            XStream xs = isReading ? xstreamReader() : xstreamWriter();
+            if (idReferences)
+                xs.setMode(XStream.ID_REFERENCES);
+            else
+                xs.setMode(XStream.XPATH_RELATIVE_REFERENCES);
+            return xs;
+        }
+
         public Client load(Reader input) throws IOException
         {
             try
             {
-                Client client = (Client) xstream().fromXML(input);
+                Client client = (Client) makeXStream(true).fromXML(input);
 
                 if (client.getVersion() > Client.CURRENT_VERSION)
                     throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled,
@@ -117,13 +158,13 @@ public class ClientFactory
         {
             Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
 
-            xstream().toXML(client, writer);
+            makeXStream(false).toXML(client, writer);
 
             writer.flush();
         }
     }
 
-    private interface ClientPersister
+    interface ClientPersister
     {
         Client load(InputStream input) throws IOException;
 
@@ -132,25 +173,47 @@ public class ClientFactory
 
     private static class PlainWriter implements ClientPersister
     {
+        boolean idReferences;
+
+        public PlainWriter(boolean idReferences)
+        {
+            this.idReferences = idReferences;
+        }
+
+        public PlainWriter()
+        {
+            this(false);
+        }
+
         @Override
         public Client load(InputStream input) throws IOException
         {
-            return new XmlSerialization().load(new InputStreamReader(input, StandardCharsets.UTF_8));
+            Client client = new XmlSerialization(idReferences)
+                            .load(new InputStreamReader(input, StandardCharsets.UTF_8));
+            client.getSaveFlags().add(SaveFlag.XML);
+            if (idReferences)
+            {
+                client.getSaveFlags().add(SaveFlag.ID_REFERENCES);
+            }
+            return client;
         }
 
         @Override
         public void save(Client client, OutputStream output) throws IOException
         {
-            try (Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8))
-            {
-                xstream().toXML(client, writer);
-                writer.flush();
-            }
+            new XmlSerialization(idReferences).save(client, output);
         }
     }
 
     private static class PlainWriterZIP implements ClientPersister
     {
+        private ClientPersister body;
+
+        public PlainWriterZIP(ClientPersister body)
+        {
+            this.body = body;
+        }
+
         @Override
         public Client load(InputStream input) throws IOException
         {
@@ -159,11 +222,17 @@ public class ClientFactory
             {
                 ZipEntry entry = zipin.getNextEntry();
 
-                if (!ZIP_DATA_FILE.equals(entry.getName()))
-                    throw new IOException(MessageFormat.format(Messages.MsgErrorUnexpectedZipEntry, ZIP_DATA_FILE,
-                                    entry.getName()));
+                if (body == null)
+                {
+                    if (entry.getName().endsWith(".portfolio")) //$NON-NLS-1$
+                        body = new ProtobufWriter();
+                    else
+                        body = new PlainWriter();
+                }
 
-                return new XmlSerialization().load(new InputStreamReader(zipin, StandardCharsets.UTF_8));
+                Client client = body.load(zipin);
+                client.getSaveFlags().add(SaveFlag.COMPRESSED);
+                return client;
             }
         }
 
@@ -175,13 +244,30 @@ public class ClientFactory
             {
                 zipout.setLevel(Deflater.BEST_COMPRESSION);
 
-                zipout.putNextEntry(new ZipEntry(ZIP_DATA_FILE));
-                new XmlSerialization().save(client, zipout);
+                String name = body instanceof ProtobufWriter ? "data.portfolio" : "data.xml"; //$NON-NLS-1$ //$NON-NLS-2$
+
+                zipout.putNextEntry(new ZipEntry(name));
+                body.save(client, zipout);
                 zipout.closeEntry();
             }
         }
     }
 
+    /**
+     * Encrypts the portfolio data.
+     * <p/>
+     * File format:
+     * 
+     * <pre>
+     *   signature (8 bytes, PORTFOLIO)
+     *   method (1 byte, 0 = AES126, 1 = AES256)
+     *   initialization vector (16 bytes)
+     *   ---
+     *   content type (4 bytes, 1 = XML, 2 = PROTOBUF)
+     *   version (4 bytes)
+     *   compressed content
+     * </pre>
+     */
     private static class Decryptor implements ClientPersister
     {
         private static final byte[] SIGNATURE = new byte[] { 'P', 'O', 'R', 'T', 'F', 'O', 'L', 'I', 'O' };
@@ -198,13 +284,15 @@ public class ClientFactory
         private static final int AES128_KEYLENGTH = 128;
         private static final int AES256_KEYLENGTH = 256;
 
+        private ClientPersister body;
         private char[] password;
         private int keyLength;
 
-        public Decryptor(String method, char[] password)
+        public Decryptor(ClientPersister body, Set<SaveFlag> flags, char[] password)
         {
+            this.body = body;
             this.password = password;
-            this.keyLength = "AES256".equals(method) ? AES256_KEYLENGTH : AES128_KEYLENGTH; //$NON-NLS-1$
+            this.keyLength = flags.contains(SaveFlag.AES256) ? AES256_KEYLENGTH : AES128_KEYLENGTH;
         }
 
         @Override
@@ -216,9 +304,9 @@ public class ClientFactory
                 byte[] signature = new byte[SIGNATURE.length];
                 int read = input.read(signature);
                 if (read != SIGNATURE.length)
-                    throw new IOException();
+                    throw new IOException("tried to read " + SIGNATURE.length + " bytes but only got " + read); //$NON-NLS-1$ //$NON-NLS-2$
                 if (!Arrays.equals(signature, SIGNATURE))
-                    throw new IOException(Messages.MsgNotAPortflioFile);
+                    throw new IOException(Messages.MsgNotAPortfolioFile);
 
                 // read encryption method
                 int method = input.read();
@@ -235,7 +323,7 @@ public class ClientFactory
                 byte[] iv = new byte[IV_LENGTH];
                 read = input.read(iv);
                 if (read != IV_LENGTH)
-                    throw new IOException();
+                    throw new IOException("tried to read " + IV_LENGTH + " bytes but only got " + read); //$NON-NLS-1$ //$NON-NLS-2$
 
                 Client client;
                 // build cipher and stream
@@ -245,29 +333,39 @@ public class ClientFactory
                 {
                     // read version information
                     byte[] bytes = new byte[4];
-                    read = decrypted.read(bytes); // major version number
+                    read = decrypted.read(bytes); // content type
                     if (read != bytes.length)
-                        throw new IOException();
+                        throw new IOException("tried to read " + bytes.length + " bytes but only got " + read); //$NON-NLS-1$ //$NON-NLS-2$
 
-                    int majorVersion = ByteBuffer.wrap(bytes).getInt();
+                    int contentType = ByteBuffer.wrap(bytes).getInt();
                     read = decrypted.read(bytes); // version number
                     if (read != bytes.length)
-                        throw new IOException();
+                        throw new IOException("tried to read " + bytes.length + " bytes but only got " + read); //$NON-NLS-1$ //$NON-NLS-2$
 
                     int version = ByteBuffer.wrap(bytes).getInt();
 
                     // sanity check if the file was properly decrypted
-                    if (majorVersion < 1 || majorVersion > 10 || version < 1 || version > 100)
+                    if (contentType < 1 || contentType > 2 || version < 1 || version > Client.CURRENT_VERSION + 20)
                         throw new IOException(Messages.MsgIncorrectPassword);
-                    if (majorVersion > Client.MAJOR_VERSION || version > Client.CURRENT_VERSION)
+                    if (version > Client.CURRENT_VERSION)
                         throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled, version));
+
+                    if (body == null)
+                    {
+                        if (contentType == 2)
+                            body = new ProtobufWriter();
+                        else
+                            body = new PlainWriter();
+                    }
 
                     // wrap with zip input stream
                     try (ZipInputStream zipin = new ZipInputStream(decrypted))
                     {
                         zipin.getNextEntry();
 
-                        client = new XmlSerialization().load(new InputStreamReader(zipin, StandardCharsets.UTF_8));
+                        client = body.load(zipin);
+                        client.getSaveFlags().add(SaveFlag.ENCRYPTED);
+                        client.getSaveFlags().add(method == 1 ? SaveFlag.AES256 : SaveFlag.AES128);
 
                         try // NOSONAR
                         {
@@ -337,16 +435,19 @@ public class ClientFactory
                 try (OutputStream encrypted = new CipherOutputStream(output, cipher))
                 {
                     // write version information
-                    encrypted.write(ByteBuffer.allocate(4).putInt(Client.MAJOR_VERSION).array());
+
+                    int contentType = body instanceof ProtobufWriter ? 2 : 1;
+
+                    encrypted.write(ByteBuffer.allocate(4).putInt(contentType).array());
                     encrypted.write(ByteBuffer.allocate(4).putInt(client.getVersion()).array());
 
                     // wrap with zip output stream
                     try (ZipOutputStream zipout = new ZipOutputStream(encrypted))
                     {
                         zipout.setLevel(Deflater.BEST_COMPRESSION);
-                        zipout.putNextEntry(new ZipEntry(ZIP_DATA_FILE));
+                        zipout.putNextEntry(new ZipEntry("data")); //$NON-NLS-1$
 
-                        new XmlSerialization().save(client, zipout);
+                        body.save(client, zipout);
                         zipout.closeEntry();
                     }
                 }
@@ -366,18 +467,87 @@ public class ClientFactory
         }
     }
 
-    private static final String ZIP_DATA_FILE = "data.xml"; //$NON-NLS-1$
-
-    private static XStream xstream;
+    private static XStream xstreamReader;
+    private static XStream xstreamWriter;
 
     public static boolean isEncrypted(File file)
     {
-        return file.getName().endsWith(".portfolio"); //$NON-NLS-1$
+        try
+        {
+            return getFlags(file).contains(SaveFlag.ENCRYPTED);
+        }
+        catch (IOException e)
+        {
+            return false;
+        }
     }
 
-    public static boolean isCompressed(File file)
+    public static Set<SaveFlag> getFlags(File file) throws IOException
     {
-        return file.getName().endsWith(".zip"); //$NON-NLS-1$
+        Set<SaveFlag> flags = EnumSet.noneOf(SaveFlag.class);
+
+        if (file.getName().endsWith(".zip")) //$NON-NLS-1$
+        {
+            flags.add(SaveFlag.XML);
+            flags.add(SaveFlag.COMPRESSED);
+        }
+        else if (file.getName().endsWith(".portfolio")) //$NON-NLS-1$
+        {
+            try (InputStream input = new BufferedInputStream(new FileInputStream(file)))
+            {
+                // read signature
+
+                byte[] signature = new byte[Decryptor.SIGNATURE.length];
+                int read = input.read(signature);
+                if (read != Decryptor.SIGNATURE.length)
+                    throw new IOException(
+                                    "tried to read " + Decryptor.SIGNATURE.length + " bytes but only got " + read); //$NON-NLS-1$ //$NON-NLS-2$
+
+                if (Arrays.equals(Decryptor.SIGNATURE, signature))
+                {
+                    flags.add(SaveFlag.ENCRYPTED);
+                }
+                else if (startsWith(new byte[] { 80, 75, 3, 4 }, signature))
+                {
+                    // https://en.wikipedia.org/wiki/List_of_file_signatures
+                    flags.add(SaveFlag.COMPRESSED);
+                }
+            }
+        }
+
+        if (flags.isEmpty())
+        {
+            flags.add(SaveFlag.XML);
+            try (Reader input = new InputStreamReader(new FileInputStream(file)))
+            {
+                char[] buffer = new char[80];
+                input.read(buffer);
+                if (new String(buffer).contains("<client id=")) //$NON-NLS-1$
+                {
+                    flags.add(SaveFlag.ID_REFERENCES);
+                }
+            }
+        }
+
+        return flags;
+    }
+
+    private static boolean startsWith(byte[] expected, byte[] actual)
+    {
+        if (actual == null || expected == null)
+            return false;
+
+        int la = actual.length;
+        int le = expected.length;
+
+        if (la < le)
+            return false;
+
+        for (int ii = 0; ii < le; ii++)
+            if (actual[ii] != expected[ii])
+                return false;
+
+        return true;
     }
 
     public static boolean isKeyLengthSupported(int keyLength)
@@ -394,7 +564,9 @@ public class ClientFactory
 
     public static Client load(File file, char[] password, IProgressMonitor monitor) throws IOException
     {
-        if (isEncrypted(file) && password == null)
+        Set<SaveFlag> flags = getFlags(file);
+
+        if (flags.contains(SaveFlag.ENCRYPTED) && password == null)
             throw new IOException(Messages.MsgPasswordMissing);
 
         try
@@ -408,7 +580,12 @@ public class ClientFactory
             try (InputStream input = new ProgressMonitorInputStream(
                             new BufferedInputStream(new FileInputStream(file), 65536), increment, monitor))
             {
-                return buildPersister(file, null, password).load(input);
+                ClientPersister persister = buildPersister(flags, password);
+                Client client = persister.load(input);
+
+                PortfolioLog.info(String.format("Loaded %s with %s", file.getName(), client.getSaveFlags().toString())); //$NON-NLS-1$
+
+                return client;
             }
         }
         catch (FileNotFoundException e)
@@ -422,9 +599,15 @@ public class ClientFactory
 
     public static Client load(Reader input) throws IOException
     {
+        return load(input, false);
+    }
+
+    @VisibleForTesting
+    public static Client load(Reader input, boolean useIdReferences) throws IOException
+    {
         try
         {
-            return new XmlSerialization().load(input);
+            return new XmlSerialization(useIdReferences).load(input);
         }
         finally
         {
@@ -433,34 +616,124 @@ public class ClientFactory
         }
     }
 
+    @VisibleForTesting
     public static Client load(InputStream input) throws IOException
     {
-        return load(new InputStreamReader(input, StandardCharsets.UTF_8));
+        return load(input, false);
     }
 
-    public static void save(final Client client, final File file, String method, char[] password) throws IOException
+    @VisibleForTesting
+    public static Client load(InputStream input, boolean useIdReferences) throws IOException
     {
-        if (isEncrypted(file) && password == null && client.getSecret() == null)
+        return load(new InputStreamReader(input, StandardCharsets.UTF_8), useIdReferences);
+    }
+
+    public static void save(final Client client, final File file) throws IOException
+    {
+        Set<SaveFlag> flags = EnumSet.copyOf(client.getSaveFlags());
+
+        if (flags.isEmpty())
+            flags.add(SaveFlag.XML);
+
+        if (flags.contains(SaveFlag.ENCRYPTED) && client.getSecret() == null)
             throw new IOException(Messages.MsgPasswordMissing);
+
+        writeFile(client, file, null, flags, true);
+    }
+
+    public static void saveAs(final Client client, final File file, char[] password, Set<SaveFlag> flags)
+                    throws IOException
+    {
+        if (flags.isEmpty())
+            flags.add(SaveFlag.XML);
+
+        if (flags.contains(SaveFlag.ENCRYPTED) && password == null)
+            throw new IOException(Messages.MsgPasswordMissing);
+
+        writeFile(client, file, password, flags, true);
+    }
+
+    public static void exportAs(final Client client, final File file, char[] password, Set<SaveFlag> flags)
+                    throws IOException
+    {
+        if (flags.isEmpty())
+            flags.add(SaveFlag.XML);
+
+        if (flags.contains(SaveFlag.ENCRYPTED) && password == null)
+            throw new IOException(Messages.MsgPasswordMissing);
+
+        writeFile(client, file, password, flags, false);
+    }
+
+    private static void writeFile(final Client client, final File file, char[] password, Set<SaveFlag> flags,
+                    boolean updateFlags) throws IOException
+    {
+        PortfolioLog.info(String.format("Saving %s with %s", file.getName(), flags.toString())); //$NON-NLS-1$
+
         // open an output stream for the file using a 64 KB buffer to speed up
         // writing
-        try (OutputStream output = new BufferedOutputStream(new FileOutputStream(file), 65536))
+        try (FileOutputStream stream = new FileOutputStream(file);
+                        BufferedOutputStream output = new BufferedOutputStream(stream, 65536))
         {
-            buildPersister(file, method, password).save(client, output);
+            // lock file while writing (apparently network-attache storage is
+            // garbling up the files if it already starts syncing while the file
+            // is still being written)
+            FileChannel channel = stream.getChannel();
+            FileLock lock = null;
+
+            try
+            {
+                // On OS X fcntl does not support locking files on AFP or SMB
+                // https://bugs.openjdk.org/browse/JDK-8167023
+                if (!Platform.getOS().equals(Platform.OS_MACOSX))
+                    lock = channel.tryLock();
+            }
+            catch (IOException e)
+            {
+                // also on some other platforms (for example reported for Linux
+                // Mint, locks are not supported on SMB shares)
+
+                PortfolioLog.warning(MessageFormat.format("Failed to aquire lock {0} with message {1}", //$NON-NLS-1$
+                                file.getAbsolutePath(), e.getMessage()));
+            }
+
+            ClientPersister persister = buildPersister(flags, password);
+            persister.save(client, output);
+
+            output.flush();
+
+            if (lock != null && lock.isValid())
+                lock.release();
+
+            if (updateFlags)
+            {
+                client.getSaveFlags().clear();
+                client.getSaveFlags().addAll(flags);
+            }
         }
     }
 
-    private static ClientPersister buildPersister(File file, String method, char[] password)
+    private static ClientPersister buildPersister(Set<SaveFlag> flags, char[] password)
     {
-        if (file != null && isEncrypted(file))
-            return new Decryptor(method, password);
-        else if (file != null && isCompressed(file))
-            return new PlainWriterZIP();
-        else
+        ClientPersister body = null;
+
+        if (flags.contains(SaveFlag.BINARY))
+            body = new ProtobufWriter();
+        else if (flags.contains(SaveFlag.XML))
+            body = new PlainWriter(flags.contains(SaveFlag.ID_REFERENCES));
+
+        if (flags.contains(SaveFlag.ENCRYPTED))
+            return new Decryptor(body, flags, password);
+        else if (flags.contains(SaveFlag.COMPRESSED))
+            return new PlainWriterZIP(body);
+
+        if (body == null)
             return new PlainWriter();
+        else
+            return body;
     }
 
-    private static void upgradeModel(Client client)
+    /* package */ static void upgradeModel(Client client)
     {
         client.doPostLoadInitialization();
 
@@ -542,7 +815,7 @@ public class ClientFactory
                 // added currency support --> designate a default currency (user
                 // will get a dialog to change)
                 setAllCurrencies(client, CurrencyUnit.EUR);
-                bumpUpCPIMonthValue(client);
+                // bumpUpCPIMonthValue --> CPI removed anyways
                 convertFeesAndTaxesToTransactionUnits(client);
             case 29: // NOSONAR
                 // added decimal places to stock quotes
@@ -578,14 +851,63 @@ public class ClientFactory
                 // added data map to classification and assignment
             case 43:
                 // added LimitPrice as attribute type
-            case 44:
+            case 44: // NOSONAR
                 // added weights to dashboard columns
                 fixDashboardColumnWeights(client);
             case 45:
                 // added custom security type NOTE
-            case 46:
+            case 46: // NOSONAR
                 // added dividend payment security event
                 addDefaultLogoAttributes(client);
+            case 47:
+                // added fees to dividend transactions
+            case 48: // NOSONAR
+                incrementSharesPrecisionFromSixToEightDigitsAfterDecimalSign(client);
+                // add 4 more decimal places to the quote to make it 8
+                addDecimalPlacesToQuotes(client);
+                addDecimalPlacesToQuotes(client);
+            case 49: // NOSONAR
+                fixLimitQuotesWith4AdditionalDecimalPlaces(client);
+            case 50: // NOSONAR
+                assignTxUUIDsAndUpdateAtInstants(client);
+            case 51: // NOSONAR
+                permanentelyRemoveCPIData(client);
+                fixDimensionsList(client);
+            case 52:
+                // added properties to attribute types
+            case 53: // NOSONAR
+                fixSourceAttributeOfTransactions(client);
+            case 54: // NOSONAR
+                addKeyToTaxonomyClassifications(client);
+            case 55: // NOSONAR
+                fixGrossValueUnits(client);
+            case 56: // NOSONAR
+                // migrate client filters into model (done when setting the
+                // client input as we do not have access to the preferences
+                // here)
+
+                // remove obsolete MARKET properties
+                removeMarketSecurityProperty(client);
+            case 57: // NOSONAR
+                // remove securities in watchlists which are not present in "all
+                // securities", see #3452
+                removeWronglyAddedSecurities(client);
+            case 58: // NOSONAR
+                fixDataSeriesLabelForAccumulatedTaxes(client);
+            case 59: // NOSONAR
+                fixNullSecurityProperties(client);
+            case 60: // NOSONAR
+                addInvestmentPlanTypes(client);
+            case 61: // NOSONAR
+                removePortfolioReportMarketProperties(client);
+            case 62: // NOSONAR
+                updateSecurityChartLabelConfiguration(client);
+            case 63: // NOSONAR
+                fixNullSecurityEvents(client);
+            case 64: // NOSONAR
+                assignDashboardIds(client);
+            case 65: // NOSOANR
+                // moved 'source' field to security event
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -733,6 +1055,7 @@ public class ClientFactory
 
         Taxonomy taxonomy = new Taxonomy("assetallocation", Messages.LabelAssetAllocation); //$NON-NLS-1$
         Classification root = new Classification(category.getUUID(), Messages.LabelAssetAllocation);
+        root.setKey(taxonomy.getId());
         taxonomy.setRootNode(root);
 
         buildTree(root, category);
@@ -758,7 +1081,7 @@ public class ClientFactory
 
         for (Object element : category.getElements())
         {
-            Assignment assignment = element instanceof Account ? new Assignment((Account) element)
+            Assignment assignment = element instanceof Account account ? new Assignment(account)
                             : new Assignment((Security) element);
             assignment.setRank(rank++);
 
@@ -829,8 +1152,7 @@ public class ClientFactory
             List<TransactionPair<?>> transactions = security.getTransactions(client);
 
             // sort by date of transaction
-            Collections.sort(transactions, (one, two) -> one.getTransaction().getDateTime()
-                            .compareTo(two.getTransaction().getDateTime()));
+            Collections.sort(transactions, TransactionPair.BY_DATE);
 
             // count and assign number of shares by account
             Map<Account, Long> account2shares = new HashMap<>();
@@ -938,16 +1260,6 @@ public class ClientFactory
     }
 
     /**
-     * Previously, January had the index 0 (in line with java.util.Date). Bump
-     * it up by one since we are using new Java 8 Time API.
-     */
-    private static void bumpUpCPIMonthValue(Client client)
-    {
-        for (ConsumerPriceIndex i : client.getConsumerPriceIndices())
-            i.setMonth(i.getMonth() + 1);
-    }
-
-    /**
      * Sets all currency codes of accounts, securities, and transactions to the
      * given currency code.
      */
@@ -990,7 +1302,8 @@ public class ClientFactory
 
         for (Security security : client.getSecurities())
         {
-            security.getPrices().stream().forEach(p -> p.setValue(p.getValue() * decimalPlacesAdded));
+            security.getPrices().stream().filter(Objects::nonNull)
+                            .forEach(p -> p.setValue(p.getValue() * decimalPlacesAdded));
             if (security.getLatest() != null)
             {
                 LatestSecurityPrice l = security.getLatest();
@@ -1000,8 +1313,8 @@ public class ClientFactory
                     l.setHigh(l.getHigh() * decimalPlacesAdded);
                 if (l.getLow() != -1)
                     l.setLow(l.getLow() * decimalPlacesAdded);
-                if (l.getPreviousClose() != -1)
-                    l.setPreviousClose(l.getPreviousClose() * decimalPlacesAdded);
+                if (l.previousClose != -1) // NOSONAR
+                    l.previousClose = l.previousClose * decimalPlacesAdded; // NOSONAR
             }
         }
 
@@ -1013,8 +1326,8 @@ public class ClientFactory
             for (AttributeType t : typesWithQuotes)
             {
                 Object value = attributes.get(t);
-                if (value instanceof Long)
-                    attributes.put(t, ((Long) value).longValue() * decimalPlacesAdded);
+                if (value instanceof Long l)
+                    attributes.put(t, l.longValue() * decimalPlacesAdded);
             }
         });
     }
@@ -1091,78 +1404,452 @@ public class ClientFactory
         client.getSettings().addAttributeType(factory.apply(InvestmentPlan.class));
     }
 
-    @SuppressWarnings("nls")
-    private static synchronized XStream xstream()
+    private static void incrementSharesPrecisionFromSixToEightDigitsAfterDecimalSign(Client client)
     {
-        if (xstream == null)
+        for (Portfolio portfolio : client.getPortfolios())
+            for (PortfolioTransaction portfolioTransaction : portfolio.getTransactions())
+                portfolioTransaction.setShares(portfolioTransaction.getShares() * 100);
+        for (Account account : client.getAccounts())
+            for (AccountTransaction accountTransaction : account.getTransactions())
+                accountTransaction.setShares(accountTransaction.getShares() * 100);
+    }
+
+    private static void fixLimitQuotesWith4AdditionalDecimalPlaces(Client client)
+    {
+        List<AttributeType> typesWithLimit = client.getSettings().getAttributeTypes()
+                        .filter(t -> t.getConverter() instanceof AttributeType.LimitPriceConverter)
+                        .collect(Collectors.toList());
+
+        client.getSecurities().stream().map(Security::getAttributes).forEach(attributes -> {
+            for (AttributeType t : typesWithLimit)
+            {
+                Object value = attributes.get(t);
+                if (value instanceof LimitPrice lp)
+                {
+                    attributes.put(t, new LimitPrice(lp.getRelationalOperator(), lp.getValue() * 10000));
+                }
+            }
+        });
+    }
+
+    private static void assignTxUUIDsAndUpdateAtInstants(Client client)
+    {
+        for (Account a : client.getAccounts())
         {
-            xstream = new XStream();
-
-            xstream.setClassLoader(ClientFactory.class.getClassLoader());
-
-            xstream.registerConverter(new XStreamLocalDateConverter());
-            xstream.registerConverter(new XStreamLocalDateTimeConverter());
-            xstream.registerConverter(
-                            new PortfolioTransactionConverter(xstream.getMapper(), xstream.getReflectionProvider()));
-
-            xstream.useAttributeFor(Money.class, "amount");
-            xstream.useAttributeFor(Money.class, "currencyCode");
-            xstream.aliasAttribute(Money.class, "currencyCode", "currency");
-
-            xstream.alias("account", Account.class);
-            xstream.alias("client", Client.class);
-            xstream.alias("settings", ClientSettings.class);
-            xstream.alias("bookmark", Bookmark.class);
-            xstream.alias("portfolio", Portfolio.class);
-            xstream.alias("unit", Transaction.Unit.class);
-            xstream.useAttributeFor(Transaction.Unit.class, "type");
-            xstream.alias("account-transaction", AccountTransaction.class);
-            xstream.alias("portfolio-transaction", PortfolioTransaction.class);
-            xstream.alias("security", Security.class);
-            xstream.addImplicitCollection(Security.class, "properties");
-            xstream.alias("latest", LatestSecurityPrice.class);
-            xstream.alias("category", Category.class); // NOSONAR
-            xstream.alias("watchlist", Watchlist.class);
-            xstream.alias("investment-plan", InvestmentPlan.class);
-            xstream.alias("attribute-type", AttributeType.class);
-
-            xstream.alias("price", SecurityPrice.class);
-            xstream.useAttributeFor(SecurityPrice.class, "date");
-            xstream.aliasField("t", SecurityPrice.class, "date");
-            xstream.useAttributeFor(SecurityPrice.class, "value");
-            xstream.aliasField("v", SecurityPrice.class, "value");
-
-            xstream.alias("limitPrice", LimitPrice.class);
-
-            xstream.alias("cpi", ConsumerPriceIndex.class);
-            xstream.useAttributeFor(ConsumerPriceIndex.class, "year");
-            xstream.aliasField("y", ConsumerPriceIndex.class, "year");
-            xstream.useAttributeFor(ConsumerPriceIndex.class, "month");
-            xstream.aliasField("m", ConsumerPriceIndex.class, "month");
-            xstream.useAttributeFor(ConsumerPriceIndex.class, "index");
-            xstream.aliasField("i", ConsumerPriceIndex.class, "index");
-
-            xstream.alias("buysell", BuySellEntry.class);
-            xstream.alias("account-transfer", AccountTransferEntry.class);
-            xstream.alias("portfolio-transfer", PortfolioTransferEntry.class);
-
-            xstream.alias("taxonomy", Taxonomy.class);
-            xstream.alias("classification", Classification.class);
-            xstream.alias("assignment", Assignment.class);
-
-            xstream.alias("dashboard", Dashboard.class);
-            xstream.useAttributeFor(Dashboard.class, "name");
-            xstream.alias("column", Dashboard.Column.class);
-            xstream.alias("widget", Dashboard.Widget.class);
-            xstream.useAttributeFor(Dashboard.Widget.class, "type");
-
-            xstream.alias("event", SecurityEvent.class);
-            xstream.alias("dividendEvent", SecurityEvent.DividendEvent.class);
-            xstream.alias("config-set", ConfigurationSet.class);
-            xstream.alias("config", ConfigurationSet.Configuration.class);
-
-            xstream.processAnnotations(SecurityProperty.class);
+            a.setUpdatedAt(Instant.now());
+            for (Transaction t : a.getTransactions())
+            {
+                t.setUpdatedAt(Instant.now());
+                t.generateUUID();
+            }
         }
+
+        for (Portfolio p : client.getPortfolios())
+        {
+            p.setUpdatedAt(Instant.now());
+            for (Transaction t : p.getTransactions())
+            {
+                t.setUpdatedAt(Instant.now());
+                t.generateUUID();
+            }
+        }
+
+        for (Security s : client.getSecurities())
+        {
+            s.setUpdatedAt(Instant.now());
+        }
+    }
+
+    private static void permanentelyRemoveCPIData(Client client)
+    {
+        client.consumerPriceIndeces = null; // NOSONAR
+    }
+
+    private static void fixDimensionsList(Client client)
+    {
+        client.getTaxonomies().forEach(t -> {
+            if (t.getDimensions() != null)
+                t.setDimensions(new ArrayList<>(t.getDimensions()));
+        });
+    }
+
+    private static void fixSourceAttributeOfTransactions(Client client)
+    {
+        List<Transaction> allTransactions = new ArrayList<>();
+        client.getAccounts().forEach(a -> allTransactions.addAll(a.getTransactions()));
+        client.getPortfolios().forEach(p -> allTransactions.addAll(p.getTransactions()));
+
+        Pattern pattern = Pattern.compile("^((?<note>.*) \\| )?(?<file>[^ ]*\\.(pdf|csv))$", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$
+
+        for (Transaction tx : allTransactions)
+        {
+            String note = TextUtil.trim(tx.getNote());
+            if (note == null || note.length() == 0)
+                continue;
+
+            Matcher m = pattern.matcher(note);
+            if (m.matches())
+            {
+                tx.setNote(TextUtil.trim(m.group("note"))); //$NON-NLS-1$
+                tx.setSource(TextUtil.trim(m.group("file"))); //$NON-NLS-1$
+            }
+        }
+    }
+
+    private static void addKeyToTaxonomyClassifications(Client client)
+    {
+        List<TaxonomyTemplate> taxonomyTemplates = TaxonomyTemplate.list();
+        for (Taxonomy taxonomy : client.getTaxonomies())
+        {
+            if (Strings.isNullOrEmpty(taxonomy.getRoot().getKey()))
+            {
+                taxonomyTemplates.stream().filter(tt -> tt.getName().equals(taxonomy.getName())).findAny()
+                                .ifPresent(template -> {
+                                    copyClassificationKeys(template.build().getRoot(), taxonomy.getRoot());
+                                });
+            }
+        }
+    }
+
+    private static void copyClassificationKeys(Classification from, Classification to)
+    {
+        to.setKey(from.getKey());
+
+        Map<String, Classification> fromChildren = from.getChildren().stream()
+                        .collect(Collectors.toMap(Classification::getName, Function.identity(), (r, l) -> null));
+
+        Map<String, Classification> toChildren = to.getChildren().stream()
+                        .collect(Collectors.toMap(Classification::getName, Function.identity(), (r, l) -> null));
+
+        for (Map.Entry<String, Classification> entry : fromChildren.entrySet())
+        {
+            String key = entry.getKey();
+            Classification fromChild = entry.getValue();
+            if (toChildren.containsKey(key))
+            {
+                copyClassificationKeys(fromChild, toChildren.get(key));
+            }
+        }
+    }
+
+    private static void fixGrossValueUnits(Client client)
+    {
+        for (Portfolio portfolio : client.getPortfolios())
+            for (PortfolioTransaction tx : portfolio.getTransactions())
+                fixGrossValueUnit(tx);
+
+        for (Account account : client.getAccounts())
+            for (AccountTransaction tx : account.getTransactions())
+                fixGrossValueUnit(tx);
+    }
+
+    private static void fixGrossValueUnit(Transaction tx)
+    {
+        Optional<Unit> unit = tx.getUnit(Unit.Type.GROSS_VALUE);
+
+        if (unit.isEmpty())
+            return;
+
+        Unit grossValueUnit = unit.get();
+        Money calculatedGrossValue = tx.getGrossValue();
+
+        if (grossValueUnit.getAmount().equals(calculatedGrossValue))
+            return;
+
+        // check if it a rounding difference that is acceptable
+        try
+        {
+            Unit u = new Unit(Unit.Type.GROSS_VALUE, calculatedGrossValue, grossValueUnit.getForex(),
+                            grossValueUnit.getExchangeRate());
+
+            tx.removeUnit(grossValueUnit);
+            tx.addUnit(u);
+            return;
+        }
+        catch (IllegalArgumentException ignore)
+        {
+            // recalculate the unit to fix the gross value
+        }
+
+        try
+        {
+            Money updatedGrossValue = Money.of(grossValueUnit.getForex().getCurrencyCode(),
+                            BigDecimal.valueOf(calculatedGrossValue.getAmount())
+                                            .divide(grossValueUnit.getExchangeRate(), Values.MC)
+                                            .setScale(0, RoundingMode.HALF_EVEN).longValue());
+
+            tx.removeUnit(grossValueUnit);
+            tx.addUnit(new Unit(Unit.Type.GROSS_VALUE, calculatedGrossValue, updatedGrossValue,
+                            grossValueUnit.getExchangeRate()));
+        }
+        catch (IllegalArgumentException e)
+        {
+            // ignore in case we are still running into rounding differences
+            // (for example: 4,33 EUR / 131,53 = 0,03 JPY but 0,03 JPY * 131,53
+            // = 3,95 EUR) because otherwise the user cannot open the file at
+            // all (and manually fix the issue)
+        }
+    }
+
+    private static void removeMarketSecurityProperty(Client client)
+    {
+        for (Security security : client.getSecurities())
+            security.removePropertyIf(p -> p == null || p.getType() == SecurityProperty.Type.MARKET);
+    }
+
+    private static void removeWronglyAddedSecurities(Client client)
+    {
+        client.getWatchlists() //
+                        .forEach(w -> new ArrayList<>(w.getSecurities()) //
+                                        .forEach(s -> {
+                                            if (!client.getSecurities().contains(s))
+                                            {
+                                                if (s.getTransactions(client).isEmpty())
+                                                    w.getSecurities().remove(s);
+                                                else
+                                                    client.addSecurity(s);
+                                            }
+                                        }));
+    }
+
+    private static void fixDataSeriesLabelForAccumulatedTaxes(Client client)
+    {
+        if (!client.getSettings().hasConfigurationSet("StatementOfAssetsHistoryView-PICKER")) //$NON-NLS-1$
+            return;
+
+        var configSet = client.getSettings().getConfigurationSet("StatementOfAssetsHistoryView-PICKER"); //$NON-NLS-1$
+
+        configSet.getConfigurations() //
+                        .filter(config -> config.getData() != null) //
+                        .forEach(config -> config.setData(config.getData() //
+                                        .replace("Client-taxes;", "Client-taxes_accumulated;"))); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    private static void fixNullSecurityProperties(Client client)
+    {
+        // see https://github.com/portfolio-performance/portfolio/issues/3895
+
+        for (Security security : client.getSecurities())
+        {
+            var properties = security.getProperties().toList();
+
+            for (SecurityProperty p : properties)
+            {
+                if (p == null)
+                {
+                    security.removeProperty(null);
+                }
+            }
+        }
+    }
+
+    private static void fixNullSecurityEvents(Client client)
+    {
+        // see
+        // https://forum.portfolio-performance.info/t/fehlermeldung-cannot-invoke-name-abuchen-portfolio-model-securityevent-gettype-because-event-is-null/29406
+
+        for (Security security : client.getSecurities())
+        {
+            var events = new ArrayList<>(security.getEvents());
+
+            for (SecurityEvent e : events)
+            {
+                if (e == null)
+                {
+                    security.removeEvent(null);
+                }
+            }
+        }
+    }
+
+    private static void addInvestmentPlanTypes(Client client)
+    {
+        for (InvestmentPlan plan : client.getPlans())
+        {
+            if (plan.getPortfolio() != null)
+            {
+                plan.setType(InvestmentPlan.Type.PURCHASE_OR_DELIVERY);
+            }
+            else
+            {
+                plan.setType(plan.getAmount() >= 0 ? InvestmentPlan.Type.DEPOSIT : InvestmentPlan.Type.REMOVAL);
+                plan.setAmount(Math.abs(plan.getAmount()));
+            }
+        }
+    }
+
+    private static void removePortfolioReportMarketProperties(Client client)
+    {
+        // with the new Portfolio Report API, we only need the currency and do
+        // not provide the markets anymore. By removing the properties, we
+        // indicate to the mobile client to use the new API
+
+        for (Security security : client.getSecurities())
+        {
+            security.removePropertyIf(p -> p.getType() == SecurityProperty.Type.FEED
+                            && ("PORTFOLIO-REPORT-MARKETS".equals(p.getName()) //$NON-NLS-1$
+                                            || "PORTFOLIO-REPORT-MARKET".equals(p.getName()))); //$NON-NLS-1$
+        }
+    }
+
+    private static void updateSecurityChartLabelConfiguration(Client client)
+    {
+        // PR 4120 splits SHOW_DATA_LABELS into
+        // SHOW_DATA_DIVESTMENT_INVESTMENT_LABEL, SHOW_DATA_DIVIDEND_LABEL,
+        // SHOW_DATA_EXTREMES_LABEL
+
+        var propertyKey = "security-chart-details"; //$NON-NLS-1$
+
+        var chartConfig = client.getProperty(propertyKey);
+        if (chartConfig == null)
+            return;
+
+        client.setProperty(propertyKey, chartConfig.replace("SHOW_DATA_LABELS", //$NON-NLS-1$
+                        "SHOW_DATA_DIVESTMENT_INVESTMENT_LABEL,SHOW_DATA_DIVIDEND_LABEL,SHOW_DATA_EXTREMES_LABEL")); //$NON-NLS-1$
+    }
+
+    private static void assignDashboardIds(Client client)
+    {
+        // dashboards get a unique identifier to reliably identify them in
+        // configuration (say the navigation bar)
+        client.getDashboards().forEach(dashboard -> dashboard.setId(UUID.randomUUID().toString()));
+    }
+
+    private static synchronized XStream xstreamReader()
+    {
+        if (xstreamReader == null)
+            xstreamReader = xstreamFactory();
+
+        return xstreamReader;
+    }
+
+    private static synchronized XStream xstreamWriter()
+    {
+        if (xstreamWriter == null)
+        {
+            xstreamWriter = xstreamFactory();
+
+            // add the immutable types only when writing the file because there
+            // are files out in the wild that still have referenced objects
+            // (probably due to bugs in older version and/or manual manipulation
+            // of files)
+
+            // Java types which aren't multiple-referenced in PP data model, so
+            // skip giving "id" attribute to these, as that adds a lot of noise
+            // to the produced XML.
+            xstreamWriter.addImmutableType(HashMap.class, false);
+            xstreamWriter.addImmutableType(ArrayList.class, false);
+
+            // PP's wrappers around Java types, again not multiple-reference,
+            // skip adding "id" attribute for the same reason.
+            xstreamWriter.addImmutableType(TypedMap.class, false);
+            xstreamWriter.addImmutableType(Attributes.class, false);
+
+            xstreamWriter.addImmutableType(Money.class, false);
+            xstreamWriter.addImmutableType(ClientSettings.class, false);
+            xstreamWriter.addImmutableType(Bookmark.class, false);
+            xstreamWriter.addImmutableType(Transaction.Unit.class, false);
+            xstreamWriter.addImmutableType(LatestSecurityPrice.class, false);
+            xstreamWriter.addImmutableType(AttributeType.class, false);
+            xstreamWriter.addImmutableType(SecurityPrice.class, false);
+            xstreamWriter.addImmutableType(LimitPrice.class, false);
+            xstreamWriter.addImmutableType(Taxonomy.class, false);
+            xstreamWriter.addImmutableType(Assignment.class, false);
+            xstreamWriter.addImmutableType(Dashboard.class, false);
+            xstreamWriter.addImmutableType(Dashboard.Column.class, false);
+            xstreamWriter.addImmutableType(Dashboard.Widget.class, false);
+            xstreamWriter.addImmutableType(SecurityEvent.class, false);
+            xstreamWriter.addImmutableType(ConfigurationSet.class, false);
+            xstreamWriter.addImmutableType(ConfigurationSet.Configuration.class, false);
+            xstreamWriter.addImmutableType(SecurityProperty.class, false);
+        }
+
+        return xstreamWriter;
+    }
+
+    @SuppressWarnings("nls")
+    private static XStream xstreamFactory()
+    {
+        var xstream = new XStream();
+
+        xstream.allowTypesByWildcard(new String[] { "name.abuchen.portfolio.model.**" });
+
+        xstream.setClassLoader(ClientFactory.class.getClassLoader());
+
+        // because we introduced LocalDate and LocalDateTime before Xstream
+        // was supporting it, we must declare it referenceable for backward
+        // compatibility reasons
+        xstream.addImmutableType(LocalDate.class, true);
+        xstream.addImmutableType(LocalDateTime.class, true);
+
+        xstream.registerConverter(new XStreamLocalDateConverter());
+        xstream.registerConverter(new XStreamLocalDateTimeConverter());
+        xstream.registerConverter(new XStreamInstantConverter());
+        xstream.registerConverter(new XStreamSecurityPriceConverter());
+        xstream.registerConverter(
+                        new PortfolioTransactionConverter(xstream.getMapper(), xstream.getReflectionProvider()));
+
+        xstream.registerConverter(new MapConverter(xstream.getMapper(), TypedMap.class));
+        xstream.registerConverter(new XStreamArrayListConverter(xstream.getMapper()));
+
+        xstream.useAttributeFor(Money.class, "amount");
+        xstream.useAttributeFor(Money.class, "currencyCode");
+        xstream.aliasAttribute(Money.class, "currencyCode", "currency");
+
+        xstream.alias("account", Account.class);
+        xstream.alias("client", Client.class);
+        xstream.alias("settings", ClientSettings.class);
+        xstream.alias("bookmark", Bookmark.class);
+        xstream.alias("portfolio", Portfolio.class);
+        xstream.alias("unit", Transaction.Unit.class);
+        xstream.useAttributeFor(Transaction.Unit.class, "type");
+        xstream.alias("account-transaction", AccountTransaction.class);
+        xstream.alias("portfolio-transaction", PortfolioTransaction.class);
+        xstream.alias("security", Security.class);
+        xstream.addImplicitCollection(Security.class, "properties");
+        xstream.alias("latest", LatestSecurityPrice.class);
+        xstream.alias("category", Category.class); // NOSONAR
+        xstream.alias("watchlist", Watchlist.class);
+        xstream.alias("investment-plan", InvestmentPlan.class);
+        xstream.alias("attribute-type", AttributeType.class);
+
+        xstream.alias("price", SecurityPrice.class);
+        xstream.useAttributeFor(SecurityPrice.class, "date");
+        xstream.aliasField("t", SecurityPrice.class, "date");
+        xstream.useAttributeFor(SecurityPrice.class, "value");
+        xstream.aliasField("v", SecurityPrice.class, "value");
+
+        xstream.alias("limitPrice", LimitPrice.class);
+
+        xstream.alias("cpi", ConsumerPriceIndex.class); // NOSONAR
+        xstream.useAttributeFor(ConsumerPriceIndex.class, "year"); // NOSONAR
+        xstream.aliasField("y", ConsumerPriceIndex.class, "year"); // NOSONAR
+        xstream.useAttributeFor(ConsumerPriceIndex.class, "month"); // NOSONAR
+        xstream.aliasField("m", ConsumerPriceIndex.class, "month"); // NOSONAR
+        xstream.useAttributeFor(ConsumerPriceIndex.class, "index"); // NOSONAR
+        xstream.aliasField("i", ConsumerPriceIndex.class, "index"); // NOSONAR
+
+        xstream.alias("buysell", BuySellEntry.class);
+        xstream.alias("account-transfer", AccountTransferEntry.class);
+        xstream.alias("portfolio-transfer", PortfolioTransferEntry.class);
+
+        xstream.alias("taxonomy", Taxonomy.class);
+        xstream.alias("classification", Classification.class);
+        xstream.alias("assignment", Assignment.class);
+
+        xstream.alias("dashboard", Dashboard.class);
+        xstream.useAttributeFor(Dashboard.class, "name");
+        xstream.alias("column", Dashboard.Column.class);
+        xstream.alias("widget", Dashboard.Widget.class);
+        xstream.useAttributeFor(Dashboard.Widget.class, "type");
+
+        xstream.alias("event", SecurityEvent.class);
+        xstream.alias("dividendEvent", SecurityEvent.DividendEvent.class);
+        xstream.alias("config-set", ConfigurationSet.class);
+        xstream.alias("config", ConfigurationSet.Configuration.class);
+
+        xstream.processAnnotations(SecurityProperty.class);
+
         return xstream;
     }
 }

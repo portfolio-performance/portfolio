@@ -1,0 +1,43 @@
+PDF Autor: 'User'
+PDFBox Version: 1.8.16
+-----------------------------------------
+   
+GLS Bank · 44774 Bochum
+Depotnummer
+ XXXXXXX
+ Kundennummer XXXXXX
+XXXXXXXXXX
+ Auftragsnummer 686698/69.00
+XXXXXXXX Datum 17.02.2021
+XXXXX Ihr Berater Wertpapierservice
+XXXX XXXX Telefon +49 234 5797 5100
+Telefax +49 234 5797 5222
+Rechnungsnummer W07657-0000007984/21
+Umsatzsteuer-ID DE124090847   
+ 
+Wertpapier Abrechnung Kauf 
+Auftrag vom 16.02.2021 20:08:58 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 2.700 INTERNAT. CONS. AIRL. GROUP SA     ES0177542018 (A1H6AJ)
+ACCIONES NOM. EO -,10              
+Handels-/Ausführungsplatz XETRA (gemäß Weisung)
+Börsensegment XETB
+Market-Order
+Limit billigst
+Schlusstag/-Zeit 17.02.2021 09:04:10 Auftraggeber Max Mustermann
+Ausführungskurs 1,8695 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 5.047,65- EUR
+Provision 1,0000 % vom Kurswert 50,48- EUR
+Transaktionsentgelt Börse 0,71- EUR
+Übertragungs-/Liefergebühr 0,07- EUR
+Finanztransaktionssteuer 10,10- EUR
+Ausmachender Betrag 5.109,01- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 19.02.2021 zu Lasten des Kontos XXXXX
+(IBAN DE88 4306 0967 XXXXX), BLZ 43060967 (BIC GENODEM1GLS).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7657.02171751.0000041OR07

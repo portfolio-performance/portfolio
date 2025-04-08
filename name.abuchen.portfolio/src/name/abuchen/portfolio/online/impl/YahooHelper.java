@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.money.Values;
 
 /* package */class YahooHelper
@@ -26,10 +27,15 @@ import name.abuchen.portfolio.money.Values;
 
     static long asPrice(String s) throws ParseException
     {
-        if ("N/A".equals(s) || "null".equals(s)) //$NON-NLS-1$ //$NON-NLS-2$
-            return -1;
+        return asPrice(s, BigDecimal.ONE);
+    }
+
+    static long asPrice(String s, BigDecimal factor) throws ParseException
+    {
+        if ("N/A".equals(s) || "null".equals(s) || "NaN".equals(s)) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            return LatestSecurityPrice.NOT_AVAILABLE;
         BigDecimal v = (BigDecimal) FMT_PRICE.get().parse(s);
-        return v.multiply(Values.Quote.getBigDecimalFactor()).setScale(0, RoundingMode.HALF_UP).longValue();
+        return v.multiply(factor).multiply(Values.Quote.getBigDecimalFactor()).setScale(0, RoundingMode.HALF_UP).longValue();
     }
 
     static int asNumber(String s) throws ParseException

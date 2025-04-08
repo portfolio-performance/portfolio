@@ -2,12 +2,13 @@ package name.abuchen.portfolio.ui.editor;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -80,5 +81,10 @@ public class ClientInputFactory
 
             selectionService.getSelection(clientInput.getClient()).ifPresent(s -> selectionService.setSelection(null));
         }
+    }
+
+    public synchronized List<ClientInput> listOpenClients()
+    {
+        return cache.keySet().stream().filter(ci -> ci.getClient() != null).toList();
     }
 }

@@ -1,0 +1,41 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+UniCredit Bank AG
+W e r t p a p i e r - A b r e c h n u n g   K a u f
+- Geschäftsbestätigung vor steuerlicher Behandlung - Kommissionsgeschäft
+Depotnummer Abrechnungstag Blatt
+123    12345678     04.04.2022  1
+Depotart Filiale   
+Depot Musterfiliale   
+Kontonummer +49 123 4567 89     
+1234 123 123    123456789     Herr Ansprechpartner
+Firma    R e c h n u n g s n u m m e r    
+Musterfirma Ordernummer    Abrechnungsnr. Urspr. Abrechnungsnr.    
+Musterstrasse 12 1-WPK- 1234567   123456    
+01234 Musterhausen Depotinhaber
+Musterfirma
+Nennbetrag Wertpapierbezeichnung    Wertpapierkennnummer/ISIN 
+ST 460 BANK OF AMERICA CORP. 858388   REGISTERED SHARES DL 0,01 US0605051046
+Zum Kurs von Ausführungstag/Zeit Ausführungsort Verwahrart
+USD 41,74 01.04.2022  15.30.00 NYSE (NEW YORK STOCK WP-Rechnung
+Abrechnung
+Kurswert USD 19.200,40
+Zwischensumme EUR 17.454,91  
+----------------------- 
+Belastung (vor Steuern) EUR 17.454,91  
+Valuta 05.04.2022 ----------------------- 
+Lagerland: USA
+20220401120353BOR416
+Umsatzreferenz: 20220404WAB1406946452
+Diese Abrechnung erfolgt ohne Berücksichtigung der Kapitalertragsteuer.
+Eine eventuell anfallende Kapitalertragsteuer oder Kapitalertragsteuer-Gutschrift    
+wird separat auf Ihrem Kontoauszug ausgewiesen.
+Unsere Umsatzsteuer-Identifikationsnummer: DE 123 456 789.
+Ihre Umsatzsteuer-Identifikationsnummer: DE123456789.
+Umrechnungskurs 1 EUR = 1,1 USD
+Referenzkurs 1 EUR = 1,1 USD
+Devisenkosten 0,00 EUR
+Bitte Rückseite beachten.     
+Bitte bewahren Sie diese Geschäftsbestätigung sowie einen eventuell gesondert erstellten Steuer-Informationsbeleg auf.
+BV0081/VK0081/03.2008
+Eingestellt am: 20220405 03:34:306 -F1 03 300 G1M454YR 416418798    00000035977023 000000018025

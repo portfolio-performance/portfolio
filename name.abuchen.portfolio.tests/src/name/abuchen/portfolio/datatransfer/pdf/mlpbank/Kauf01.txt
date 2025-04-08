@@ -1,0 +1,33 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+MLP Banking AG · Alte Heerstraße 40 · 69168 Wiesloch
+Depotnummer 8505679654
+Kundennummer 9999999
+Max Mustermann
+Auftragsnummer 638328/07.00
+Max Mustermann Datum 18.01.2021
+Musterstraße 10 Rechnungsnummer W00866-0000233255/21
+11111 Musterstadt Umsatzsteuer-ID DE143449824
+Vermögensdepot
+0016
+Wertpapier Abrechnung Kauf
+Auftrag vom 12.01.2021 10:34:30 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 4,929 SAUREN GLOBAL BALANCED LU0106280836 (930920)
+INHABER-ANTEILE A O.N
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 14.01.2021
+Ausführungskurs 20,29 EUR
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 100,01- EUR
+Ausmachender Betrag 100,01- EUR
+Ausgabeaufschlag pro Anteil 5,00 %
+Den Gegenwert buchen wir mit Valuta 18.01.2021 zu Lasten des Kontos 505679278 (IBAN DE10 6723 0000 0505 6792 78),
+BLZ 67230000 (BIC MLPBDE61XXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Ihr Ausgabeaufschlag betraegt:
+0,00 EUR (0,000 Prozent)
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0866.01182114.0015226OR07

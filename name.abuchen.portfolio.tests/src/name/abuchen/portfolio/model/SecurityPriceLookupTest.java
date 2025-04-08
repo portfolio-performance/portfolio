@@ -1,14 +1,14 @@
 package name.abuchen.portfolio.model;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDate;
 
-import name.abuchen.portfolio.SecurityBuilder;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import name.abuchen.portfolio.junit.SecurityBuilder;
 
 @SuppressWarnings("nls")
 public class SecurityPriceLookupTest

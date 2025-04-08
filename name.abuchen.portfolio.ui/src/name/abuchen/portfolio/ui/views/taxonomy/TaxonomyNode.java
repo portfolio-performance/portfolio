@@ -3,7 +3,11 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
+import com.google.common.base.Strings;
+
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Attributable;
@@ -13,6 +17,7 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.NodeVisitor;
 
@@ -89,6 +94,31 @@ public abstract class TaxonomyNode implements Adaptable
         }
 
         @Override
+        public String getKey()
+        {
+            return classification.getKey();
+        }
+
+        @Override
+        public void setKey(String newKey)
+        {
+            if (!Strings.isNullOrEmpty(newKey) && !newKey.equals(classification.getKey()))
+            {
+                // Key must be unique within tree
+                Classification root = classification;
+                while (root.getParent() != null)
+                    root = root.getParent();
+                Optional<Classification> findAny = root.getTreeElements().stream()
+                                .filter(c -> c.getKey().equals(newKey)).findAny();
+                if (findAny.isPresent())
+                {
+                    throw new IllegalArgumentException(Messages.ErrorKeyAlreadyUsed);
+                }
+            }
+            classification.setKey(newKey);
+        }
+
+        @Override
         public Object setData(String key, Object object)
         {
             return classification.setData(key, object);
@@ -114,9 +144,15 @@ public abstract class TaxonomyNode implements Adaptable
         {
             return getName();
         }
+
+        @Override
+        public boolean isPrimary()
+        {
+            return true;
+        }
     }
 
-    /* protected */static class AssignmentNode extends TaxonomyNode
+    /* package */static class AssignmentNode extends TaxonomyNode
     {
         private Assignment assignment;
 
@@ -129,10 +165,16 @@ public abstract class TaxonomyNode implements Adaptable
         @Override
         public Security getBackingSecurity()
         {
-            if (assignment.getInvestmentVehicle() instanceof Security)
-                return (Security) assignment.getInvestmentVehicle();
+            if (assignment.getInvestmentVehicle() instanceof Security security)
+                return security;
             else
                 return null;
+        }
+
+        @Override
+        public InvestmentVehicle getBackingInvestmentVehicle()
+        {
+            return assignment.getInvestmentVehicle();
         }
 
         @Override
@@ -157,6 +199,17 @@ public abstract class TaxonomyNode implements Adaptable
         public void setWeight(int weight)
         {
             assignment.setWeight(weight);
+        }
+
+        @Override
+        public String getKey()
+        {
+            return null;
+        }
+
+        @Override
+        public void setKey(String key)
+        {
         }
 
         @Override
@@ -215,8 +268,27 @@ public abstract class TaxonomyNode implements Adaptable
         {
             if (type == Named.class || type == Annotated.class)
                 return type.cast(assignment.getInvestmentVehicle());
+            else if (type == Account.class && assignment.getInvestmentVehicle() instanceof Account)
+                return type.cast(assignment.getInvestmentVehicle());
             else
                 return super.adapt(type);
+        }
+
+        @Override
+        public boolean isPrimary()
+        {
+            if (getWeight() == Classification.ONE_HUNDRED_PERCENT)
+                return true; // This is the only node
+
+            TaxonomyNode[] firstNodeWithThisInvestmentVehicle = new TaxonomyNode[] { null };
+
+            // Find first node with the same security:
+            this.getRoot().accept(node -> {
+                if (firstNodeWithThisInvestmentVehicle[0] == null && node
+                                .getBackingInvestmentVehicle() == AssignmentNode.this.getBackingInvestmentVehicle())
+                    firstNodeWithThisInvestmentVehicle[0] = node;
+            });
+            return firstNodeWithThisInvestmentVehicle[0] == this;
         }
     }
 
@@ -267,6 +339,11 @@ public abstract class TaxonomyNode implements Adaptable
         return parent == null ? this : parent.getRoot();
     }
 
+    public TaxonomyNode getClassificationRoot()
+    {
+        return getRoot().getChildren().get(0);
+    }
+
     public List<TaxonomyNode> getChildren()
     {
         return children;
@@ -283,7 +360,29 @@ public abstract class TaxonomyNode implements Adaptable
         return null;
     }
 
+    public Optional<TaxonomyNode> getNodeById(String uuid)
+    {
+        LinkedList<TaxonomyNode> stack = new LinkedList<>();
+        stack.add(this);
+
+        while (!stack.isEmpty())
+        {
+            TaxonomyNode n = stack.removeFirst();
+            if (uuid.equals(n.getId()))
+                return Optional.of(n);
+
+            stack.addAll(n.getChildren());
+        }
+
+        return Optional.empty();
+    }
+
     public Security getBackingSecurity()
+    {
+        return null;
+    }
+
+    public InvestmentVehicle getBackingInvestmentVehicle()
     {
         return null;
     }
@@ -329,6 +428,10 @@ public abstract class TaxonomyNode implements Adaptable
 
     public abstract String getId();
 
+    public abstract String getKey();
+
+    public abstract void setKey(String key);
+
     public abstract String getName();
 
     public abstract void setName(String name);
@@ -340,6 +443,13 @@ public abstract class TaxonomyNode implements Adaptable
     public abstract int getRank();
 
     public abstract void setRank(int rank);
+
+    /**
+     * A security can be the backed security of multiple assignment nodes. For
+     * each security, exactly one their assignment nodes of them is primary.
+     * Classifications are always primary.
+     */
+    public abstract boolean isPrimary();
 
     public abstract String getColor();
 

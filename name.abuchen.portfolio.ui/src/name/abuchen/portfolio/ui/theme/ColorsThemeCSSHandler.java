@@ -14,9 +14,9 @@ public class ColorsThemeCSSHandler implements ICSSPropertyHandler
     public boolean applyCSSProperty(Object element, String property, CSSValue value, String pseudo, CSSEngine engine)
                     throws Exception
     {
-        if (element instanceof ColorsThemeElementAdapter)
+        if (element instanceof ColorsThemeElementAdapter colorsThemeAdapter)
         {
-            Colors.Theme theme = ((ColorsThemeElementAdapter) element).getColorsTheme();
+            Colors.Theme theme = colorsThemeAdapter.getColorsTheme();
 
             switch (property)
             {
@@ -40,6 +40,9 @@ public class ColorsThemeCSSHandler implements ICSSPropertyHandler
                     break;
                 case "green-foreground": //$NON-NLS-1$
                     theme.setGreenForeground(CSSSWTColorHelper.getRGBA(value));
+                    break;
+                case "gray-foreground": //$NON-NLS-1$
+                    theme.setGrayForeground(CSSSWTColorHelper.getRGBA(value));
                     break;
                 case "hyperlink": //$NON-NLS-1$
                     theme.setHyperlink(CSSSWTColorHelper.getRGBA(value));

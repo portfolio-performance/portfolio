@@ -1,0 +1,40 @@
+PDF Autor: 'Unknown'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Deutsche Bank AG
+V 220/898.2.000
+Max Mustermann Beratungsteam
+Musterstraße  Telefon (08161) 4832-27
+0815 Musterstadt 24h-Kundenservice (069) 910-10000
+23. August 2021
+Abrechnung: Kauf von Wertpapieren
+Depotinhaber: Max Mustermann
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+111 1111111 11 X(IE)-MSCI WORLD 1D FUNDS 1/1
+WKN A1XEY2 Nominal ST 1,4353
+ISIN IE00BK1PV551 Kurs EUR 70,332
+Verwahrart Girosammel / Zwischenverwahrung Euroclear
+Geschäft Kommissionsgeschäft
+Börse Frankfurt a.M. - Deutsche Börse - Frankfurter Wertpapierbörse (FWB) - Xetra
+Belegnummer 1111111111 / 1111111 Schlusstag/-zeit MEZ 20.08.2021 / 09:04
+Ihre Referenz DBM11
+Auftragsart sonstiger Auftrag
+Wichtiger Hinweis: Hiermit weisen wir darauf hin, dass der Kauf dieses Wertpapieres einer zeitlich befristeten
+Sonderkondition unterliegt. Ab Ende der Aktion fallen für Käufe im Rahmen des maxblue Wertpapier Sparplans die
+regulären Gebühren gemäß Preis- und Leistungsverzeichnis an, sofern keine Verlängerung der Aktion erfolgt. Informationen
+zur Mindestlaufzeit der aktuellen Aktionen finden Sie auf der maxblue Webseite unter Geldanlage / Wertpapier Sparplan.
+Abrechnung Währung Betrag
+Kurswert EUR 100,95
+Provision EUR 1,26
+Ausgekehrte Zuwendungen, die die Bank von DWS Xtrackers erhält EUR -1,26
+Belastung
+Buchung auf Kontonummer 1111111 11 mit Wertstellung 24.08.2021 EUR 100,95
+Summe der in der Abrechnung enthaltenen Provisionen und Auslagen EUR 1,26
+DieWertpapiere haben wir entsprechend der Abrechnung gebucht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen
+und die Sonderbedingungen fürWertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen
+in den Geschäftsräumen der Bank oder schriftlich an Deutsche Bank AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt.
+Die unter § 4 Nr. 8 UStG im Inland fallenden Bank- und Finanzdienstleistungen sind von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert
+ausgewiesen ist. Soweit der Leistungsempfänger umsatzsteuerlicher Unternehmer ist und seinen Sitz in einem anderen EU-Mitgliedstaat hat und die Bank
+und Finanzdienstleistungen nach dortigem Recht umsatzsteuerpflichtig sind, gilt die Steuerschuldnerschaft des Leistungsempfängers. Umsatzsteuer ID
+Nr.: Deutsche Bank AG, 60262 Frankfurt DE114103379
+TR00000001 / IR12_17_DBTRADER_68059 / 20210823 / A#

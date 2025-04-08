@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
+import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
@@ -33,6 +36,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextStyle;
@@ -47,13 +51,15 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
+import name.abuchen.portfolio.datatransfer.actions.CheckForexGrossValueAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckSecurityRelatedValuesAction;
+import name.abuchen.portfolio.datatransfer.actions.CheckTransactionDateAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckValidTypesAction;
 import name.abuchen.portfolio.datatransfer.actions.DetectDuplicatesAction;
-import name.abuchen.portfolio.datatransfer.actions.MarkNonImportableAction;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -70,11 +76,16 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.CopyPasteSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class ReviewExtractedItemsPage extends AbstractWizardPage implements ImportAction.Context
 {
@@ -82,6 +93,23 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private static final String IMPORT_TARGET = "import-target"; //$NON-NLS-1$
     private static final String IMPORT_TARGET_PORTFOLIO = IMPORT_TARGET + "-portfolio-"; //$NON-NLS-1$
     private static final String IMPORT_TARGET_ACCOUNT = IMPORT_TARGET + "-account-"; //$NON-NLS-1$
+    /**
+     * Preference for the import wizard to convert "BuySell" transactions to
+     * "Delivery" transactions
+     */
+    private static final String IMPORT_CONVERT_BUYSELL_TO_DELIVERY = "IMPORT_CONVERT_BUYSELL_TO_DELIVERY"; //$NON-NLS-1$
+
+    /**
+     * Preference for the import wizard for "Dividends" additional one
+     * "Withdrawal" generate
+     */
+    private static final String IMPORT_REMOVE_DIVIDENDS = "IMPORT_REMOVE_DIVIDENDS"; //$NON-NLS-1$
+
+    /**
+     * Preference for the import wizard that the notes are set for the
+     * transactions
+     */
+    private static final String IMPORT_NOTES = "IMPORT_NOTES"; //$NON-NLS-1$
 
     /**
      * If embedded into the CSV import, the first page can change the parsing
@@ -101,6 +129,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private ComboViewer secondaryAccount;
     private Button cbConvertToDelivery;
     private Button cbRemoveDividends;
+    private Button cbImportNotesFromSource;
 
     private final Client client;
     private final Extractor extractor;
@@ -177,12 +206,25 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         return cbRemoveDividends.getSelection();
     }
 
+    public boolean doImportNotesFromSource()
+    {
+        return cbImportNotesFromSource.getSelection();
+    }
+
     @Override
     public void createControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NULL);
         setControl(container);
         container.setLayout(new FormLayout());
+
+        List<Account> accounts = client.getActiveAccounts();
+        if (accounts.isEmpty())
+            accounts = client.getAccounts();
+
+        List<Portfolio> portfolios = client.getActivePortfolios();
+        if (portfolios.isEmpty())
+            portfolios = client.getPortfolios();
 
         Composite targetContainer = new Composite(container, SWT.NONE);
         GridLayoutFactory.fillDefaults().numColumns(4).applyTo(targetContainer);
@@ -192,7 +234,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         Combo cmbAccount = new Combo(targetContainer, SWT.READ_ONLY);
         primaryAccount = new ComboViewer(cmbAccount);
         primaryAccount.setContentProvider(ArrayContentProvider.getInstance());
-        primaryAccount.setInput(client.getActiveAccounts());
+        primaryAccount.setInput(accounts);
         primaryAccount.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
 
         lblSecondaryAccount = new Label(targetContainer, SWT.NONE);
@@ -201,7 +243,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         Combo cmbAccountTarget = new Combo(targetContainer, SWT.READ_ONLY);
         secondaryAccount = new ComboViewer(cmbAccountTarget);
         secondaryAccount.setContentProvider(ArrayContentProvider.getInstance());
-        secondaryAccount.setInput(client.getActiveAccounts());
+        secondaryAccount.setInput(accounts);
         secondaryAccount.getControl().setVisible(false);
 
         Label lblPrimaryPortfolio = new Label(targetContainer, SWT.NONE);
@@ -209,7 +251,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         Combo cmbPortfolio = new Combo(targetContainer, SWT.READ_ONLY);
         primaryPortfolio = new ComboViewer(cmbPortfolio);
         primaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
-        primaryPortfolio.setInput(client.getActivePortfolios());
+        primaryPortfolio.setInput(portfolios);
         primaryPortfolio.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
 
         lblSecondaryPortfolio = new Label(targetContainer, SWT.NONE);
@@ -218,16 +260,27 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         Combo cmbPortfolioTarget = new Combo(targetContainer, SWT.READ_ONLY);
         secondaryPortfolio = new ComboViewer(cmbPortfolioTarget);
         secondaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
-        secondaryPortfolio.setInput(client.getActivePortfolios());
+        secondaryPortfolio.setInput(portfolios);
         secondaryPortfolio.getControl().setVisible(false);
 
         preselectDropDowns();
 
         cbConvertToDelivery = new Button(container, SWT.CHECK);
         cbConvertToDelivery.setText(Messages.LabelConvertBuySellIntoDeliveryTransactions);
+        cbConvertToDelivery.setSelection(
+                        preferences.getBoolean(IMPORT_CONVERT_BUYSELL_TO_DELIVERY + extractor.getLabel()));
 
         cbRemoveDividends = new Button(container, SWT.CHECK);
         cbRemoveDividends.setText(Messages.LabelRemoveDividends);
+        cbRemoveDividends.setSelection(preferences.getBoolean(IMPORT_REMOVE_DIVIDENDS + extractor.getLabel()));
+
+        cbImportNotesFromSource = new Button(container, SWT.CHECK);
+        cbImportNotesFromSource.setText(Messages.LabelImportNotesFromSource);
+
+        // default behavior is to import the notes -> check if the key exists
+        // because the boolean value defaults to false
+        var hasKey = preferences.contains(IMPORT_NOTES + extractor.getLabel());
+        cbImportNotesFromSource.setSelection(!hasKey || preferences.getBoolean(IMPORT_NOTES + extractor.getLabel()));
 
         Composite compositeTable = new Composite(container, SWT.NONE);
         Composite errorTable = new Composite(container, SWT.NONE);
@@ -239,7 +292,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         FormDataFactory.startingWith(targetContainer) //
                         .top(new FormAttachment(0, 0)).left(new FormAttachment(0, 0)).right(new FormAttachment(100, 0))
                         .thenBelow(cbConvertToDelivery) //
-                        .thenRight(cbRemoveDividends);
+                        .thenRight(cbRemoveDividends) //
+                        .thenRight(cbImportNotesFromSource);
 
         FormDataFactory.startingWith(cbConvertToDelivery) //
                         .thenBelow(compositeTable).right(targetContainer).bottom(new FormAttachment(80, 0)) //
@@ -256,6 +310,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(tableViewer);
 
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
@@ -267,6 +322,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         layout = new TableColumnLayout();
         errorTable.setLayout(layout);
         errorTableViewer = new TableViewer(errorTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        ColumnViewerToolTipSupport.enableFor(errorTableViewer, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(errorTableViewer);
         errorTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         table = errorTableViewer.getTable();
@@ -281,6 +338,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         // be imported into the same account
 
         List<Account> activeAccounts = client.getActiveAccounts();
+        if (activeAccounts.isEmpty())
+            activeAccounts.addAll(client.getAccounts());
         if (!activeAccounts.isEmpty())
         {
             String uuid = account != null ? account.getUUID()
@@ -293,6 +352,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         }
 
         List<Portfolio> activePortfolios = client.getActivePortfolios();
+        if (activePortfolios.isEmpty())
+            activePortfolios.addAll(client.getPortfolios());
         if (!activePortfolios.isEmpty())
         {
             String uuid = portfolio != null ? portfolio.getUUID()
@@ -317,6 +378,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 String text = e.getMessage();
                 return text == null || text.isEmpty() ? e.getClass().getName() : text;
             }
+
+            @Override
+            public String getToolTipText(Object element)
+            {
+                return TextUtil.wordwrap(getText(element));
+            }
         });
         layout.setColumnData(column.getColumn(), new ColumnWeightData(100, true));
     }
@@ -340,6 +407,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                         image = Images.ERROR;
                         break;
                     case OK:
+                        image = Images.OK;
+                        break;
                     default:
                 }
                 return image != null ? image.image() : null;
@@ -348,22 +417,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public String getToolTipText(Object entry)
             {
-                List<String> messages = new ArrayList<String>();
-                ((ExtractedEntry) entry).getStatus() //
+                String message = ((ExtractedEntry) entry).getStatus() //
                                 .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
-                                .forEach(s -> {
-                                    if (s.getMessage() != null)
-                                        messages.add(s.getMessage());
-                                });
-                String message = null;
-                for (String m : messages)
-                {
-                    if (message != null && message.length() > 0)
-                        message = message.concat("\n").concat(m); //$NON-NLS-1$
-                    else
-                        message = m;
-                }
-                return message;
+                                .filter(s -> s.getMessage() != null) //
+                                .map(s -> s.getMessage()) // NOSONAR
+                                .collect(Collectors.joining("\n")); //$NON-NLS-1$
+                return TextUtil.wordwrap(message);
             }
 
             @Override
@@ -372,6 +431,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 return ""; //$NON-NLS-1$
             }
         });
+        ColumnViewerSorter.create(entry -> ((ExtractedEntry) entry).getMaxCode()).attachTo(viewer, column);
         layout.setColumnData(column.getColumn(), new ColumnPixelData(22, true));
 
         column = new TableViewerColumn(viewer, SWT.NONE);
@@ -385,6 +445,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 return date != null ? Values.DateTime.format(date) : null;
             }
         });
+        ColumnViewerSorter.create(entry -> ((ExtractedEntry) entry).getItem().getDate()).attachTo(viewer, column);
         layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
 
         column = new TableViewerColumn(viewer, SWT.NONE);
@@ -400,22 +461,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public String getToolTipText(Object entry)
             {
-                List<String> messages = new ArrayList<String>();
-                ((ExtractedEntry) entry).getStatus() //
+                String message = ((ExtractedEntry) entry).getStatus() //
                                 .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
-                                .forEach(s -> {
-                                    if (s.getMessage() != null)
-                                        messages.add(s.getMessage());
-                                });
-                String message = null;
-                for (String m : messages)
-                {
-                    if (message != null && message.length() > 0)
-                        message = message.concat("\n").concat(m); //$NON-NLS-1$
-                    else
-                        message = m;
-                }
-                return message;
+                                .filter(s -> s.getMessage() != null) //
+                                .map(s -> s.getMessage()) // NOSONAR
+                                .collect(Collectors.joining("\n")); //$NON-NLS-1$
+                return TextUtil.wordwrap(message);
             }
 
             @Override
@@ -467,13 +518,16 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         column = new TableViewerColumn(viewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnSecurity);
+        var nameConfig = client.getSecurityNameConfig();
         column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
         {
             @Override
             public String getText(ExtractedEntry entry)
             {
                 Security security = entry.getItem().getSecurity();
-                return security != null ? security.getName() : null;
+                if (security == null)
+                    return null;
+                return entry.getSecurityOverride() != null ? entry.getSecurityOverride().getName(nameConfig) : security.getName(nameConfig);
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(250, true));
@@ -485,8 +539,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public String getText(ExtractedEntry entry)
             {
-                Account account = entry.getItem().getAccountPrimary();
-                return account != null ? account.getName() : null;
+                Account a = entry.getItem().getAccountPrimary();
+                return a != null ? a.getName() : null;
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
@@ -498,8 +552,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public String getText(ExtractedEntry entry)
             {
-                Account account = entry.getItem().getAccountSecondary();
-                return account != null ? account.getName() : null;
+                Account a = entry.getItem().getAccountSecondary();
+                return a != null ? a.getName() : null;
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
@@ -511,8 +565,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public String getText(ExtractedEntry entry)
             {
-                Portfolio portfolio = entry.getItem().getPortfolioPrimary();
-                return portfolio != null ? portfolio.getName() : null;
+                Portfolio p = entry.getItem().getPortfolioPrimary();
+                return p != null ? p.getName() : null;
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
@@ -524,8 +578,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public String getText(ExtractedEntry entry)
             {
-                Portfolio portfolio = entry.getItem().getPortfolioSecondary();
-                return portfolio != null ? portfolio.getName() : null;
+                Portfolio p = entry.getItem().getPortfolioSecondary();
+                return p != null ? p.getName() : null;
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
@@ -578,7 +632,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                             .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
                             .forEach(s -> {
                                 Images image = s.getCode() == ImportAction.Status.Code.WARNING ? //
-                                Images.WARNING : Images.ERROR;
+                                                Images.WARNING : Images.ERROR;
                                 manager.add(new LabelOnly(s.getMessage(), image.descriptor()));
                             });
         }
@@ -597,23 +651,40 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         {
             manager.add(new SimpleAction(Messages.LabelDoImport, a -> {
                 for (Object element : ((IStructuredSelection) tableViewer.getSelection()).toList())
-                    ((ExtractedEntry) element).setImported(true);
+                {
+                    var entry = (ExtractedEntry) element;
+                    entry.setImported(true);
+
+                    if (entry.getItem() instanceof Extractor.SecurityItem)
+                    {
+                        // if a security item is now explicitly imported, remove
+                        // all security overrides
+                        allEntries.stream().filter(e -> e.getSecurityDependency() == entry)
+                                        .forEach(e -> e.setSecurityOverride(null));
+                    }
+                }
 
                 tableViewer.refresh();
             }));
         }
 
+        // if exactly one security is selected, offer to use an alternative
+
+        if (selection.size() == 1 && selection.getFirstElement() instanceof ExtractedEntry entry
+                        && entry.getItem() instanceof Extractor.SecurityItem)
+        {
+            manager.add(new Separator());
+            manager.add(new SimpleAction(Messages.LabelUseExistingSecurity, a -> selectExistingSecurity(entry)));
+        }
+
         manager.add(new Separator());
 
-        showApplyToAllItemsMenu(manager, Messages.ColumnAccount, client::getAccounts,
-                        (item, account) -> item.setAccountPrimary(account));
-        showApplyToAllItemsMenu(manager, Messages.ColumnOffsetAccount, client::getAccounts,
-                        (item, account) -> item.setAccountSecondary(account));
+        showApplyToAllItemsMenu(manager, Messages.ColumnAccount, client::getAccounts, Item::setAccountPrimary);
+        showApplyToAllItemsMenu(manager, Messages.ColumnOffsetAccount, client::getAccounts, Item::setAccountSecondary);
 
-        showApplyToAllItemsMenu(manager, Messages.ColumnPortfolio, client::getPortfolios,
-                        (item, portfolio) -> item.setPortfolioPrimary(portfolio));
+        showApplyToAllItemsMenu(manager, Messages.ColumnPortfolio, client::getPortfolios, Item::setPortfolioPrimary);
         showApplyToAllItemsMenu(manager, Messages.ColumnOffsetPortfolio, client::getPortfolios,
-                        (item, portfolio) -> item.setPortfolioSecondary(portfolio));
+                        Item::setPortfolioSecondary);
     }
 
     private <T extends Named> void showApplyToAllItemsMenu(IMenuManager parent, String label, Supplier<List<T>> options,
@@ -638,11 +709,15 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     {
         setTitle(extractor.getLabel());
 
-        if (!doExtractBeforeEveryPageDisplay
-                        && (!allEntries.isEmpty() || errorTableViewer.getTable().getItemCount() > 0))
-            return;
+        // run the extraction job either if we have to run them every time (in
+        // the case of CSV) or the first time around because we do not have any
+        // entries nor error messages
+        if (doExtractBeforeEveryPageDisplay
+                        || (allEntries.isEmpty() && errorTableViewer.getTable().getItemCount() == 0))
+        {
+            runExtractionJob();
 
-        runExtractionJob();
+        }
     }
 
     private void runExtractionJob()
@@ -654,7 +729,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         if (extractor == null)
         {
             setResults(Collections.emptyList(), files.stream().map(f -> new UnsupportedOperationException(f.getName()))
-                            .collect(Collectors.toList()));
+                            .collect(toMutableList()));
             return;
         }
 
@@ -670,11 +745,21 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
                     try
                     {
+                        // for PDF documents, the extraction job does not
+                        // actually do an extraction because we the extractor
+                        // is created in ImportExtractedItemsWizard and just
+                        // returns the items
+
+                        // for CSV documents, we actually have to parse the
+                        // original file again
+
+                        // in both cases, we have a fresh list to which we can
+                        // apply the checks inside setResults again
 
                         List<ExtractedEntry> entries = extractor //
                                         .extract(files, errors).stream() //
                                         .map(ExtractedEntry::new) //
-                                        .collect(Collectors.toList());
+                                        .toList();
 
                         // Logging them is not a bad idea if the whole method
                         // fails
@@ -702,6 +787,10 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     {
         preferences.setValue(IMPORT_TARGET_ACCOUNT + extractor.getLabel(), getAccount().getUUID());
         preferences.setValue(IMPORT_TARGET_PORTFOLIO + extractor.getLabel(), getPortfolio().getUUID());
+
+        preferences.setValue(IMPORT_CONVERT_BUYSELL_TO_DELIVERY + extractor.getLabel(), doConvertToDelivery());
+        preferences.setValue(IMPORT_REMOVE_DIVIDENDS + extractor.getLabel(), doRemoveDividends());
+        preferences.setValue(IMPORT_NOTES + extractor.getLabel(), doImportNotesFromSource());
     }
 
     public void setAccount(Account account)
@@ -716,12 +805,13 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
     private void setResults(List<ExtractedEntry> entries, List<Exception> errors)
     {
+        allEntries.addAll(entries);
+        extractionErrors.addAll(errors);
+
+        setupDependencies(entries);
         checkEntries(entries);
 
-        allEntries.addAll(entries);
         tableViewer.setInput(allEntries);
-        extractionErrors.addAll(errors);
-        errorTableViewer.setInput(extractionErrors);
 
         for (ExtractedEntry entry : entries)
         {
@@ -744,32 +834,103 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         tableViewer.refresh();
     }
 
+    /**
+     * Setup the securityDependency attribute of the extracted item by
+     * collecting all entries which import a new security
+     */
+    private void setupDependencies(List<ExtractedEntry> entries)
+    {
+        var security2entry = entries.stream().filter(e -> e.getItem() instanceof Extractor.SecurityItem)
+                        .collect(Collectors.toMap(e -> e.getItem().getSecurity(), e -> e));
+
+        for (ExtractedEntry entry : entries)
+        {
+            if (entry.getItem() instanceof Extractor.SecurityItem)
+                continue;
+
+            entry.setSecurityDependency(security2entry.get(entry.getItem().getSecurity()));
+        }
+    }
+
     private void checkEntries(List<ExtractedEntry> entries)
     {
         List<ImportAction> actions = new ArrayList<>();
+        actions.add(new CheckTransactionDateAction());
         actions.add(new CheckValidTypesAction());
         actions.add(new CheckSecurityRelatedValuesAction());
         actions.add(new DetectDuplicatesAction(client));
         actions.add(new CheckCurrenciesAction());
-        actions.add(new MarkNonImportableAction());
+        actions.add(new CheckForexGrossValueAction());
 
         List<Exception> allErrors = new ArrayList<>(extractionErrors);
 
         for (ExtractedEntry entry : entries)
         {
             entry.clearStatus();
-            for (ImportAction action : actions)
-            {
-                ImportAction.Status actionStatus = entry.getItem().apply(action, this);
-                entry.addStatus(actionStatus);
-                if (actionStatus.getCode() == ImportAction.Status.Code.ERROR)
-                    allErrors.add(new IOException(
-                                    entry.getItem().getSubject().getNote() + ": " + actionStatus.getMessage())); //$NON-NLS-1$
 
+            if (entry.getItem().isFailure())
+            {
+                entry.addStatus(new ImportAction.Status(Code.ERROR, entry.getItem().getFailureMessage()));
+                allErrors.add(new IOException(entry.getItem().getFailureMessage() + ": " + entry.getItem().toString())); //$NON-NLS-1$
+            }
+            else
+            {
+                for (ImportAction action : actions)
+                {
+                    try
+                    {
+                        ImportAction.Status actionStatus = entry.getItem().apply(action, this);
+                        entry.addStatus(actionStatus);
+                        if (actionStatus.getCode() == ImportAction.Status.Code.ERROR)
+                        {
+                            allErrors.add(new IOException(actionStatus.getMessage() + ": " //$NON-NLS-1$
+                                            + entry.getItem().toString()));
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        // if any of the import action fails to due unexpected
+                        // error, we must not abort but mark the item as not
+                        // importable and continue
+
+                        entry.addStatus(new ImportAction.Status(ImportAction.Status.Code.ERROR, e.getMessage()));
+                        allErrors.add(e);
+
+                        // write to application log as this is most likely than
+                        // not a programming error
+                        PortfolioPlugin.log(e);
+                    }
+                }
             }
         }
 
         errorTableViewer.setInput(allErrors);
+    }
+
+    private void selectExistingSecurity(ExtractedEntry entry)
+    {
+        var labelProvider = LabelProvider.createTextImageProvider(o -> ((Security) o).getName(),
+                        o -> LogoManager.instance().getDefaultColumnImage(o, client.getSettings()));
+        ListSelectionDialog dialog = new ListSelectionDialog(Display.getDefault().getActiveShell(), labelProvider);
+        dialog.setTitle(Messages.LabelSecurities);
+        dialog.setMultiSelection(false);
+
+        // add all securities that can be purchased, i.e. exclude exchange rates
+        // and indices
+        dialog.setElements(client.getSecurities().stream().filter(s -> s.getCurrencyCode() != null)
+                        .filter(s -> !s.isExchangeRate()).sorted(new Security.ByName()).toList());
+
+        if (dialog.open() == Window.OK)
+        {
+            Object[] selected = dialog.getResult();
+            if (selected.length > 0)
+            {
+                entry.setImported(false);
+                allEntries.stream().filter(e -> e.getSecurityDependency() == entry)
+                                .forEach(e -> e.setSecurityOverride((Security) selected[0]));
+                tableViewer.refresh();
+            }
+        }
     }
 
     abstract static class FormattedLabelProvider extends StyledCellLabelProvider // NOSONAR

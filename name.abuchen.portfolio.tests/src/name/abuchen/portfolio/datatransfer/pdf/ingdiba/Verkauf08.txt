@@ -1,0 +1,57 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: Max Mustermann
+Hans Mustermann
+Max Mustermann
+und Hans Mustermann Direkt-Depot Nr.: 8154711815
+Turmstr. 1 Datum: 16.11.2021
+10123 Berlin Seite: 1 von 2
+Wertpapierabrechnung Verkauf
+Ordernummer 815471111.001
+ISIN (WKN) US76954A1034 (A3C47B)
+Wertpapierbezeichnung Rivian Automotive Inc.
+Reg.Shares Cl.A  DL -,0001
+Nominale Stück 5,00
+Kurs USD 166,00
+Handelsplatz USA
+Ausführungstag / -zeit 16.11.2021 um 15:41:12 Uhr
+Kurswert USD 830,00
+Zwischensumme USD 830,00
+umger. zum Devisenkurs EUR 729,54 (USD = 1,137702)
+KapSt anteilig 50,00 % 24,45% EUR 32,14
+Kirchensteuer 9,00 % EUR 2,89
+Solidaritätszuschlag 5,50 % EUR 1,76
+KapSt anteilig 50,00 % 24,45% EUR 32,14
+Kirchensteuer 9,00 % EUR 2,89
+Solidaritätszuschlag 5,50 % EUR 1,76
+Handelsplatzgebühr EUR 14,90
+Provision EUR 6,72
+Endbetrag zu Ihren Gunsten EUR 634,34
+Abrechnungs-IBAN DE34 4711 0815 1111 4711 10
+Valuta 18.11.2021
+Wertpapiere zulasten Wertpapierrechnung USA.
+Die Abrechnung erfolgt unter dem Vorbehalt der Lieferbarkeit der Wertpapiere.
+Diese Order wurde mit folgendem Limit / -typ erteilt: 166,00 USD
+Auftraggeber war Hans Mustermann.
+Jahressteuerbescheinigung folgt.
+Weiter geht es auf Seite 2.
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzende des Aufsichtsrates: Susanne Klöß-Braekler · Vorstand: Nick Jue (Vorsitzender),
+Dr. Joachim von Schorlemer (stellv. Vorsitzender), Zeljko Kaurin, Sigrid Kozmiensky, Daniel Llano Manibardo, Norman Tambach · Sitz: Frankfurt am Main · AG Frankfurt am Main
+HRB 7727, Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+11WAAA8154711815_T
+Depotinhaber: Max Mustermann
+Hans Mustermann
+Direkt-Depot Nr.: 8154711815
+Datum: 16.11.2021
+Seite: 2 von 2
+Ordernummer 815471111.001
+ISIN (WKN) US76954A1034 (A3C47B)
+Veräußerungsgewinn nach Differenzmethode 9999,99 EUR
+KapSt-pflichtiger Kapitalertrag 9999,99 EUR
+Bemessungsgrundlage für KapSt anteilig 50,00 % 9999,99 EUR
+Bemessungsgrundlage für KapSt anteilig 50,00 % 9999,99 EUR
+Bemessungsgrundlage für KapSt 9999,99 EUR
+Sparer-Pauschbetrag nach Geschäft 9999,99 EUR
+Bei Fragen besuchen Sie uns einfach unter www.ing.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing.de .

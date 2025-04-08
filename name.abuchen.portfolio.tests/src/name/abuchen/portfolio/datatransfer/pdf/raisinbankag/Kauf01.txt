@@ -1,0 +1,34 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+Wertpapierabrechnung 
+Kauf 
+Abrechnungsnummer 
+95a8535f-0aa7-4197-85ae-3f7337d9232d 
+aWGZmxB hdQCtgGNs YWpJtg 
+Straße 4 
+30655 Hannover Depotinhaber Depotnummer - Konto 
+Deutschland LLIMnbP xJilmXPlP 127691188-1 
+Kokfmg 
+Wir haben für Sie gekauft Berlin, 23.05.2024 
+Wertpapier ISIN 
+VANG.FTSE D.A.P.X.J.DLD IE00B9F5YL18 
+Nominal/Anzahl Kurs Kurswert 
+0,18854 Stück 24,08 EUR 4,54 EUR 
+Handel 
+Handelsdatum, Uhrzeit: 23.05.2024 12:10:43 
+Handelsplatz: Tradegate 
+Ordertyp: Market Order 
+Verwahrung 
+Verwahrart: Wertpapierrechnung 
+Lagerstelle: Clearstream Banking S.A. in Luxembourg 
+Lagerland: Luxemburg 
+Valuta Betrag zu Ihren Lasten 
+27.05.2024 4,54 EUR 
+Dokument ID: 509d20df-f9da-4b1b-96d1-ba7f65fd1cc7
+© Raisin Bank AG
+Raisin Bank AG Niedenau 61-63 60325 Frankfurt am Main
+Sitz der Gesellschaft/Registered Office: Frankfurt am Main
+Registergericht/Commercial Register: Amtsgericht Frankfurt am Main, HRB 13305
+Vorstand/Member of the Board of Directors: Marco Lindgens, Mirko Siepmann, Dr. Andreas Wolf
+Vorsitzender des Aufsichtsrats/Chairman of the Supervisory Board: Dr. Frank Freund

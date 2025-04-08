@@ -1,0 +1,53 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.64.1
+-----------------------------------------
+~$~|ET|684844||||||||SBROKERL210906.ET||||20210906||2368|0000|||||~$~
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+Ertr gnisgutschrift aus Wertpapieren EMAILVERSAND=Nä
+DEPOTNUMMER=324/1589/002
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=0000
+Dividende f r ADRESSZEILE1=Herrnü
+ADRESSZEILE2=qFRdoT xikPV
+01.01.2021 - 31.12.2021
+ADRESSZEILE3=vmmUhli. 21
+Herrn Depot-Nr. Abrechnungs-Nr. ADRESSZEILE4=52249 Eschweiler OT Bergrath
+wnxbjN spHZE 728/1200/002 44756844 ADRESSZEILE5=
+ZcHLGCZ. 30 ADRESSZEILE6=
+15240 SLDslxQGQz OT BXZRrlUx BELEGNUMMER=2383
+SEITENNUMMER=1
+STEUERERSTATTUNG=N
+Depotinhaber
+ODNbrz NKWJj
+Wiesbaden, 07.09.2021
+Dividendengutschrift
+Gattungsbezeichnung ISIN
+Johnson & Johnson Registered Shares DL 1 US4781601046
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 8,000 23.08.2021 07.09.2021 USD 1,060000
+Wert Devisenkurs Betrag zu Ihren Gunsten
+07.09.2021 EUR/USD 1,19025 EUR 5,30
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+ausländische Dividende EUR 7,12
+US-Quellensteuer 15% USD 1,27
+davon anrechenbare US-Quellensteuer 15% EUR 1,07
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 2,84
+einbehaltene Kapitalertragsteuer EUR 0,71
+einbehaltener Solidaritätszuschlag EUR 0,04
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 29,56
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 1,62
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Wiesbaden, Steuernummer 402/200/0073.
+Steuerlicher Stichtag: 07.09.2021
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung
+Mit freundlichen Grüûen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/ABREEREIERTR/GDBERTRG/002383/070921/004103
+SBRO_ET_v3.0T.SBROKERL210906.ET_2368

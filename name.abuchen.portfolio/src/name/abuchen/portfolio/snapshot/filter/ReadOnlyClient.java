@@ -85,6 +85,6 @@ public class ReadOnlyClient extends Client
 
     public static Client unwrap(Client client)
     {
-        return client instanceof ReadOnlyClient ? unwrap(((ReadOnlyClient) client).source) : client;
+        return client instanceof ReadOnlyClient readOnly ? unwrap(readOnly.source) : client;
     }
 }

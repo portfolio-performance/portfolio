@@ -1,0 +1,84 @@
+PDF Autor: 'ING-DiBa'
+PDFBox Version: 1.8.16
+-----------------------------------------
+ING-DiBa AG   60628 Frankfurt am Main
+Datum 30.12.2016
+Herrn Auszugsnummer 1
+Max Mustermann Alter Saldo 127,62 Euro
+Mustermannstr. 11 Neuer Saldo 316,32 Euro
+99999 München
+IBAN DEXX XXXX XXXX XXXX XXXX XX
+BIC INGDDEFFXXX
+Seite 1 von 2
+Extra-Konto Nummer XXXXXXXXXX
+Kontoauszug 2016
+Buchung Buchung / Verwendungszweck Betrag (EUR)
+Valuta
+29.04.2016 Zins/Dividende WP 155,24
+28.04.2016 Zins/Dividende ISIN CH0126881561 SWISS RE
+13.05.2016 Zins/Dividende WP 23,25
+13.05.2016 Zins/Dividende ISIN DE0005190037 BAY.MOTOR
+23.06.2016 Zins/Dividende WP 6,15
+23.06.2016 Zins/Dividende ISIN DE0007664039 VOLKSWAGE
+27.06.2016 Gutschrift Max Mustermann 10.000,00
+27.06.2016 GELDANLAGE
+13.07.2016 Ueberweisung Mustermann -5.000,00
+13.07.2016 Geldanlage
+17.08.2016 Ueberweisung Mustermann -3.000,00
+17.08.2016 Ueberweisung
+31.10.2016 Ueberweisung Mustermann -2.000,00
+31.10.2016 Geldanlage
+30.12.2016 Kapitalertragsteuer -1,38
+30.12.2016
+30.12.2016 Solidaritätszuschlag -0,07
+30.12.2016
+30.12.2016 Kirchensteuer -0,11
+30.12.2016
+30.12.2016 Zinsertrag 5,62
+30.12.2016
+Neuer Saldo 316,32
+ING-DiBa AG   Theodor-Heuss-Allee 2   60486 Frankfurt am Main   Vorsitzender des Aufsichtsrates: Ben Tellings   Vorstand: Roland Boekhout (Vorsitzender), Bernd Geilen,
+Katharina Herrmann, Željko Kaurin, Remco Nieland, Dr. Joachim von Schorlemer   Sitz: Frankfurt am Main   AG Frankfurt am Main HRB 7727   Steuernummer: 047 220 2800 4
+USt-IdNr.: DE 114 103 475   Internet: www.ing-diba.de   E-Mail: info@ing-diba.de   BIC: INGDDEFFXXX   Mitglied im Einlagensicherungsfonds
+34EXMUXXXXXXXXXX_T
+Extra-Konto Nummer XXXXXXXXXX
+Kontoauszug 2016
+Datum 30.12.2016
+Seite 2 von 2
+Abschluss für Konto XXXXXXXXXX
+Zeitraum Zins p.a. Ertrag
+01.01.2016 bis 14.06.2016 0,50%  Zins 0,40
+15.06.2016 bis 31.12.2016 0,35%  Zins 5,22
+Abschlussbetrag 5,62
+Kunden-Information
+Vorliegender Freistellungsauftrag 0,00
+Bitte beachten Sie auch die Hinweise auf der Folgeseite. Erläuterungen zu Ihrem Kontoauszug finden Sie
+auch unter https://www.ing-diba.de/kontoauszug. Weitere Erklärungen zum Thema Einlagensicherung
+finden Sie unter www.ing-diba.de/einlagensicherung. Oder wir senden Ihnen den Informationsbogen zu,
+wenn Sie das möchten.
+Wir bedanken uns für Ihr Vertrauen und wünschen Ihnen ein gesundes und erfolgreiches Jahr 2017.
+Ihre
+ING-DiBa
+PS: Ihre Kontaktdaten haben sich geändert? Bitte aktualisieren Sie diese ganz einfach im Internetbanking
+unter Service > Mein Profil.
+34EXMUXXXXXXXXXX_T
+Bitte beachten Sie die nachstehenden Hinweise:
+Kontoauszug ohne Rechnungsabschluss (Kontoübersicht)
+Wir bitten Sie, den Kontoauszug gemäß Ziffer 11 Absatz 4 unserer Allgemeinen Geschäftsbedingungen auf
+Vollständigkeit und Richtigkeit zu prüfen und uns Einwendungen in Textform unverzüglich mitzuteilen.
+Rechnungsabschluss inkl. Saldenmitteilung
+Wir bitten Sie, den Saldo Ihres Kontos/die Salden Ihrer Konten zu prüfen und uns Einwendungen in Textform
+unverzüglich, spätestens innerhalb von 6 Wochen nach Zugang, mitzuteilen. Werden innerhalb der Frist keine
+Einwendungen vorgebracht, so gilt der Saldo/gelten die Salden wie oben aufgeführt entsprechend unseren
+Allgemeinen Geschäftsbedingungen als von Ihnen anerkannt. Sie können zwar auch nach Fristablauf eine
+Berichtigung des Rechnungsabschlusses verlangen, müssen dann aber beweisen, dass Ihr Konto zu Unrecht
+belastet oder eine Ihnen zustehende Gutschrift nicht erteilt wurde.
+Einlagensicherung
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere
+Informationen können dem "Informationsbogen für den Einleger" (siehe auch www.ing-diba.de/einlagensicherung)
+entnommen werden.
+Gilt nur für Extra-Konten:
+Das Extra-Konto wird mit einer Höchstgrenze für Kontoeinlagen ("Einlagenhöchstgrenze") geführt. Die
+Einlagenhöchstgrenze beträgt 1.000.000 Euro. Der Kontoinhaber ist verpflichtet sicherzustellen, dass die
+Einlagenhöchstgrenze von 1.000.000 nicht überschritten wird.
+ING-DiBa AG

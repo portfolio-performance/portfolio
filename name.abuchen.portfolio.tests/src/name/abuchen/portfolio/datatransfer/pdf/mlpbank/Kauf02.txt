@@ -1,0 +1,40 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+MLP FDL AG · Alte Heerstraße 40 · 69168 Wiesloch
+Depotnummer 9876543210
+Kundennummer 7654321
+Max Mustermann
+Auftragsnummer 357593/62.00
+Max Mustermann Datum 16.10.2013
+Musterstr. 1 Rechnungsnummer W00866-0000961713/13
+11111 Musterstadt Umsatzsteuer-ID DE123456789
+Vermögensdepot
+0016
+Wertpapier Abrechnung Kauf
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 0,826 ZINSPLUS OP DE000A0MUWS7 (A0MUWS)
+INHABER-ANTEILE
+Börse Außerbörslich (gemäß Weisung)
+Schlusstag 15.10.2013
+Ausführungskurs 54,63 EUR
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 45,12- EUR
+Ermittlung steuerrelevante Erträge
+Zwischengewinn 0,37- EUR
+Verrechneter Sparerpauschbetrag 0,37 EUR
+Ausmachender Betrag 45,12- EUR
+Den Gegenwert buchen wir mit Valuta 17.10.2013 zu Lasten des Kontos 0123456789, BLZ 67230000.
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Den Betrag Ihres tatsächlich in Rechnung gestellten Ausgabeaufschlages entnehmen Sie bitte Ihrem persönlichen
+Kundenreporting.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2013 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 169,50 0,00 0,00
+Kauf 0,00 0,00 0,37 0,00 0,00
+Nachher 0,00 0,00 169,87 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0866.10162100.0002026OR07

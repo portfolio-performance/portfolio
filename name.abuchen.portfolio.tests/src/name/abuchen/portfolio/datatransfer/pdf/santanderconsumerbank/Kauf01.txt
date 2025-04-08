@@ -1,0 +1,36 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Santander Consumer Bank AG · Santander-Platz 1 · 41061 Mönchengladbach    
+Depotnummer
+  0000 0000000000
+ Kundennummer 000000000
+VORNAME NACHNAME
+ Auftragsnummer 000000/00.00
+ANREDE Datum 17.03.2021
+VORNAME NACHNAME Ihr Berater Santander Expertenberatung
+STRAßE NUMMER Telefon 02161/9060187
+PLZ STADT Rechnungsnummer X00000-0000000000/00
+Umsatzsteuer-ID XX000000000   
+ 
+Wertpapier Abrechnung Kauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 2 3M CO.                             US88579Y1010 (851745)
+REGISTERED SHARES DL -,01          
+Handels-/Ausführungsplatz Tradegate (Best Execution)
+Börsensegment XGAT
+Market-Order
+Limit billigst
+Schlusstag/-Zeit 17.03.2021 16:53:45 Auftraggeber NACHNAME VORNAME
+Ausführungskurs 158,98 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 317,96- EUR
+Provision 7,90- EUR
+Ausmachender Betrag 325,86- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 19.03.2021 zu Lasten des Kontos 0000000000
+(IBAN XX00 0000 0000 0000 0000 00), BLZ 31010833 (BIC SCFBDE33XXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0000.00000000.0000000XX00

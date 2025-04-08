@@ -1,0 +1,106 @@
+﻿PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.65.6
+-----------------------------------------
+Baader Bank AG   Weihenstephaner Straße 4   85716 Unterschleißheim Scalable Capital GmbH
+T  00800 00 586336*   F  +49 89 5150 2442    service@baaderbank.de Seitzstrasse 8e
+80538 Munich 
+service@scalable.capital
+Page 1/2
+Mr. Munich
+2023-11-03
+Max Musterman
+Teststr Max Musterman
+12345 Teststadt Client ID: 1962254    Portfolio: 1
+Account No.: 1234567890
+IBAN: DE30 1234 1234 1234 1234 07
+BLZ: 700 331 00
+BIC: BDWBDEMM
+Transaction No.: 341080432
+Reference No.: 477123844
+Periodic Account Statement: EUR Account
+Account Statement No. 023010
+Posting Description Value Date Debit Credit
+Date in EUR in EUR
+Account Balance in EUR on 2023-09-29 20.35
+2023-10-03 Direct Debit 2023-10-03 200.00
+Max Musterman
+DE12341234123412341234
+PBNKDEFFXXX
+Scalable Capital Broker savings pla
+n
+End to end Referenz:
+PSUY6PZUXXG1TIGSJP6GDQ
+Mandatsreferenz:
+IQWAV9M8E92WRAOE2AICQ
+Mandatsdatum:
+07.12.2021
+Gläubiger-ID:
+DE63MUC00001787612
+Case No.: 928299393
+2023-10-04 Purchase 2023-10-06 199.59 -
+ISHSVII-CORE S+P500 DLACC
+ISIN IE00B5BMR087
+STK               0,474
+Case No.: WWUM 00232559999
+2023-10-06 Credit SEPA 2023-10-06 10,000.00
+Max Musterman
+DE12341234123412341234
+PBNKDEFFXXX
+Case No.: 928689624
+Balance: 10,020.76
+Scalable Capital GmbH • Managing Directors: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • HRB 217778, District Court Munich • VAT No. 
+DE300434774 • www.scalable.capital
+ 
+Publisher and responsible for the content is Baader Bank Aktiengesellschaft • Weihenstephaner Strasse 4 • 85716 Unterschleissheim • Germany
+Management Board: Nico Baader (CEO), Oliver Riedel (Deputy CEO) • Chairman of the Supervisory Board: Helmut Schreyer • Commercial Register HRB 121537 • Principal 
+Office: Unterschleissheim • TaxNo: 143/107/04009 • VAT ID: DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Toll-free from (inter-) national landline networks. Charges may apply from other networks. KKTKK801-043.041
+Periodic Account Statement: EUR Account
+Account Statement No. 023010
+Continued: Page 2/2
+Account No.: 1234567890   BLZ: 700 331 00   IBAN: DE12 1234 1234 1234 1234 07   BIC: BDWBDEMM
+Posting Description Value Date Debit Credit
+Date in EUR in EUR
+Balance: 10,020.76
+2023-10-10 Purchase 2023-10-12 4,884.26 -
+ISHSIII-CORE MSCI WLD DLA
+ISIN IE00B4L5Y983
+STK              63
+Case No.: WWUM 00234412388
+2023-10-10 Purchase 2023-10-12 4,714.60 -
+ISHSVII-CORE S+P500 DLACC
+ISIN IE00B5BMR087
+STK              11
+Case No.: WWUM 00234412525
+2023-10-20 Direct Debit 2023-10-20 100.00
+Max Musterman
+DE12341234123412341234
+PBNKDEFFXXX
+Scalable Capital Broker savings pla
+n
+End to end Referenz:
+QTLJRRVQGTRBCJCF2JMYUR
+Mandatsreferenz:
+IQWAV9M8E92WRAOE2AICQ
+Mandatsdatum:
+07.12.2021
+Gläubiger-ID:
+DE63MUC00001787612
+Case No.: 929220024
+2023-10-23 Purchase 2023-10-25 99.93 -
+ISHSIII-CORE MSCI WLD DLA
+ISIN IE00B4L5Y983
+STK               1,337
+Case No.: WWUM 00237399133
+Account Balance in EUR on 2023-10-31 421.97
+Please ensure your compliance with the German foreign trade reporting regulations to the German Bundesbank (AWV-Meldung).
+This document has been generated electronically and will not be signed.
+Scalable Capital GmbH • Managing Directors: Erik Podzuweit, Florian Prucker, Martin Krebs, Dirk Urmoneit, Dirk Franzmeyer • HRB 217778, District Court Munich • VAT No. 
+DE300434774 • www.scalable.capital
+ 
+Publisher and responsible for the content is Baader Bank Aktiengesellschaft • Weihenstephaner Strasse 4 • 85716 Unterschleissheim • Germany
+Management Board: Nico Baader (CEO), Oliver Riedel (Deputy CEO) • Chairman of the Supervisory Board: Helmut Schreyer • Commercial Register HRB 121537 • Principal 
+Office: Unterschleissheim • TaxNo: 143/107/04009 • VAT ID: DE114123893 • LEI: 529900JFOPPEDUR61H13 • T 00800 00 586336* • service@baaderbank.de
+ 
+* Toll-free from (inter-) national landline networks. Charges may apply from other networks. KKTKK801-043.041

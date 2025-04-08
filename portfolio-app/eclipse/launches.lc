@@ -1,0 +1,87 @@
+eclipse configuration PortfolioPerformance {
+    workspace "${workspace_loc}/../runtime-PortfolioPerformance";
+    product name.abuchen.portfolio.bootstrap.product;
+        
+    feature name.abuchen.portfolio.feature;
+	feature org.eclipse.e4.rcp;
+	feature org.eclipse.emf.ecore;
+	feature org.eclipse.emf.common;
+	feature org.eclipse.equinox.p2.core.feature;
+	feature org.eclipse.ecf.filetransfer.httpclient5.feature;	
+	feature org.eclipse.ecf.core.ssl.feature;
+	feature org.eclipse.ecf.filetransfer.ssl.feature;
+	feature org.eclipse.ecf.core.feature;
+	feature org.eclipse.ecf.filetransfer.feature;
+	feature org.eclipse.nebula.cwt.feature;
+	feature org.eclipse.nebula.widgets.cdatetime.feature;
+	plugin org.apache.felix.scr;
+	plugin org.apache.aries.spifly.dynamic.bundle;
+	plugin com.twelvemonkeys.imageio.bmp autostart;
+	
+	ignore name.abuchen.portfolio.junit;
+	ignore name.abuchen.portfolio.tests;
+	ignore name.abuchen.portfolio.ui.tests;
+	ignore org.eclipse.ant.core;
+	ignore org.eclipse.jdt.annotation;
+	ignore org.eclipse.ui;
+	ignore org.eclipse.ui.workbench;
+	ignore org.junit;
+	ignore org.hamcrest.core;
+	ignore org.hamcrest.library;
+	
+    memory min=512M max=2G;
+    
+    execution-environment 'JavaSE-21';
+    
+    argument "-consoleLog";
+    
+    vm-argument "-XX:+IgnoreUnrecognizedVMOptions";
+    vm-argument "--add-modules=ALL-SYSTEM";
+    vm-argument "-XX:+UseG1GC";
+    vm-argument "-XX:+UseStringDeduplication";
+    vm-argument "-XstartOnFirstThread";
+    vm-argument "-Dorg.eclipse.swt.internal.carbon.smallFonts";
+}
+
+abstract junit-plugin configuration TestBase {
+	application org.eclipse.ant.core.antRunner;
+	
+	feature name.abuchen.portfolio.feature;
+	feature org.eclipse.e4.rcp;
+	feature org.eclipse.emf.ecore;
+	feature org.eclipse.emf.common;
+	feature org.eclipse.equinox.p2.core.feature;
+	feature org.eclipse.ecf.filetransfer.httpclient5.feature;	
+	feature org.eclipse.ecf.core.ssl.feature;
+	feature org.eclipse.ecf.filetransfer.ssl.feature;
+	feature org.eclipse.ecf.core.feature;
+	feature org.eclipse.ecf.filetransfer.feature;
+	feature org.eclipse.nebula.cwt.feature;
+	feature org.eclipse.nebula.widgets.cdatetime.feature;
+	plugin org.apache.felix.scr;
+	
+	plugin name.abuchen.portfolio.junit;
+	plugin net.bytebuddy.byte-buddy;
+	plugin org.hamcrest.core;
+	plugin org.hamcrest.library;
+	plugin org.mockito.mockito-core;
+	plugin org.objenesis;
+
+	ignore org.eclipse.jdt.annotation;
+	ignore org.eclipse.ui;
+	ignore org.eclipse.ui.workbench;
+}
+
+junit-plugin configuration PortfolioPerformance_Tests:TestBase {
+    test {
+        container '/name.abuchen.portfolio.tests';
+        runner junit4;
+    }
+}
+
+junit-plugin configuration PortfolioPerformance_UI_Tests:TestBase {
+    test {
+        container '/name.abuchen.portfolio.ui.tests';
+        runner junit4;
+    }
+}

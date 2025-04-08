@@ -1,0 +1,507 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+S Sparkasse
+Ostunterfranken
+341 00 00 81
+Herrn Ihr Ansprechpartner:
+Max Max Kompetenzcenter Stadt
+Max Max Max
+Frankenweg 7 Marktplatz 7
+99999 Stadt 99999 Stadt
+Telefon 09523 9228-24
+Telefax 09523 9228-39
+Max.fueglein@spk-ostunterfranken.de
+ 
+ 
+ 
+1. Juli 2016
+. Kontoauszug 12/2016 Seite 1 von 10
+Giro Plus 999999, DE51 7935 1730 0000 9999 99
+  
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+ Kontostand am 31.05.2016, Auszug Nr.   11              353,90+
+01.06.2016 01.06.2016 Überweisung            1.950,00-
+Richard Max
+Rückzahlung Rest 4000
+DATUM 01.06.2016, 18.10 UHR
+1.TAN 654502
+. 01.06.2016 01.06.2016 Überweisung              800,00-
+Max Max
+Rückzahlung
+DATUM 01.06.2016, 18.07 UHR
+1.TAN 151663
+01.06.2016 01.06.2016 Basis-Lastschrift               19,99-
+Telefonica Germany GmbH + Co. OHG
+Kd-Nr.: 99999999, Rg-Nr.: 107573955
+8/05, Ihre Mobilfunkrechnung. Detai
+ls unter www.rechnung.telefonica.de
+3302255483680001075739558005RCUR
+T0010001B000000099999999
+Gläubiger-ID: DE9700000000142462
+01.06.2016 01.06.2016 Entgeltabrechnung                0,50-
+siehe Anlage Nr. 1
+01.06.2016 01.06.2016 Zahlungseingang            3.890,58+
+HUK-COBURG UNTERNEHMENSGRUPPE
+HUK-COBURG UNTERNEHMENSGRUPPE
+SCHADEN VOM 06.05.2016, 16316063362
+24T 99999999/9999999999/
+301+9999999999
+Sparkasse Ostunterfranken Telefon 09521/58-0    SWIFT-Adr. (BIC): BYLADEM1HAS
+Marktplatz 14/15 Telefax 09521/58-499    BLZ: 793 517 30
+97437 Haßfurt Handelsregister www.spk-ostunterfranken.de    Ust-IDNr. DE 133906625
+Anstalt des öffentlichen Rechts HRA 5337 (AG Amtsgericht Bamberg) info@spk-ostunterfranken.de   Steuer-Nr. 249/114/70639
+0.53.2.3980007 92078..10.0101 7(F0assung November 2013) - (V1) Finanz Informatik 
+Urheberrechtlich geschützt *0000000000100383011150*
+0000000000100383011150
+S Sparkasse
+Ostunterfranken
+Kontoauszug 12/2016 Seite 2 von 10
+Giro Plus 999999, DE51 7935 1730 0000 9999 99 Max Max
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+02.06.2016 02.06.2016 Basis-Lastschrift               95,00-
+PayPal Europe S.a.r.l. et Cie S.C.A
+PP.9397.PP . JOCHENLEIMB, Ihr Einka
+uf bei JOCHENLEIMB
+YYI53MJ29N5YTN6S PP.9397.PP PAYPAL
+53MJ224MYL4VU
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+02.06.2016 02.06.2016 Zahlungseingang              220,00+
+Max Max
+Teile
+03.06.2016 03.06.2016 Basis-Lastschrift               91,10-
+. PayPal Europe S.a.r.l. et Cie S.C.APP.9397.PP . Q PARTS24, Ihr Einkauf
+  bei Q PARTS24
+YYIJ222227MUNFWG PP.9397.PP PAYPAL
+53MJ224MYL4VU
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+03.06.2016 03.06.2016 Basis-Lastschrift               46,11-
+PayPal Europe S.a.r.l. et Cie S.C.A
+PP.9397.PP . MISTER AUTO, Ihr Einka
+uf bei MISTER AUTO
+. YYIJ222227MUNLYQ PP.9397.PP PAYPAL
+53MJ224MYL4VU
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+03.06.2016 03.06.2016 Kartenzahlung               22,71-
+SHELL 7421// Schweinfurt /DE
+2016-06-02T18:30:40 Karte2 2016-12
+06.06.2016 06.06.2016 Basis-Lastschrift               89,00-
+PayPal Europe S.a.r.l. et Cie S.C.A
+PP.9397.PP . wb-autoteile, Ihr Eink
+auf bei wb-autoteile, Artikel-22126
+5334037
+YYIJ222227N4VCXE PP.9397.PP PAYPAL
+53MJ224MYL4VU
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+06.06.2016 06.06.2016 Basis-Lastschrift               54,15-
+PayPal Europe S.a.r.l. et Cie S.C.A
+PP.9397.PP . AUTOTEILESU, Ihr Einka
+uf bei AUTOTEILESU
+YYIJ222227N4KWM8 PP.9397.PP PAYPAL
+53MJ224MYL4VU
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+Sparkasse Ostunterfranken Telefon 09521/58-0    SWIFT-Adr. (BIC): BYLADEM1HAS
+Marktplatz 14/15 Telefax 09521/58-499    BLZ: 793 517 30
+97437 Haßfurt Handelsregister www.spk-ostunterfranken.de    Ust-IDNr. DE 133906625
+Anstalt des öffentlichen Rechts HRA 5337 (AG Amtsgericht Bamberg) info@spk-ostunterfranken.de   Steuer-Nr. 249/114/70639
+0.53.2.3980007 92078..10.0101 7(F0assung November 2013) - (V1) Finanz Informatik 
+Urheberrechtlich geschützt *0000000000100383011150*
+0000000000100383011150
+S Sparkasse
+Ostunterfranken
+Kontoauszug 12/2016 Seite 3 von 10
+Giro Plus 999999, DE51 7935 1730 0000 9999 99 Max Max
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+07.06.2016 07.06.2016 Basis-Lastschrift               42,00-
+PayPal Europe S.a.r.l. et Cie S.C.A
+PP.9397.PP . tafmet, Ihr Einkauf be
+i tafmet, Artikel-181290503739
+YYIJ222227NQR86U PP.9397.PP PAYPAL
+53MJ224MYL4VU
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+07.06.2016 07.06.2016 Basis-Lastschrift                7,99-
+PayPal Europe S.a.r.l. et Cie S.C.A
+PP.9397.PP . DHL OL, Ihr Einkauf be
+i DHL OL
+. YYIJ222227NVJYFQ PP.9397.PP PAYPAL53MJ224MYL4VU
+  Gläubiger-ID:
+LU96ZZZ0000000000000000058
+07.06.2016 07.06.2016 Zahlungseingang               20,00+
+Jasmin Max
+Lecher
+08.06.2016 08.06.2016 Basis-Lastschrift               16,49-
+PayPal Europe S.a.r.l. et Cie S.C.A
+PP.9397.PP . carparts-discount-eu,
+Ihr Einkauf bei carparts-discount-e
+. u, Artikel-221885552010
+YYIJ222227P7S9KQ PP.9397.PP PAYPAL
+53MJ224MYL4VU
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+09.06.2016 09.06.2016 Basis-Lastschrift               64,02-
+PayPal Europe S.a.r.l. et Cie S.C.A
+PP.9397.PP . WAGNERAUTOT, Ihr Einka
+uf bei WAGNERAUTOT
+YYIJ222227PG3GZC PP.9397.PP PAYPAL
+53MJ224MYL4VU
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+09.06.2016 09.06.2016 Zahlungseingang              100,00+
+Max Max
+Teile
+10.06.2016 10.06.2016 Basis-Lastschrift              165,32-
+PayPal Europe S.a.r.l. et Cie S.C.A
+PP.9397.PP . PARTSRUNNER, Ihr Einka
+uf bei PARTSRUNNER
+YYIJ222227PQEGPS PP.9397.PP PAYPAL
+53MJ224MYL4VU
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+Sparkasse Ostunterfranken Telefon 09521/58-0    SWIFT-Adr. (BIC): BYLADEM1HAS
+Marktplatz 14/15 Telefax 09521/58-499    BLZ: 793 517 30
+97437 Haßfurt Handelsregister www.spk-ostunterfranken.de    Ust-IDNr. DE 133906625
+Anstalt des öffentlichen Rechts HRA 5337 (AG Amtsgericht Bamberg) info@spk-ostunterfranken.de   Steuer-Nr. 249/114/70639
+0.53.2.3980007 92078..10.0101 7(F0assung November 2013) - (V1) Finanz Informatik 
+Urheberrechtlich geschützt *0000000000100383011150*
+0000000000100383011150
+S Sparkasse
+Ostunterfranken
+Kontoauszug 12/2016 Seite 4 von 10
+Giro Plus 999999, DE51 7935 1730 0000 9999 99 Max Max
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+10.06.2016 10.06.2016 Wertpapierabrechnung               80,00-
+DekaBank Frankfurt
+Kauf AT 08.06.2016 St 1,272 zu 62,8
+80000EUR AA 3,500Proz Deka-BR 100 D
+eka-BonusRente
+Depot 9999999999 XF0009994050 00
+9999999999001
+Gläubiger-ID: DE02DBD00000081995
+10.06.2016 10.06.2016 Überweisung               48,00-
+CITY-PARK-SW
+HASS2504 vom 20.03.16
+DATUM 10.06.2016, 19.41 UHR
+. 1.TAN 00023613.06.2016 13.06.2016 Überweisung              161,00-
+  Huk Coburg Versicherung
+RF9999999999999 606/999999-P
+DATUM 11.06.2016, 13.36 UHR
+1.TAN 582773
+35e69be-583451125-13355039-20160611
+13.06.2016 13.06.2016 Überweisung               20,52-
+Huk Coburg Versicherung
+RF5460699999900 606/999999-T
+DATUM 11.06.2016, 13.38 UHR
+. 1.TAN 214144
+48d5520-583550750-13373002-20160611
+14.06.2016 14.06.2016 Basis-Lastschrift               21,78-
+PayPal Europe S.a.r.l. et Cie S.C.A
+PP.9397.PP . PARTSRUNNER, Ihr Einka
+uf bei PARTSRUNNER
+YYIJ222227QAQHDL PP.9397.PP PAYPAL
+53MJ224MYL4VU
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+15.06.2016 15.06.2016 Basis-Lastschrift               83,10-
+AOK Bayern
+9571465587 OB-X982370571 EUR 83,10
+BEITRAG 0516 - 0516
+9571465587 OB-X982370571
+1202593708000001
+Gläubiger-ID: DE49AOK00000018487
+16.06.2016 16.06.2016 Basis-Lastschrift               50,00-
+PayPal Europe S.a.r.l. et Cie S.C.A
+PP.9397.PP . DMILZ8803, Ihr Einkauf
+bei DMILZ8803
+YYIJ222227R4Y3JE PP.9397.PP PAYPAL
+53MJ224MYL4VU
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+Sparkasse Ostunterfranken Telefon 09521/58-0    SWIFT-Adr. (BIC): BYLADEM1HAS
+Marktplatz 14/15 Telefax 09521/58-499    BLZ: 793 517 30
+97437 Haßfurt Handelsregister www.spk-ostunterfranken.de    Ust-IDNr. DE 133906625
+Anstalt des öffentlichen Rechts HRA 5337 (AG Amtsgericht Bamberg) info@spk-ostunterfranken.de   Steuer-Nr. 249/114/70639
+0.53.2.390F8in0
+0 908.000 (Fassung November 2013) - (V1) 
+a7n2z7 I.n1f.o1r1m7a0tik 
+Urheberrechtlich geschützt *0000000000100383011150*
+0000000000100383011150
+S Sparkasse
+Ostunterfranken
+Kontoauszug 12/2016 Seite 5 von 10
+Giro Plus 999999, DE51 7935 1730 0000 9999 99 Max Max
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+17.06.2016 17.06.2016 Basis-Lastschrift               12,95-
+PayPal Europe S.a.r.l. et Cie S.C.A
+PP.9397.PP . birgitt504, Ihr Einkau
+f bei birgitt504, Artikel-111867432
+124
+YYIJ222227RH4BYW PP.9397.PP PAYPAL
+53MJ224MYL4VU
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+20.06.2016 20.06.2016 Basis-Lastschrift              113,09-
+PayPal Europe S.a.r.l. et Cie S.C.A
+PP.9397.PP . ALEXSBIKESH, Ihr Einka
+. uf bei ALEXSBIKESHYYI53MJ29P6WHU5S PP.9397.PP PAYPAL
+  53MJ224MYL4VU
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+20.06.2016 20.06.2016 Zahlungseingang              374,92+
+Bundesagentur für Arbeit-Service-Ha
+747D139749/74701/7002 01.06.16-14.0
+6.16 99999999999/1400089256600
+99999999999
+21.06.2016 21.06.2016 Überweisung              300,00-
+. Max Max
+XXXXXXXXXXX
+DATUM 20.06.2016, 20.36 UHR
+1.TAN 421377
+0e4173a-427851328-20355823-20160620
+21.06.2016 21.06.2016 Überweisung               18,81-
+XXL-Automotive
+BK1660828
+DATUM 20.06.2016, 20.33 UHR
+1.TAN 710385
+eebf53a-427621031-20320794-20160620
+21.06.2016 21.06.2016 Zahlungseingang              796,47+
+Finanzamt Schweinfurt Finanzkasse
+FINANZKASSE SCHWEINFURT
+ERSTATT.999/999/99999 EINK.ST 2015
+755,00 EUR, SOL.EST 2015 41,47 EUR
+999/999/99999 EINKG1706201606610017
+22.06.2016 22.06.2016 Überweisung                3,61-
+PPRO Financial Ltd
+1QJS36I Alipay 68568-215348-576A67E
+5-C170
+DATUM 22.06.2016, 12.28 UHR
+1.TAN 128619
+1QJS36I Alipay
+P20160622102733
+23.06.2016 23.06.2016 Geldautomat              450,00-
+NIEDERWER2//SPARKASSE SCHWEINFURT/D
+E
+2016-06-22T16:25:22 Karte2 2016-12
+Sparkasse Ostunterfranken Telefon 09521/58-0    SWIFT-Adr. (BIC): BYLADEM1HAS
+Marktplatz 14/15 Telefax 09521/58-499    BLZ: 793 517 30
+97437 Haßfurt Handelsregister www.spk-ostunterfranken.de    Ust-IDNr. DE 133906625
+Anstalt des öffentlichen Rechts HRA 5337 (AG Amtsgericht Bamberg) info@spk-ostunterfranken.de   Steuer-Nr. 249/114/70639
+0.53.2.390F8in0
+0
+a7
+ 90
+n2z7
+8..10.0101 7(F0assung November 2013) - (V1)  Informatik 
+Urheberrechtlich geschützt *0000000000100383011150*
+0000000000100383011150
+S Sparkasse
+Ostunterfranken
+Kontoauszug 12/2016 Seite 6 von 10
+Giro Plus 999999, DE51 7935 1730 0000 9999 99 Max Max
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+23.06.2016 23.06.2016 Überweisung              235,00-
+Dealertyre GmbH
+Bestellung 113500 fritzreifen-de sa
+gt Danke
+DATUM 22.06.2016, 22.11 UHR
+1.TAN 960747
+Bestellung 113500
+P20160622201110
+27.06.2016 27.06.2016 Überweisung              901,72-
+Autohaus Max
+Kdr.999999 Bnr.9999999
+DATUM 26.06.2016, 20.24 UHR
+. 1.TAN 7818862a8d470-117113312-20234566-20160626
+ 2 7.06.2016 27.06.2016 Überweisung              400,00-
+Max Max
+XXXXXXXXXXXXXXXXXXX
+DATUM 26.06.2016, 20.39 UHR
+1.TAN 586872
+132b122-117978359-20381071-20160626
+27.06.2016 27.06.2016 Überweisung              300,00-
+Max Max
+XXXXXXXXXXXXXXXXXXX
+. DATUM 27.06.2016, 19.29 UHR
+1.TAN 447621
+eb80f9d-200233312-19290566-20160627
+27.06.2016 26.06.2016 Barumsatz              800,00+
+SB-EINZAHLUNG Stadt02
+GA 2082 / 26.06.16 19.52.10
+0000999999 / 1612 /0 / 2
+27.06.2016 27.06.2016 Zahlungseingang            1.140,00+
+Max Max
+Teile
+29.06.2016 29.06.2016 Überweisung                4,22-
+Autohaus Max
+Kdr.999999 Bnr.1374065
+DATUM 28.06.2016, 21.42 UHR
+1.TAN 938723
+63ed6f4-294415078-21384742-20160628
+30.06.2016 30.06.2016 Basis-Lastschrift              116,12-
+PayPal Europe S.a.r.l. et Cie S.C.A
+PP.9397.PP . TH PARTS, Ihr Einkauf
+bei TH PARTS
+YYIJ222227UKRBSQ PP.9397.PP PAYPAL
+53MJ224MYL4VU
+Gläubiger-ID:
+LU96ZZZ0000000000000000058
+30.06.2016 01.07.2016 Entgeltabrechnung                8,50-
+siehe Anlage Nr. 2
+30.06.2016 01.07.2016 Abrechnung 30.06.2016                0,00+
+siehe Anlage Nr. 3
+Sparkasse Ostunterfranken Telefon 09521/58-0    SWIFT-Adr. (BIC): BYLADEM1HAS
+Marktplatz 14/15 Telefax 09521/58-499    BLZ: 793 517 30
+97437 Haßfurt Handelsregister www.spk-ostunterfranken.de    Ust-IDNr. DE 133906625
+Anstalt des öffentlichen Rechts HRA 5337 (AG Amtsgericht Bamberg) info@spk-ostunterfranken.de   Steuer-Nr. 249/114/70639
+0.53.2.3980007 92078..10.0101 7(F0assung November 2013) - (V1) Finanz Informatik 
+Urheberrechtlich geschützt *0000000000100383011150*
+0000000000100383011150
+S Sparkasse
+Ostunterfranken
+Kontoauszug 12/2016 Seite 7 von 10
+Giro Plus 999999, DE51 7935 1730 0000 9999 99 Max Max
+Datum Wert Erläuterung Betrag Soll EUR Betrag Haben EUR
+30.06.2016 30.06.2016 Barumsatz              240,00+
+SB-EINZAHLUNG Stadt02
+GA 2082 / 30.06.16 07.07.00
+0000999999 / 1612 /0 / 2
+ Kontostand am 30.06.2016 um 20:12 Uhr            1.143,07+
+Der Kontostand kann Beträge mit späterer Wertstellung enthalten, bitte Hinweise zum Kontoauszug beachten.
+Anzahl Anlagen 3
+.
+  
+.
+Sparkasse Ostunterfranken Telefon 09521/58-0    SWIFT-Adr. (BIC): BYLADEM1HAS
+Marktplatz 14/15 Telefax 09521/58-499    BLZ: 793 517 30
+97437 Haßfurt Handelsregister www.spk-ostunterfranken.de    Ust-IDNr. DE 133906625
+Anstalt des öffentlichen Rechts HRA 5337 (AG Amtsgericht Bamberg) info@spk-ostunterfranken.de   Steuer-Nr. 249/114/70639
+0.53.2.3980007 92078..10.0101 7(F0assung November 2013) - (V1) Finanz Informatik 
+Urheberrechtlich geschützt *0000000000100383011150*
+0000000000100383011150
+S Sparkasse
+Ostunterfranken
+Kontoauszug 12/2016 Seite 8 von 10
+Giro Plus 999999, DE51 7935 1730 0000 9999 99 Max Max
+Entgeltabschluss: Anlage    1
+ 
+Entgelte vom 30.04.2016 bis 31.05.2016                               0,50-
+ 
+Entgelte / Auslagen                                    0,50-
+                                                            --------------
+Abrechnung 31.05.2016                                                0,50-
+Rechnungsnummer: 20160601-BY036-00001531162
+ 
+ 
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+.
+  
+.
+Sparkasse Ostunterfranken Telefon 09521/58-0    SWIFT-Adr. (BIC): BYLADEM1HAS
+Marktplatz 14/15 Telefax 09521/58-499    BLZ: 793 517 30
+97437 Haßfurt Handelsregister www.spk-ostunterfranken.de    Ust-IDNr. DE 133906625
+Anstalt des öffentlichen Rechts HRA 5337 (AG Amtsgericht Bamberg) info@spk-ostunterfranken.de   Steuer-Nr. 249/114/70639
+0.53.2.390F8in0
+0
+a7
+ 9
+n2
+0
+z7
+8.0
+ I.n1f.
+0101 7(F0assung November 2013) - (V1) ormatik 
+Urheberrechtlich geschützt *0000000000100383011150*
+0000000000100383011150
+S Sparkasse
+Ostunterfranken
+Kontoauszug 12/2016 Seite 9 von 10
+Giro Plus 999999, DE51 7935 1730 0000 9999 99 Max Max
+Entgeltabschluss: Anlage    2
+ 
+Entgelte vom 01.06.2016 bis 30.06.2016                               8,50-
+ 
+Entgelte / Auslagen                                    8,50-
+                                                            --------------
+Abrechnung 30.06.2016                                                8,50-
+Rechnungsnummer: 20160630-BY036-00001568344
+ 
+ 
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+.
+  
+.
+Sparkasse Ostunterfranken Telefon 09521/58-0    SWIFT-Adr. (BIC): BYLADEM1HAS
+Marktplatz 14/15 Telefax 09521/58-499    BLZ: 793 517 30
+97437 Haßfurt Handelsregister www.spk-ostunterfranken.de    Ust-IDNr. DE 133906625
+Anstalt des öffentlichen Rechts HRA 5337 (AG Amtsgericht Bamberg) info@spk-ostunterfranken.de   Steuer-Nr. 249/114/70639
+0.53.2.390F8in0
+0
+a7
+ 9
+n2
+0
+z7
+8.0
+ I.n1f.
+0101 7(F0assung November 2013) - (V1) ormatik 
+Urheberrechtlich geschützt *0000000000100383011150*
+0000000000100383011150
+S Sparkasse
+Ostunterfranken
+Kontoauszug 12/2016 Seite 10 von 10
+Giro Plus 999999, DE51 7935 1730 0000 9999 99 Max Max
+Rechnungsabschluss: Anlage    3
+ 
+Kontostand in EUR am 30.06.2016                                 1.143,07 +
+                                                            --------------
+Abrechnungszeitraum vom 01.04.2016 bis 30.06.2016
+Abrechnung 30.06.2016                                                0,00+
+ 
+Sollzinssätze am 30.06.2016
+10,4500 v.H. für Kontoüberziehungen
+ 
+Die Anpassung des Zinssatzes für Kontoüberziehungen ist abhängig von der
+. Entwicklung des "Gleitenden Ein-Jahreszinssatzes für Bundeswertpapiere". 
+  Kontostand/Rechnungsabschluss in EUR am 30.06.2016              1.143,07 +
+Rechnungsnummer: 20160630-BY036-00001568343
+ 
+Bitte beachten Sie die Hinweise zum Kontoauszug.
+Hinweise zum Kontoauszug:
+Sehr geehrte Kundin, sehr geehrter Kunde,
+. bitte prüfen Sie die Buchungen und Berechnungen in diesem Kontoauszug. Eventuelle Rückfragen besprechen Sie bitte mit IhremKundenberater.
+l Einwendungen gegen den Kontoauszug richten Sie bitte unverzüglich an unsere Revisionsabteilung. Unsere Anschrift(en)
+entnehmen Sie bitte unserem Preis- und Leistungsverzeichnis.
+l Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass der genannte
+Betrag nicht dem für die Zinsrechnung maßgeblichen Kontostand entsprechen muss und bei Verfügungen möglicherweise
+Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung anfallen können.
+l Rechnungsabschlüsse gelten als genehmigt, sofern Sie innerhalb von sechs Wochen nach Zugang keine Einwendungen erheben.
+Einwendungen gegen Rechnungsabschlüsse müssen der Sparkasse schriftlich oder, wenn im Rahmen der Geschäftsbeziehung
+der elektronische Kommunikationsweg vereinbart wurde (z. B. Online-Banking), auf diesem Wege zugehen. Zur Fristwahrung
+genügt die rechtzeitige Absendung (Nr. 7 Abs. 3 unserer Allgemeinen Geschäftsbedingungen).
+l Gutschriften aus eingereichten Schecks, Lastschriften und anderen Einzugspapieren erfolgen unter dem Vorbehalt der
+Einlösung.
+l Schecks und andere Einzugspapiere sind erst dann eingelöst, wenn sie nicht bis zum Ablauf des übernächsten Bankarbeitstages
+storniert oder korrigiert werden. Diese Papiere sind auch eingelöst, wenn die Sparkasse ihren Einlösungswillen schon vorher
+Dritten gegenüber erkennbar bekundet hat (z. B. durch Bezahltmeldung). Für Lastschriften gelten die Einlösungsregeln in den
+hierfür vereinbarten besonderen Bedingungen.
+l Sparkontoauszüge heften Sie bitte in Ihr Loseblatt-Sparkassenbuch ein.
+l Dieser Kontoauszug gilt im Zusammenhang mit den zugrunde liegenden Verträgen laut angegebener Kontonummer als
+Rechnung im Sinne des UStG.
+l Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können
+dem Informationsbogen für den Einleger entnommen werden.
+Unsere für den Geschäftsverkehr mit Ihnen geltenden Allgemeinen Geschäftsbedingungen und besonderen Bedingungen stellen
+wir Ihnen auf Wunsch gern zur Verfügung.
+Mit freundlichen Grüßen
+Ihre Sparkasse Ostunterfranken
+Sparkasse Ostunterfranken Telefon 09521/58-0    SWIFT-Adr. (BIC): BYLADEM1HAS
+Marktplatz 14/15 Telefax 09521/58-499    BLZ: 793 517 30
+97437 Haßfurt Handelsregister www.spk-ostunterfranken.de    Ust-IDNr. DE 133906625
+Anstalt des öffentlichen Rechts HRA 5337 (AG Amtsgericht Bamberg) info@spk-ostunterfranken.de   Steuer-Nr. 249/114/70639
+0.53.2.3980007 92078..000 (Fassung November 2013) - (V1) Finanz In1f.o1r1m7a0tik 
+Urheberrechtlich geschützt *0000000000100383011150*
+0000000000100383011150

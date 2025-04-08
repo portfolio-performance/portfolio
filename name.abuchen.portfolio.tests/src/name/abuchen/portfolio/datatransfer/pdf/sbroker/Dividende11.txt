@@ -1,0 +1,50 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.1
+-----------------------------------------
+~$~|ER01|746015||||||||ERTRAEGE.D230508.AFP||||20230508||33844|0000|||||~$~
+S Broker AG & Co. KG ´ Postfach 90 01 50 ´ 39133 Magdeburg Seite 1
+Depotnummer 12345678
+Sebastian Name
+Abrechnungsnr. 12345678
+Datum 08.05.2023
+Herrn
+Sebastian Name
+Stadtteil
+Strasse. 123
+12345 Stadt
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 28 HUHTAMAEKI OYJ FI0009000459 (870740)
+REGISTERED SHARES O.N.
+Zahlbarkeitstag 09.05.2023 Dividende pro Stück 0,50 EUR
+Bestandsstichtag 27.04.2023 Herkunftsland Finnland
+Ex-Tag 28.04.2023 Art der Dividende Zwischendividende
+Geschäftsjahr 01.01.2022 - 31.12.2022
+Dividendengutschrift 14,00+ EUR
+Einbehaltene Quellensteuer 35 % auf 14,00 EUR 4,90- EUR
+Anrechenbare Quellensteuer 15 % auf 14,00 EUR 2,10 EUR
+Kapitalertragsteuerpflichtige Dividende 14,00 EUR
+Verrechneter Sparer-Pauschbetrag 14,00 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 9,10+ EUR
+20 % rückforderbare Quellensteuer 2,80 EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Jahressteuerbescheinigung folgt.
+Bitte ggf. Rückseite beachten.
+5500.05082144.0040698ER01
+SBRO_ER01_v10.8P.ERTRAEGE.D230508.AFP_33844
+
+Seite 2
+Depotnummer 12345678
+Abrechnungsnr. 12345678
+Datum 08.05.2023
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2023 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 2.306,26 0,00 167,05 31,75 0,00
+Ertrag 0,00 0,00 14,00- 2,10 0,00
+Nachher 2.306,26 0,00 153,05 33,85 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+5500.05082144.0040699ER01

@@ -1,0 +1,37 @@
+﻿PDFBox Version: 1.8.16
+Portfolio Performance Version: 0.59.5
+-----------------------------------------
+10919 Berlin
+Depotnummer 0123456789
+Kundennummer 0123456789
+Vorname Nachname
+Auftragsnummer 1234567/65.50
+Herrn Datum 13.01.2021
+Vorname Nachname Rechnungsnummer W00000-000000000/00
+1234 Umsatzsteuer-ID DE137178746
+Strasse 12
+123 ORT
+LAND
+Storno zur Wertpapier Abrechnung vom 05.01.2021
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 16,3986 VANG.FTSE DEVELOP.WORLD U.ETF IE00BKX55T58 (A12CX1)
+REGISTERED SHARES USD DIS.ON
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 05.01.2021 Auftraggeber Vorname Nachname
+Ausführungskurs 64,03 EUR Auftragserteilung/ -ort sonstige
+Wertpapierrechnung Lagerland Grossbritannien
+Kurswert 1.050,00 EUR
+Provision 1,50 EUR
+Ausmachender Betrag 1.051,50 EUR
+Den Gegenwert buchen wir mit Valuta 07.01.2021 zu Gunsten des Kontos 123456789
+(IBAN DE00 0000 0000 0000 0000 00), BLZ 12030000 (BIC BYLADEM1001).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Gegenpartei bei diesem Geschäft war Börse Tradegate
+Storno, da der Ursprungsauftrag mit falscher Entgeltberechnung erfolgte.
+Wir bitten die Unannehmlichkeiten zu entschuldigen.
+ABR. OHNE AUSGABEAUFSCHLAG
+IHR ETF-SPARPLAN NR. 1
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0000.0000000.000000000

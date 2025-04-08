@@ -1,0 +1,21 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.62.0
+-----------------------------------------
+Senhor. My Name Anonimized
+LastName
+My Address Anonimzed
+MyAddress
+Nome de utilizador: *******ino
+Transações de 01-01-2020 para 02-04-2023
+Data Hora Produto ISIN Bolsa Bolsa Quantidde ade Preços Valor local Valor
+Taxa de Custos de
+Câmbio transação Total
+13-03-2023 14:31 ENERGY FUELS INC CA2926717083 ASE XASE 410 5,40 USD -2.214,00 USD -2.068,01 EUR 1,0706 -1,00 EUR -2.069,01 EUR
+15-09-2022 17:01 VANGUARD FTSE ALL- IE00BK5BQT80 XET XETA 52 96,00 EUR -4.992,00 EUR -4.992,00 EUR -4.992,00 EUR
+WORLD UCITS ETF - (USD)
+ACCUMULATING
+O flatex DEGIRO Bank Dutch Branch, comercializado sob o nome www.degiro.pt Resumo da carteira
+DEGIRO, é a filial Holandesa do flatexDEGIRO Bank AG. O clientes@degiro.pt 2023-04-02
+flatexDEGIRO Bank AG é primariamente supervisionado pelo
+regulador financeiro Alemão (BaFin) e registado no DNB nos Países Amstelplein 1 1096 HA Página 1 / 5
+Baixos.

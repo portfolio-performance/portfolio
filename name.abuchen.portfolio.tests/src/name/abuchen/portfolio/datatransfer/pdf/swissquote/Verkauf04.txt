@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.68.4
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 1234567890 - TRADING
+IBAN: CH12345678901234567890
+Herrn Manfred Mutermann
+Musterstrasse 3
+012345 Musterhausen
+Gland, 24.05.2024
+Derivatetransaktion: Sell close Unsere Referenz: 579076719 
+Gemäss Ihrem Verkaufsauftrag vom 24.05.2024 haben wir folgende Transaktionen vorgenommen:
+Bezeichnung Anzahl Kontraktwährung Preis
+SPY JUL24 530C 2.00 USD 11.75
+Kontraktgrösse Multiplikator Ausübungspreis Fälligkeit Börsenplatz
+100 100 530 31.07.2024 International Securities
+Exchange
+Wir haben die folgenden Beträge auf Ihrem Konto verbucht:
+Kontonummer 1234567890
+Valutadatum 28.05.2024
+Total USD 2'350.00
+Börsengebühren USD 0.90
+Bruttobetrag USD 2'349.10
+Kommission Swissquote Bank AG USD 1.00
+Total gutgeschrieben USD 2'348.10
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland  Formular ohne Unterschrift | SE&O.
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+CHE-116.310.079 MwSt

@@ -1,0 +1,29 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.61.4
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 1234567
+IBAN: CH3308781000123456700
+Herrn Max Mustermann
+Muster Str. 23
+DE-12345 Musterstadt
+Gland, 20.03.2023
+Dividende Unsere Referenz: 312345678 
+Im Hinblick auf folgenden Titel:
+Titel
+Bezeichnung Anzahl
+ROCHE GS ISIN: CH0012032048NKN: 1203204 4.0542
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben: 
+Kontonummer 123456700
+Ausführungsdatum 16.03.2023
+Valutadatum 20.03.2023
+Anzahl 4.0542
+Dividende 9.5 CHF
+Betrag CHF 38.51
+Verrechnungssteuer 35% (CH) CHF 13.48
+Total CHF 25.03
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen für Yuh Accounts und
+jeglichen Vereinbarungen, die Sie mit Swissquote Bank AG in Bezug auf Ihren Yuh Account abgeschlossen haben.
+Die Bankdienstleistungen für Yuh werden von Swissquote Bank AG erbracht, einer Bank,  Formular ohne Unterschrift | SE&O.
+die von der Eidgenössischen Finanzmarktaufsicht (FINMA) reguliert wird.
+Swissquote Bank AG, chemin de la Crétaux 33, CH-1196 Gland | Customer Care: +41 44 825 87 89

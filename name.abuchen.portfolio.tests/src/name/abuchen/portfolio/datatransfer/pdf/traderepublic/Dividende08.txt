@@ -1,0 +1,34 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Vorna Nachname SEITE 1 von 1
+Straßestr. 1 DATUM 27.05.2021
+12345 Ort DEPOT 01234567
+AUSSCHÜTTUNG
+ÜBERSICHT
+Ausschüttung mit dem Ex-Tag 13.05.2021.
+POSITION ANZAHL ERTRÄGNIS BETRAG
+iShsII-MSCI Turkey UCITS ETF 124,0903 Stk. 0,3307 USD 41,04 USD
+Registered Shs USD (Dist) o.N.
+ISIN: IE00B1FZS574
+GESAMT 41,04 USD
+ABRECHNUNG
+POSITION BETRAG
+Zwischensumme 41,04 USD
+Zwischensumme 1,2275 EUR/USD 33,43 EUR
+Kapitalertragsteuer -8,36 EUR
+Solidaritätszuschlag -0,46 EUR
+GESAMT 24,61 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE123456789234456 26.05.2021 24,61 EUR
+iShsII-MSCI Turkey UCITS ETF Registered Shs USD (Dist) o.N. in Wertpapierrechnung in Deutschland.
+Lagerland: Irland
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Andreas Willius
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 28.05.2021 / 10683519 / 9be3-5cf5

@@ -1,0 +1,49 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+   
+Freisinger Bank eG · Münchner Str. 2 · 85354 Freising Seite 1 von 2
+Depotnummer
+ xxxxxx
+ Kundennummer xxxxxx
+xxxxxx
+ Auftragsnummer 554374/09.00
+xxxxxxDatum 01.04.2022
+(haftungsbeschränkt) Rechnungsnummer W06353-0000003133/22
+xxxxxx Steuernummer xxxxxx  
+xxxxxx
+ 
+Wertpapier Abrechnung Verkauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 15 MICROSOFT CORP.                    US5949181045 (870747)
+REGISTERED SHARES DL-,00000625     
+Handels-/Ausführungsplatz Tradegate (Best Execution)
+Börsensegment XGAT
+Market-Order
+Limit bestens
+Schlusstag/-Zeit 01.04.2022 11:23:39 Auftraggeber Michael Frey
+Ausführungskurs 279,85 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 4.197,75 EUR
+Provision 0,2500 % vom Kurswert 10,49- EUR
+Übertragungs-/Liefergebühr 0,10- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn 302,16 EUR
+Ausmachender Betrag 4.187,16 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 05.04.2022 zu Gunsten des Kontos xxxxxx(IBANxxxxxxxxxxxxx),
+BLZ 70169614 (BIC GENODEF1FSR).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+6353.04011731.0000003OR07
+Seite 2 von 2
+Depotnummer xxxxxx
+Kundennummer xxxxx
+Auftragsnummer 554374/09.00
+Datum 01.04.2022
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös ant. Ergebnis
+Einbuchung 8323619700 02.03.2022 Stück 15,0000 3.885,00- 4.187,16 302,16 (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 302,16
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+6353.04011731.0000004OR07

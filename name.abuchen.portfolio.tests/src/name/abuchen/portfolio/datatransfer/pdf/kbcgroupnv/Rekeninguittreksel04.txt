@@ -1,0 +1,23 @@
+```
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.72.3.qualifier
+System: win32 | x86_64 | 21.0.4+7-LTS | Azul Systems, Inc.
+-----------------------------------------
+ABBELOOS-STREUMER VICTOR-CHANTAL
+Overzicht transacties en rekeninguittreksels voor klantnummer 4742538
+05/09/2024
+EUR-REKENING - 40
+Rekeninguittreksel Nr 32 Vorig Saldo: -0,47 EUR
+05/09/2024 Provisionering rekening klant Valuta 05/09/2024 5,00 EUR
+Mededeling: ABBELOOS-STREUMER V & C
+Nieuw Saldo 4,53 EUR
+Dit deposito komt in aanmerking voor depositobescherming. Meer info: www.kbc.be/depositobescherming
+Heb je nog vragen ? Gelieve je te richten tot de Bolero order desk
+ABBELOOS-STREUMER VICTOR-CHANTAL Pagina 1
+0964124
+_______________________________________________________________________________________
+KBC BANK NV Documentreferte: 41
+Havenlaan 2, 1080 Brussels, Belgium VAT BE 0462.920.226
+Account N° BE77 4096 5474 0142 - BIC KREDBEBB
+
+```
