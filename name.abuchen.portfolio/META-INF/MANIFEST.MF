@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: name.abuchen.portfolio
-Bundle-Version: 0.74.3.qualifier
+Bundle-Version: 0.75.0
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: name.abuchen.portfolio,
  name.abuchen.portfolio.checks,
@@ -72,8 +72,8 @@ Require-Bundle: org.eclipse.core.runtime,
  json-path,
  com.google.gson,
  org.osgi.service.component,
- name.abuchen.portfolio.pdfbox1;bundle-version="0.74.3",
- name.abuchen.portfolio.pdfbox3;bundle-version="0.74.3"
+ name.abuchen.portfolio.pdfbox1;bundle-version="0.75.0",
+ name.abuchen.portfolio.pdfbox3;bundle-version="0.75.0"
 Automatic-Module-Name: name.abuchen.portfolio
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/name.abuchen.portfolio.util.ImageioSpiRegistration.xml
