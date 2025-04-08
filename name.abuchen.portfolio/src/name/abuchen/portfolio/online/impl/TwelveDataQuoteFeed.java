@@ -99,8 +99,74 @@ public class TwelveDataQuoteFeed implements QuoteFeed
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        List<LatestSecurityPrice> prices = getHistoricalQuotes(security, true, LocalDate.now()).getLatestPrices();
-        return prices.isEmpty() ? Optional.empty() : Optional.of(prices.get(prices.size() - 1));
+        LocalDate quoteStartDate = LocalDate.now();
+        String securityTickerSymbol = trim(security.getTickerSymbol()).toUpperCase();
+        String securityTickerSymbolWithoutStockMarket = trim(security.getTickerSymbolWithoutStockMarket())
+                        .toUpperCase();
+
+        // Extract the exchange from the ticker symbol, if present
+        String securityExchange = null;
+        if (security.getTickerSymbol().contains(".")) //$NON-NLS-1$
+            securityExchange = security.getTickerSymbol().substring(security.getTickerSymbol().indexOf('.') + 1)
+                            .toUpperCase();
+
+        if (apiKey == null || apiKey.isBlank())
+        {
+            PortfolioLog.error(Messages.MsgErrorTwelveDataAPIKeyMissing);
+            return Optional.empty();
+        }
+
+        if (securityTickerSymbol == null || securityTickerSymbol.isEmpty())
+        {
+            PortfolioLog.error(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName()));
+            return Optional.empty();
+        }
+
+        QuoteFeedData data = new QuoteFeedData();
+        try
+        {
+            WebAccess webaccess = new WebAccess("api.twelvedata.com", "/price") //$NON-NLS-1$ //$NON-NLS-2$
+                            .addParameter("symbol", securityTickerSymbolWithoutStockMarket) //$NON-NLS-1$
+                            .addParameter("mic_code", securityExchange) //$NON-NLS-1$
+                            .addParameter("apikey", apiKey); //$NON-NLS-1$
+
+            JSONObject json = (JSONObject) JSONValue.parse(webaccess.get());
+
+            // If any error with your plan, the response is
+            //
+            // @formatter:off
+            // { "code":123,"message":"error message","status":"error" } // NOSONAR
+            // @formatter:on
+            if (json != null && !json.isEmpty() && json.containsKey("code") //$NON-NLS-1$
+                            && "error".equals(json.get("status"))) //$NON-NLS-1$ //$NON-NLS-2$
+            {
+                final String msg = String.join(" ", getName(), String.valueOf(json.get("message")), //$NON-NLS-1$ //$NON-NLS-2$
+                                String.valueOf(json.get("code"))); //$NON-NLS-1$
+
+                PortfolioLog.error(msg);
+                return Optional.empty();
+            }
+
+            // Check if the json contains a non-empty JSON array
+            if (json != null && !json.isEmpty() && json.containsKey("price")) //$NON-NLS-1$
+            {
+                long priceNumber = asPrice(json.get("price")); //$NON-NLS-1$
+                LatestSecurityPrice price = new LatestSecurityPrice();
+                price.setDate(quoteStartDate);
+                price.setValue(priceNumber);
+                price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
+                price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
+                price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
+
+                return Optional.ofNullable(price);
+            }
+        }
+        catch (IOException e)
+        {
+            data.addError(e);
+        }
+
+        return Optional.empty();
     }
 
     @Override
