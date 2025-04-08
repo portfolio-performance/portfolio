@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.EstateGuruPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
@@ -34,11 +33,11 @@ public class EstateGuruPDFExtractorTest
     @Test
     public void testKontoauszug01()
     {
-        EstateGuruPDFExtractor extractor = new EstateGuruPDFExtractor(new Client());
+        var extractor = new EstateGuruPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -63,11 +62,11 @@ public class EstateGuruPDFExtractorTest
     @Test
     public void testKontoauszug02()
     {
-        EstateGuruPDFExtractor extractor = new EstateGuruPDFExtractor(new Client());
+        var extractor = new EstateGuruPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -96,11 +95,11 @@ public class EstateGuruPDFExtractorTest
     @Test
     public void testKontoauszug03()
     {
-        EstateGuruPDFExtractor extractor = new EstateGuruPDFExtractor(new Client());
+        var extractor = new EstateGuruPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -145,17 +144,17 @@ public class EstateGuruPDFExtractorTest
     @Test
     public void testKontoauszug04()
     {
-        EstateGuruPDFExtractor extractor = new EstateGuruPDFExtractor(new Client());
+        var extractor = new EstateGuruPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(18L));
-        assertThat(results.size(), is(18));
+        assertThat(countAccountTransactions(results), is(17L));
+        assertThat(results.size(), is(17));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
@@ -189,10 +188,6 @@ public class EstateGuruPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2023-12-04"), hasAmount("EUR", 1.00), //
                         hasSource("Kontoauszug04.txt"), hasNote("Withdraw fee"))));
-
-        // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2023-12-02"), hasAmount("EUR", 0.41), //
-                        hasSource("Kontoauszug04.txt"), hasNote("Sale fee"))));
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2023-12-02"), hasAmount("EUR", 0.41), //
@@ -238,11 +233,11 @@ public class EstateGuruPDFExtractorTest
     @Test
     public void testKontoauszug05()
     {
-        EstateGuruPDFExtractor extractor = new EstateGuruPDFExtractor(new Client());
+        var extractor = new EstateGuruPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -267,17 +262,17 @@ public class EstateGuruPDFExtractorTest
     @Test
     public void testKontoauszug06()
     {
-        EstateGuruPDFExtractor extractor = new EstateGuruPDFExtractor(new Client());
+        var extractor = new EstateGuruPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-//        assertThat(countAccountTransactions(results), is(3L));
-//        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(18L));
+        assertThat(results.size(), is(18));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // assert transaction
@@ -347,5 +342,38 @@ public class EstateGuruPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2022-12-15"), hasAmount("EUR", 1.25), //
                         hasSource("Kontoauszug06.txt"), hasNote("Zins"))));
+    }
+
+    @Test
+    public void testKontoauszug07()
+    {
+        var extractor = new EstateGuruPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(859L));
+        assertThat(results.size(), is(859));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-12-11"), hasAmount("EUR", 51.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-12-10"), hasAmount("EUR", 53.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2024-07-25"), hasAmount("EUR", 64.00), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
+
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2023-03-14"), hasAmount("EUR", 0.38), //
+                        hasSource("Kontoauszug07.txt"), hasNote(null))));
     }
 }
