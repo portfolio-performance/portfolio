@@ -82,7 +82,10 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 
                     long gain = netAmount - averageCosts;
                     long gainForex = 0L;
-                    if (!termCurrency.equals(securityCurrency))
+
+                    // netAmountForex can be zero because an outbound delivery
+                    // can be zero value
+                    if (!termCurrency.equals(securityCurrency) && netAmountForex != 0)
                     {
                         // Calculate currency gains as the difference between
                         // the average costs in the security currency with the
@@ -162,7 +165,10 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 
         long gain = netAmount - movingAverageNetCost;
         long gainForex = 0L;
-        if (!termCurrency.equals(securityCurrency))
+
+        // netAmountForex can be zero because an outbound delivery can be zero
+        // value
+        if (!termCurrency.equals(securityCurrency) && netAmountForex != 0)
         {
             var exchangeRate = BigDecimal.valueOf(netAmount / (double) netAmountForex)
                             .setScale(Values.MC.getPrecision(), Values.MC.getRoundingMode());
