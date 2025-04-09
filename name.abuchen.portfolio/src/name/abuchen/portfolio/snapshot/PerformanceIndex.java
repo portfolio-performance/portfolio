@@ -278,7 +278,7 @@ public class PerformanceIndex
             if (performanceSnapshotMovingAverage == null)
                 performanceSnapshotMovingAverage = new ClientPerformanceSnapshot(client, converter, reportInterval,
                                 false);
-            return Optional.of(performanceSnapshotFifo);
+            return Optional.of(performanceSnapshotMovingAverage);
         }
     }
 
