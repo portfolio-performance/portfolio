@@ -365,7 +365,11 @@ public class PaginatedTable
         var prevButton = new Button(buttons, SWT.PUSH);
         prevButton.setText("<"); //$NON-NLS-1$
         prevButton.addSelectionListener(org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter(e -> {
-            stack.getLast().page = Math.max(0, stack.getLast().page - 1);
+            var page = stack.getLast().page;
+            if (page == 0)
+                return;
+
+            stack.getLast().page = Math.max(0, page - 1);
             renderPage();
         }));
 
@@ -376,8 +380,11 @@ public class PaginatedTable
         var nextButton = new Button(buttons, SWT.PUSH);
         nextButton.setText(">"); //$NON-NLS-1$
         nextButton.addSelectionListener(org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter(e -> {
-            var numPages = stack.getLast().elements.size() / PAGE_SIZE
-                            + (stack.getLast().elements.size() % PAGE_SIZE == 0 ? 0 : 1);
+            var size = stack.getLast().elements.size();
+            if (size == 0)
+                return;
+
+            var numPages = size / PAGE_SIZE + (size % PAGE_SIZE == 0 ? 0 : 1);
             stack.getLast().page = Math.min(numPages - 1, stack.getLast().page + 1);
             renderPage();
         }));
