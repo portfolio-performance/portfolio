@@ -3,8 +3,6 @@ description: Report a problem with the PDF importer
 title: "[PDF] "
 labels: ["pdf"]
 projects: ["portfolio-performance/1"]
-assignees:
-  - Nirus2000
 body:
   - type: markdown
     attributes:

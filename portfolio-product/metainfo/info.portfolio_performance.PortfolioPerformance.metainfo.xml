@@ -37,14 +37,44 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.75.0" date="2025-04-09">
+      <description>
+        <ul>
+          <li>Fix: Resolves a NumberFormatException when calculating capital gains (division by zero).</li>
+          <li>Fix: Resolves an IndexOutOfBoundsException when paging through the search results for securities.</li>
+          <li>New: PDF import support for E*TRADE Securities LLC.</li>
+          <li xml:lang="de">Fix: Behebt eine NumberFormatException bei der Berechnung von Kursgewinnen (Division durch Null).</li>          
+          <li xml:lang="de">Fix: Behebt eine IndexOutOfBoundsException beim Blättern durch die Suchergebnisse für Wertpapiere.</li>
+          <li xml:lang="de">Neu: PDF-Importer für E*TRADE Securities LLC.</li> 
+        </ul>
+      </description>
+    </release>
+    <release version="0.75.0" date="2025-04-08">
+      <description>
+        <ul>
+          <li>New: Option to use moving average for calculating realized and unrealized capital gains</li>
+          <li>Improvement: New search dialog for instruments</li>
+          <li>Improvement: Dedicated view for “grouped accounts” (also known as filters)</li>
+          <li>New: Turkish translation – thanks to ALGO IT, Alp ŞEBER, and all contributors</li>
+          <li>New: PDF import support for Cetesdirecto, Modena Estonia OÜ, Crédit Mutuel Alliance Fédérale, BSDEX</li>
+          <li>Improvement: Enhanced PDF importers for Arkea Direct Bank, FlatEx, Bourso Bank, Trade Republic, Raisin Bank, Easybank, Swissquote, Postbank, ING Diba</li>
+          <li xml:lang="de">Neu: Gleitender Durchschnitt als alternative Methode zur Berechnung von realisierten und unrealiserten Kursgewinnen</li>
+          <li xml:lang="de">Verbesserung: Neuer Suchdialog für Wertpapiere</li>
+          <li xml:lang="de">Verbesserung: Eigene Ansicht für „gruppierte Konten“ (Filter)</li>
+          <li xml:lang="de">Neu: Türkische Übersetzung - vielen Dank an ALGO IT, Alp ŞEBER, und andere.</li>
+          <li xml:lang="de">Neu: PDF-Importer für Cetesdirecton, Modena Estonia OÜ, Crédit Mutuel Alliance Fédérale, BSDEX.</li>          
+          <li xml:lang="de">Verbesserungen an den PDF-Importern für Arkea Direct Bank, FlatEx, Bourso Bank, Trade Republic, Raisin Bank, Easybank, Swissquote, Postbank, ING Diba </li>
+        </ul>
+      </description>
+    </release>
     <release version="0.74.2" date="2025-03-09">
       <description>
         <ul>
-          <li xml:lang="en">Improvement: Instruments in the "Follow-up" widget are now grouped by date and type for better clarity.</li>
-          <li xml:lang="en">Improvement: CSV import now also supports time in ISO format yyyy-MM-dd'T'HH:mm.</li>
-          <li xml:lang="en">Improvement: The "Balance" column is now color-coded depending on whether the balance is positive or negative (instead of whether the transaction increases or decreases the value).</li>
-          <li xml:lang="en">Improvements to the PDF importers for Arkea Direct Bank, Swissquote, DKB, Trade Republic, ING-DiBa, Consorsbank, C24 Bank, ABN AMRO, akf bank, N26, Raiffeisenbank, Audi Bank, Saxo, and PhrozenByte.</li>
-          <li xml:lang="en">Fix: Corrected an issue with trade assignment during multiple portfolio transfers of a position.</li>
+          <li>Improvement: Instruments in the "Follow-up" widget are now grouped by date and type for better clarity.</li>
+          <li>Improvement: CSV import now also supports time in ISO format yyyy-MM-dd'T'HH:mm.</li>
+          <li>Improvement: The "Balance" column is now color-coded depending on whether the balance is positive or negative (instead of whether the transaction increases or decreases the value).</li>
+          <li>Improvements to the PDF importers for Arkea Direct Bank, Swissquote, DKB, Trade Republic, ING-DiBa, Consorsbank, C24 Bank, ABN AMRO, akf bank, N26, Raiffeisenbank, Audi Bank, Saxo, and PhrozenByte.</li>
+          <li>Fix: Corrected an issue with trade assignment during multiple portfolio transfers of a position.</li>
           <li xml:lang="de">Verbesserung: Wertpapiere im Widget "Termin erreicht" werden nun zur besseren Übersicht gruppiert.</li>
           <li xml:lang="de">Verbesserung: CSV Import unterstützt jetzt auch die Uhrzeit mit dem ISO Format yyyy-MM-dd'T'HH:mm.</li>
           <li xml:lang="de">Verbesserung: Die Spalte "Saldo" wird nun farblich markiert, abhängig davon, ob der Saldo positiv oder negativ ist (statt ob die Buchung den Wert erhöht oder verringert).</li>

@@ -73,6 +73,7 @@ public class PDFImportAssistant
         extractors.add(new EbasePDFExtractor(client));
         extractors.add(new ErsteBankPDFExtractor(client));
         extractors.add(new EstateGuruPDFExtractor(client));
+        extractors.add(new ETradePDFExtractor(client));
         extractors.add(new FidelityInternationalPDFExtractor(client));
         extractors.add(new FILFondbankPDFExtractor(client));
         extractors.add(new FindependentAGPDFExtractor(client));
@@ -146,7 +147,7 @@ public class PDFImportAssistant
 
         Map<Extractor, List<Item>> itemsByExtractor = new HashMap<>();
 
-        SecurityCache securityCache = new SecurityCache(client);
+        var securityCache = new SecurityCache(client);
 
         for (PDFInputFile inputFile : inputFiles)
         {
@@ -156,12 +157,12 @@ public class PDFImportAssistant
             {
                 inputFile.convertPDFtoText();
 
-                boolean extracted = false;
+                var extracted = false;
 
                 List<Exception> warnings = new ArrayList<>();
                 for (Extractor extractor : extractors)
                 {
-                    List<Item> items = extractor.extract(securityCache, inputFile, warnings);
+                    var items = extractor.extract(securityCache, inputFile, warnings);
 
                     if (!items.isEmpty())
                     {
@@ -176,7 +177,7 @@ public class PDFImportAssistant
                     inputFile.convertLegacyPDFtoText();
                     for (Extractor extractor : extractors)
                     {
-                        List<Item> items = extractor.extract(securityCache, inputFile, warnings);
+                        var items = extractor.extract(securityCache, inputFile, warnings);
 
                         if (!items.isEmpty())
                         {
@@ -195,7 +196,7 @@ public class PDFImportAssistant
                 if (!extracted)
                 {
                     Predicate<? super Exception> isNotUnsupportedOperation = e -> !(e instanceof UnsupportedOperationException);
-                    List<Exception> meaningfulExceptions = warnings.stream().filter(isNotUnsupportedOperation).toList();
+                    var meaningfulExceptions = warnings.stream().filter(isNotUnsupportedOperation).toList();
 
                     errors.put(inputFile.getFile(), meaningfulExceptions.isEmpty() ? warnings : meaningfulExceptions);
                 }

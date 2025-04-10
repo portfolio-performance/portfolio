@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.DocumentContext;
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -30,7 +29,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
     private static final String IS_JOINT_ACCOUNT = "isJointAccount";
 
     BiConsumer<DocumentContext, String[]> jointAccount = (context, lines) -> {
-        Pattern pJointAccount = Pattern.compile("KapSt anteilig [\\d]{2},[\\d]{2} %.*");
+        var pJointAccount = Pattern.compile("KapSt anteilig [\\d]{2},[\\d]{2} %.*");
 
         for (String line : lines)
         {
@@ -64,7 +63,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final DocumentType type = new DocumentType("(Wertpapierabrechnung " //
+        final var type = new DocumentType("(Wertpapierabrechnung " //
                         + "(Kauf" //
                         + "|Kauf Einmalanlage" //
                         + "|Kauf aus Sparplan" //
@@ -80,9 +79,9 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         + "|Operaciones Cuenta de Valores)", jointAccount);
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("(Wertpapierabrechnung " //
+        var firstRelevantLine = new Block("(Wertpapierabrechnung " //
                         + "(Kauf" //
                         + "|Kauf Einmalanlage" //
                         + "|Kauf aus Sparplan" //
@@ -102,7 +101,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -203,7 +202,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            var shares = asBigDecimal(v.get("shares"));
                                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                         }),
                                         // @formatter:off
@@ -216,7 +215,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            var shares = asBigDecimal(v.get("shares"));
                                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                         }))
 
@@ -288,11 +287,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .match("^.* Devisenkurs [\\w]{3} (?<gross>[\\.,\\d]+) \\((?<termCurrency>[\\w]{3}) = (?<exchangeRate>[\\.,\\d]+)\\)$") //
                                                         .match("^Endbetrag( zu Ihren (Lasten|Gunsten))? (?<baseCurrency>[\\w]{3}) [\\.,\\d]+$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
@@ -303,11 +302,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("termCurrency", "exchangeRate", "baseCurrency", "gross") //
                                                         .match("^.* (?<termCurrency>[\\w]{3}) [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\d]{2}:[\\d]{2} (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3}) (?<gross>[\\.,\\d]+) [\\w]{3}$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
@@ -353,16 +352,16 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final DocumentType type = new DocumentType("(Dividendengutschrift" //
+        final var type = new DocumentType("(Dividendengutschrift" //
                         + "|Ertragsgutschrift" //
                         + "|Zinsgutschrift" //
                         + "|Abono de Dividendos)", //
                         jointAccount);
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^(Dividendengutschrift" //
+        var firstRelevantLine = new Block("^(Dividendengutschrift" //
                         + "|Ertragsgutschrift" //
                         + "|Zinsgutschrift" //
                         + "|Abono de Dividendos).*$");
@@ -372,7 +371,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -451,7 +450,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             // @formatter:on
                                                             if (v.get("notation") != null && !"Stück".equalsIgnoreCase(v.get("notation")))
                                                             {
-                                                                BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                                var shares = asBigDecimal(v.get("shares"));
                                                                 t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                             }
                                                             else
@@ -532,11 +531,11 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .match("^Brutto (?<termCurrency>[\\w]{3}) (\\- )?(?<fxGross>[\\.,\\d]+)$") //
                         .match("^Umg\\. z\\. Dev\\.\\-Kurs \\((?<exchangeRate>[\\.,\\d]+)\\) (?<baseCurrency>[\\w]{3}) (\\- )?[\\.,\\d]+$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -544,7 +543,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .conclude(ExtractorUtils.fixGrossValueA())
 
                         .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -558,19 +557,19 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        final DocumentType type = new DocumentType("Vorabpauschale");
+        final var type = new DocumentType("Vorabpauschale");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Vorabpauschale$");
+        var firstRelevantLine = new Block("^Vorabpauschale$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
@@ -621,7 +620,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
@@ -632,7 +631,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszug .*[\\d]{4}", //
+        final var type = new DocumentType("Kontoauszug .*[\\d]{4}", //
                         documentContext -> documentContext //
                                         .oneOf( //
                                                         // @formatter:off
@@ -699,7 +698,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 16.02.2020 Lastschrift XYZ GmbH -10,00
         // 06.03.2023 Kontolöschung -1.161,10
         // @formatter:on
-        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(Ueberweisung" //
                         + "|Dauerauftrag\\/Terminueberw\\." //
                         + "|Lastschrift" //
@@ -709,7 +708,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         removalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.REMOVAL);
                             return accountTransaction;
                         })
@@ -746,7 +745,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // 13.10.2020 Gutschrift-VWL 40,00
         // 04.06.2024 Lastschrift-Einzug mvezSX fnHyElys 5.300,00
         // @formatter:on
-        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
+        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} " //
                         + "(Gutschrift-VWL" //
                         + "|Gutschrift\\/Dauerauftrag" //
                         + "|Gehalt\\/Rente" //
@@ -757,7 +756,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -780,12 +779,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
 
-        Block interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Zinsertrag|Zinsgutschrift) [\\.,\\d]+$");
+        var interestBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Zinsertrag|Zinsgutschrift) [\\.,\\d]+$");
         type.addBlock(interestBlock);
         interestBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
@@ -801,7 +800,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                         .documentContextOptionally("taxDate1", "taxDate2", "taxDate3", "tax1", "tax2", "tax3")
                                                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (Zinsertrag|Zinsgutschrift) (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                                                            var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setMonetaryAmount(amount);
@@ -809,7 +808,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             if (v.containsKey("taxDate1") && v.containsKey("tax1")
                                                                             && t.getDateTime().equals(asDate(v.get("taxDate1"))))
                                                             {
-                                                                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax1")));
+                                                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax1")));
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                                                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                                                             }
@@ -817,7 +816,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             if (v.containsKey("taxDate2") && v.containsKey("tax2")
                                                                             && t.getDateTime().equals(asDate(v.get("taxDate2"))))
                                                             {
-                                                                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax2")));
+                                                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax2")));
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                                                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                                                             }
@@ -825,7 +824,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                                                             if (v.containsKey("taxDate3") && v.containsKey("tax3")
                                                                             && t.getDateTime().equals(asDate(v.get("taxDate3"))))
                                                             {
-                                                                Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax3")));
+                                                                var tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax3")));
                                                                 t.setMonetaryAmount(t.getMonetaryAmount().subtract(tax));
                                                                 t.addUnit(new Unit(Unit.Type.TAX, tax));
                                                             }
@@ -836,12 +835,12 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 03.05.2023 Entgelt EgumoUc -0,99
         // @formatter:on
-        Block feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Entgelt .* \\-[\\.,\\d]+$");
+        var feesBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Entgelt .* \\-[\\.,\\d]+$");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES);
                             return accountTransaction;
                         })
@@ -860,14 +859,14 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
 
     private void addNonImportableTransaction()
     {
-        final DocumentType type = new DocumentType("(Wertpapierabrechnung zum steuerrelevanten Umtausch" //
+        final var type = new DocumentType("(Wertpapierabrechnung zum steuerrelevanten Umtausch" //
                         + "|Umtausch Eingang" //
                         + "|Umtausch Ausgang)");
         this.addDocumentTyp(type);
 
-        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
 
-        Block firstRelevantLine = new Block("^(Wertpapierabrechnung zum steuerrelevanten Umtausch" //
+        var firstRelevantLine = new Block("^(Wertpapierabrechnung zum steuerrelevanten Umtausch" //
                         + "|Umtausch Eingang" //
                         + "|Umtausch Ausgang)$");
         type.addBlock(firstRelevantLine);
@@ -876,7 +875,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
         pdfTransaction //
 
                         .subject(() -> {
-                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            var portfolioTransaction = new PortfolioTransaction();
                             portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
                             return portfolioTransaction;
                         })
@@ -947,7 +946,7 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> v.getTransactionContext().put(FAILURE, Messages.MsgErrorSplitTransactionsNotSupported))
 
                         .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -1239,21 +1238,21 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         .match("^Rabatt (?<discountCurrency>[\\w]{3}) \\- (?<discount>[\\.,\\d]+)$") //
                         .match("^Der regul.re Ausgabeaufschlag von (?<percentageFee>[\\.,\\d]+)% .*$") //
                         .assign((t, v) -> {
-                            BigDecimal percentageFee = asBigDecimal(v.get("percentageFee"));
-                            BigDecimal amount = asBigDecimal(v.get("amount"));
-                            Money discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
+                            var percentageFee = asBigDecimal(v.get("percentageFee"));
+                            var amount = asBigDecimal(v.get("amount"));
+                            var discount = Money.of(asCurrencyCode(v.get("discountCurrency")), asAmount(v.get("discount")));
 
                             if (percentageFee.compareTo(BigDecimal.ZERO) != 0 && discount.isPositive())
                             {
                                 // @formatter:off
                                 // feeAmount = (amount / (1 + percentageFee / 100)) * (percentageFee / 100)
                                 // @formatter:on
-                                BigDecimal fxFee = amount //
+                                var fxFee = amount //
                                                 .divide(percentageFee.divide(BigDecimal.valueOf(100)) //
                                                                 .add(BigDecimal.ONE), Values.MC) //
                                                 .multiply(percentageFee, Values.MC); //
 
-                                Money fee = Money.of(asCurrencyCode(v.get("currency")), fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
+                                var fee = Money.of(asCurrencyCode(v.get("currency")), fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
 
                                 // fee = fee - discount
                                 fee = fee.subtract(discount);
