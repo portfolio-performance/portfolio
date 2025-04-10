@@ -35,7 +35,7 @@ public class AssertImportActions
         }
 
         @Override
-        public Account getAccount()
+        public Account getAccount(String currencyCode)
         {
             return account;
         }
@@ -47,7 +47,7 @@ public class AssertImportActions
         }
 
         @Override
-        public Account getSecondaryAccount()
+        public Account getSecondaryAccount(String currencyCode)
         {
             return secondaryAccount;
         }
