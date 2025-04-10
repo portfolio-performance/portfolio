@@ -289,6 +289,9 @@ public class Messages extends NLS
     public static String ColumnQuoteChange;
     public static String ColumnQuoteChange_Description;
     public static String ColumnQuoteChange_Option;
+    public static String ColumnQuoteChangeAnnualized;
+    public static String ColumnQuoteChangeAnnualized_Description;
+    public static String ColumnQuoteChangeAnnualized_Option;
     public static String ColumnQuoteDistanceFromAthPercent;
     public static String ColumnQuoteDistanceFromAthPercent_Description;
     public static String ColumnQuoteDistanceFromAthPercent_Option;
