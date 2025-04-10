@@ -274,8 +274,8 @@ public interface Extractor
             if (transaction instanceof AccountTransaction at)
             {
                 Account account = getAccountPrimary();
-                if (account == null)
-                    account = context.getAccount();
+                if (account == null && getAmount() != null)
+                    account = context.getAccount(getAmount().getCurrencyCode());
                 return action.process(at, account);
             }
             else if (transaction instanceof PortfolioTransaction pt)
@@ -359,8 +359,8 @@ public interface Extractor
         public Status apply(ImportAction action, Context context)
         {
             Account account = getAccountPrimary();
-            if (account == null)
-                account = context.getAccount();
+            if (account == null && getAmount() != null)
+                account = context.getAccount(getAmount().getCurrencyCode());
 
             Portfolio portfolio = getPortfolioPrimary();
             if (portfolio == null)
@@ -441,12 +441,12 @@ public interface Extractor
         public Status apply(ImportAction action, Context context)
         {
             Account account = getAccountPrimary();
-            if (account == null)
-                account = context.getAccount();
+            if (account == null && getAmount() != null)
+                account = context.getAccount(getAmount().getCurrencyCode());
 
             Account accountSecondary = getAccountSecondary();
-            if (accountSecondary == null)
-                accountSecondary = context.getSecondaryAccount();
+            if (accountSecondary == null && getAmount() != null)
+                accountSecondary = context.getSecondaryAccount(getAmount().getCurrencyCode());
 
             if (isOutbound)
                 return action.process(entry, account, accountSecondary);
