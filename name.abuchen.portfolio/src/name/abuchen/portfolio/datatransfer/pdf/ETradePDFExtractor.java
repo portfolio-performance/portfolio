@@ -55,7 +55,7 @@ public class ETradePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "nameContinued", "tickerSymbol", "currency") //
                         .match("^Company Name \\(Symbol\\) (?<name>.*),.*$") //
-                        .match("^(?<nameContinued>.*)\\((?<tickerSymbol>[\\w]{3,4})\\) Shares Purchased [\\.,\\d]+$") //
+                        .match("^(?<nameContinued>.*)\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) Shares Purchased [\\.,\\d]+$") //
                         .match("^Grant Date Market Value (?<currency>\\p{Sc})[\\.,\\d]+$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 

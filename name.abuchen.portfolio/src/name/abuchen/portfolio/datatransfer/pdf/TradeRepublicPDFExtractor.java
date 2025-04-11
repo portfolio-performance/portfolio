@@ -985,14 +985,14 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         // Ethereum (ETH) 0,0878 Stk. 3.415,35 EUR 299,87 EUR
                         // @formatter:on
                         .section("name", "tickerSymbol", "currency") //
-                        .match("^(?<name>.*) \\((?<tickerSymbol>[A-Z]*)\\) [\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                        .match("^(?<name>.*) \\((?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?)\\) [\\.,\\d]+ Stk\\. [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateCryptoCurrency(v)))
 
                         // @formatter:off
                         // Ethereum (ETH) 0,0878 Stk. 3.415,35 EUR 299,87 EUR
                         // @formatter:on
                         .section("shares") //
-                        .match("^.* \\([A-Z]*\\) (?<shares>[\\.,\\d]+) Stk\\. [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                        .match("^.* \\([A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?\\) (?<shares>[\\.,\\d]+) Stk\\. [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .oneOf( //

@@ -366,7 +366,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         // STK 0,0024 Bitcoin EUR 41.981,240
                         // @formatter:on
                         .section("name", "tickerSymbol", "currency") //
-                        .match("^Nominale Kennung: (?<tickerSymbol>[A-Z]+) Kurs$") //
+                        .match("^Nominale Kennung: (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) Kurs$") //
                         .match("^STK [\\.,\\d]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.,\\d]+$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateCryptoCurrency(v)))
 

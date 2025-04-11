@@ -73,7 +73,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "tickerSymbol", "currency") //
                                                         .match("^Instrument (?<name>.*) Handelszeit.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
-                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,5}):.*$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
                                                         .match("^Ordertyp .* \\-[\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -86,7 +86,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "tickerSymbol", "currency") //
                                                         .match("^Instrument (?<name>.*) Handelszeit.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
-                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,5}):.*$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
                                                         .match("^Ordertyp .* [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 

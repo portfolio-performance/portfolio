@@ -75,7 +75,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                         // TSLA Tesla US88160R1014 Sell 2.1451261 $1,166.12 03 Nov 2021
                         // @formatter:on
                         .section("tickerSymbol", "name", "isin") //
-                        .match("^(?<tickerSymbol>[A-Z0-9]{3,4}) (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Sell [\\.,\\d]+ \\p{Sc}[\\.,\\d]+ [\\d]{2} .* [\\d]{4}$") //
+                        .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Sell [\\.,\\d]+ \\p{Sc}[\\.,\\d]+ [\\d]{2} .* [\\d]{4}$") //
                         .assign((t, v) -> {
                             v.put("currency", CurrencyUnit.USD);
 

@@ -264,7 +264,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "tickerSymbol", "currency") //
                         .match("^Produktbezeichnung \\- (?<name>.*)$") //
-                        .match("^Kennung: (?<tickerSymbol>[A-Z]*)$") //
+                        .match("^Kennung: (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?)$") //
                         .match("^W.hrung: (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateCryptoCurrency(v)))
 

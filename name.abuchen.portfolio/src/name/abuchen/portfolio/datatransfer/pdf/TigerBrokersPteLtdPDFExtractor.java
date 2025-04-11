@@ -66,9 +66,9 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("Activity Statement", (context, lines) -> {
             Pattern pCurrency = Pattern.compile("^.* Base Currency : (?<currency>[\\w]{3})$");
-            Pattern pSecurity = Pattern.compile("^(?<tickerSymbol>(?!(GST|Net))[A-Z0-9]{2,4}) (?<name>.*) [\\d]$");
+            Pattern pSecurity = Pattern.compile("^(?<tickerSymbol>(?!(GST|Net))[A-Z0-9]{1,6}(?:\\\\.[A-Z]{1,4})?) (?<name>.*) [\\d]$");
             Pattern pSecurityCurrency = Pattern.compile("^Stock Currency: (?<securityCurrency>[\\w]{3})$");
-            Pattern pDividendTaxes = Pattern.compile("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<tickerSymbol>[A-Z0-9]{2,4}) Cash Dividend .* \\-(?<tax>[\\.,\\d]+).*$");
+            Pattern pDividendTaxes = Pattern.compile("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) Cash Dividend .* \\-(?<tax>[\\.,\\d]+).*$");
 
             String securityCurrency = null;
 
@@ -150,7 +150,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
                         .section("tickerSymbol", "date", "time", "shares", "gross", "fee1", "fee2", "fee3") //
                         .match("^Settlement Fee: \\-[\\.,\\d]+$") //
-                        .match("^(?<tickerSymbol>[A-Z0-9]{2,4}) " //
+                        .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) " //
                                         + "(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}), " //
                                         + "(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .* " //
                                         + "(?<shares>[\\.,\\d]+) " //
@@ -213,7 +213,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("tickerSymbol", "date", "time", "shares", "gross", "fee1", "fee2", "fee3").optional() //
-                        .match("^(?<tickerSymbol>[A-Z0-9]{2,4}) " //
+                        .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) " //
                                         + "(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}), " //
                                         + "(?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}), .* " //
                                         + "(?<shares>[\\.,\\d]+) " //
@@ -276,7 +276,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("tickerSymbol", "shares", "gross", "fee1", "fee2", "date", "fee3", "time").optional() //
-                        .match("^(?<tickerSymbol>[A-Z0-9]{2,4}) [A-Z]+ " //
+                        .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) [A-Z]+ " //
                                         + "(?<shares>[\\.,\\d]+) " //
                                         + "[\\.,\\d]+ [\\.,\\d]+ " //
                                         + "(?<gross>[\\.,\\d]+) " //
@@ -344,7 +344,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "tickerSymbol", "shares", "gross", "fee1", "fee2", "time", "fee3") //
                                                         .match("^Commission: (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})$") //
-                                                        .match("^(?<tickerSymbol>[A-Z0-9]{2,4}) .* " //
+                                                        .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) .* " //
                                                                         + "(?<shares>[\\.,\\d]+) " //
                                                                         + "[\\.,\\d]+ [\\.,\\d]+ " //
                                                                         + "(?<gross>[\\.,\\d]+) " //
@@ -385,7 +385,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("date", "tickerSymbol", "shares", "gross", "fee1", "fee2", "time", "fee3") //
                                                         .match("^Commission: (?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2})$") //
-                                                        .match("^(?<tickerSymbol>[A-Z0-9]{2,4}) .* " //
+                                                        .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) .* " //
                                                                         + "(?<shares>[\\.,\\d]+) " //
                                                                         + "[\\.,\\d]+ [\\.,\\d]+ " //
                                                                         + "(?<gross>[\\.,\\d]+) " //
@@ -448,7 +448,7 @@ public class TigerBrokersPteLtdPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "tickerSymbol", "amountPerShare", "note", "amount") //
                         .match("^(?<date>[\\d]{4}\\-[\\d]{2}\\-[\\d]{2}) " //
-                                        + "(?<tickerSymbol>[A-Z0-9]{2,4}) " //
+                                        + "(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) " //
                                         + "Cash Dividend " //
                                         + "(?<amountPerShare>[\\.,\\d]+) " //
                                         + "[\\w]{3} per Share " //
