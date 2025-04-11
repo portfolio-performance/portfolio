@@ -106,9 +106,12 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
                         // b) the account currency might be different that the
                         // reporting currency
 
-                        var exchangeRate = BigDecimal.valueOf(netAmount / (double) netAmountForex)
-                                        .setScale(Values.MC.getPrecision(), Values.MC.getRoundingMode());
-
+                        var exchangeRate = BigDecimal.valueOf(1);
+                        if (netAmount != 0 && netAmountForex != 0)
+                        {
+                            exchangeRate = BigDecimal.valueOf(netAmount / (double) netAmountForex)
+                                            .setScale(Values.MC.getPrecision(), Values.MC.getRoundingMode());
+                        }
                         gainForex = BigDecimal.valueOf(averageCostsForex) //
                                         .multiply(exchangeRate) //
                                         .subtract(BigDecimal.valueOf(averageCosts)) //
