@@ -5,7 +5,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -38,7 +37,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final DocumentType type = new DocumentType("Trade details,", //
+        final var type = new DocumentType("Trade details,", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Währung: CHF 05-Dez-2024 - 05-Dez-2024
@@ -49,16 +48,16 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Instrument .*$");
+        var firstRelevantLine = new Block("^Instrument .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -74,7 +73,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "tickerSymbol", "currency") //
                                                         .match("^Instrument (?<name>.*) Handelszeit.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
-                                                        .match("^Symbol (?<tickerSymbol>[\\w]{3,4}):.*$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,5}):.*$") //
                                                         .match("^Ordertyp .* \\-[\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -87,7 +86,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name", "isin", "tickerSymbol", "currency") //
                                                         .match("^Instrument (?<name>.*) Handelszeit.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
-                                                        .match("^Symbol (?<tickerSymbol>[\\w]{3,4}):.*$") //
+                                                        .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,5}):.*$") //
                                                         .match("^Ordertyp .* [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -113,7 +112,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "time") //
-                                                        .match("^.* Handelszeit (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$") //
+                                                        .match("^.*Handelszeit (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2})$") //
                                                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
 
                         .oneOf( //
@@ -141,11 +140,11 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Aktienbetrag .* (?<exchangeRate>[\\.,\\d]+) \\-[\\.,\\d]+ \\-[\\.,\\d]+$") //
                                                         .match("^Nettobetrag .* \\-[\\.,\\d]+ \\-(?<gross>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = rate.convert(rate.getBaseCurrency(), gross);
+                                                            var gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getBaseCurrency(), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
@@ -174,19 +173,19 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
     private void addDepositTransaction()
     {
-        DocumentType type = new DocumentType("Cash Transfer Detail Report");
+        var type = new DocumentType("Cash Transfer Detail Report");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Cash Transfer Detail Report$");
+        var firstRelevantLine = new Block("^Cash Transfer Detail Report$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -213,7 +212,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszugsbericht", //
+        final var type = new DocumentType("Kontoauszugsbericht", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Währung : CHF
@@ -227,12 +226,12 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 26-Nov-2024 26-Nov-2024 DEPOSIT (6980803089, 6083903733) 700,00 700,00
         // @formatter:on
-        Block depositBlock = new Block("^[\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} (DEPOSIT) .* [\\.,\\d]+ [\\.,\\d]+$");
+        var depositBlock = new Block("^[\\d]{2}\\-[\\w]+\\-[\\d]{4} [\\d]{2}\\-[\\w]+\\-[\\d]{4} (DEPOSIT) .* [\\.,\\d]+ [\\.,\\d]+$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -241,8 +240,8 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^[\\d]{2}\\-[\\w]+\\-[\\d]{4} " //
                                         + "(?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) " //
-                                        + "DEPOSIT .* "
-                                        + "(?<amount>[\\.,\\d]+)"
+                                        + "DEPOSIT .* " //
+                                        + "(?<amount>[\\.,\\d]+)" //
                                         + "[\\.,\\d]+$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
@@ -265,8 +264,8 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^Stempelgeb.hr .* \\-(?<currencyConversionFee>[\\.,\\d]+) \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            Money taxes = Money.of(v.get("currency"), asAmount(v.get("tax")));
-                            Money currencyConversionFee = Money.of(v.get("currency"), asAmount(v.get("currencyConversionFee")));
+                            var taxes = Money.of(v.get("currency"), asAmount(v.get("tax")));
+                            var currencyConversionFee = Money.of(v.get("currency"), asAmount(v.get("currencyConversionFee")));
 
                             // Subtract currency conversion fee from taxes
                             taxes = taxes.subtract(currencyConversionFee);
@@ -278,6 +277,15 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
+
+                        // @formatter:off
+                        // Provision 4555555555 07-Apr-2025 08-Apr-2025 -1,77 0,860862 -0,01 -1,52
+                        // @formatter:on
+                        .section("fee").optional() //
+                        .documentContext("currency") //
+                        .match("^Provision .* \\-(?<fee>[\\.,\\d]+) \\-[\\.,\\d]+$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
 
                         // @formatter:off
                         // Stempelgebühr 39683058642 05-Dez-2024 09-Dez-2024 -8,22 0,887182 -0,02 -7,29
