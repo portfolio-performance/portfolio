@@ -56,12 +56,16 @@ public class BSDEXPDFExtractorTest
     };
 
     @Test
-    public void testCryptoKauf01()
+    public void testTransaktionshistorie01()
     {
         List<Exception> errors = new ArrayList<>();
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transaktionshistorie01.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
@@ -76,19 +80,23 @@ public class BSDEXPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-12-18T04:14:42"), hasShares(0.001), //
-                        hasSource("Kauf01.txt"), //
+                        hasSource("Transaktionshistorie01.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 99.20), hasGrossValue("EUR", 99.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.20))));
     }
 
     @Test
-    public void testCryptoKauf02()
+    public void testTransaktionshistorie02()
     {
         List<Exception> errors = new ArrayList<>();
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transaktionshistorie02.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
@@ -103,19 +111,23 @@ public class BSDEXPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
                         hasDate("2024-04-30T19:16:59"), hasShares(0.0001283), //
-                        hasSource("Kauf02.txt"), //
+                        hasSource("Transaktionshistorie02.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 7.19), hasGrossValue("EUR", 7.18), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.01))));
     }
 
     @Test
-    public void testCryptoVerkauf01()
+    public void testTransaktionshistorie03()
     {
         List<Exception> errors = new ArrayList<>();
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transaktionshistorie03.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
@@ -130,20 +142,20 @@ public class BSDEXPDFExtractorTest
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
                         hasDate("2024-12-17T18:07:05"), hasShares(15.00), //
-                        hasSource("Verkauf01.txt"), //
+                        hasSource("Transaktionshistorie03.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 37.72), hasGrossValue("EUR", 37.80), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.08))));
     }
 
     @Test
-    public void testDepositRemoval01()
+    public void testTransaktionshistorie04()
     {
         var extractor = new BSDEXPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DepositRemoval01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transaktionshistorie04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -154,10 +166,57 @@ public class BSDEXPDFExtractorTest
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-06-14T06:00:26"), hasAmount("EUR", 25.50), //
-                        hasSource("DepositRemoval01.txt"), hasNote(null))));
+                        hasSource("Transaktionshistorie04.txt"), hasNote(null))));
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-12-17T06:30:23"), hasAmount("EUR", 113.66), //
-                        hasSource("DepositRemoval01.txt"), hasNote(null))));
+                        hasSource("Transaktionshistorie04.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testTransaktionshistorie05()
+    {
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Transaktionshistorie05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(2L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("BTC"), //
+                        hasName("Bitcoin"), //
+                        hasCurrencyCode("EUR"), //
+                        hasFeed(CoinGeckoQuoteFeed.ID), //
+                        hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "bitcoin"))));
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("ETH"), //
+                        hasName("Ethereum"), //
+                        hasCurrencyCode("EUR"), //
+                        hasFeed(CoinGeckoQuoteFeed.ID), //
+                        hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "ethereum"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2023-08-02T01:25:55"), hasShares(0.00553256), //
+                        hasSource("Transaktionshistorie05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 151.18), hasGrossValue("EUR", 150.65), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.53))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2023-02-16T23:47:54"), hasShares(0.032057491), //
+                        hasSource("Transaktionshistorie05.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 49.01), hasGrossValue("EUR", 49.18), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.17))));
     }
 }
