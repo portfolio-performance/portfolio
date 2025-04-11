@@ -2111,7 +2111,7 @@ public class IBFlexStatementExtractorTest
         assertThat(securityItems.size(), is(3));
         assertThat(buySellTransactions.size(), is(6));
         assertThat(accountTransactions.size(), is(2));
-        assertThat(results.size(), is(11));
+        assertThat(results.size(), is(13));
 
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2596,7 +2596,7 @@ public class IBFlexStatementExtractorTest
         assertThat(securityItems.size(), is(2));
         assertThat(buySellTransactions.size(), is(2));
         assertThat(accountTransactions.size(), is(4));
-        assertThat(results.size(), is(8));
+        assertThat(results.size(), is(12));
 
         // check security
         Security security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2701,6 +2701,16 @@ public class IBFlexStatementExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
 
+        // check 1nd cash transaction
+        // AccountTransferEntry transfer = (AccountTransferEntry) results.stream().filter(AccountTransferItem.class::isInstance)
+        //                 .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        // transaction = transfer.getSourceTransaction();
+        // assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+        // assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-26T00:00")));
+        // assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(-3634))));
+        // assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(-3634))));
+        
         // check transaction
         // get transactions
         Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).skip(2).iterator();
