@@ -162,7 +162,7 @@ public class PaginatedTable
         }
     }
 
-    private static final int PAGE_SIZE = 12;
+    private static final int PAGE_SIZE = 10;
 
     private final Color selectionColor = Display.getDefault().getSystemColor(SWT.COLOR_LIST_SELECTION);
 
