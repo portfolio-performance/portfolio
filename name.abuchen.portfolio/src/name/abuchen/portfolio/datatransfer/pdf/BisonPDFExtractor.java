@@ -76,7 +76,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
                         // 12.06.2022 21:19 1.401,94 €/ETH + 47,62 €
                         // @formatter:on
                         .section("tickerSymbol", "shares", "date", "time", "amount", "currency") //
-                        .match("^(Kauf|Verkauf)([\\*])? (?<tickerSymbol>[\\w]{3}) (?<shares>[\\.,\\d]+)$") //
+                        .match("^(Kauf|Verkauf)([\\*])? (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<shares>[\\.,\\d]+)$") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateCryptoCurrency(v));
@@ -116,7 +116,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
                         // 16.01.2020 11:19 7.684,63 €/BTC + 10,00 €
                         // @formatter:on
                         .section("tickerSymbol", "shares", "date", "time", "amount", "currency") //
-                        .match("^Gutschein([\\*])? (?<tickerSymbol>[\\w]{3}) (?<shares>[\\.,\\d]+)$") //
+                        .match("^Gutschein([\\*])? (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<shares>[\\.,\\d]+)$") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateCryptoCurrency(v));

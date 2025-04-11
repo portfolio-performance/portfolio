@@ -75,7 +75,7 @@ public class HargreavesLansdownPlcExtractor extends AbstractPDFExtractor
                 // 2,539.00 MSCI World ETF GBP 2267.4179 57,569.74
                 // @formatter:on
                 .section("isin", "tickerSymbol", "name", "nameContinued").optional()
-                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) STOCK CODE: (?<tickerSymbol>.*)$")
+                .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) STOCK CODE: (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)(\\.)?$")
                 .match("^(?<name>.*)$")
                 .match("^[\\.,\\d]+ (?<nameContinued>.*) [\\.,\\d]+ [\\.,\\d]+$")
                 .assign((t, v) -> {

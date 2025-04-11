@@ -78,7 +78,7 @@ public class AvivaPLCPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Investment Name: (?<name>.*)$") //
                                                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^SEDOL: (?<wkn>[A-Z0-9]{7})$") //
-                                                        .match("^Citicode: (?<tickerSymbol>[\\w]{3,4})\\..*$") //
+                                                        .match("^Citicode: (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\..*$") //
                                                         .assign((t, v) -> {
                                                             v.put("currency", asCurrencyCode("GBP"));
 

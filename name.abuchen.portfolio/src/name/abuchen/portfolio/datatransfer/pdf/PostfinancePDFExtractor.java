@@ -179,14 +179,14 @@ public class PostfinancePDFExtractor extends AbstractPDFExtractor
                         // Bitcoin BTC 0.006124 USD 97 376.126639
                         // @formatter:on
                         .section("name", "tickerSymbol", "currency") //
-                        .match("^(?<name>.*) (?<tickerSymbol>[A-Z]+) [\\.'\\d]+ (?<currency>[\\w]{3}) [\\.'\\d]+ [\\.'\\d]+.*$") //
+                        .match("^(?<name>.*) (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) [\\.'\\d]+ (?<currency>[\\w]{3}) [\\.'\\d]+ [\\.'\\d]+.*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateCryptoCurrency(v)))
 
                         // @formatter:off
                         // Bitcoin BTC 0.006124 USD 97 376.126639
                         // @formatter:on
                         .section("shares") //
-                        .match("^.* [A-Z]+ (?<shares>[\\.'\\d]+) [\\w]{3} [\\.'\\d]+ [\\.'\\d]+.*$") //
+                        .match("^.* [A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})? (?<shares>[\\.'\\d]+) [\\w]{3} [\\.'\\d]+ [\\.'\\d]+.*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off

@@ -135,7 +135,7 @@ public class HargreavesLansdownPlcTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("GB00BKX5CN86"));
         assertNull(security.getWkn());
-        assertThat(security.getTickerSymbol(), is("JE."));
+        assertThat(security.getTickerSymbol(), is("JE"));
         assertThat(security.getName(), is("Just Eat plc Ordinary Shares 1p"));
         assertThat(security.getCurrencyCode(), is("GBP"));
 
