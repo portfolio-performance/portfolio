@@ -42,6 +42,8 @@ import name.abuchen.portfolio.ui.views.dashboard.lists.FollowUpWidget;
 import name.abuchen.portfolio.ui.views.dashboard.lists.LimitExceededWidget;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.payments.PaymentsViewModel;
+import name.abuchen.portfolio.ui.views.dashboard.charts.RebalancingChartWidget;
+import name.abuchen.portfolio.ui.views.dashboard.charts.RebalancingTargetChartWidget;
 
 public enum WidgetFactory
 {
@@ -411,6 +413,12 @@ public enum WidgetFactory
                                                                         .getDate()));
                                     }) //
                                     .build()),
+
+    REBALANCING_CHART(Messages.RebalancingChart, Messages.LabelStatementOfAssets, Images.VIEW_BARCHART,
+                    RebalancingChartWidget::new),
+    
+    REBALANCING_TARGET_CHART(Messages.RebalancingTargetChart, Messages.LabelStatementOfAssets, Images.VIEW_BARCHART,
+                    RebalancingTargetChartWidget::new),
 
     // typo is API now!!
     VERTICAL_SPACEER(Messages.LabelVerticalSpacer, Messages.LabelCommon, VerticalSpacerWidget::new);
