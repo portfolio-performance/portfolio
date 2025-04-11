@@ -15,6 +15,7 @@ public class Messages extends NLS
     public static String SaveHandlerMsgSelectFileToSave;
     public static String SaveHandlerPrompt;
     public static String SaveHandlerTitle;
+
     static
     {
         // initialize resource bundle
