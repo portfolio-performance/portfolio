@@ -9,8 +9,6 @@ import java.util.Locale;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 
-import org.eclipse.core.commands.Command;
-import org.eclipse.core.commands.IParameter;
 import org.eclipse.core.commands.Parameterization;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
@@ -20,7 +18,6 @@ import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -30,6 +27,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
@@ -82,23 +80,23 @@ public class WelcomePart
 
     private void createHeader(Composite container)
     {
-        Composite composite = new Composite(container, SWT.NONE);
+        var composite = new Composite(container, SWT.NONE);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).grab(true, false).applyTo(composite);
         composite.setBackground(container.getBackground());
         composite.setLayout(new FormLayout());
 
         // logo
-        Label image = new Label(composite, SWT.NONE);
+        var image = new Label(composite, SWT.NONE);
         image.setBackground(composite.getBackground());
         image.setImage(Images.LOGO_128.image());
 
         // name
-        Label title = new Label(composite, SWT.NONE);
+        var title = new Label(composite, SWT.NONE);
         title.setText(Messages.LabelPortfolioPerformance);
         title.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING1);
 
         // version
-        Label version = new Label(composite, SWT.NONE);
+        var version = new Label(composite, SWT.NONE);
         version.setText(PortfolioPlugin.getDefault().getBundle().getVersion().toString() + " (" //$NON-NLS-1$
                         + DateTimeFormatter.ofPattern("MMMM yyyy").format(BuildInfo.INSTANCE.getBuildTime()) //$NON-NLS-1$
                         + ")"); //$NON-NLS-1$
@@ -110,7 +108,7 @@ public class WelcomePart
 
     private void createContent(Composite container)
     {
-        Composite composite = new Composite(container, SWT.NONE);
+        var composite = new Composite(container, SWT.NONE);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(composite);
         composite.setBackground(container.getBackground());
 
@@ -131,7 +129,7 @@ public class WelcomePart
 
     private Composite createOpenLinks(Composite composite)
     {
-        Composite section = new Composite(composite, SWT.NONE);
+        var section = new Composite(composite, SWT.NONE);
         GridLayoutFactory.fillDefaults().margins(5, 5).applyTo(section);
 
         addSectionLabel(section, Messages.IntroLabelActions);
@@ -142,7 +140,7 @@ public class WelcomePart
 
         for (String file : recentFiles.getRecentFiles())
         {
-            String name = Path.fromOSString(file).lastSegment();
+            var name = Path.fromOSString(file).lastSegment();
             addLink(section, OPEN + file, name, null);
         }
 
@@ -151,29 +149,32 @@ public class WelcomePart
 
     private Composite createHelpSection(Composite composite)
     {
-        Composite section = new Composite(composite, SWT.NONE);
+        var section = new Composite(composite, SWT.NONE);
         GridLayoutFactory.fillDefaults().margins(5, 5).applyTo(section);
 
         addSectionLabel(section, Messages.IntroLabelSamples);
-        addLink(section, "action:sample", Messages.IntroOpenSample, Messages.IntroOpenSampleText); //$NON-NLS-1$
+        addLink(section, "action:sample", //$NON-NLS-1$
+                        Messages.IntroOpenSample, Messages.IntroOpenSampleText);
 
         addSectionLabel(section, Messages.IntroLabelHelp);
-        addLink(section, Messages.SiteNewAndNoteworthy, Messages.SystemMenuNewAndNoteworthy,
-                        Messages.IntroNewAndNoteworthyText);
+        addLink(section, Messages.SiteNewAndNoteworthy, //
+                        Messages.SystemMenuNewAndNoteworthy, Messages.IntroNewAndNoteworthyText);
 
-        addLink(section, "https://forum.portfolio-performance.info", //$NON-NLS-1$
+        addLink(section, Messages.SiteManual, //
+                        Messages.IntroOpenManual, Messages.IntroOpenManualText);
+
+        addLink(section, Messages.SiteForum, //
                         Messages.IntroOpenForum, Messages.IntroOpenForumText);
-        addLink(section, "https://forum.portfolio-performance.info/c/how-to", //$NON-NLS-1$
+
+        addLink(section, Messages.SiteHowTo, //
                         Messages.IntroOpenHowtos, Messages.IntroOpenHowtosText);
-        addLink(section, "https://forum.portfolio-performance.info/c/faq", //$NON-NLS-1$
-                        Messages.IntroOpenFAQ, Messages.IntroOpenFAQText);
 
         return section;
     }
 
     private Composite createMobileAppSection(Composite composite)
     {
-        Composite section = new Composite(composite, SWT.NONE);
+        var section = new Composite(composite, SWT.NONE);
         GridLayoutFactory.fillDefaults().margins(5, 5).applyTo(section);
 
         addSectionLabel(section, Messages.LabelMobileApp);
@@ -184,7 +185,7 @@ public class WelcomePart
         // qr codes
 
         var isDark = themeEngine.getActiveTheme().getId().contains("dark"); //$NON-NLS-1$
-        var isGerman = Locale.getDefault().getLanguage().equals("de"); //$NON-NLS-1$
+        var isGerman = "de".equals(Locale.getDefault().getLanguage()); //$NON-NLS-1$
 
         var qrcode = new ImageHyperlink(section, SWT.NONE);
         qrcode.setImage(Images.resolve(MessageFormat.format("qr/app_{0}_{1}.png", //$NON-NLS-1$
@@ -199,7 +200,7 @@ public class WelcomePart
 
     private void addSectionLabel(Composite actions, String label)
     {
-        Label l = new Label(actions, SWT.NONE);
+        var l = new Label(actions, SWT.NONE);
         l.setText(label);
         l.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING1);
         GridDataFactory.fillDefaults().indent(0, 20).applyTo(l);
@@ -207,13 +208,13 @@ public class WelcomePart
 
     private void addLink(Composite container, final String target, String label, String subtext)
     {
-        Link link = new Link(container, SWT.UNDERLINE_LINK);
+        var link = new Link(container, SWT.UNDERLINE_LINK);
         link.setText("<a>" + label + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
         link.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> linkActivated(target)));
 
         if (subtext != null)
         {
-            Label l = new Label(container, SWT.WRAP);
+            var l = new Label(container, SWT.WRAP);
             l.setText(subtext);
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).grab(true, false).applyTo(l);
         }
@@ -223,13 +224,13 @@ public class WelcomePart
     {
         if (target.startsWith(OPEN))
         {
-            String file = target.substring(OPEN.length());
+            var file = target.substring(OPEN.length());
 
             // check if file is already opened somewhere
 
-            java.util.Optional<MPart> part = partService.getParts().stream()
+            var part = partService.getParts().stream() //
                             .filter(p -> UIConstants.Part.PORTFOLIO.equals(p.getElementId())) //
-                            .filter(p -> file.equals(p.getPersistedState().get(UIConstants.PersistedState.FILENAME)))
+                            .filter(p -> file.equals(p.getPersistedState().get(UIConstants.PersistedState.FILENAME))) //
                             .findAny();
 
             if (part.isPresent())
@@ -253,7 +254,7 @@ public class WelcomePart
         }
         else if (target.startsWith(OPEN_PREFERENCES))
         {
-            String page = target.substring(OPEN_PREFERENCES.length());
+            var page = target.substring(OPEN_PREFERENCES.length());
             executeCommand(UIConstants.Command.PREFERENCES, UIConstants.Parameter.PAGE, page);
         }
         else if (target.startsWith("http")) //$NON-NLS-1$
@@ -266,20 +267,19 @@ public class WelcomePart
     {
         try
         {
-            Command cmd = commandService.getCommand(command);
+            var cmd = commandService.getCommand(command);
 
             List<Parameterization> parameterizations = new ArrayList<>();
             if (parameters != null)
             {
-                for (int ii = 0; ii < parameters.length; ii = ii + 2)
+                for (var ii = 0; ii < parameters.length; ii = ii + 2)
                 {
-                    IParameter p = cmd.getParameter(parameters[ii]);
+                    var p = cmd.getParameter(parameters[ii]);
                     parameterizations.add(new Parameterization(p, parameters[ii + 1]));
                 }
             }
 
-            ParameterizedCommand pCmd = new ParameterizedCommand(cmd,
-                            parameterizations.toArray(new Parameterization[0]));
+            var pCmd = new ParameterizedCommand(cmd, parameterizations.toArray(new Parameterization[0]));
             if (handlerService.canExecute(pCmd))
                 handlerService.executeHandler(pCmd);
         }
@@ -299,8 +299,8 @@ public class WelcomePart
 
         // dispose all children
         var controls = container.getChildren();
-        for (int ii = 0; ii < controls.length; ii++)
-            controls[ii].dispose();
+        for (Control control : controls)
+            control.dispose();
 
         // recreate the content
         createHeader(container);

@@ -126,3 +126,5 @@ Require-Bundle: name.abuchen.portfolio;bundle-version="0.75.2",
 Automatic-Module-Name: name.abuchen.portfolio.ui
 Service-Component: OSGI-INF/name.abuchen.portfolio.ui.util.theme.ColorAndFontProviderImpl.xml,
  OSGI-INF/name.abuchen.portfolio.ui.theme.CustomThemeEngineManager.xml
+Export-Package: name.abuchen.portfolio.ui,
+ name.abuchen.portfolio.ui.util
