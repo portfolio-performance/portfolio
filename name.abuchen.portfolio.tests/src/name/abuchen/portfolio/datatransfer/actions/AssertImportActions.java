@@ -9,35 +9,119 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.stream.Stream;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
 
+
 public class AssertImportActions
 {
+    public static class Currencies
+    {
+        private String primary;
+        private String secondary;
+        
+        public Currencies(String primary, String secondary)
+        {
+            this.primary = primary;
+            this.secondary = secondary;
+        }
+        
+        public String getPrimary()
+        {
+            return primary;
+        }
+
+        public String getSecondary()
+        {
+            return secondary;
+        }
+    }
+
+    public static class CheckResult
+    {
+        private Extractor.Item item;
+        private ImportAction.Status status;
+
+        public CheckResult(Extractor.Item item, ImportAction.Status status)
+        {
+            this.item = item;
+            this.status = status;
+        }
+        
+        public Extractor.Item getItem()
+        {
+            return item;
+        }
+
+        public ImportAction.Status getStatus()
+        {
+            return status;
+        }
+
+        @Override
+        public String toString()
+        {
+            return item.toString() + " " + status.getCode() + ": " + status.getMessage();
+        }
+    }
+    
     private static class TestContext implements ImportAction.Context
     {
-        private Account account;
+        private class AccountPair
+        {
+            private Account primary;
+            private Account secondary;
+
+            public AccountPair(Currencies currencies)
+            {
+                this.primary = new Account();
+                this.secondary = new Account();
+                this.primary.setCurrencyCode(currencies.getPrimary());
+                this.secondary.setCurrencyCode(currencies.getSecondary());
+            }
+
+            public Account getPrimary()
+            {
+                return primary;
+            }
+
+            public Account getSecondary()
+            {
+                return secondary;
+            }
+        }
+
+        private Map<String, AccountPair> accounts;
         private Portfolio portfolio;
-        private Account secondaryAccount;
         private Portfolio secondaryPortfolio;
 
         public TestContext(String currency)
         {
-            this.account = new Account();
-            this.account.setCurrencyCode(currency);
+            this(new Currencies(currency, currency));
+        }
+
+        public TestContext(Currencies... currencies)
+        {
             this.portfolio = new Portfolio();
-            this.secondaryAccount = new Account();
-            this.secondaryAccount.setCurrencyCode(currency);
             this.secondaryPortfolio = new Portfolio();
+            this.accounts = new HashMap<>();
+            for (Currencies c : currencies)
+            {
+                this.accounts.put(c.getPrimary(), new AccountPair(c));
+            }
         }
 
         @Override
         public Account getAccount(String currencyCode)
         {
-            return account;
+            AccountPair pair = accounts.get(currencyCode);
+            return pair != null ? pair.getPrimary() : accounts.values().stream().findFirst().map(AccountPair::getPrimary).orElse(null);
         }
 
         @Override
@@ -49,7 +133,8 @@ public class AssertImportActions
         @Override
         public Account getSecondaryAccount(String currencyCode)
         {
-            return secondaryAccount;
+            AccountPair pair = accounts.get(currencyCode);
+            return pair != null ? pair.getSecondary() : accounts.values().stream().findFirst().map(AccountPair::getSecondary).orElse(null);
         }
 
         @Override
@@ -98,5 +183,15 @@ public class AssertImportActions
                                 status.getCode(), is(ImportAction.Status.Code.OK));
             }
         }
+    }
+
+    public List<CheckResult> check(List<Extractor.Item> items, Currencies... currencies)
+    {
+        var context = new TestContext(currencies);
+        
+        return items.stream()
+                        .flatMap(item -> Stream.of(actions).map(action -> new CheckResult(item, item.apply(action, context))))
+                        .filter(result -> result.getStatus().getCode() != ImportAction.Status.Code.OK)
+                        .collect(Collectors.toList());
     }
 }

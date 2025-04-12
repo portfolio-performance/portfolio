@@ -409,43 +409,41 @@ public class IBFlexStatementExtractor implements Extractor
                 }
             }
 
-            // paid: tradeMoney with Symbile.split(".")[1]
-            // received: quantity with Symbile.split(".")[0]
-            // @formatter:off
-            // Set amount and check if the element contains the "netCash"
-            // attribute. If the element contains only the "cost" attribute, the
-            // amount will be set based on this attribute.
-            // @formatter:on
-            if (element.hasAttribute("symbol") && element.hasAttribute("tradeMoney") && element.hasAttribute("quantity"))
-            {
-                String symbol = element.getAttribute("symbol");
-                String[] parts = symbol.split("\\.");
-                if (parts.length != 2)
-                    return null;
-
-                String sourceCurrency = parts[1];
-                String targetCurrency = parts[0];
-                String sourceAmount = element.getAttribute("tradeMoney");
-                String targetAmount = element.getAttribute("quantity");
-
-                Money source = Money.of(sourceCurrency, asAmount(sourceAmount));
-                Money target = Money.of(targetCurrency, asAmount(targetAmount));
-
-                setAmount(element, cashTransaction.getSourceTransaction(), source);
-                setAmount(element, cashTransaction.getTargetTransaction(), target, false);
-
-                BigDecimal exachangeRate = asExchangeRate(element.getAttribute("tradePrice"));
-                
-                cashTransaction.getSourceTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE, source, target, exachangeRate));
-            }
-            else
+            // Ensure all required attributes are present
+            if (!element.hasAttribute("symbol") || 
+                !element.hasAttribute("tradeMoney") || 
+                !element.hasAttribute("quantity"))
             {
                 return null;
             }
 
+            // Split the symbol into source and target currency (e.g. EUR.USD)
+            // where USD is the currency paid and EUR is the currency bought
+            String symbol = element.getAttribute("symbol");
+            String[] parts = symbol.split("\\.");
+            if (parts.length != 2)
+                return null;
+
+            String sourceCurrency = parts[1];
+            String targetCurrency = parts[0];
+            String sourceAmount = element.getAttribute("tradeMoney");
+            String targetAmount = element.getAttribute("quantity");
+
+            // Set the amounts
+            Money source = Money.of(sourceCurrency, asAmount(sourceAmount));
+            Money target = Money.of(targetCurrency, asAmount(targetAmount));
+
+            // Since this is a cash transaction, we don't need to convert the amounts currencies
+            // therefore we skip setAmount()
+            cashTransaction.getSourceTransaction().setMonetaryAmount(source);
+            cashTransaction.getTargetTransaction().setMonetaryAmount(target);
+
+            BigDecimal exachangeRate = asExchangeRate(element.getAttribute("tradePrice"));
+            cashTransaction.getSourceTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE, source, target, exachangeRate));
+
             // Set fees
             Money fees = Money.of(asCurrencyCode(element.getAttribute("ibCommissionCurrency")), asAmount(element.getAttribute("ibCommission")));
-            Unit feeUnit = createUnit(element, Unit.Type.FEE, fees);
+            Unit feeUnit = new Unit(Unit.Type.FEE, fees);
             if (fees.getCurrencyCode().equals(cashTransaction.getSourceTransaction().getCurrencyCode()))
                 cashTransaction.getSourceTransaction().addUnit(feeUnit);
             else
@@ -453,7 +451,7 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Set taxes
             Money taxes = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("taxes")));
-            Unit taxUnit = createUnit(element, Unit.Type.TAX, taxes);
+            Unit taxUnit = new Unit(Unit.Type.TAX, taxes);
             if (taxes.getCurrencyCode().equals(cashTransaction.getSourceTransaction().getCurrencyCode()))
                 cashTransaction.getSourceTransaction().addUnit(taxUnit);
             else

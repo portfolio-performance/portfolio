@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.math.BigDecimal;
 
 import org.junit.Test;
 
@@ -41,6 +42,8 @@ import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
+import name.abuchen.portfolio.model.AccountTransferEntry;
+import name.abuchen.portfolio.datatransfer.Extractor.AccountTransferItem;
 
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractorTest
@@ -1657,8 +1660,11 @@ public class IBFlexStatementExtractorTest
         assertThat(securityItems.size(), is(1));
         assertThat(buySellTransactions.size(), is(1));
         assertThat(accountTransactions.size(), is(0));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(results.size(), is(3));
+        var errorsImportActions = new AssertImportActions().check(results, 
+                                                                  new AssertImportActions.Currencies(CurrencyUnit.EUR, CurrencyUnit.USD), 
+                                                                  new AssertImportActions.Currencies(CurrencyUnit.USD, CurrencyUnit.EUR));
+        assertThat(errorsImportActions, empty());
 
         // check security
         Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1696,6 +1702,30 @@ public class IBFlexStatementExtractorTest
         Unit grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
         assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(140.83))));
+
+        // check 1st account transfer
+        AccountTransferEntry transfer = (AccountTransferEntry) results.stream().filter(AccountTransferItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        AccountTransaction transaction = transfer.getSourceTransaction();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-21T18:06:05")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(140.9268))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(140.9268))));
+        Unit unit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(unit.getType(), is(Unit.Type.GROSS_VALUE));
+        assertThat(unit.getAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(140.9268))));
+        assertThat(unit.getForex(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(133))));
+        assertThat(unit.getExchangeRate(), is(BigDecimal.valueOf(1.0596)));
+
+
+        transaction = transfer.getTargetTransaction();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_IN));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-21T18:06:05")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(133))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(133))));
     }
 
     @Test
@@ -2279,6 +2309,53 @@ public class IBFlexStatementExtractorTest
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
                         is(Quote.of(CurrencyUnit.USD, Values.Quote.factorize(54.178))));
 
+        // check 1nd cash transaction
+        AccountTransferEntry transfer = (AccountTransferEntry) results.stream().filter(AccountTransferItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        AccountTransaction transaction = transfer.getSourceTransaction();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-09T15:20:21")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1301.04))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1301.04))));
+        Unit unit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(unit.getType(), is(Unit.Type.GROSS_VALUE));
+        assertThat(unit.getAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1301.04))));
+        assertThat(unit.getForex(), is(Money.of("CHF", Values.Amount.factorize(1200))));
+        assertThat(unit.getExchangeRate(), is(BigDecimal.valueOf(1.0842)));
+
+
+        transaction = transfer.getTargetTransaction();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_IN));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-09T15:20:21")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1200))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(1.84194))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(1200 + 1.84194))));
+
+        // check 2nd cash transaction
+        transfer = (AccountTransferEntry) results.stream().filter(AccountTransferItem.class::isInstance).skip(1).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        transaction = transfer.getSourceTransaction();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-27T04:52:03")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1311.26125))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1311.26125))));
+        unit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(unit.getType(), is(Unit.Type.GROSS_VALUE));
+        assertThat(unit.getAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1311.26125))));
+        assertThat(unit.getForex(), is(Money.of("CHF", Values.Amount.factorize(1235))));
+        assertThat(unit.getExchangeRate(), is(BigDecimal.valueOf(1.06175)));
+
+        transaction = transfer.getTargetTransaction();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_IN));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-27T04:52:03")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1235))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(1.88208))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(1235 + 1.88208))));
+
         // check transaction
         // get transactions
         Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -2287,7 +2364,7 @@ public class IBFlexStatementExtractorTest
         Item item = iter.next();
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-02-06T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(1500.00))));
@@ -2702,14 +2779,53 @@ public class IBFlexStatementExtractorTest
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
 
         // check 1nd cash transaction
-        // AccountTransferEntry transfer = (AccountTransferEntry) results.stream().filter(AccountTransferItem.class::isInstance)
-        //                 .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        AccountTransferEntry transfer = (AccountTransferEntry) results.stream().filter(AccountTransferItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
-        // transaction = transfer.getSourceTransaction();
-        // assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
-        // assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-26T00:00")));
-        // assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(-3634))));
-        // assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(-3634))));
+        transaction = transfer.getSourceTransaction();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-26T15:00:54")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(3895.2846))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(3895.2846))));
+        Unit unit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(unit.getType(), is(Unit.Type.GROSS_VALUE));
+        assertThat(unit.getAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(3895.2846))));
+        assertThat(unit.getForex(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3634))));
+        assertThat(unit.getExchangeRate(), is(BigDecimal.valueOf(1.0719)));
+
+
+        transaction = transfer.getTargetTransaction();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_IN));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-26T15:00:54")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3634))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.8726))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3634 + 1.8726))));
+
+        // check 2nd cash transaction
+        transfer = (AccountTransferEntry) results.stream().filter(AccountTransferItem.class::isInstance).skip(1).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        transaction = transfer.getSourceTransaction();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-31T00:00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.255394785))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.255394785))));
+        unit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(unit.getType(), is(Unit.Type.GROSS_VALUE));
+        assertThat(unit.getAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.255394785))));
+        assertThat(unit.getForex(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.0923))));
+        assertThat(unit.getExchangeRate(), is(BigDecimal.valueOf(1.07795)));
+
+
+        transaction = transfer.getTargetTransaction();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_IN));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-31T00:00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.0923))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.0923))));
+        
         
         // check transaction
         // get transactions
@@ -3061,5 +3177,116 @@ public class IBFlexStatementExtractorTest
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testIBFlexStatementFile22() throws IOException
+    {
+        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(new Client());
+
+        InputStream activityStatement = getClass().getResourceAsStream("testIBFlexStatementFile22.xml");
+        Extractor.InputFile tempFile = createTempFile(activityStatement);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        List<Item> securityItems = results.stream().filter(SecurityItem.class::isInstance) //
+                        .collect(Collectors.toList());
+        List<Item> buySellTransactions = results.stream().filter(BuySellEntryItem.class::isInstance) //
+                        .collect(Collectors.toList());
+        List<Item> accountTransactions = results.stream().filter(TransactionItem.class::isInstance) //
+                        .collect(Collectors.toList());
+
+        assertThat(errors, empty());
+        assertThat(securityItems.size(), is(0));
+        assertThat(buySellTransactions.size(), is(0));
+        assertThat(accountTransactions.size(), is(0));
+        assertThat(results.size(), is(3));
+        var errorsImportActions = new AssertImportActions().check(results, 
+                                                                  new AssertImportActions.Currencies( "CHF", CurrencyUnit.EUR), 
+                                                                  new AssertImportActions.Currencies(CurrencyUnit.USD, "CHF"),
+                                                                  new AssertImportActions.Currencies(CurrencyUnit.EUR, CurrencyUnit.USD));
+        assertThat(errorsImportActions, empty());
+
+        errorsImportActions = new AssertImportActions().check(results, 
+                                                              new AssertImportActions.Currencies("WRONG", CurrencyUnit.EUR), 
+                                                              new AssertImportActions.Currencies(CurrencyUnit.USD, "WRONG2"),
+                                                              new AssertImportActions.Currencies(CurrencyUnit.EUR, CurrencyUnit.USD));
+        assertThat(errorsImportActions.size(), is(2));
+        assertThat(errorsImportActions.get(0).getStatus().getMessage(), is("Transaction currency CHF does not match account currency EUR"));
+        assertThat(errorsImportActions.get(1).getStatus().getMessage(), is("Transaction currency CHF does not match account currency WRONG2"));
+
+        // check 1nd cash transaction
+        AccountTransferEntry transfer = (AccountTransferEntry) results.stream().filter(AccountTransferItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        AccountTransaction transaction = transfer.getSourceTransaction();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-26T15:00:54")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(3895.2846))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(3895.2846))));
+        Unit unit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(unit.getType(), is(Unit.Type.GROSS_VALUE));
+        assertThat(unit.getAmount(), is(Money.of("CHF", Values.Amount.factorize(3895.2846))));
+        assertThat(unit.getForex(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3634))));
+        assertThat(unit.getExchangeRate(), is(BigDecimal.valueOf(1.0719)));
+
+
+        transaction = transfer.getTargetTransaction();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_IN));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-26T15:00:54")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3634))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.8726))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3634 + 1.8726))));
+
+        // check 2nd cash transaction
+        transfer = (AccountTransferEntry) results.stream().filter(AccountTransferItem.class::isInstance).skip(1).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        transaction = transfer.getSourceTransaction();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-31T00:00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.255394785))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.255394785))));
+        unit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(unit.getType(), is(Unit.Type.GROSS_VALUE));
+        assertThat(unit.getAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.255394785))));
+        assertThat(unit.getForex(), is(Money.of("CHF", Values.Amount.factorize(2.0923))));
+        assertThat(unit.getExchangeRate(), is(BigDecimal.valueOf(1.07795)));
+
+
+        transaction = transfer.getTargetTransaction();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_IN));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-31T00:00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(2.0923))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(2.0923))));
+
+        // check 3st account transfer
+        transfer = (AccountTransferEntry) results.stream().filter(AccountTransferItem.class::isInstance)
+                        .skip(2).findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        transaction = transfer.getSourceTransaction();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-21T18:06:05")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(140.9268))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(140.9268))));
+        unit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(unit.getType(), is(Unit.Type.GROSS_VALUE));
+        assertThat(unit.getAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(140.9268))));
+        assertThat(unit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(133))));
+        assertThat(unit.getExchangeRate(), is(BigDecimal.valueOf(1.0596)));
+
+
+        transaction = transfer.getTargetTransaction();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TRANSFER_IN));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-21T18:06:05")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(133))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(133))));
     }
 }
