@@ -638,7 +638,7 @@ public class CommerzbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-05-27T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-06-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(123)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 3345AO12BC3D4445E | Ertragsgutschrift 01.03.15 - 29.02.16"));
@@ -682,7 +682,7 @@ public class CommerzbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-05-27T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-06-18T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(123)));
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 3345AO12BC3D4445E | Ertragsgutschrift 01.03.15 - 29.02.16"));
@@ -731,7 +731,7 @@ public class CommerzbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-06-24T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-07-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1234)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 1A2BCDEFGH1234I | Ertragsgutschrift 01.03.15 - 29.02.16"));
@@ -775,7 +775,7 @@ public class CommerzbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-06-24T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-07-16T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1234)));
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 1A2BCDEFGH1234I | Ertragsgutschrift 01.03.15 - 29.02.16"));
@@ -824,7 +824,7 @@ public class CommerzbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-03-27T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-26T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(12)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 1234567890ABCDEF | Zwischendividende 01.01.20 - 31.12.20"));
@@ -868,7 +868,7 @@ public class CommerzbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-03-27T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-26T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(12)));
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 1234567890ABCDEF | Zwischendividende 01.01.20 - 31.12.20"));
@@ -917,7 +917,7 @@ public class CommerzbankPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-05T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-10T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(500)));
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Ref.-Nr.: 1X1XX1XXXXX00111 | Dividendengutschrift 01.10.18 - 30.09.19"));
@@ -926,6 +926,48 @@ public class CommerzbankPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1950.00))));
         assertThat(transaction.getGrossValue(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1950.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+    }
+
+    @Test
+    public void testDividende05()
+    {
+        CommerzbankPDFExtractor extractor = new CommerzbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("DE0008475096"));
+        assertThat(security.getWkn(), is("847509"));
+        assertNull(security.getTickerSymbol());
+        assertThat(security.getName(),
+                        is("A l l i a n z  R o h s t o f f f o n d s I n h a b e r - A n t e i l e  A  ( E U R )"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check dividends transaction
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2025-03-05T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(329.817)));
+        assertThat(transaction.getSource(), is("Dividende05.txt"));
+        assertThat(transaction.getNote(), is("Ref.-Nr.: 1U7Z8J3RQTF000SP |  01.01.24 - 31.12.24"));
+
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(452.51))));
+        assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(452.51))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getUnitSum(Unit.Type.FEE),

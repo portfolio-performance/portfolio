@@ -50,7 +50,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^W e r t p a p i e r (k a u f|v e r k a u f)$");
+        Block firstRelevantLine = new Block("^W ?e ?r ?t ?p ?a ?p ?i ?e ?r ?(k ?a ?u ?f|v ?e ?r ?k ?a ?u ?f)$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -64,10 +64,13 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
-                        .match("(?<type>W e r t p a p i e r v e r k a u f)") //
+                        .match("(?<type>W ?e ?r ?t ?p ?a ?p ?i ?e ?r ?v ?e ?r ?k ?a ?u ?f)") //
                         .assign((t, v) -> {
-                            if ("W e r t p a p i e r v e r k a u f".equals(v.get("type")))
+                            String xtype = v.get("type").replaceAll("\\s", "");
+                            if (xtype != null && xtype.equals("Wertpapierverkauf"))
+                            {
                                 t.setType(PortfolioTransaction.Type.SELL);
+                            }
                         })
 
                         // @formatter:off
@@ -77,7 +80,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         // S t . 0 , 5 7 2 EUR 4 3 , 6 4
                          // @formatter:on
                         .section("name", "wkn", "nameContinued", "currency") //
-                        .find("W e r t p a p i e r \\- B e z e i c h n u n g .*") //
+                        .find("W ?e ?r ?t ?p ?a ?p ?i ?e ?r ?\\-\\ ?B ?e ?z ?e ?i ?c ?h ?n ?u ?n ?g ?.*") //
                         .match("(?<name>.*)(,)? (?<wkn>([A-Z0-9]{6}|\\w\\s\\w\\s\\w\\s\\w\\s\\w\\s\\w))$") //
                         .match("(?<nameContinued>.*)") //
                         .match("^(Summe )?S([\\s]+)?t([\\s]+)?\\. [\\.,\\d\\s]+ (?<currency>[\\w]{3}) [\\.,\\d\\s]+.*$") //
@@ -96,20 +99,22 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setShares(asShares(stripBlanks(v.get("shares")))))
 
                         .optionalOneOf( //
-                                        // @formatter:off
+                        // @formatter:off
                                         // 1 2 : 0 6 S t . 2 3 0 EUR 1 8 4 , 1 6 EUR 4 2 . 3 5 6 , 8 0
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("time") //
                                                         .match("^(?<time>[\\d\\s]+:[\\d\\s]+) (S t .|St.) [\\.,\\d\\s]+ [\\w]{3} [\\.,\\d\\s]+ [\\w]{3} [\\.,\\d\\s]+$") //
-                                                        .assign((t, v) -> type.getCurrentContext().put("time", stripBlanks(v.get("time")))),
+                                                        .assign((t, v) -> type.getCurrentContext().put("time",
+                                                                        stripBlanks(v.get("time")))),
                                         // @formatter:off
                                         // H a n d e l s z e i t : 1 3 : 1 0 U h r (MEZ/MESZ)
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("time") //
                                                         .match("^H a n d e l s z e i t : (?<time>[\\d\\s]+:[\\d\\s]+) .*$") //
-                                                        .assign((t, v) -> type.getCurrentContext().put("time", stripBlanks(v.get("time")))))
+                                                        .assign((t, v) -> type.getCurrentContext().put("time",
+                                                                        stripBlanks(v.get("time")))))
 
                         // @formatter:off
                         // G e s c h ä f t s t a g : 1 7 . 0 2 . 2 0 2 1 A b w i c k l u n g : F e s t p r e i s
@@ -149,12 +154,14 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final DocumentType type = new DocumentType("(D i v i d e n d e n g u t s c h r i f t|E r t r a g s g u t s c h r i f t)");
+        final DocumentType type = new DocumentType(
+                        "(D ?i ?v ?i ?d ?e ?n ?d ?e ?n ?g ?u ?t ?s ?c ?h ?r ?i ?f ?t|E ?r ?t ?r ?a ?g ?s ?g ?u ?t ?s ?c ?h ?r ?i ?f ?t)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
 
-        Block firstRelevantLine = new Block("^(D i v i d e n d e n g u t s c h r i f t|E r t r a g s g u t s c h r i f t)$");
+        Block firstRelevantLine = new Block(
+                        "^(D ?i ?v ?i ?d ?e ?n ?d ?e ?n ?g ?u ?t ?s ?c ?h ?r ?i ?f ?t|E ?r ?t ?r ?a ?g ?s ?g ?u ?t ?s ?c ?h ?r ?i ?f ?t)\\s*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -172,9 +179,9 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         // USD 7 ,219127 D i v i d e n d e p r o S t ü c k f ü r G e s c h ä f t s j a h r 0 1 . 0 1 . 2 0 b i s 3 1 . 1 2 . 2 0
                         // @formatter:on
                         .section("name", "wkn", "nameContinued", "isin", "currency") //
-                        .match("^p([\\s]+)?e([\\s]+)?r [\\d\\s]+.[\\d\\s]+.[\\d\\s]+ (?<name>.*) (?<wkn>([\\w]{6}|\\w\\s\\w\\s\\w\\s\\w\\s\\w\\s\\w))$") //
-                        .match("^STK [\\.,\\d\\s]+ (?<nameContinued>.*) (?<isin>[\\w]{12})$") //
-                        .match("^(?<currency>[\\w]{3}) [\\.,\\d\\s]+ (D i v i d e n d e|A u s s c h . t t u n g) .*$") //
+                        .match("^p([\\s]+)?e([\\s]+)?r [\\d\\s]+.[\\d\\s]+.[\\d\\s]+ (?<name>.*) (?<wkn>([\\w]{6}|\\w\\s\\w\\s\\w\\s\\w\\s\\w\\s\\w))\\s*$") //
+                        .match("^S ?T ?K [\\.,\\d\\s]+ (?<nameContinued>.*) (?<isin>([\\w] ?){12})\\s*$") //
+                        .match("^(?<currency>[\\w]{3}) [\\.,\\d\\s]+\\s*(D ?i ?v ?i ?d ?e ?n ?d ?e|A ?u ?s ?s ?c ?h ?. ?t ?t ?u ?n ?g).*$") //
                         .assign((t, v) -> {
                             v.put("wkn", stripBlanks(v.get("wkn")));
                             v.put("isin", stripBlanks(v.get("isin")));
@@ -186,14 +193,14 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         // STK 1 2 , 0 0 0 R.Shs(NV)Pf(GDR144A)/25 SW 100 US7960502018
                         // @formatter:on
                         .section("shares") //
-                        .match("^STK (?<shares>[\\.,\\d\\s]+) .*$") //
+                        .match("^S ?T ?K\\s*(?<shares>[\\.,\\d\\s]+)\\s*.*$") //
                         .assign((t, v) -> t.setShares(asShares(stripBlanks(v.get("shares")))))
 
                         // @formatter:off
                         // p e r 2 7 . 0 3 . 2 0 2 0 Samsung E l e c t r o n i c s Co. L t d . 881823
                         // @formatter:on
                         .section("date") //
-                        .match("^p([\\s]+)?e([\\s]+)?r (?<date>[\\d\\s]+.[\\d\\s]+.[\\d\\s]+) .*$") //
+                        .match("^z ?a ?h ?l ?b ?a ?r +?a ?b +(?<date>[\\d\\s]+.[\\d\\s]+.[\\d\\s]+)\\s*.*$") //
                         .assign((t, v) -> t.setDateTime(asDate(stripBlanks(v.get("date")))))
 
                         .section("currency", "amount") //
@@ -210,7 +217,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         // zum D e v i s e n k u r s : EUR/USD 1 ,098400 EUR 6 1 , 3 0
                         // @formatter:on
                         .section("fxGross", "exchangeRate", "baseCurrency", "termCurrency").optional() //
-                        .match("^B r u t t o b e t r a g : [\\w]{3} (?<fxGross>[\\.,\\d\\s]+)$") //
+                        .match("^B ?r ?u ?t ?t ?o ?b ?e ?t ?r ?a ?g ?:\\s*[\\w]{3}\\s*(?<fxGross>[\\.,\\d\\s]+)$") //
                         .match("^.* (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d\\s]+) [\\w]{3} [\\.,\\d\\s]+$") //
                         .assign((t, v) -> {
                             v.put("exchangeRate", stripBlanks(v.get("exchangeRate")));
@@ -228,7 +235,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         // ( R e f e r e n z - N r . 3345AO12BC3D4445E).
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^.*R e f e r e n z - N r \\. (?<note>.*)\\).*$") //
+                        .match("^.*R ?e ?f ?e ?r ?e ?n ?z ?- ?N ?r ?\\. ?(?<note>.*)\\).*$") //
                         .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
 
                         // @formatter:off
@@ -255,7 +262,8 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxAdjustmentTransaction()
     {
-        final DocumentType type = new DocumentType("Steuerliche Behandlung: (Wertpapier(kauf|verkauf)|Verkauf|.*Dividende)");
+        final DocumentType type = new DocumentType(
+                        "Steuerliche Behandlung: (Wertpapier(kauf|verkauf)|Verkauf|.*Dividende|.*Ausschüttung)");
         this.addDocumentTyp(type);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
@@ -334,7 +342,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
     {
         final DocumentType type = new DocumentType("Kontoauszug", //
                         documentContext -> documentContext //
-                                        // @formatter:off
+                        // @formatter:off
                                         // Kontowährung Euro
                                         // @formatter:on
                                         .section("currency") //
@@ -408,7 +416,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
     {
         transaction
 
-                        // @formatter:off
+        // @formatter:off
                         // 2 2 , 0 0 0 % Q u e l l e n s t e u e r USD 1 9 , 0 6 -
                         // @formatter:on
                         .section("currency", "withHoldingTax").optional() //
@@ -423,7 +431,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
     {
         transaction
 
-                        // @formatter:off
+        // @formatter:off
                         // f r emde Spesen USD 0 , 2 4 -
                         // @formatter:on
                         .section("currency", "fee").optional() //
@@ -556,7 +564,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 
                             if (percentageFee.compareTo(BigDecimal.ZERO) != 0)
                             {
-                                // @formatter:off
+                        // @formatter:off
                                 // feeAmount = (amount / (1 + percentageFee / 100)) * (percentageFee / 100)
                                 // @formatter:on
                                 BigDecimal fxFee = amount //
@@ -565,7 +573,8 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                                                 .multiply(percentageFee, Values.MC);
 
                                 // fee = fee - discount
-                                Money fee = Money.of(asCurrencyCode(v.get("currency")), fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
+                                Money fee = Money.of(asCurrencyCode(v.get("currency")),
+                                                fxFee.setScale(0, Values.MC.getRoundingMode()).longValue());
 
                                 // Assign the fee to the current context
                                 checkAndSetFee(fee, t, type.getCurrentContext());
