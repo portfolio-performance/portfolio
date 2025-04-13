@@ -202,6 +202,12 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
     }
 
     @Override
+    protected String getJSONDateTimezonePropertyName()
+    {
+        return GenericJSONQuoteFeed.DATE_TIMEZONE_PROPERTY_NAME_LATEST;
+    }
+
+    @Override
     protected String getJSONLowPathPropertyName()
     {
         return GenericJSONQuoteFeed.LOW_PROPERTY_NAME_LATEST;
