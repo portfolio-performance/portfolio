@@ -121,6 +121,12 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     }
 
     @Override
+    protected String getJSONDateTimezonePropertyName()
+    {
+        return GenericJSONQuoteFeed.DATE_TIMEZONE_PROPERTY_NAME_HISTORIC;
+    }
+
+    @Override
     protected String getJSONLowPathPropertyName()
     {
         return GenericJSONQuoteFeed.LOW_PROPERTY_NAME_HISTORIC;
@@ -253,6 +259,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                                             .getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME_HISTORIC))
                             + String.valueOf(getModel()
                                             .getFeedProperty(GenericJSONQuoteFeed.DATE_FORMAT_PROPERTY_NAME_HISTORIC))
+                            + String.valueOf(getModel()
+                                            .getFeedProperty(GenericJSONQuoteFeed.DATE_TIMEZONE_PROPERTY_NAME_HISTORIC))
                             + String.valueOf(
                                             getModel().getFeedProperty(GenericJSONQuoteFeed.LOW_PROPERTY_NAME_HISTORIC))
                             + String.valueOf(getModel()
