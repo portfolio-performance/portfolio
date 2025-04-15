@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 
@@ -557,6 +558,18 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
         manager.add(new SimpleAction(MessageFormat.format(Messages.MenuConfigureRebalancingIndicator, //
                         rule.getAbsoluteThreshold(), rule.getRelativeThreshold()),
                         a -> new EditRebalancingColoringRuleDialog(ActiveShell.get(), rule).open()));
+
+        RebalancingPurchaseValue purchaseValue = new RebalancingPurchaseValue(getModel().getClient());
+        manager.add(new SimpleAction(Messages.MenuConfigureRebalancingPurchaseValue,
+                        a -> new EditRebalancingPurchaseValueDialog(ActiveShell.get(), purchaseValue).open()));
+
+        PropertyChangeListener listener = evt -> {
+            getModel().recalculate();
+            getNodeViewer().refresh();
+        };
+        getModel().getClient().addPropertyChangeListener(listener);
+        getNodeViewer().getControl()
+                        .addDisposeListener(e -> getModel().getClient().removePropertyChangeListener(listener));
     }
 
     @Override

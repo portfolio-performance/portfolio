@@ -424,6 +424,31 @@ public class BindingHelper
                         new UpdateValueStrategy<Long, String>().setConverter(new CurrencyToStringConverter(type)));
     }
 
+    public final Control bindPositiveAmountInput(Composite editArea, final String label, String property, int style,
+                    int lenghtInCharacters)
+    {
+        Text txtValue = createTextInput(editArea, label, style, lenghtInCharacters);
+        FrenchKeypadSupport.configure(txtValue);
+        bindPositiveDecimalInput(label, property, txtValue, Values.Amount);
+        return txtValue;
+    }
+
+    private void bindPositiveDecimalInput(final String label, String property, Text txtValue, Values<?> type)
+    {
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(type);
+
+        UpdateValueStrategy<String, Long> input2model = new UpdateValueStrategy<>();
+        input2model.setAfterGetValidator(converter);
+        input2model.setConverter(converter);
+        input2model.setAfterConvertValidator(v -> v != null && v.longValue() >= 0 ? ValidationStatus.ok()
+                        : ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, label)));
+
+        IObservableValue<String> targetObservable = WidgetProperties.text(SWT.Modify).observe(txtValue);
+        IObservableValue<Long> modelObservable = BeanProperties.value(property, Long.class).observe(model);
+        context.bindValue(targetObservable, modelObservable, input2model,
+                        new UpdateValueStrategy<Long, String>().setConverter(new CurrencyToStringConverter(type)));
+    }
+
     private Text createTextInput(Composite editArea, final String label)
     {
         return createTextInput(editArea, label, SWT.NONE, SWT.DEFAULT);
