@@ -412,6 +412,32 @@ public enum WidgetFactory
                                     }) //
                                     .build()),
 
+    RULE_4P_YEARLY(Messages.Label4PRuleYearly, Messages.LabelStatementOfAssets, //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        int length = index.getTotals().length;
+                                        return Money.of(index.getCurrency(),
+                                                        (long) (index.getTotals()[length - 1] * 0.04));
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .withColoredValues(false) //
+                                    .build()),
+
+    RULE_4P_MONTHLY(Messages.Label4PRuleMonthly, Messages.LabelStatementOfAssets, //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        int length = index.getTotals().length;
+                                        return Money.of(index.getCurrency(),
+                                                        (long) (index.getTotals()[length - 1] * 0.04 / 12));
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .withColoredValues(false) //
+                                    .build()),
+
     // typo is API now!!
     VERTICAL_SPACEER(Messages.LabelVerticalSpacer, Messages.LabelCommon, VerticalSpacerWidget::new);
 
