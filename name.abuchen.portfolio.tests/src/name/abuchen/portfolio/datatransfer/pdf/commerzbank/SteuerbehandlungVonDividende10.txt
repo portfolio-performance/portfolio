@@ -1,0 +1,42 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kundennr. /BLZ Bezeichnung
+xmLlap wZVPlpVh
+12 1411 1
+SABCpuaNLoW 13
+200 617 00 58971 AppRuYjyc-ndJst
+abweichend wirtschaftlich Berechtigter
+----
+000 82161
+Frau Datum: 18.03.2025
+vjadxx TqIldktW Depotnummer: 2749784 00
+mwGFBEtzIBW Str. 13
+44310 aWkbHWcil-BCiLw Referenz-Nummer: 2I7Z9FWTCFT0000R
+Steuerliche Behandlung: Ausländische Dividende vom 18.03.2025
+Stk. 100 STANLEY BL. + DECK.DL2,50 , WKN / ISIN: A1CTQA / US8545021011
+Zu Ihren Gunsten vor Steuern: EUR 6 3 , 6 8
+Steuerbemessungsgrundlage EUR 7 4 , 9 1
+Kapitalertragsteuer EUR - 7 , 4 9
+(angerechnete ausländische Quellensteuer: EUR 11,24 )
+Solidaritätszuschlag EUR - 0 , 4 1
+Kirchensteuer EUR 0 , 0 0
+abgeführte Steuern EUR - 7 , 9 0
+Zu Ihren Gunsten nach Steuern: EUR 5 5 , 7 8
+Die Gutschrift erfolgt mit Valuta 20.03.2025 auf Konto EUR mit der IBAN DE90 3972 0000 0801 2234 00
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2025 einbehaltene einbehaltener einbehaltene angerechnete
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung 1.559,84 85,72 0,00 1.037,79
+nach Ermittlung 1.567,33 86,13 0,00 1.049,03
+Verrechnungssalden in EUR (4)
+Gewinne / Verluste sonstige anrechenbare verfügbarer
+in 2025 aus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung -42.083,83 10.390,38 0,00 0,00
+nach Ermittlung -42.083,83 10.465,29 0,00 0,00
+Commerzbank AG
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.
+KEINE STEUERBESCHEINIGUNG

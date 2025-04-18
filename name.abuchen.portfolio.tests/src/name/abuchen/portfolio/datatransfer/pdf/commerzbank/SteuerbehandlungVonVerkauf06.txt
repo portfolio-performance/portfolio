@@ -1,0 +1,52 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.75.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kundennr. /BLZ Bezeichnung
+HEGk OIlXOtwH
+11 0454 0
+fWoGpqcJTdf Str. 3 Z
+300 495 00 25247 vDplCXXlL
+abweichend wirtschaftlich Berechtigter
+----
+000 49054
+Frau Datum: 06.03.2025
+UDkZ bMgUpZwc Depotnummer: 5534880 00
+NLaCMmzyFtF Str. 0l
+31964 QZazRDoBE Referenz-Nummer: 8S7g9fWBki19769c
+Steuerliche Behandlung: Wertpapierverkauf Nr. 50676961 vom 06.03.2025
+Stk. 150 THE SOUTHERN CO. DL 5 , WKN / ISIN: 852523 / US8425871071
+Zu Ihren Gunsten vor Steuern: EUR 1 2 . 2 0 4 , 2 8 USD 1 3 . 2 1 7 , 2 4
+Steuerbemessungsgrundlage (1) EUR 6 . 4 2 2 , 0 8
+Kapitalertragsteuer EUR - 1 . 6 0 5 , 5 2
+Solidaritätszuschlag EUR - 8 8 , 3 0
+Kirchensteuer EUR 0 , 0 0
+abgeführte Steuern EUR - 1 . 6 9 3 , 8 2 USD - 1 . 8 3 4 , 4 1
+Zu Ihren Gunsten nach Steuern: USD 1 1 . 3 8 2 , 8 3
+Umrechnungen zum Devisenkurs 1,083000
+Die Gutschrift erfolgt mit Valuta 07.03.2025 auf Konto USD 80 27697 01 Bankleitzahl : 300 989 00
+(1) siehe "Hinweise zur Ermittlung der Steuerbemessungsgrundlage" auf der Rückseite
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2025 einbehaltene einbehaltener einbehaltene angerechnete
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung 86,66 4,74 0,00 124,16
+nach Ermittlung 1.692,18 93,04 0,00 124,16
+Verrechnungssalden in EUR (4)
+Gewinne / Verluste sonstige anrechenbare verfügbarer
+in 2025 aus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung 0,00 1.843,25 0,00 0,00
+nach Ermittlung 6.422,08 1.843,25 0,00 0,00
+Hinweise zur Ermittlung der Steuerbemessungsgrundlage:
+zu Ihren Gunsten vor Steuern EUR 1 2 . 2 0 4 , 2 8
+A n s c h a f f u n g vom 0 8 . 0 9 . 2 0 1 5 1 5 0 , 0 0 S t ü c k EUR - 5 . 7 8 2 , 2 0
+Summe der Anschaffungskosten aus Anschaffungsvorgängen nach
+abgeltungsteuerrelevantem Stichtag EUR - 5 . 7 8 2 , 2 0
+Steuerbemessungsgrundlage vor Verlustverrechnung EUR 6 . 4 2 2 , 0 8
+Sonstige Erläuterungen:
+Bei Fremdwährungsgeschäften werden für die Ermittlung der Steuerbemessungsgrundlage sowohl der Veräußerungserlös
+als auch die Anschaffungskosten in Euro umgerechnet (§ 20 Abs. 4 S. 1 2. Halbsatz EStG).
+Commerzbank AG
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.
+KEINE STEUERBESCHEINIGUNG
