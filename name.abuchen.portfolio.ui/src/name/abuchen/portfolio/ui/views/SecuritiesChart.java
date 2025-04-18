@@ -64,8 +64,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyClient;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceIndicator;
-import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -1938,23 +1937,33 @@ public class SecuritiesChart
     private Optional<Double> getPurchasePrice(Client filteredClient, CurrencyConverter currencyConverter,
                     LocalDate date)
     {
-        return SecurityPerformanceSnapshot
-                        .create(filteredClient, currencyConverter, Interval.of(LocalDate.MIN, date),
-                                        SecurityPerformanceIndicator.Costs.class)
-                        .getRecord(security) //
-                        .filter(r -> !r.getFifoCostPerSharesHeld().isZero()) //
-                        .map(r -> r.getFifoCostPerSharesHeld().getAmount() / Values.Quote.divider());
+        var r = LazySecurityPerformanceSnapshot
+                        .create(filteredClient, currencyConverter, Interval.of(LocalDate.MIN, date))
+                        .getRecord(security);
+
+        if (r.isEmpty())
+            return Optional.empty();
+
+        var fifoPerShare = r.get().getFifoCostPerSharesHeld().get();
+
+        return fifoPerShare.isZero() ? Optional.empty()
+                        : Optional.of(fifoPerShare.getAmount() / Values.Quote.divider());
     }
 
     private Optional<Double> getMovingAveragePurchasePrice(Client filteredClient, CurrencyConverter currencyConverter,
                     LocalDate date)
     {
-        return SecurityPerformanceSnapshot
-                        .create(filteredClient, currencyConverter, Interval.of(LocalDate.MIN, date),
-                                        SecurityPerformanceIndicator.Costs.class)
-                        .getRecord(security) //
-                        .filter(r -> !r.getFifoCostPerSharesHeld().isZero()) //
-                        .map(r -> r.getMovingAverageCostPerSharesHeld().getAmount() / Values.Quote.divider());
+        var r = LazySecurityPerformanceSnapshot
+                        .create(filteredClient, currencyConverter, Interval.of(LocalDate.MIN, date))
+                        .getRecord(security);
+
+        if (r.isEmpty())
+            return Optional.empty();
+
+        var movingAveragePerShare = r.get().getMovingAverageCostPerSharesHeld().get();
+
+        return movingAveragePerShare.isZero() ? Optional.empty()
+                        : Optional.of(movingAveragePerShare.getAmount() / Values.Quote.divider());
     }
 
     private static class MessagePainter implements PaintListener, DisposeListener
