@@ -32,21 +32,17 @@ public class MonthlyPNTransfersWidget extends AbstractMonhtlyHeatmapWidget
         Client client = getDashboardData().getClient();
         DataSeries series = get(DataSeriesConfig.class).getDataSeries();
 
-        // Process each month in the interval once, rather than per transaction
         for (int year = interval.getStart().getYear(); year <= interval.getEnd().getYear(); year++)
         {
             int row = year - startYear;
 
-            // For each month in the year that falls within the interval
             for (int month = 1; month <= 12; month++)
             {
                 int col = month - 1;
 
-                // Create the month interval
+                // Skip if this month is outside our interval
                 LocalDate startOfMonth = LocalDate.of(year, month, 1);
                 LocalDate endOfMonth = startOfMonth.plusMonths(1).minusDays(1);
-
-                // Skip if this month is outside our interval
                 if (endOfMonth.isBefore(interval.getStart()) || startOfMonth.isAfter(interval.getEnd()))
                     continue;
 
