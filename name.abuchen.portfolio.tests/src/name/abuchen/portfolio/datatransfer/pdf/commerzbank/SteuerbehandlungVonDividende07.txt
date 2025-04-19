@@ -1,0 +1,46 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kundennr. /BLZ Bezeichnung
+fCbkDm jYUhiFQY
+12 4011 1
+elkAWYjaKAe 13
+566 800 00 74955 LBQIeARqa-XLzLL
+abweichend wirtschaftlich Berechtigter
+----
+000 33012
+Frau Datum: 05.03.2025
+sHBudQ qQgljBtd Depotnummer: 9422718 00
+hzmscevtaWJ PIA. 13
+07207 TdAxarOtZ-tTYvb Referenz-Nummer: 884A8H8Q6c0848W9
+Steuerliche Behandlung: Inländische Investment-Ausschüttung vom 05.03.2025
+Stk. 500 ALLIANZ FDS JAPAN A (EUR) , WKN / ISIN: 847511 / DE0008475112
+Zu Ihren Gunsten vor Steuern: EUR 7 1 3 , 0 0
+Steuerbemessungsgrundlage (1) EUR 4 9 9 , 1 0
+Kapitalertragsteuer EUR - 1 2 4 , 7 8
+Solidaritätszuschlag EUR - 6 , 8 6
+Kirchensteuer EUR 0 , 0 0
+abgeführte Steuern EUR - 1 3 1 , 6 4
+Zu Ihren Gunsten nach Steuern: EUR 5 8 1 , 3 6
+Die Gutschrift erfolgt mit Valuta 05.03.2025 auf Konto EUR mit der IBAN DE90 2501 0000 1705 7483 00
+(1) siehe "Hinweise zur Ermittlung der Steuerbemessungsgrundlage" auf der Rückseite
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2025 einbehaltene einbehaltener einbehaltene angerechnete
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung 856,14 47,03 0,00 169,41
+nach Ermittlung 980,92 53,89 0,00 169,41
+Verrechnungssalden in EUR (4)
+Gewinne / Verluste sonstige anrechenbare verfügbarer
+in 2025 aus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung -42.083,83 4.102,12 0,00 0,00
+nach Ermittlung -42.083,83 4.601,22 0,00 0,00
+Hinweise zur Ermittlung der Steuerbemessungsgrundlage:
+Investment-Ausschüttung EUR 7 1 3 , 0 0
+Teilfreistellung (30%) EUR - 2 1 3 , 9 0
+Steuerbemessungsgrundlage vor Verlustverrechnung EUR 4 9 9 , 1 0
+Commerzbank AG
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.
+KEINE STEUERBESCHEINIGUNG
