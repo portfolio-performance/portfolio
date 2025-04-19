@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
+import java.util.Set;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -93,6 +95,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private static final String IMPORT_TARGET = "import-target"; //$NON-NLS-1$
     private static final String IMPORT_TARGET_PORTFOLIO = IMPORT_TARGET + "-portfolio-"; //$NON-NLS-1$
     private static final String IMPORT_TARGET_ACCOUNT = IMPORT_TARGET + "-account-"; //$NON-NLS-1$
+    private static final String IMPORT_TARGET_ACCOUNT_SECONDARY = IMPORT_TARGET + "-account-secondary-"; //$NON-NLS-1$
     /**
      * Preference for the import wizard to convert "BuySell" transactions to
      * "Delivery" transactions
@@ -119,14 +122,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private boolean doExtractBeforeEveryPageDisplay = false;
 
     private TableViewer tableViewer;
+    private TableViewer accountsTableViewer;
     private TableViewer errorTableViewer;
 
     private ComboViewer primaryPortfolio;
     private Label lblSecondaryPortfolio;
     private ComboViewer secondaryPortfolio;
-    private ComboViewer primaryAccount;
-    private Label lblSecondaryAccount;
-    private ComboViewer secondaryAccount;
     private Button cbConvertToDelivery;
     private Button cbRemoveDividends;
     private Button cbImportNotesFromSource;
@@ -135,10 +136,10 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private final Extractor extractor;
     private final IPreferenceStore preferences;
     private List<Extractor.InputFile> files;
-    private Account account;
     private Portfolio portfolio;
 
     private List<ExtractedEntry> allEntries = new ArrayList<>();
+    private List<CurrencyAccount> currencyAccounts = new ArrayList<>();
 
     private List<Exception> extractionErrors = new ArrayList<>();
 
@@ -185,15 +186,47 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     }
 
     @Override
-    public Account getAccount()
+    public Account getAccount(String currencyCode)
     {
-        return (Account) ((IStructuredSelection) primaryAccount.getSelection()).getFirstElement();
+        Account account = currencyAccounts.stream()
+            .filter(ca -> ca.getCurrency().equals(currencyCode))
+            .map(ca -> ca.getAccount())
+            .filter(a -> a != null)
+            .findFirst()
+            .orElse(null);
+
+        if (account == null)
+        {
+            account = currencyAccounts.stream()
+                .map(ca -> ca.getAccount())
+                .filter(a -> a != null)
+                .findFirst()
+                .orElse(null);
+        }
+
+        return account;
     }
 
     @Override
-    public Account getSecondaryAccount()
+    public Account getSecondaryAccount(String currencyCode)
     {
-        return (Account) ((IStructuredSelection) secondaryAccount.getSelection()).getFirstElement();
+        Account account = currencyAccounts.stream()
+            .filter(ca -> ca.getCurrency().equals(currencyCode))
+            .map(ca -> ca.getOffsetAccount())
+            .filter(a -> a != null)
+            .findFirst()
+            .orElse(null);
+
+        if (account == null)
+        {
+            account = currencyAccounts.stream()
+                .map(ca -> ca.getOffsetAccount())
+                .filter(a -> a != null)
+                .findFirst()
+                .orElse(null);
+        }
+
+        return account;
     }
 
     public boolean doConvertToDelivery()
@@ -227,24 +260,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             portfolios = client.getPortfolios();
 
         Composite targetContainer = new Composite(container, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(4).applyTo(targetContainer);
+        GridLayoutFactory.fillDefaults().numColumns(8).applyTo(targetContainer);
 
-        Label lblPrimaryAccount = new Label(targetContainer, SWT.NONE);
-        lblPrimaryAccount.setText(Messages.ColumnAccount);
-        Combo cmbAccount = new Combo(targetContainer, SWT.READ_ONLY);
-        primaryAccount = new ComboViewer(cmbAccount);
-        primaryAccount.setContentProvider(ArrayContentProvider.getInstance());
-        primaryAccount.setInput(accounts);
-        primaryAccount.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
-
-        lblSecondaryAccount = new Label(targetContainer, SWT.NONE);
-        lblSecondaryAccount.setText(Messages.LabelTransferTo);
-        lblSecondaryAccount.setVisible(false);
-        Combo cmbAccountTarget = new Combo(targetContainer, SWT.READ_ONLY);
-        secondaryAccount = new ComboViewer(cmbAccountTarget);
-        secondaryAccount.setContentProvider(ArrayContentProvider.getInstance());
-        secondaryAccount.setInput(accounts);
-        secondaryAccount.getControl().setVisible(false);
+        createAccountsTable(targetContainer);
 
         Label lblPrimaryPortfolio = new Label(targetContainer, SWT.NONE);
         lblPrimaryPortfolio.setText(Messages.ColumnPortfolio);
@@ -290,7 +308,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         //
 
         FormDataFactory.startingWith(targetContainer) //
-                        .top(new FormAttachment(0, 0)).left(new FormAttachment(0, 0)).right(new FormAttachment(100, 0))
+                        .top(new FormAttachment(0, 0)).left(new FormAttachment(0, 0)).right(new FormAttachment(130, 0))
                         .thenBelow(cbConvertToDelivery) //
                         .thenRight(cbRemoveDividends) //
                         .thenRight(cbImportNotesFromSource);
@@ -332,25 +350,31 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         addColumnsExceptionTable(errorTableViewer, layout);
     }
 
+    private void createAccountsTable(Composite parent)
+    {
+        // Creating a table to choose primary and secondary accounts for each currency
+        Composite accountsTableComposite = new Composite(parent, SWT.NONE);
+        GridDataFactory.fillDefaults().grab(false, true).hint(SWT.DEFAULT, 100).applyTo(accountsTableComposite);
+        TableColumnLayout accountsTableLayout = new TableColumnLayout();
+        accountsTableComposite.setLayout(accountsTableLayout);
+        
+        accountsTableViewer = new TableViewer(accountsTableComposite, SWT.BORDER | SWT.FULL_SELECTION);
+        accountsTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+
+        Table accountsTable = accountsTableViewer.getTable();
+        accountsTable.setHeaderVisible(true);
+        accountsTable.setLinesVisible(true);
+
+        addColumnsAccountsTable(accountsTableViewer, accountsTableLayout);
+        attachContextMenuCurrencyAccounts(accountsTable);
+        ColumnViewerToolTipSupport.enableFor(accountsTableViewer, ToolTip.NO_RECREATE);
+        CopyPasteSupport.enableFor(accountsTableViewer);
+
+        accountsTableViewer.setInput(currencyAccounts);
+    }
+
     private void preselectDropDowns()
     {
-        // idea: generally one type of document (i.e. from the same bank) will
-        // be imported into the same account
-
-        List<Account> activeAccounts = client.getActiveAccounts();
-        if (activeAccounts.isEmpty())
-            activeAccounts.addAll(client.getAccounts());
-        if (!activeAccounts.isEmpty())
-        {
-            String uuid = account != null ? account.getUUID()
-                            : preferences.getString(IMPORT_TARGET_ACCOUNT + extractor.getLabel());
-
-            // do not trigger selection listener (-> do not user #setSelection)
-            primaryAccount.getCombo().select(IntStream.range(0, activeAccounts.size())
-                            .filter(i -> activeAccounts.get(i).getUUID().equals(uuid)).findAny().orElse(0));
-            secondaryAccount.getCombo().select(0);
-        }
-
         List<Portfolio> activePortfolios = client.getActivePortfolios();
         if (activePortfolios.isEmpty())
             activePortfolios.addAll(client.getPortfolios());
@@ -585,10 +609,95 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
     }
 
+    private class CurrencyAccount 
+    {
+        private String currency;
+        private Account account;
+        private Account offsetAccount;
+
+        // crete getters and constructor
+        public CurrencyAccount(String currency, Account account, Account offsetAccount)
+        {
+            this.currency = currency;
+            this.account = account;
+            this.offsetAccount = offsetAccount;
+        }
+
+        public String getCurrency() 
+        {
+            return currency;
+        }
+
+        public Account getAccount() 
+        {
+            return account;
+        }
+
+        public Account getOffsetAccount()
+        {
+            return offsetAccount;
+        }
+
+        public void setAccount(Account account)
+        {
+            this.account = account;
+        }
+
+        public void setOffsetAccount(Account offsetAccount)
+        {
+            this.offsetAccount = offsetAccount;
+        }
+    }
+    
+    private void addColumnsAccountsTable(TableViewer viewer, TableColumnLayout layout)
+    {
+        TableViewerColumn column = new TableViewerColumn(viewer, SWT.RIGHT);
+        column.getColumn().setText(Messages.ColumnCurrency);
+        column.setLabelProvider(new FormattedLabelProviderAccountsTable() // NOSONAR
+        {
+            @Override
+            public String getText(CurrencyAccount entry)
+            {
+                return entry.getCurrency();
+            }
+        });
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));
+        column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnAccount);
+        column.setLabelProvider(new FormattedLabelProviderAccountsTable() // NOSONAR
+        {
+            @Override
+            public String getText(CurrencyAccount entry)
+            {
+                if (entry.getAccount() == null)
+                    return null;
+
+                return entry.getAccount().getName();
+            }
+        });
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
+        column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnOffsetAccount);
+        column.setLabelProvider(new FormattedLabelProviderAccountsTable() // NOSONAR
+        {
+            @Override
+            public String getText(CurrencyAccount entry)
+            {
+                if (entry.getOffsetAccount() == null)
+                    return null;
+
+                return entry.getOffsetAccount().getName();
+            }
+        });
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
+    }
+
+
     private void attachContextMenu(final Table table)
     {
         MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
         menuMgr.setRemoveAllWhenShown(true);
+
         menuMgr.addMenuListener(this::showContextMenu);
 
         final Menu contextMenu = menuMgr.createContextMenu(table.getShell());
@@ -598,6 +707,35 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             if (contextMenu != null && !contextMenu.isDisposed())
                 contextMenu.dispose();
         });
+    }
+
+
+    private void attachContextMenuCurrencyAccounts(final Table table)
+    {
+        MenuManager menuMgr = new MenuManager("#PopupMenuCurrencyAccounts"); //$NON-NLS-1$
+        menuMgr.setRemoveAllWhenShown(true);
+
+        menuMgr.addMenuListener(this::showContextMenuCurrencyAccounts);
+
+        final Menu contextMenu = menuMgr.createContextMenu(table.getShell());
+        table.setMenu(contextMenu);
+
+        table.addDisposeListener(e -> {
+            if (contextMenu != null && !contextMenu.isDisposed())
+                contextMenu.dispose();
+        });
+    }
+    
+    
+    private void showContextMenuCurrencyAccounts(IMenuManager manager)
+    {
+        IStructuredSelection selection = (IStructuredSelection) accountsTableViewer.getSelection();
+
+        if (selection.isEmpty())
+            return;
+
+        showApplyToAllItemsMenuCurrencyAccounts(manager, Messages.ColumnAccount, client::getAccounts, CurrencyAccount::setAccount);
+        showApplyToAllItemsMenuCurrencyAccounts(manager, Messages.ColumnOffsetAccount, client::getAccounts, CurrencyAccount::setOffsetAccount);
     }
 
     private void showContextMenu(IMenuManager manager)
@@ -687,6 +825,23 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                         Item::setPortfolioSecondary);
     }
 
+    private <T extends Named> void showApplyToAllItemsMenuCurrencyAccounts(IMenuManager parent, String label, Supplier<List<T>> options,
+                    BiConsumer<CurrencyAccount, T> applier)
+    {
+        IMenuManager manager = new MenuManager(label);
+        parent.add(manager);
+
+        for (T subject : options.get())
+        {
+            manager.add(new SimpleAction(subject.getName(), a -> {
+                for (Object element : accountsTableViewer.getStructuredSelection().toList())
+                    applier.accept((CurrencyAccount) element, subject);
+
+                checkEntriesAndRefresh(allEntries);
+            }));
+        }
+    }
+    
     private <T extends Named> void showApplyToAllItemsMenu(IMenuManager parent, String label, Supplier<List<T>> options,
                     BiConsumer<Extractor.Item, T> applier)
     {
@@ -785,7 +940,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     @Override
     public void afterPage()
     {
-        preferences.setValue(IMPORT_TARGET_ACCOUNT + extractor.getLabel(), getAccount().getUUID());
+        for (CurrencyAccount currencyAccount : currencyAccounts)
+        {
+            preferences.setValue(IMPORT_TARGET_ACCOUNT + extractor.getLabel() + currencyAccount.getCurrency(), currencyAccount.getAccount().getUUID());
+            preferences.setValue(IMPORT_TARGET_ACCOUNT_SECONDARY + extractor.getLabel() + currencyAccount.getCurrency(), currencyAccount.getOffsetAccount().getUUID());
+        }
+        
         preferences.setValue(IMPORT_TARGET_PORTFOLIO + extractor.getLabel(), getPortfolio().getUUID());
 
         preferences.setValue(IMPORT_CONVERT_BUYSELL_TO_DELIVERY + extractor.getLabel(), doConvertToDelivery());
@@ -795,7 +955,6 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
     public void setAccount(Account account)
     {
-        this.account = account;
     }
 
     public void setPortfolio(Portfolio portfolio)
@@ -809,29 +968,72 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         extractionErrors.addAll(errors);
 
         setupDependencies(entries);
+        populateCurrencyAccounts();
         checkEntries(entries);
 
-        tableViewer.setInput(allEntries);
-
-        for (ExtractedEntry entry : entries)
+        if (allEntries.stream().anyMatch(e -> e.getItem() instanceof Extractor.PortfolioTransferItem)) 
         {
-            if (entry.getItem() instanceof Extractor.AccountTransferItem)
-            {
-                lblSecondaryAccount.setVisible(true);
-                secondaryAccount.getControl().setVisible(true);
-            }
-            else if (entry.getItem() instanceof Extractor.PortfolioTransferItem)
-            {
-                lblSecondaryPortfolio.setVisible(true);
-                secondaryPortfolio.getControl().setVisible(true);
-            }
+            lblSecondaryPortfolio.setVisible(true);
+            secondaryPortfolio.getControl().setVisible(true);
         }
+
+        tableViewer.setInput(allEntries);        
+    }
+
+    private void populateCurrencyAccounts()
+    {
+        // Get all currencies from the entries
+        Set<String> currencies = allEntries.stream()
+                                           .filter(e -> e.getItem().getAmount() != null)
+                                           .map(e -> e.getItem().getAmount().getCurrencyCode())
+                                           .collect(Collectors.toSet());
+
+        // Ensure table is populated with all currencies
+        for (String currency : currencies)
+        {
+            if (currencyAccounts.stream().anyMatch(ca -> ca.getCurrency().equals(currency)))
+            {
+                continue;
+            }
+
+            // Getting preferred account for this currency if exists
+            Account account = null;
+            String accountUUID = preferences.getString(IMPORT_TARGET_ACCOUNT + extractor.getLabel() + currency);
+            if (accountUUID != null)
+            {
+                account = client.getAccounts().stream().filter(a -> a.getUUID().equals(accountUUID)).findFirst()
+                        .orElse(null);
+            }
+
+            // Otherwise, get the first account with the currency
+            if (account == null) 
+            {
+                account = client.getAccounts()
+                                .stream()
+                                .filter(a -> a.getCurrencyCode().equals(currency))
+                                .findFirst()
+                                .orElse(null);
+            }
+
+            Account accountSecondary = null;
+            String accountUUIDSecondary = preferences.getString(IMPORT_TARGET_ACCOUNT_SECONDARY + extractor.getLabel() + currency);
+            if (accountUUIDSecondary != null)
+            {
+                accountSecondary = client.getAccounts().stream().filter(a -> a.getUUID().equals(accountUUIDSecondary)).findFirst()
+                        .orElse(null);
+            }
+            
+            currencyAccounts.add(new CurrencyAccount(currency, account, accountSecondary == null ? account : accountSecondary));
+        }
+
+        accountsTableViewer.setInput(currencyAccounts);
     }
 
     private void checkEntriesAndRefresh(List<ExtractedEntry> entries)
     {
         checkEntries(entries);
         tableViewer.refresh();
+        accountsTableViewer.refresh();
     }
 
     /**
@@ -969,6 +1171,27 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             cell.setStyleRanges(styledString.getStyleRanges());
             cell.setImage(getImage(entry));
 
+            super.update(cell);
+        }
+    }
+
+    abstract static class FormattedLabelProviderAccountsTable extends StyledCellLabelProvider // NOSONAR
+    {
+        public String getText(CurrencyAccount element) // NOSONAR
+        {
+            return null;
+        }
+
+        @Override
+        public void update(ViewerCell cell)
+        {
+            CurrencyAccount entry = (CurrencyAccount) cell.getElement();
+            String text = getText(entry);
+            if (text == null)
+                text = ""; //$NON-NLS-1$
+
+            cell.setText(text);
+            
             super.update(cell);
         }
     }
