@@ -720,6 +720,7 @@ public class Messages extends NLS
     public static String LabelImportNotesFromSource;
     public static String LabelIncludeSecuritiesInPieChart;
     public static String LabelIncludeUnassignedCategoryInCharts;
+    public static String LabelIncludeSecuritiesInCharts;
     public static String LabelInfo;
     public static String LabelInputValidationFailed;
     public static String LabelInstallationDetails;
@@ -1387,6 +1388,8 @@ public class Messages extends NLS
     public static String WatchlistRename;
     public static String Website;
     public static String YearlyPerformanceHeatmapToolTip;
+    public static String RebalancingChart;
+    public static String RebalancingTargetChart;
     static
     {
         // initialize resource bundle
