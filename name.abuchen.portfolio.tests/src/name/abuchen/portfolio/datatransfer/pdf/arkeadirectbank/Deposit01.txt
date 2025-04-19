@@ -1,0 +1,78 @@
+```
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.3.qualifier
+System: win32 | x86_64 | 21.0.6+7-LTS | Eclipse Adoptium
+-----------------------------------------
+LIQUIDITES sur PEA N° 1 - 2021
+Page 1/2
+01 janvier 2021
+FORTUNEO
+MsJx HKXIrw
+5 jXjXI DE nw sYJdyXPA 6161
+70261 UyCfM LA BdHPgps sYVRK
+w rztOTsR RIopfB
+6 MRO FKpK OlAHr GrvzHqfeF
+SITE INTERNET www.fortuneo.fr 01814 ENnBT Hop JULwqgK
+SERVICE CLIENTS TEL 0 525 297 135
+SERVICE CLIENTS FAX 0 254 820 407
+SOS CARTES 53 21 28 97 47
+Titulaire(s) du compte : D dLivlUj hrWsbj
+NUMÉRO DE COMPTE : 11543 56784 792622931 79
+Date Libellé Débit € Crédit €
+Ancien solde au 01/01/2020 0
+02/03 VERSEMENT 3 000,00
+10/03 REGULARISATION 331,98
+23/03 VERSEMENT 4 000,00
+02/04 TAXE TRANSAC FINAN 4,54
+02/04 ACHAT 100 AXA 1 516,70
+02/04 TAXE TRANSAC FINAN 4,66
+02/04 ACHAT 20 SANOFI 1 557,90
+14/04 VERSEMENT 6 000,00
+15/04 ACHAT 60 SAINT-GOBAIN 1 584,30
+15/04 TAXE TRANSAC FINAN 4,17
+15/04 ACHAT 170 EDF 1 393,48
+15/04 TAXE TRANSAC FINAN 4,74
+22/04 TAXE TRANSAC FINAN 5,88
+22/04 ACHAT 65 TOTAL 1 962,68
+23/04 VERSEMENT 2 000,00
+23/04 TAXE TRANSAC FINAN 5,30
+23/04 ACHAT 100 VEOLIA ENVIRON. 1 768,90
+24/04 TAXE TRANSAC FINAN 5,18
+24/04 ACHAT 260 CREDIT AGRICOLE 1 729,26
+SUITE AU VERSOË
+Émis le 04/01/2021 Réf : kqlUjlBn
+LIQUIDITES sur PEA N° 1 - 2021
+Page 2/2
+NUMÉRO DE COMPTE : 73287 27831 766647511 32
+Date Libellé Débit € Crédit €
+07/05 DIVIDENDE 20 SANOFI 63,00
+08/05 ACHAT 30 DANONE 1 860,90
+08/05 TAXE TRANSAC FINAN 5,57
+15/05 DIVIDENDE 100 VEOLIA ENVIRON. 50,00
+05/06 VERSEMENT 2 000,00
+10/07 DIVIDENDE 100 AXA 73,00
+15/07 ACHAT 30 DANONE 1 775,10
+15/07 TAXE TRANSAC FINAN 5,31
+17/07 DIVIDENDE 30 DANONE 63,00
+17/07 DIV-ACTION 2 TOTAL 57,60
+17/07 PAI 65 TOTAL 44,20
+20/07 VERSEMENT 2 000,00
+23/07 ACHAT 7 AM.M.WOR.ETF EUR C 2 106,51
+03/10 DIVIDENDE 67 TOTAL SE 44,22
+05/10 VERSEMENT 3 000,00
+19/10 REGULARISATION 4,93
+Total des mouvements 17 358,68 22 674,33
+Nouveau Solde au 31/12/2020 5 315,65
+Le compte espèces de votre PEA relève de la Garantie des Dépôts du FGDR (www.garantiedesdepots.fr)
+Fortuneo est une marque commerciale d’Arkéa Direct Bank. Arkéa Direct Bank, Société Anonyme à Directoire et Conseil de Surveillance au capital de 89 198 952 euros.
+RCS Nanterre 384 288 890. Siège social : Tour Ariane - 5, place de la Pyramide 92088 Paris La Défense. Adresse postale : TSA 41707 - 73536 WCIPgQ fcydY 9.
+Horaires Service Clients : du lundi au vendredi de 08h30 à 20h00 (de 08h00 jusqu’à 22h00 pour les ordres de bourse) et le samedi de 09h00 à 13h30.
+Ce document est unique et personnel. Conservez-le confidentiellement sans limitation de durée.
+Pour toute demande portant sur la bonne exécution d’un contrat et le traitement d’une réclamation, vous pouvez contacter :
+1 - Le Service Clients via le site "www.fortuneo.fr" , Rubrique « Nous contacter » ou par courrier adressé TSA 41707 - 45720 XRENADD CEDEX 9.
+2 - En cas de difficultés persistantes, le Service Réclamations par courrier adressé TSA 41707 - 35917 RENNES CEDEX 9 ou au 00 01 02 03 04.
+3 - Et en ultime étape de conciliation, et uniquement dans les cas relevant de sa compétence, le Médiateur auprés de Fortuneo. Saisine soit à l’adresse postale :
+Monsieur Le Médiateur 29809 BREST CEDEX 9, soit sur le site : https://lemediateur.creditmutuelarkea.fr/
+Émis le 04/01/2021 Réf : MABCQTTEFPI
+
+```
