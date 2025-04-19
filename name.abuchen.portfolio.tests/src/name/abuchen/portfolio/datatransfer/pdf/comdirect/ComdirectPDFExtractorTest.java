@@ -260,8 +260,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -277,16 +277,6 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 592581219254 | R.-Nr.: 878649826981vsP4"), //
                         hasAmount("EUR", 999.90), hasGrossValue("EUR", 999.90), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2023-01-02T00:00"), hasShares(8.544), //
-                                        hasSource("KaufMitSteuerbehandlung01.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -301,8 +291,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -318,16 +308,6 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 150799808720 | R.-Nr.: 454960516206DB75"), //
                         hasAmount("EUR", 24.99), hasGrossValue("EUR", 24.62), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.37))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2018-06-01T00:00"), hasShares(0.10), //
-                                        hasSource("KaufMitSteuerbehandlung02.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -342,8 +322,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -359,16 +339,6 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 004786949040 | R.-Nr.: 442604441030D195"), //
                         hasAmount("EUR", 24.97), hasGrossValue("EUR", 24.97), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2018-01-08T00:00"), hasShares(0.205), //
-                                        hasSource("KaufMitSteuerbehandlung03.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -383,8 +353,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -400,16 +370,6 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 303796885690 | R.-Nr.: 468179348267DC35"), //
                         hasAmount("EUR", 149.95), hasGrossValue("EUR", 146.80), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.20 + 0.95))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2018-11-01T00:00"), hasShares(2.17), //
-                                        hasSource("KaufMitSteuerbehandlung04.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -424,8 +384,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -442,16 +402,6 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 24.97), hasGrossValue("EUR", 24.97), //
                         hasForexGrossValue("USD", 28.05), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2017-06-07T00:00"), hasShares(0.843), //
-                                        hasSource("KaufMitSteuerbehandlung05.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -473,8 +423,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(2));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
@@ -489,16 +439,6 @@ public class ComdirectPDFExtractorTest
                             var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2017-06-07T00:00"), hasShares(0.843), //
-                                        hasSource("KaufMitSteuerbehandlung05.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -513,8 +453,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -530,16 +470,6 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 072450450919 | R.-Nr.: 406909971273D0D5"), //
                         hasAmount("EUR", 1431.40), hasGrossValue("EUR", 1420.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 9.90 + 1.50))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2016-11-22T00:00"), hasShares(20.00), //
-                                        hasSource("KaufMitSteuerbehandlung06.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -554,8 +484,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -572,16 +502,6 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 25847.07), hasGrossValue("EUR", 25759.28), //
                         hasForexGrossValue("USD", 28870.99), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 62.90 + (27.90 / 1.120800)))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2020-03-11T00:00"), hasShares(720.00), //
-                                        hasSource("KaufMitSteuerbehandlung07.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -603,8 +523,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(2));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
@@ -619,16 +539,6 @@ public class ComdirectPDFExtractorTest
                             var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2020-03-11T00:00"), hasShares(720.00), //
-                                        hasSource("KaufMitSteuerbehandlung07.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -643,8 +553,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -661,16 +571,6 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 50569.94), hasGrossValue("EUR", 50238.13), //
                         hasForexGrossValue("GBP", 42720.00), //
                         hasTaxes("EUR", (213.60 / 0.850350)), hasFees("EUR", 62.90 + (15.07 / 0.850350)))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2019-12-02T00:00"), hasShares(6000.00), //
-                                        hasSource("KaufMitSteuerbehandlung08.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -692,8 +592,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(2));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
@@ -708,16 +608,6 @@ public class ComdirectPDFExtractorTest
                             var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2019-12-02T00:00"), hasShares(6000.00), //
-                                        hasSource("KaufMitSteuerbehandlung08.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -732,8 +622,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -749,16 +639,6 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 111111111111-111 | R.-Nr.: 2222222222222A22"), //
                         hasAmount("EUR", 1686.80), hasGrossValue("EUR", 1666.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.90 + 9.90 + 5.00 + 3.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2020-02-21T00:00"), hasShares(34.00), //
-                                        hasSource("KaufMitSteuerbehandlung09.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -773,8 +653,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -790,16 +670,6 @@ public class ComdirectPDFExtractorTest
                         hasNote("R.-Nr.: "), //
                         hasAmount("EUR", 1430.30), hasGrossValue("EUR", 1417.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.90 + 9.90))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2020-12-28T00:00"), hasShares(150.00), //
-                                        hasSource("KaufMitSteuerbehandlung10.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -814,8 +684,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -831,16 +701,6 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 000000000000 | R.-Nr.: 600000000000DBD5"), //
                         hasAmount("EUR", 999.91), hasGrossValue("EUR", 999.91), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2023-01-16T00:00"), hasShares(8.261), //
-                                        hasSource("KaufMitSteuerbehandlung11.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -855,8 +715,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -872,16 +732,6 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 302789004599 | R.-Nr.: 019579984081kw86"), //
                         hasAmount("EUR", 323.49), hasGrossValue("EUR", 323.49), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2023-05-02T00:00"), hasShares(2.734), //
-                                        hasSource("KaufMitSteuerbehandlung12.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -896,8 +746,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -913,16 +763,6 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 272803480270 | R.-Nr.: 591997149596D095"), //
                         hasAmount("EUR", 24.99), hasGrossValue("EUR", 23.68), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.36 + 0.95))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2022-10-04T00:00"), hasShares(0.565), //
-                                        hasSource("KaufMitSteuerbehandlung13.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -937,8 +777,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -954,16 +794,6 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 000312226831-001 | R.-Nr.: 591958998217D175"), //
                         hasAmount("EUR", 220.85), hasGrossValue("EUR", 207.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 9.90 + 0.95 + 2.50))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2022-10-04T00:00"), hasShares(5.00), //
-                                        hasSource("KaufMitSteuerbehandlung14.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -978,8 +808,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -996,16 +826,6 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 49.98), hasGrossValue("EUR", 49.98), //
                         hasForexGrossValue("USD", 60.80), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2021-05-07T00:00"), hasShares(0.165), //
-                                        hasSource("KaufMitSteuerbehandlung15.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -1027,8 +847,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(2));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
@@ -1043,16 +863,6 @@ public class ComdirectPDFExtractorTest
                             var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2021-05-07T00:00"), hasShares(0.165), //
-                                        hasSource("KaufMitSteuerbehandlung15.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -1067,8 +877,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -1084,16 +894,6 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 317309783000 | R.-Nr.: 627068187716DB85"), //
                         hasAmount("EUR", 1000.00), hasGrossValue("EUR", 1000.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2023-11-13T00:00"), hasShares(10.00), //
-                                        hasSource("KaufMitSteuerbehandlung16.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
@@ -6523,8 +6323,8 @@ public class ComdirectPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(2L));
         assertThat(countBuySell(results), is(3L));
-        assertThat(countAccountTransactions(results), is(2L));
-        assertThat(results.size(), is(7));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(6));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -6554,16 +6354,6 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 272803480270 | R.-Nr.: 591997149596D095"), //
                         hasAmount("EUR", 24.99), hasGrossValue("EUR", 23.68), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.36 + 0.95))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2022-10-04T00:00"), hasShares(0.565), //
-                                        hasSource("KaufMitSteuerbehandlung13.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //

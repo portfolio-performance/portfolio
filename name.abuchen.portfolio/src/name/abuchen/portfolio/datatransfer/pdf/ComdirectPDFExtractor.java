@@ -52,7 +52,7 @@ import name.abuchen.portfolio.util.Pair;
  *           The separate taxes treatment does only contain taxes in the account currency.
  *           However, if the security currency differs, we need to provide the currency conversion.
  *           {@code
- *              fixMissingCurrencyConversionForSaleTaxesTransactions(Collection<TransactionTaxesPair>)
+ *              applyMissingCurrencyConversionBetweenTaxesAndSale(Collection<TransactionTaxesPair> purchaseSaleTaxPairs)
  *           }
  *
  *           Always import the securities transaction and the taxes treatment for a correct transaction.
@@ -1025,7 +1025,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .match("^Stk\\.[\\s]{1,}(\\-)?[\\.,\\d]+ (?<name>.*), WKN \\/ ISIN: (?<wkn>[A-Z0-9]{6})[\\s]{1,}\\/[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^Stk\\.[\\-\\s]{1,}[\\.,\\d]+ (?<name>.*), WKN \\/ ISIN: (?<wkn>[A-Z0-9]{6})[\\s]{1,}\\/[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*" //
                                                                         + "(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)" //
                                                                         + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}[\\.,\\d\\s]+[\\s]{1,}(?<currency>(?:[A-Z][\\s]*){3})[\\s]{1,}[\\.,\\d\\s]+.*$") //
@@ -1044,7 +1044,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .match("^Stk\\.[\\s]{1,}(\\-)?[\\.,\\d]+ (?<name>.*), WKN \\/ ISIN: (?<wkn>[A-Z0-9]{6})[\\s]{1,}\\/[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^Stk\\.[\\-\\s]{1,}[\\.,\\d]+ (?<name>.*), WKN \\/ ISIN: (?<wkn>[A-Z0-9]{6})[\\s]{1,}\\/[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*" //
                                                                         + "(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)" //
                                                                         + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?<currency>(?:[A-Z][\\s]*){3})[\\s]{1,}[\\.,\\d\\s]+.*$") //
@@ -1060,7 +1060,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "name", "wkn", "isin") //
-                                                        .match("^(?<currency>[A-Z]{3})[\\s]{1,}(\\-)?(?<shares>[\\.,\\d]+) (?<name>.*), WKN \\/ ISIN: (?<wkn>[A-Z0-9]{6})[\\s]{1,}\\/[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^(?<currency>[A-Z]{3})[\\-\\s]{1,}(?<shares>[\\.,\\d]+) (?<name>.*), WKN \\/ ISIN: (?<wkn>[A-Z0-9]{6})[\\s]{1,}\\/[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*" //
                                                                         + "(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)" //
                                                                         + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}[\\.,\\d\\s]+.*$") //
@@ -1078,14 +1078,14 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^Stk\\.[\\s]{1,}(\\-)?(?<shares>[\\.,\\d]+) .*, WKN \\/ ISIN: [A-Z0-9]{6}[\\s]{1,}\\/[\\s]{1,}[A-Z]{2}[A-Z0-9]{9}[0-9].*$") //
+                                                        .match("^Stk\\.[\\-\\s]{1,}(?<shares>[\\.,\\d]+) .*, WKN \\/ ISIN: [A-Z0-9]{6}[\\s]{1,}\\/[\\s]{1,}[A-Z]{2}[A-Z0-9]{9}[0-9].*$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // EUR           5.000 COBA CAM.PART.-ANL.09/15 , WKN / ISIN: CB89VM  / DE000CB89VM3
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^[A-Z]{3}[\\s]{1,}(\\-)?(?<shares>[\\.,\\d]+) .*, WKN \\/ ISIN: [A-Z0-9]{6}[\\s]{1,}\\/[\\s]{1,}[A-Z]{2}[A-Z0-9]{9}[0-9].*$") //
+                                                        .match("^[A-Z]{3}[\\-\\s]{1,}(?<shares>[\\.,\\d]+) .*, WKN \\/ ISIN: [A-Z0-9]{6}[\\s]{1,}\\/[\\s]{1,}[A-Z]{2}[A-Z0-9]{9}[0-9].*$") //
                                                         .assign((t, v) -> {
                                                             // Percentage quotation, workaround for bonds
                                                             var shares = asBigDecimal(v.get("shares"));
@@ -1142,8 +1142,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "currencyTaxesBaseBeforeLossOffset", "sign", "grossTaxesBaseBeforeLossOffset", "currencyDeductedTaxes", "deductedTaxes") //
                                                         .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*" //
                                                                         + "(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)" //
-                                                                        + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*: [\\s]{1,}(?<currencyBeforeTaxes>(?:[A-Z][\\s]*){3})[\\s]{1,}(\\-)?(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
-                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]*v[\\s]*o[\\s]*r[\\s]*V[\\s]*e[\\s]*r[\\s]*l[\\s]*u[\\s]*s[\\s]*t[\\s]*v[\\s]*e[\\s]*r[\\s]*r[\\s]*e[\\s]*c[\\s]*h[\\s]*n[\\s]*u[\\s]*n[\\s]*g[\\s]{1,}([\\(\\s\\d\\)]+)?[\\s]{1,}(?<currencyTaxesBaseBeforeLossOffset>(?:[A-Z][\\s]*){3})(?<sign>[\\-\\s]{1,})(?<grossTaxesBaseBeforeLossOffset>[\\.,\\d\\s]+).*$") //
+                                                                        + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*: [\\s]{1,}(?<currencyBeforeTaxes>(?:[A-Z][\\s]*){3})[\\-\\s]{1,}(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
+                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]*v[\\s]*o[\\s]*r[\\s]*V[\\s]*e[\\s]*r[\\s]*l[\\s]*u[\\s]*s[\\s]*t[\\s]*v[\\s]*e[\\s]*r[\\s]*r[\\s]*e[\\s]*c[\\s]*h[\\s]*n[\\s]*u[\\s]*n[\\s]*g[\\s]{1,}([\\(\\s\\d\\)]+)?(?<currencyTaxesBaseBeforeLossOffset>(?:[A-Z][\\s]*){3})(?<sign>[\\-\\s]{1,})(?<grossTaxesBaseBeforeLossOffset>[\\.,\\d\\s]+).*$") //
                                                         .match("^[\\s]*a[\\s]*b[\\s]*g[\\s]*e[\\s]*f[\\s]*.[\\s]*h[\\s]*r[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]{1,}(?<currencyDeductedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<deductedTaxes>[\\.,\\d_\\s]+).*$") //
                                                         .assign((t, v) -> {
                                                             var grossBeforeTaxes = Money.of(asCurrencyCode(stripBlanks(v.get("currencyBeforeTaxes"))), asAmount(stripBlanks(v.get("grossBeforeTaxes"))));
@@ -1172,9 +1172,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                     .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "fxCurrencyAssessmentBasis", "fxGrossAssessmentBasis", "currencyDeductedTaxes", "deductedTaxes", "exchangeRate") //
                                                     .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*" //
                                                                     + "(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)" //
-                                                                    + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*: [\\s]{2,}[A-Z]\\s*[A-Z]\\s*[A-Z] [\\s]{2,}[\\.,\\d\\s]+ [\\s]{1,}(?<currencyBeforeTaxes>(?:[A-Z][\\s]*){3})[\\s]{1,}(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
-                                                    .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?[\\s]{1,}(?<fxCurrencyAssessmentBasis>(?:[A-Z][\\s]*){3})[\\s]{1,}(?<fxGrossAssessmentBasis>[\\.,\\d\\s]+).*$") //
-                                                    .match("^[\\s]*a[\\s]*b[\\s]*g[\\s]*e[\\s]*f[\\s]*.[\\s]*h[\\s]*r[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n [\\s]{1,}[A-Z_\\s]+ [\\-_\\s]{1,}[\\.,\\d_\\s]+ [\\s]{1,}(?<currencyDeductedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<deductedTaxes>[\\.,\\d_\\s]+).*$") //
+                                                                    + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}[\\.,\\d\\s]+[\\s]{1,}(?<currencyBeforeTaxes>(?:[A-Z][\\s]*){3})[\\-\\s]{1,}(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
+                                                    .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?(?<fxCurrencyAssessmentBasis>(?:[A-Z][\\s]*){3})[\\s]{1,}(?<fxGrossAssessmentBasis>[\\.,\\d\\s]+).*$") //
+                                                    .match("^[\\s]*a[\\s]*b[\\s]*g[\\s]*e[\\s]*f[\\s]*.[\\s]*h[\\s]*r[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]{1,}[A-Z_\\s]+[\\-_\\s]{1,}[\\.,\\d_\\s]+[\\s]{1,}(?<currencyDeductedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<deductedTaxes>[\\.,\\d_\\s]+).*$") //
                                                     .match("^Umrechnungen zum Devisenkurs [\\s]*(?<exchangeRate>[\\.,\\d]+).*$") //
                                                     .assign((t, v) -> {
                                                         var grossBeforeTaxes = Money.of(asCurrencyCode(stripBlanks(v.get("currencyBeforeTaxes"))), asAmount(stripBlanks(v.get("grossBeforeTaxes"))));
@@ -1220,8 +1220,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "currencyAssessmentBasis", "sign", "grossAssessmentBasis", "currencyDeductedTaxes", "deductedTaxes") //
                                                         .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*" //
                                                                         + "(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)" //
-                                                                        + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*: [\\s]{1,}(?<currencyBeforeTaxes>(?:[A-Z][\\s]*){3})[\\s]{1,}(\\-)?(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
-                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?[\\s]{1,}(?<currencyAssessmentBasis>(?:[A-Z][\\s]*){3})(?<sign>[\\-\\s]{1,})(?<grossAssessmentBasis>[\\.,\\d\\s]+).*$") //
+                                                                        + "[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?<currencyBeforeTaxes>(?:[A-Z][\\s]*){3})[\\-\\s]{1,}(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
+                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?(?<currencyAssessmentBasis>(?:[A-Z][\\s]*){3})(?<sign>[\\-\\s]{1,})(?<grossAssessmentBasis>[\\.,\\d\\s]+).*$") //
                                                         .match("^[\\s]*a[\\s]*b[\\s]*g[\\s]*e[\\s]*f[\\s]*.[\\s]*h[\\s]*r[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]{1,}(?<currencyDeductedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<deductedTaxes>[\\.,\\d_\\s]+).*$") //
                                                         .assign((t, v) -> {
                                                             var grossBeforeTaxes = Money.of(asCurrencyCode(stripBlanks(v.get("currencyBeforeTaxes"))), asAmount(stripBlanks(v.get("grossBeforeTaxes"))));
@@ -1255,9 +1255,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                             // @formatter:on
                                             section -> section //
                                                             .attributes("currencyRefundedTaxes", "refundedTaxes") //
-                                                            .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}(\\-)?[\\.,\\d\\s]+.*$") //
-                                                            .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}(\\-)?[\\.,\\d\\s]+.*$") //
-                                                            .match("^[\\s]*e[\\s]*r[\\s]*s[\\s]*t[\\s]*a[\\s]*t[\\s]*t[\\s]*e[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n [\\s]{1,}[A-Z_\\s]+ [\\-_\\s]{1,}[\\.,\\d_\\s]+[\\s]{1,}(?<currencyRefundedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<refundedTaxes>[\\.,\\d_\\s]+)$") //
+                                                            .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
+                                                            .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
+                                                            .match("^[\\s]*e[\\s]*r[\\s]*s[\\s]*t[\\s]*a[\\s]*t[\\s]*t[\\s]*e[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n [\\s]{1,}[A-Z_\\s]+[\\-_\\s]{1,}[\\.,\\d_\\s]+[\\s]{1,}(?<currencyRefundedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<refundedTaxes>[\\.,\\d_\\s]+)$") //
                                                             .assign((t, v) -> {
                                                                 t.setType(AccountTransaction.Type.TAX_REFUND);
 
@@ -1274,9 +1274,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currencyRefundedTaxes", "refundedTaxes") //
-                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}(\\-)?[\\.,\\d\\s]+.*$") //
+                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*(G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
                                                         .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]*n[\\s]*a[\\s]*c[\\s]*h[\\s]*V[\\s]*e[\\s]*r[\\s]*l[\\s]*u[\\s]*s[\\s]*t[\\s]*v[\\s]*e[\\s]*r[\\s]*r[\\s]*e[\\s]*c[\\s]*h[\\s]*n[\\s]*u[\\s]*n[\\s]*g[\\s]{1,}([\\(\\s\\d\\)]+)?[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
-                                                        .match("^[\\s]*e[\\s]*r[\\s]*s[\\s]*t[\\s]*a[\\s]*t[\\s]*t[\\s]*e[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n [\\s]{1,}[A-Z_\\s]+ [\\-_\\s]{1,}[\\.,\\d_\\s]+[\\s]{1,}(?<currencyRefundedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<refundedTaxes>[\\.,\\d_\\s]+)$") //
+                                                        .match("^[\\s]*e[\\s]*r[\\s]*s[\\s]*t[\\s]*a[\\s]*t[\\s]*t[\\s]*e[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n [\\s]{1,}[A-Z_\\s]+[\\-_\\s]{1,}[\\.,\\d_\\s]+[\\s]{1,}(?<currencyRefundedTaxes>[A-Z_\\s]+)[\\-_\\s]{1,}(?<refundedTaxes>[\\.,\\d_\\s]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setType(AccountTransaction.Type.TAX_REFUND);
 
@@ -1293,8 +1293,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("termCurrency", "fxRefundedTaxes", "baseCurrency", "refundedTaxes", "exchangeRate") //
-                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}(\\-)?[\\.,\\d\\s]+[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}(\\-)?[\\.,\\d\\s]+$") //
-                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}(\\-)?[\\.,\\d\\s]+.*$") //
+                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+$") //
+                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
                                                         .match("^[\\s]*e[\\s]*r[\\s]*s[\\s]*t[\\s]*a[\\s]*t[\\s]*t[\\s]*e[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]{1,}(?<termCurrency>[A-Z_\\s]+)[\\-_\\s]{1,}(?<fxRefundedTaxes>[\\.,\\d_\\s]+)[\\s]{1,}(?<baseCurrency>[A-Z_\\s]+)[\\-_\\s]{1,}(?<refundedTaxes>[\\.,\\d_\\s]+)$") //
                                                         .match("^Umrechnungen zum Devisenkurs[\\s]{1,}(?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
@@ -1316,10 +1316,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         // Umrechnungen zum Devisenkurs       1,192200
                                         // @formatter:on
                                         section -> section //
-                                                        .attributes("termCurrency", "fxRefundedTaxes", "baseCurrency", "refundedTaxes", "exchangeRate") //
-                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}(\\-)?[\\.,\\d\\s]+[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}(\\-)?[\\.,\\d\\s]+$") //
-                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?[\\s]{1,}(?:[A-Z][\\s]*){3}[\\s]{1,}(\\-)?[\\.,\\d\\s]+.*$") //
-                                                        .match("^[\\s]*a[\\s]*b[\\s]*g[\\s]*e[\\s]*f[\\s]*.[\\s]*h[\\s]*r[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]{1,}(?<termCurrency>[A-Z_\\s]+)[\\-_\\s]{1,}(?<fxRefundedTaxes>[\\.,\\d_\\s]+)[\\s]{1,}(?<baseCurrency>[A-Z_\\s]+)[\\-_\\s]{1,}(?<refundedTaxes>[\\.,\\d_\\s]+)$") //
+                                                        .attributes("termCurrency", "fxTaxes", "baseCurrency", "taxes", "exchangeRate") //
+                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+$") //
+                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?[\\s]{1,}(?:[A-Z][\\s]*){3}[\\-\\s]{1,}[\\.,\\d\\s]+.*$") //
+                                                        .match("^[\\s]*a[\\s]*b[\\s]*g[\\s]*e[\\s]*f[\\s]*.[\\s]*h[\\s]*r[\\s]*t[\\s]*e[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]{1,}(?<termCurrency>[A-Z_\\s]+)[\\-_\\s]{1,}(?<fxTaxes>[\\.,\\d_\\s]+)[\\s]{1,}(?<baseCurrency>[A-Z_\\s]+)[\\-_\\s]{1,}(?<taxes>[\\.,\\d_\\s]+)$") //
                                                         .match("^Umrechnungen zum Devisenkurs[\\s]{1,}(?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
                                                             v.put("baseCurrency", asCurrencyCode(stripBlanksAndUnderscores(v.get("baseCurrency"))));
@@ -1328,8 +1328,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(stripBlanksAndUnderscores(v.get("refundedTaxes"))));
-                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(stripBlanksAndUnderscores(v.get("fxRefundedTaxes"))));
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(stripBlanksAndUnderscores(v.get("taxes"))));
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(stripBlanksAndUnderscores(v.get("fxTaxes"))));
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
@@ -1967,15 +1967,15 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
      * This method performs post-processing on a list transaction items, categorizing and
      * modifying them based on their types and associations. It follows several steps:
      *
-     * 1. Filters the input list to isolate taxes treatment transactions, sale transactions, and dividend transactions.
-     * 2. Matches sale transactions with their corresponding taxes treatment and dividend transactions with their corresponding taxes treatment.
-     * 3. Adjusts sale transactions by subtracting tax amounts, adding tax units, combining source information, appending tax-related notes,
+     * 1. Filters the input list to isolate taxes treatment transactions, purchase/sale transactions, and dividend transactions.
+     * 2. Matches purchase/sale transactions with their corresponding taxes treatment and dividend transactions with their corresponding taxes treatment.
+     * 3. Adjusts purchase/sale transactions by adding/subtracting tax amounts, adding tax units, combining source information, appending tax-related notes,
      *    and removing taxes treatment's from the list of items.
-     * 4. Adjusts dividend transactions by updating the gross amount if necessary, subtracting tax amounts, adding tax units,
+     * 4. Adjusts dividend transactions by updating the gross amount if necessary, adding/subtracting tax amounts, adding tax units,
      *    combining source information, appending taxes treatment notes, and removing taxes treatment's from the list of items.
      *
      * The goal of this method is to process transactions and ensure that taxes treatment is accurately reflected
-     * in sale and dividend transactions, making the transaction's more comprehensive and accurate.
+     * in purchase/sale and dividend transactions, making the transaction's more comprehensive and accurate.
      *
      * @param items The list of transaction items to be processed.
      * @return A modified list of transaction items after post-processing.
@@ -1995,11 +1995,14 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .toList();
 
         // Filter transactions by buySell transactions
-        var saleTransactionList = items.stream() //
+        var purchaseSaleTransactionList = items.stream() //
                         .filter(BuySellEntryItem.class::isInstance) //
                         .filter(i -> i.getSubject() instanceof BuySellEntry) //
-                        .filter(i -> PortfolioTransaction.Type.SELL //
-                                        .equals((((BuySellEntry) i.getSubject()).getPortfolioTransaction().getType()))) //
+                        .filter(i -> { //
+                            var type = ((BuySellEntry) i.getSubject()).getPortfolioTransaction().getType(); //
+                            return PortfolioTransaction.Type.SELL.equals(type)
+                                            || PortfolioTransaction.Type.BUY.equals(type); //
+                        }) //
                         .toList();
 
         // Filter transactions by dividend transactions
@@ -2010,41 +2013,54 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         .equals((((AccountTransaction) i.getSubject()).getType()))) //
                         .toList();
 
-        var saleTaxPairs = matchTransactionPair(saleTransactionList, taxesTreatmentList);
+        var purchaseSaleListTaxPairs = matchTransactionPair(purchaseSaleTransactionList, taxesTreatmentList);
         var dividendTaxPairs = matchTransactionPair(dividendTransactionList, taxesTreatmentList);
 
-        fixMissingCurrencyConversionForSaleTaxesTransactions(saleTaxPairs);
+        applyMissingCurrencyConversionBetweenTaxesAndSale(purchaseSaleListTaxPairs);
 
         // @formatter:off
-        // This loop iterates through a list of sale and tax pairs and processes them.
+        // This loop iterates through a list of purchase/sale and tax pairs and processes them.
         //
-        // For each pair, it subtracts the tax amount from the sale transaction's total amount,
-        // adds the tax as a tax unit to the sale transaction, combines source information if needed,
-        // appends taxes treatment notes to the sale transaction, and removes the tax treatment from the 'items' list.
+        // For each pair, it adds/subtracts the tax amount from the purchase/sale transaction's total amount,
+        // adds the tax as a tax unit to the purchase/sale transaction, combines source information if needed,
+        // appends taxes treatment notes to the purchase/sale transaction, and removes the tax treatment from the 'items' list.
         //
         // It performs these operations when a valid tax transaction is found.
         // @formatter:on
-        for (TransactionTaxesPair pair : saleTaxPairs)
+        for (TransactionTaxesPair pair : purchaseSaleListTaxPairs)
         {
-            var saleTransaction = (BuySellEntry) pair.transaction.getSubject();
+            var purchaseSaleTransaction = (BuySellEntry) pair.transaction.getSubject();
             var taxesTransaction = pair.tax() != null ? (AccountTransaction) pair.tax().getSubject() : null;
 
             if (taxesTransaction != null && taxesTransaction.getType() == AccountTransaction.Type.TAXES)
             {
-                saleTransaction.setMonetaryAmount(saleTransaction.getPortfolioTransaction().getMonetaryAmount()
-                                .subtract(taxesTransaction.getMonetaryAmount()));
+                if (purchaseSaleTransaction.getPortfolioTransaction().getType().isLiquidation())
+                {
+                    purchaseSaleTransaction.setMonetaryAmount(purchaseSaleTransaction.getPortfolioTransaction()
+                                    .getMonetaryAmount().subtract(taxesTransaction.getMonetaryAmount()));
+                }
+                else
+                {
+                    purchaseSaleTransaction.setMonetaryAmount(purchaseSaleTransaction.getPortfolioTransaction()
+                                    .getMonetaryAmount().add(taxesTransaction.getMonetaryAmount()));
+                }
 
-                saleTransaction.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
+                purchaseSaleTransaction.getPortfolioTransaction()
+                                .addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
 
-                saleTransaction.setSource(concatenate(saleTransaction.getSource(), taxesTransaction.getSource(), "; "));
+                purchaseSaleTransaction.setSource(
+                                concatenate(purchaseSaleTransaction.getSource(), taxesTransaction.getSource(), "; "));
 
-                saleTransaction.setNote(concatenate(saleTransaction.getNote(), taxesTransaction.getNote(), " | "));
+                purchaseSaleTransaction.setNote(
+                                concatenate(purchaseSaleTransaction.getNote(), taxesTransaction.getNote(), " | "));
+
+                ExtractorUtils.fixGrossValueBuySell().accept(purchaseSaleTransaction);
 
                 items.remove(pair.tax());
             }
         }
 
-         // @formatter:off
+        // @formatter:off
          // This loop processes a list of dividend and tax pairs, adjusting the gross amount of dividend transactions as needed.
          //
          // For each pair, it checks if there is a corresponding tax transaction. If present, it considers the gross taxes treatment,
@@ -2070,8 +2086,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                     if (taxesAmount.isZero() && grossTaxesTreatment.isLessThan(dividendAmount))
                     {
-                        var adjustedTaxes  = dividendAmount.subtract(grossTaxesTreatment);
-                        dividendTransaction.addUnit(new Unit(Unit.Type.TAX, adjustedTaxes ));
+                        var adjustedTaxes = dividendAmount.subtract(grossTaxesTreatment);
+                        dividendTransaction.addUnit(new Unit(Unit.Type.TAX, adjustedTaxes));
                         dividendTransaction.setMonetaryAmount(grossTaxesTreatment);
                     }
                     else
@@ -2087,9 +2103,11 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                 dividendTransaction.addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
 
-                dividendTransaction.setSource(concatenate(dividendTransaction.getSource(), taxesTransaction.getSource(), "; "));
+                dividendTransaction.setSource(
+                                concatenate(dividendTransaction.getSource(), taxesTransaction.getSource(), "; "));
 
-                dividendTransaction.setNote(concatenate(dividendTransaction.getNote(), taxesTransaction.getNote(), " | "));
+                dividendTransaction
+                                .setNote(concatenate(dividendTransaction.getNote(), taxesTransaction.getNote(), " | "));
 
                 ExtractorUtils.fixGrossValue().accept(dividendTransaction);
 
@@ -2116,7 +2134,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
      * @return A collection of TransactionTaxesPair objects representing matched transactions and taxes treatment's.
      * @formatter:on
      */
-    private Collection<TransactionTaxesPair> matchTransactionPair(List<Item> transactionList, List<Item> taxesTreatmentList)
+    private Collection<TransactionTaxesPair> matchTransactionPair(List<Item> transactionList,
+                    List<Item> taxesTreatmentList)
     {
         // Use a Set to prevent duplicates
         Set<Pair<LocalDate, Security>> keys = new HashSet<>();
@@ -2133,20 +2152,24 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         } //
         );
 
-        // Iterate through the list of taxes treatment's to match them with transactions
+        // Iterate through the list of taxes treatment's to match them with
+        // transactions
         taxesTreatmentList.forEach( //
                         tax -> {
                             // Check if the taxes treatment has a security
                             if (tax.getSecurity() == null)
                                 return;
 
-                            // Create a key based on the taxes treatment date and security
+                            // Create a key based on the taxes treatment date
+                            // and security
                             var key = new Pair<>(tax.getDate().toLocalDate(), tax.getSecurity());
 
-                            // Retrieve the TransactionTaxesPair associated with this key, if it exists
+                            // Retrieve the TransactionTaxesPair associated with
+                            // this key, if it exists
                             var pair = pairs.get(key);
 
-                            // Skip if no transaction is found or if a taxes treatment already exists
+                            // Skip if no transaction is found or if a taxes
+                            // treatment already exists
                             if (pair != null && pair.tax() == null)
                                 pairs.put(key, new TransactionTaxesPair(pair.transaction(), tax));
                         } //
@@ -2157,48 +2180,77 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
     /**
      * @formatter:off
-     * This method fixes missing currency conversion for taxes transactions.
+     * Resolves missing currency conversions between taxes and purchase/sale transactions based on existing exchange rates.
      *
-     * It iterates through a collection of TransactionTaxesPair objects and performs the necessary currency conversions
-     * if required based on the currency codes of the involved transactions.
+     * For each TransactionTaxesPair, this method checks for currency mismatches between:
+     * - the monetary amount and security currency of the taxes transaction, and
+     * - the monetary amount and security currency of the purchase/sale transaction.
      *
-     * @param saleTaxPairs A collection of TransactionTaxesPair objects containing taxes and sale transactions.
+     * If either side shows a mismatch, and if the opposite side contains a valid exchange rate,
+     * a corresponding GROSS_VALUE unit with the appropriate FX conversion will be added to ensure consistency.
+     *
+     * This helps ensure that both tax and purchase/sale transactions carry correct currency conversion data
+     * when working across multi-currency portfolios.
+     *
+     * @param purchaseSaleTaxPairs A collection of TransactionTaxesPair objects containing associated taxes and purchase/sale transactions.
      * @formatter:on
      */
-    private void fixMissingCurrencyConversionForSaleTaxesTransactions(Collection<TransactionTaxesPair> saleTaxPairs)
+    private void applyMissingCurrencyConversionBetweenTaxesAndSale(
+                    Collection<TransactionTaxesPair> purchaseSaleTaxPairs)
     {
-        saleTaxPairs.forEach( //
-                        pair -> { //
-                            if (pair.tax != null)
-                            {
-                                // Get the taxes treatment from the SaleTaxPair
-                                var tax = (AccountTransaction) pair.tax.getSubject();
+        purchaseSaleTaxPairs.forEach(pair -> {
+            if (pair.tax != null && pair.transaction != null)
+            {
+                var tax = (AccountTransaction) pair.tax.getSubject();
+                var purchaseSale = (BuySellEntry) pair.transaction.getSubject();
+                var purchaseSalePortfolioTx = purchaseSale.getPortfolioTransaction();
 
-                                // Check if currency conversion is needed
-                                if (!tax.getSecurity().getCurrencyCode().equals(tax.getMonetaryAmount().getCurrencyCode()))
-                                {
-                                    // Get the sale transaction from the SaleTaxPair
-                                    var sale = (BuySellEntry) pair.transaction.getSubject();
+                // Determine currency of monetary amounts and associated
+                // securities
+                var taxCurrency = tax.getMonetaryAmount().getCurrencyCode();
+                var taxSecurityCurrency = tax.getSecurity().getCurrencyCode();
 
-                                    // Check if we have an exchange rate available from the sale transaction
-                                    var grossValue = sale.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE);
+                var purchaseSaleCurrency = purchaseSalePortfolioTx.getMonetaryAmount().getCurrencyCode();
+                var purchaseSaleSecurityCurrency = purchaseSalePortfolioTx.getSecurity().getCurrencyCode();
 
-                                    if (grossValue.isPresent() && grossValue.get().getExchangeRate() != null)
-                                    {
-                                        // Create and set the required grossUnit to the taxes treatment
-                                        var rate = new ExtrExchangeRate(grossValue.get().getExchangeRate(),
-                                                        sale.getPortfolioTransaction().getSecurity().getCurrencyCode(),
-                                                        tax.getCurrencyCode());
+                var taxHasMismatch = !taxCurrency.equals(taxSecurityCurrency);
+                var purchaseSaleHasMismatch = !purchaseSaleCurrency.equals(purchaseSaleSecurityCurrency);
 
-                                        var termCurrency = sale.getPortfolioTransaction().getSecurity().getCurrencyCode();
-                                        var fxGross = rate.convert(termCurrency, tax.getMonetaryAmount());
+                // Proceed only if at least one of the transactions has a
+                // currency mismatch
+                if (taxHasMismatch || purchaseSaleHasMismatch)
+                {
+                    var taxAmount = tax.getMonetaryAmount();
 
-                                        // Add the converted gross value unit to the taxes transaction
-                                        tax.addUnit(new Unit(Unit.Type.GROSS_VALUE, tax.getMonetaryAmount(), fxGross, rate.getRate()));
-                                    }
-                                }
-                            }
-                        } //
-        );
+                    var taxGrossValue = tax.getUnit(Unit.Type.GROSS_VALUE);
+                    var purchaseSaleGrossValue = purchaseSalePortfolioTx.getUnit(Unit.Type.GROSS_VALUE);
+
+                    // If the taxes transaction contains a usable exchange rate,
+                    // apply the conversion to the sales transaction. Otherwise,
+                    // if the purchase/sales transaction contains a usable
+                    // exchange rate,
+                    // apply the conversion to the taxes transaction.
+                    if (taxGrossValue.isPresent() && taxGrossValue.get().getExchangeRate() != null)
+                    {
+                        var rate = new ExtrExchangeRate(taxGrossValue.get().getExchangeRate(),
+                                        purchaseSaleSecurityCurrency, taxCurrency);
+                        var fxGross = rate.convert(purchaseSaleSecurityCurrency,
+                                        purchaseSalePortfolioTx.getMonetaryAmount());
+
+                        purchaseSalePortfolioTx.addUnit(new Unit(Unit.Type.GROSS_VALUE,
+                                        purchaseSalePortfolioTx.getMonetaryAmount(), fxGross, rate.getRate()));
+                    }
+                    else if (purchaseSaleGrossValue.isPresent()
+                                    && purchaseSaleGrossValue.get().getExchangeRate() != null)
+                    {
+                        var rate = new ExtrExchangeRate(purchaseSaleGrossValue.get().getExchangeRate(),
+                                        purchaseSaleSecurityCurrency, taxCurrency);
+                        var fxGross = rate.convert(purchaseSaleSecurityCurrency, taxAmount);
+
+                        tax.addUnit(new Unit(Unit.Type.GROSS_VALUE, taxAmount, fxGross, rate.getRate()));
+                    }
+                }
+            }
+        });
     }
 }

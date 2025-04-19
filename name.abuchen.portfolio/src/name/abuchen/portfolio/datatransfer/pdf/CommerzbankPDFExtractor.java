@@ -51,7 +51,7 @@ import name.abuchen.portfolio.util.Pair;
  *           The separate taxes treatment does only contain taxes in the account currency.
  *           However, if the security currency differs, we need to provide the currency conversion.
  *           {@code
- *              fixMissingCurrencyConversionForSaleTaxesTransactions(Collection<TransactionTaxesPair>)
+ *              applyMissingCurrencyConversionBetweenTaxesAndSale(Collection<TransactionTaxesPair> purchaseSaleTaxPairs)
  *           }
  *
  *           Always import the securities transaction and the taxes treatment for a correct transaction.
@@ -953,7 +953,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
      * This helps ensure that both tax and purchase/sale transactions carry correct currency conversion data
      * when working across multi-currency portfolios.
      *
-     * @param saleTaxPairs A collection of TransactionTaxesPair objects containing associated taxes and sale transactions.
+     * @param purchaseSaleTaxPairs A collection of TransactionTaxesPair objects containing associated taxes and purchase/sale transactions.
      * @formatter:on
      */
     private void applyMissingCurrencyConversionBetweenTaxesAndSale(
