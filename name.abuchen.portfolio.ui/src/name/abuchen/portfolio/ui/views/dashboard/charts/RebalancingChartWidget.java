@@ -39,6 +39,7 @@ public class RebalancingChartWidget extends WidgetDelegate<TaxonomyModel>
     private Label title;
     private static final Color COLOR_ACTUAL = Display.getDefault().getSystemColor(SWT.COLOR_BLUE);
     private static final Color COLOR_TARGET = Display.getDefault().getSystemColor(SWT.COLOR_GREEN);
+    private static final Color COLOR_DIFF = Display.getDefault().getSystemColor(SWT.COLOR_RED);
 
     public RebalancingChartWidget(Widget widget, DashboardData dashboardData)
     {
@@ -134,6 +135,7 @@ public class RebalancingChartWidget extends WidgetDelegate<TaxonomyModel>
             List<TaxonomyNode> nodes = root.getChildren();
             double[] actualValues = new double[nodes.size()];
             double[] targetValues = new double[nodes.size()];
+            double[] diffs = new double[nodes.size()];
             String[] categories = new String[nodes.size()];
 
             PortfolioLog.error(String.format("Amount of nodes: %s", nodes.size()));
@@ -142,8 +144,9 @@ public class RebalancingChartWidget extends WidgetDelegate<TaxonomyModel>
             for (TaxonomyNode node : nodes)
             {
                 categories[index] = node.getName();
-                targetValues[index] = node.getActual().subtract(node.getTarget()).getAmount() / Values.Amount.divider();
+                diffs[index] = node.getTarget().subtract(node.getActual()).getAmount() / Values.Amount.divider();
                 actualValues[index] = node.getActual().isZero() ? 0 : node.getActual().getAmount() / Values.Amount.divider();
+                targetValues[index] = node.getTarget().getAmount() / Values.Amount.divider();
                 index++;
             }
 
@@ -151,8 +154,9 @@ public class RebalancingChartWidget extends WidgetDelegate<TaxonomyModel>
 
             chart.setCategories(Arrays.asList(categories));
 
-            chart.addSeries("actual", "Actual", actualValues, COLOR_ACTUAL);
-            chart.addSeries("target", "Target", targetValues, COLOR_TARGET);
+            chart.addSeries("diff", "Diff", diffs, COLOR_DIFF, false);
+            chart.addSeries("actual", "Actual", actualValues, COLOR_ACTUAL, true);
+            chart.addSeries("target", "Target", targetValues, COLOR_TARGET, true);
 
             chart.adjustRange();
         }

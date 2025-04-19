@@ -88,12 +88,13 @@ public class StackedChart extends Chart // NOSONAR
         xAxis.enableCategory(true);
     }
 
-    public IBarSeries<?> addSeries(String id, String label, double[] values, Color color)
+    public IBarSeries<?> addSeries(String id, String label, double[] values, Color color, boolean visible)
     {
         var series = (IBarSeries<?>) getSeriesSet().createSeries(SeriesType.BAR, id);
         series.setDescription(label);
         series.setYSeries(values);
         series.setBarColor(color);
+        series.setVisible(visible);
         series.setBarPadding(25);
 
         return series;
