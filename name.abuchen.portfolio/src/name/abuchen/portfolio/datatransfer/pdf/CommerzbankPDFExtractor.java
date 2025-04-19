@@ -51,7 +51,7 @@ import name.abuchen.portfolio.util.Pair;
  *           The separate taxes treatment does only contain taxes in the account currency.
  *           However, if the security currency differs, we need to provide the currency conversion.
  *           {@code
- *              applyMissingCurrencyConversionBetweenTaxesAndSale(Collection<TransactionTaxesPair> purchaseSaleTaxPairs)
+ *              applyMissingCurrencyConversionBetweenTaxesAndPurchaseSale(Collection<TransactionTaxesPair> purchaseSaleTaxPairs)
  *           }
  *
  *           Always import the securities transaction and the taxes treatment for a correct transaction.
@@ -777,7 +777,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
         var purchaseSaleListTaxPairs = matchTransactionPair(purchaseSaleTransactionList, taxesTreatmentList);
         var dividendTaxPairs = matchTransactionPair(dividendTransactionList, taxesTreatmentList);
 
-        applyMissingCurrencyConversionBetweenTaxesAndSale(purchaseSaleListTaxPairs);
+        applyMissingCurrencyConversionBetweenTaxesAndPurchaseSale(purchaseSaleListTaxPairs);
 
         // @formatter:off
         // This loop iterates through a list of purchase/sale and tax pairs and processes them.
@@ -956,7 +956,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
      * @param purchaseSaleTaxPairs A collection of TransactionTaxesPair objects containing associated taxes and purchase/sale transactions.
      * @formatter:on
      */
-    private void applyMissingCurrencyConversionBetweenTaxesAndSale(
+    private void applyMissingCurrencyConversionBetweenTaxesAndPurchaseSale(
                     Collection<TransactionTaxesPair> purchaseSaleTaxPairs)
     {
         purchaseSaleTaxPairs.forEach(pair -> {
