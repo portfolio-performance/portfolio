@@ -127,6 +127,7 @@ public class StatementOfAssetsViewer
     {
         private static final String TOP = Model.class.getSimpleName() + "@top"; //$NON-NLS-1$
         private static final String BOTTOM = Model.class.getSimpleName() + "@bottom"; //$NON-NLS-1$
+        public static final String COLLAPSED_CATEGORIES = Model.class.getSimpleName() + "@collapsed"; //$NON-NLS-1$
 
         private final IPreferenceStore preferences;
 
@@ -163,6 +164,9 @@ public class StatementOfAssetsViewer
             this.hideTotalsAtTheBottom = preferences.getBoolean(BOTTOM);
 
             this.elements.addAll(flatten(groupByTaxonomy));
+            
+            // Load collapsed state from preferences
+            loadCollapsedState();
         }
 
         public List<Element> getElements()
@@ -221,6 +225,49 @@ public class StatementOfAssetsViewer
         {
             this.hideTotalsAtTheBottom = hideTotalsAtTheBottom;
             preferences.setValue(BOTTOM, hideTotalsAtTheBottom);
+        }
+        
+        /**
+         * Saves the collapsed state of all categories to preferences
+         */
+        public void saveCollapsedState()
+        {
+            // Create a string with the IDs of all collapsed categories
+            String collapsedIds = elements.stream()
+                    .filter(Element::isCategory)
+                    .filter(Element::isCollapsed)
+                    .map(e -> e.getCategory().getClassification().getId())
+                    .collect(Collectors.joining(","));
+            
+            preferences.setValue(COLLAPSED_CATEGORIES, collapsedIds);
+        }
+        
+        /**
+         * Loads the collapsed state of all categories from preferences
+         */
+        private void loadCollapsedState()
+        {
+            String collapsedIds = preferences.getString(COLLAPSED_CATEGORIES);
+            if (collapsedIds == null || collapsedIds.isEmpty())
+                return;
+                
+            // Split the string into individual IDs
+            String[] ids = collapsedIds.split(",");
+            Set<String> collapsedIdSet = new HashSet<>();
+            for (String id : ids)
+            {
+                if (!id.isEmpty())
+                    collapsedIdSet.add(id);
+            }
+            
+            // Set the collapsed state for each category
+            elements.stream()
+                    .filter(Element::isCategory)
+                    .forEach(e -> {
+                        String id = e.getCategory().getClassification().getId();
+                        if (collapsedIdSet.contains(id))
+                            e.setCollapsed(true);
+                    });
         }
 
         private final List<Element> flatten(GroupByTaxonomy groupByTaxonomy)
@@ -320,6 +367,7 @@ public class StatementOfAssetsViewer
 
     private final Client client;
     private Taxonomy taxonomy;
+    private String lastTaxonomyId;
     private Model model;
 
     @Inject
@@ -407,6 +455,8 @@ public class StatementOfAssetsViewer
                         // Only toggle for category rows
                         if (element.isCategory()) {
                             element.toggleCollapsed();
+                            // Save the collapsed state to preferences
+                            model.saveCollapsedState();
                             // Refresh the table to apply the filter
                             assets.setInput(model.getElements());
                             assets.refresh();
@@ -1135,6 +1185,7 @@ public class StatementOfAssetsViewer
         {
             Action action = new SimpleAction(TextUtil.tooltip(t.getName()), a -> {
                 taxonomy = t;
+                // The setInput method will handle clearing the collapsed state if needed
                 setInput(model.clientFilter, model.getDate(), model.getCurrencyConverter());
             });
             action.setChecked(t.equals(taxonomy));
@@ -1173,6 +1224,16 @@ public class StatementOfAssetsViewer
         assets.getTable().setRedraw(false);
         try
         {
+            // Check if the taxonomy has changed
+            String currentTaxonomyId = taxonomy != null ? taxonomy.getId() : null;
+            if (lastTaxonomyId != null && currentTaxonomyId != null && !lastTaxonomyId.equals(currentTaxonomyId)) {
+                // Taxonomy has changed, clear the collapsed state
+                preference.setValue(Model.COLLAPSED_CATEGORIES, "");
+            }
+            
+            // Remember the current taxonomy ID for next time
+            lastTaxonomyId = currentTaxonomyId;
+            
             this.model = new Model(preference, client, filter, converter, date, taxonomy);
 
             assets.setInput(model.getElements());
