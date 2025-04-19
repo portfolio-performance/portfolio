@@ -77,7 +77,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                         .section("tickerSymbol", "name", "isin") //
                         .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) (?<name>.*) (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Sell [\\.,\\d]+ \\p{Sc}[\\.,\\d]+ [\\d]{2} .* [\\d]{4}$") //
                         .assign((t, v) -> {
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -103,7 +103,7 @@ public class RevolutLtdPDFExtractor extends AbstractPDFExtractor
                         .match("^[A-Z0-9]{3,4} .* [A-Z]{2}[A-Z0-9]{9}[0-9] Sell [\\.,\\d]+ \\p{Sc}(?<amount>[\\.,\\d]+) [\\d]{2} .* [\\d]{4}$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(CurrencyUnit.USD);
+                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
                         })
 
                         .wrap(BuySellEntryItem::new);

@@ -99,6 +99,20 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
         return null;
     }
 
+    public static CurrencyUnit getInstanceByDisplayName(String displayName)
+    {
+        if (displayName == null)
+            return null;
+
+        for (CurrencyUnit unit : CACHE.values())
+        {
+            if (displayName.equalsIgnoreCase(unit.getDisplayName()))
+                return unit;
+        }
+
+        return null;
+    }
+
     public static boolean containsCurrencyCode(String currencyCode)
     {
         return CACHE.containsKey(currencyCode);

@@ -53,6 +53,7 @@ import name.abuchen.portfolio.util.AdditionalLocales;
  *
  * @formatter:on
  */
+
 @SuppressWarnings("nls")
 public class CetesDirectoPDFExtractor extends AbstractPDFExtractor
 {
