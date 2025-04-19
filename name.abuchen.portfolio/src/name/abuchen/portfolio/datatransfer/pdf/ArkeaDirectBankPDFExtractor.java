@@ -70,6 +70,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction_Format02();
         addDividendeTransaction();
         addTaxesTreatmentTransaction();
+        addDepositTransaction();
     }
 
     @Override
@@ -216,6 +217,59 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(BuySellEntryItem::new);
+    }
+
+    private void addDepositTransaction()
+    {
+        var type = new DocumentType("LIQUIDITES sur PEA",
+                        documentContext -> documentContext //
+                        // @formatter:off
+                        // Nouveau Solde au 31/12/2020 5 315,65
+                        // @formatter:on
+                        .section("year") //
+                        .match("^Nouveau Solde au 31/12/(?<year>[\\d]{4}) .*$") //
+                        .assign((ctx, v) -> {
+                            ctx.put("year", v.get("year"));
+                        })
+                        // @formatter:off
+                        // Date Libellé Débit € Crédit €
+                        // @formatter:on
+                        .section("currency") //
+                                        .match("^Date Libell. D.bit (?<currency>\\p{Sc}) Cr.dit \\1$") //
+                        .assign((ctx, v) -> {
+                            ctx.put("currency", v.get("currency"));
+                        }));
+        this.addDocumentTyp(type);
+
+
+        // @formatter:off
+        // 02/03 VERSEMENT 3 000,00
+        // 10/03 REGULARISATION 331,98
+        // @formatter:on
+        var depositBlock = new Block("^(?<day>[\\d]{2})\\/(?<month>[\\d]{2}) " //
+                        + "(VERSEMENT|REGULARISATION) " //
+                        + "(?<amount>[\\.,\\d\\\s]+)");
+        type.addBlock(depositBlock);
+
+        depositBlock.set(new Transaction<AccountTransaction>() //
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+                        .section("amount", "day", "month", "note") //
+                        .documentContext("year", "currency") //
+                        .match("^(?<day>[\\d]{2})\\/(?<month>[\\d]{2}) " //
+                                        + "(?<note>VERSEMENT|REGULARISATION) " //
+                                        + "(?<amount>[\\.,\\d\\\s]+)")
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private void addDividendeTransaction()
