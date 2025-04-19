@@ -488,14 +488,14 @@ public class Messages extends NLS
     public static String IntroNewAndNoteworthyText;
     public static String IntroNewFile;
     public static String IntroNewFileText;
-    public static String IntroOpenFAQ;
-    public static String IntroOpenFAQText;
     public static String IntroOpenFile;
     public static String IntroOpenFileText;
     public static String IntroOpenForum;
     public static String IntroOpenForumText;
     public static String IntroOpenHowtos;
     public static String IntroOpenHowtosText;
+    public static String IntroOpenManual;
+    public static String IntroOpenManualText;
     public static String IntroOpenSample;
     public static String IntroOpenSampleText;
     public static String InvestmentPlanAutoCreationJob;
@@ -1328,6 +1328,9 @@ public class Messages extends NLS
     public static String SecurityTabTransactions;
     public static String SharpeRatioRisklessIRR;
     public static String SiteAppLandingpage;
+    public static String SiteForum;
+    public static String SiteHowTo;
+    public static String SiteManual;
     public static String SiteNewAndNoteworthy;
     public static String SplitWizardDefinitionDescription;
     public static String SplitWizardDefinitionTitle;
