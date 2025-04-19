@@ -356,7 +356,6 @@ public class StatementOfAssetsViewer
     private AbstractFinanceView owner;
     private ShowHideColumnHelper support;
 
-    // Store a reference to the Collapser column
     private Column collapserColumn;
 
     private final Client client;
@@ -456,22 +455,18 @@ public class StatementOfAssetsViewer
                         }
                     }
 
-                    // Check if it's a category and if the click is in the
-                    // Collapser column
                     Object data = item.getData();
                     if (data instanceof Element)
                     {
                         Element element = (Element) data;
 
-                        // Check if this is the Collapser column
+                        // Check if the click was in the Collapser column
                         boolean isCollapserColumn = false;
                         if (columnIndex >= 0 && columnIndex < assets.getTable().getColumnCount())
                         {
                             TableColumn tableColumn = assets.getTable().getColumn(columnIndex);
                             try
                             {
-                                // Get the Column object stored in the
-                                // TableColumn
                                 Object columnData = tableColumn.getData(Column.class.getName());
                                 if (columnData == collapserColumn)
                                 {
@@ -484,13 +479,12 @@ public class StatementOfAssetsViewer
                             }
                         }
 
-                        // Toggle collapse if it's a category and the click is
-                        // in the Collapser column
+                        // If the click was a category row, Collapser column
                         if (element.isCategory() && isCollapserColumn)
                         {
                             element.toggleCollapsed();
-                            // Save the collapsed state to preferences
                             model.saveCollapsedState();
+
                             // Refresh the table to apply the filter
                             assets.setInput(model.getElements());
                             assets.refresh();
@@ -508,7 +502,7 @@ public class StatementOfAssetsViewer
         support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, preference, assets, layout);
 
         // Add a column for the collapse/expand icon
-        this.collapserColumn = new Column("collapser", "Collapser", SWT.CENTER, 30); //$NON-NLS-1$ //$NON-NLS-2$
+        this.collapserColumn = new Column("collapser", Messages.ColumnCollapser, SWT.CENTER, 30); //$NON-NLS-1$
         this.collapserColumn.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -544,10 +538,7 @@ public class StatementOfAssetsViewer
                 if (((Element) e).isGroupByTaxonomy())
                     return Messages.ColumnSum;
                 if (el.isCategory())
-                {
-                    // No indicator in the text, we'll draw it as an overlay
                     return super.getText(el) + " (" + el.getChildren().count() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
-                }
                 return super.getText(e);
             }
 
@@ -751,21 +742,12 @@ public class StatementOfAssetsViewer
 
         // Add a paint listener to draw the collapse/expand indicators
         assets.getTable().addListener(SWT.PaintItem, event -> {
-            // Get the column being painted
+
+            // Check if the column being painted is the Collapser column
             TableColumn tableColumn = assets.getTable().getColumn(event.index);
-
-            // Check if this is the first column or the Collapser column
-            boolean isFirstColumn = (event.index == 0);
             boolean isCollapserColumn = false;
-
-            // Check if this is the Collapser column by comparing with our
-            // stored reference
-            // We need to get the ViewerColumn from the TableColumn
             try
             {
-                // We can use the column's data to identify it
-                // The ShowHideColumnHelper stores a reference to the Column in
-                // the TableColumn
                 Object data = tableColumn.getData(Column.class.getName());
                 if (data == collapserColumn)
                 {
@@ -774,10 +756,9 @@ public class StatementOfAssetsViewer
             }
             catch (Exception e)
             {
-                // If anything goes wrong, just fall back to the first column
             }
 
-            // Draw triangles only in the Collapser column
+            // Draw triangles to show the collapsed state
             if (isCollapserColumn)
             {
                 Object data = event.item.getData();
@@ -786,38 +767,28 @@ public class StatementOfAssetsViewer
                     Element element = (Element) data;
                     if (element.isCategory())
                     {
-                        // Draw the collapse/expand indicator
                         GC gc = event.gc;
-                        int x = event.x + 5; // Offset from left edge
-                        int y = event.y + (event.height - 8) / 2; // Vertically
-                                                                  // center
+                        int x = event.x + 5;
+                        int y = event.y + (event.height - 8) / 2;
 
-                        // Save the current foreground color
-                        Color oldForeground = gc.getForeground();
-
-                        // Set a dark color for the triangle
-                        Color darkColor = new Color(gc.getDevice(), 0, 0, 0); // Black
-                        gc.setForeground(darkColor);
-                        gc.setBackground(darkColor);
+                        Color oldBackground = gc.getBackground();
+                        Color textColor = assets.getTable().getForeground();
+                        gc.setBackground(textColor);
 
                         if (element.isCollapsed())
                         {
-                            // Draw a right-pointing triangle (collapsed)
+                            // Points to the right
                             int[] trianglePoints = new int[] { x, y, x, y + 8, x + 8, y + 4 };
                             gc.fillPolygon(trianglePoints);
                         }
                         else
                         {
-                            // Draw a down-pointing triangle (expanded)
+                            // Points down
                             int[] trianglePoints = new int[] { x, y, x + 8, y, x + 4, y + 8 };
                             gc.fillPolygon(trianglePoints);
                         }
 
-                        // Restore the original foreground color
-                        gc.setForeground(oldForeground);
-
-                        // Dispose the color we created
-                        darkColor.dispose();
+                        gc.setBackground(oldBackground);
                     }
                 }
             }
@@ -1308,8 +1279,6 @@ public class StatementOfAssetsViewer
         {
             Action action = new SimpleAction(TextUtil.tooltip(t.getName()), a -> {
                 taxonomy = t;
-                // The setInput method will handle clearing the collapsed state
-                // if needed
                 setInput(model.clientFilter, model.getDate(), model.getCurrencyConverter());
             });
             action.setChecked(t.equals(taxonomy));
@@ -1355,8 +1324,6 @@ public class StatementOfAssetsViewer
                 // Taxonomy has changed, clear the collapsed state
                 preference.setValue(Model.COLLAPSED_CATEGORIES, "");
             }
-
-            // Remember the current taxonomy ID for next time
             lastTaxonomyId = currentTaxonomyId;
 
             this.model = new Model(preference, client, filter, converter, date, taxonomy);
@@ -1409,11 +1376,9 @@ public class StatementOfAssetsViewer
         private GroupByTaxonomy groupByTaxonomy;
         private AssetCategory category;
         private AssetPosition position;
-
-        private List<Element> children = new ArrayList<>();
-
-        // Track whether a category is collapsed
         private boolean collapsed = false;
+        
+        private List<Element> children = new ArrayList<>();      
 
         private Map<CacheKey, LazySecurityPerformanceRecord> performance = new HashMap<>();
         private Map<CacheKey, LazyValue<PerformanceIndex>> performanceForCategoryTotals = new HashMap<>();
