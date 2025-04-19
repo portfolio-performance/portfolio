@@ -821,6 +821,7 @@ public class Messages extends NLS
     public static String LabelRatio;
     public static String LabelRefresh;
     public static String LabelRemoveDividends;
+    public static String LabelMonthlyPNTransfers;
     public static String LabelRemoveLogo;
     public static String LabelReportingAddPeriod;
     public static String LabelReportingDialogDay;
