@@ -174,6 +174,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     private Text textJsonPathClose;
     private Label labelJsonDateFormat;
     private Text textJsonDateFormat;
+    private Label labelJsonDateTimezone;
+    private Text textJsonDateTimezone;
     private Label labelJsonPathLow;
     private Text textJsonPathLow;
     private Label labelJsonPathHigh;
@@ -222,6 +224,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     protected abstract String getJSONDatePropertyName();
 
     protected abstract String getJSONDateFormatPropertyName();
+
+    protected abstract String getJSONDateTimezonePropertyName();
 
     protected abstract String getJSONClosePropertyName();
 
@@ -320,6 +324,13 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         {
             String dateFormat = model.getFeedProperty(getJSONDateFormatPropertyName());
             textJsonDateFormat.setText(dateFormat != null ? dateFormat : ""); //$NON-NLS-1$
+        }
+
+        if (textJsonDateTimezone != null && !textJsonDateTimezone.getText()
+                        .equals(model.getFeedProperty(getJSONDateTimezonePropertyName())))
+        {
+            String dateTimezone = model.getFeedProperty(getJSONDateTimezonePropertyName());
+            textJsonDateTimezone.setText(dateTimezone != null ? dateTimezone : ""); //$NON-NLS-1$
         }
 
         if (textJsonPathLow != null
@@ -560,6 +571,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         textJsonPathClose = disposeIf(textJsonPathClose);
         labelJsonDateFormat = disposeIf(labelJsonDateFormat);
         textJsonDateFormat = disposeIf(textJsonDateFormat);
+        labelJsonDateTimezone = disposeIf(labelJsonDateTimezone);
+        textJsonDateTimezone = disposeIf(textJsonDateTimezone);
         labelJsonPathLow = disposeIf(labelJsonPathLow);
         textJsonPathLow = disposeIf(textJsonPathLow);
         labelJsonPathHigh = disposeIf(labelJsonPathHigh);
@@ -665,6 +678,19 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
             deco = new ControlDecoration(textJsonDateFormat, SWT.CENTER | SWT.RIGHT);
             deco.setDescriptionText(Messages.LabelJSONDateFormatHint);
+            deco.setImage(Images.INFO.image());
+            deco.setMarginWidth(2);
+            deco.show();
+
+            labelJsonDateTimezone = new Label(grpQuoteFeed, SWT.NONE);
+            labelJsonDateTimezone.setText(Messages.LabelJSONDateTimezone);
+
+            textJsonDateTimezone = new Text(grpQuoteFeed, SWT.BORDER);
+            GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonDateTimezone);
+            textJsonDateTimezone.addModifyListener(e -> onJsonDateTimezoneChanged());
+
+            deco = new ControlDecoration(textJsonDateTimezone, SWT.CENTER | SWT.RIGHT);
+            deco.setDescriptionText(Messages.LabelJSONDateTimezoneHint);
             deco.setImage(Images.INFO.image());
             deco.setMarginWidth(2);
             deco.show();
@@ -837,6 +863,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             if (dateFormat != null)
                 textJsonDateFormat.setText(dateFormat);
 
+            String dateTimezone = model.getFeedProperty(getJSONDateTimezonePropertyName());
+            if (dateTimezone != null)
+                textJsonDateTimezone.setText(dateTimezone);
+
             String lowPath = model.getFeedProperty(getJSONLowPathPropertyName());
             if (lowPath != null)
                 textJsonPathLow.setText(lowPath);
@@ -969,6 +999,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             String dateFormat = model.getFeedProperty(getJSONDateFormatPropertyName());
             if (dateFormat != null)
                 textJsonDateFormat.setText(dateFormat);
+
+            String dateTimezone = model.getFeedProperty(getJSONDateTimezonePropertyName());
+            if (dateTimezone != null)
+                textJsonDateTimezone.setText(dateTimezone);
 
             String lowPath = model.getFeedProperty(getJSONLowPathPropertyName());
             if (lowPath != null)
@@ -1128,6 +1162,17 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         String dateFormat = textJsonDateFormat.getText();
 
         model.setFeedProperty(getJSONDateFormatPropertyName(), dateFormat.isEmpty() ? null : dateFormat);
+
+        QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+        showSampleQuotes(feed, null);
+        setStatus(null);
+    }
+
+    private void onJsonDateTimezoneChanged()
+    {
+        String dateTimezone = textJsonDateTimezone.getText();
+
+        model.setFeedProperty(getJSONDateTimezonePropertyName(), dateTimezone.isEmpty() ? null : dateTimezone);
 
         QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
         showSampleQuotes(feed, null);
