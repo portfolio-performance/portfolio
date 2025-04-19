@@ -167,8 +167,22 @@ public class StatementOfAssetsViewer
 
         public List<Element> getElements()
         {
-            return elements.stream().filter(e -> e.getSortOrder() != 0 || !hideTotalsAtTheTop)
+            return elements.stream()
+                            .filter(e -> e.getSortOrder() != 0 || !hideTotalsAtTheTop)
                             .filter(e -> e.getSortOrder() != Integer.MAX_VALUE || !hideTotalsAtTheBottom)
+                            // Filter out child elements of collapsed categories
+                            .filter(e -> {
+                                if (e.isPosition()) {
+                                    // Find the parent category of this position
+                                    return elements.stream()
+                                            .filter(Element::isCategory)
+                                            .filter(cat -> cat.getChildren().anyMatch(child -> child == e))
+                                            .findFirst()
+                                            .map(cat -> !cat.isCollapsed())
+                                            .orElse(true);
+                                }
+                                return true;
+                            })
                             .collect(Collectors.toList());
         }
 
@@ -377,6 +391,33 @@ public class StatementOfAssetsViewer
             else
                 selectionService.setSelection(null);
         });
+        
+        // Add mouse listener to handle category collapsing/expanding
+        assets.getTable().addListener(SWT.MouseDown, event -> {
+            if (model == null)
+                return;
+                
+            try {
+                // Get the item under the mouse click
+                org.eclipse.swt.widgets.TableItem item = assets.getTable().getItem(new org.eclipse.swt.graphics.Point(event.x, event.y));
+                if (item != null) {
+                    Object data = item.getData();
+                    if (data instanceof Element) {
+                        Element element = (Element) data;
+                        // Only toggle for category rows
+                        if (element.isCategory()) {
+                            element.toggleCollapsed();
+                            // Refresh the table to apply the filter
+                            assets.setInput(model.getElements());
+                            assets.refresh();
+                        }
+                    }
+                }
+            } catch (IllegalArgumentException e) {
+                // This can happen if the user clicks outside the valid area
+                // Just ignore and do nothing
+            }
+        });
 
         support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, preference, assets, layout);
 
@@ -403,8 +444,11 @@ public class StatementOfAssetsViewer
                 Element el = (Element) e;
                 if (((Element) e).isGroupByTaxonomy())
                     return Messages.ColumnSum;
-                if (el.isCategory())
-                    return super.getText(el) + " (" + el.getChildren().count() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+                if (el.isCategory()) {
+                    // Add a [+] or [-] indicator to show collapsed/expanded state
+                    String indicator = el.isCollapsed() ? "[+] " : "[-] ";
+                    return indicator + super.getText(el) + " (" + el.getChildren().count() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+                }
                 return super.getText(e);
             }
 
@@ -1181,6 +1225,9 @@ public class StatementOfAssetsViewer
         private AssetPosition position;
 
         private List<Element> children = new ArrayList<>();
+        
+        // Track whether a category is collapsed
+        private boolean collapsed = false;
 
         private Map<CacheKey, LazySecurityPerformanceRecord> performance = new HashMap<>();
         private Map<CacheKey, LazyValue<PerformanceIndex>> performanceForCategoryTotals = new HashMap<>();
@@ -1227,7 +1274,7 @@ public class StatementOfAssetsViewer
         public void addChild(Element child)
         {
             children.add(child);
-        }
+        } 
 
         public Stream<Element> getChildren()
         {
@@ -1318,6 +1365,21 @@ public class StatementOfAssetsViewer
                 return category.getValuation();
             else
                 return groupByTaxonomy.getValuation();
+        }
+        
+        public boolean isCollapsed()
+        {
+            return collapsed;
+        }
+        
+        public void setCollapsed(boolean collapsed)
+        {
+            this.collapsed = collapsed;
+        }
+        
+        public void toggleCollapsed()
+        {
+            this.collapsed = !this.collapsed;
         }
 
         @Override
