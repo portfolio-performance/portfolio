@@ -36,30 +36,32 @@ public class MonthlyPNTransfersWidget extends AbstractMonhtlyHeatmapWidget
         for (int year = interval.getStart().getYear(); year <= interval.getEnd().getYear(); year++)
         {
             int row = year - startYear;
-            
+
             // For each month in the year that falls within the interval
             for (int month = 1; month <= 12; month++)
             {
                 int col = month - 1;
-                
+
                 // Create the month interval
                 LocalDate startOfMonth = LocalDate.of(year, month, 1);
                 LocalDate endOfMonth = startOfMonth.plusMonths(1).minusDays(1);
-                
+
                 // Skip if this month is outside our interval
                 if (endOfMonth.isBefore(interval.getStart()) || startOfMonth.isAfter(interval.getEnd()))
                     continue;
-                
-                // Create interval for the month (including the day before for proper calculation)
+
+                // Create interval for the month (including the day before for
+                // proper calculation)
                 Interval monthInterval = Interval.of(startOfMonth.minusDays(1), endOfMonth);
-                
+
                 // Calculate performance index for the month
                 PerformanceIndex monthlyIndex = getDashboardData().calculate(series, monthInterval);
-                
-                // Get transferals and sum them, skipping the first element (day before start)
+
+                // Get transferals and sum them, skipping the first element (day
+                // before start)
                 long[] transferals = monthlyIndex.getTransferals();
                 long monthlyTransfers = transferals.length > 1 ? LongStream.of(transferals).skip(1).sum() : 0L;
-                
+
                 // Set the value in the model
                 Long oldValue = model.getRow(row).getData(col);
                 if (oldValue != null)
