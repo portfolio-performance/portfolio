@@ -42,11 +42,14 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptable;
@@ -127,7 +130,7 @@ public class StatementOfAssetsViewer
     {
         private static final String TOP = Model.class.getSimpleName() + "@top"; //$NON-NLS-1$
         private static final String BOTTOM = Model.class.getSimpleName() + "@bottom"; //$NON-NLS-1$
-        public static final String COLLAPSED_CATEGORIES = Model.class.getSimpleName() + "@collapsed"; //$NON-NLS-1$
+        private static final String COLLAPSED_CATEGORIES = Model.class.getSimpleName() + "@collapsed"; //$NON-NLS-1$
 
         private final IPreferenceStore preferences;
 
@@ -164,30 +167,25 @@ public class StatementOfAssetsViewer
             this.hideTotalsAtTheBottom = preferences.getBoolean(BOTTOM);
 
             this.elements.addAll(flatten(groupByTaxonomy));
-            
-            // Load collapsed state from preferences
+
             loadCollapsedState();
         }
 
         public List<Element> getElements()
         {
-            return elements.stream()
-                            .filter(e -> e.getSortOrder() != 0 || !hideTotalsAtTheTop)
+            return elements.stream().filter(e -> e.getSortOrder() != 0 || !hideTotalsAtTheTop)
                             .filter(e -> e.getSortOrder() != Integer.MAX_VALUE || !hideTotalsAtTheBottom)
                             // Filter out child elements of collapsed categories
                             .filter(e -> {
-                                if (e.isPosition()) {
+                                if (e.isPosition())
+                                {
                                     // Find the parent category of this position
-                                    return elements.stream()
-                                            .filter(Element::isCategory)
-                                            .filter(cat -> cat.getChildren().anyMatch(child -> child == e))
-                                            .findFirst()
-                                            .map(cat -> !cat.isCollapsed())
-                                            .orElse(true);
+                                    return elements.stream().filter(Element::isCategory)
+                                                    .filter(cat -> cat.getChildren().anyMatch(child -> child == e))
+                                                    .findFirst().map(cat -> !cat.isCollapsed()).orElse(true);
                                 }
                                 return true;
-                            })
-                            .collect(Collectors.toList());
+                            }).collect(Collectors.toList());
         }
 
         public LocalDate getDate()
@@ -226,22 +224,18 @@ public class StatementOfAssetsViewer
             this.hideTotalsAtTheBottom = hideTotalsAtTheBottom;
             preferences.setValue(BOTTOM, hideTotalsAtTheBottom);
         }
-        
+
         /**
          * Saves the collapsed state of all categories to preferences
          */
         public void saveCollapsedState()
         {
-            // Create a string with the IDs of all collapsed categories
-            String collapsedIds = elements.stream()
-                    .filter(Element::isCategory)
-                    .filter(Element::isCollapsed)
-                    .map(e -> e.getCategory().getClassification().getId())
-                    .collect(Collectors.joining(","));
-            
+            String collapsedIds = elements.stream().filter(Element::isCategory).filter(Element::isCollapsed)
+                            .map(e -> e.getCategory().getClassification().getId()).collect(Collectors.joining(","));
+
             preferences.setValue(COLLAPSED_CATEGORIES, collapsedIds);
         }
-        
+
         /**
          * Loads the collapsed state of all categories from preferences
          */
@@ -250,8 +244,7 @@ public class StatementOfAssetsViewer
             String collapsedIds = preferences.getString(COLLAPSED_CATEGORIES);
             if (collapsedIds == null || collapsedIds.isEmpty())
                 return;
-                
-            // Split the string into individual IDs
+
             String[] ids = collapsedIds.split(",");
             Set<String> collapsedIdSet = new HashSet<>();
             for (String id : ids)
@@ -259,15 +252,12 @@ public class StatementOfAssetsViewer
                 if (!id.isEmpty())
                     collapsedIdSet.add(id);
             }
-            
-            // Set the collapsed state for each category
-            elements.stream()
-                    .filter(Element::isCategory)
-                    .forEach(e -> {
-                        String id = e.getCategory().getClassification().getId();
-                        if (collapsedIdSet.contains(id))
-                            e.setCollapsed(true);
-                    });
+
+            elements.stream().filter(Element::isCategory).forEach(e -> {
+                String id = e.getCategory().getClassification().getId();
+                if (collapsedIdSet.contains(id))
+                    e.setCollapsed(true);
+            });
         }
 
         private final List<Element> flatten(GroupByTaxonomy groupByTaxonomy)
@@ -439,30 +429,37 @@ public class StatementOfAssetsViewer
             else
                 selectionService.setSelection(null);
         });
-        
+
         // Add mouse listener to handle category collapsing/expanding
         assets.getTable().addListener(SWT.MouseDown, event -> {
             if (model == null)
                 return;
-                
-            try {
+
+            try
+            {
                 // Get the item under the mouse click
-                org.eclipse.swt.widgets.TableItem item = assets.getTable().getItem(new org.eclipse.swt.graphics.Point(event.x, event.y));
-                if (item != null) {
+                TableItem item = assets.getTable().getItem(new Point(event.x, event.y));
+                if (item != null)
+                {
                     // Get the column index where the click occurred
                     int columnIndex = -1;
-                    for (int i = 0; i < assets.getTable().getColumnCount(); i++) {
-                        if (item.getBounds(i).contains(event.x, event.y)) {
+                    for (int i = 0; i < assets.getTable().getColumnCount(); i++)
+                    {
+                        if (item.getBounds(i).contains(event.x, event.y))
+                        {
                             columnIndex = i;
                             break;
                         }
                     }
-                    
+
+                    // Check if it's a category and if the click is in the
+                    // indicator area (left side of first column)
                     Object data = item.getData();
-                    if (data instanceof Element) {
+                    if (data instanceof Element)
+                    {
                         Element element = (Element) data;
-                        // Check if it's a category and if the click is in the indicator area (left side of first column)
-                        if (element.isCategory() && columnIndex == 0 && event.x < item.getBounds(0).x + 20) {
+                        if (element.isCategory() && columnIndex == 0 && event.x < item.getBounds(0).x + 20)
+                        {
                             element.toggleCollapsed();
                             // Save the collapsed state to preferences
                             model.saveCollapsedState();
@@ -472,7 +469,9 @@ public class StatementOfAssetsViewer
                         }
                     }
                 }
-            } catch (IllegalArgumentException e) {
+            }
+            catch (IllegalArgumentException e)
+            {
                 // This can happen if the user clicks outside the valid area
                 // Just ignore and do nothing
             }
@@ -503,7 +502,8 @@ public class StatementOfAssetsViewer
                 Element el = (Element) e;
                 if (((Element) e).isGroupByTaxonomy())
                     return Messages.ColumnSum;
-                if (el.isCategory()) {
+                if (el.isCategory())
+                {
                     // No indicator in the text, we'll draw it as an overlay
                     return super.getText(el) + " (" + el.getChildren().count() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
                 }
@@ -707,49 +707,48 @@ public class StatementOfAssetsViewer
 
         assets.getTable().setHeaderVisible(true);
         assets.getTable().setLinesVisible(true);
-        
+
         // Add a paint listener to draw the collapse/expand indicators
         assets.getTable().addListener(SWT.PaintItem, event -> {
             // Only draw for category rows
-            if (event.index == 0) { // First column
+            if (event.index == 0)
+            { // First column
                 Object data = event.item.getData();
-                if (data instanceof Element) {
+                if (data instanceof Element)
+                {
                     Element element = (Element) data;
-                    if (element.isCategory()) {
+                    if (element.isCategory())
+                    {
                         // Draw the collapse/expand indicator
-                        org.eclipse.swt.graphics.GC gc = event.gc;
+                        GC gc = event.gc;
                         int x = event.x + 5; // Offset from left edge
-                        int y = event.y + (event.height - 8) / 2; // Vertically center
-                        
+                        int y = event.y + (event.height - 8) / 2; // Vertically
+                                                                  // center
+
                         // Save the current foreground color
-                        org.eclipse.swt.graphics.Color oldForeground = gc.getForeground();
-                        
+                        Color oldForeground = gc.getForeground();
+
                         // Set a dark color for the triangle
-                        org.eclipse.swt.graphics.Color darkColor = new org.eclipse.swt.graphics.Color(gc.getDevice(), 0, 0, 0); // Black
+                        Color darkColor = new Color(gc.getDevice(), 0, 0, 0); // Black
                         gc.setForeground(darkColor);
                         gc.setBackground(darkColor);
-                        
-                        if (element.isCollapsed()) {
+
+                        if (element.isCollapsed())
+                        {
                             // Draw a right-pointing triangle (collapsed)
-                            int[] trianglePoints = new int[] {
-                                x, y,
-                                x, y + 8,
-                                x + 8, y + 4
-                            };
-                            gc.fillPolygon(trianglePoints);
-                        } else {
-                            // Draw a down-pointing triangle (expanded)
-                            int[] trianglePoints = new int[] {
-                                x, y,
-                                x + 8, y,
-                                x + 4, y + 8
-                            };
+                            int[] trianglePoints = new int[] { x, y, x, y + 8, x + 8, y + 4 };
                             gc.fillPolygon(trianglePoints);
                         }
-                        
+                        else
+                        {
+                            // Draw a down-pointing triangle (expanded)
+                            int[] trianglePoints = new int[] { x, y, x + 8, y, x + 4, y + 8 };
+                            gc.fillPolygon(trianglePoints);
+                        }
+
                         // Restore the original foreground color
                         gc.setForeground(oldForeground);
-                        
+
                         // Dispose the color we created
                         darkColor.dispose();
                     }
@@ -1242,7 +1241,8 @@ public class StatementOfAssetsViewer
         {
             Action action = new SimpleAction(TextUtil.tooltip(t.getName()), a -> {
                 taxonomy = t;
-                // The setInput method will handle clearing the collapsed state if needed
+                // The setInput method will handle clearing the collapsed state
+                // if needed
                 setInput(model.clientFilter, model.getDate(), model.getCurrencyConverter());
             });
             action.setChecked(t.equals(taxonomy));
@@ -1283,14 +1283,15 @@ public class StatementOfAssetsViewer
         {
             // Check if the taxonomy has changed
             String currentTaxonomyId = taxonomy != null ? taxonomy.getId() : null;
-            if (lastTaxonomyId != null && currentTaxonomyId != null && !lastTaxonomyId.equals(currentTaxonomyId)) {
+            if (lastTaxonomyId != null && currentTaxonomyId != null && !lastTaxonomyId.equals(currentTaxonomyId))
+            {
                 // Taxonomy has changed, clear the collapsed state
                 preference.setValue(Model.COLLAPSED_CATEGORIES, "");
             }
-            
+
             // Remember the current taxonomy ID for next time
             lastTaxonomyId = currentTaxonomyId;
-            
+
             this.model = new Model(preference, client, filter, converter, date, taxonomy);
 
             assets.setInput(model.getElements());
@@ -1343,7 +1344,7 @@ public class StatementOfAssetsViewer
         private AssetPosition position;
 
         private List<Element> children = new ArrayList<>();
-        
+
         // Track whether a category is collapsed
         private boolean collapsed = false;
 
@@ -1392,7 +1393,7 @@ public class StatementOfAssetsViewer
         public void addChild(Element child)
         {
             children.add(child);
-        } 
+        }
 
         public Stream<Element> getChildren()
         {
@@ -1484,17 +1485,17 @@ public class StatementOfAssetsViewer
             else
                 return groupByTaxonomy.getValuation();
         }
-        
+
         public boolean isCollapsed()
         {
             return collapsed;
         }
-        
+
         public void setCollapsed(boolean collapsed)
         {
             this.collapsed = collapsed;
         }
-        
+
         public void toggleCollapsed()
         {
             this.collapsed = !this.collapsed;
