@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
 import name.abuchen.portfolio.model.Account;
@@ -355,6 +356,9 @@ public class StatementOfAssetsViewer
     private AbstractFinanceView owner;
     private ShowHideColumnHelper support;
 
+    // Store a reference to the Collapser column
+    private Column collapserColumn;
+
     private final Client client;
     private Taxonomy taxonomy;
     private String lastTaxonomyId;
@@ -453,12 +457,36 @@ public class StatementOfAssetsViewer
                     }
 
                     // Check if it's a category and if the click is in the
-                    // indicator area (left side of first column)
+                    // Collapser column
                     Object data = item.getData();
                     if (data instanceof Element)
                     {
                         Element element = (Element) data;
-                        if (element.isCategory() && columnIndex == 0 && event.x < item.getBounds(0).x + 20)
+
+                        // Check if this is the Collapser column
+                        boolean isCollapserColumn = false;
+                        if (columnIndex >= 0 && columnIndex < assets.getTable().getColumnCount())
+                        {
+                            TableColumn tableColumn = assets.getTable().getColumn(columnIndex);
+                            try
+                            {
+                                // Get the Column object stored in the
+                                // TableColumn
+                                Object columnData = tableColumn.getData(Column.class.getName());
+                                if (columnData == collapserColumn)
+                                {
+                                    isCollapserColumn = true;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                // If anything goes wrong, just ignore
+                            }
+                        }
+
+                        // Toggle collapse if it's a category and the click is
+                        // in the Collapser column
+                        if (element.isCategory() && isCollapserColumn)
                         {
                             element.toggleCollapsed();
                             // Save the collapsed state to preferences
@@ -478,6 +506,19 @@ public class StatementOfAssetsViewer
         });
 
         support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, preference, assets, layout);
+
+        // Add a column for the collapse/expand icon
+        this.collapserColumn = new Column("collapser", "Collapser", SWT.CENTER, 30); //$NON-NLS-1$ //$NON-NLS-2$
+        this.collapserColumn.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                // Return empty string to prevent default toString() output
+                return "";
+            }
+        });
+        support.addColumn(this.collapserColumn);
 
         Column column = new Column("0", Messages.ColumnSharesOwned, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
@@ -710,9 +751,35 @@ public class StatementOfAssetsViewer
 
         // Add a paint listener to draw the collapse/expand indicators
         assets.getTable().addListener(SWT.PaintItem, event -> {
-            // Only draw for category rows
-            if (event.index == 0)
-            { // First column
+            // Get the column being painted
+            TableColumn tableColumn = assets.getTable().getColumn(event.index);
+
+            // Check if this is the first column or the Collapser column
+            boolean isFirstColumn = (event.index == 0);
+            boolean isCollapserColumn = false;
+
+            // Check if this is the Collapser column by comparing with our
+            // stored reference
+            // We need to get the ViewerColumn from the TableColumn
+            try
+            {
+                // We can use the column's data to identify it
+                // The ShowHideColumnHelper stores a reference to the Column in
+                // the TableColumn
+                Object data = tableColumn.getData(Column.class.getName());
+                if (data == collapserColumn)
+                {
+                    isCollapserColumn = true;
+                }
+            }
+            catch (Exception e)
+            {
+                // If anything goes wrong, just fall back to the first column
+            }
+
+            // Draw triangles only in the Collapser column
+            if (isCollapserColumn)
+            {
                 Object data = event.item.getData();
                 if (data instanceof Element)
                 {
