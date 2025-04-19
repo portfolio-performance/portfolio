@@ -92,12 +92,12 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                             Map<String, String> context = type.getCurrentContext();
                             v.put("date", v.get("day") + " " + v.get("month") + " " + context.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                             t.setDate(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
@@ -136,15 +136,15 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$") //
                                                         .assign((t, v) -> {
                                                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                                                            v.put("currency", CurrencyUnit.USD);
+                                                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
-                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                                                            t.setCurrencyCode(v.get("currency"));
                                                             t.setSecurity(getOrCreateSecurity(v));
 
-                                                            Money tax = Money.of(asCurrencyCode(CurrencyUnit.USD), asAmount(v.get("tax")));
+                                                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
 
                                                             checkAndSetTax(tax, t, type.getCurrentContext());
                                                         }),
@@ -154,12 +154,12 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<month>.*) (?<day>[\\d]{2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                                                            v.put("currency", CurrencyUnit.USD);
+                                                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                                                            t.setCurrencyCode(v.get("currency"));
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }))
 
@@ -190,12 +190,12 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         .match("(?<nameContinued>.*)") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setAmount(0L);
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
@@ -223,7 +223,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Ca Fee_spinoff.* (?<name>.*) (?<wkn>.*) Journal \\((?<amount>[\\.,\\d]+)\\)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                             // if CUSIP lenght != 9
                             if (trim(v.get("wkn")).length() < 9)
@@ -233,7 +233,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(v.get("currency"));
                         })
 
                         .wrap((t, ctx) -> {
@@ -268,12 +268,12 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<name>.*)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(0L);
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(v.get("currency"));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
@@ -300,11 +300,11 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) Incoming Wire .* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(v.get("currency"));
                         })
 
                         .wrap(TransactionItem::new));
@@ -330,11 +330,11 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<month>[\\w]{3}) (?<day>[\\d]{2}) .* Credit Interest (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(v.get("currency"));
                         })
 
                         .wrap(TransactionItem::new));

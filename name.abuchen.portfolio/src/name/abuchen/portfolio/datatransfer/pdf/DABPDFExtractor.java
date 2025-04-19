@@ -1114,10 +1114,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                                                         section -> section //
                                                                         .attributes("currency") //
                                                                         .match("^Referenzw.hrung (?<currency>.*)$") //
-                                                                        .assign((ctx, v) -> {
-                                                                            if ("Euro".equals(trim(v.get("currency"))))
-                                                                                ctx.put("currency", "EUR");
-                                                                        }),
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))),
                                                         // @formatter:off
                                                         // 28.08.2024
                                                         // Buchung Valuta Buchungsinformation Soll Haben

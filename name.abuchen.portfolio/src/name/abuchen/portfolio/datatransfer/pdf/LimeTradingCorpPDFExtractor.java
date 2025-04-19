@@ -95,12 +95,12 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                 t.setType(PortfolioTransaction.Type.SELL);
 
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                             t.setDate(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(v.get("currency"));
 
                             // if CUSIP lenght != 9
                             if (v.get("wkn").length() != 9)
@@ -155,12 +155,12 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$") //
                                                         .assign((t, v) -> {
                                                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                                                            v.put("currency", CurrencyUnit.USD);
+                                                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
-                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                                                            t.setCurrencyCode(v.get("currency"));
 
                                                             // if CUSIP lenght != 9
                                                             if (v.get("wkn").length() != 9)
@@ -178,12 +178,12 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\w]{3} [\\d]{2} .* [\\w]{9} (NRA Withhold|Foreign Withholding) \\((?<tax>[\\.,\\d]+)\\)$") //
                                                         .assign((t, v) -> {
                                                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                                                            v.put("currency", CurrencyUnit.USD);
+                                                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
-                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                                                            t.setCurrencyCode(v.get("currency"));
 
                                                             // if CUSIP lenght != 9
                                                             if (v.get("wkn").length() != 9)
@@ -201,12 +201,12 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<month>.*) (?<day>[\\d]{1,2}) (?<name>.*) (?<shares>[\\.,\\d]+) (?<wkn>(?!Qualified).{9}) (Qualified )?Dividend (?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                                                            v.put("currency", CurrencyUnit.USD);
+                                                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                                                            t.setCurrencyCode(v.get("currency"));
 
                                                             // if CUSIP lenght != 9
                                                             if (v.get("wkn").length() != 9)
@@ -243,13 +243,13 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                                                         .match("^(?<name>.*)$") //
                                                         .assign((t, v) -> {
                                                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                                                            v.put("currency", CurrencyUnit.USD);
+                                                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(0L);
                                                             t.setAmount(asAmount(v.get("amount")));
                                                             t.setNote(v.get("note"));
-                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                                                            t.setCurrencyCode(v.get("currency"));
 
                                                             // if CUSIP lenght != 9
                                                             if (v.get("wkn").length() != 9)
@@ -292,12 +292,12 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         .match("(?<nameContinued>.*)") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setAmount(0L);
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(v.get("currency"));
 
                             // if CUSIP lenght != 9
                             if (v.get("wkn").length() != 9)
@@ -337,11 +337,11 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) Ca Fee_spinoff.* (?<name>.*) (?<wkn>.*) Journal \\((?<amount>[\\.,\\d]+)\\)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(v.get("currency"));
 
                             // if CUSIP lenght != 9
                             if (v.get("wkn").length() != 9)
@@ -382,12 +382,12 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<name>.*)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(0L);
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(v.get("currency"));
 
                             // if CUSIP lenght != 9
                             if (v.get("wkn").length() != 9)
@@ -426,11 +426,11 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) Wire .* (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(v.get("currency"));
                         })
 
                         .wrap(TransactionItem::new));
@@ -456,11 +456,11 @@ public class LimeTradingCorpPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<month>[\\w]{3}) (?<day>[\\d]{1,2}) .* Credit Interest (?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             v.put("date", v.get("day") + " " + v.get("month") + " " + v.get("year"));
-                            v.put("currency", CurrencyUnit.USD);
+                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(v.get("currency"));
                         })
 
                         .wrap(TransactionItem::new));

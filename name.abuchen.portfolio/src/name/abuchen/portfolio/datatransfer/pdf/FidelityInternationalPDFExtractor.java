@@ -9,6 +9,7 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -197,7 +198,7 @@ public class FidelityInternationalPDFExtractor extends AbstractPDFExtractor
                                                         .find("Symbol:.*") //
                                                         .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?).*$") //
                                                         .assign((t, v) -> {
-                                                            v.put("currency", asCurrencyCode("USD"));
+                                                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }),
                                         // @formatter:off
@@ -214,7 +215,7 @@ public class FidelityInternationalPDFExtractor extends AbstractPDFExtractor
                                                         .find("Symbol:.*") //
                                                         .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?).*$") //
                                                         .assign((t, v) -> {
-                                                            v.put("currency", asCurrencyCode("USD"));
+                                                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }),
                                         // @formatter:off
@@ -230,7 +231,7 @@ public class FidelityInternationalPDFExtractor extends AbstractPDFExtractor
                                                         .find("Symbol:.*") //
                                                         .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?).*$") //
                                                         .assign((t, v) -> {
-                                                            v.put("currency", asCurrencyCode("USD"));
+                                                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }))
 
@@ -293,7 +294,8 @@ public class FidelityInternationalPDFExtractor extends AbstractPDFExtractor
                         .find("You (Bought|Sold) .*") //
                         .match("^.* Activity .*([\\s]{1,})(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            v.put("currency", asCurrencyCode("USD"));
+                            v.put("currency", asCurrencyCode(CurrencyUnit.USD));
+
                             processFeeEntries(t, v, type);
                         })
 
