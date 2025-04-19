@@ -46,11 +46,9 @@ public class MonthlyPNTransfersWidget extends AbstractMonhtlyHeatmapWidget
                 if (endOfMonth.isBefore(interval.getStart()) || startOfMonth.isAfter(interval.getEnd()))
                     continue;
 
-                // Create interval for the month (including the day before for
-                // proper calculation)
+                // Calculate performance index of the month (including the day
+                // before for proper calculation)
                 Interval monthInterval = Interval.of(startOfMonth.minusDays(1), endOfMonth);
-
-                // Calculate performance index for the month
                 PerformanceIndex monthlyIndex = getDashboardData().calculate(series, monthInterval);
 
                 // Get transferals and sum them, skipping the first element (day
