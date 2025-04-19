@@ -35,7 +35,6 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -53,11 +52,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -84,11 +83,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testWertpapierKauf02()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -115,11 +114,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf01()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -146,11 +145,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf02()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -177,12 +176,12 @@ public class TargobankPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonVerkauf02()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonVerkauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonVerkauf02.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -209,11 +208,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testVerkauf02MitSteuerbehandlungVonVerkauf02()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt", "SteuerbehandlungVonVerkauf02.txt"),
                         errors);
 
@@ -242,11 +241,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testVerkauf02MitSteuerbehandlungVonVerkauf02_SourceFilesReversed()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonVerkauf02.txt", "Verkauf02.txt"),
                         errors);
 
@@ -275,11 +274,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf03()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -306,12 +305,12 @@ public class TargobankPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonVerkauf03()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonVerkauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonVerkauf03.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -340,11 +339,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testVerkauf03MitSteuerbehandlungVonVerkauf03()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt", "SteuerbehandlungVonVerkauf03.txt"),
                         errors);
 
@@ -373,11 +372,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testVerkauf03MitSteuerbehandlungVonVerkauf03_SourceFilesReversed()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonVerkauf03.txt", "Verkauf03.txt"),
                         errors);
 
@@ -406,11 +405,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende01()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -438,19 +437,18 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende01WithSecurityInEUR()
     {
-        Security security = new Security("Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN",
-                        CurrencyUnit.EUR);
+        var security = new Security("Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN", CurrencyUnit.EUR);
         security.setIsin("IE00BKX55T58");
         security.setWkn("A12CX1");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+        var extractor = new TargobankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -467,10 +465,10 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 21.18), hasGrossValue("EUR", 21.18), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -478,12 +476,12 @@ public class TargobankPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende01()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -510,11 +508,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende01MitSteuerbehandlungVonDividende01()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende01.txt", "SteuerbehandlungVonDividende01.txt"),
                         errors);
 
@@ -544,19 +542,18 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende01MitSteuerbehandlungVonDividende01WithSecurityInEUR()
     {
-        Security security = new Security("Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN",
-                        CurrencyUnit.EUR);
+        var security = new Security("Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN", CurrencyUnit.EUR);
         security.setIsin("IE00BKX55T58");
         security.setWkn("A12CX1");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+        var extractor = new TargobankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende01.txt", "Dividende01.txt"),
                         errors);
 
@@ -575,10 +572,10 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 15.59), hasGrossValue("EUR", 21.18), //
                         hasTaxes("EUR", 5.59), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -586,11 +583,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende01MitSteuerbehandlungVonDividende01_SourceFilesReversed()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende01.txt", "Dividende01.txt"),
                         errors);
 
@@ -619,19 +616,18 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende01MitSteuerbehandlungVonDividende01WithSecurityInEUR_SourceFilesReversed()
     {
-        Security security = new Security("Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN",
-                        CurrencyUnit.EUR);
+        var security = new Security("Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN", CurrencyUnit.EUR);
         security.setIsin("IE00BKX55T58");
         security.setWkn("A12CX1");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+        var extractor = new TargobankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende01.txt", "SteuerbehandlungVonDividende01.txt"),
                         errors);
 
@@ -650,10 +646,10 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 15.59), hasGrossValue("EUR", 21.18), //
                         hasTaxes("EUR", 5.59), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -661,11 +657,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende02()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -692,12 +688,12 @@ public class TargobankPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende02()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende02.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -726,11 +722,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende02MitSteuerbehandlungVonDividende02()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende02.txt", "SteuerbehandlungVonDividende02.txt"),
                         errors);
 
@@ -769,11 +765,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende02MitSteuerbehandlungVonDividende02_SourceFilesReversed()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende02.txt", "Dividende02.txt"),
                         errors);
 
@@ -812,11 +808,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende03()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -844,18 +840,18 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende03WithSecurityInEUR()
     {
-        Security security = new Security("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N.", CurrencyUnit.EUR);
+        var security = new Security("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N.", CurrencyUnit.EUR);
         security.setIsin("LU0875160326");
         security.setWkn("DBX0NK");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+        var extractor = new TargobankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -872,10 +868,10 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 279.64), hasGrossValue("EUR", 279.64), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -883,12 +879,12 @@ public class TargobankPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende03()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende03.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -915,11 +911,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende03MitSteuerbehandlungVonDividende03()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende03.txt", "SteuerbehandlungVonDividende03.txt"),
                         errors);
 
@@ -949,18 +945,18 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende03MitSteuerbehandlungVonDividende03WithSecurityInEUR()
     {
-        Security security = new Security("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N.", CurrencyUnit.EUR);
+        var security = new Security("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N.", CurrencyUnit.EUR);
         security.setIsin("LU0875160326");
         security.setWkn("DBX0NK");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+        var extractor = new TargobankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende03.txt", "Dividende03.txt"),
                         errors);
 
@@ -979,10 +975,10 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 228.01), hasGrossValue("EUR", 279.64), //
                         hasTaxes("EUR", 51.63), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -990,11 +986,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende03MitSteuerbehandlungVonDividende03_SourceFilesReversed()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende03.txt", "Dividende03.txt"),
                         errors);
 
@@ -1023,18 +1019,18 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende03MitSteuerbehandlungVonDividende03WithSecurityInEUR_SourceFilesReversed()
     {
-        Security security = new Security("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N.", CurrencyUnit.EUR);
+        var security = new Security("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N.", CurrencyUnit.EUR);
         security.setIsin("LU0875160326");
         security.setWkn("DBX0NK");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+        var extractor = new TargobankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende03.txt", "SteuerbehandlungVonDividende03.txt"),
                         errors);
 
@@ -1053,10 +1049,10 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 228.01), hasGrossValue("EUR", 279.64), //
                         hasTaxes("EUR", 51.63), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1064,11 +1060,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende04()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1095,12 +1091,12 @@ public class TargobankPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende04()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende04.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1129,11 +1125,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende04MitSteuerbehandlungVonDividende04()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende04.txt", "SteuerbehandlungVonDividende04.txt"),
                         errors);
 
@@ -1172,11 +1168,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende04MitSteuerbehandlungVonDividende04_SourceFilesReversed()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende04.txt", "Dividende04.txt"),
                         errors);
 
@@ -1215,11 +1211,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende05()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1247,18 +1243,18 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende05WithSecurityInEUR()
     {
-        Security security = new Security("Aktiengesellschaft AG", CurrencyUnit.EUR);
+        var security = new Security("Aktiengesellschaft AG", CurrencyUnit.EUR);
         security.setIsin("DE0123456789");
         security.setWkn("ABC0DE");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+        var extractor = new TargobankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1275,10 +1271,10 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 20.82), hasGrossValue("EUR", 20.82), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1286,12 +1282,12 @@ public class TargobankPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende05()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende05.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1320,11 +1316,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende05MitSteuerbehandlungVonDividende05()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende05.txt", "SteuerbehandlungVonDividende05.txt"),
                         errors);
 
@@ -1364,18 +1360,18 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende05MitSteuerbehandlungVonDividende05WithSecurityInEUR()
     {
-        Security security = new Security("Aktiengesellschaft AG", CurrencyUnit.EUR);
+        var security = new Security("Aktiengesellschaft AG", CurrencyUnit.EUR);
         security.setIsin("DE0123456789");
         security.setWkn("ABC0DE");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+        var extractor = new TargobankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende05.txt", "Dividende05.txt"),
                         errors);
 
@@ -1394,10 +1390,10 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 20.82), hasGrossValue("EUR", 20.82), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
 
@@ -1411,10 +1407,10 @@ public class TargobankPDFExtractorTest
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                                         check(tx -> {
-                                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                                            Account account = new Account();
+                                            var c = new CheckCurrenciesAction();
+                                            var account = new Account();
                                             account.setCurrencyCode(CurrencyUnit.EUR);
-                                            Status s = c.process((AccountTransaction) tx, account);
+                                            var s = c.process((AccountTransaction) tx, account);
                                             assertThat(s, is(Status.OK_STATUS));
                                         })))));
     }
@@ -1422,11 +1418,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende05MitSteuerbehandlungVonDividende05_SourceFilesReversed()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende05.txt", "Dividende05.txt"),
                         errors);
 
@@ -1465,18 +1461,18 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende05MitSteuerbehandlungVonDividende05WithSecurityInEUR_SourceFilesReversed()
     {
-        Security security = new Security("Aktiengesellschaft AG", CurrencyUnit.EUR);
+        var security = new Security("Aktiengesellschaft AG", CurrencyUnit.EUR);
         security.setIsin("DE0123456789");
         security.setWkn("ABC0DE");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+        var extractor = new TargobankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende05.txt", "SteuerbehandlungVonDividende05.txt"),
                         errors);
 
@@ -1495,10 +1491,10 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 20.82), hasGrossValue("EUR", 20.82), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
 
@@ -1512,10 +1508,10 @@ public class TargobankPDFExtractorTest
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                                         check(tx -> {
-                                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                                            Account account = new Account();
+                                            var c = new CheckCurrenciesAction();
+                                            var account = new Account();
                                             account.setCurrencyCode(CurrencyUnit.EUR);
-                                            Status s = c.process((AccountTransaction) tx, account);
+                                            var s = c.process((AccountTransaction) tx, account);
                                             assertThat(s, is(Status.OK_STATUS));
                                         })))));
     }
@@ -1523,11 +1519,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende06()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1554,12 +1550,12 @@ public class TargobankPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende06()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende06.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1586,11 +1582,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende06MitSteuerbehandlungVonDividende06()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende06.txt", "SteuerbehandlungVonDividende06.txt"),
                         errors);
 
@@ -1619,11 +1615,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende06MitSteuerbehandlungVonDividende06_SourceFilesReversed()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende06.txt", "Dividende06.txt"),
                         errors);
 
@@ -1652,11 +1648,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende07()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1684,18 +1680,18 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende07WithSecurityInEUR()
     {
-        Security security = new Security("Northrop Grumman Corp. - Registered Shares DL 1", CurrencyUnit.EUR);
+        var security = new Security("Northrop Grumman Corp. - Registered Shares DL 1", CurrencyUnit.EUR);
         security.setIsin("US6668071029");
         security.setWkn("851915");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+        var extractor = new TargobankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1712,10 +1708,10 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 6.71), hasGrossValue("EUR", 6.71), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1723,12 +1719,12 @@ public class TargobankPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende07()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende07.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1755,11 +1751,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende07MitSteuerbehandlungVonDividende07()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende07.txt", "SteuerbehandlungVonDividende07.txt"),
                         errors);
 
@@ -1789,18 +1785,18 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende07MitSteuerbehandlungVonDividende03WithSecurityInEUR()
     {
-        Security security = new Security("Northrop Grumman Corp. - Registered Shares DL 1", CurrencyUnit.EUR);
+        var security = new Security("Northrop Grumman Corp. - Registered Shares DL 1", CurrencyUnit.EUR);
         security.setIsin("US6668071029");
         security.setWkn("851915");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+        var extractor = new TargobankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende07.txt", "Dividende07.txt"),
                         errors);
 
@@ -1819,10 +1815,10 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 7.06 - 1.18), hasGrossValue("EUR", 7.89), //
                         hasTaxes("EUR", 0.83 + 1.18), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1830,11 +1826,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende07MitSteuerbehandlungVonDividende07_SourceFilesReversed()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende07.txt", "Dividende07.txt"),
                         errors);
 
@@ -1863,18 +1859,18 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende07MitSteuerbehandlungVonDividende07WithSecurityInEUR_SourceFilesReversed()
     {
-        Security security = new Security("Northrop Grumman Corp. - Registered Shares DL 1", CurrencyUnit.EUR);
+        var security = new Security("Northrop Grumman Corp. - Registered Shares DL 1", CurrencyUnit.EUR);
         security.setIsin("US6668071029");
         security.setWkn("851915");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+        var extractor = new TargobankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende07.txt", "SteuerbehandlungVonDividende07.txt"),
                         errors);
 
@@ -1893,10 +1889,10 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 7.06 - 1.18), hasGrossValue("EUR", 7.89), //
                         hasTaxes("EUR", 0.83 + 1.18), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1904,11 +1900,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende08()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -1936,18 +1932,18 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende08WithSecurityInEUR()
     {
-        Security security = new Security("Coca-Cola Co., The - Registered Shares DL -,25", CurrencyUnit.EUR);
+        var security = new Security("Coca-Cola Co., The - Registered Shares DL -,25", CurrencyUnit.EUR);
         security.setIsin("US1912161007");
         security.setWkn("850663");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+        var extractor = new TargobankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -1964,10 +1960,10 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 37.70), hasGrossValue("EUR", 37.70), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -1975,12 +1971,12 @@ public class TargobankPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende08()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende08.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -2007,11 +2003,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende08MitSteuerbehandlungVonDividende08()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende08.txt", "SteuerbehandlungVonDividende08.txt"),
                         errors);
 
@@ -2041,18 +2037,18 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende08MitSteuerbehandlungVonDividende08WithSecurityInEUR()
     {
-        Security security = new Security("Coca-Cola Co., The - Registered Shares DL -,25", CurrencyUnit.EUR);
+        var security = new Security("Coca-Cola Co., The - Registered Shares DL -,25", CurrencyUnit.EUR);
         security.setIsin("US1912161007");
         security.setWkn("850663");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+        var extractor = new TargobankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende08.txt", "Dividende08.txt"),
                         errors);
 
@@ -2071,10 +2067,10 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 39.67 - 6.65), hasGrossValue("EUR", 44.35), //
                         hasTaxes("EUR", 4.68 + 6.65), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -2082,11 +2078,11 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende08MitSteuerbehandlungVonDividende08_SourceFilesReversed()
     {
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+        var extractor = new TargobankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende08.txt", "Dividende08.txt"),
                         errors);
 
@@ -2115,18 +2111,18 @@ public class TargobankPDFExtractorTest
     @Test
     public void testDividende08MitSteuerbehandlungVonDividende08WithSecurityInEUR_SourceFilesReversed()
     {
-        Security security = new Security("Coca-Cola Co., The - Registered Shares DL -,25", CurrencyUnit.EUR);
+        var security = new Security("Coca-Cola Co., The - Registered Shares DL -,25", CurrencyUnit.EUR);
         security.setIsin("US1912161007");
         security.setWkn("850663");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        TargobankPDFExtractor extractor = new TargobankPDFExtractor(client);
+        var extractor = new TargobankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende08.txt", "Dividende08.txt"),
                         errors);
 
@@ -2145,10 +2141,10 @@ public class TargobankPDFExtractorTest
                         hasAmount("EUR", 39.67 - 6.65), hasGrossValue("EUR", 44.35), //
                         hasTaxes("EUR", 4.68 + 6.65), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
                             account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
