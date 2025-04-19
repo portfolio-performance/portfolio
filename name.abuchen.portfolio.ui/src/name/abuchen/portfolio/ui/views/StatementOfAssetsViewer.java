@@ -449,11 +449,20 @@ public class StatementOfAssetsViewer
                 // Get the item under the mouse click
                 org.eclipse.swt.widgets.TableItem item = assets.getTable().getItem(new org.eclipse.swt.graphics.Point(event.x, event.y));
                 if (item != null) {
+                    // Get the column index where the click occurred
+                    int columnIndex = -1;
+                    for (int i = 0; i < assets.getTable().getColumnCount(); i++) {
+                        if (item.getBounds(i).contains(event.x, event.y)) {
+                            columnIndex = i;
+                            break;
+                        }
+                    }
+                    
                     Object data = item.getData();
                     if (data instanceof Element) {
                         Element element = (Element) data;
-                        // Only toggle for category rows
-                        if (element.isCategory()) {
+                        // Check if it's a category and if the click is in the indicator area (left side of first column)
+                        if (element.isCategory() && columnIndex == 0 && event.x < item.getBounds(0).x + 20) {
                             element.toggleCollapsed();
                             // Save the collapsed state to preferences
                             model.saveCollapsedState();
@@ -495,9 +504,8 @@ public class StatementOfAssetsViewer
                 if (((Element) e).isGroupByTaxonomy())
                     return Messages.ColumnSum;
                 if (el.isCategory()) {
-                    // Add a [+] or [-] indicator to show collapsed/expanded state
-                    String indicator = el.isCollapsed() ? "[+] " : "[-] ";
-                    return indicator + super.getText(el) + " (" + el.getChildren().count() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+                    // No indicator in the text, we'll draw it as an overlay
+                    return super.getText(el) + " (" + el.getChildren().count() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 return super.getText(e);
             }
@@ -699,6 +707,55 @@ public class StatementOfAssetsViewer
 
         assets.getTable().setHeaderVisible(true);
         assets.getTable().setLinesVisible(true);
+        
+        // Add a paint listener to draw the collapse/expand indicators
+        assets.getTable().addListener(SWT.PaintItem, event -> {
+            // Only draw for category rows
+            if (event.index == 0) { // First column
+                Object data = event.item.getData();
+                if (data instanceof Element) {
+                    Element element = (Element) data;
+                    if (element.isCategory()) {
+                        // Draw the collapse/expand indicator
+                        org.eclipse.swt.graphics.GC gc = event.gc;
+                        int x = event.x + 5; // Offset from left edge
+                        int y = event.y + (event.height - 8) / 2; // Vertically center
+                        
+                        // Save the current foreground color
+                        org.eclipse.swt.graphics.Color oldForeground = gc.getForeground();
+                        
+                        // Set a dark color for the triangle
+                        org.eclipse.swt.graphics.Color darkColor = new org.eclipse.swt.graphics.Color(gc.getDevice(), 0, 0, 0); // Black
+                        gc.setForeground(darkColor);
+                        gc.setBackground(darkColor);
+                        
+                        if (element.isCollapsed()) {
+                            // Draw a right-pointing triangle (collapsed)
+                            int[] trianglePoints = new int[] {
+                                x, y,
+                                x, y + 8,
+                                x + 8, y + 4
+                            };
+                            gc.fillPolygon(trianglePoints);
+                        } else {
+                            // Draw a down-pointing triangle (expanded)
+                            int[] trianglePoints = new int[] {
+                                x, y,
+                                x + 8, y,
+                                x + 4, y + 8
+                            };
+                            gc.fillPolygon(trianglePoints);
+                        }
+                        
+                        // Restore the original foreground color
+                        gc.setForeground(oldForeground);
+                        
+                        // Dispose the color we created
+                        darkColor.dispose();
+                    }
+                }
+            }
+        });
 
         assets.setContentProvider(ArrayContentProvider.getInstance());
 
