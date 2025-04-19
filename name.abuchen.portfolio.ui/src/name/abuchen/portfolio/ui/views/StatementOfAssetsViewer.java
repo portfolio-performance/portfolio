@@ -31,20 +31,26 @@ import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
@@ -365,6 +371,38 @@ public class StatementOfAssetsViewer
         ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(assets);
         CopyPasteSupport.enableFor(assets);
+
+        // Add double-click listener for copying values
+        assets.getTable().addListener(SWT.MouseDoubleClick, event -> {
+            // Get the clicked cell
+            ViewerCell cell = assets.getCell(new Point(event.x, event.y));
+            if (cell == null)
+                return;
+
+            String text = cell.getText();
+
+            // For owner-drawn cells (like SharesLabelProvider)
+            if ((text == null || text.isEmpty()) && cell.getElement() instanceof Element)
+            {
+                int columnIndex = cell.getColumnIndex();
+                CellLabelProvider provider = assets.getLabelProvider(columnIndex);
+                if (provider instanceof SharesLabelProvider sharesProvider)
+                {
+                    Long value = sharesProvider.getValue(cell.getElement());
+                    if (value != null)
+                    {
+                        text = Values.Share.format(value);
+                    }
+                }
+            }
+
+            if (text != null && !text.isEmpty())
+            {
+                Clipboard clipboard = new Clipboard(Display.getCurrent());
+                clipboard.setContents(new Object[] { text }, new Transfer[] { TextTransfer.getInstance() });
+                clipboard.dispose();
+            }
+        });
 
         ImportFromURLDropAdapter.attach(this.assets.getControl(), owner.getPart());
         ImportFromFileDropAdapter.attach(this.assets.getControl(), owner.getPart());
