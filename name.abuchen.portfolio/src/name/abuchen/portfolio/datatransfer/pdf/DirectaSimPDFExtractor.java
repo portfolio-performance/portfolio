@@ -11,7 +11,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -38,19 +37,19 @@ public class DirectaSimPDFExtractor extends AbstractPDFExtractor
                         documentContext -> documentContext //
                                         .oneOf( //
                                                         // @formatter:off
-                                                        //                                      Quantita'                 Euro               Prezzo      Valuta
-                                                        // @formatter:on
-                                                        section -> section //
-                                                                        .attributes("currency") //
-                                                                        .match("^[\\s]{1,}Quantita.[\\s]{1,}(?<currency>(Euro|USD))[\\s]{1,}Prezzo.*$") //
-                                                                        .assign((ctx, v) -> ctx.put("currency", normalizeCurrency(v.get("currency")))),
-                                                        // @formatter:off
                                                         //                                               Quantita'                USD              Euro     Prezzo         Valuta
                                                         // @formatter:on
                                                         section -> section //
                                                                         .attributes("currency") //
-                                                                        .match("^[\\s]{1,}Quantita.[\\s]{1,}(Euro|USD)[\\s]{1,}(?<currency>(Euro|USD))[\\s]{1,}Prezzo.*$") //
-                                                                        .assign((ctx, v) -> ctx.put("currency", normalizeCurrency(v.get("currency"))))));
+                                                                        .match("^[\\s]{1,}Quantita.[\\s]{1,}([A-Z]{3}|[A-Za-z\\s\\-\\'\\.,]+)[\\s]{1,}(?<currency>([A-Z]{3}|[A-Za-z\\s\\-\\'\\.,]+))[\\s]{1,}Prezzo.*$") //
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get( "currency")))),
+                                                        // @formatter:off
+                                                        //                                      Quantita'                 Euro               Prezzo      Valuta
+                                                        // @formatter:on
+                                                        section -> section //
+                                                                        .attributes("currency") //
+                                                                        .match("^[\\s]{1,}Quantita.[\\s]{1,}(?<currency>([A-Z]{3}|[A-Za-z\\s\\-\\'\\.,]+))[\\s]{1,}Prezzo.*$") //
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get( "currency"))))));
 
         this.addDocumentTyp(type);
 
@@ -70,27 +69,29 @@ public class DirectaSimPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         // @formatter:off
+                                        // per l'acquisto di: 9  CROCS INC ISIN US2270461096
+                                        //                                               Quantita'                USD              Euro     Prezzo         Valuta
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "isin", "currency") //
+                                                        .match("^.*: [\\.,\\d]+[\\s]{1,}(?<name>.*) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^[\\s]{1,}Quantita.[\\s]{1,}(?<currency>([A-Z]{3}|[A-Za-z\\s\\-\\'\\.,]+))[\\s]{1,}([A-Z]{3}|[A-Za-z\\s\\-\\'\\.,]+)[\\s]{1,}Prezzo.*$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("currency", asCurrencyCode(v.get("currency")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+                                        // @formatter:off
                                         // per l'acquisto di: 29  VANGUARD FTSE ALL-WORLD UCITS ISIN IE00BK5BQT80
                                         //                                                   Quantita'                 Euro               Prezzo      Valuta
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^.*: [\\.,\\d]+[\\s]{1,}(?<name>.*) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .match("^[\\s]{1,}Quantita.[\\s]{1,}(?<currency>(Euro|USD))[\\s]{1,}Prezzo.*$") //
+                                                        .match("^[\\s]{1,}Quantita.[\\s]{1,}(?<currency>([A-Z]{3}|[A-Za-z\\s\\-\\'\\.,]+))[\\s]{1,}Prezzo.*$") //
                                                         .assign((t, v) -> {
-                                                            v.put("currency", normalizeCurrency(v.get("currency")));
-                                                            t.setSecurity(getOrCreateSecurity(v));
-                                                        }),
-                                        // @formatter:off
-                                        // EUR   1.000,00 15,00 % 97,28 %
-                                        // EUR   208.000,00 Bundesrep.Deutschland 100,00 %
-                                        // @formatter:on
-                                        section -> section //
-                                                        .attributes("name", "isin", "currency") //
-                                                        .match("^.*: [\\.,\\d]+[\\s]{1,}(?<name>.*) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .match("^[\\s]{1,}Quantita.[\\s]{1,}(?<currency>(Euro|USD))[\\s]{1,}(Euro|USD)[\\s]{1,}Prezzo.*$") //
-                                                        .assign((t, v) -> {
-                                                            v.put("currency", normalizeCurrency(v.get("currency")));
+                                                            v.put("currency", asCurrencyCode(v.get("currency")));
+
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }))
 
@@ -139,12 +140,12 @@ public class DirectaSimPDFExtractor extends AbstractPDFExtractor
                         // =C/$=  1,06470
                         // @formatter:on
                         .section("termCurrency", "baseCurrency", "fxGross", "exchangeRate").optional() //
-                        .match("^[\\s]{1,}Quantita.[\\s]{1,}(?<termCurrency>(Euro|USD))[\\s]{1,}(?<baseCurrency>(Euro|USD))[\\s]{1,}Prezzo.*$") //
+                        .match("^[\\s]{1,}Quantita.[\\s]{1,}(?<termCurrency>([A-Z]{3}|[A-Za-z\\s\\-\\'\\.,]+))[\\s]{1,}(?<baseCurrency>([A-Z]{3}|[A-Za-z\\s\\-\\'\\.,]+))[\\s]{1,}Prezzo.*$") //
                         .match("^.*Totale a Vs\\. Debito[\\s]{1,}:[\\s]{1,}(?<fxGross>[\\.,\\d]+)[\\s]{1,}[\\.,\\d]+$") //
                         .match("^.*\\/.*=[\\s]{1,}(?<exchangeRate>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            v.put("baseCurrency", normalizeCurrency(v.get("baseCurrency")));
-                            v.put("termCurrency", normalizeCurrency(v.get("termCurrency")));
+                            v.put("baseCurrency", asCurrencyCode(v.get("baseCurrency")));
+                            v.put("termCurrency", asCurrencyCode(v.get("termCurrency")));
 
                             ExtrExchangeRate rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -188,15 +189,5 @@ public class DirectaSimPDFExtractor extends AbstractPDFExtractor
                         .documentContext("currency") //
                         .match("^.*Commissioni:[\\s]{1,}[\\.,\\d]+[\\s]{1,}(?<fee>[\\.,\\d]+)\\*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
-    }
-
-    private static String normalizeCurrency(String currency)
-    {
-        if ("USD".equals(currency))
-            return "USD";
-        if ("Euro".equals(currency))
-            return "EUR";
-
-        return CurrencyUnit.getDefaultInstance().getCurrencyCode();
     }
 }
