@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.util;
 
 import java.text.Collator;
+import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -11,6 +12,7 @@ public final class TextUtil
     public static final String PARAGRAPH_BREAK = "\n\n"; //$NON-NLS-1$
 
     public static final char DECIMAL_SEPARATOR = new DecimalFormatSymbols().getDecimalSeparator();
+    public static final char GROUPING_SEPARATOR = new DecimalFormatSymbols().getGroupingSeparator();
 
     private static final String VALID_NUM_CHARACTERS = "0123456789,.'-"; //$NON-NLS-1$
 
@@ -361,5 +363,74 @@ public final class TextUtil
                         .replace(">", "&gt;") //$NON-NLS-1$ //$NON-NLS-2$
                         .replace("\"", "&quot;") //$NON-NLS-1$ //$NON-NLS-2$
                         .replace("'", "&#39;"); //$NON-NLS-1$ //$NON-NLS-2$ Ï
+    }
+
+    /**
+     * Determines if a search text matches a numeric value. Supports partial
+     * matches (prefixes), locale-specific formatting, and separators (i.e.
+     * 2,000 = 2000)
+     */
+    public static boolean isNumericSearchMatch(String searchText, double value)
+    {
+        if (searchText == null || searchText.isEmpty())
+            return false;
+
+        // Remove grouping separators from search text
+        String cleanedSearchText = searchText.replace(String.valueOf(GROUPING_SEPARATOR), ""); //$NON-NLS-1$
+
+        // Remove any negative sign from search text for comparison
+        if (cleanedSearchText.startsWith("-")) //$NON-NLS-1$
+            cleanedSearchText = cleanedSearchText.substring(1);
+
+        // Check if the search text is a valid number format
+        if (!isValidNumberFormat(cleanedSearchText, DECIMAL_SEPARATOR))
+            return false;
+
+        // Format the value to a string using the current locale (using absolute
+        // value)
+        DecimalFormat df = new DecimalFormat("#.###"); //$NON-NLS-1$
+        df.setGroupingUsed(false); // Disable grouping
+        String formattedValue = df.format(Math.abs(value));
+
+        // Split both strings into whole and decimal parts
+
+        var searchDecimal = cleanedSearchText.indexOf(DECIMAL_SEPARATOR);
+        var valueDecimal = formattedValue.indexOf(DECIMAL_SEPARATOR);
+
+        String searchWholePart = searchDecimal >= 0 ? cleanedSearchText.substring(0, searchDecimal) : cleanedSearchText;
+        String searchDecimalPart = searchDecimal >= 0 ? cleanedSearchText.substring(searchDecimal + 1) : ""; //$NON-NLS-1$
+
+        String valueWholePart = valueDecimal >= 0 ? formattedValue.substring(0, valueDecimal) : formattedValue;
+        String valueDecimalPart = valueDecimal >= 0 ? formattedValue.substring(valueDecimal + 1) : ""; //$NON-NLS-1$
+
+        // The whole part must be a prefix match
+        if (!valueWholePart.startsWith(searchWholePart))
+            return false;
+
+        // If search has decimal but whole parts have different lengths (e.g.,
+        // "25.0" vs "2500")
+        if (searchDecimal >= 0 && searchWholePart.length() != valueWholePart.length())
+            return false;
+
+        // If search doesn't have a decimal part, it's a match
+        if (searchDecimal < 0)
+            return true;
+
+        // If search has decimal but value doesn't,
+        // Only match if search decimal part is all zeros
+        // Handles i.e. "2601.0" matches value 2601
+        if (valueDecimal < 0)
+            return searchDecimalPart.isEmpty() || searchDecimalPart.matches("0+"); //$NON-NLS-1$
+
+        // Both have decimal parts, check if search decimal part is a prefix of
+        // value decimal part
+        return valueDecimalPart.startsWith(searchDecimalPart);
+    }
+
+    private static boolean isValidNumberFormat(String text, char decimalSeparator)
+    {
+        String decimalSep = Pattern.quote(String.valueOf(decimalSeparator));
+        String pattern = "^-?\\d*(" + decimalSep + "\\d*)?$"; //$NON-NLS-1$ //$NON-NLS-2$
+        return text.matches(pattern);
     }
 }
