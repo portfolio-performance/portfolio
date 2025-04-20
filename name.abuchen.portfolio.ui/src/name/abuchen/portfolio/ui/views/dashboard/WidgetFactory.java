@@ -413,7 +413,46 @@ public enum WidgetFactory
                                     .build()),
 
     // typo is API now!!
-    VERTICAL_SPACEER(Messages.LabelVerticalSpacer, Messages.LabelCommon, VerticalSpacerWidget::new);
+    VERTICAL_SPACEER(Messages.LabelVerticalSpacer, Messages.LabelCommon, VerticalSpacerWidget::new),
+
+    ALL_TIME_HIGH(Messages.LabelAllTimeHigh, Messages.LabelCommon, //
+                    (widget, data) -> IndicatorWidget.<Money>create(widget, data) //
+                                    .with(Values.Money) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        long[] totals = index.getTotals();
+                                        long maxValue = 0;
+                                        for (long value : totals)
+                                        {
+                                            maxValue = Math.max(maxValue, value);
+                                        }
+                                        return Money.of(index.getCurrency(), maxValue);
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .withTooltip((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        long[] totals = index.getTotals();
+                                        long maxValue = 0;
+                                        int maxIndex = 0;
+
+                                        for (int i = 0; i < totals.length; i++)
+                                        {
+                                            if (totals[i] > maxValue)
+                                            {
+                                                maxValue = totals[i];
+                                                maxIndex = i;
+                                            }
+                                        }
+
+                                        DateTimeFormatter formatter = DateTimeFormatter
+                                                        .ofLocalizedDate(FormatStyle.LONG)
+                                                        .withZone(ZoneId.systemDefault());
+
+                                        LocalDate date = period.getStart().plusDays(maxIndex);
+                                        return MessageFormat.format(Messages.TooltipAllTimeHighWidget,
+                                                        formatter.format(date));
+                                    }) //
+                                    .build());
 
     private String label;
     private String group;
