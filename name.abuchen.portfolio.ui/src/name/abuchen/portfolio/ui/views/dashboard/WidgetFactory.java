@@ -170,6 +170,55 @@ public enum WidgetFactory
                                     .withColoredValues(false) //
                                     .build()),
 
+    CURRENT_DRAWDOWN(Messages.LabelCurrentDrawdown, Messages.LabelRiskIndicators, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        long[] totals = index.getTotals();
+                                        if (totals.length == 0)
+                                            return 0.0;
+
+                                        long highWatermark = 0;
+                                        for (int i = 0; i < totals.length; i++)
+                                        {
+                                            if (totals[i] > highWatermark)
+                                                highWatermark = totals[i];
+                                        }
+                                        if (highWatermark == 0)
+                                            return 0.0;
+
+                                        long currentValue = totals[totals.length - 1];
+                                        return (double) (currentValue - highWatermark) / highWatermark;
+                                    }) //
+                                    .withTooltip((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        long[] totals = index.getTotals();
+                                        if (totals.length == 0)
+                                            return Messages.TooltipCurrentDrawdown;
+
+                                        long highWatermark = 0;
+                                        int highWatermarkIndex = 0;
+                                        for (int i = 0; i < totals.length; i++)
+                                        {
+                                            if (totals[i] > highWatermark)
+                                            {
+                                                highWatermark = totals[i];
+                                                highWatermarkIndex = i;
+                                            }
+                                        }
+
+                                        DateTimeFormatter formatter = DateTimeFormatter
+                                                        .ofLocalizedDate(FormatStyle.LONG)
+                                                        .withZone(ZoneId.systemDefault());
+
+                                        LocalDate highWatermarkDate = period.getStart().plusDays(highWatermarkIndex);
+                                        return MessageFormat.format(Messages.TooltipCurrentDrawdown,
+                                                        formatter.format(highWatermarkDate));
+                                    }) //
+                                    .withColoredValues(true) //
+                                    .build()),
+
     MAXDRAWDOWNDURATION(Messages.LabelMaxDrawdownDuration, Messages.LabelRiskIndicators,
                     MaxDrawdownDurationWidget::new),
 
