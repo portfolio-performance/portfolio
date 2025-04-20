@@ -657,6 +657,7 @@ public class Messages extends NLS
     public static String LabelCurrencyConverter;
     public static String LabelCurrentConfiguration;
     public static String LabelCurrentDate;
+    public static String LabelCurrentDrawdown;
     public static String LabelCurrentMonth;
     public static String LabelCurrentQuarter;
     public static String LabelCurrentWeek;
@@ -1369,6 +1370,7 @@ public class Messages extends NLS
     public static String TooltipAllTimeHigh;
     public static String TooltipAllTimeHighWidget;
     public static String TooltipAverageHoldingPeriod;
+    public static String TooltipCurrentDrawdown;
     public static String TooltipDateOfExchangeRate;
     public static String TooltipHintPressAlt;
     public static String TooltipMaxDrawdown;
