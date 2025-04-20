@@ -407,7 +407,7 @@ public class TradeDetailsView extends AbstractFinanceView
         if (onlyLossMaking.isTrue())
             filteredTrades = filteredTrades.filter(Trade::isLoss);
         if (onlyProfitable.isTrue())
-            filteredTrades = filteredTrades.filter(t -> !t.isLoss());
+            filteredTrades = filteredTrades.filter(t -> t.getProfitLoss().isPositive());
 
         table.setInput(filteredTrades.collect(Collectors.toList()));
 
