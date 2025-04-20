@@ -85,6 +85,9 @@ public class Messages extends NLS
     public static String ClientEditorLabelReports;
     public static String ClientEditorLabelReturnsVolatility;
     public static String ClientEditorPerformanceCalculation;
+    public static String CmdLogin;
+    public static String CmdLogout;
+    public static String CmdNotNow;
     public static String ColumnAbsolutePerformance;
     public static String ColumnAbsolutePerformance_Description;
     public static String ColumnAbsolutePerformance_MenuLabel;
@@ -557,6 +560,7 @@ public class Messages extends NLS
     public static String LabelAllTransactions;
     public static String LabelAspect;
     public static String LabelAssetChart;
+    public static String LabelAuthenticationRequiredToRetrieveHistoricalPrices;
     public static String LabelAutomaticDarkLightTheme;
     public static String LabelAvailableAttributes;
     public static String LabelAverageHoldingPeriod;
@@ -916,6 +920,7 @@ public class Messages extends NLS
     public static String LabelUpdatesAvailable;
     public static String LabelUseExistingSecurity;
     public static String LabelUseGrossValue;
+    public static String LabelUser;
     public static String LabelUsingDashboardDefaultReportingPeriod;
     public static String LabelValueInboundDelivery;
     public static String LabelValueOutboundDelivery;
@@ -1176,6 +1181,7 @@ public class Messages extends NLS
     public static String PrefDescriptionFinnhub;
     public static String PrefDescriptionLeeway;
     public static String PrefDescriptionMyDividends24;
+    public static String PrefDescriptionPortfolioPerformanceID;
     public static String PrefDescriptionPortfolioReport;
     public static String PrefDescriptionProxy;
     public static String PrefDescriptionQuandl;
