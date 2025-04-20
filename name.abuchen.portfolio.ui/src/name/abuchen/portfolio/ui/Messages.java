@@ -556,6 +556,7 @@ public class Messages extends NLS
     public static String LabelAllInboundTransactions;
     public static String LabelAllOutboundTransactions;
     public static String LabelAllSecurities;
+    public static String LabelAllTimeHigh;
     public static String LabelAllTrades;
     public static String LabelAllTransactions;
     public static String LabelAspect;
@@ -1366,6 +1367,7 @@ public class Messages extends NLS
     public static String TabTransactions;
     public static String TitlePasswordDialog;
     public static String TooltipAllTimeHigh;
+    public static String TooltipAllTimeHighWidget;
     public static String TooltipAverageHoldingPeriod;
     public static String TooltipDateOfExchangeRate;
     public static String TooltipHintPressAlt;
