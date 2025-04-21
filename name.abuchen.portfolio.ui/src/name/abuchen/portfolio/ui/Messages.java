@@ -1236,6 +1236,7 @@ public class Messages extends NLS
     public static String PresetsPrefPageTitle;
     public static String RebalanceAmbiguousTooltip;
     public static String RebalanceInexactTooltip;
+    public static String RebalancingChartActualVsTarget;
     public static String SearchSecurityWizardPageSymbolAlreadyExistsInfo;
     public static String SecuritiesChart_NoDataMessage_NoHoldings;
     public static String SecuritiesChart_NoDataMessage_NoPrices;
