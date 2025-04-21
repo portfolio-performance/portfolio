@@ -87,9 +87,7 @@ public interface SecuritySearchProvider
     {
         if (type == null)
             return null;
-        
-        type = trim(type).toLowerCase();
-        
+
         // Convert the security type to a standard value
         Map<String, String> typeMap = new HashMap<>();
 
@@ -100,6 +98,7 @@ public interface SecuritySearchProvider
         typeMap.put("currency", Messages.LabelSearchCurrency);
         typeMap.put("digital currency", Messages.LabelSearchCryptoCurrency);
         typeMap.put("cryptocurrency", Messages.LabelSearchCryptoCurrency);
+        typeMap.put("crypto", Messages.LabelSearchCryptoCurrency);
         typeMap.put("etf", Messages.LabelSearchETF);
         typeMap.put("etc", Messages.LabelSearchETC);
         typeMap.put("exchange-traded note", Messages.LabelSearchETN);
@@ -116,6 +115,7 @@ public interface SecuritySearchProvider
         typeMap.put("reit", Messages.LabelSearchReit);
         typeMap.put("warrant", Messages.LabelSearchWarrant);
 
-        return typeMap.getOrDefault(type, type);
+        // keep original capitalization for unknown types
+        return typeMap.getOrDefault(trim(type).toLowerCase(), type);
     }
 }

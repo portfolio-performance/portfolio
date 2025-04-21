@@ -21,7 +21,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.oauth.OAuthClient;
 import name.abuchen.portfolio.online.Factory;
-import name.abuchen.portfolio.online.OpenFIGI;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.util.WebAccess;
 import name.abuchen.portfolio.util.WebAccess.WebAccessException;
@@ -50,7 +49,9 @@ public class PortfolioPerformanceSearchProvider implements SecuritySearchProvide
             answer.provider = (String) json.get("provider"); //$NON-NLS-1$
             answer.name = (String) json.get("description"); //$NON-NLS-1$
             answer.isin = (String) json.get("isin"); //$NON-NLS-1$
-            answer.type = OpenFIGI.getTypeLabel((String) json.get("type")); //$NON-NLS-1$
+            answer.type = (String) json.get("type"); //$NON-NLS-1$
+
+            answer.type = SecuritySearchProvider.convertType(answer.type);
 
             var markets = (JSONArray) json.get("markets"); //$NON-NLS-1$
 
@@ -84,6 +85,9 @@ public class PortfolioPerformanceSearchProvider implements SecuritySearchProvide
                 answer.markets.sort(new ByExchangeComparator());
             }
 
+            // if the instrument is traded only on one market, do only return
+            // this one market to simplify the user experience in the search
+            // dialog
             return Optional.of(answer.markets.size() == 1 ? answer.markets.get(0) : answer);
         }
 
@@ -152,7 +156,7 @@ public class PortfolioPerformanceSearchProvider implements SecuritySearchProvide
         @Override
         public Security create(Client client)
         {
-            Security security = new Security(name, currency);
+            var security = new Security(name, currency);
             security.setIsin(isin);
             security.setTickerSymbol(symbol);
             security.setFeed(provider);
@@ -177,7 +181,7 @@ public class PortfolioPerformanceSearchProvider implements SecuritySearchProvide
         @Override
         public int compare(ResultItem left, ResultItem right)
         {
-            int cmp = compareByPriority(left.getExchange(), right.getExchange(), EXCHANGES);
+            var cmp = compareByPriority(left.getExchange(), right.getExchange(), EXCHANGES);
             if (cmp != 0)
                 return cmp;
 
@@ -187,8 +191,8 @@ public class PortfolioPerformanceSearchProvider implements SecuritySearchProvide
 
         private static int compareByPriority(String left, String right, List<String> priorityList)
         {
-            int li = priorityList.indexOf(left);
-            int ri = priorityList.indexOf(right);
+            var li = priorityList.indexOf(left);
+            var ri = priorityList.indexOf(right);
 
             if (li != ri)
                 return li == -1 ? 1 : ri == -1 ? -1 : li - ri; // NOSONAR
@@ -228,15 +232,15 @@ public class PortfolioPerformanceSearchProvider implements SecuritySearchProvide
         try
         {
             @SuppressWarnings("nls")
-            String json = new WebAccess("api.portfolio-performance.info", "/v1/search") //
+            var json = new WebAccess("api.portfolio-performance.info", "/v1/search") //
                             .addParameter("q", query).get();
 
-            JSONArray response = (JSONArray) JSONValue.parse(json);
+            var response = (JSONArray) JSONValue.parse(json);
             if (response != null)
             {
                 List<ResultItem> answer = new ArrayList<>();
 
-                for (int ii = 0; ii < response.size(); ii++)
+                for (var ii = 0; ii < response.size(); ii++)
                 {
                     Result.from((JSONObject) response.get(ii)).ifPresent(answer::add);
                 }
