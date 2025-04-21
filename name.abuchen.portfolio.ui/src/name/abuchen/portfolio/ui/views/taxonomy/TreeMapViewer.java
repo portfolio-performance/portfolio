@@ -64,7 +64,7 @@ import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
     public void nodeChange(TaxonomyNode node)
     {
         treeMap.setTreeModel(new Model(getModel()));
-        legend.setRootItem(getModel().getVirtualRootNode());
+        legend.setNode(getModel().getVirtualRootNode());
     }
 
     @Override
@@ -100,7 +100,7 @@ import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
 
         treeMap.setRectangleRenderer(new ClassificationRectangleRenderer(getModel(), getRenderer()));
         treeMap.setTreeModel(new Model(getModel()));
-        legend.setRootItem(getModel().getChartRenderingRootNode());
+        legend.setNode(getModel().getChartRenderingRootNode());
 
         return sash;
     }
