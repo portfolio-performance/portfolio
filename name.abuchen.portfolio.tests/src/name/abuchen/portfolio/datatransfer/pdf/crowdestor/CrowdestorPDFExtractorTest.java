@@ -1,26 +1,29 @@
 package name.abuchen.portfolio.datatransfer.pdf.crowdestor;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
+import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
-import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.CrowdestorPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
-import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
 public class CrowdestorPDFExtractorTest
@@ -28,128 +31,57 @@ public class CrowdestorPDFExtractorTest
     @Test
     public void testKontoauszug01()
     {
-        CrowdestorPDFExtractor extractor = new CrowdestorPDFExtractor(new Client());
+        var extractor = new CrowdestorPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(10L));
         assertThat(results.size(), is(10));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        // check transaction
-        Iterator<Extractor.Item> iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
-        assertThat(results.stream().filter(TransactionItem.class::isInstance).count(), is(10L));
-
-        Item item = iter.next();
+        // assert transaction
+        assertThat(results, hasItem(deposit(hasDate("2022-07-14"), hasAmount("EUR", 50.00), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         // assert transaction
-        AccountTransaction transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-14T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(50.00)));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Einzahlung"));
-
-        item = iter.next();
+        assertThat(results, hasItem(interest(hasDate("2022-07-16T00:00"), hasAmount("EUR", 00.03), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-16T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(00.03)));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Zinsen"));
-
-        item = iter.next();
+        assertThat(results, hasItem(interest(hasDate("2022-07-17T00:00"), hasAmount("EUR", 00.03), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-17T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(00.03)));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Zinsen"));
-
-        item = iter.next();
+        assertThat(results, hasItem(interest(hasDate("2022-07-18T00:00"), hasAmount("EUR", 00.03), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-18T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(00.03)));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Zinsen"));
-
-        item = iter.next();
+        assertThat(results, hasItem(interest(hasDate("2022-07-19T00:00"), hasAmount("EUR", 00.03), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-19T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(00.03)));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Zinsen"));
-
-        item = iter.next();
+        assertThat(results, hasItem(interest(hasDate("2022-07-20T00:00"), hasAmount("EUR", 00.03), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-20T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(00.03)));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Zinsen"));
-
-        item = iter.next();
+        assertThat(results, hasItem(interest(hasDate("2022-07-21T00:00"), hasAmount("EUR", 00.03), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-21T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(00.03)));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Zinsen"));
-
-        item = iter.next();
+        assertThat(results, hasItem(interest(hasDate("2022-07-22T00:00"), hasAmount("EUR", 00.03), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-22T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(00.03)));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Zinsen"));
-
-        item = iter.next();
+        assertThat(results, hasItem(interest(hasDate("2022-07-23T00:00"), hasAmount("EUR", 00.03), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
 
         // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-23T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(00.03)));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Zinsen"));
-
-        item = iter.next();
-
-        // assert transaction
-        transaction = (AccountTransaction) item.getSubject();
-        assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
-        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-07-24T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(00.03)));
-        assertThat(transaction.getSource(), is("Kontoauszug01.txt"));
-        assertThat(transaction.getNote(), is("Zinsen"));
+        assertThat(results, hasItem(interest(hasDate("2022-07-24T00:00"), hasAmount("EUR", 00.03), //
+                        hasSource("Kontoauszug01.txt"), hasNote(null))));
     }
 }
