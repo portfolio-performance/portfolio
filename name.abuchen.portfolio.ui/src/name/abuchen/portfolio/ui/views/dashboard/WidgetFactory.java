@@ -414,7 +414,9 @@ public enum WidgetFactory
                                     }) //
                                     .build()),
 
-    REBALANCING_TARGET_CHART(MessageFormat.format("{0} ({1})", Messages.LabelTaxonomies, Messages.ColumnTargetValue),
+    REBALANCING_TARGET_CHART(
+                    MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelTaxonomies,
+                                    Messages.ColumnTargetValue),
                     Messages.LabelStatementOfAssets, Images.VIEW_PIECHART, RebalancingTargetChartWidget::new),
 
     REBALANCING_CHART(Messages.RebalancingChartActualVsTarget, Messages.LabelStatementOfAssets, Images.VIEW_BARCHART,

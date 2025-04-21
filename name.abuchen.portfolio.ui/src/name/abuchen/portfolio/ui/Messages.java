@@ -636,6 +636,7 @@ public class Messages extends NLS
     public static String LabelCoinGeckoCoinIdHint;
     public static String LabelCollapse;
     public static String LabelCollapseAll;
+    public static String LabelColonSeparated;
     public static String LabelColorSchema;
     public static String LabelColumns;
     public static String LabelColumnsInReverseOrder;
