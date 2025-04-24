@@ -6,6 +6,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -19,12 +20,10 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.ModenaEstoniaPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class ModenaEstoniaPDFExtractorTest
@@ -32,19 +31,18 @@ public class ModenaEstoniaPDFExtractorTest
     @Test
     public void testKontoauszug01()
     {
-        ModenaEstoniaPDFExtractor extractor = new ModenaEstoniaPDFExtractor(new Client());
+        var extractor = new ModenaEstoniaPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(5L));
         assertThat(results.size(), is(5));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2025-03-13T21:39:01"), hasAmount("EUR", 12.56), //
@@ -65,5 +63,26 @@ public class ModenaEstoniaPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2025-03-22T09:00:04"), hasAmount("EUR", 1.23), //
                         hasSource("Kontoauszug01.txt"), hasNote("Vault revenue share"))));
+    }
+
+    @Test
+    public void testKontoauszug02()
+    {
+        var extractor = new ModenaEstoniaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(interestCharge(hasDate("2025-04-17T07:00:16"), hasAmount("EUR", 0.63), //
+                        hasSource("Kontoauszug02.txt"), hasNote("Debt claims buyback"))));
     }
 }
