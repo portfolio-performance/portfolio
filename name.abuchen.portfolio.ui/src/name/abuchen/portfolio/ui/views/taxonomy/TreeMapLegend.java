@@ -15,8 +15,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.engehausen.treemap.swt.TreeMap;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.util.Colors;
 
 /* package */class TreeMapLegend extends Composite
 {
@@ -106,15 +104,6 @@ import name.abuchen.portfolio.ui.util.Colors;
 
             renderer.drawRectangle(null, item, e.gc, r);
 
-            String text = item.getName();
-            String info = getInfo();
-
-            GC gc = e.gc;
-            gc.setForeground(Colors.getTextColor(gc.getBackground()));
-            gc.drawString(text, 2, 2, true);
-            Point extent = gc.stringExtent(text);
-            gc.drawString(info, 2, extent.y + 1, true);
-
             e.gc.setForeground(oldForeground);
             e.gc.setBackground(oldBackground);
         }
@@ -122,23 +111,21 @@ import name.abuchen.portfolio.ui.util.Colors;
         @Override
         public Point computeSize(int wHint, int hHint, boolean changed)
         {
-            String text = item.getName();
-            String info = getInfo();
+            var label = renderer.getLabel(item);
 
             GC gc = new GC(this);
-            Point extentText = gc.stringExtent(text);
-            Point extentInfo = gc.stringExtent(info);
+            var width = 0;
+            var height = 0;
+            for (int ii = 0; ii < label.length; ii++)
+            {
+                Point extent = gc.textExtent(label[ii]);
+                if (extent.x > width)
+                    width = extent.x;
+                height += extent.y;
+            }
             gc.dispose();
 
-            return new Point(Math.max(extentText.x, extentInfo.x) + 4, extentText.y + extentInfo.y + 4);
+            return new Point(width + 4, height + 4);
         }
-
-        private String getInfo()
-        {
-            return String.format("%s (%s%%)", Values.Money.format(item.getActual()), //$NON-NLS-1$
-                            Values.Percent.format((double) item.getActual().getAmount()
-                                            / (double) model.getVirtualRootNode().getActual().getAmount()));
-        }
-
     }
 }

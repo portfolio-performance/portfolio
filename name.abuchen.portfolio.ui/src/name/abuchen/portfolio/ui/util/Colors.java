@@ -250,6 +250,11 @@ public final class Colors
         return getColor(ColorConversion.brighter(base.getRGB()));
     }
 
+    public static Color darker(Color base)
+    {
+        return getColor(ColorConversion.darker(base.getRGB()));
+    }
+
     /**
      * Interpolates between two RGB colors.
      *

@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.dashboard.heatmap;
+package name.abuchen.portfolio.ui.util.swt;
 
 import java.util.function.DoubleFunction;
 
@@ -11,7 +11,7 @@ import name.abuchen.portfolio.ui.util.ColorGradient;
 import name.abuchen.portfolio.ui.util.ColorGradient.ColorPoint;
 import name.abuchen.portfolio.ui.util.Colors;
 
-enum ColorSchema
+public enum ColorSchema
 {
     GREEN_YELLOW_RED(Messages.LabelGreenYellowRed), //
     GREEN_WHITE_RED(Messages.LabelGreenWhiteRed), //
@@ -28,7 +28,7 @@ enum ColorSchema
         this.label = label;
     }
 
-    DoubleFunction<Color> buildColorFunction(ResourceManager resourceManager)
+    public DoubleFunction<Color> buildColorFunction(ResourceManager resourceManager)
     {
         return switch (this)
         {

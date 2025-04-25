@@ -1,81 +1,225 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
-
-import name.abuchen.portfolio.util.ColorConversion;
+import java.util.Map;
+import java.util.function.DoubleFunction;
+import java.util.function.Function;
 
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
+
+import name.abuchen.portfolio.model.ClientProperties;
+import name.abuchen.portfolio.model.SecurityNameConfig;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.swt.ColorSchema;
+import name.abuchen.portfolio.util.ColorConversion;
 
 /* package */class TaxonomyNodeRenderer
 {
-    private final class Segment
+    static class PerformanceNodeRenderer extends TaxonomyNodeRenderer
     {
-        private Color primary;
-        private Color brighter;
-        private Color darker;
+        private final ReportingPeriod reportingPeriod;
+        private LazySecurityPerformanceSnapshot snapshot;
+        private DoubleFunction<Color> colorSchema;
 
-        public Segment(String color)
+        public PerformanceNodeRenderer(TaxonomyModel model, LocalResourceManager resources,
+                        ReportingPeriod reportingPeriod)
         {
-            RGB rgb = ColorConversion.hex2RGB(color);
-            createColors(rgb, rgb.getHSB());
+            super(model, resources);
+            this.reportingPeriod = reportingPeriod;
+            this.snapshot = LazySecurityPerformanceSnapshot.create(model.getFilteredClient(),
+                            model.getCurrencyConverter(), reportingPeriod.toInterval(LocalDate.now()));
         }
 
-        private void createColors(RGB rgb, float[] hsb)
+        public void setColorSchema(ColorSchema colorSchema)
         {
-            primary = resources.createColor(rgb);
-            brighter = resources.createColor(new RGB(hsb[0], hsb[1], Math.min(1.0f, hsb[2] + 0.05f)));
-            darker = resources.createColor(new RGB(hsb[0], hsb[1], Math.max(0f, hsb[2] - 0.05f)));
+            this.colorSchema = colorSchema.buildColorFunction(resources);
+        }
+
+        @Override
+        public String[] getLabel(TaxonomyNode node)
+        {
+            if (node.getBackingSecurity() == null)
+            {
+                return new String[] { node.getName() };
+            }
+            else
+            {
+                var r = snapshot.getRecord(node.getBackingSecurity());
+
+                if (r.isPresent())
+                {
+                    var performance = r.get().getTrueTimeWeightedRateOfReturn().get();
+                    return new String[] { node.getBackingSecurity().getName(nameConfig),
+                                    Values.PercentWithSign.format(performance) };
+                }
+                else
+                {
+                    return new String[] { node.getBackingSecurity().getName(nameConfig) };
+                }
+            }
+        }
+
+        @Override
+        public Color getColorFor(TaxonomyNode rootNode, TaxonomyNode node)
+        {
+            if (node.getBackingSecurity() == null)
+            {
+                return colorSchema.apply(0);
+            }
+            else
+            {
+                var r = snapshot.getRecord(node.getBackingSecurity());
+
+                if (r.isPresent())
+                {
+                    var performance = r.get().getTrueTimeWeightedRateOfReturn().get();
+                    return colorSchema.apply(performance);
+                }
+                else
+                {
+                    return colorSchema.apply(0);
+                }
+            }
+        }
+
+        public ReportingPeriod getReportingPeriod()
+        {
+            return reportingPeriod;
         }
     }
 
-    private LocalResourceManager resources;
+    protected final LocalResourceManager resources;
+    protected final TaxonomyModel model;
+    protected final SecurityNameConfig nameConfig;
 
-    public TaxonomyNodeRenderer(LocalResourceManager resources)
+    protected Map<String, Color> hex2color = new HashMap<>();
+    protected Function<String, Color> colorFactory = color -> new Color(ColorConversion.hex2RGB(color));
+
+    public TaxonomyNodeRenderer(TaxonomyModel model, LocalResourceManager resources)
     {
+        this.model = model;
         this.resources = resources;
+        this.nameConfig = new ClientProperties(model.getClient()).getSecurityNameConfig();
     }
 
-    public void drawRectangle(TaxonomyNode rootItem, TaxonomyNode item, GC gc, Rectangle r)
+    public String[] getLabel(TaxonomyNode node)
     {
-        Segment segment = getSegment(rootItem, item);
+        var label = node.getBackingSecurity() != null ? node.getBackingSecurity().getName(nameConfig) : node.getName();
+        double total = model.getChartRenderingRootNode().getActual().getAmount();
+        String info = String.format("%s (%s%%)", Values.Money.format(node.getActual()), //$NON-NLS-1$
+                        Values.Percent.format(node.getActual().getAmount() / total));
+        return new String[] { label, info };
+    }
 
-        gc.setBackground(segment.primary);
+    public final void drawRectangle(TaxonomyNode rootNode, TaxonomyNode node, GC gc, Rectangle r)
+    {
+        var color = getColorFor(rootNode, node);
+
+        gc.setBackground(color);
         gc.fillRectangle(r.x, r.y, r.width, r.height);
 
-        gc.setForeground(segment.darker);
+        gc.setForeground(Colors.darker(color));
         gc.drawLine(r.x, r.y + r.height - 1, r.x + r.width - 1, r.y + r.height - 1);
         gc.drawLine(r.x + r.width - 1, r.y, r.x + r.width - 1, r.y + r.height - 1);
 
-        gc.setForeground(segment.brighter);
+        gc.setForeground(Colors.brighter(color));
         gc.drawLine(r.x, r.y, r.x + r.width, r.y);
         gc.drawLine(r.x, r.y, r.x, r.y + r.height);
+
+        gc.setClipping(r);
+
+        try
+        {
+            gc.setForeground(Colors.getTextColor(gc.getBackground()));
+
+            var label = getLabel(node);
+
+            var textExtents = new Point[label.length];
+            var widestLabel = 0;
+            for (int ii = 0; ii < label.length; ii++)
+            {
+                Point extent = gc.textExtent(label[ii]);
+                textExtents[ii] = extent;
+                if (extent.x > widestLabel)
+                    widestLabel = extent.x;
+            }
+
+            int lineHeight = gc.getFontMetrics().getHeight();
+
+            if (widestLabel <= r.width || r.width > r.height)
+            {
+                // horizontal
+                for (int ii = 0; ii < label.length; ii++)
+                {
+                    gc.drawString(label[ii], r.x + 2, r.y + 2 + ii * lineHeight, true);
+                }
+            }
+            else
+            {
+                // vertical
+                final Transform transform = new Transform(gc.getDevice());
+                try
+                {
+                    transform.translate(r.x, r.y);
+                    transform.rotate(-90);
+                    gc.setTransform(transform);
+
+                    // drawing a multi-line label with transform does not
+                    // work. Instead, we split the label into individual
+                    // lines
+
+                    for (int ii = 0; ii < label.length; ii++)
+                    {
+                        gc.drawString(label[ii], //
+                                        Math.max(-textExtents[ii].x - 2, -r.height + 2), //
+                                        2 + ii * lineHeight, true);
+                    }
+                }
+                finally
+                {
+                    transform.dispose();
+                    gc.setTransform(null);
+                }
+            }
+        }
+        finally
+        {
+            gc.setClipping((Rectangle) null);
+        }
+
     }
 
-    public Color getColorFor(TaxonomyNode node)
+    public final Color getColorFor(TaxonomyNode node)
     {
-        return getSegment(null, node).primary;
+        return getColorFor(null, node);
     }
 
-    private Segment getSegment(TaxonomyNode rootItem, TaxonomyNode item)
+    protected Color getColorFor(TaxonomyNode rootNode, TaxonomyNode node)
     {
-        if (rootItem == null || item.isRoot() || rootItem.equals(item))
-            return new Segment(item.getColor());
+        if (rootNode == null || node.isRoot() || rootNode.equals(node))
+            return hex2color.computeIfAbsent(node.getColor(), colorFactory);
 
-        List<TaxonomyNode> path = item.getPath();
-        int index = path.indexOf(rootItem);
+        List<TaxonomyNode> path = node.getPath();
+        int index = path.indexOf(rootNode);
 
         if (index < 0) // root not found!
-            return new Segment(item.getColor());
+            return hex2color.computeIfAbsent(node.getColor(), colorFactory);
 
         if (path.size() <= index + 1)
-            return new Segment(item.getColor());
+            return hex2color.computeIfAbsent(node.getColor(), colorFactory);
 
         TaxonomyNode reference = path.get(index + 1);
-        return new Segment(reference.getColor());
+        return hex2color.computeIfAbsent(reference.getColor(), colorFactory);
     }
 
 }

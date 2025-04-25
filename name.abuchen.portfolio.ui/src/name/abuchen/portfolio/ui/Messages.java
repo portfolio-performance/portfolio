@@ -641,6 +641,7 @@ public class Messages extends NLS
     public static String LabelCollapse;
     public static String LabelCollapseAll;
     public static String LabelColonSeparated;
+    public static String LabelColorBy;
     public static String LabelColorSchema;
     public static String LabelColumns;
     public static String LabelColumnsInReverseOrder;
@@ -767,6 +768,7 @@ public class Messages extends NLS
     public static String LabelMissingQuotes;
     public static String LabelMissingQuotes_Decsription;
     public static String LabelMobileApp;
+    public static String LabelMore;
     public static String LabelNamePlusCopy;
     public static String LabelNet;
     public static String LabelNewClassification;
@@ -870,6 +872,7 @@ public class Messages extends NLS
     public static String LabelSemiVolatility;
     public static String LabelSettings;
     public static String LabelSharpeRatio;
+    public static String LabelShowHeadline;
     public static String LabelShowOnlyOneYear;
     public static String LabelShowRawResponse;
     public static String LabelSmallerSize;
