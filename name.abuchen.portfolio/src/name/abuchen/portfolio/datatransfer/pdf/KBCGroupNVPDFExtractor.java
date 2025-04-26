@@ -3,9 +3,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import java.math.BigDecimal;
-
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -39,19 +36,19 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Uw (Aankoop|Verkoop) Online");
+        var type = new DocumentType("Uw (Aankoop|Verkoop)");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Borderel [\\d]+.*$");
+        var firstRelevantLine = new Block("^Borderel [\\d]+.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -71,7 +68,7 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^.* van [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^.* van [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
                                                         .match("^Waardecode (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -81,8 +78,8 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^.* van [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+ (?<currency>[\\w]{3})$") //
-                                                        .match("^[\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^.* van [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^[\\.,\\d]+ [A-Z]{3}$") //
                                                         .match("^Waardecode (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -92,8 +89,8 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^.* van [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})$") //
-                                                        .match("^[\\w]{3}$") //
+                                                        .match("^.* van [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^[A-Z]{3}$") //
                                                         .match("^Waardecode (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -103,7 +100,7 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^.* van (?<currency>[\\w]{3}) [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^.* van (?<currency>[A-Z]{3}) [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+ [A-Z]{3}$") //
                                                         .match("^[\\.,\\d]+%$") //
                                                         .match("^Waardecode (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -114,7 +111,7 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^.* van (?<currency>[\\w]{3}) [\\.,\\d]+ (?<name>.*) [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^.* van (?<currency>[A-Z]{3}) [\\.,\\d]+ (?<name>.*) [\\.,\\d]+ [A-Z]{3}$") //
                                                         .match("^aan [\\.,\\d]+%$") //
                                                         .match("^Waardecode (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
@@ -124,7 +121,7 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
-                                                        .match("^.* van (?<currency>[\\w]{3}) [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+% [\\.,\\d]+ [\\w]{3}$") //
+                                                        .match("^.* van (?<currency>[A-Z]{3}) [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+% [\\.,\\d]+ [A-Z]{3}$") //
                                                         .match("^Waardecode (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -143,12 +140,12 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^.* van [\\w]{3} (?<shares>[\\.,\\d]+) .* aan [\\.,\\d]+%.*$") //
+                                                        .match("^.* van [A-Z]{3} (?<shares>[\\.,\\d]+) .* aan [\\.,\\d]+%.*$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            var shares = asBigDecimal(v.get("shares"));
                                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                         }),
                                         // @formatter:off
@@ -157,13 +154,13 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^.* van [\\w]{3} (?<shares>[\\.,\\d]+) .* aan.*$") //
+                                                        .match("^.* van [A-Z]{3} (?<shares>[\\.,\\d]+) .* aan.*$") //
                                                         .match("^[\\.,\\d]+%$") //
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            var shares = asBigDecimal(v.get("shares"));
                                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                         }),
                                         // @formatter:off
@@ -172,29 +169,38 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^.* van [\\w]{3} (?<shares>[\\.,\\d]+) .*$") //
+                                                        .match("^.* van [A-Z]{3} (?<shares>[\\.,\\d]+).*$") //
                                                         .match("^aan [\\.,\\d]+%$")
                                                         .assign((t, v) -> {
                                                             // @formatter:off
                                                             // Percentage quotation, workaround for bonds
                                                             // @formatter:on
-                                                            BigDecimal shares = asBigDecimal(v.get("shares"));
+                                                            var shares = asBigDecimal(v.get("shares"));
                                                             t.setShares(Values.Share.factorize(shares.doubleValue() / 100));
                                                         }))
 
-                        // @formatter:off
-                        // 02/02/2022 14:50:02 Valuta 04/02/2022 Euronext A'dam
-                        // @formatter:on
-                        .section("date", "time") //
-                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) Valuta [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} .*$") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // 02/02/2022 14:50:02 Valuta 04/02/2022 Euronext A'dam
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}) Valuta [\\d]{2}\\/[\\d]{2}\\/[\\d]{4}.*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))),
+                                        // @formatter:off
+                                        // Uitvoeringsdatum : 13/03/2025 Uitvoeringstijdstip : 10:33:16 Valutadatum : 17/03/2025
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "time") //
+                                                        .match("^Uitvoeringsdatum : (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) Uitvoeringstijdstip : (?<time>[\\d]{2}:[\\d]{2}:[\\d]{2}).*$") //
+                                                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time")))))
 
                         // @formatter:off
                         // Netto debit -868,50 EUR
                         // Netto credit 125.824,15 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Netto (debit|credit) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Netto (debit|credit) (\\-)?(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -205,15 +211,15 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                         // Netto credit 69.606,12 USD
                         // @formatter:on
                         .section("termCurrency", "exchangeRate", "baseCurrency", "gross").optional() //
-                        .match("^[\\.,\\d]+ (?<baseCurrency>[\\w]{3}) = (?<exchangeRate>[\\.,\\d]+) (?<termCurrency>[\\w]{3})$") //
-                        .match("^Netto (debit|credit) (\\-)?(?<gross>[\\.,\\d]+) [\\w]{3}$") //
+                        .match("^[\\.,\\d]+ (?<baseCurrency>[A-Z]{3}) = (?<exchangeRate>[\\.,\\d]+) (?<termCurrency>[A-Z]{3})$") //
+                        .match("^Netto (debit|credit) (\\-)?(?<gross>[\\.,\\d]+) [A-Z]{3}$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
-                            
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
+
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
 
@@ -225,7 +231,7 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(trim(v.get("note"))))
 
                         .conclude(ExtractorUtils.fixGrossValueBuySell())
-                        
+
                         .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -234,33 +240,44 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Uw Uitbetaling dividenden");
+        var type = new DocumentType("Uw Uitbetaling dividenden");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Borderel [\\d]+.*$");
+        var firstRelevantLine = new Block("^Borderel [\\d]+.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
 
-                        // @formatter:off
-                        // Uw Uitbetaling dividenden van 2.065 ISHAR.III CORE EUR CORP BD UC ETF-D 4.173,16 EUR
-                        // aan 2,020901 EUR
-                        // Cash Dividend IE00B3F81R35ex 2024-01-11 pd 2024-01-24
-                        // @formatter:on
-                        .section("name", "currency", "isin") //
-                        .match("^.* van [\\.,\\d]+ (?<name>.*) [\\.,\\d]+ [\\w]{3}$") //
-                        .match("^aan [\\.,\\d]+ (?<currency>[\\w]{3})$") //
-                        .match("^Cash Dividend (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Uw Uitbetaling dividenden van 2.065 ISHAR.III CORE EUR CORP BD UC ETF-D 4.173,16 EUR
+                                        // aan 2,020901 EUR
+                                        // Cash Dividend IE00B3F81R35ex 2024-01-11 pd 2024-01-24
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin") //
+                                                        .match("^.* van [\\.,\\d]+ (?<name>.*) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^aan [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
+                                                        .match("^Cash Dividend (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
+                                        // @formatter:off
+                                        // Uw Uitbetaling dividenden van 2.130 FIRST MAJESTIC SILVER CORP aan 0,0057 USD 12,14 USD
+                                        // Waardecode ES0000012I08
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "currency", "isin") //
+                                                        .match("^.* van [\\.,\\d]+ (?<name>.*) aan [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                        .match("^Waardecode (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
+                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
                         // Uw Uitbetaling dividenden van 2.065 ISHAR.III CORE EUR CORP BD UC ETF-D 4.173,16 EUR
@@ -280,11 +297,30 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                         // Netto credit 2.862,79 EUR
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Netto credit (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Netto credit (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
+
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Uw Uitbetaling dividenden van 2.130 FIRST MAJESTIC SILVER CORP aan 0,0057 USD 12,14 USD
+                                        // Wisselkoers 1 EUR = 1,089923 USD
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("gross", "baseCurrency", "exchangeRate", "termCurrency") //
+                                                        .match("^.* aan [\\.,\\d]+ [A-Z]{3} (?<gross>[\\.,\\d]+) [A-Z]{3}$") //
+                                                        .match("^Wisselkoers [\\.,\\d]+ (?<baseCurrency>[A-Z]{3}) = (?<exchangeRate>[\\.,\\d]+) (?<termCurrency>[A-Z]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var gross = Money.of(rate.getTermCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getBaseCurrency(), gross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }))
 
                         // @formatter:off
                         // Borderel 003308592
@@ -301,19 +337,19 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Rekeninguittreksel Nr");
+        final var type = new DocumentType("Rekeninguittreksel Nr");
         this.addDocumentTyp(type);
 
         // @formatter:off
         // 18/08/2022 Provisionering rekening klant Valuta 17/08/2022 50.000,00 EUR
         // @formatter:on
-        Block depositBlock = new Block("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} Provisionering rekening klant.*$");
+        var depositBlock = new Block("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} Provisionering rekening klant.*$");
         type.addBlock(depositBlock);
         depositBlock.setMaxSize(1);
         depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -322,7 +358,7 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) " //
                                         + "(?<note>Provisionering rekening klant) " //
                                         + "Valuta [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} " //
-                                        + "(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                        + "(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -335,13 +371,13 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 04/09/2024 Overschrijving naar klant Valuta 04/09/2024 -32.339,70 EUR
         // @formatter:on
-        Block removalBlock = new Block("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} Overschrijving naar klant.*$");
+        var removalBlock = new Block("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} Overschrijving naar klant.*$");
         type.addBlock(removalBlock);
         removalBlock.setMaxSize(1);
         removalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.REMOVAL);
                             return accountTransaction;
                         })
@@ -350,7 +386,7 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) " //
                                         + "(?<note>Overschrijving naar klant) " //
                                         + "Valuta [\\d]{2}\\/[\\d]{2}\\/[\\d]{4} " //
-                                        + "\\-(?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                        + "\\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -366,31 +402,38 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
         transaction //
 
                         // @formatter:off
+                        // Buitenlandse bronheffing (basisbedrag 12,14 USD) 3,04 USD
+                        // @formatter:on
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^Buitenlandse bronheffing \\(basisbedrag [\\.,\\d]+ [A-Z]{3}\\) (?<withHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
+                        // @formatter:off
                         // Roerende voorheffing op fondsen 839,15 EUR
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^Roerende voorheffing op fondsen (?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Roerende voorheffing op fondsen (?<withHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Roerende voorheffing (basisbedrag 4.173,16 EUR) 1.251,95 EUR
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^Roerende voorheffing \\(basisbedrag [\\.,\\d]+ [\\w]{3}\\) (?<withHoldingTax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Roerende voorheffing \\(basisbedrag [\\.,\\d]+ [A-Z]{3}\\) (?<withHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // BTW (basisbedrag 48,28 EUR) 10,14 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^BTW \\(basisbedrag [\\.,\\d]+ [\\w]{3}\\) (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^BTW \\(basisbedrag [\\.,\\d]+ [A-Z]{3}\\) (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Beurstaks 3,00 EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Beurstaks (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Beurstaks (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -402,14 +445,21 @@ public class KBCGroupNVPDFExtractor extends AbstractPDFExtractor
                         // Makelaarsloon 7,50 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Makelaarsloon (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Makelaarsloon (?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processFeeEntries(t, v, type))
+
+                        // @formatter:off
+                        // Makelaarsloon KBC 37,84 EUR
+                        // @formatter:on
+                        .section("fee", "currency").optional() //
+                        .match("^Makelaarsloon .* (?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Kosten incassostelling (basisbedrag 2.921,21 EUR) 48,28 EUR
                         // @formatter:on
                         .section("fee", "currency").optional() //
-                        .match("^Kosten incassostelling \\(basisbedrag [\\.,\\d]+ [\\w]{3}\\) (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Kosten incassostelling \\(basisbedrag [\\.,\\d]+ [A-Z]{3}\\) (?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
