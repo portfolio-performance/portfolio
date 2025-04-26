@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf.kbcgroupnv;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
@@ -33,11 +34,15 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.KBCGroupNVPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
@@ -46,18 +51,18 @@ public class KBCGroupNVPDFExtractorTest
     @Test
     public void testAankoop01()
     {
-        KBCGroupNVPDFExtractor extractor = new KBCGroupNVPDFExtractor(new Client());
+        var extractor = new KBCGroupNVPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Aankoop01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Aankoop01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -75,20 +80,51 @@ public class KBCGroupNVPDFExtractorTest
     }
 
     @Test
-    public void testMultiblerAankoopVerkoop01()
+    public void testAankoop02()
     {
-        KBCGroupNVPDFExtractor extractor = new KBCGroupNVPDFExtractor(new Client());
+        var extractor = new KBCGroupNVPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "MultiblerAankoopVerkoop01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Aankoop02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("BE0974256852"), hasWkn(null), hasTicker(null), //
+                        hasName("COLRUYT GROUP NV (BR)"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-03-13T10:33:16"), hasShares(395.00), //
+                        hasSource("Aankoop02.txt"), //
+                        hasNote("Borderel 019564655"), //
+                        hasAmount("EUR", 15249.93), hasGrossValue("EUR", 15136.40), //
+                        hasTaxes("EUR", 52.98), hasFees("EUR", 22.71 + 37.84))));
+    }
+
+    @Test
+    public void testMultiblerAankoopVerkoop01()
+    {
+        var extractor = new KBCGroupNVPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "MultiblerAankoopVerkoop01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(6L));
         assertThat(countBuySell(results), is(6L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(12));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -178,18 +214,18 @@ public class KBCGroupNVPDFExtractorTest
     @Test
     public void testDividende01()
     {
-        KBCGroupNVPDFExtractor extractor = new KBCGroupNVPDFExtractor(new Client());
+        var extractor = new KBCGroupNVPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -207,21 +243,90 @@ public class KBCGroupNVPDFExtractorTest
     }
 
     @Test
-    public void testRekeninguittreksel01()
+    public void testDividende02()
     {
-        KBCGroupNVPDFExtractor extractor = new KBCGroupNVPDFExtractor(new Client());
+        var extractor = new KBCGroupNVPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rekeninguittreksel01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CA32076V1031"), hasWkn(null), hasTicker(null), //
+                        hasName("FIRST MAJESTIC SILVER CORP"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-03-14T00:00"), hasShares(2130.00), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Borderel 019817049"), //
+                        hasAmount("USD", 6.37), hasGrossValue("USD", 12.14), //
+                        hasTaxes("USD", 3.04 + 2.73), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testDividende02WithSecurityInEUR()
+    {
+        var security = new Security("FIRST MAJESTIC SILVER CORP", CurrencyUnit.EUR);
+        security.setIsin("CA32076V1031");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new KBCGroupNVPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "USD");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-03-14T00:00"), hasShares(2130.00), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Borderel 019817049"), //
+                        hasAmount("USD", 6.37), hasGrossValue("USD", 12.14), //
+                        hasForexGrossValue("EUR", 11.14), //
+                        hasTaxes("USD", 3.04 + 2.73), hasFees("USD", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("USD");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testRekeninguittreksel01()
+    {
+        var extractor = new KBCGroupNVPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rekeninguittreksel01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2024-09-04"), hasAmount("EUR", 32339.70), //
@@ -231,19 +336,18 @@ public class KBCGroupNVPDFExtractorTest
     @Test
     public void testRekeninguittreksel02()
     {
-        KBCGroupNVPDFExtractor extractor = new KBCGroupNVPDFExtractor(new Client());
+        var extractor = new KBCGroupNVPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rekeninguittreksel02.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rekeninguittreksel02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2022-08-18"), hasAmount("EUR", 50000.00), //
@@ -253,12 +357,11 @@ public class KBCGroupNVPDFExtractorTest
     @Test
     public void testRekeninguittreksel03()
     {
-        KBCGroupNVPDFExtractor extractor = new KBCGroupNVPDFExtractor(new Client());
+        var extractor = new KBCGroupNVPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rekeninguittreksel03.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rekeninguittreksel03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -294,19 +397,18 @@ public class KBCGroupNVPDFExtractorTest
     @Test
     public void testRekeninguittreksel04()
     {
-        KBCGroupNVPDFExtractor extractor = new KBCGroupNVPDFExtractor(new Client());
+        var extractor = new KBCGroupNVPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rekeninguittreksel04.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Rekeninguittreksel04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-09-05"), hasAmount("EUR", 5.00), //
