@@ -1,0 +1,22 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.74.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+Max Mustermann SEITE 1 von 1
+Musterweg 1 DATUM 01.04.2025
+11111 IBAN DE00111122223333444455
+Musterstadt BIC TRBKDEBBXXX
+ÜBERWEISUNGSBESTÄTIGUNG
+ÜBERWEISUNGSDETAILS
+BETRAG STATUS ÜBERWEISUNGSDATUM TYP REFERENZ
+6.400,00 € Ausgeführt 01.04.2025 SEPA Überweisung
+ANGABEN ZUM SENDER
+NAME IBAN BIC
+Max Mustermann DE00111122223333444455 MLPBDE61XXX
+Bitte beachte, dass dieses Dokument lediglich eine Bestätigung deiner Transaktionsanfrage darstellt und keinen Nachweis für die Ausführung darstellt.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Berlin Direktoren
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin Umsatzsteuer-ID DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
