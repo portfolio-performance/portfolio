@@ -494,6 +494,7 @@ public class IBFlexStatementExtractor implements Extractor
             if (portfolioTransaction.getPortfolioTransaction().getCurrencyCode() != null && portfolioTransaction.getPortfolioTransaction().getAmount() == 0)
             {
                 // item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
+                portfolioTransaction.setType(PortfolioTransaction.Type.TRANSFER_IN);
                 return item;
             }
             else if (Messages.MsgErrorOrderCancellationUnsupported.equals(portfolioTransaction.getPortfolioTransaction().getNote()))
