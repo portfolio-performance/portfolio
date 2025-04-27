@@ -5,6 +5,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.replaceMultipleBlanks;
 import static name.abuchen.portfolio.util.TextUtil.stripBlanks;
+import static name.abuchen.portfolio.util.TextUtil.stripBlanksAndUnderscores;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import java.math.BigDecimal;
@@ -348,7 +349,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<AccountTransaction>();
 
-        var firstRelevantLine = new Block("^.*Referenz\\-Nummer:.*$");
+        var firstRelevantLine = new Block("^Kundennr\\. \\/BLZ Bezeichnung$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -380,22 +381,32 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // Stk. -10,195 VERMOEGENSMA.BALANCE A EO , WKN / ISIN: A0M16S / LU0321021155
                                         // Zu Ihren Gunsten vor Steuern: EUR 1 . 4 3 9 , 1 3
+                                        //
+                                        // Stk.             126 NESTLE NAM.        SF-,10 , WKN / ISIN: A0Q4DC  / CH0038863350
+                                        // Z u  Ih r e n G u n s t e n v o r S te u e r n :                                                                                                    E U R             265,1 4
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("name", "wkn", "isin", "currency") //
-                                                        .match("^Stk\\. (\\-)?[\\.,\\d]+ (?<name>.*), WKN \\/ ISIN: (?<wkn>(?:[A-Z0-9][\\s]*){6}) \\/ (?<isin>(?:[A-Z0-9][\\s]*){12}).*$") //
-                                                        .match("^Zu Ihren (Gunsten|Lasten) vor Steuern:[\\s]{1,}(?<currency>[A-Z]{3}).*$") //
-                                                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
+                                                        .match("^[\\s]*Stk\\.[\\s]*(\\-)?[\\.,\\d]+ (?<name>.*), WKN \\/ ISIN: (?<wkn>(?:[A-Z0-9][\\s]*){6}) \\/ (?<isin>(?:[A-Z0-9][\\s]*){12}).*$") //
+                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*(?:G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:?[\\s]*?(?<currency>[A-Z\\s]{3,}).*$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("name", trim(replaceMultipleBlanks(v.get("name"))));
+                                                            v.put("currency", stripBlanks(v.get("currency")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }))
 
                         // @formatter:off
                         // Stk. -10,195 VERMOEGENSMA.BALANCE A EO , WKN / ISIN: A0M16S / LU0321021155
+                        // Stk.             126 NESTLE NAM.        SF-,10 , WKN / ISIN: A0Q4DC  / CH0038863350
                         // @formatter:on
                         .section("shares") //
-                        .match("^Stk\\. (\\-)?(?<shares>[\\.,\\d]+).*$") //
+                        .match("^Stk\\.[\\s]*(\\-)?(?<shares>[\\.,\\d]+).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
                         // Steuerliche Behandlung: Wertpapierkauf Nr. 72006822 vom 17.02.2021
+                        // Steuerliche Behandlung: Ausländische Dividende vom 24.04.2025
                         // @formatter:on
                         .section("date") //
                         .match("^Steuerliche Behandlung: .* vom (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
@@ -510,6 +521,37 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                                                             }
                                                         }),
                                         // @formatter:off
+                                        // Z u  Ih r e n G u n s t e n v o r S te u e r n :                                                                                                    E U R             265,1 4
+                                        // S  te u e rb e m  e ss u n g s g r u n d la g e                                                            E  U   R                             4   0  7 , 9 2
+                                        // a b g e f ü h rt e S t e u er n                                                                                                                    E_ U_ R_ _ _ _ _ _ _ _  _ _ _ _ _-_4_3_,_0_ 3_
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currencyBeforeTaxes", "grossBeforeTaxes", "currencyAssessmentBasis", "grossAssessmentBasis", "currencyDeductedTaxes", "deductedTaxes") //
+                                                        .match("^[\\s]*Z[\\s]*u[\\s]*I[\\s]*h[\\s]*r[\\s]*e[\\s]*n[\\s]*(?:G[\\s]*u[\\s]*n[\\s]*s[\\s]*t[\\s]*e[\\s]*n|L[\\s]*a[\\s]*s[\\s]*t[\\s]*e[\\s]*n)[\\s]*v[\\s]*o[\\s]*r[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]*:?[\\s]*?(?<currencyBeforeTaxes>[A-Z\\s]{3,})[\\-\\s]{1,}(?<grossBeforeTaxes>[\\.,\\d\\s]+).*$") //
+                                                        .match("^[\\s]*S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*b[\\s]*e[\\s]*m[\\s]*e[\\s]*s[\\s]*s[\\s]*u[\\s]*n[\\s]*g[\\s]*s[\\s]*g[\\s]*r[\\s]*u[\\s]*n[\\s]*d[\\s]*l[\\s]*a[\\s]*g[\\s]*e[\\s]{1,}([\\(\\s\\d\\)]+)?(?<currencyAssessmentBasis>[A-Z\\s]{3,})[\\s]{1,}(?<grossAssessmentBasis>[\\.,\\d\\s]+).*$") //
+                                                        .match("^[\\s]*a[\\s]*b[\\s]*g[\\s]*e[\\s]*f[\\s]*.[\\s]*h[\\s]*r[\\s]*t[\\s]*e[\\s]{1,}S[\\s]*t[\\s]*e[\\s]*u[\\s]*e[\\s]*r[\\s]*n[\\s]{1,}(?<currencyDeductedTaxes>[A-Z_\\s]+)[\\-\\s]{1,}(?<deductedTaxes>[\\.,\\d_\\s]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            var grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(stripBlanks(v.get("grossBeforeTaxes"))));
+                                                            var grossAssessmentBasis = Money.of(asCurrencyCode(v.get("currencyAssessmentBasis")), asAmount(stripBlanks(v.get("grossAssessmentBasis"))));
+                                                            var deductedTaxes = Money.of(asCurrencyCode(stripBlanksAndUnderscores(v.get("currencyDeductedTaxes"))), asAmount(stripBlanksAndUnderscores(v.get("deductedTaxes"))));
+
+                                                            // Calculate the taxes and store gross amount
+                                                            if (!grossBeforeTaxes.isZero() && grossAssessmentBasis.isGreaterThan(grossBeforeTaxes))
+                                                            {
+                                                                t.setMonetaryAmount(grossAssessmentBasis.subtract(grossBeforeTaxes).add(deductedTaxes));
+
+                                                                // Store in transaction context
+                                                                v.getTransactionContext().put(ATTRIBUTE_GROSS_TAXES_TREATMENT, grossAssessmentBasis);
+                                                            }
+                                                            else
+                                                            {
+                                                                // Store in transaction context
+                                                                v.getTransactionContext().put(ATTRIBUTE_GROSS_TAXES_TREATMENT, grossBeforeTaxes);
+
+                                                                t.setMonetaryAmount(deductedTaxes);
+                                                            }
+                                                        }),
+                                        // @formatter:off
                                         // Zu Ihren Gunsten vor Steuern: EUR 4 5 . 9 1 8 , 9 7
                                         // Steuerbemessungsgrundlage EUR - 1 . 9 5 9 , 4 0
                                         // erstattete Steuern EUR 5 4 8 , 5 1
@@ -559,10 +601,11 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // 01111 City Referenz-Nummer: 0W7U3RJX11111111
+                        // 3  5  5  1  0   N   u  t z  b  a  c h                  R   e  f e  r e  n  z  - N   u mmer:    1 C   7  Z  B   W   0  N Q14714E9
                         // @formatter:on
                         .section("note").optional() //
-                        .match("^.*Referenz\\-Nummer: (?<note>.*)$") //
-                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(v.get("note"))))
+                        .match("^.*R[\\s]*e[\\s]*f[\\s]*e[\\s]*r[\\s]*e[\\s]*n[\\s]*z[\\s]*\\-[\\s]*N[\\s]*u[\\s]*m[\\s]*m[\\s]*e[\\s]*r[\\s]*:[\\s]{1,}(?<note>.*)$") //
+                        .assign((t, v) -> t.setNote("Ref.-Nr.: " + trim(stripBlanks(v.get("note")))))
 
                         .wrap((t, ctx) -> {
                             var item = new TransactionItem(t);
