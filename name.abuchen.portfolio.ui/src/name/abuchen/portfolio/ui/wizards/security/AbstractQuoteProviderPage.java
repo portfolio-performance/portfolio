@@ -369,6 +369,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         currencyCode = getModel().getCurrencyCode();
 
         if (comboExchange != null && feed.getId() != null && (feed.getId().startsWith(YAHOO) //
+                        || feed.getId().equals(PortfolioPerformanceFeed.ID) //
                         || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
                         || feed.getId().equals(LeewayQuoteFeed.ID) //
                         || feed.getId().equals(TwelveDataQuoteFeed.ID) //
