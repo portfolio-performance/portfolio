@@ -130,7 +130,7 @@ public class PPIDPreferencePage extends PreferencePage
         if (accessToken.isPresent())
         {
             var claims = accessToken.get().getClaims();
-            user.setText(claims.getSub() + " (" + claims.getEmail() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+            user.setText(claims.getEmail());
         }
         else
         {
