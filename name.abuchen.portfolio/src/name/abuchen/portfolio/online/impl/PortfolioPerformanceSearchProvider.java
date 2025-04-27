@@ -224,16 +224,16 @@ public class PortfolioPerformanceSearchProvider implements SecuritySearchProvide
     public List<ResultItem> search(String query) throws IOException
     {
         // add an authentication check to enable feature only for beta users
-        return OAuthClient.INSTANCE.isAuthenticated() ? internalSearch(query) : Collections.emptyList();
+        return OAuthClient.INSTANCE.isAuthenticated() ? internalSearch("q", query) : Collections.emptyList(); //$NON-NLS-1$
     }
 
-    List<ResultItem> internalSearch(String query) throws IOException
+    List<ResultItem> internalSearch(String parameter, String query) throws IOException
     {
         try
         {
             @SuppressWarnings("nls")
             var json = new WebAccess("api.portfolio-performance.info", "/v1/search") //
-                            .addParameter("q", query).get();
+                            .addParameter(parameter, query).get();
 
             var response = (JSONArray) JSONValue.parse(json);
             if (response != null)

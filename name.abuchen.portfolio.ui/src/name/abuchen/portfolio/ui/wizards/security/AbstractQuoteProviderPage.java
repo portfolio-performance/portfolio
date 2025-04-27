@@ -928,6 +928,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
             if (this.tickerSymbol == null || this.tickerSymbol.isEmpty() && //
                             (feed.getId().startsWith(YAHOO) //
+                                            || feed.getId().equals(PortfolioPerformanceFeed.ID) //
                                             || feed.getId().equals(LeewayQuoteFeed.ID) //
                                             || feed.getId().equals(TwelveDataQuoteFeed.ID)))
             {

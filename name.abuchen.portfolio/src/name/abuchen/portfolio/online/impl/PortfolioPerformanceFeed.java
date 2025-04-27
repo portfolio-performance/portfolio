@@ -254,13 +254,13 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
     @Override
     public List<Exchange> getExchanges(Security subject, List<Exception> errors)
     {
-        var byIsin = true;
+        var parameter = "isin"; //$NON-NLS-1$
         var query = subject.getIsin();
 
         if (query == null || query.isBlank())
         {
-            byIsin = false;
-            query = subject.getTickerSymbolWithoutStockMarket();
+            parameter = "symbol"; //$NON-NLS-1$
+            query = subject.getTickerSymbol();
         }
 
         if (query == null || query.isBlank())
@@ -269,21 +269,14 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
         try
         {
             var answer = new ArrayList<Exchange>();
-            var candidates = new PortfolioPerformanceSearchProvider().internalSearch(query);
+            var candidates = new PortfolioPerformanceSearchProvider().internalSearch(parameter, query);
 
             for (var candidate : candidates) // NOSONAR
             {
-                // sanity check if the query term is found in the identifier
-                if (byIsin && (candidate.getIsin() == null || !candidate.getIsin().contains(query)))
-                    continue;
-
-                if (!byIsin && (candidate.getSymbol() == null || !candidate.getSymbol().contains(query)))
-                    continue;
-
                 (candidate.getMarkets().isEmpty() ? List.of(candidate) : candidate.getMarkets()) //
                                 .stream().forEach(r -> {
-                                    var label = MessageFormat.format("{0} * {1} * {2}", //$NON-NLS-1$
-                                                    r.getName(), r.getCurrencyCode(),
+                                    var label = MessageFormat.format("{0} * {1}", //$NON-NLS-1$
+                                                    r.getCurrencyCode(),
                                                     MarketIdentifierCodes.getLabel(r.getExchange()));
                                     var exchange = new Exchange(r.getSymbol(), label);
                                     answer.add(exchange);
