@@ -51,9 +51,6 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
             String note = getText(Messages.CSVColumn_Note, rawValues, field2column);
             s.setNote(note);
 
-            if (s.getTickerSymbol() != null)
-                s.setFeed(YahooFinanceQuoteFeed.ID);
-
             items.add(new Extractor.SecurityItem(s));
         });
 
@@ -64,8 +61,12 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
                                             .toString()),
                             0);
 
-        // nothing to do to add the security: if necessary, the security item
-        // has been created in the callback of the #extractSecurity method
+        // The security item is created in the callback of the #getSecurity
+        // method, into this callback, symbols are not yet initialized, thus
+        // moves feed initialization from the callback to here by taking care of
+        // not overriding an existing value
+        if (security.getFeed() == null && security.getTickerSymbol() != null)
+            security.setFeed(YahooFinanceQuoteFeed.ID);
 
         // check if the data contains price
 
