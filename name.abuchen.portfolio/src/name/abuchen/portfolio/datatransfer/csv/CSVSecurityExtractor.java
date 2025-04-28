@@ -51,8 +51,12 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
             String note = getText(Messages.CSVColumn_Note, rawValues, field2column);
             s.setNote(note);
 
-            if (s.getTickerSymbol() != null)
+            String tickerSymbol = getText(Messages.CSVColumn_TickerSymbol, rawValues, field2column);
+            if (tickerSymbol != null && !tickerSymbol.isBlank())
+            {
+                s.setTickerSymbol(tickerSymbol);
                 s.setFeed(YahooFinanceQuoteFeed.ID);
+            }
 
             items.add(new Extractor.SecurityItem(s));
         });
