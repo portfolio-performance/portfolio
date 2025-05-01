@@ -5,6 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,16 +21,18 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
+import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
-public class TradeCollectorTest2
+public class TradeCollector2Test
 {
     private static Client client;
 
     @BeforeClass
     public static void prepare() throws IOException
     {
-        client = ClientFactory.load(TradeCollectorTest2.class.getResourceAsStream("trade_test_case2.xml"));
+        client = ClientFactory.load(TradeCollector2Test.class.getResourceAsStream("trade_test_case2.xml"));
     }
 
     @Test
@@ -71,4 +74,29 @@ public class TradeCollectorTest2
                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(28.27 * percentageRemainingShares))));
     }
 
+    @Test
+    public void testMovingAverageEntryCost() throws TradeCollectorException
+    {
+        TradeCollector collector = new TradeCollector(client, new TestCurrencyConverter());
+
+        Security att = client.getSecurities().stream().filter(s -> "AT&T Inc.".equals(s.getName())).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+
+        List<Trade> trades = collector.collect(att);
+
+        assertThat(trades.size(), is(2));
+
+        Trade secondTrade = trades.get(1);
+        assertThat(secondTrade.getEnd().isPresent(), is(false));
+
+        // check entry value: for the open position, this has to match to the
+        // values of the security performance record
+
+        var snapshot = LazySecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
+                        Interval.of(LocalDate.MIN, LocalDate.now()));
+        var securityRecord = snapshot.getRecord(att).get();
+
+        assertThat(secondTrade.getEntryValue(), is(securityRecord.getFifoCost().get()));
+        assertThat(secondTrade.getEntryValueMovingAverage(), is(securityRecord.getMovingAverageCost().get()));
+    }
 }

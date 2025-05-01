@@ -19,7 +19,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
-public class TradeCollectorTest3
+public class TradeCollector3Test
 {
     @Test
     public void testTradesThatAreOpenedAndClosedOnTheSameDay() throws TradeCollectorException

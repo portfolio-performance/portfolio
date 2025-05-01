@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.Adaptable;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -20,7 +21,11 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.filter.ClientTransactionFilter;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceRecord.LazyValue;
+import name.abuchen.portfolio.snapshot.security.LazySecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Dates;
+import name.abuchen.portfolio.util.Interval;
 
 public class Trade implements Adaptable
 {
@@ -39,6 +44,8 @@ public class Trade implements Adaptable
     private long holdingPeriod;
     private double irr;
 
+    private LazyValue<Money> entryValueMovingAverage;
+
     public Trade(Security security, Portfolio portfolio, long shares)
     {
         this.security = security;
@@ -46,7 +53,7 @@ public class Trade implements Adaptable
         this.portfolio = portfolio;
     }
 
-    /* package */ void calculate(CurrencyConverter converter)
+    /* package */ void calculate(Client client, CurrencyConverter converter)
     {
         this.entryValue = transactions.stream() //
                         .filter(t -> t.getTransaction().getType().isPurchase())
@@ -107,6 +114,42 @@ public class Trade implements Adaptable
         this.setStart(transactions.get(0).getTransaction().getDateTime());
 
         calculateIRR(converter);
+
+        this.entryValueMovingAverage = new LazyValue<>(() -> {
+            var closingTransaction = transactions.stream() //
+                            .filter(t -> t.getTransaction().getType().isLiquidation()) //
+                            .findFirst().map(t -> t.getTransaction());
+
+            Client filteredClient = client;
+            if (closingTransaction.isPresent())
+            {
+                // if a closing transaction is present, we need to calculate the
+                // moving average costs based on all transactions before the
+                // closing transaction
+                filteredClient = new ClientTransactionFilter(security, closingTransaction.get()).filter(client);
+            }
+
+            var snapshot = LazySecurityPerformanceSnapshot.create(filteredClient, converter,
+                            Interval.of(LocalDate.MIN,
+                                            closingTransaction.isPresent()
+                                                            ? closingTransaction.get().getDateTime().toLocalDate()
+                                                            : LocalDate.now()));
+            var r = snapshot.getRecord(security);
+            if (r.isEmpty())
+                return null;
+
+            // the trade might be a partial liquidation, so we have to calculate
+            // the moving average purchase value based on the number of shares
+            // sold
+
+            var totalCosts = r.get().getMovingAverageCost().get();
+            var totalShares = r.get().getSharesHeld().get();
+
+            var cost = BigDecimal.valueOf(shares / (double) totalShares) //
+                            .multiply(BigDecimal.valueOf(totalCosts.getAmount())) //
+                            .setScale(0, RoundingMode.HALF_DOWN).longValue();
+            return Money.of(totalCosts.getCurrencyCode(), cost);
+        });
     }
 
     private void calculateIRR(CurrencyConverter converter)
@@ -195,6 +238,11 @@ public class Trade implements Adaptable
         return entryValue;
     }
 
+    public Money getEntryValueMovingAverage()
+    {
+        return entryValueMovingAverage.get();
+    }
+
     public Money getExitValue()
     {
         return exitValue;
@@ -203,6 +251,11 @@ public class Trade implements Adaptable
     public Money getProfitLoss()
     {
         return exitValue.subtract(entryValue);
+    }
+
+    public Money getProfitLossMovingAverage()
+    {
+        return exitValue.subtract(entryValueMovingAverage.get());
     }
 
     public Money getGrossProfitLoss()
@@ -267,6 +320,6 @@ public class Trade implements Adaptable
     public String toString()
     {
         return String.format("<Trade sh=%s %s %s -> %s %s>", //$NON-NLS-1$
-            shares, start, entryValue, end, exitValue);
+                        shares, start, entryValue, end, exitValue);
     }
 }
