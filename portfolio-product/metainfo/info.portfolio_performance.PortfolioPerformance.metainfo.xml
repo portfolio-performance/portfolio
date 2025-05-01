@@ -37,7 +37,29 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
-    <release version="0.75.0" date="2025-04-09">
+    <release version="0.76.0" date="2025-05-01">
+      <description>
+        <ul>
+          <li>New: Treemap coloring can now optionally be based on performance or category.</li>
+          <li>New: Dashboard widgets for rebalancing status – shown as bar or pie charts.</li>
+          <li>Improvement: Cost basis using moving average is now also shown in the trade list.</li>
+          <li>Improvement: Current prices can now also be retrieved with a TwelveData subscription.</li>
+          <li>Improvement: Tooltip for price changes now also shows the annualized change.</li>
+          <li>Improvement: PDF importer extended for: Bison, Saxo Bank, Commerzbank, KBC Group NV, Trade Republic, Consorsbank, Modena Estonia, Crowdestor OÜ, Arkea Direct Bank, TargoBank, Comdirect, Hargreaves Lansdown Asset Management, BSDEX.</li>
+          <li>Fix: Resolved an issue with trade assignment after multiple portfolio transfers of a position.</li>
+          <li>Beta: Price provider for historical prices of European and US stocks (see forum).</li>
+          <li xml:lang="de">Neu: Treemap-Färbung jetzt wahlweise nach Performance oder Kategorie.</li>
+          <li xml:lang="de">Neu: Dashboard-Widgets zum Rebalancing-Status – als Balken- oder Kuchendiagramm.</li>
+          <li xml:lang="de">Verbesserung: Einstandspreis nach gleitendem Durchschnitt nun auch in der Trade-Liste.</li>
+          <li xml:lang="de">Verbesserung: Aktuelle Kurse können jetzt auch mit einem TwelveData-Abo geladen werden.</li>
+          <li xml:lang="de">Verbesserung: Tooltip zur Kursveränderung zeigt nun auch die annualisierte Veränderung.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer erweitert für: Bison, Saxo Bank, Commerzbank, KBC Group NV, Trade Republic, Consorsbank, Modena Estonia, Crowdestor OÜ, Arkea Direct Bank, TargoBank, Comdirect, Hargreaves Lansdown Asset Management, BSDEX.</li>
+          <li xml:lang="de">Fix: Problem bei Trade-Zuordnung nach mehrfachen Depotüberträgen einer Position behoben.</li>
+          <li xml:lang="de">Beta: Kurslieferant für historische Kurse europäischer und amerikanischer Aktien (siehe Forum).</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.75.1" date="2025-04-09">
       <description>
         <ul>
           <li>Fix: Resolves a NumberFormatException when calculating capital gains (division by zero).</li>
