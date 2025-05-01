@@ -41,7 +41,7 @@
 						<macosx-bundled>true</macosx-bundled>
 					</profileProperties>
 					<extraArtifactRepositoryProperties>
-						<p2.statsURI>https://api.portfolio-performance.info/stats/stats/update</p2.statsURI>
+						<p2.statsURI>https://api.portfolio-performance.info/stats/update</p2.statsURI>
 					</extraArtifactRepositoryProperties>
 				</configuration>
 			</plugin>
