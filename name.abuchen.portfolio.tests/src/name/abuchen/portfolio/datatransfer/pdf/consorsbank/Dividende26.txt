@@ -1,0 +1,62 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.75.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Consorsbank • 90318 Nürnberg
+Depotnummer: 7899957300
+1234123489/12
+Vermerk der Bank: 1810
+2
+WBRvCH IvLDbZMeuqG
+Datum: 11.04.2025
+CgXrbFrXWpvAL 54j
+Seite: 1 von 2
+37014 HZJjPm
+Zinsgutschrift
+Wertpapierbezeichnung WKN ISIN
+Leverage Shares PLC ETP 25.09.74 IS Alphabet A4A52W XS2901885041
+Bestand Kupontag
+1.000 Stück 01.04.2025
+Zinssatz 0,1093 USD Schlusstag 31.03.2025
+Brutto in USD 109,30 USD
+109,30 USD
+Zwischensumme in USD
+Devisenkurs 1,136000 USD / EUR
+96,21 EUR
+Brutto in EUR
+Zwischensumme in EUR 96,21 EUR
+abzgl. Kapitalertragsteuer 25,00 % von 96,21 EUR 24,05 EUR
+abzgl. Solidaritätszuschlag 5,50 % von 24,05 EUR 1,32 EUR
+70,84 EUR
+Netto zugunsten IBAN zX87 1626 5177 7752 3440 03
+Valuta 10.04.2025 BIC CSDBDE71XXX
+Bitte beachten Sie die weiteren Informationen auf Seite 2.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
+23172g44-139A-Z3M4-79s2-c254br56s5FI
+Depotnummer: 5336619503
+1234123489/12
+Vermerk der Bank: 9049
+2
+Datum: 11.04.2025
+Seite: 2 von 2
+Details zur Abrechnung
+Steuerpflichtiger Gesamtertrag 96,21 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Mit Quellensteuer verrechnet 0,00 EUR
+somit verrechnete Quellensteuer 0,00 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 96,21 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf "Allgemein" vor der Abrechnung 0,00 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Verrechnungstopf "Allgemein" nach der Abrechnung 0,00 EUR
+Sparerpauschbetrag vor der Abrechnung 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Sparerpauschbetrag nach der Abrechnung 0,00 EUR
+Verrechnungstopf "Quellensteuer" vor der Abrechnung 0,00 EUR
+Änderung Verrechnungstopf "Quellensteuer" 0,00 EUR
+Verrechnungstopf "Quellensteuer" nach der Abrechnung 0,00 EUR

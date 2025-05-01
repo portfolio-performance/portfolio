@@ -104,7 +104,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("wkn", "isin", "name1", "currency", "name","tickerSymbol") //
                                                         .match("^St.ckzahl Valor (?<wkn>[A-Z0-9]{5,9}) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^[\\.'\\d\\s]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.'\\d\\s]+$") //
-                                                        .match("^(?<name1>.*) \\((?<tickerSymbol>.*)\\)$") //
+                                                        .match("^(?<name1>.*) \\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\)$") //
                                                         .assign((t, v) -> {
                                                             v.put("name", v.get("name") + " " + v.get("name1"));
 
@@ -137,7 +137,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                                         .match("^STUECKZAHL VALOR (?<wkn>[A-Z0-9]{5,9}) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^[\\.'\\d\\s]+ (?<name3>.*) BRUTTO$") //
                                                         .match("^(?<name>.*)$") //
-                                                        .match("^(?<name1>.*) \\((?<tickerSymbol>.*)\\) (?<currency>[\\w]{3}) [\\.'\\d\\s]+$") //
+                                                        .match("^(?<name1>.*) \\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) (?<currency>[\\w]{3}) [\\.'\\d\\s]+$") //
                                                         .assign((t, v) -> {
                                                             if (!v.get("name1").startsWith("Kurswert"))
                                                                 v.put("name", v.get("name") + " " + v.get("name1") + " " + v.get("name3"));
@@ -154,7 +154,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("wkn", "isin", "name", "currency", "tickerSymbol") //
                                                         .match("^St.ck Valor (?<wkn>[A-Z0-9]{5,9}) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^[\\.'\\d\\s]+ (?<name>.*) (?<currency>[\\w]{3}) [\\.'\\d\\s]+$") //
-                                                        .match("^\\((?<tickerSymbol>.*)\\)$") //
+                                                        .match("^\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\)$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Stück Valor 58198423 ISIN US92556V1061 Preis
@@ -397,7 +397,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("wkn", "isin", "name", "tickerSymbol", "currency") //
                                                         .match("^STUECKZAHL VALOR (?<wkn>[A-Z0-9]{5,9}) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .match("^[\\.'\\d\\s]+ (?<name>.*) \\((?<tickerSymbol>.*)\\) BRUTTO$") //
+                                                        .match("^[\\.'\\d\\s]+ (?<name>.*) \\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\) BRUTTO$") //
                                                         .match("^BRUTTO (?<currency>[\\w]{3}) [\\.'\\d\\s]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -410,7 +410,7 @@ public class UBSAGBankingAGPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("wkn", "isin", "name", "tickerSymbol", "currency") //
                                                         .match("^STUECKZAHL VALOR (?<wkn>[A-Z0-9]{5,9}) ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
                                                         .match("^[\\.'\\d\\s]+ (?<name>.*) BRUTTO$") //
-                                                        .match("^\\((?<tickerSymbol>.*)\\)$")
+                                                        .match("^\\((?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\)$")
                                                         .match("^BRUTTO (?<currency>[\\w]{3}) [\\.'\\d\\s]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 

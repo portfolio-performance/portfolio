@@ -31,7 +31,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -48,11 +47,11 @@ public class SaxoBankPDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        SaxoBankPDFExtractor extractor = new SaxoBankPDFExtractor(new Client());
+        var extractor = new SaxoBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -80,18 +79,18 @@ public class SaxoBankPDFExtractorTest
     @Test
     public void testWertpapierKauf01WithSecurityInCHF()
     {
-        Security security = new Security("iShares Core MSCI World UCITS ETF", "CHF");
+        var security = new Security("iShares Core MSCI World UCITS ETF", "CHF");
         security.setIsin("IE00B4L5Y983");
         security.setTickerSymbol("SWDA");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        SaxoBankPDFExtractor extractor = new SaxoBankPDFExtractor(client);
+        var extractor = new SaxoBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -108,8 +107,8 @@ public class SaxoBankPDFExtractorTest
                         hasAmount("CHF", 4869.43), hasGrossValue("CHF", 4850.02), //
                         hasTaxes("CHF", 7.29 - 0.02), hasFees("CHF", 12.12 + 0.02), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -117,11 +116,11 @@ public class SaxoBankPDFExtractorTest
     @Test
     public void testWertpapierKauf02()
     {
-        SaxoBankPDFExtractor extractor = new SaxoBankPDFExtractor(new Client());
+        var extractor = new SaxoBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -149,18 +148,18 @@ public class SaxoBankPDFExtractorTest
     @Test
     public void testWertpapierKauf02WithSecurityInCHF()
     {
-        Security security = new Security("iShares Core MSCI World UCITS ETF", "CHF");
+        var security = new Security("iShares Core MSCI World UCITS ETF", "CHF");
         security.setIsin("IE00B4L5Y983");
         security.setTickerSymbol("SWDA");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        SaxoBankPDFExtractor extractor = new SaxoBankPDFExtractor(client);
+        var extractor = new SaxoBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -177,8 +176,8 @@ public class SaxoBankPDFExtractorTest
                         hasAmount("CHF", 4869.43), hasGrossValue("CHF", 4850.02), //
                         hasTaxes("CHF", 7.29 - 0.02), hasFees("CHF", 12.12 + 0.02), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -186,11 +185,11 @@ public class SaxoBankPDFExtractorTest
     @Test
     public void testWertpapierKauf03()
     {
-        SaxoBankPDFExtractor extractor = new SaxoBankPDFExtractor(new Client());
+        var extractor = new SaxoBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
@@ -218,18 +217,18 @@ public class SaxoBankPDFExtractorTest
     @Test
     public void testWertpapierKauf03WithSecurityInCHF()
     {
-        Security security = new Security("iShares Core MSCI World UCITS ETF", "CHF");
+        var security = new Security("iShares Core MSCI World UCITS ETF", "CHF");
         security.setIsin("IE00B4L5Y983");
         security.setTickerSymbol("SWDA");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        SaxoBankPDFExtractor extractor = new SaxoBankPDFExtractor(client);
+        var extractor = new SaxoBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -246,20 +245,120 @@ public class SaxoBankPDFExtractorTest
                         hasAmount("CHF", 21480.86), hasGrossValue("CHF", 21395.21), //
                         hasTaxes("CHF", 32.17 - 0.08), hasFees("CHF", 53.48 + 0.08), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
 
     @Test
-    public void testCashTransfer01()
+    public void testWertpapierKauf04()
     {
-        SaxoBankPDFExtractor extractor = new SaxoBankPDFExtractor(new Client());
+        var extractor = new SaxoBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CashTransfer01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US02079K3059"), hasWkn(null), hasTicker("GOOGL"), //
+                        hasName("Alphabet Inc. - A Share"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-04-07T19:00:21"), hasShares(15.00), //
+                        hasSource("Kauf04.txt"), //
+                        hasNote("Order-ID 5555555555 | Trade-ID 6666666666"), //
+                        hasAmount("CHF", 1903.60), hasGrossValue("CHF", 1894.49), //
+                        hasForexGrossValue("USD", 2200.69), //
+                        hasTaxes("CHF", 2.85 - 0.01), hasFees("CHF", 1.52 + 0.01 + 4.73 + 0.01))));
+    }
+
+    @Test
+    public void testWertpapierKauf04WithSecurityInCHF()
+    {
+        var security = new Security("Alphabet Inc. - A Share", "CHF");
+        security.setIsin("US02079K3059");
+        security.setTickerSymbol("GOOGL");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new SaxoBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-04-07T19:00:21"), hasShares(15.00), //
+                        hasSource("Kauf04.txt"), //
+                        hasNote("Order-ID 5555555555 | Trade-ID 6666666666"), //
+                        hasAmount("CHF", 1903.60), hasGrossValue("CHF", 1894.49), //
+                        hasTaxes("CHF", 2.85 - 0.01), hasFees("CHF", 1.52 + 0.01 + 4.73 + 0.01), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testWertpapierKauf05()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3RBWM25"), hasWkn(null), hasTicker("VWRL"), //
+                        hasName("Vanguard FTSE All-World UCITS ETF"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-20T09:27:39"), hasShares(25.00), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote("Order-ID 5240614298 | Trade-ID 6107719451"), //
+                        hasAmount("CHF", 3057.58), hasGrossValue("CHF", 3050.00), //
+                        hasTaxes("CHF", 4.58), hasFees("CHF", 3.00))));
+    }
+
+    @Test
+    public void testCashTransfer01()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CashTransfer01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
@@ -276,11 +375,11 @@ public class SaxoBankPDFExtractorTest
     @Test
     public void testKontoauszug01()
     {
-        SaxoBankPDFExtractor extractor = new SaxoBankPDFExtractor(new Client());
+        var extractor = new SaxoBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));

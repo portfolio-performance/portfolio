@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf.arkeadirectbank;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
@@ -475,6 +476,69 @@ public class ArkeaDirectBankPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 5.30), hasGrossValue("EUR", 5.30), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDeposit01()
+    {
+        var extractor = new ArkeaDirectBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Deposit01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(9L));
+        assertThat(results.size(), is(9));
+        new AssertImportActions().check(results, "EUR");
+
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2020-03-02T00:00"), hasSource("Deposit01.txt"), //
+                        hasNote("VERSEMENT"), //
+                        hasAmount("EUR", 3000.00))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2020-03-10T00:00"), hasSource("Deposit01.txt"), //
+                        hasNote("REGULARISATION"), //
+                        hasAmount("EUR", 331.98))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2020-03-23T00:00"), hasSource("Deposit01.txt"), //
+                        hasNote("VERSEMENT"), //
+                        hasAmount("EUR", 4000.00))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2020-04-14T00:00"), hasSource("Deposit01.txt"), //
+                        hasNote("VERSEMENT"), //
+                        hasAmount("EUR", 6000.00))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2020-04-23T00:00"), hasSource("Deposit01.txt"), //
+                        hasNote("VERSEMENT"), //
+                        hasAmount("EUR", 2000.00))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2020-06-05T00:00"), hasSource("Deposit01.txt"), //
+                        hasNote("VERSEMENT"), //
+                        hasAmount("EUR", 2000.00))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2020-07-20T00:00"), hasSource("Deposit01.txt"), //
+                        hasNote("VERSEMENT"), //
+                        hasAmount("EUR", 2000.00))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2020-10-05T00:00"), hasSource("Deposit01.txt"), //
+                        hasNote("VERSEMENT"), //
+                        hasAmount("EUR", 3000.00))));
+
+        assertThat(results, hasItem(deposit( //
+                        hasDate("2020-10-19T00:00"), hasSource("Deposit01.txt"), //
+                        hasNote("REGULARISATION"), //
+                        hasAmount("EUR", 4.93))));
     }
 
     @Test

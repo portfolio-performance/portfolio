@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
 /**
@@ -264,7 +265,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "tickerSymbol", "currency") //
                         .match("^Produktbezeichnung \\- (?<name>.*)$") //
-                        .match("^Kennung: (?<tickerSymbol>[A-Z]*)$") //
+                        .match("^Kennung: (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?)$") //
                         .match("^W.hrung: (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateCryptoCurrency(v)))
 
@@ -496,7 +497,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date"), v.get("time")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorOrderCancellationUnsupported);
@@ -528,7 +529,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date"), v.get("time")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             Money tax1 = Money.of(t.getPortfolioTransaction().getCurrencyCode(), asAmount(v.get("tax1")));
@@ -561,7 +562,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date"), v.get("time")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
@@ -587,7 +588,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date"), v.get("time")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
@@ -610,7 +611,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
@@ -632,7 +633,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
@@ -653,7 +654,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
@@ -675,7 +676,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note"));
@@ -698,7 +699,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setDate(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note"));
@@ -749,7 +750,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(0L);
 
-                            t.setCurrencyCode("EUR");
+                            t.setCurrencyCode(CurrencyUnit.EUR);
                             t.setAmount(asAmount(v.get("amount")));
 
                             Money tax1 = Money.of(t.getCurrencyCode(), asAmount(v.get("tax1")));
@@ -789,7 +790,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note"));
@@ -812,7 +813,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                                                             t.setDateTime(asDate(v.get("date")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note"));
@@ -848,7 +849,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
 
-                            t.setCurrencyCode("EUR");
+                            t.setCurrencyCode(CurrencyUnit.EUR);
                             t.setAmount(asAmount(v.get("amount")));
 
                             t.setNote(v.get("note"));
@@ -895,7 +896,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note"));
@@ -917,7 +918,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note"));
@@ -932,7 +933,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note"));
@@ -957,7 +958,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
 
                                                             t.setDateTime(asDate(v.get("date")));
 
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setAmount(asAmount(v.get("amount")));
 
                                                             t.setNote(v.get("note1") + " " + v.get("note2") + " vom " + v.get("stornoDate"));
@@ -996,7 +997,7 @@ public class SutorBankGmbHPDFExtractor extends AbstractPDFExtractor
                                                             t.setSecurity(getOrCreateSecurity(v));
 
                                                             t.setAmount(0L);
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
 
                                                             t.setNote(v.get("note"));
 

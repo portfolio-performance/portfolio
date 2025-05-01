@@ -24,6 +24,8 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class AvivaPLCPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String GBP = "GBP";
+
     public AvivaPLCPDFExtractor(Client client)
     {
         super(client);
@@ -78,9 +80,9 @@ public class AvivaPLCPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Investment Name: (?<name>.*)$") //
                                                         .match("^ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
                                                         .match("^SEDOL: (?<wkn>[A-Z0-9]{7})$") //
-                                                        .match("^Citicode: (?<tickerSymbol>[\\w]{3,4})\\..*$") //
+                                                        .match("^Citicode: (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)\\..*$") //
                                                         .assign((t, v) -> {
-                                                            v.put("currency", asCurrencyCode("GBP"));
+                                                            v.put("currency", GBP);
 
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }),
@@ -91,7 +93,7 @@ public class AvivaPLCPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("name") //
                                                         .match("^Investment Name: (?<name>.*)$") //
                                                         .assign((t, v) -> {
-                                                            v.put("currency", asCurrencyCode("GBP"));
+                                                            v.put("currency", GBP);
 
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }))
@@ -119,7 +121,7 @@ public class AvivaPLCPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("amount") //
                                                         .match("^Total Consideration \\p{Sc}(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            t.setCurrencyCode(asCurrencyCode("GBP"));
+                                                            t.setCurrencyCode(GBP);
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         // @formatter:off
@@ -130,7 +132,7 @@ public class AvivaPLCPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("amount") //
                                                         .match("^Consideration([:])? \\p{Sc}(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
-                                                            t.setCurrencyCode(asCurrencyCode("GBP"));
+                                                            t.setCurrencyCode(GBP);
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
                         // @formatter:off

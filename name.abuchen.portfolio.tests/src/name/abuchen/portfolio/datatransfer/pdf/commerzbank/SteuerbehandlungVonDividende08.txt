@@ -1,0 +1,42 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.74.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kundennr. /BLZ Bezeichnung
+gYeqDO gEuXLjzU
+12 3078 1
+rhqJLDHznSw 13
+098 800 00 90450 Quickborn-Heide
+abweichend wirtschaftlich Berechtigter
+----
+000 33012
+Frau Datum: 13.03.2025
+KekRLI MukEcSbF Depotnummer: 9629735 00
+tVmbfmGkJfg Vgl. 13
+69357 mascZJHKz-tRQjI Referenz-Nummer: 6j2R5436dOM884a3
+Steuerliche Behandlung: Ausländische Dividende vom 13.03.2025
+Stk. 120 T-MOBILE US INC.DL,-00001 , WKN / ISIN: A1T7LU / US8725901040
+Zu Ihren Gunsten vor Steuern: EUR 8 2 , 4 4
+Steuerbemessungsgrundlage EUR 9 6 , 9 9
+Kapitalertragsteuer EUR - 9 , 7 0
+(angerechnete ausländische Quellensteuer: EUR 14,55 )
+Solidaritätszuschlag EUR - 0 , 5 3
+Kirchensteuer EUR 0 , 0 0
+abgeführte Steuern EUR - 1 0 , 2 3
+Zu Ihren Gunsten nach Steuern: EUR 7 2 , 2 1
+Die Gutschrift erfolgt mit Valuta 17.03.2025 auf Konto EUR mit der IBAN DE90 5136 0000 3802 4111 00
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2025 einbehaltene einbehaltener einbehaltene angerechnete
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung 990,05 54,39 0,00 183,10
+nach Ermittlung 999,75 54,92 0,00 197,65
+Verrechnungssalden in EUR (4)
+Gewinne / Verluste sonstige anrechenbare verfügbarer
+in 2025 aus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung -42.083,83 4.692,50 0,00 0,00
+nach Ermittlung -42.083,83 4.789,49 0,00 0,00
+Commerzbank AG
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.
+KEINE STEUERBESCHEINIGUNG

@@ -40,7 +40,6 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -52,7 +51,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.CurrencyUnit;
 
 @SuppressWarnings("nls")
 public class ComdirectPDFExtractorTest
@@ -60,18 +58,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierKauf01()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -91,18 +89,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierKauf02()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -122,18 +120,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierKauf03()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -153,18 +151,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierKauf04()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -185,25 +183,25 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierKauf04WithSecurityInEUR()
     {
-        Security security = new Security("Amazon.com Inc. Registered Shares DL -,01", CurrencyUnit.EUR);
+        var security = new Security("Amazon.com Inc. Registered Shares DL -,01", "EUR");
         security.setIsin("US0231351067");
         security.setWkn("906866");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -213,8 +211,8 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 4444.15), hasGrossValue("EUR", 4412.36), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 18.93 + (13.90 / 1.080600)), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -222,18 +220,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierKauf05()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -253,19 +251,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierKaufMitSteuerbehandlung01()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -280,34 +277,23 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 592581219254 | R.-Nr.: 878649826981vsP4"), //
                         hasAmount("EUR", 999.90), hasGrossValue("EUR", 999.90), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2023-01-02T00:00"), hasShares(8.544), //
-                                        hasSource("KaufMitSteuerbehandlung01.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung02()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung02.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -322,34 +308,23 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 150799808720 | R.-Nr.: 454960516206DB75"), //
                         hasAmount("EUR", 24.99), hasGrossValue("EUR", 24.62), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.37))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2018-06-01T00:00"), hasShares(0.10), //
-                                        hasSource("KaufMitSteuerbehandlung02.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung03()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung03.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -364,34 +339,23 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 004786949040 | R.-Nr.: 442604441030D195"), //
                         hasAmount("EUR", 24.97), hasGrossValue("EUR", 24.97), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2018-01-08T00:00"), hasShares(0.205), //
-                                        hasSource("KaufMitSteuerbehandlung03.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung04()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung04.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -406,34 +370,23 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 303796885690 | R.-Nr.: 468179348267DC35"), //
                         hasAmount("EUR", 149.95), hasGrossValue("EUR", 146.80), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.20 + 0.95))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2018-11-01T00:00"), hasShares(2.17), //
-                                        hasSource("KaufMitSteuerbehandlung04.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung05()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung05.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -449,41 +402,30 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 24.97), hasGrossValue("EUR", 24.97), //
                         hasForexGrossValue("USD", 28.05), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2017-06-07T00:00"), hasShares(0.843), //
-                                        hasSource("KaufMitSteuerbehandlung05.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung05WithSecurityInEUR()
     {
-        Security security = new Security("BGF - World Gold Fund Act. Nom. A2RF USD o.N.", CurrencyUnit.EUR);
+        var security = new Security("BGF - World Gold Fund Act. Nom. A2RF USD o.N.", "EUR");
         security.setIsin("LU0055631609");
         security.setWkn("974119");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung05.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -493,38 +435,27 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 24.97), hasGrossValue("EUR", 24.97), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2017-06-07T00:00"), hasShares(0.843), //
-                                        hasSource("KaufMitSteuerbehandlung05.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung06()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung06.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -539,34 +470,23 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 072450450919 | R.-Nr.: 406909971273D0D5"), //
                         hasAmount("EUR", 1431.40), hasGrossValue("EUR", 1420.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 9.90 + 1.50))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2016-11-22T00:00"), hasShares(20.00), //
-                                        hasSource("KaufMitSteuerbehandlung06.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung07()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung07.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -582,41 +502,30 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 25847.07), hasGrossValue("EUR", 25759.28), //
                         hasForexGrossValue("USD", 28870.99), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 62.90 + (27.90 / 1.120800)))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2020-03-11T00:00"), hasShares(720.00), //
-                                        hasSource("KaufMitSteuerbehandlung07.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung07WithSecurityInEUR()
     {
-        Security security = new Security("AerCap Holdings N.V. Aandelen op naam EO -,01", CurrencyUnit.EUR);
+        var security = new Security("AerCap Holdings N.V. Aandelen op naam EO -,01", "EUR");
         security.setIsin("NL0000687663");
         security.setWkn("A0LFB3");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung07.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -626,38 +535,27 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 25847.07), hasGrossValue("EUR", 25759.28), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 62.90 + (27.90 / 1.120800)), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2020-03-11T00:00"), hasShares(720.00), //
-                                        hasSource("KaufMitSteuerbehandlung07.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung08()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung08.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -673,41 +571,30 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 50569.94), hasGrossValue("EUR", 50238.13), //
                         hasForexGrossValue("GBP", 42720.00), //
                         hasTaxes("EUR", (213.60 / 0.850350)), hasFees("EUR", 62.90 + (15.07 / 0.850350)))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2019-12-02T00:00"), hasShares(6000.00), //
-                                        hasSource("KaufMitSteuerbehandlung08.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung08WithSecurityInEUR()
     {
-        Security security = new Security("Rolls Royce Holdings PLC Registered Shares LS 0.20", CurrencyUnit.EUR);
+        var security = new Security("Rolls Royce Holdings PLC Registered Shares LS 0.20", "EUR");
         security.setIsin("GB00B63H8491");
         security.setWkn("A1H81L");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung08.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -717,38 +604,27 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 50569.94), hasGrossValue("EUR", 50238.13), //
                         hasTaxes("EUR", (213.60 / 0.850350)), hasFees("EUR", 62.90 + (15.07 / 0.850350)), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2019-12-02T00:00"), hasShares(6000.00), //
-                                        hasSource("KaufMitSteuerbehandlung08.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung09()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung09.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -763,34 +639,23 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 111111111111-111 | R.-Nr.: 2222222222222A22"), //
                         hasAmount("EUR", 1686.80), hasGrossValue("EUR", 1666.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.90 + 9.90 + 5.00 + 3.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2020-02-21T00:00"), hasShares(34.00), //
-                                        hasSource("KaufMitSteuerbehandlung09.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung10()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung10.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -805,34 +670,23 @@ public class ComdirectPDFExtractorTest
                         hasNote("R.-Nr.: "), //
                         hasAmount("EUR", 1430.30), hasGrossValue("EUR", 1417.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 2.90 + 9.90))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2020-12-28T00:00"), hasShares(150.00), //
-                                        hasSource("KaufMitSteuerbehandlung10.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung11()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung11.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -847,34 +701,23 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 000000000000 | R.-Nr.: 600000000000DBD5"), //
                         hasAmount("EUR", 999.91), hasGrossValue("EUR", 999.91), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2023-01-16T00:00"), hasShares(8.261), //
-                                        hasSource("KaufMitSteuerbehandlung11.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung12()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung12.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung12.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -889,34 +732,23 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 302789004599 | R.-Nr.: 019579984081kw86"), //
                         hasAmount("EUR", 323.49), hasGrossValue("EUR", 323.49), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2023-05-02T00:00"), hasShares(2.734), //
-                                        hasSource("KaufMitSteuerbehandlung12.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung13()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung13.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung13.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -931,34 +763,23 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 272803480270 | R.-Nr.: 591997149596D095"), //
                         hasAmount("EUR", 24.99), hasGrossValue("EUR", 23.68), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.36 + 0.95))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2022-10-04T00:00"), hasShares(0.565), //
-                                        hasSource("KaufMitSteuerbehandlung13.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung14()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung14.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung14.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -973,34 +794,23 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 000312226831-001 | R.-Nr.: 591958998217D175"), //
                         hasAmount("EUR", 220.85), hasGrossValue("EUR", 207.50), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 9.90 + 0.95 + 2.50))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2022-10-04T00:00"), hasShares(5.00), //
-                                        hasSource("KaufMitSteuerbehandlung14.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung15()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung15.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung15.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1016,42 +826,30 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 49.98), hasGrossValue("EUR", 49.98), //
                         hasForexGrossValue("USD", 60.80), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2021-05-07T00:00"), hasShares(0.165), //
-                                        hasSource("KaufMitSteuerbehandlung15.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung15WithSecurityInEUR()
     {
-        Security security = new Security("Fidelity Fds-Greater China Fd. Reg.Shares A (Glob.Cert.) o.N.",
-                        CurrencyUnit.EUR);
+        var security = new Security("Fidelity Fds-Greater China Fd. Reg.Shares A (Glob.Cert.) o.N.", "EUR");
         security.setIsin("LU0048580855");
         security.setWkn("973265");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung15.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung15.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -1061,38 +859,27 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 49.98), hasGrossValue("EUR", 49.98), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2021-05-07T00:00"), hasShares(0.165), //
-                                        hasSource("KaufMitSteuerbehandlung15.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufMitSteuerbehandlung16()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung16.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung16.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1107,34 +894,23 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 317309783000 | R.-Nr.: 627068187716DB85"), //
                         hasAmount("EUR", 1000.00), hasGrossValue("EUR", 1000.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2023-11-13T00:00"), hasShares(10.00), //
-                                        hasSource("KaufMitSteuerbehandlung16.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testWertpapierKaufSteuerbehandlung01()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufSteuerbehandlung01.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufSteuerbehandlung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1156,18 +932,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkauf01()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1187,18 +963,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkauf02()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1218,18 +994,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkauf03()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1254,19 +1030,18 @@ public class ComdirectPDFExtractorTest
         // currency. If there are problems here, this can also be deleted and
         // replaced with a correct PDF debug.
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1301,26 +1076,25 @@ public class ComdirectPDFExtractorTest
         // currency. If there are problems here, this can also be deleted and
         // replaced with a correct PDF debug.
 
-        Security security = new Security("Wirecard AG Inhaber-Aktien o.N.", CurrencyUnit.EUR);
+        var security = new Security("Wirecard AG Inhaber-Aktien o.N.", "EUR");
         security.setIsin("DE0007472060");
         security.setWkn("747206");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
@@ -1342,19 +1116,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung01()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1374,19 +1148,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung02()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung02.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1406,19 +1180,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung03()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung03.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1438,19 +1212,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung04()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung04.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1470,19 +1244,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung05()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung05.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1510,19 +1284,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung06()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung06.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1550,19 +1324,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung07()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung07.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1592,26 +1366,26 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung07WithSecurityInEUR()
     {
-        Security security = new Security("Sunrun Inc. Registered Shares DL -,0001", CurrencyUnit.EUR);
+        var security = new Security("Sunrun Inc. Registered Shares DL -,0001", "EUR");
         security.setIsin("US86771W1053");
         security.setWkn("A14V1T");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung07.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
@@ -1633,11 +1407,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung08()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung08.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung08.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -1645,7 +1419,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1665,19 +1439,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung09()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung09.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1705,19 +1479,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung10()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung10.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung10.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1737,19 +1511,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung11()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung11.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung11.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1769,19 +1543,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung12()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung12.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung12.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1809,19 +1583,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung13()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung13.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung13.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1841,19 +1615,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung14()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung14.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung14.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1881,19 +1655,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung15()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung15.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung15.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1921,19 +1695,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung16()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung16.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung16.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1961,11 +1735,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung17()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung17.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung17.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -1973,7 +1747,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1993,11 +1767,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung18()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung18.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung18.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -2005,7 +1779,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2033,11 +1807,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung19()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung19.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung19.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -2045,7 +1819,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2066,26 +1840,26 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkaufMitSteuerbehandlung19WithSecurityInEUR()
     {
-        Security security = new Security("AB SICAV I-Concentr.US Equ.Ptf Actions Nom. I Acc. USD o.N.", CurrencyUnit.EUR);
+        var security = new Security("AB SICAV I-Concentr.US Equ.Ptf Actions Nom. I Acc. USD o.N.", "EUR");
         security.setIsin("LU1011999676");
         security.setWkn("A1XBWG");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung19.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung19.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
@@ -2097,13 +1871,194 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkaufSteuerbehandlung01()
+    public void testWertpapierVerkaufMitSteuerbehandlung20()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufSteuerbehandlung01.txt"),
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung20.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B5L8K969"), hasWkn("A1C1H5"), hasTicker(null), //
+                        hasName("iShs VII-MSCI EM Asia U.ETF Reg. Shares USD (Acc) o.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-04-09T00:00"), hasShares(1.708), //
+                        hasSource("VerkaufMitSteuerbehandlung20.txt"), //
+                        hasNote("Ord.-Nr.: 099011756580 | R.-Nr.: 671305787389DC15"), //
+                        hasAmount("EUR", 250.01), hasGrossValue("EUR", 250.01), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung21()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung21.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0132412106"), hasWkn("769088"), hasTicker(null), //
+                        hasName("abrdn SICAV I-Emerg.Mkts Equ. Actions Nom. A Acc USD o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-03-31T17:06"), hasShares(0.156), //
+                        hasSource("VerkaufMitSteuerbehandlung21.txt"), //
+                        hasNote("Ord.-Nr.: 703388829593-001 | R.-Nr.: 459495152574C254"), //
+                        hasAmount("EUR", 6.95), hasGrossValue("EUR", 6.95), //
+                        hasForexGrossValue("USD", 7.53), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-03-31T00:00"), hasShares(0.156), //
+                        hasSource("VerkaufMitSteuerbehandlung21.txt"), //
+                        hasNote("Ref.-Nr.: 2BIM45S6VQF0005G"), //
+                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
+                        hasForexGrossValue("USD", 0.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung21WithSecurityInEUR()
+    {
+        var security = new Security("abrdn SICAV I-Emerg.Mkts Equ. Actions Nom. A Acc USD o.N.", "EUR");
+        security.setIsin("LU0132412106");
+        security.setWkn("769088");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ComdirectPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung21.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-03-31T17:06"), hasShares(0.156), //
+                        hasSource("VerkaufMitSteuerbehandlung21.txt"), //
+                        hasNote("Ord.-Nr.: 703388829593-001 | R.-Nr.: 459495152574C254"), //
+                        hasAmount("EUR", 6.95), hasGrossValue("EUR", 6.95), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check tax refund transaction
+        assertThat(results, hasItem(taxRefund( //
+                        hasDate("2025-03-31T00:00"), hasShares(0.156), //
+                        hasSource("VerkaufMitSteuerbehandlung21.txt"), //
+                        hasNote("Ref.-Nr.: 2BIM45S6VQF0005G"), //
+                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung22()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung22.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0072463663"), hasWkn("987139"), hasTicker(null), //
+                        hasName("BGF - Latin American Fund Act. Nom. Classe A2 o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-03-31T19:03"), hasShares(29.00), //
+                        hasSource("VerkaufMitSteuerbehandlung22.txt"), //
+                        hasNote("Ord.-Nr.: 000445114393-001 | R.-Nr.: 670602616376D085"), //
+                        hasAmount("EUR", 1529.81), hasGrossValue("EUR", 1589.44), //
+                        hasForexGrossValue("USD", 1721.20), //
+                        hasTaxes("EUR", 59.63), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkaufMitSteuerbehandlung22WithSecurityInEUR()
+    {
+        var security = new Security("BGF - Latin American Fund Act. Nom. Classe A2 o.N.", "EUR");
+        security.setIsin("LU0072463663");
+        security.setWkn("987139");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new ComdirectPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VerkaufMitSteuerbehandlung22.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-03-31T19:03"), hasShares(29.00), //
+                        hasSource("VerkaufMitSteuerbehandlung22.txt"), //
+                        hasNote("Ord.-Nr.: 000445114393-001 | R.-Nr.: 670602616376D085"), //
+                        hasAmount("EUR", 1529.81), hasGrossValue("EUR", 1589.44), //
+                        hasTaxes("EUR", 59.63), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierSteuerbehandlungOhneVerkauf01()
+    {
+        var extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungOhneVerkauf01.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -2111,7 +2066,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2124,7 +2079,7 @@ public class ComdirectPDFExtractorTest
                         Messages.MsgErrorTransactionTypeNotSupported, //
                         taxes( //
                                         hasDate("2015-05-05T00:00"), hasShares(0.049), //
-                                        hasSource("VerkaufSteuerbehandlung01.txt"), //
+                                        hasSource("SteuerbehandlungOhneVerkauf01.txt"), //
                                         hasNote(null), //
                                         hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
@@ -2133,18 +2088,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende01()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2165,26 +2120,25 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende01WithSecurityInEUR()
     {
-        Security security = new Security("P r oc t e r & G a m b l e C o ., T he R e gi st er ed S ha r e s o .N .",
-                        CurrencyUnit.EUR);
+        var security = new Security("P r oc t e r & G a m b l e C o ., T he R e gi st er ed S ha r e s o .N .", "EUR");
         security.setIsin("US7427181091");
         security.setWkn("852062");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -2194,10 +2148,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 0.17), hasGrossValue("EUR", 0.17), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -2205,18 +2159,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende02()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2236,18 +2190,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende03()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2268,27 +2222,27 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende03WithSecurityInEUR()
     {
-        Security security = new Security(
+        var security = new Security(
                         "S am su n g El e ct r on i c s Co . Lt d. R. S h s ( N V ) Pf d( GD R 14 4 A) 1 / 2 S W5 0 0 0",
-                        CurrencyUnit.EUR);
+                        "EUR");
         security.setIsin("US7960502018");
         security.setWkn("881823");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -2298,10 +2252,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 10.16), hasGrossValue("EUR", 10.22), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.06), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -2309,18 +2263,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende04()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2341,26 +2295,25 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende04WithSecurityInEUR()
     {
-        Security security = new Security("J D. co m I n c. R .S hs C l. A ( S p .A D R s ) /1 DL - , 0 0 0 02",
-                        CurrencyUnit.EUR);
+        var security = new Security("J D. co m I n c. R .S hs C l. A ( S p .A D R s ) /1 DL - , 0 0 0 02", "EUR");
         security.setIsin("US47215P1066");
         security.setWkn("A112ST");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -2370,10 +2323,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 9.79), hasGrossValue("EUR", 10.11), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.32), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -2381,18 +2334,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende05()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2413,26 +2366,25 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende05WithSecurityInEUR()
     {
-        Security security = new Security("U ni l e ve r P LC R e gi s t er e d Sh ar e s LS - , 0 31 1 11",
-                        CurrencyUnit.EUR);
+        var security = new Security("U ni l e ve r P LC R e gi s t er e d Sh ar e s LS - , 0 31 1 11", "EUR");
         security.setIsin("GB00B10RZP78");
         security.setWkn("A0JNE2");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -2442,10 +2394,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 10.58), hasGrossValue("EUR", 10.58), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -2453,18 +2405,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende06()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2485,27 +2437,26 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende06WithSecurityInEUR()
     {
-        Security security = new Security(
-                        "i S ha r e s P L C - M SC I W o . U C . E T F D IS R eg i s t er e d S ha re s o .N .",
-                        CurrencyUnit.EUR);
+        var security = new Security(
+                        "i S ha r e s P L C - M SC I W o . U C . E T F D IS R eg i s t er e d S ha re s o .N .", "EUR");
         security.setIsin("IE00B0M62Q58");
         security.setWkn("A0HGV0");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -2515,10 +2466,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 1.05), hasGrossValue("EUR", 1.05), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -2526,18 +2477,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende07()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2557,18 +2508,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende08()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2588,19 +2539,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende08()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende08.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende08.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2620,11 +2571,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende08MitSteuerbehandlungVonDividende08()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende08.txt", "SteuerbehandlungVonDividende08.txt"),
                         errors);
 
@@ -2633,7 +2584,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2653,11 +2604,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende08MitSteuerbehandlungVonDividende08_SourceFilesReversed()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende08.txt", "Dividende08.txt"),
                         errors);
 
@@ -2666,7 +2617,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2686,18 +2637,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende09()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2717,19 +2668,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende09()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende09.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende09.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2751,11 +2702,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende09MitSteuerbehandlungVonDividende09()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende09.txt", "SteuerbehandlungVonDividende09.txt"),
                         errors);
 
@@ -2764,7 +2715,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2784,11 +2735,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende09MitSteuerbehandlungVonDividende09_SourceFilesReversed()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende09.txt", "Dividende09.txt"),
                         errors);
 
@@ -2797,7 +2748,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2817,18 +2768,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende10()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende10.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2848,18 +2799,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende11()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2880,26 +2831,25 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende11WithSecurityInEUR()
     {
-        Security security = new Security("P r oc t e r & G a m b l e C o ., T he R e gi st er ed S ha r e s o .N .",
-                        CurrencyUnit.EUR);
+        var security = new Security("P r oc t e r & G a m b l e C o ., T he R e gi st er ed S ha r e s o .N .", "EUR");
         security.setIsin("US7427181091");
         security.setWkn("852062");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -2909,10 +2859,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 5.47), hasGrossValue("EUR", 5.47), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -2920,19 +2870,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende11()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende11.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende11.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2952,11 +2902,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende11MitSteuerbehandlungVonDividende11()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende11.txt", "SteuerbehandlungVonDividende11.txt"),
                         errors);
 
@@ -2965,7 +2915,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2986,19 +2936,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende11MitSteuerbehandlungVonDividende11WithSecurityInEUR()
     {
-        Security security = new Security("P r oc t e r & G a m b l e C o ., T he R e gi st er ed S ha r e s o .N .",
-                        CurrencyUnit.EUR);
+        var security = new Security("P r oc t e r & G a m b l e C o ., T he R e gi st er ed S ha r e s o .N .", "EUR");
         security.setIsin("US7427181091");
         security.setWkn("852062");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende11.txt", "SteuerbehandlungVonDividende11.txt"),
                         errors);
 
@@ -3007,7 +2956,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -3017,10 +2966,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 4.07), hasGrossValue("EUR", 5.47), //
                         hasTaxes("EUR", (5.47 - 4.65) + 0.58), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -3028,11 +2977,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende11MitSteuerbehandlungVonDividende11_SourceFilesReversed()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende11.txt", "Dividende11.txt"),
                         errors);
 
@@ -3041,7 +2990,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3061,19 +3010,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende11MitSteuerbehandlungVonDividende11WithSecurityInEUR_SourceFilesReversed()
     {
-        Security security = new Security("P r oc t e r & G a m b l e C o ., T he R e gi st er ed S ha r e s o .N .",
-                        CurrencyUnit.EUR);
+        var security = new Security("P r oc t e r & G a m b l e C o ., T he R e gi st er ed S ha r e s o .N .", "EUR");
         security.setIsin("US7427181091");
         security.setWkn("852062");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende11.txt", "Dividende11.txt"),
                         errors);
 
@@ -3082,7 +3030,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -3092,10 +3040,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 4.07), hasGrossValue("EUR", 5.47), //
                         hasTaxes("EUR", (5.47 - 4.65) + 0.58), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -3103,18 +3051,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende12()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3135,27 +3083,27 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende12WithSecurityInEUR()
     {
-        Security security = new Security(
+        var security = new Security(
                         "V a n g u a r d F T S E Al l -W o rl d U . E TF R eg i st er e d S h ar e s U S D D is .o N",
-                        CurrencyUnit.EUR);
+                        "EUR");
         security.setIsin("IE00B3RBWM25");
         security.setWkn("A1JX52");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -3165,10 +3113,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 40.96), hasGrossValue("EUR", 40.96), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -3176,19 +3124,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende12()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende12.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende12.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3208,11 +3156,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende12MitSteuerbehandlungVonDividende12()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende12.txt", "SteuerbehandlungVonDividende12.txt"),
                         errors);
 
@@ -3221,7 +3169,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3242,20 +3190,20 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende12MitSteuerbehandlungVonDividende12WithSecurityInEUR()
     {
-        Security security = new Security(
+        var security = new Security(
                         "V a n g u a r d F T S E Al l -W o rl d U . E TF R eg i st er e d S h ar e s U S D D is .o N",
-                        CurrencyUnit.EUR);
+                        "EUR");
         security.setIsin("IE00B3RBWM25");
         security.setWkn("A1JX52");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende12.txt", "SteuerbehandlungVonDividende12.txt"),
                         errors);
 
@@ -3264,7 +3212,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -3274,10 +3222,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 33.40), hasGrossValue("EUR", 40.96), //
                         hasTaxes("EUR", 7.17 + 0.39), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -3285,11 +3233,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende12MitSteuerbehandlungVonDividende12_SourceFilesReversed()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende12.txt", "Dividende12.txt"),
                         errors);
 
@@ -3298,7 +3246,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3318,20 +3266,20 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende12MitSteuerbehandlungVonDividende12WithSecurityInEUR_SourceFilesReversed()
     {
-        Security security = new Security(
+        var security = new Security(
                         "V a n g u a r d F T S E Al l -W o rl d U . E TF R eg i st er e d S h ar e s U S D D is .o N",
-                        CurrencyUnit.EUR);
+                        "EUR");
         security.setIsin("IE00B3RBWM25");
         security.setWkn("A1JX52");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende12.txt", "Dividende12.txt"),
                         errors);
 
@@ -3340,7 +3288,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -3350,10 +3298,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 33.40), hasGrossValue("EUR", 40.96), //
                         hasTaxes("EUR", 7.17 + 0.39), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -3361,18 +3309,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende13()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende13.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3392,19 +3340,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende13()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende13.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende13.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3426,11 +3374,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende13MitSteuerbehandlungVonDividende13()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende13.txt", "SteuerbehandlungVonDividende13.txt"),
                         errors);
 
@@ -3439,7 +3387,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3459,11 +3407,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende13MitSteuerbehandlungVonDividende13_SourceFilesReversed()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende13.txt", "Dividende13.txt"),
                         errors);
 
@@ -3472,7 +3420,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3492,18 +3440,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende14()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3524,26 +3472,25 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende14WithSecurityInEUR()
     {
-        Security security = new Security("C VS H e a lt h Co r p. R eg is te r ed S h a re s D L -, 0 1",
-                        CurrencyUnit.EUR);
+        var security = new Security("C VS H e a lt h Co r p. R eg is te r ed S h a re s D L -, 0 1", "EUR");
         security.setIsin("US1266501006");
         security.setWkn("859034");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende14.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -3553,10 +3500,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 13.69), hasGrossValue("EUR", 13.69), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -3564,19 +3511,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende14()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende14.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende14.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3597,11 +3544,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende14MitSteuerbehandlungVonDividende14()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende14.txt", "SteuerbehandlungVonDividende14.txt"),
                         errors);
 
@@ -3610,7 +3557,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3631,19 +3578,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende14MitSteuerbehandlungVonDividende14WithSecurityInEUR()
     {
-        Security security = new Security("C VS H e a lt h Co r p. R eg is te r ed S h a re s D L -, 0 1",
-                        CurrencyUnit.EUR);
+        var security = new Security("C VS H e a lt h Co r p. R eg is te r ed S h a re s D L -, 0 1", "EUR");
         security.setIsin("US1266501006");
         security.setWkn("859034");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende14.txt", "SteuerbehandlungVonDividende14.txt"),
                         errors);
 
@@ -3652,7 +3598,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -3662,10 +3608,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 10.19), hasGrossValue("EUR", 13.70), //
                         hasTaxes("EUR", (13.70 - 11.64) + 1.38 + 0.07), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -3673,11 +3619,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende14MitSteuerbehandlungVonDividende14_SourceFilesReversed()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende14.txt", "Dividende14.txt"),
                         errors);
 
@@ -3686,7 +3632,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3706,19 +3652,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende14MitSteuerbehandlungVonDividende14WithSecurityInEUR_SourceFilesReversed()
     {
-        Security security = new Security("C VS H e a lt h Co r p. R eg is te r ed S h a re s D L -, 0 1",
-                        CurrencyUnit.EUR);
+        var security = new Security("C VS H e a lt h Co r p. R eg is te r ed S h a re s D L -, 0 1", "EUR");
         security.setIsin("US1266501006");
         security.setWkn("859034");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende14.txt", "Dividende14.txt"),
                         errors);
 
@@ -3727,7 +3672,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -3737,10 +3682,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 10.19), hasGrossValue("EUR", 13.70), //
                         hasTaxes("EUR", (13.70 - 11.64) + 1.38 + 0.07), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -3748,18 +3693,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende15()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3779,26 +3724,25 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende15WithSecurityInEUR()
     {
-        Security security = new Security("To r o m on t I n du st r i e s L t d . R eg is te r ed S h ar e s o .N .",
-                        CurrencyUnit.EUR);
+        var security = new Security("To r o m on t I n du st r i e s L t d . R eg is te r ed S h ar e s o .N .", "EUR");
         security.setIsin("CA8911021050");
         security.setWkn("914305");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende15.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -3808,10 +3752,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 6.71), hasGrossValue("EUR", 6.71), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -3819,19 +3763,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende15()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende15.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende15.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3851,11 +3795,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende15MitSteuerbehandlungVonDividende15()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende15.txt", "SteuerbehandlungVonDividende15.txt"),
                         errors);
 
@@ -3864,7 +3808,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3884,19 +3828,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende15MitSteuerbehandlungVonDividende15WithSecurityInEUR()
     {
-        Security security = new Security("To r o m on t I n du st r i e s L t d . R eg is te r ed S h ar e s o .N .",
-                        CurrencyUnit.EUR);
+        var security = new Security("To r o m on t I n du st r i e s L t d . R eg is te r ed S h ar e s o .N .", "EUR");
         security.setIsin("CA8911021050");
         security.setWkn("914305");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende15.txt", "SteuerbehandlungVonDividende15.txt"),
                         errors);
 
@@ -3905,7 +3848,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -3915,10 +3858,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 5.03), hasGrossValue("EUR", 6.71), //
                         hasTaxes("EUR", 6.71 - 5.03), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -3926,11 +3869,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende15MitSteuerbehandlungVonDividende15_SourceFilesReversed()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende15.txt", "Dividende15.txt"),
                         errors);
 
@@ -3939,7 +3882,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3959,19 +3902,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende15MitSteuerbehandlungVonDividende15WithSecurityInEUR_SourceFilesReversed()
     {
-        Security security = new Security("To r o m on t I n du st r i e s L t d . R eg is te r ed S h ar e s o .N .",
-                        CurrencyUnit.EUR);
+        var security = new Security("To r o m on t I n du st r i e s L t d . R eg is te r ed S h ar e s o .N .", "EUR");
         security.setIsin("CA8911021050");
         security.setWkn("914305");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende15.txt", "Dividende15.txt"),
                         errors);
 
@@ -3980,7 +3922,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -3990,10 +3932,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 5.03), hasGrossValue("EUR", 6.71), //
                         hasTaxes("EUR", 6.71 - 5.03), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -4001,18 +3943,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende16()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende16.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende16.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4032,19 +3974,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende16()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende16.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende16.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4064,11 +4006,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende16MitSteuerbehandlungVonDividende16()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende16.txt", "SteuerbehandlungVonDividende16.txt"),
                         errors);
 
@@ -4077,7 +4019,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4097,11 +4039,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende16MitSteuerbehandlungVonDividende16_SourceFilesReversed()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende16.txt", "Dividende16.txt"),
                         errors);
 
@@ -4110,7 +4052,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4130,18 +4072,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende17()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende17.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4161,19 +4103,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende18MitSteuerbehandlung()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "Dividende18MitSteuerbehandlung.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende18MitSteuerbehandlung.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4193,19 +4135,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende19MitSteuerbehandlung()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "Dividende19MitSteuerbehandlung.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende19MitSteuerbehandlung.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4225,19 +4167,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende20MitSteuerbehandlung()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "Dividende20MitSteuerbehandlung.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende20MitSteuerbehandlung.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4258,28 +4200,27 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende20MitSteuerbehandlungWithSecurityInEUR()
     {
-        Security security = new Security(
-                        "I nt l B u s i ne ss M a c hi n e s Co r p . R eg i s te r ed S ha r es DL - ,2 0",
-                        CurrencyUnit.EUR);
+        var security = new Security("I nt l B u s i ne ss M a c hi n e s Co r p . R eg i s te r ed S ha r es DL - ,2 0",
+                        "EUR");
         security.setIsin("US4592001014");
         security.setWkn("851399");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "Dividende20MitSteuerbehandlung.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende20MitSteuerbehandlung.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -4289,10 +4230,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 27.37), hasGrossValue("EUR", 32.20), //
                         hasTaxes("EUR", (7.50 / 1.552700)), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -4300,18 +4241,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende21()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende21.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende21.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4332,25 +4273,25 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende21WithSecurityInEUR()
     {
-        Security security = new Security("P f iz e r I n c. Re g i s te r ed S ha r e s DL - , 0 5", CurrencyUnit.EUR);
+        var security = new Security("P f iz e r I n c. Re g i s te r ed S ha r e s DL - , 0 5", "EUR");
         security.setIsin("US7170811035");
         security.setWkn("852009");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende21.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende21.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -4360,10 +4301,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 114.21), hasGrossValue("EUR", 114.21), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -4371,19 +4312,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende21()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende21.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende21.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4404,11 +4345,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende21MitSteuerbehandlungVonDividende21()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende21.txt", "SteuerbehandlungVonDividende21.txt"),
                         errors);
 
@@ -4417,7 +4358,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4438,18 +4379,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende21MitSteuerbehandlungVonDividende21WithSecurityInEUR()
     {
-        Security security = new Security("P f iz e r I n c. Re g i s te r ed S ha r e s DL - , 0 5", CurrencyUnit.EUR);
+        var security = new Security("P f iz e r I n c. Re g i s te r ed S ha r e s DL - , 0 5", "EUR");
         security.setIsin("US7170811035");
         security.setWkn("852009");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende21.txt", "SteuerbehandlungVonDividende21.txt"),
                         errors);
 
@@ -4458,7 +4399,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -4468,10 +4409,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 85.04), hasGrossValue("EUR", 114.21), //
                         hasTaxes("EUR", (114.21 - 97.08) + 11.42 + 0.62), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -4479,11 +4420,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende21MitSteuerbehandlungVonDividende21_SourceFilesReversed()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende21.txt", "Dividende21.txt"),
                         errors);
 
@@ -4492,7 +4433,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4512,18 +4453,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende21MitSteuerbehandlungVonDividende21WithSecurityInEUR_SourceFilesReversed()
     {
-        Security security = new Security("P f iz e r I n c. Re g i s te r ed S ha r e s DL - , 0 5", CurrencyUnit.EUR);
+        var security = new Security("P f iz e r I n c. Re g i s te r ed S ha r e s DL - , 0 5", "EUR");
         security.setIsin("US7170811035");
         security.setWkn("852009");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende21.txt", "Dividende21.txt"),
                         errors);
 
@@ -4532,7 +4473,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -4542,10 +4483,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 85.04), hasGrossValue("EUR", 114.21), //
                         hasTaxes("EUR", (114.21 - 97.08) + 11.42 + 0.62), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -4553,18 +4494,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende22()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende22.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende22.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4584,18 +4525,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende23()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende23.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4615,18 +4556,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende24()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende24.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4646,18 +4587,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende25()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende25.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4679,19 +4620,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende26()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende26.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende26.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4713,18 +4654,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende27()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende27.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende27.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4746,18 +4687,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende28()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende28.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende28.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4778,25 +4719,25 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende28WithSecurityInEUR()
     {
-        Security security = new Security("Ge n er a l M i l ls I nc . R e g i st er ed Sh a r e s D L - , 10", CurrencyUnit.EUR);
+        var security = new Security("Ge n er a l M i l ls I nc . R e g i st er ed Sh a r e s D L - , 10", "EUR");
         security.setIsin("US3703341046");
         security.setWkn("853862");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende28.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende28.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -4806,10 +4747,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 0.29), hasGrossValue("EUR", 0.29), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -4817,19 +4758,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende28()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende28.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende28.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4849,11 +4790,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende28MitSteuerbehandlungVonDividende28()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende28.txt", "SteuerbehandlungVonDividende28.txt"),
                         errors);
 
@@ -4862,7 +4803,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4883,18 +4824,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende28MitSteuerbehandlungVonDividende28WithSecurityInEUR()
     {
-        Security security = new Security("GENL MILLS DL -,10", CurrencyUnit.EUR);
+        var security = new Security("GENL MILLS DL -,10", "EUR");
         security.setIsin("US3703341046");
         security.setWkn("853862");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende28.txt", "SteuerbehandlungVonDividende28.txt"),
                         errors);
 
@@ -4903,7 +4844,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -4913,10 +4854,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 0.21), hasGrossValue("EUR", 0.28), //
                         hasTaxes("EUR", 0.03 + 0.04), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -4924,11 +4865,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende28MitSteuerbehandlungVonDividende28_SourceFilesReversed()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende28.txt", "Dividende28.txt"),
                         errors);
 
@@ -4937,7 +4878,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4957,18 +4898,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende28MitSteuerbehandlungVonDividende28WithSecurityInEUR_SourceFilesReversed()
     {
-        Security security = new Security("GENL MILLS DL -,10", CurrencyUnit.EUR);
+        var security = new Security("GENL MILLS DL -,10", "EUR");
         security.setIsin("US3703341046");
         security.setWkn("853862");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende28.txt", "Dividende28.txt"),
                         errors);
 
@@ -4977,7 +4918,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -4987,10 +4928,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 0.21), hasGrossValue("EUR", 0.28), //
                         hasTaxes("EUR", 0.03 + 0.04), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -4998,18 +4939,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende29()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende29.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende29.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5030,25 +4971,25 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende29WithSecurityInEUR()
     {
-        Security security = new Security("T ex as I n s t ru m e nt s I n c. R e gi s t e re d S ha r e s DL 1", CurrencyUnit.EUR);
+        var security = new Security("T ex as I n s t ru m e nt s I n c. R e gi s t e re d S ha r e s DL 1", "EUR");
         security.setIsin("US8825081040");
         security.setWkn("852654");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende29.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende29.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -5058,10 +4999,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 12.72), hasGrossValue("EUR", 12.72), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -5069,19 +5010,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende29()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende29.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende29.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5103,11 +5044,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende29MitSteuerbehandlungVonDividende29()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende29.txt", "SteuerbehandlungVonDividende29.txt"),
                         errors);
 
@@ -5116,7 +5057,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5137,18 +5078,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende29MitSteuerbehandlungVonDividende29WithSecurityInEUR()
     {
-        Security security = new Security("T ex as I n s t ru m e nt s I n c. R e gi s t e re d S ha r e s DL 1", CurrencyUnit.EUR);
+        var security = new Security("T ex as I n s t ru m e nt s I n c. R e gi s t e re d S ha r e s DL 1", "EUR");
         security.setIsin("US8825081040");
         security.setWkn("852654");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende29.txt", "SteuerbehandlungVonDividende29.txt"),
                         errors);
 
@@ -5157,7 +5098,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -5167,10 +5108,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 10.81), hasGrossValue("EUR", 12.72), //
                         hasTaxes("EUR", 1.91), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -5178,11 +5119,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende29MitSteuerbehandlungVonDividende29_SourceFilesReversed()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende29.txt", "Dividende29.txt"),
                         errors);
 
@@ -5191,7 +5132,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5211,18 +5152,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende29MitSteuerbehandlungVonDividende29WithSecurityInEUR_SourceFilesReversed()
     {
-        Security security = new Security("TEXAS INSTR. DL 1", CurrencyUnit.EUR);
+        var security = new Security("TEXAS INSTR. DL 1", "EUR");
         security.setIsin("US8825081040");
         security.setWkn("852654");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende29.txt", "Dividende29.txt"),
                         errors);
 
@@ -5231,7 +5172,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -5241,10 +5182,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 10.81), hasGrossValue("EUR", 12.72), //
                         hasTaxes("EUR", 1.91), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -5252,18 +5193,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende30()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende30.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende30.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5283,19 +5224,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonDividende30()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende30.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende30.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5315,11 +5256,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende30MitSteuerbehandlungVonDividende30()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Dividende30.txt", "SteuerbehandlungVonDividende30.txt"),
                         errors);
 
@@ -5328,7 +5269,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5348,11 +5289,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende30MitSteuerbehandlungVonDividende30_SourceFilesReversed()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende30.txt", "Dividende30.txt"),
                         errors);
 
@@ -5361,7 +5302,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5381,18 +5322,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende31()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende31.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende31.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5413,25 +5354,25 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende31WithSecurityInEUR()
     {
-        Security security = new Security("A p p le In c . R e gi s te r e d S ha r e s o . N .", CurrencyUnit.EUR);
+        var security = new Security("A p p le In c . R e gi s te r e d S ha r e s o . N .", "EUR");
         security.setIsin("US0378331005");
         security.setWkn("865985");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende31.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende31.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -5441,10 +5382,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 7.99), hasGrossValue("EUR", 7.99), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -5452,18 +5393,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende32()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende32.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende32.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5484,25 +5425,25 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende32WithSecurityInEUR()
     {
-        Security security = new Security("A l p h a b et I n c . R e g . Sh s Cl . A D L -, 0 0 1", CurrencyUnit.EUR);
+        var security = new Security("A l p h a b et I n c . R e g . Sh s Cl . A D L -, 0 0 1", "EUR");
         security.setIsin("US02079K3059");
         security.setWkn("A14Y6F");
 
-        Client client = new Client();
+        var client = new Client();
         client.addSecurity(security);
 
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(client);
+        var extractor = new ComdirectPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende32.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende32.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -5512,10 +5453,10 @@ public class ComdirectPDFExtractorTest
                         hasAmount("EUR", 14.90), hasGrossValue("EUR", 14.90), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
                         check(tx -> {
-                            CheckCurrenciesAction c = new CheckCurrenciesAction();
-                            Account account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
-                            Status s = c.process((AccountTransaction) tx, account);
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
@@ -5523,19 +5464,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonEinloesung01()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonEinloesung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonEinloesung01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5555,19 +5496,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testSteuerbehandlungVonEinbuchung01()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonEinbuchung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonEinbuchung01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5587,19 +5528,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testVorabpauschaleSteuerbehandlung01()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VorabpauschaleSteuerbehandlung01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VorabpauschaleSteuerbehandlung01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5619,19 +5560,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testVorabpauschaleSteuerbehandlung02()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "VorabpauschaleSteuerbehandlung02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VorabpauschaleSteuerbehandlung02.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5663,18 +5604,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testFinanzreport01()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(22L));
         assertThat(results.size(), is(22));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2018-09-04"), hasAmount("EUR", 1500.00), //
@@ -5772,18 +5713,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testFinanzreport02()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(11L));
         assertThat(results.size(), is(11));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2013-11-18"), hasAmount("EUR", 20.00), //
@@ -5833,18 +5774,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testFinanzreport03()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport03.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(13L));
         assertThat(results.size(), is(13));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2017-06-05"), hasAmount("EUR", 49.66), //
@@ -5902,18 +5843,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testFinanzreport04()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(7L));
         assertThat(results.size(), is(7));
-        new AssertImportActions().check(results, "EUR", "USD"); // Multiple currencies
+        new AssertImportActions().check(results, "EUR", "USD"); // Multiple
+                                                                // currencies
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2017-06-14"), hasAmount("EUR", 501.00), //
@@ -5951,18 +5893,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testFinanzreport05()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport05.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(17L));
         assertThat(results.size(), is(17));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2016-08-01"), hasAmount("EUR", 894.30), //
@@ -6032,18 +5974,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testFinanzreport06()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport06.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(5L));
         assertThat(results.size(), is(5));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2018-08-01"), hasAmount("EUR", 30.00), //
@@ -6069,18 +6011,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testFinanzreport07()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport07.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(fee(hasDate("2023-01-31"), hasAmount("EUR", 1.90), //
@@ -6094,11 +6036,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testFinanzreport08()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Finanzreport08MitAuslandsueberweisung.txt"), errors);
 
         assertThat(errors, empty());
@@ -6106,7 +6048,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(5L));
         assertThat(results.size(), is(5));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2023-05-07"), hasAmount("EUR", 1000.00), //
@@ -6132,11 +6074,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testFinanzreport09()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Finanzreport09MitSteuerverrechnungNegativ.txt"), errors);
 
         assertThat(errors, empty());
@@ -6144,7 +6086,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(10L));
         assertThat(results.size(), is(10));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transactions
         assertThat(results, hasItem(deposit(hasDate("2024-11-04"), hasAmount("EUR", 200.00), //
@@ -6190,11 +6132,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testFinanzreport10()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        var results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "Finanzreport10MitSteuerverrechnungPositiv.txt"), errors);
 
         assertThat(errors, empty());
@@ -6202,7 +6144,7 @@ public class ComdirectPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(3L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transactions
         assertThat(results, hasItem(fee(hasDate("2024-11-01"), hasAmount("EUR", 4.33), //
@@ -6220,19 +6162,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testFinanzreport11()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
-                        PDFInputFile.loadTestCase(getClass(), "Finanzreport11.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Finanzreport11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(6L));
         assertThat(results.size(), is(6));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transactions
         assertThat(results, hasItem(deposit(hasDate("2025-02-19"), hasAmount("EUR", 1500.00), //
@@ -6262,18 +6203,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerwahrentgelt01()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verwahrentgelt01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verwahrentgelt01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -6293,18 +6234,18 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerwahrentgelt02()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verwahrentgelt02.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verwahrentgelt02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -6324,19 +6265,19 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testSteuerbehandlungOhneDividende01()
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungOhneDividende01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungOhneDividende01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -6372,19 +6313,19 @@ public class ComdirectPDFExtractorTest
         //                  ]
         // }
         // @formatter:off
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        var extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung13.txt",
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "KaufMitSteuerbehandlung13.txt",
                         "KaufMitSteuerbehandlung14.txt", "VerkaufMitSteuerbehandlung13.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(2L));
         assertThat(countBuySell(results), is(3L));
-        assertThat(countAccountTransactions(results), is(2L));
-        assertThat(results.size(), is(7));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(6));
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -6413,16 +6354,6 @@ public class ComdirectPDFExtractorTest
                         hasNote("Ord.-Nr.: 272803480270 | R.-Nr.: 591997149596D095"), //
                         hasAmount("EUR", 24.99), hasGrossValue("EUR", 23.68), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.36 + 0.95))));
-
-        // check cancellation transaction
-        assertThat(results, hasItem(withFailureMessage( //
-                        Messages.MsgErrorTransactionTypeNotSupported, //
-                        taxes( //
-                                        hasDate("2022-10-04T00:00"), hasShares(0.565), //
-                                        hasSource("KaufMitSteuerbehandlung13.txt"), //
-                                        hasNote(null), //
-                                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
-                                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00)))));
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //

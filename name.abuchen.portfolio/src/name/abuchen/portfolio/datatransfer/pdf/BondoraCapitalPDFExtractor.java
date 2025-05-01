@@ -9,6 +9,7 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 /**
  * @implNote Bondora Capital does not have a specific bank identifier.
@@ -112,7 +113,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                             }
 
                                                             t.setAmount(asAmount(v.get("amount"), language, country));
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
@@ -161,7 +162,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                             }
 
                                                             t.setAmount(asAmount(v.get("amount"), language, country));
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
@@ -186,7 +187,7 @@ public class BondoraCapitalPDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setAmount(asAmount(v.get("amount"), "de", "DE"));
-                                                            t.setCurrencyCode("EUR");
+                                                            t.setCurrencyCode(CurrencyUnit.EUR);
                                                             t.setNote(trim(v.get("note")));
                                                         }))
 

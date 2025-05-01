@@ -73,7 +73,7 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
                         // @formmatter:on
                         .section("name", "tickerSymbol", "currency").optional() //
                         .match("^COMPANY: (?<name>.*)$") //
-                        .match("^(?<tickerSymbol>[\\w]{3,4})$") //
+                        .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)$") //
                         .match("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\p{Sc}[\\.,\\d]+ .*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
@@ -84,7 +84,7 @@ public class CommSecPDFExtractor extends AbstractPDFExtractor
                         // @formmatter:on
                         .section("name", "tickerSymbol", "currency").optional() //
                         .match("^COMPANY (?<name>.*)$") //
-                        .match("^SECURITY ORDINARY FULLY PAID (?<tickerSymbol>[\\w]{3,4})$") //
+                        .match("^SECURITY ORDINARY FULLY PAID (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)$") //
                         .match("^CONSIDERATION \\((?<currency>[\\w]{3})\\): \\p{Sc}[\\.,\\d]+ .*$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 

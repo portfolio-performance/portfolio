@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -24,10 +25,37 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Pair;
 
+/**
+ * @formatter:off
+ * @implNote Arkéa Direct Bank / Fortuneo Banque provides two documents for the transaction.
+ *           The security transaction and the taxes treatment.
+ *           Both documents are provided as one PDF or as two PDFs.
+ *
+ *           The security transaction includes the fees, but not the correct taxes
+ *           and the taxes treatment includes all taxes (including withholding tax),
+ *           but not all fees.
+ *
+ *           Therefore, we use the documents based on their function and merge both documents, if possible, as one transaction.
+ *           {@code
+ *              matchTransactionPair(List<Item> transactionList,List<Item> taxesTreatmentList)
+ *           }
+ *
+ *           The separate taxes treatment does only contain taxes in the account currency.
+ *           However, if the security currency differs, we need to provide the currency conversion.
+ *           {@code
+ *              applyMissingCurrencyConversionBetweenTaxesAndPurchaseSale(Collection<TransactionTaxesPair> purchaseSaleTaxPairs)
+ *           }
+ *
+ *           Always import the securities transaction and the taxes treatment for a correct transaction.
+ *           Due to rounding differences, the correct gross amount is not always shown in the securities transaction.
+ *
+ *           In postProcessing, we always finally delete the taxes treatment.
+ * @formatter:on
+ */
+
 @SuppressWarnings("nls")
 public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
 {
-
     private static record TransactionTaxesPair(Item transaction, Item tax)
     {
     }
@@ -42,6 +70,7 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
         addBuySellTransaction_Format02();
         addDividendeTransaction();
         addTaxesTreatmentTransaction();
+        addDepositTransaction();
     }
 
     @Override
@@ -188,6 +217,59 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(BuySellEntryItem::new);
+    }
+
+    private void addDepositTransaction()
+    {
+        var type = new DocumentType("LIQUIDITES sur PEA",
+                        documentContext -> documentContext //
+                        // @formatter:off
+                        // Nouveau Solde au 31/12/2020 5 315,65
+                        // @formatter:on
+                        .section("year") //
+                        .match("^Nouveau Solde au 31/12/(?<year>[\\d]{4}) .*$") //
+                        .assign((ctx, v) -> {
+                            ctx.put("year", v.get("year"));
+                        })
+                        // @formatter:off
+                        // Date Libellé Débit € Crédit €
+                        // @formatter:on
+                        .section("currency") //
+                                        .match("^Date Libell. D.bit (?<currency>\\p{Sc}) Cr.dit \\1$") //
+                        .assign((ctx, v) -> {
+                            ctx.put("currency", v.get("currency"));
+                        }));
+        this.addDocumentTyp(type);
+
+
+        // @formatter:off
+        // 02/03 VERSEMENT 3 000,00
+        // 10/03 REGULARISATION 331,98
+        // @formatter:on
+        var depositBlock = new Block("^(?<day>[\\d]{2})\\/(?<month>[\\d]{2}) " //
+                        + "(VERSEMENT|REGULARISATION) " //
+                        + "(?<amount>[\\.,\\d\\\s]+)");
+        type.addBlock(depositBlock);
+
+        depositBlock.set(new Transaction<AccountTransaction>() //
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+                        .section("amount", "day", "month", "note") //
+                        .documentContext("year", "currency") //
+                        .match("^(?<day>[\\d]{2})\\/(?<month>[\\d]{2}) " //
+                                        + "(?<note>VERSEMENT|REGULARISATION) " //
+                                        + "(?<amount>[\\.,\\d\\\s]+)")
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setDateTime(asDate(v.get("day") + "." + v.get("month") + "." + v.get("year")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private void addDividendeTransaction()
@@ -384,13 +466,13 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
      * This method performs post-processing on a list transaction items, categorizing and
      * modifying them based on their types and associations. It follows several steps:
      *
-     * 1. Filters the input list to isolate taxes treatment transactions and buy transactions.
-     * 2. Matches buy transactions with their corresponding taxes treatment transactions.
-     * 3. Adjusts buy transactions by adding tax amounts, adding tax units, combining source information, appending tax-related notes,
+     * 1. Filters the input list to isolate taxes treatment transactions, purchase/sale transactions.
+     * 2. Matches purchase/sale transactions with their corresponding taxes treatment.
+     * 3. Adjusts purchase/sale transactions by adding/subtracting tax amounts, adding tax units, combining source information, appending tax-related notes,
      *    and removing taxes treatment's from the list of items.
      *
      * The goal of this method is to process transactions and ensure that taxes treatment is accurately reflected
-     * in buy transactions, making the transaction's more comprehensive and accurate.
+     * in purchase/sale transactions, making the transaction's more comprehensive and accurate.
      *
      * @param items The list of transaction items to be processed.
      * @return A modified list of transaction items after post-processing.
@@ -399,49 +481,68 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public void postProcessing(List<Item> items)
     {
-        // Filter transactions by taxes
+        // Filter transactions by taxes treatment's
         var taxesTreatmentList = items.stream() //
                         .filter(TransactionItem.class::isInstance) //
                         .filter(i -> i.getSubject() instanceof AccountTransaction) //
-                        .filter(i -> AccountTransaction.Type.TAXES
-                                        .equals(((AccountTransaction) i.getSubject()).getType())) //
+                        .filter(i -> { //
+                            var type = ((AccountTransaction) i.getSubject()).getType(); //
+                            return type == AccountTransaction.Type.TAXES || type == AccountTransaction.Type.TAX_REFUND; //
+                        }) //
                         .toList();
 
         // Filter transactions by buySell transactions
-        var buyTransactionList = items.stream() //
+        var purchaseSaleTransactionList = items.stream() //
                         .filter(BuySellEntryItem.class::isInstance) //
                         .filter(i -> i.getSubject() instanceof BuySellEntry) //
-                        .filter(i -> PortfolioTransaction.Type.BUY //
-                                        .equals((((BuySellEntry) i.getSubject()).getPortfolioTransaction().getType()))) //
+                        .filter(i -> { //
+                            var type = ((BuySellEntry) i.getSubject()).getPortfolioTransaction().getType(); //
+                            return PortfolioTransaction.Type.SELL.equals(type)
+                                            || PortfolioTransaction.Type.BUY.equals(type); //
+                        }) //
                         .toList();
 
-        var transactionTaxPairs = matchTransactionPair(buyTransactionList, taxesTreatmentList);
+        var purchaseSaleListTaxPairs = matchTransactionPair(purchaseSaleTransactionList, taxesTreatmentList);
+
+        applyMissingCurrencyConversionBetweenTaxesAndPurchaseSale(purchaseSaleListTaxPairs);
 
         // @formatter:off
-        // This loop iterates through a list of buy and tax pairs and processes them.
+        // This loop iterates through a list of purchase/sale and tax pairs and processes them.
         //
-        // For each pair, it adds the tax amount to the buy transaction's total amount,
-        // adds the tax as a tax unit to the buy transaction, combines source information if needed,
-        // appends taxes treatment notes to the buy transaction, and removes the tax treatment from the 'items' list.
+        // For each pair, it adds/subtracts the tax amount from the purchase/sale transaction's total amount,
+        // adds the tax as a tax unit to the purchase/sale transaction, combines source information if needed,
+        // appends taxes treatment notes to the purchase/sale transaction, and removes the tax treatment from the 'items' list.
         //
         // It performs these operations when a valid tax transaction is found.
         // @formatter:on
-        for (TransactionTaxesPair pair : transactionTaxPairs)
+        for (TransactionTaxesPair pair : purchaseSaleListTaxPairs)
         {
-            var buyTransaction = (BuySellEntry) pair.transaction.getSubject();
+            var purchaseSaleTransaction = (BuySellEntry) pair.transaction.getSubject();
             var taxesTransaction = pair.tax() != null ? (AccountTransaction) pair.tax().getSubject() : null;
 
             if (taxesTransaction != null && taxesTransaction.getType() == AccountTransaction.Type.TAXES)
             {
-                buyTransaction.setMonetaryAmount(buyTransaction.getPortfolioTransaction().getMonetaryAmount()
-                                .add(taxesTransaction.getMonetaryAmount()));
+                if (purchaseSaleTransaction.getPortfolioTransaction().getType().isLiquidation())
+                {
+                    purchaseSaleTransaction.setMonetaryAmount(purchaseSaleTransaction.getPortfolioTransaction()
+                                    .getMonetaryAmount().subtract(taxesTransaction.getMonetaryAmount()));
+                }
+                else
+                {
+                    purchaseSaleTransaction.setMonetaryAmount(purchaseSaleTransaction.getPortfolioTransaction()
+                                    .getMonetaryAmount().add(taxesTransaction.getMonetaryAmount()));
+                }
 
-                buyTransaction.getPortfolioTransaction()
+                purchaseSaleTransaction.getPortfolioTransaction()
                                 .addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
 
-                buyTransaction.setSource(concatenate(buyTransaction.getSource(), taxesTransaction.getSource(), "; "));
+                purchaseSaleTransaction.setSource(
+                                concatenate(purchaseSaleTransaction.getSource(), taxesTransaction.getSource(), "; "));
 
-                buyTransaction.setNote(concatenate(buyTransaction.getNote(), taxesTransaction.getNote(), " | "));
+                purchaseSaleTransaction.setNote(
+                                concatenate(purchaseSaleTransaction.getNote(), taxesTransaction.getNote(), " | "));
+
+                ExtractorUtils.fixGrossValueBuySell().accept(purchaseSaleTransaction);
 
                 items.remove(pair.tax());
             }
@@ -504,5 +605,81 @@ public class ArkeaDirectBankPDFExtractor extends AbstractPDFExtractor
         );
 
         return pairs.values();
+    }
+
+    /**
+     * @formatter:off
+     * Resolves missing currency conversions between taxes and purchase/sale transactions based on existing exchange rates.
+     *
+     * For each TransactionTaxesPair, this method checks for currency mismatches between:
+     * - the monetary amount and security currency of the taxes transaction, and
+     * - the monetary amount and security currency of the purchase/sale transaction.
+     *
+     * If either side shows a mismatch, and if the opposite side contains a valid exchange rate,
+     * a corresponding GROSS_VALUE unit with the appropriate FX conversion will be added to ensure consistency.
+     *
+     * This helps ensure that both tax and purchase/sale transactions carry correct currency conversion data
+     * when working across multi-currency portfolios.
+     *
+     * @param purchaseSaleTaxPairs A collection of TransactionTaxesPair objects containing associated taxes and purchase/sale transactions.
+     * @formatter:on
+     */
+    private void applyMissingCurrencyConversionBetweenTaxesAndPurchaseSale(
+                    Collection<TransactionTaxesPair> purchaseSaleTaxPairs)
+    {
+        purchaseSaleTaxPairs.forEach(pair -> {
+            if (pair.tax != null && pair.transaction != null)
+            {
+                var tax = (AccountTransaction) pair.tax.getSubject();
+                var purchaseSale = (BuySellEntry) pair.transaction.getSubject();
+                var purchaseSalePortfolioTx = purchaseSale.getPortfolioTransaction();
+
+                // Determine currency of monetary amounts and associated
+                // securities
+                var taxCurrency = tax.getMonetaryAmount().getCurrencyCode();
+                var taxSecurityCurrency = tax.getSecurity().getCurrencyCode();
+
+                var purchaseSaleCurrency = purchaseSalePortfolioTx.getMonetaryAmount().getCurrencyCode();
+                var purchaseSaleSecurityCurrency = purchaseSalePortfolioTx.getSecurity().getCurrencyCode();
+
+                var taxHasMismatch = !taxCurrency.equals(taxSecurityCurrency);
+                var purchaseSaleHasMismatch = !purchaseSaleCurrency.equals(purchaseSaleSecurityCurrency);
+
+                // Proceed only if at least one of the transactions has a
+                // currency mismatch
+                if (taxHasMismatch || purchaseSaleHasMismatch)
+                {
+                    var taxAmount = tax.getMonetaryAmount();
+
+                    var taxGrossValue = tax.getUnit(Unit.Type.GROSS_VALUE);
+                    var purchaseSaleGrossValue = purchaseSalePortfolioTx.getUnit(Unit.Type.GROSS_VALUE);
+
+                    // If the taxes transaction contains a usable exchange rate,
+                    // apply the conversion to the sales transaction. Otherwise,
+                    // if the purchase/sales transaction contains a usable
+                    // exchange rate,
+                    // apply the conversion to the taxes transaction.
+                    if (taxGrossValue.isPresent() && taxGrossValue.get().getExchangeRate() != null)
+                    {
+                        var rate = new ExtrExchangeRate(taxGrossValue.get().getExchangeRate(),
+                                        purchaseSaleSecurityCurrency, taxCurrency);
+                        var fxGross = rate.convert(purchaseSaleSecurityCurrency,
+                                        purchaseSalePortfolioTx.getMonetaryAmount());
+
+                        purchaseSalePortfolioTx.addUnit(new Unit(Unit.Type.GROSS_VALUE,
+                                        purchaseSalePortfolioTx.getMonetaryAmount(), fxGross, rate.getRate()));
+                    }
+                    else if (purchaseSaleGrossValue.isPresent()
+                                    && purchaseSaleGrossValue.get().getExchangeRate() != null)
+                    {
+                        var rate = new ExtrExchangeRate(purchaseSaleGrossValue.get().getExchangeRate(),
+                                        purchaseSaleSecurityCurrency, taxCurrency);
+                        var fxGross = rate.convert(purchaseSaleSecurityCurrency, taxAmount);
+
+                        tax.addUnit(new Unit(Unit.Type.GROSS_VALUE, taxAmount, fxGross, rate.getRate()));
+                    }
+                }
+            }
+        });
     }
 }

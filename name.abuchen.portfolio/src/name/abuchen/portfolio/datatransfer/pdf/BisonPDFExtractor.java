@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.util.TextUtil.trim;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -44,7 +46,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^(Kauf|Verkauf)([\\*])? [\\w]{3} [\\.,\\d]+$");
+        var firstRelevantLine = new Block("^(Kauf|Verkauf|Staking Reward)([\\*])? [A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})? [\\.,\\d]+$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.setMaxSize(2);
         firstRelevantLine.set(pdfTransaction);
@@ -59,7 +61,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^(?<type>(Kauf|Verkauf))([\\*])? [\\w]{3} [\\.,\\d]+$") //
+                        .match("^(?<type>(Kauf|Verkauf|Staking Reward))([\\*])? [A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})? [\\.,\\d]+$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type"))) //
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -74,9 +76,12 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
                         //
                         // Verkauf* ETH 0,03396843
                         // 12.06.2022 21:19 1.401,94 €/ETH + 47,62 €
+                        //
+                        // Staking Reward ETH 0,00000541
+                        // 03.02.2025 08:48 3.011,63 €/ETH + 0,02 €
                         // @formatter:on
                         .section("tickerSymbol", "shares", "date", "time", "amount", "currency") //
-                        .match("^(Kauf|Verkauf)([\\*])? (?<tickerSymbol>[\\w]{3}) (?<shares>[\\.,\\d]+)$") //
+                        .match("^(Kauf|Verkauf|Staking Reward)([\\*])? (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<shares>[\\.,\\d]+)$") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateCryptoCurrency(v));
@@ -98,7 +103,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<PortfolioTransaction>();
 
-        var firstRelevantLine = new Block("^(Gutschein)\\*? [\\w]{3} [\\.,\\d]+$");
+        var firstRelevantLine = new Block("^(Gutschein|Staking Reward)\\*? [A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})? [\\.,\\d]+$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.setMaxSize(2);
         firstRelevantLine.set(pdfTransaction);
@@ -114,9 +119,12 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Gutschein BTC 0,00130130
                         // 16.01.2020 11:19 7.684,63 €/BTC + 10,00 €
+                        //
+                        // Staking Reward ETH 0,00000541
+                        // 03.02.2025 08:48 3.011,63 €/ETH + 0,02 €
                         // @formatter:on
-                        .section("tickerSymbol", "shares", "date", "time", "amount", "currency") //
-                        .match("^Gutschein([\\*])? (?<tickerSymbol>[\\w]{3}) (?<shares>[\\.,\\d]+)$") //
+                        .section("note", "tickerSymbol", "shares", "date", "time", "amount", "currency") //
+                        .match("^(?<note>(Gutschein|Staking Reward))([\\*])? (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<shares>[\\.,\\d]+)$") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateCryptoCurrency(v));
@@ -126,6 +134,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
 
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(trim(v.get("note")));
                         })
 
                         .wrap(TransactionItem::new);
@@ -206,7 +215,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
                         .section("name", "isin", "currency") //
                         .match("^Name (?<name>.*)$") //
                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])$") //
-                        .match("^.*Vorabpauschale in (?<currency>[\\w]{3})$$") //
+                        .match("^.*Vorabpauschale in (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off

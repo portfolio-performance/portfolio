@@ -6,6 +6,7 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -36,7 +37,7 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
                                                         // @formatter:on
                                                         section -> section //
                                                                         .attributes("currency") //
-                                                                        .match("^Tagesgeldkonto \\(alle Betr.* in (?<currency>[\\w]{3})\\).*$") //
+                                                                        .match("^Tagesgeldkonto \\(alle Betr.* in (?<currency>[A-Z]{3})\\).*$") //
                                                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))),
                                                         // @formatter:off
                                                         // Tagesgeldkonto 100,00 24.10.2011 100,00
@@ -44,7 +45,8 @@ public class ABNAMROGroupPDFExtractor extends AbstractPDFExtractor
                                                         section -> section //
                                                                         .attributes("currency") //
                                                                         .match("^Tagesgeldkonto (?<currency>.*)$") //
-                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode("EUR"))))
+                                                                        .assign((ctx, v) -> ctx.put("currency",
+                                                                                        CurrencyUnit.EUR)))
 
                                         .optionalOneOf( //
                                                         // @formatter:off

@@ -9,6 +9,7 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -79,7 +80,7 @@ public class FidelityInternationalPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("wkn", "tickerSymbol", "currency", "name") //
                                                         .match("^.* [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\w]+ (?<wkn>[A-Z0-9]+)$") //
                                                         .match("^YOU PURCHASED [\\.,\\d]+ AT (?<currency>\\p{Sc})[\\.,\\d]+.*$") //
-                                                        .match("^SECURITY DESCRIPTION SYMBOL: (?<tickerSymbol>[A-Z]{2,}) .*$") //
+                                                        .match("^SECURITY DESCRIPTION SYMBOL: (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) .*$") //
                                                         .match("^(?<name>.*)$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -92,7 +93,7 @@ public class FidelityInternationalPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("wkn", "tickerSymbol", "currency", "name") //
                                                         .match("^.* [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\w]+ (?<wkn>[A-Z0-9]+)$") //
                                                         .match("^YOU SOLD [\\.,\\d]+.*$") //
-                                                        .match("^SECURITY DESCRIPTION SYMBOL: (?<tickerSymbol>[A-Z]{2,}) .* (?<currency>\\p{Sc})[\\.,\\d]+$") //
+                                                        .match("^SECURITY DESCRIPTION SYMBOL: (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?) .* (?<currency>\\p{Sc})[\\.,\\d]+$") //
                                                         .match("^(?<name>.*)$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
@@ -195,9 +196,9 @@ public class FidelityInternationalPDFExtractor extends AbstractPDFExtractor
                                                         .match("^You (Bought|Sold) (?<name>.*) Principal Amount([\\s]{1,})[\\.,\\d]+$") //
                                                         .match("^.* ISIN #(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
                                                         .find("Symbol:.*") //
-                                                        .match("^(?<tickerSymbol>[A-Z]{2,5}).*$") //
+                                                        .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?).*$") //
                                                         .assign((t, v) -> {
-                                                            v.put("currency", asCurrencyCode("USD"));
+                                                            v.put("currency", CurrencyUnit.USD);
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }),
                                         // @formatter:off
@@ -212,9 +213,9 @@ public class FidelityInternationalPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[A-Z0-9]+\\-[A-Z0-9]+ .* [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} (?<wkn>[A-Z0-9]+) [A-Z0-9]+\\-[A-Z0-9]+$") //
                                                         .match("^You (Bought|Sold) (?<name>.*) ISIN #(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Principal Amount([\\s]{1,})[\\.,\\d]+$") //
                                                         .find("Symbol:.*") //
-                                                        .match("^(?<tickerSymbol>[A-Z]{2,5}).*$") //
+                                                        .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?).*$") //
                                                         .assign((t, v) -> {
-                                                            v.put("currency", asCurrencyCode("USD"));
+                                                            v.put("currency", CurrencyUnit.USD);
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }),
                                         // @formatter:off
@@ -228,9 +229,9 @@ public class FidelityInternationalPDFExtractor extends AbstractPDFExtractor
                                                         .match("^[A-Z0-9]+\\-[A-Z0-9]+ .* [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} [\\d]{2}\\-[\\d]{2}\\-[\\d]{2} (?<wkn>[A-Z0-9]+) [A-Z0-9]+\\-[A-Z0-9]+$") //
                                                         .match("^You (Bought|Sold) (?<name>.*) Principal Amount([\\s]{1,})[\\.,\\d]+$") //
                                                         .find("Symbol:.*") //
-                                                        .match("^(?<tickerSymbol>[A-Z]{2,5}).*$") //
+                                                        .match("^(?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?).*$") //
                                                         .assign((t, v) -> {
-                                                            v.put("currency", asCurrencyCode("USD"));
+                                                            v.put("currency", CurrencyUnit.USD);
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }))
 
@@ -293,7 +294,8 @@ public class FidelityInternationalPDFExtractor extends AbstractPDFExtractor
                         .find("You (Bought|Sold) .*") //
                         .match("^.* Activity .*([\\s]{1,})(?<fee>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            v.put("currency", asCurrencyCode("USD"));
+                            v.put("currency", CurrencyUnit.USD);
+
                             processFeeEntries(t, v, type);
                         })
 

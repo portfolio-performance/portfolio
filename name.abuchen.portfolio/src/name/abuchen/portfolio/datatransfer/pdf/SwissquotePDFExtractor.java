@@ -264,7 +264,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "currency") //
                         .find("Anzahl W.hrung Rate")
-                        .match("^[\\.'\\d]+ (?<name>[A-Z]{3}) [\\.'\\d]+$") //
+                        .match("^[\\.'\\d]+ (?<name>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) [\\.'\\d]+$") //
                         .match("^Bruttobetrag (?<currency>[A-Z]{3})[\\s]{1,}[\\.'\\d]+$") //
                         .assign((t, v) -> {
                             v.put("tickerSymbol", v.get("name"));
@@ -278,7 +278,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("shares") //
                         .find("Anzahl W.hrung Rate")
-                        .match("^(?<shares>[\\.'\\d]+) [A-Z]{3} [\\.'\\d]+$") //
+                        .match("^(?<shares>[\\.'\\d]+) [A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})? [\\.'\\d]+$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off

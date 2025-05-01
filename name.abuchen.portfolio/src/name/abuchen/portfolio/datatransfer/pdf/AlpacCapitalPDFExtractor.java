@@ -48,7 +48,7 @@ public class AlpacCapitalPDFExtractor extends AbstractPDFExtractor
                                         // SYMBOL: SGOV
                                         // @formatter:on
                                         .attributes("tickerSymbol") //
-                                        .match("^SYMBOL: (?<tickerSymbol>[A-Z]{3,4})$"));
+                                        .match("^SYMBOL: (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?)$"));
 
         final DocumentType type = new DocumentType("BUY\\/SELL", securityRange);
         this.addDocumentTyp(type);

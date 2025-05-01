@@ -1,0 +1,48 @@
+PDFBox Version: 1.8.17
+Portfolio Performance Version: 0.72.2
+-----------------------------------------
+CH - 123 - 123
+Bericht zu Trade-Details
+Berichtszeitraum: 20-Dez-2024 - 20-Dez-2024
+Generiert um: 23-Dez-2024 09:33:53 09:33:53 (W. Europe Standard Time)
+CH - 123 Saxo Bank CH
+Switzerland The Circle 38
+8058 Zürich-Flughafen
+Switzerland
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH - 123 Berichtszeitraum
+Währung: CHF 20-Dez-2024 - 20-Dez-2024
+Seite 1 von 3 Konten: 1/12 Generiert um: 23-Dez-2024
+Trade details, CHF
+Berichtszeitraum
+20-Dez-2024 bis 20-Dez-2024
+ETF
+Instrument Vanguard FTSE All-World UCITS ETF Handelszeit 20-Dez-2024 09:27:39
+ISIN IE00B3RBWM25 Valuta 24-Dez-2024
+Symbol VWRL:xswx Order-ID 5240614298
+Börsenbeschreibung SIX SWISS EXCHANGE (XSWX) Trade-ID 6107719451
+Handelsplatz Exchange Gehandelter Wert -3.050,00 CHF
+Ordertyp Limit-Order Preis 122 CHF
+K/V Kauf Menge 25,00
+Eröffnung/Schluss To-Open Spread-Kosten 0,00 CHF
+Saxo is counterparty No Gesamte Trading-Kosten -7,58 CHF
+Buchungsbetrag- Amount Umrechnungskosten Gebuchter Betrag
+Trade-Datum Value Date Umrechnungskurs
+ID CHF CHF CHF
+Provision 40107905938 20-Dez-2024 24-Dez-2024 -3,00 1,000000 0,00 -3,00
+Aktienbetrag 40112732021 20-Dez-2024 24-Dez-2024 -3.050,00 1,000000 0,00 -3.050,00
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH - 123 Berichtszeitraum
+Währung: CHF 20-Dez-2024 - 20-Dez-2024
+Seite 2 von 3 Konten: 1/12 Generiert um: 23-Dez-2024
+Trade details, CHF
+Berichtszeitraum
+20-Dez-2024 bis 20-Dez-2024
+Buchungsbetrag- Amount Umrechnungskosten Gebuchter Betrag
+Trade-Datum Value Date Umrechnungskurs
+ID CHF CHF CHF
+Schweizerische
+Stempelgebühr 40118366990 20-Dez-2024 24-Dez-2024 -4,58 1,000000 0,00 -4,58
+Ausland
+Nettobetrag - - - - - 0,00 -3.057,58
+Saxo Bank CH / The Circle 38 / 8058 Zürich-Flughafen / Switzerland CH - 123 Berichtszeitraum
+Währung: CHF 20-Dez-2024 - 20-Dez-2024
+Seite 3 von 3 Konten: 1/12 Generiert um: 23-Dez-2024

@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -355,7 +356,7 @@ public class GenoBrokerPDFExtractor extends AbstractPDFExtractor
 
                             // No amount available
                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
-                            t.setCurrencyCode("EUR");
+                            t.setCurrencyCode(CurrencyUnit.EUR);
                             t.setAmount(0);
                         })
 

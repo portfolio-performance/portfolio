@@ -45,7 +45,7 @@ import name.abuchen.portfolio.util.Pair;
  *           The separate taxes treatment does only contain taxes in the account currency.
  *           However, if the security currency differs, we need to provide the currency conversion.
  *           {@code
- *              fixMissingCurrencyConversionForSaleTaxesTransactions(Collection<TransactionTaxesPair>)
+ *              applyMissingCurrencyConversionBetweenTaxesAndPurchaseSale(Collection<TransactionTaxesPair> purchaseSaleTaxPairs)
  *           }
  *
  *           Always import the securities transaction and the taxes treatment for a correct transaction.
@@ -85,19 +85,19 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        final DocumentType type = new DocumentType("Effektenabrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}");
+        final var type = new DocumentType("Effektenabrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^Effektenabrechnung .*$");
+        var firstRelevantLine = new Block("^Effektenabrechnung .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -175,19 +175,19 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        final DocumentType type = new DocumentType("(Ertragsgutschrift|Dividendengutschrift) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}");
+        final var type = new DocumentType("(Ertragsgutschrift|Dividendengutschrift) [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^(Ertragsgutschrift|Dividendengutschrift) .*$");
+        var firstRelevantLine = new Block("^(Ertragsgutschrift|Dividendengutschrift) .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -237,11 +237,11 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         .match("^Devisenkurs zur Handelsw.hrung (?<termCurrency>[\\w]{3})\\/(?<baseCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
                         .match("^Bruttoertrag in [\\w]{3} [\\.,\\d]+ (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -262,19 +262,19 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
 
     private void addTaxesTreatmentTransaction()
     {
-        final DocumentType type = new DocumentType("\\(Steuerbeilage\\)");
+        final var type = new DocumentType("\\(Steuerbeilage\\)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^.* \\(Steuerbeilage\\) .*$");
+        var block = new Block("^.* \\(Steuerbeilage\\) .*$");
         type.addBlock(block);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
         block.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
@@ -359,12 +359,12 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Bemessungsgrundlage (?<grossAssessmentBasis>[\\.,\\d]+) (?<currencyAssessmentBasis>[\\w]{3})$") //
                                                         .match("^Gesamtsumme Steuern (?<deductedTaxes>[\\.,\\d]+) (?<currencyDeductedTaxes>[\\w]{3})$") //
                                                         .assign((t, v) -> {
-                                                            Money partialExemptionTaxes = Money.of(asCurrencyCode(v.get("currencypartialExemptionTaxes")), asAmount(v.get("partialExemptionTaxes")));
-                                                            Money grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
+                                                            var partialExemptionTaxes = Money.of(asCurrencyCode(v.get("currencypartialExemptionTaxes")), asAmount(v.get("partialExemptionTaxes")));
+                                                            var grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
                                                             grossBeforeTaxes = grossBeforeTaxes.add(partialExemptionTaxes);
 
-                                                            Money grossAssessmentBasis = Money.of(asCurrencyCode(v.get("currencyAssessmentBasis")), asAmount(v.get("grossAssessmentBasis")));
-                                                            Money deductedTaxes = Money.of(asCurrencyCode(v.get("currencyDeductedTaxes")), asAmount(v.get("deductedTaxes")));
+                                                            var grossAssessmentBasis = Money.of(asCurrencyCode(v.get("currencyAssessmentBasis")), asAmount(v.get("grossAssessmentBasis")));
+                                                            var deductedTaxes = Money.of(asCurrencyCode(v.get("currencyDeductedTaxes")), asAmount(v.get("deductedTaxes")));
 
                                                             // Calculate the taxes and store gross amount
                                                             if (!grossBeforeTaxes.isZero() && grossAssessmentBasis.isGreaterThan(grossBeforeTaxes))
@@ -414,11 +414,11 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Bemessungsgrundlage (?<grossAssessmentBasis>[\\.,\\d]+) (?<currencyAssessmentBasis>[\\w]{3})$") //
                                                         .match("^Gesamtsumme Steuern (?<deductedTaxes>[\\.,\\d]+) (?<currencyDeductedTaxes>[\\w]{3})$") //
                                                         .assign((t, v) -> {
-                                                            Money withHoldingTaxes = Money.of(asCurrencyCode(v.get("currencyWithHoldingTaxes")), asAmount(v.get("withHoldingTaxes")));
-                                                            Money grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
-                                                            Money withholdingTaxesTimes4 = Money.of(asCurrencyCode(v.get("currencyWithholdingTaxesTimes4")), asAmount(v.get("withholdingTaxesTimes4")));
-                                                            Money grossAssessmentBasis = Money.of(asCurrencyCode(v.get("currencyAssessmentBasis")), asAmount(v.get("grossAssessmentBasis")));
-                                                            Money deductedTaxes = Money.of(asCurrencyCode(v.get("currencyDeductedTaxes")), asAmount(v.get("deductedTaxes")));
+                                                            var withHoldingTaxes = Money.of(asCurrencyCode(v.get("currencyWithHoldingTaxes")), asAmount(v.get("withHoldingTaxes")));
+                                                            var grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
+                                                            var withholdingTaxesTimes4 = Money.of(asCurrencyCode(v.get("currencyWithholdingTaxesTimes4")), asAmount(v.get("withholdingTaxesTimes4")));
+                                                            var grossAssessmentBasis = Money.of(asCurrencyCode(v.get("currencyAssessmentBasis")), asAmount(v.get("grossAssessmentBasis")));
+                                                            var deductedTaxes = Money.of(asCurrencyCode(v.get("currencyDeductedTaxes")), asAmount(v.get("deductedTaxes")));
 
                                                             // Store in transaction context
                                                             v.getTransactionContext().put(ATTRIBUTE_GROSS_TAXES_TREATMENT, grossBeforeTaxes);
@@ -441,9 +441,9 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Bemessungsgrundlage (?<grossAssessmentBasis>[\\.,\\d]+) (?<currencyAssessmentBasis>[\\w]{3})$") //
                                                         .match("^Gesamtsumme Steuern (?<deductedTaxes>[\\.,\\d]+) (?<currencyDeductedTaxes>[\\w]{3})$") //
                                                         .assign((t, v) -> {
-                                                            Money grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
-                                                            Money grossAssessmentBasis = Money.of(asCurrencyCode(v.get("currencyAssessmentBasis")), asAmount(v.get("grossAssessmentBasis")));
-                                                            Money deductedTaxes = Money.of(asCurrencyCode(v.get("currencyDeductedTaxes")), asAmount(v.get("deductedTaxes")));
+                                                            var grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
+                                                            var grossAssessmentBasis = Money.of(asCurrencyCode(v.get("currencyAssessmentBasis")), asAmount(v.get("grossAssessmentBasis")));
+                                                            var deductedTaxes = Money.of(asCurrencyCode(v.get("currencyDeductedTaxes")), asAmount(v.get("deductedTaxes")));
 
                                                             // Calculate the taxes and store gross amount
                                                             if (!grossBeforeTaxes.isZero() && grossAssessmentBasis.isGreaterThan(grossBeforeTaxes))
@@ -472,8 +472,8 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Ver.u.erungsverlust \\- (?<grossLoss>[\\.,\\d]+) (?<currencyLoss>[\\w]{3})$") //
                                                         .match("^Ertr.ge\\/Verluste \\- (?<grossBeforeTaxes>[\\.,\\d]+) (?<currencyBeforeTaxes>[\\w]{3})$") //
                                                         .assign((t, v) -> {
-                                                            Money grossLoss = Money.of(asCurrencyCode(v.get("currencyLoss")), asAmount(v.get("grossLoss")));
-                                                            Money grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
+                                                            var grossLoss = Money.of(asCurrencyCode(v.get("currencyLoss")), asAmount(v.get("grossLoss")));
+                                                            var grossBeforeTaxes = Money.of(asCurrencyCode(v.get("currencyBeforeTaxes")), asAmount(v.get("grossBeforeTaxes")));
                                                             grossBeforeTaxes = grossLoss.subtract(grossBeforeTaxes);
 
                                                             // There is no taxes to pay
@@ -487,6 +487,46 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                                                         }))
 
                         // @formatter:off
+                        // Add withHolding tax and set correct gross amount
+                        // @formatter:on
+                        .optionalOneOf( //
+                                        // @formatter:off
+                                        // Bruttobetrag:                     USD               0,22
+                                        // 15,000 % Quellensteuer            USD               0,03 -
+                                        //     zum Devisenkurs: EUR/USD      1,084100                 EUR               4,65
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("fxCurrency", "fxGross", "currencyWithHoldingTax", "withHoldingTax", "baseCurrency", "termCurrency", "exchangeRate") //
+                                                        .match("^Bruttobetrag:[\\s]{1,}(?<fxCurrency>[\\w]{3})[\\s]{1,}(?<fxGross>[\\.,\\d]+).*$") //
+                                                        .match("^[\\.,\\d]+ % Quellensteuer[\\s]{1,}(?<currencyWithHoldingTax>[\\w]{3})[\\s]{1,}(?<withHoldingTax>[\\.,\\d]+) \\-.*$") //
+                                                        .match("^.*zum Devisenkurs: (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3})[\\s]{1,}(?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var fxWithHoldingTax = Money.of(asCurrencyCode(v.get("currencyWithHoldingTax")), asAmount(v.get("withHoldingTax")));
+                                                            var withHoldingTax = rate.convert(rate.getBaseCurrency(), fxWithHoldingTax);
+
+                                                            t.setMonetaryAmount(t.getMonetaryAmount().add(withHoldingTax));
+
+                                                            var fxGross = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxGross")));
+
+                                                            checkAndSetGrossUnit(t.getMonetaryAmount(), fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
+                                        // 15,000 % Quellensteuer                                     EUR               XX,XX -
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("currency", "withHoldingTax") //
+                                                        .match("^[\\.,\\d]+ % Quellensteuer[\\s]{1,}(?<currencyWithHoldingTax>[\\w]{3})[\\s]{1,}(?<withHoldingTax>[\\.,\\d]+) \\-.*$") //
+                                                        .assign((t, v) -> {
+                                                            var withHoldingTax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("withHoldingTax")));
+
+                                                            if (t.getMonetaryAmount().getCurrencyCode().equals(withHoldingTax.getCurrencyCode()))
+                                                                t.setMonetaryAmount(t.getMonetaryAmount().add(withHoldingTax));
+                                                        }))
+                        
+                        // @formatter:off
                         // Transaktionsreferenz TR TBK14720B024746O001
                         // Transaktionsreferenz INDTBK1234567890
                         // @formatter:on
@@ -495,7 +535,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote("Tr.-Nr.: " + trim(v.get("note"))))
 
                         .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             // Store attribute in item data map
                             item.setData(ATTRIBUTE_GROSS_TAXES_TREATMENT, ctx.get(ATTRIBUTE_GROSS_TAXES_TREATMENT));
@@ -524,15 +564,15 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
      * This method performs post-processing on a list transaction items, categorizing and
      * modifying them based on their types and associations. It follows several steps:
      *
-     * 1. Filters the input list to isolate taxes treatment transactions, sale transactions, and dividend transactions.
-     * 2. Matches sale transactions with their corresponding taxes treatment and dividend transactions with their corresponding taxes treatment.
-     * 3. Adjusts sale transactions by subtracting tax amounts, adding tax units, combining source information, appending tax-related notes,
+     * 1. Filters the input list to isolate taxes treatment transactions, purchase/sale transactions, and dividend transactions.
+     * 2. Matches purchase/sale transactions with their corresponding taxes treatment and dividend transactions with their corresponding taxes treatment.
+     * 3. Adjusts purchase/sale transactions by adding/subtracting tax amounts, adding tax units, combining source information, appending tax-related notes,
      *    and removing taxes treatment's from the list of items.
-     * 4. Adjusts dividend transactions by updating the gross amount if necessary, subtracting tax amounts, adding tax units,
+     * 4. Adjusts dividend transactions by updating the gross amount if necessary, adding/subtracting tax amounts, adding tax units,
      *    combining source information, appending taxes treatment notes, and removing taxes treatment's from the list of items.
      *
      * The goal of this method is to process transactions and ensure that taxes treatment is accurately reflected
-     * in sale and dividend transactions, making the transaction's more comprehensive and accurate.
+     * in purchase/sale and dividend transactions, making the transaction's more comprehensive and accurate.
      *
      * @param items The list of transaction items to be processed.
      * @return A modified list of transaction items after post-processing.
@@ -542,7 +582,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
     public void postProcessing(List<Item> items)
     {
         // Filter transactions by taxes treatment's
-        List<Item> taxesTreatmentList = items.stream() //
+        var taxesTreatmentList = items.stream() //
                         .filter(TransactionItem.class::isInstance) //
                         .filter(i -> i.getSubject() instanceof AccountTransaction) //
                         .filter(i -> { //
@@ -552,56 +592,72 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         .toList();
 
         // Filter transactions by buySell transactions
-        List<Item> saleTransactionList = items.stream() //
+        var purchaseSaleTransactionList = items.stream() //
                         .filter(BuySellEntryItem.class::isInstance) //
                         .filter(i -> i.getSubject() instanceof BuySellEntry) //
-                        .filter(i -> PortfolioTransaction.Type.SELL //
-                                        .equals((((BuySellEntry) i.getSubject()).getPortfolioTransaction().getType()))) //
+                        .filter(i -> { //
+                            var type = ((BuySellEntry) i.getSubject()).getPortfolioTransaction().getType(); //
+                            return PortfolioTransaction.Type.SELL.equals(type)
+                                            || PortfolioTransaction.Type.BUY.equals(type); //
+                        }) //
                         .toList();
 
         // Filter transactions by dividend transactions
-        List<Item> dividendTransactionList = items.stream() //
+        var dividendTransactionList = items.stream() //
                         .filter(TransactionItem.class::isInstance) //
                         .filter(i -> i.getSubject() instanceof AccountTransaction) //
                         .filter(i -> AccountTransaction.Type.DIVIDENDS //
                                         .equals((((AccountTransaction) i.getSubject()).getType()))) //
                         .toList();
 
-        var saleTaxPairs = matchTransactionPair(saleTransactionList, taxesTreatmentList);
+        var purchaseSaleListTaxPairs = matchTransactionPair(purchaseSaleTransactionList, taxesTreatmentList);
         var dividendTaxPairs = matchTransactionPair(dividendTransactionList, taxesTreatmentList);
 
-        fixMissingCurrencyConversionForSaleTaxesTransactions(saleTaxPairs);
+        applyMissingCurrencyConversionBetweenTaxesAndPurchaseSale(purchaseSaleListTaxPairs);
 
         // @formatter:off
-        // This loop iterates through a list of sale and tax pairs and processes them.
+        // This loop iterates through a list of purchase/sale and tax pairs and processes them.
         //
-        // For each pair, it subtracts the tax amount from the sale transaction's total amount,
-        // adds the tax as a tax unit to the sale transaction, combines source information if needed,
-        // appends taxes treatment notes to the sale transaction, and removes the tax treatment from the 'items' list.
+        // For each pair, it adds/subtracts the tax amount from the purchase/sale transaction's total amount,
+        // adds the tax as a tax unit to the purchase/sale transaction, combines source information if needed,
+        // appends taxes treatment notes to the purchase/sale transaction, and removes the tax treatment from the 'items' list.
         //
         // It performs these operations when a valid tax transaction is found.
         // @formatter:on
-        for (TransactionTaxesPair pair : saleTaxPairs)
+        for (TransactionTaxesPair pair : purchaseSaleListTaxPairs)
         {
-            var saleTransaction = (BuySellEntry) pair.transaction.getSubject();
+            var purchaseSaleTransaction = (BuySellEntry) pair.transaction.getSubject();
             var taxesTransaction = pair.tax() != null ? (AccountTransaction) pair.tax().getSubject() : null;
 
             if (taxesTransaction != null && taxesTransaction.getType() == AccountTransaction.Type.TAXES)
             {
-                saleTransaction.setMonetaryAmount(saleTransaction.getPortfolioTransaction().getMonetaryAmount()
-                                .subtract(taxesTransaction.getMonetaryAmount()));
+                if (purchaseSaleTransaction.getPortfolioTransaction().getType().isLiquidation())
+                {
+                    purchaseSaleTransaction.setMonetaryAmount(purchaseSaleTransaction.getPortfolioTransaction()
+                                    .getMonetaryAmount().subtract(taxesTransaction.getMonetaryAmount()));
+                }
+                else
+                {
+                    purchaseSaleTransaction.setMonetaryAmount(purchaseSaleTransaction.getPortfolioTransaction()
+                                    .getMonetaryAmount().add(taxesTransaction.getMonetaryAmount()));
+                }
 
-                saleTransaction.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
+                purchaseSaleTransaction.getPortfolioTransaction()
+                                .addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
 
-                saleTransaction.setSource(concatenate(saleTransaction.getSource(), taxesTransaction.getSource(), "; "));
+                purchaseSaleTransaction.setSource(
+                                concatenate(purchaseSaleTransaction.getSource(), taxesTransaction.getSource(), "; "));
 
-                saleTransaction.setNote(concatenate(saleTransaction.getNote(), taxesTransaction.getNote(), " | "));
+                purchaseSaleTransaction.setNote(
+                                concatenate(purchaseSaleTransaction.getNote(), taxesTransaction.getNote(), " | "));
+
+                ExtractorUtils.fixGrossValueBuySell().accept(purchaseSaleTransaction);
 
                 items.remove(pair.tax());
             }
         }
 
-         // @formatter:off
+        // @formatter:off
          // This loop processes a list of dividend and tax pairs, adjusting the gross amount of dividend transactions as needed.
          //
          // For each pair, it checks if there is a corresponding tax transaction. If present, it considers the gross taxes treatment,
@@ -618,17 +674,17 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
 
             if (taxesTransaction != null)
             {
-                Money grossTaxesTreatment = (Money) pair.tax().getData(ATTRIBUTE_GROSS_TAXES_TREATMENT);
+                var grossTaxesTreatment = (Money) pair.tax().getData(ATTRIBUTE_GROSS_TAXES_TREATMENT);
 
                 if (grossTaxesTreatment != null)
                 {
-                    Money dividendAmount = dividendTransaction.getMonetaryAmount();
-                    Money taxesAmount = taxesTransaction.getMonetaryAmount();
+                    var dividendAmount = dividendTransaction.getMonetaryAmount();
+                    var taxesAmount = taxesTransaction.getMonetaryAmount();
 
                     if (taxesAmount.isZero() && grossTaxesTreatment.isLessThan(dividendAmount))
                     {
-                        Money adjustedTaxes  = dividendAmount.subtract(grossTaxesTreatment);
-                        dividendTransaction.addUnit(new Unit(Unit.Type.TAX, adjustedTaxes ));
+                        var adjustedTaxes = dividendAmount.subtract(grossTaxesTreatment);
+                        dividendTransaction.addUnit(new Unit(Unit.Type.TAX, adjustedTaxes));
                         dividendTransaction.setMonetaryAmount(grossTaxesTreatment);
                     }
                     else
@@ -644,9 +700,13 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
 
                 dividendTransaction.addUnit(new Unit(Unit.Type.TAX, taxesTransaction.getMonetaryAmount()));
 
-                dividendTransaction.setSource(concatenate(dividendTransaction.getSource(), taxesTransaction.getSource(), "; "));
+                dividendTransaction.setSource(
+                                concatenate(dividendTransaction.getSource(), taxesTransaction.getSource(), "; "));
 
-                dividendTransaction.setNote(concatenate(dividendTransaction.getNote(), taxesTransaction.getNote(), " | "));
+                dividendTransaction
+                                .setNote(concatenate(dividendTransaction.getNote(), taxesTransaction.getNote(), " | "));
+
+                ExtractorUtils.fixGrossValue().accept(dividendTransaction);
 
                 items.remove(pair.tax());
             }
@@ -671,7 +731,8 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
      * @return A collection of TransactionTaxesPair objects representing matched transactions and taxes treatment's.
      * @formatter:on
      */
-    private Collection<TransactionTaxesPair> matchTransactionPair(List<Item> transactionList, List<Item> taxesTreatmentList)
+    private Collection<TransactionTaxesPair> matchTransactionPair(List<Item> transactionList,
+                    List<Item> taxesTreatmentList)
     {
         // Use a Set to prevent duplicates
         Set<Pair<LocalDate, Security>> keys = new HashSet<>();
@@ -688,20 +749,24 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         } //
         );
 
-        // Iterate through the list of taxes treatment's to match them with transactions
+        // Iterate through the list of taxes treatment's to match them with
+        // transactions
         taxesTreatmentList.forEach( //
                         tax -> {
                             // Check if the taxes treatment has a security
                             if (tax.getSecurity() == null)
                                 return;
 
-                            // Create a key based on the taxes treatment date and security
+                            // Create a key based on the taxes treatment date
+                            // and security
                             var key = new Pair<>(tax.getDate().toLocalDate(), tax.getSecurity());
 
-                            // Retrieve the TransactionTaxesPair associated with this key, if it exists
+                            // Retrieve the TransactionTaxesPair associated with
+                            // this key, if it exists
                             var pair = pairs.get(key);
 
-                            // Skip if no transaction is found or if a taxes treatment already exists
+                            // Skip if no transaction is found or if a taxes
+                            // treatment already exists
                             if (pair != null && pair.tax() == null)
                                 pairs.put(key, new TransactionTaxesPair(pair.transaction(), tax));
                         } //
@@ -712,48 +777,77 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
 
     /**
      * @formatter:off
-     * This method fixes missing currency conversion for taxes transactions.
+     * Resolves missing currency conversions between taxes and purchase/sale transactions based on existing exchange rates.
      *
-     * It iterates through a collection of TransactionTaxesPair objects and performs the necessary currency conversions
-     * if required based on the currency codes of the involved transactions.
+     * For each TransactionTaxesPair, this method checks for currency mismatches between:
+     * - the monetary amount and security currency of the taxes transaction, and
+     * - the monetary amount and security currency of the purchase/sale transaction.
      *
-     * @param saleTaxPairs A collection of TransactionTaxesPair objects containing taxes and sale transactions.
+     * If either side shows a mismatch, and if the opposite side contains a valid exchange rate,
+     * a corresponding GROSS_VALUE unit with the appropriate FX conversion will be added to ensure consistency.
+     *
+     * This helps ensure that both tax and purchase/sale transactions carry correct currency conversion data
+     * when working across multi-currency portfolios.
+     *
+     * @param purchaseSaleTaxPairs A collection of TransactionTaxesPair objects containing associated taxes and purchase/sale transactions.
      * @formatter:on
      */
-    private void fixMissingCurrencyConversionForSaleTaxesTransactions(Collection<TransactionTaxesPair> saleTaxPairs)
+    private void applyMissingCurrencyConversionBetweenTaxesAndPurchaseSale(
+                    Collection<TransactionTaxesPair> purchaseSaleTaxPairs)
     {
-        saleTaxPairs.forEach( //
-                        pair -> { //
-                            if (pair.tax != null)
-                            {
-                                // Get the taxes treatment from the SaleTaxPair
-                                var tax = (AccountTransaction) pair.tax.getSubject();
+        purchaseSaleTaxPairs.forEach(pair -> {
+            if (pair.tax != null && pair.transaction != null)
+            {
+                var tax = (AccountTransaction) pair.tax.getSubject();
+                var purchaseSale = (BuySellEntry) pair.transaction.getSubject();
+                var purchaseSalePortfolioTx = purchaseSale.getPortfolioTransaction();
 
-                                // Check if currency conversion is needed
-                                if (!tax.getSecurity().getCurrencyCode().equals(tax.getMonetaryAmount().getCurrencyCode()))
-                                {
-                                    // Get the sale transaction from the SaleTaxPair
-                                    var sale = (BuySellEntry) pair.transaction.getSubject();
+                // Determine currency of monetary amounts and associated
+                // securities
+                var taxCurrency = tax.getMonetaryAmount().getCurrencyCode();
+                var taxSecurityCurrency = tax.getSecurity().getCurrencyCode();
 
-                                    // Check if we have an exchange rate available from the sale transaction
-                                    var grossValue = sale.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE);
+                var purchaseSaleCurrency = purchaseSalePortfolioTx.getMonetaryAmount().getCurrencyCode();
+                var purchaseSaleSecurityCurrency = purchaseSalePortfolioTx.getSecurity().getCurrencyCode();
 
-                                    if (grossValue.isPresent() && grossValue.get().getExchangeRate() != null)
-                                    {
-                                        // Create and set the required grossUnit to the taxes treatment
-                                        var rate = new ExtrExchangeRate(grossValue.get().getExchangeRate(),
-                                                        sale.getPortfolioTransaction().getSecurity().getCurrencyCode(),
-                                                        tax.getCurrencyCode());
+                var taxHasMismatch = !taxCurrency.equals(taxSecurityCurrency);
+                var purchaseSaleHasMismatch = !purchaseSaleCurrency.equals(purchaseSaleSecurityCurrency);
 
-                                        String termCurrency = sale.getPortfolioTransaction().getSecurity().getCurrencyCode();
-                                        Money fxGross = rate.convert(termCurrency, tax.getMonetaryAmount());
+                // Proceed only if at least one of the transactions has a
+                // currency mismatch
+                if (taxHasMismatch || purchaseSaleHasMismatch)
+                {
+                    var taxAmount = tax.getMonetaryAmount();
 
-                                        // Add the converted gross value unit to the taxes transaction
-                                        tax.addUnit(new Unit(Unit.Type.GROSS_VALUE, tax.getMonetaryAmount(), fxGross, rate.getRate()));
-                                    }
-                                }
-                            }
-                        } //
-        );
+                    var taxGrossValue = tax.getUnit(Unit.Type.GROSS_VALUE);
+                    var purchaseSaleGrossValue = purchaseSalePortfolioTx.getUnit(Unit.Type.GROSS_VALUE);
+
+                    // If the taxes transaction contains a usable exchange rate,
+                    // apply the conversion to the sales transaction. Otherwise,
+                    // if the purchase/sales transaction contains a usable
+                    // exchange rate,
+                    // apply the conversion to the taxes transaction.
+                    if (taxGrossValue.isPresent() && taxGrossValue.get().getExchangeRate() != null)
+                    {
+                        var rate = new ExtrExchangeRate(taxGrossValue.get().getExchangeRate(),
+                                        purchaseSaleSecurityCurrency, taxCurrency);
+                        var fxGross = rate.convert(purchaseSaleSecurityCurrency,
+                                        purchaseSalePortfolioTx.getMonetaryAmount());
+
+                        purchaseSalePortfolioTx.addUnit(new Unit(Unit.Type.GROSS_VALUE,
+                                        purchaseSalePortfolioTx.getMonetaryAmount(), fxGross, rate.getRate()));
+                    }
+                    else if (purchaseSaleGrossValue.isPresent()
+                                    && purchaseSaleGrossValue.get().getExchangeRate() != null)
+                    {
+                        var rate = new ExtrExchangeRate(purchaseSaleGrossValue.get().getExchangeRate(),
+                                        purchaseSaleSecurityCurrency, taxCurrency);
+                        var fxGross = rate.convert(purchaseSaleSecurityCurrency, taxAmount);
+
+                        tax.addUnit(new Unit(Unit.Type.GROSS_VALUE, taxAmount, fxGross, rate.getRate()));
+                    }
+                }
+            }
+        });
     }
 }
