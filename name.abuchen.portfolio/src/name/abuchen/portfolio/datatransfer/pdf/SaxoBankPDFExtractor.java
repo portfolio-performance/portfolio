@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetFee;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGrossUnit;
 import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetTax;
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
@@ -43,7 +44,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // Währung: CHF 05-Dez-2024 - 05-Dez-2024
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^W.hrung: (?<currency>[\\w]{3}).*$") //
+                                        .match("^W.hrung: (?<currency>[A-Z]{3}).*$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
         this.addDocumentTyp(type);
@@ -74,7 +75,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Instrument (?<name>.*) Handelszeit.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
-                                                        .match("^Ordertyp .* \\-[\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^Ordertyp .* \\-[\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Instrument iShares Core MSCI World UCITS ETF Handelszeit 05-Dez-2024 11:21:27
@@ -87,7 +88,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                                         .match("^Instrument (?<name>.*) Handelszeit.*$") //
                                                         .match("^ISIN (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valuta.*$") //
                                                         .match("^Symbol (?<tickerSymbol>[A-Z0-9]{1,6}(?:\\.[A-Z]{1,4})?):.*$") //
-                                                        .match("^Ordertyp .* [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^Ordertyp .* [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -118,11 +119,12 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .oneOf( //
                                         // @formatter:off
                                         // Nettobetrag - - - - - -12,14 -4.869,43
+                                        // Nettobetrag - - - - - 0,00 -3.057,58
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("amount") //
                                                         .documentContext("currency") //
-                                                        .match("^Nettobetrag .* \\-[\\.,\\d]+ \\-(?<amount>[\\.,\\d]+)$") //
+                                                        .match("^Nettobetrag .* \\-[\\s]*[\\.,\\d]+ \\-(?<amount>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(v.get("currency"));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -133,12 +135,16 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // ID USD CHF CHF
                                         // Aktienbetrag 39679982249 05-Dez-2024 09-Dez-2024 -5.480,43 0,887182 -12,12 -4.862,14
                                         // Nettobetrag - - - - - -12,14 -4.869,43
+                                        //
+                                        // ID CHF CHF CHF
+                                        // Aktienbetrag 40112732021 20-Dez-2024 24-Dez-2024 -3.050,00 1,000000 0,00 -3.050,00
+                                        // Nettobetrag - - - - - 0,00 -3.057,58
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross") //
-                                                        .match("^ID (?<baseCurrency>[\\w]{3}) [\\w]{3} (?<termCurrency>[\\w]{3})$") //
+                                                        .match("^ID (?<baseCurrency>[A-Z]{3}) [A-Z]{3} (?<termCurrency>[A-Z]{3})$") //
                                                         .match("^Aktienbetrag .* (?<exchangeRate>[\\.,\\d]+) \\-[\\.,\\d]+ \\-[\\.,\\d]+$") //
-                                                        .match("^Nettobetrag .* \\-[\\.,\\d]+ \\-(?<gross>[\\.,\\d]+)$") //
+                                                        .match("^Nettobetrag .* \\-[\\s]*[\\.,\\d]+ \\-(?<gross>[\\.,\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -199,7 +205,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                         .section("note", "date", "amount", "currency") //
                         .find("Bargeldtransfer") //
                         .match("^Einlage (?<note>[\\d]+) [\\d]{2}\\-[\\w]+\\-[\\d]{4} (?<date>[\\d]{2}\\-[\\w]+\\-[\\d]{4}) .* (?<amount>[\\.,\\d]+)$") //
-                        .match("^W.hrung: (?<currency>[\\w]{3}).*$") //
+                        .match("^W.hrung: (?<currency>[A-Z]{3}).*$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -218,7 +224,7 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
                                         // Währung : CHF
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^W.hrung : (?<currency>[\\w]{3}).*$") //
+                                        .match("^W.hrung : (?<currency>[A-Z]{3}).*$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))));
 
         this.addDocumentTyp(type);
@@ -259,10 +265,11 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Stempelgebühr 39683058642 05-Dez-2024 09-Dez-2024 -8,22 0,887182 -0,02 -7,29
+                        // Stempelgebühr 40118366990 20-Dez-2024 24-Dez-2024 -4,58 1,000000 0,00 -4,58
                         // @formatter:on
                         .section("currencyConversionFee", "tax").optional() //
                         .documentContext("currency") //
-                        .match("^Stempelgeb.hr .* \\-(?<currencyConversionFee>[\\.,\\d]+) \\-(?<tax>[\\.,\\d]+)$") //
+                        .match("^Stempelgeb.hr .* (\\-)?(?<currencyConversionFee>[\\.,\\d]+) \\-(?<tax>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             var taxes = Money.of(v.get("currency"), asAmount(v.get("tax")));
                             var currencyConversionFee = Money.of(v.get("currency"), asAmount(v.get("currencyConversionFee")));
@@ -280,12 +287,20 @@ public class SaxoBankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Provision 4555555555 07-Apr-2025 08-Apr-2025 -1,77 0,860862 -0,01 -1,52
+                        // Provision 40107905938 20-Dez-2024 24-Dez-2024 -3,00 1,000000 0,00 -3,00
                         // @formatter:on
-                        .section("fee").optional() //
+                        .section("currencyConversionFee", "fee").optional() //
                         .documentContext("currency") //
-                        .match("^Provision .* \\-(?<fee>[\\.,\\d]+) \\-[\\.,\\d]+$") //
-                        .assign((t, v) -> processFeeEntries(t, v, type))
+                        .match("^Provision .* (\\-)?(?<currencyConversionFee>[\\.,\\d]+) \\-(?<fee>[\\.,\\d]+)$") //
+                        .assign((t, v) -> {
+                            var fees = Money.of(v.get("currency"), asAmount(v.get("fee")));
+                            var currencyConversionFee = Money.of(v.get("currency"), asAmount(v.get("currencyConversionFee")));
 
+                            // Add currency conversion fee from fees
+                            fees = fees.add(currencyConversionFee);
+
+                            checkAndSetFee(fees, t, type.getCurrentContext());
+                        })
 
                         // @formatter:off
                         // Stempelgebühr 39683058642 05-Dez-2024 09-Dez-2024 -8,22 0,887182 -0,02 -7,29

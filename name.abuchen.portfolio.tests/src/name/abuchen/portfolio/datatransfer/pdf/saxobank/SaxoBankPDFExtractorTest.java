@@ -278,9 +278,9 @@ public class SaxoBankPDFExtractorTest
                         hasDate("2025-04-07T19:00:21"), hasShares(15.00), //
                         hasSource("Kauf04.txt"), //
                         hasNote("Order-ID 5555555555 | Trade-ID 6666666666"), //
-                        hasAmount("CHF", 1903.60), hasGrossValue("CHF", 1896.01), //
-                        hasForexGrossValue("USD", 2202.46), //
-                        hasTaxes("CHF", 2.85 - 0.01), hasFees("CHF", 4.73 + 0.01 + 0.01))));
+                        hasAmount("CHF", 1903.60), hasGrossValue("CHF", 1894.49), //
+                        hasForexGrossValue("USD", 2200.69), //
+                        hasTaxes("CHF", 2.85 - 0.01), hasFees("CHF", 1.52 + 0.01 + 4.73 + 0.01))));
     }
 
     @Test
@@ -311,13 +311,44 @@ public class SaxoBankPDFExtractorTest
                         hasDate("2025-04-07T19:00:21"), hasShares(15.00), //
                         hasSource("Kauf04.txt"), //
                         hasNote("Order-ID 5555555555 | Trade-ID 6666666666"), //
-                        hasAmount("CHF", 1903.60), hasGrossValue("CHF", 1896.01), //
-                        hasTaxes("CHF", 2.85 - 0.01), hasFees("CHF", 4.73 + 0.01 + 0.01), //
+                        hasAmount("CHF", 1903.60), hasGrossValue("CHF", 1894.49), //
+                        hasTaxes("CHF", 2.85 - 0.01), hasFees("CHF", 1.52 + 0.01 + 4.73 + 0.01), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var s = c.process((PortfolioTransaction) tx, new Portfolio());
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
+    }
+
+    @Test
+    public void testWertpapierKauf05()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B3RBWM25"), hasWkn(null), hasTicker("VWRL"), //
+                        hasName("Vanguard FTSE All-World UCITS ETF"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-12-20T09:27:39"), hasShares(25.00), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote("Order-ID 5240614298 | Trade-ID 6107719451"), //
+                        hasAmount("CHF", 3057.58), hasGrossValue("CHF", 3050.00), //
+                        hasTaxes("CHF", 4.58), hasFees("CHF", 3.00))));
     }
 
     @Test
