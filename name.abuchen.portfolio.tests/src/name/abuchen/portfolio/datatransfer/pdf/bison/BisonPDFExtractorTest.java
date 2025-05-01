@@ -40,7 +40,6 @@ import name.abuchen.portfolio.datatransfer.pdf.BisonPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.TestCoinSearchProvider;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 
@@ -68,7 +67,7 @@ public class BisonPDFExtractorTest
         assertThat(countBuySell(results), is(12L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(15));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -203,7 +202,7 @@ public class BisonPDFExtractorTest
         assertThat(countBuySell(results), is(2L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(4));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -250,7 +249,7 @@ public class BisonPDFExtractorTest
         assertThat(countBuySell(results), is(2L));
         assertThat(countAccountTransactions(results), is(3L));
         assertThat(results.size(), is(6));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -288,7 +287,7 @@ public class BisonPDFExtractorTest
         assertThat(results, hasItem(inboundDelivery( //
                         hasDate("2020-01-16T11:19"), hasShares(0.00130130), //
                         hasSource("InfoReport03.txt"), //
-                        hasNote(null), //
+                        hasNote("Gutschein"), //
                         hasAmount("EUR", 10.00), hasGrossValue("EUR", 10.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
@@ -301,11 +300,89 @@ public class BisonPDFExtractorTest
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check deposit transactions
-        assertThat(results, hasItem(deposit( //
-                        hasDate("2020-01-16T10:30"), //
-                        hasSource("InfoReport03.txt"), //
+        assertThat(results, hasItem(deposit(hasDate("2020-01-16T10:30"), hasAmount("EUR", 100.00), //
+                        hasSource("InfoReport03.txt"), hasNote(null))));
+    }
+
+    @Test
+    public void testInfoReport04()
+    {
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "InfoReport04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(2L));
+        assertThat(countBuySell(results), is(4L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(9));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("BTC"), //
+                        hasName("Bitcoin"), //
+                        hasCurrencyCode("EUR"), //
+                        hasFeed(CoinGeckoQuoteFeed.ID), //
+                        hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "bitcoin"))));
+
+        assertThat(results, hasItem(security( //
+                        hasIsin(null), hasWkn(null), hasTicker("ETH"), //
+                        hasName("Ethereum"), //
+                        hasCurrencyCode("EUR"), //
+                        hasFeed(CoinGeckoQuoteFeed.ID), //
+                        hasFeedProperty(CoinGeckoQuoteFeed.COINGECKO_COIN_ID, "ethereum"))));
+
+        // check deposit transactions
+        assertThat(results, hasItem(deposit(hasDate("2025-02-03T20:17"), hasAmount("EUR", 53.00), //
+                        hasSource("InfoReport04.txt"), hasNote(null))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-02-03T08:48"), hasShares(0.00000541), //
+                        hasSource("InfoReport04.txt"), //
                         hasNote(null), //
-                        hasAmount("EUR", 100.00), hasGrossValue("EUR", 100.00), //
+                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check inbound delivery transactions
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2025-02-03T08:48"), hasShares(0.00000541), //
+                        hasSource("InfoReport04.txt"), //
+                        hasNote("Staking Reward"), //
+                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-01-31T09:07"), hasShares(0.00113890), //
+                        hasSource("InfoReport04.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 3.60), hasGrossValue("EUR", 3.60), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-01-31T09:07"), hasShares(0.00008275), //
+                        hasSource("InfoReport04.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 8.40), hasGrossValue("EUR", 8.40), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-01-27T07:50"), hasShares(0.00000150), //
+                        hasSource("InfoReport04.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check inbound delivery transactions
+        assertThat(results, hasItem(inboundDelivery( //
+                        hasDate("2025-01-27T07:50"), hasShares(0.00000150), //
+                        hasSource("InfoReport04.txt"), //
+                        hasNote("Staking Reward"), //
+                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
     }
 
@@ -323,7 +400,7 @@ public class BisonPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
