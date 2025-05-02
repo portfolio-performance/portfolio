@@ -175,35 +175,65 @@ public enum WidgetFactory
                                     .with(Values.Percent2) //
                                     .with((ds, period) -> {
                                         PerformanceIndex index = data.calculate(ds, period);
-                                        long[] totals = index.getTotals();
-                                        if (totals.length == 0)
+                                        double[] accumulated = index.getAccumulatedPercentage();
+                                        if (accumulated.length == 0)
                                             return 0.0;
 
-                                        long highWatermark = 0;
-                                        for (int i = 0; i < totals.length; i++)
+                                        // Find the high watermark in
+                                        // accumulated performance
+                                        double highWatermark = Double.NEGATIVE_INFINITY;
+                                        for (int i = 0; i < accumulated.length; i++)
                                         {
-                                            if (totals[i] > highWatermark)
-                                                highWatermark = totals[i];
+                                            if (accumulated[i] > highWatermark)
+                                                highWatermark = accumulated[i];
                                         }
-                                        if (highWatermark == 0)
+
+                                        // If no positive performance, no
+                                        // drawdown
+                                        if (highWatermark <= 0)
                                             return 0.0;
 
-                                        long currentValue = totals[totals.length - 1];
-                                        return (double) (currentValue - highWatermark) / highWatermark;
+                                        // Current accumulated performance
+                                        double currentValue = accumulated[accumulated.length - 1];
+
+                                        // Calculate drawdown as percentage from
+                                        // high watermark
+                                        // This matches how the Drawdown class
+                                        // calculates drawdown in Risk.java
+                                        // Only return a drawdown if current
+                                        // value is less than high watermark
+                                        if (currentValue < highWatermark)
+                                        {
+                                            // Convert accumulated percentages
+                                            // to values relative to 1
+                                            // e.g., 0.25 (25% gain) becomes
+                                            // 1.25
+                                            double peakValue = 1 + highWatermark;
+                                            double currentVal = 1 + currentValue;
+
+                                            // Calculate drawdown using the same
+                                            // formula as in Risk.Drawdown
+                                            return -(peakValue - currentVal) / peakValue;
+                                        }
+                                        else
+                                        {
+                                            return 0.0;
+                                        }
                                     }) //
                                     .withTooltip((ds, period) -> {
                                         PerformanceIndex index = data.calculate(ds, period);
-                                        long[] totals = index.getTotals();
-                                        if (totals.length == 0)
+                                        double[] accumulated = index.getAccumulatedPercentage();
+                                        if (accumulated.length == 0)
                                             return Messages.TooltipCurrentDrawdown;
 
-                                        long highWatermark = 0;
+                                        // Find the high watermark date
+                                        double highWatermark = Double.NEGATIVE_INFINITY;
                                         int highWatermarkIndex = 0;
-                                        for (int i = 0; i < totals.length; i++)
+                                        for (int i = 0; i < accumulated.length; i++)
                                         {
-                                            if (totals[i] > highWatermark)
+                                            if (accumulated[i] > highWatermark)
                                             {
-                                                highWatermark = totals[i];
+                                                highWatermark = accumulated[i];
                                                 highWatermarkIndex = i;
                                             }
                                         }
