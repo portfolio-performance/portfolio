@@ -27,6 +27,8 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.dashboard.charts.ClientDataSeriesChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.DrawdownChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.HoldingsChartWidget;
+import name.abuchen.portfolio.ui.views.dashboard.charts.RebalancingChartWidget;
+import name.abuchen.portfolio.ui.views.dashboard.charts.RebalancingTargetChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.charts.TaxonomyChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsByTaxonomyChartWidget;
 import name.abuchen.portfolio.ui.views.dashboard.earnings.EarningsChartWidget;
@@ -411,6 +413,14 @@ public enum WidgetFactory
                                                                         .getDate()));
                                     }) //
                                     .build()),
+
+    REBALANCING_TARGET_CHART(
+                    MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelTaxonomies,
+                                    Messages.ColumnTargetValue),
+                    Messages.LabelStatementOfAssets, Images.VIEW_PIECHART, RebalancingTargetChartWidget::new),
+
+    REBALANCING_CHART(Messages.RebalancingChartActualVsTarget, Messages.LabelStatementOfAssets, Images.VIEW_BARCHART,
+                    RebalancingChartWidget::new),
 
     // typo is API now!!
     VERTICAL_SPACEER(Messages.LabelVerticalSpacer, Messages.LabelCommon, VerticalSpacerWidget::new);

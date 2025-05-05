@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
@@ -19,16 +20,24 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobGroup;
+import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.oauth.AccessToken;
+import name.abuchen.portfolio.oauth.AuthenticationException;
+import name.abuchen.portfolio.oauth.OAuthClient;
+import name.abuchen.portfolio.online.AuthenticationExpiredException;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.RateLimitExceededException;
+import name.abuchen.portfolio.online.SecurityNotSupportedException;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
+import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.util.RateLimitExceededException;
+import name.abuchen.portfolio.ui.dialogs.AuthenticationRequiredDialog;
 import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public final class UpdateQuotesJob extends AbstractClientJob
@@ -111,8 +120,10 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
     }
 
+    private final OAuthClient oauthClient = OAuthClient.INSTANCE;
+
     private final Set<Target> target;
-    private Predicate<Security> filter;
+    private final Predicate<Security> filter;
     private long repeatPeriod;
 
     public UpdateQuotesJob(Client client, Set<Target> target)
@@ -150,6 +161,35 @@ public final class UpdateQuotesJob extends AbstractClientJob
         monitor.beginTask(Messages.JobLabelUpdating, IProgressMonitor.UNKNOWN);
 
         List<Security> securities = getClient().getSecurities().stream().filter(filter).collect(toMutableList());
+
+        Optional<AccessToken> accessToken = Optional.empty();
+
+        // try to get the access token
+        try
+        {
+            if (oauthClient.isAuthenticated())
+                accessToken = oauthClient.getAPIAccessToken();
+        }
+        catch (AuthenticationException e)
+        {
+            PortfolioPlugin.log(e);
+            // unable to refresh access token --> user needs to re-authenticate
+        }
+
+        if (accessToken.isEmpty())
+        {
+            // check if any of the jobs need an authenticated user
+
+            var feed = Factory.getQuoteFeed(PortfolioPerformanceFeed.class);
+            var feedNeedsUser = feed.requiresAuthentication(securities);
+
+            if (feedNeedsUser)
+            {
+                // inform the user but go ahead with the remaining updates
+                Display.getDefault().asyncExec(
+                                () -> AuthenticationRequiredDialog.open(Display.getDefault().getActiveShell()));
+            }
+        }
 
         Dirtyable dirtyable = new Dirtyable(getClient());
         List<Job> jobs = new ArrayList<>();
@@ -251,6 +291,11 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
                     return Status.OK_STATUS;
                 }
+                catch (SecurityNotSupportedException | AuthenticationExpiredException e)
+                {
+                    PortfolioPlugin.log(e);
+                    return Status.OK_STATUS;
+                }
                 catch (RateLimitExceededException e)
                 {
                     schedule(2000);
@@ -300,6 +345,11 @@ public final class UpdateQuotesJob extends AbstractClientJob
                             });
                         }
 
+                        return Status.OK_STATUS;
+                    }
+                    catch (SecurityNotSupportedException | AuthenticationExpiredException e)
+                    {
+                        PortfolioPlugin.log(e);
                         return Status.OK_STATUS;
                     }
                     catch (RateLimitExceededException e)

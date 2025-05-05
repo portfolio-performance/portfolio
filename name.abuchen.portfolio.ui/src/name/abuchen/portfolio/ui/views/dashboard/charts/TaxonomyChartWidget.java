@@ -13,7 +13,6 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.CircularChartToolTip;
 import name.abuchen.portfolio.ui.views.dashboard.ClientFilterConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
-import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
 import name.abuchen.portfolio.ui.views.dashboard.TaxonomyConfig;
 import name.abuchen.portfolio.ui.views.taxonomy.DonutChartBuilder;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel;
@@ -26,8 +25,9 @@ public class TaxonomyChartWidget extends CircularChartWidget<TaxonomyModel>
     {
         super(widget, data);
 
-        addConfigAfter(ReportingPeriodConfig.class, new TaxonomyConfig(this));
-        addConfigAfter(ClientFilterConfig.class, new IncludeUnassignedCategoryConfig(this, true));
+        addConfigAfter(ClientFilterConfig.class, new TaxonomyConfig(this));
+        addConfigAfter(TaxonomyConfig.class, new IncludeUnassignedCategoryConfig(this, true));
+        addConfigAfter(IncludeUnassignedCategoryConfig.class, new IncludeSecuritiesConfig(this, true));
     }
 
     @Override
@@ -54,6 +54,8 @@ public class TaxonomyChartWidget extends CircularChartWidget<TaxonomyModel>
 
                 model.setExcludeUnassignedCategoryInCharts(
                                 !get(IncludeUnassignedCategoryConfig.class).isUnassignedCategoryIncluded());
+
+                model.setExcludeSecuritiesInPieChart(!get(IncludeSecuritiesConfig.class).isSecuritiesIncluded());
                 return model;
             }
             else

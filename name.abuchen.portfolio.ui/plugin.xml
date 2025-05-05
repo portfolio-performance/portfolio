@@ -81,6 +81,9 @@
                name="default-background">
          </property-name>
          <property-name
+               name="chip-background">
+         </property-name>
+         <property-name
                name="warning-background">
          </property-name>
          <property-name

@@ -61,6 +61,7 @@ import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
 import name.abuchen.portfolio.online.impl.KrakenQuoteFeed;
 import name.abuchen.portfolio.online.impl.LeewayQuoteFeed;
 import name.abuchen.portfolio.online.impl.MFAPIQuoteFeed;
+import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
@@ -257,6 +258,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             this.tickerSymbol = model.getTickerSymbol();
 
             if (this.tickerSymbol.isEmpty() && feed != null && (feed.getId().startsWith(YAHOO) //
+                            || feed.getId().equals(PortfolioPerformanceFeed.ID) //
                             || feed.getId().equals(LeewayQuoteFeed.ID) //
                             || feed.getId().equals(TwelveDataQuoteFeed.ID)))
             {
@@ -367,6 +369,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         currencyCode = getModel().getCurrencyCode();
 
         if (comboExchange != null && feed.getId() != null && (feed.getId().startsWith(YAHOO) //
+                        || feed.getId().equals(PortfolioPerformanceFeed.ID) //
                         || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
                         || feed.getId().equals(LeewayQuoteFeed.ID) //
                         || feed.getId().equals(TwelveDataQuoteFeed.ID) //
@@ -501,6 +504,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     {
         boolean dropDown = feed != null && feed.getId() != null && //
                         (feed.getId().startsWith(YAHOO) //
+                                        || feed.getId().equals(PortfolioPerformanceFeed.ID) //
                                         || feed.getId().equals(EurostatHICPQuoteFeed.ID) //
                                         || feed.getId().equals(ECBStatisticalDataWarehouseQuoteFeed.ID) //
                                         || feed.getId().equals(LeewayQuoteFeed.ID) //
@@ -924,6 +928,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
             if (this.tickerSymbol == null || this.tickerSymbol.isEmpty() && //
                             (feed.getId().startsWith(YAHOO) //
+                                            || feed.getId().equals(PortfolioPerformanceFeed.ID) //
                                             || feed.getId().equals(LeewayQuoteFeed.ID) //
                                             || feed.getId().equals(TwelveDataQuoteFeed.ID)))
             {

@@ -41,6 +41,7 @@ import name.abuchen.portfolio.ui.preferences.QuandlPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ThemePreferencePage;
 import name.abuchen.portfolio.ui.preferences.TwelveDataPreferencePage;
 import name.abuchen.portfolio.ui.preferences.UpdatePreferencePage;
+import name.abuchen.portfolio.ui.preferences.PPIDPreferencePage;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
 
 @SuppressWarnings("restriction")
@@ -64,7 +65,8 @@ public class OpenPreferenceDialogHandler
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
                     @Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Preference(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES) boolean enableExperimentalFeatures,
-                    @Optional @Named(UIConstants.Parameter.PAGE) String page, IThemeEngine themeEngine)
+                    @Optional @Named(UIConstants.Parameter.PAGE) String page, //
+                    IThemeEngine themeEngine)
     {
         // the active client
         var client = MenuHelper.getActiveClient(part, false);
@@ -82,6 +84,7 @@ public class OpenPreferenceDialogHandler
         pm.addToRoot(new PreferenceNode("calendar", new CalendarPreferencePage())); //$NON-NLS-1$
 
         pm.addToRoot(new PreferenceNode("api", new APIKeyPreferencePage())); //$NON-NLS-1$
+        pm.addTo("api", new PreferenceNode("pp", new PPIDPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("alphavantage", new AlphaVantagePreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("coingecko", new CoingeckoPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
         pm.addTo("api", new PreferenceNode("divvydiary", new DivvyDiaryPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$

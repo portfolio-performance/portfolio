@@ -1417,10 +1417,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         // den vorherigen Monat mit einem Entgelt in Höhe von 123,45 Euro. Das entspricht 0,0298 %
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^.*(Buchung|H.he) von (?<amount>[\\.,\\d]+) (?<currency>.*).*$") //
+                        .match("^.*(Buchung|H.he) von (?<amount>[\\.,\\d]+) (?<currency>[A-Za-z\\s\\-\\'\\.,]+).*$") //
                         .assign((t, v) -> {
-                            if ("Euro".equals(trim(v.get("currency"))))
-                                v.put("currency", "EUR");
+                            v.put("currency", asCurrencyCode(v.get("currency")));
 
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));

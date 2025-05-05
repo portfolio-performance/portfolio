@@ -130,6 +130,10 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     private String expansionStateDefinition;
     /** preference key: node expansion state in rebalancing viewer */
     private String expansionStateReblancing;
+    /** preference key: show group heading in the tree map */
+    private String identifierGroupHeading;
+    /** preference key: color schema used in the tree map */
+    private String identifierColorSchema;
 
     private TaxonomyModel model;
     private Taxonomy taxonomy;
@@ -191,12 +195,19 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         this.expansionStateReblancing = TaxonomyView.class.getSimpleName() + "-EXPANSION-REBALANCE-" //$NON-NLS-1$
                         + taxonomy.getId();
 
+        this.identifierGroupHeading = TaxonomyView.class.getSimpleName() + "-GROUPHEADING-" //$NON-NLS-1$
+                        + taxonomy.getId();
+        this.identifierColorSchema = TaxonomyView.class.getSimpleName() + "-COLORSCHEMA-" //$NON-NLS-1$
+                        + taxonomy.getId();
+
         IPreferenceStore preferences = getPreferenceStore();
         this.model.setExcludeUnassignedCategoryInCharts(preferences.getBoolean(identifierUnassigned));
         this.model.setExcludeSecuritiesInPieChart(preferences.getBoolean(identifierExclucdeSecuritiesInPieChart));
         this.model.setOrderByTaxonomyInStackChart(preferences.getBoolean(identifierOrderByTaxonomy));
         this.model.setExpansionStateDefinition(preferences.getString(expansionStateDefinition));
         this.model.setExpansionStateRebalancing(preferences.getString(expansionStateReblancing));
+        this.model.setShowGroupHeadingInTreeMap(preferences.getBoolean(identifierGroupHeading));
+        this.model.setColorSchemaInTreeMap(preferences.getString(identifierColorSchema));
 
         this.taxonomy.addPropertyChangeListener(this);
     }
@@ -227,6 +238,8 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         preferences.setValue(identifierOrderByTaxonomy, model.isOrderByTaxonomyInStackChart());
         preferences.setValue(expansionStateDefinition, model.getExpansionStateDefinition());
         preferences.setValue(expansionStateReblancing, model.getExpansionStateRebalancing());
+        preferences.setValue(identifierGroupHeading, model.doShowGroupHeadingInTreeMap());
+        preferences.setValue(identifierColorSchema, model.getColorSchemaInTreeMap());
 
         super.dispose();
     }
@@ -359,7 +372,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     {
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), parent);
 
-        TaxonomyNodeRenderer renderer = new TaxonomyNodeRenderer(resources);
+        TaxonomyNodeRenderer renderer = new TaxonomyNodeRenderer(model, resources);
 
         container = new Composite(parent, SWT.NONE);
         StackLayout layout = new StackLayout();
@@ -429,9 +442,9 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         for (Control control : container.getChildren())
         {
             Page page = (Page) control.getData();
-            if (page instanceof ReportingPeriodListener)
+            if (page instanceof ReportingPeriodListener listener)
             {
-                ((ReportingPeriodListener) page).reportingPeriodUpdated();
+                listener.reportingPeriodUpdated();
             }
         }
     }

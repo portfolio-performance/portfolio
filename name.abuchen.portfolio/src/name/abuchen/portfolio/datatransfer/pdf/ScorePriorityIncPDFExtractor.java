@@ -97,7 +97,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             t.setDate(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
@@ -141,10 +141,10 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setAmount(asAmount(v.get("amount")) - asAmount(v.get("tax")));
-                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setSecurity(getOrCreateSecurity(v));
 
-                                                            Money tax = Money.of(asCurrencyCode(CurrencyUnit.USD), asAmount(v.get("tax")));
+                                                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
 
                                                             checkAndSetTax(tax, t, type.getCurrentContext());
                                                         }),
@@ -159,7 +159,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setShares(asShares(v.get("shares")));
                                                             t.setAmount(asAmount(v.get("amount")));
-                                                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setSecurity(getOrCreateSecurity(v));
                                                         }))
 
@@ -195,7 +195,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setAmount(0L);
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
@@ -233,7 +233,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap((t, ctx) -> {
@@ -273,7 +273,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setShares(0L);
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
@@ -304,7 +304,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap(TransactionItem::new));
@@ -334,7 +334,7 @@ public class ScorePriorityIncPDFExtractor extends AbstractPDFExtractor
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(CurrencyUnit.USD));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap(TransactionItem::new));

@@ -1,4 +1,5 @@
 name.abuchen.portfolio.online.impl.ManualQuoteFeed
+name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed
 name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed
 name.abuchen.portfolio.online.impl.AMFIIndiaQuoteFeed
 name.abuchen.portfolio.online.impl.BitfinexQuoteFeed

@@ -26,6 +26,9 @@ public class ColorsThemeCSSHandler implements ICSSPropertyHandler
                 case "default-background": //$NON-NLS-1$
                     theme.setDefaultBackground(CSSSWTColorHelper.getRGBA(value));
                     break;
+                case "chip-background": //$NON-NLS-1$
+                    theme.setChipBackground(CSSSWTColorHelper.getRGBA(value));
+                    break;
                 case "warning-background": //$NON-NLS-1$
                     theme.setWarningBackground(CSSSWTColorHelper.getRGBA(value));
                     break;

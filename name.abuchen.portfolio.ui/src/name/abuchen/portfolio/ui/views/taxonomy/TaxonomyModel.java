@@ -102,6 +102,8 @@ public final class TaxonomyModel
     private boolean orderByTaxonomyInStackChart = false;
     private String expansionStateDefinition;
     private String expansionStateRebalancing;
+    private boolean showGroupHeadingInTreeMap = false;
+    private String colorSchemaInTreeMap;
 
     private List<Predicate<TaxonomyNode>> nodeFilters = new ArrayList<>();
     private Pattern filterPattern;
@@ -299,6 +301,26 @@ public final class TaxonomyModel
     public void setExpansionStateRebalancing(String expansionStateRebalancing)
     {
         this.expansionStateRebalancing = expansionStateRebalancing;
+    }
+
+    public boolean doShowGroupHeadingInTreeMap()
+    {
+        return showGroupHeadingInTreeMap;
+    }
+
+    public void setShowGroupHeadingInTreeMap(boolean showGroupHeadingInTreeMap)
+    {
+        this.showGroupHeadingInTreeMap = showGroupHeadingInTreeMap;
+    }
+
+    public String getColorSchemaInTreeMap()
+    {
+        return colorSchemaInTreeMap;
+    }
+
+    public void setColorSchemaInTreeMap(String colorSchema)
+    {
+        this.colorSchemaInTreeMap = colorSchema;
     }
 
     public List<Predicate<TaxonomyNode>> getNodeFilters()

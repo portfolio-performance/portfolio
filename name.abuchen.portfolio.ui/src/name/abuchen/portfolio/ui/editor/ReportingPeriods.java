@@ -55,6 +55,11 @@ public class ReportingPeriods
         return periods.contains(p);
     }
 
+    public int size()
+    {
+        return periods.size();
+    }
+
     private void loadReportingPeriods()
     {
         periods = (ArrayList<ReportingPeriod>) clientInput.getClient().getSettings()

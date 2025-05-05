@@ -635,24 +635,19 @@ public class INGDiBaPDFExtractor extends AbstractPDFExtractor
                         documentContext -> documentContext //
                                         .oneOf( //
                                                         // @formatter:off
-                                                        // Valuta Vorgang Euro
+                                                        // Buchung Buchung / Verwendungszweck Betrag (EUR)
                                                         // @formatter:on
                                                         section -> section //
                                                                         .attributes("currency") //
-                                                                        .match("^Buchung Buchung \\/ Verwendungszweck Betrag \\((?<currency>[\\w]{3})\\)$") //
-                                                                        .assign((ctx, v) -> {
-                                                                            ctx.put("currency", asCurrencyCode("EUR"));
-                                                                        }),
+                                                                        .match("^Buchung Buchung \\/ Verwendungszweck Betrag \\((?<currency>[A-Z]{3})\\)$") //
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))),
                                                         // @formatter:off
                                                         // Valuta Vorgang Euro
                                                         // @formatter:on
                                                         section -> section //
                                                                         .attributes("currency") //
-                                                                        .match("^Valuta Vorgang (?<currency>Euro)$") //
-                                                                        .assign((ctx, v) -> {
-                                                                            if ("Euro".equals(v.get("currency")))
-                                                                                ctx.put("currency", asCurrencyCode("EUR"));
-                                                                        }))
+                                                                        .match("^Valuta Vorgang (?<currency>.*)$") //
+                                                                        .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency")))))
 
                                         .optionalOneOf( //
                                                         // @formatter:off

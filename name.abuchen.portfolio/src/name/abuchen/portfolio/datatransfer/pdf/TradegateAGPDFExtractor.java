@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
 @SuppressWarnings("nls")
@@ -321,7 +322,7 @@ public class TradegateAGPDFExtractor extends AbstractPDFExtractor
                         .section("amount") //
                         .match("^(Gutgeschriebener Betrag|Belastung) (\\-)?(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
-                            t.setCurrencyCode("EUR");
+                            t.setCurrencyCode(CurrencyUnit.EUR);
                             t.setAmount(asAmount(v.get("amount")));
                         })
 

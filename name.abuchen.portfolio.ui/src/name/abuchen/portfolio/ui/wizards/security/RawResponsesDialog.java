@@ -50,6 +50,12 @@ public class RawResponsesDialog extends Dialog
     }
 
     @Override
+    protected boolean isResizable()
+    {
+        return true;
+    }
+
+    @Override
     protected void configureShell(Shell shell)
     {
         super.configureShell(shell);
@@ -86,6 +92,7 @@ public class RawResponsesDialog extends Dialog
         FormDataFactory.startingWith(comboURL.getControl()).left(new FormAttachment(0, 10))
                         .right(new FormAttachment(100, -10)).width(500) //
                         .thenBelow(rawText, 10).left(new FormAttachment(0, 10)).right(new FormAttachment(100, -10))
+                        .bottom(new FormAttachment(100, 0))
                         .width(500).height(300);
 
         if (!rawResponses.isEmpty())

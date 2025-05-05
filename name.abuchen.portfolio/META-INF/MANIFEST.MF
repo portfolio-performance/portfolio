@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: name.abuchen.portfolio
-Bundle-Version: 0.75.2.qualifier
+Bundle-Version: 0.76.1.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: name.abuchen.portfolio,
  name.abuchen.portfolio.checks,
@@ -17,6 +17,7 @@ Export-Package: name.abuchen.portfolio,
  name.abuchen.portfolio.model,
  name.abuchen.portfolio.money,
  name.abuchen.portfolio.money.impl;x-friends:="name.abuchen.portfolio.junit",
+ name.abuchen.portfolio.oauth,
  name.abuchen.portfolio.online,
  name.abuchen.portfolio.online.impl,
  name.abuchen.portfolio.online.portfolioreport,
@@ -27,7 +28,9 @@ Export-Package: name.abuchen.portfolio,
  name.abuchen.portfolio.snapshot.trades,
  name.abuchen.portfolio.snapshot.trail,
  name.abuchen.portfolio.util
-Import-Package: com.google.common.annotations,
+Import-Package: com.auth0.jwt,
+ com.auth0.jwt.interfaces,
+ com.google.common.annotations,
  com.google.common.base,
  com.google.common.io,
  com.google.common.util.concurrent,
@@ -53,6 +56,7 @@ Import-Package: com.google.common.annotations,
  org.bouncycastle,
  org.eclipse.e4.core.di.annotations,
  org.eclipse.e4.core.di.extensions,
+ org.eclipse.equinox.security.storage,
  org.eclipse.osgi.util,
  org.eclipse.swt,
  org.eclipse.swt.graphics,
@@ -72,8 +76,8 @@ Require-Bundle: org.eclipse.core.runtime,
  json-path,
  com.google.gson,
  org.osgi.service.component,
- name.abuchen.portfolio.pdfbox1;bundle-version="0.75.2",
- name.abuchen.portfolio.pdfbox3;bundle-version="0.75.2"
+ name.abuchen.portfolio.pdfbox1;bundle-version="0.76.1",
+ name.abuchen.portfolio.pdfbox3;bundle-version="0.76.1"
 Automatic-Module-Name: name.abuchen.portfolio
 Bundle-ActivationPolicy: lazy
 Service-Component: OSGI-INF/name.abuchen.portfolio.util.ImageioSpiRegistration.xml
