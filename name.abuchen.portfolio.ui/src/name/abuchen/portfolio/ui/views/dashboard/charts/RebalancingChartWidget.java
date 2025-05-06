@@ -62,6 +62,7 @@ public class RebalancingChartWidget extends WidgetDelegate<TaxonomyModel>
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
         chart = new BarChart(container, title.getText());
+        chart.getAxisSet().getYAxis(0).getTick().setVisible(get(ChartShowYAxisConfig.class).getIsShowYAxis());
 
         int yHint = get(ChartHeightConfig.class).getPixel();
         GridDataFactory.fillDefaults().hint(SWT.DEFAULT, yHint).grab(true, false).applyTo(chart);
@@ -120,6 +121,8 @@ public class RebalancingChartWidget extends WidgetDelegate<TaxonomyModel>
 
             for (var s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
+
+            chart.getAxisSet().getYAxis(0).getTick().setVisible(get(ChartShowYAxisConfig.class).getIsShowYAxis());
 
             if (model == null)
                 return;
