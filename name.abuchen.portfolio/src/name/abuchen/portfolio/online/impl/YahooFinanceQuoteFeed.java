@@ -19,6 +19,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -58,6 +59,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     public String rpcLatestQuote(Security security) throws IOException
     {
         return new WebAccess("query1.finance.yahoo.com", "/v8/finance/chart/" + security.getTickerSymbol())
+                        .addUserAgent("Mozilla/5.0 (" + ThreadLocalRandom.current().nextInt(100000, 999999) + ")") //
                         .addParameter("lang", "en-US").addParameter("region", "US")
                         .addParameter("corsDomain", "finance.yahoo.com").get();
     }
@@ -193,6 +195,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             range = "5y"; //$NON-NLS-1$
 
         return new WebAccess("query1.finance.yahoo.com", "/v8/finance/chart/" + security.getTickerSymbol()) //
+                        .addUserAgent("Mozilla/5.0 (" + ThreadLocalRandom.current().nextInt(100000, 999999) + ")") //
                         .addParameter("range", range) //
                         .addParameter("interval", "1d").get();
 
