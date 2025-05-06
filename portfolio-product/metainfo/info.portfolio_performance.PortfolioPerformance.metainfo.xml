@@ -37,6 +37,14 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.76.1" date="2025-05-06">
+      <description>
+        <ul>
+          <li>Experimental fix: Adjusted logic for downloading prices from Yahoo Finance.</li>
+          <li xml:lang="de">Experimenteller Fix: Yahoo Finance als Kurslieferant erneut eingebunden.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.76.0" date="2025-05-01">
       <description>
         <ul>
