@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Portfolio Performance Bootstrap
 Bundle-SymbolicName: name.abuchen.portfolio.bootstrap;singleton:=true
-Bundle-Version: 0.71.9.e430-v0760
+Bundle-Version: 0.71.10.e430-v0761
 Import-Package: jakarta.inject
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Bundle: org.eclipse.emf.common,
