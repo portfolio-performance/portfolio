@@ -179,7 +179,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         int days = Dates.daysBetween(startDate, LocalDate.now());
 
         // "max" only returns a sample of quotes
-        String range = "10y"; //$NON-NLS-1$
+        String range = "30y"; //$NON-NLS-1$
 
         if (days < 25)
             range = "1mo"; //$NON-NLS-1$
@@ -193,6 +193,10 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             range = "2y"; //$NON-NLS-1$
         else if (days < 1500)
             range = "5y"; //$NON-NLS-1$
+        else if (days < 3000)
+            range = "10y"; //$NON-NLS-1$
+        else if (days < 6000)
+            range = "20y"; //$NON-NLS-1$
 
         return new WebAccess("query1.finance.yahoo.com", "/v8/finance/chart/" + security.getTickerSymbol()) //
                         .addUserAgent("Mozilla/5.0 (" + ThreadLocalRandom.current().nextInt(100000, 999999) + ")") //
