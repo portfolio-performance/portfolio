@@ -93,9 +93,6 @@ public class YahooFinanceQuoteFeedTest
     {
         String rawQuotes = getHistoricalYahooQuotes();
 
-        Security security = new Security();
-        security.setTickerSymbol("DAI.DE");
-
         YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed();
         QuoteFeedData data = feed.extractQuotes(rawQuotes);
         List<LatestSecurityPrice> prices = data.getLatestPrices();
@@ -123,9 +120,6 @@ public class YahooFinanceQuoteFeedTest
     {
         String rawQuotes = getHistoricalYahooQuotesAX();
 
-        Security security = new Security();
-        security.setTickerSymbol("ALL.AX");
-
         YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed();
         QuoteFeedData data = feed.extractQuotes(rawQuotes);
         List<LatestSecurityPrice> prices = data.getLatestPrices();
@@ -141,9 +135,6 @@ public class YahooFinanceQuoteFeedTest
     public void testParsingHistoricalAdjustedCloseQuotes() throws IOException
     {
         String rawQuotes = getHistoricalYahooQuotes();
-
-        Security security = new Security();
-        security.setTickerSymbol("DAI.DE");
 
         YahooFinanceAdjustedCloseQuoteFeed feed = new YahooFinanceAdjustedCloseQuoteFeed();
         QuoteFeedData data = feed.extractQuotes(rawQuotes);
