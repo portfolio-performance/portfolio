@@ -17,7 +17,10 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class TransactionSearchField extends ControlContribution
 {
@@ -99,7 +102,31 @@ public class TransactionSearchField extends ControlContribution
                 for (Function<TransactionPair<?>, Object> label : searchLabels)
                 {
                     Object l = label.apply(tx);
-                    if (l != null && l.toString().toLowerCase().indexOf(filterText) >= 0)
+                    if (l == null)
+                        continue;
+
+                    // If this is a numeric field, do a numeric comparison
+                    // to handle formatting differences (commas, periods, etc.)
+                    if (l instanceof Money || l instanceof Number)
+                    {
+                        double fieldValue;
+                        if (l instanceof Money)
+                            fieldValue = ((Money) l).getAmount() / Values.Money.divider();
+                        else if (l instanceof Long)
+                        {
+                            if (l.equals(tx.getTransaction().getShares()))
+                                fieldValue = ((Long) l).doubleValue() / Values.Share.divider();
+                            else
+                                fieldValue = ((Long) l).doubleValue() / Values.Money.divider();
+                        }
+                        else
+                            fieldValue = ((Number) l).doubleValue();
+
+                        if (TextUtil.isNumericSearchMatch(filterText, fieldValue))
+                            return true;
+                    }
+
+                    else if (l.toString().toLowerCase().indexOf(filterText) >= 0)
                         return true;
                 }
 
@@ -107,4 +134,5 @@ public class TransactionSearchField extends ControlContribution
             }
         };
     }
+
 }
