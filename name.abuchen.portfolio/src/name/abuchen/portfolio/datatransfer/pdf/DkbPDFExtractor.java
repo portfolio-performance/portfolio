@@ -41,7 +41,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
     private static final String IS_JOINT_ACCOUNT = "isJointAccount";
 
     BiConsumer<DocumentContext, String[]> isJointAccount = (context, lines) -> {
-        var pJointAccount = Pattern.compile("^Anteilige Berechnungsgrundlage f.r \\([\\d]{2},[\\d]{2}([\\s]+)?%\\).*$");
+        var pJointAccount = Pattern.compile("^Anteilige Berechnungsgrundlage f.r \\([\\d]{2},[\\d]{2}[\\s]*%\\).*$");
 
         for (String line : lines)
         {
@@ -750,7 +750,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .section("note", "amount", "type").optional() //
                         .documentContext("date", "currency") //
                         .match("^(?<note>Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .match("^Zinsen f.r (einger.umte Konto.berziehung|Guthaben) ([\\s]+)?(?<amount>[\\.,\\d]+)(?<type>([\\-|\\+]))$") //
+                        .match("^Zinsen f.r (einger.umte Konto.berziehung|Guthaben) [\\s]*(?<amount>[\\.,\\d]+)(?<type>([\\-|\\+]))$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type is "-" change from INTEREST to INTEREST_CHARGE
@@ -809,7 +809,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
 
-        var interestChargeCreditBlock = new Block("^Zinsen f.r Dispositionskredit ([\\s]+)?[\\.,\\d]+([\\-|\\+])$");
+        var interestChargeCreditBlock = new Block("^Zinsen f.r Dispositionskredit [\\s]*[\\.,\\d]+([\\-|\\+])$");
         type.addBlock(interestChargeCreditBlock);
         interestChargeCreditBlock.set(new Transaction<AccountTransaction>()
 
@@ -821,7 +821,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .section("note", "amount", "type") //
                         .documentContext("date", "currency") //
-                        .match("^(?<note>Zinsen f.r Dispositionskredit) ([\\s]+)?(?<amount>[\\.,\\d]+)(?<type>([\\-|\\+]))$") //
+                        .match("^(?<note>Zinsen f.r Dispositionskredit) [\\s]*(?<amount>[\\.,\\d]+)(?<type>([\\-|\\+]))$") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -1126,6 +1126,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         // 09.12.2024 Zahlungseingang               500,00
         // 06.02.2025 Kartenzahlung onl              -460,00
         //  1 7.02.2025 Kartenzahlung               -44,00
+        // 08.04.2025 Kartenzahlung / Wert: 07.04.2025               -13,20
         // @formatter:on
         var depositRemovalBlock_Format02 = new Block("^[\\d\\s]{1,4}\\.[\\d]{2}\\.[\\d]{4}(?!(Wertpapierabrechnung|Abrechnung [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})).*[\\.,\\d]+$");
         type.addBlock(depositRemovalBlock_Format02);
@@ -1157,7 +1158,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                         + "|Kreditkartenabr\\." //
                                         + "|Verf.gung Geldautomat" //
                                         + "|Verf.g\\. Geldautom\\. FW" //
-                                        + "|.berweis\\. entgeltfr\\.))[\\s]{1,}" //
+                                        + "|.berweis\\. entgeltfr\\.))([\\s]\\/.*)?[\\s]{1,}" //
                                         + "(?<type>[\\-\\s])(?<amount>[\\.,\\d]+)$") //
                         .assign((t, v) -> {
                             // @formatter:off
@@ -1385,7 +1386,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .section("note", "amount", "type").optional() //
                         .documentContext("currency", "date") //
                         .match("^(?<note>Abrechnungszeitraum vom [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
-                        .match("^Zinsen f.r (einger.umte Konto.berziehung|Guthaben) ([\\s]+)?(?<amount>[\\.,\\d]+)(?<type>([\\-|\\+]))$") //
+                        .match("^Zinsen f.r (einger.umte Konto.berziehung|Guthaben) [\\s]*(?<amount>[\\.,\\d]+)(?<type>([\\-|\\+]))$") //
                         .assign((t, v) -> {
                             // @formatter:off
                             // Is type is "-" change from INTEREST to INTEREST_CHARGE
@@ -1756,7 +1757,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer 24,45 % auf 131,25 EUR 32,09- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Kapitalertragsteuer [\\.,\\d]+[\\s]*% .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                                 processTaxEntries(t, v, type);
@@ -1768,8 +1769,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer 24,45 % auf 131,25 EUR 32,09- EUR
                         // @formatter:on
                         .section("tax1", "currency1", "tax2", "currency2").optional() //
-                        .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$") //
-                        .match("^Kapitalertragsteuer [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$") //
+                        .match("^Kapitalertragsteuer [\\.,\\d]+[\\s]*% .* [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$") //
+                        .match("^Kapitalertragsteuer [\\.,\\d]+[\\s]*% .* [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
@@ -1791,7 +1792,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // Solidaritätszuschlag 5,5 % auf 32,09 EUR 1,76- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+[\\s]*% .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                                 processTaxEntries(t, v, type);
@@ -1803,8 +1804,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // Solidaritätszuschlag 5,5 % auf 32,09 EUR 1,76- EUR
                         // @formatter:on
                         .section("tax1", "currency1", "tax2", "currency2").optional() //
-                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$") //
-                        .match("^Solidarit.tszuschlag [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$") //
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+[\\s]*% .* [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$") //
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+[\\s]*% .* [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
@@ -1826,7 +1827,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // Kirchensteuer 9 % auf 32,09 EUR 2,88- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
+                        .match("^Kirchensteuer [\\.,\\d]+[\\s]*% .* [\\.,\\d]+ [\\w]{3} (?<tax>[\\.,\\d]+)\\- (?<currency>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (!type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                                 processTaxEntries(t, v, type);
@@ -1838,8 +1839,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         // Kirchensteuer 9 % auf 32,09 EUR 2,88- EUR
                         // @formatter:on
                         .section("tax1", "currency1", "tax2", "currency2").optional() //
-                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$") //
-                        .match("^Kirchensteuer [\\.,\\d]+([\\s]+)?% .* [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$") //
+                        .match("^Kirchensteuer [\\.,\\d]+[\\s]*% .* [\\.,\\d]+ [\\w]{3} (?<tax1>[\\.,\\d]+)\\- (?<currency1>[\\w]{3})$") //
+                        .match("^Kirchensteuer [\\.,\\d]+[\\s]*% .* [\\.,\\d]+ [\\w]{3} (?<tax2>[\\.,\\d]+)\\- (?<currency2>[\\w]{3})$") //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().getBoolean(IS_JOINT_ACCOUNT))
                             {
