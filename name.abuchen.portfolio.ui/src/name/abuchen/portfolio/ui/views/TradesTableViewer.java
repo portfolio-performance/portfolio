@@ -238,6 +238,8 @@ public class TradesTableViewer
         column = new Column("entryvalue-pershare", Messages.ColumnEntryValue + " (" + Messages.ColumnPerShare + ")", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                         SWT.RIGHT, 80);
         column.setGroupLabel(Messages.ColumnEntryValue);
+        column.setMenuLabel(Messages.ColumnEntryValue + " (" + Messages.ColumnPerShare + ")" + " (" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        + Messages.LabelCapitalGainsMethodFIFO + ")"); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -247,6 +249,32 @@ public class TradesTableViewer
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> averagePurchasePrice.apply((Trade) e)));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        Function<Trade, Money> averagePurchasePriceMovingAverage = t -> {
+            Money entryValue = t.getEntryValueMovingAverage();
+            return Money.of(entryValue.getCurrencyCode(),
+                            Math.round(entryValue.getAmount() / (double) t.getShares() * Values.Share.factor()));
+        };
+
+        column = new Column("entryvalue-mvavg-pershare", //$NON-NLS-1$
+                        Messages.ColumnEntryValue + " (" + Messages.ColumnPerShare + ")" + " (" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                        + Messages.LabelCapitalGainsMethodMovingAverageAbbr + ")", //$NON-NLS-1$
+                        SWT.RIGHT, 80);
+        column.setGroupLabel(Messages.ColumnEntryValue);
+        column.setMenuLabel(Messages.ColumnEntryValue + " (" + Messages.ColumnPerShare + ")" + " (" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        + Messages.LabelCapitalGainsMethodMovingAverage + ")"); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return Values.Money.format(averagePurchasePriceMovingAverage.apply((Trade) e),
+                                view.getClient().getBaseCurrency());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(e -> averagePurchasePriceMovingAverage.apply((Trade) e)));
         column.setVisible(false);
         support.addColumn(column);
 
