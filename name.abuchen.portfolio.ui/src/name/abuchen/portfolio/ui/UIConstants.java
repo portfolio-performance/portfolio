@@ -211,9 +211,11 @@ public interface UIConstants
         String EOD_HISTORICAL_DATA_API_KEY = "EOD_HISTORICAL_DATA_API_KEY"; //$NON-NLS-1$
 
         String COINGECKO_API_KEY = "COINGECKO_API_KEY"; //$NON-NLS-1$
-        
-        String PORTFOLIO_REPORT_API_KEY = "PORTFOLIO_REPORT_API_KEY"; //$NON-NLS-1$
-        String PORTFOLIO_REPORT_API_URL = "PORTFOLIO_REPORT_API_URL"; //$NON-NLS-1$
+
+        @Deprecated(since = "2025-05-09")
+        String PORTFOLIO_REPORT_API_KEY = "PORTFOLIO_REPORT_API_KEY"; //$NON-NLS-1$ //NOSONAR
+        @Deprecated(since = "2025-05-09")
+        String PORTFOLIO_REPORT_API_URL = "PORTFOLIO_REPORT_API_URL"; //$NON-NLS-1$ //NOSONAR
 
         /**
          * Preference key whether to store settings (standard calendar)

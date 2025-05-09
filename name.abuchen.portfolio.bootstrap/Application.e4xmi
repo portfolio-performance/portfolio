@@ -116,14 +116,11 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_PV6KIL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.menu.online.uploadToDivvyDiary" label="%menu.online.divvydiary.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/divvydiary.com-logo.png" command="_ZWCyUL3OEeqoTtTaIzseTQ">
           <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_cLemQAxoEe6sSLPjYVyvlw" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.preferences.DivvyDiaryAPIKeyConfiguredExpression"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_t1tSoDrlEeydp_NU-UFwGA" elementId="name.abuchen.portfolio.ui.menu.online.syncEODHistoricalData" label="%menu.online.eod-historical-data.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/eodhistoricaldata-logo.png" command="_hlqdUDrlEeydp_NU-UFwGA">
-          <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_t1tSoTrlEeydp_NU-UFwGA" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.preferences.ExperimentalFeaturesEnabledExpression"/>
-        </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_CB6bwHmPEeuiO8_BzX84yg" elementId="name.abuchen.portfolio.ui.menu.online.syncPortfolioReport" label="%menu.online.portfolio-report.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/portfolio-report.net-logo.png" command="_m720cHmOEeuiO8_BzX84yg">
-          <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_J5pDQKBuEeuHadwYWq-bDQ" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.preferences.ExperimentalFeaturesEnabledExpression"/>
-        </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_HPofkNoBEe2p9IMNrIn2tQ" elementId="name.abuchen.portfolio.ui.menu.online.uploadToMyDividends24" label="%menu.online.mydividends24.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/mydividends24.de-logo.png" command="_61mn0NoAEe2p9IMNrIn2tQ">
           <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_dUK78AzREe6sSLPjYVyvlw" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.preferences.MyDividends24APIKeyConfiguredExpression"/>
+        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_t1tSoDrlEeydp_NU-UFwGA" elementId="name.abuchen.portfolio.ui.menu.online.syncEODHistoricalData" label="%menu.online.eod-historical-data.label" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/eodhistoricaldata-logo.png" command="_hlqdUDrlEeydp_NU-UFwGA">
+          <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_t1tSoTrlEeydp_NU-UFwGA" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.preferences.ExperimentalFeaturesEnabledExpression"/>
         </children>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_6KeHEBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.help" label="%menu.help.label">
@@ -206,7 +203,6 @@
   <handlers xmi:id="_VFcfMBM9EeqsXLK6ns2Lug" elementId="name.abuchen.portfolio.ui.handler.saveErrorLog" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SaveErrorLogHandler" command="_PZoy8BM9EeqsXLK6ns2Lug"/>
   <handlers xmi:id="_QjA2cL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.handler.uploadToDivvyDiary" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UploadToDivvyDiaryHandler" command="_ZWCyUL3OEeqoTtTaIzseTQ"/>
   <handlers xmi:id="_YLz7IDFOEeuGXeKVI3KJtQ" elementId="name.abuchen.portfolio.handler.selectAll" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SelectAllHandler" command="_gxx18DFPEeuGXeKVI3KJtQ"/>
-  <handlers xmi:id="_toGqAHmOEeuiO8_BzX84yg" elementId="name.abuchen.portfolio.ui.handler.syncPortfolioReport" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SyncPortfolioReportHandler" command="_m720cHmOEeuiO8_BzX84yg"/>
   <handlers xmi:id="_kqZZoDrlEeydp_NU-UFwGA" elementId="name.abuchen.portfolio.ui.handler.syncEODHistoricalData" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SyncEODHistoricalDataHandler" command="_hlqdUDrlEeydp_NU-UFwGA"/>
   <handlers xmi:id="_epQgkO8hEeyrZdV12xoNqg" elementId="name.abuchen.portfolio.ui.handler.activateDiscreetMode" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ActivateDiscreetModeHandler" command="_oL7wsO8hEeyrZdV12xoNqg"/>
   <handlers xmi:id="_ytClQNoAEe2p9IMNrIn2tQ" elementId="name.abuchen.portfolio.ui.handler.uploadToMyDividends24" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UploadToMyDividends24Handler" command="_61mn0NoAEe2p9IMNrIn2tQ"/>
@@ -311,7 +307,6 @@
   <commands xmi:id="_PZoy8BM9EeqsXLK6ns2Lug" elementId="name.abuchen.portfolio.ui.command.saveErrorLog" commandName="saveErrorLog"/>
   <commands xmi:id="_ZWCyUL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.command.uploadToDivvyDiary" commandName="uploadToDivvyDiary"/>
   <commands xmi:id="_gxx18DFPEeuGXeKVI3KJtQ" elementId="name.abuchen.portfolio.ui.command.selectAll" commandName="selectAll"/>
-  <commands xmi:id="_m720cHmOEeuiO8_BzX84yg" elementId="name.abuchen.portfolio.ui.command.syncPortfolioReport" commandName="syncPortfolioReport"/>
   <commands xmi:id="_hlqdUDrlEeydp_NU-UFwGA" elementId="name.abuchen.portfolio.ui.command.syncEODHistoricalData" commandName="syncEODHistoricalData"/>
   <commands xmi:id="_oL7wsO8hEeyrZdV12xoNqg" elementId="name.abuchen.portfolio.ui.command.activateDiscreetMode" commandName="activateDiscreetMode"/>
   <commands xmi:id="_61mn0NoAEe2p9IMNrIn2tQ" elementId="name.abuchen.portfolio.ui.command.uploadToMyDividends24" commandName="uploadToMyDividends24"/>
