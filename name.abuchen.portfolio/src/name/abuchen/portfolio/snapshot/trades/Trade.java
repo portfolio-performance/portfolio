@@ -256,6 +256,11 @@ public class Trade implements Adaptable
         return (exitValue.getAmount() / (double) entryValue.getAmount()) - 1;
     }
 
+    public double getReturnMovingAverage()
+    {
+        return (exitValue.getAmount() / (double) entryValueMovingAverage.get().getAmount()) - 1;
+    }
+
     /**
      * @brief Checks if the trade is closed
      * @return True if the trade has been closed, false otherwise
