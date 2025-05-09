@@ -321,7 +321,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         {
             if ("GBP".equals(quoteCurrency) && "GBX".equals(securityCurrency)) //$NON-NLS-1$ //$NON-NLS-2$
                 return price * 100;
-            if ("GBX".equals(quoteCurrency) && "GBP".equals(securityCurrency)) //$NON-NLS-1$ //$NON-NLS-2$
+            if ("GBp".equals(quoteCurrency) && "GBP".equals(securityCurrency)) //$NON-NLS-1$ //$NON-NLS-2$
                 return price / 100;
         }
         return price;
