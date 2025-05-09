@@ -37,6 +37,22 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.76.2" date="2025-05-09">
+      <description>
+        <ul>
+          <li>Fix: Resolved an issue with searching for securities via Yahoo.</li>
+          <li>Fix: Resolved an issue with the automatic conversion from GPX to GBP using the Yahoo quote provider.</li>
+          <li>Fix: Resolved an issue where the Y-axis in the Rebalancing widget could not be hidden.</li>
+          <li>Improvement: Extended PDF importer to support DKB.</li>
+          <li>Improvement: Improved handling of request limits and caching for the integrated quote provider.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem bei der Suche nach Wertpapieren über Yahoo.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem bei der automatischen Umrechnung von GPX in GBP beim Kurslieferanten Yahoo.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, durch das im Rebalancing-Widget die Y-Achse nicht ausgeblendet werden konnte.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer erweitert für: DKB</li>
+          <li xml:lang="de">Verbesserung: Besserer Umgang mit Abruflimits und Caching des integrierten Kurslieferanten.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.76.1" date="2025-05-06">
       <description>
         <ul>
