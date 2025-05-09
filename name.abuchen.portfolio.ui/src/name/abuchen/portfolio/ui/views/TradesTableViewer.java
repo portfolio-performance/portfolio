@@ -381,8 +381,21 @@ public class TradesTableViewer
         support.addColumn(column);
 
         column = new Column("return", Messages.ColumnReturn, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.ColumnReturn);
+        column.setMenuLabel(Messages.ColumnReturn + " (" + Messages.LabelCapitalGainsMethodFIFO + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, t -> ((Trade) t).getReturn()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getReturn()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("return moving average", //$NON-NLS-1$
+                        Messages.ColumnReturn + " (" + Messages.LabelCapitalGainsMethodMovingAverageAbbr + ")", //$NON-NLS-1$ //$NON-NLS-2$
+                        SWT.RIGHT, 80);
+        column.setGroupLabel(Messages.ColumnReturn);
+        column.setMenuLabel(Messages.ColumnReturn + " (" + Messages.LabelCapitalGainsMethodMovingAverage + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setLabelProvider(
+                        new NumberColorLabelProvider<>(Values.Percent2, t -> ((Trade) t).getReturnMovingAverage()));
+        column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getReturnMovingAverage()));
         column.setVisible(false);
         support.addColumn(column);
 
