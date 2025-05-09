@@ -429,7 +429,8 @@ public class Client
     public String removeProperty(String key)
     {
         String oldValue = properties.remove(key);
-        touch();
+        if (oldValue != null)
+            touch();
         return oldValue;
     }
 

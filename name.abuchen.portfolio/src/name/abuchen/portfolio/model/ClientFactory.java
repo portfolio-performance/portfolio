@@ -912,6 +912,9 @@ public class ClientFactory
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
+
+                // no need to create a new version. For now, always remove.
+                removePortfolioReportSyncProperties(client);
                 break;
             default:
                 break;
@@ -1713,6 +1716,13 @@ public class ClientFactory
         // dashboards get a unique identifier to reliably identify them in
         // configuration (say the navigation bar)
         client.getDashboards().forEach(dashboard -> dashboard.setId(UUID.randomUUID().toString()));
+    }
+
+    private static void removePortfolioReportSyncProperties(Client client)
+    {
+        // the experimental sync feature used to store these two properties
+        client.removeProperty("net.portfolio-report.portfolioId"); //$NON-NLS-1$
+        client.removeProperty("net.portfolio-report.synchronizedAt"); //$NON-NLS-1$
     }
 
     private static synchronized XStream xstreamReader()
