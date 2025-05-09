@@ -38,6 +38,12 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public final class PortfolioPerformanceFeed implements QuoteFeed
 {
+    private static class CachedResponse
+    {
+        LocalDate start;
+        String json;
+    }
+
     public static final String ID = "PP"; //$NON-NLS-1$
 
     private static final String ENDPOINT = "api.portfolio-performance.info"; //$NON-NLS-1$
@@ -64,6 +70,8 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
     );
 
     private static final OAuthClient oauthClient = OAuthClient.INSTANCE;
+
+    private final PageCache<CachedResponse> cache = new PageCache<>();
 
     @Override
     public String getId()
@@ -176,12 +184,23 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
             if (accessToken.isPresent())
                 webaccess.addBearer(accessToken.get().getToken());
 
-            String response = webaccess.get();
+            // check cache first
+
+            var response = cache.lookup(security.getTickerSymbol());
+            if (response == null || response.start.isAfter(startDate))
+            {
+                response = new CachedResponse();
+                response.start = startDate;
+                response.json = webaccess.get();
+
+                if (response.json != null)
+                    cache.put(security.getTickerSymbol(), response);
+            }
 
             if (collectRawResponse)
-                data.addResponse(webaccess.getURL(), response);
+                data.addResponse(webaccess.getURL(), response.json);
 
-            parseCandle(response, data);
+            parseCandle(response.json, data);
         }
         catch (WebAccessException e)
         {
@@ -205,6 +224,9 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
 
     private void parseCandle(String response, QuoteFeedData data)
     {
+        if (response == null)
+            return;
+
         JSONObject json = (JSONObject) JSONValue.parse(response);
 
         String status = (String) json.get("s"); //$NON-NLS-1$
