@@ -235,7 +235,6 @@ public class Messages extends NLS
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;
     public static String MsgAlphaVantageAPIKeyMissing;
-    public static String MsgAlphaVantageRateLimitExceeded;
     public static String MsgCheckConfiguredAndCalculatedGrossValueDoNotMatch;
     public static String MsgCheckDividendsMustHaveASecurity;
     public static String MsgCheckGrossValueUnitForexMismatch;
@@ -252,7 +251,6 @@ public class Messages extends NLS
     public static String MsgCheckUnitForexMismatch;
     public static String MsgCheckUnitForexNotValid;
     public static String MsgCheckUnsupportedCurrency;
-    public static String MsgCoinGeckoRateLimitExceeded;
     public static String MsgDeltaWithoutAssets;
     public static String MsgErrorTransactionAlternativeDocumentRequired;
     public static String MsgErrorBaseAndTermCurrencyAreEqualWithInvalidExchangeRate;
@@ -313,6 +311,7 @@ public class Messages extends NLS
     public static String MsgNotANumber;
     public static String MsgNotAPortfolioFile;
     public static String MsgPasswordMissing;
+    public static String MsgRateLimitExceeded;
     public static String MsgReadingFile;
     public static String MsgUnexpectedHeader;
     public static String MsgUnexpectedValue;
