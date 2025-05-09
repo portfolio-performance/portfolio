@@ -208,7 +208,8 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
             switch (e.getHttpErrorCode())
             {
                 case HttpStatus.SC_TOO_MANY_REQUESTS:
-                    throw new RateLimitExceededException(Duration.ZERO);
+                    throw new RateLimitExceededException(Duration.ofMinutes(1),
+                                    MessageFormat.format(Messages.MsgRateLimitExceeded, getName()));
                 case HttpStatus.SC_NOT_FOUND, HttpStatus.SC_FORBIDDEN:
                     throw new SecurityNotSupportedException();
                 default:

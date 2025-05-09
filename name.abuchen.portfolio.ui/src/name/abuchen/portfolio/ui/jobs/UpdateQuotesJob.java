@@ -196,7 +196,15 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
         // include historical quotes
         if (target.contains(Target.HISTORIC))
-            addHistoricalQuotesJobs(securities, dirtyable, jobs);
+        {
+            var builtIn = securities.stream().filter(s -> PortfolioPerformanceFeed.ID.equals(s.getFeed()))
+                            .collect(toMutableList());
+            addBuiltInQuotesJobs(builtIn, dirtyable, jobs);
+
+            var others = securities.stream().filter(s -> !PortfolioPerformanceFeed.ID.equals(s.getFeed()))
+                            .collect(toMutableList());
+            addHistoricalQuotesJobs(others, dirtyable, jobs);
+        }
 
         // include latest quotes
         if (target.contains(Target.LATEST))
@@ -390,6 +398,74 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
             jobs.add(job);
         }
+    }
+
+    private void addBuiltInQuotesJobs(List<Security> securities, Dirtyable dirtyable, List<Job> jobs)
+    {
+        if (securities.isEmpty())
+            return;
+
+        var feed = Factory.getQuoteFeed(PortfolioPerformanceFeed.class);
+
+        Collections.shuffle(securities);
+
+        Job job = new Job(feed.getName() + ": " + securities.size()) //$NON-NLS-1$
+        {
+            List<Security> candidates = new ArrayList<>(securities);
+
+            /** number of reschedules before failing permanently */
+            int count = 3;
+
+            @Override
+            protected IStatus run(IProgressMonitor monitor)
+            {
+                while (!candidates.isEmpty())
+                {
+                    var security = candidates.getLast();
+
+                    try
+                    {
+                        QuoteFeedData data = feed.getHistoricalQuotes(security, false);
+
+                        candidates.remove(security);
+
+                        if (security.addAllPrices(data.getPrices()))
+                            dirtyable.markDirty();
+
+                        if (!data.getErrors().isEmpty())
+                            PortfolioPlugin.log(createErrorStatus(security.getName(), data.getErrors()));
+                    }
+                    catch (SecurityNotSupportedException e)
+                    {
+                        candidates.remove(security);
+                        PortfolioPlugin.log(e);
+                    }
+                    catch (AuthenticationExpiredException e)
+                    {
+                        PortfolioPlugin.log(e);
+                        return Status.OK_STATUS;
+                    }
+                    catch (RateLimitExceededException e)
+                    {
+                        count--;
+
+                        if (count >= 0 && e.getRetryAfter().isPositive())
+                        {
+                            schedule(e.getRetryAfter().toMillis());
+                            return Status.OK_STATUS;
+                        }
+                        else
+                        {
+                            return new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage());
+                        }
+                    }
+                }
+
+                return Status.OK_STATUS;
+            }
+        };
+
+        jobs.add(job);
     }
 
     private IStatus createErrorStatus(String label, List<Exception> exceptions)

@@ -12,12 +12,6 @@ public class RateLimitExceededException extends RuntimeException
 
     private final Duration retryAfter;
 
-    public RateLimitExceededException(Duration retryAfter)
-    {
-        super();
-        this.retryAfter = retryAfter;
-    }
-
     public RateLimitExceededException(Duration retryAfter, String message)
     {
         super(message);
