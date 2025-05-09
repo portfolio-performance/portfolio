@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -107,7 +108,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
         }
 
         if (!rateLimiter.tryAcquire())
-            throw new RateLimitExceededException(Messages.MsgAlphaVantageRateLimitExceeded);
+            throw new RateLimitExceededException(Duration.ofSeconds(5), Messages.MsgAlphaVantageRateLimitExceeded);
 
         try
         {
@@ -185,7 +186,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                             new IllegalArgumentException(Messages.MsgAlphaVantageAPIKeyMissing));
 
         if (!rateLimiter.tryAcquire())
-            throw new RateLimitExceededException(Messages.MsgAlphaVantageRateLimitExceeded);
+            throw new RateLimitExceededException(Duration.ofSeconds(5), Messages.MsgAlphaVantageRateLimitExceeded);
 
         QuoteFeedData data = new QuoteFeedData();
 

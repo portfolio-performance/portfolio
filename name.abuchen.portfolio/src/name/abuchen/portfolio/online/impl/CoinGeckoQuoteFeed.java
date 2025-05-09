@@ -232,7 +232,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
                             new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
 
         if (!rateLimiter.tryAcquire(Duration.ofSeconds(30)))
-            throw new RateLimitExceededException(Messages.MsgCoinGeckoRateLimitExceeded);
+            throw new RateLimitExceededException(Duration.ofSeconds(5), Messages.MsgCoinGeckoRateLimitExceeded);
 
         QuoteFeedData data = new QuoteFeedData();
 
@@ -284,7 +284,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
         catch (WebAccessException e)
         {
             if (e.getHttpErrorCode() == HttpStatus.SC_TOO_MANY_REQUESTS)
-                throw new RateLimitExceededException(Messages.MsgCoinGeckoRateLimitExceeded);
+                throw new RateLimitExceededException(Duration.ofSeconds(5), Messages.MsgCoinGeckoRateLimitExceeded);
 
             data.addError(e);
         }

@@ -279,6 +279,9 @@ public final class UpdateQuotesJob extends AbstractClientJob
     {
         return new Job(feed.getName() + ": " + security.getName() + " " + Messages.EditWizardLatestQuoteFeedTitle) //$NON-NLS-1$ //$NON-NLS-2$
         {
+            /** number of reschedules before failing permanently */
+            int count = 3;
+
             @Override
             protected IStatus run(IProgressMonitor monitor)
             {
@@ -298,8 +301,17 @@ public final class UpdateQuotesJob extends AbstractClientJob
                 }
                 catch (RateLimitExceededException e)
                 {
-                    schedule(2000);
-                    return Status.OK_STATUS;
+                    count--;
+
+                    if (count >= 0 && e.getRetryAfter().isPositive())
+                    {
+                        schedule(e.getRetryAfter().toMillis());
+                        return Status.OK_STATUS;
+                    }
+                    else
+                    {
+                        return new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage());
+                    }
                 }
             }
         };
@@ -321,6 +333,9 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
             Job job = new Job(feed.getName() + ": " + security.getName()) //$NON-NLS-1$
             {
+                /** number of reschedules before failing permanently */
+                int count = 3;
+
                 @Override
                 protected IStatus run(IProgressMonitor monitor)
                 {
@@ -354,8 +369,18 @@ public final class UpdateQuotesJob extends AbstractClientJob
                     }
                     catch (RateLimitExceededException e)
                     {
-                        schedule(2000);
-                        return Status.OK_STATUS;
+                        count--;
+
+                        if (count >= 0 && e.getRetryAfter().isPositive())
+                        {
+                            schedule(e.getRetryAfter().toMillis());
+                            return Status.OK_STATUS;
+                        }
+                        else
+                        {
+                            return new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage());
+                        }
+
                     }
                 }
             };

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -207,7 +208,7 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
             switch (e.getHttpErrorCode())
             {
                 case HttpStatus.SC_TOO_MANY_REQUESTS:
-                    throw new RateLimitExceededException();
+                    throw new RateLimitExceededException(Duration.ZERO);
                 case HttpStatus.SC_NOT_FOUND, HttpStatus.SC_FORBIDDEN:
                     throw new SecurityNotSupportedException();
                 default:
