@@ -313,6 +313,18 @@ public class TradesTableViewer
         column.setVisible(false);
         support.addColumn(column);
 
+        column = new Column("gpl-mavg", //$NON-NLS-1$
+                        Messages.ColumnGrossProfitLoss + " (" + Messages.LabelCapitalGainsMethodMovingAverageAbbr + ")", //$NON-NLS-1$ //$NON-NLS-2$
+                        SWT.RIGHT, 80);
+        column.setGroupLabel(Messages.ColumnProfitLoss);
+        column.setMenuLabel(
+                        Messages.ColumnGrossProfitLoss + " (" + Messages.LabelCapitalGainsMethodMovingAverage + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setLabelProvider(new MoneyColorLabelProvider(
+                        element -> ((Trade) element).getGrossProfitLossMovingAverage(), view.getClient()));
+        column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getGrossProfitLossMovingAverage()));
+        column.setVisible(false);
+        support.addColumn(column);
+
         column = new Column("holdingperiod", Messages.ColumnHoldingPeriod, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
