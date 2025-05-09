@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 import org.json.simple.JSONArray;
@@ -130,6 +131,7 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
         {
             @SuppressWarnings("nls")
             var html = new WebAccess("query2.finance.yahoo.com", "/v1/finance/search") //
+                            .addUserAgent("Mozilla/5.0 (" + ThreadLocalRandom.current().nextInt(100000, 999999) + ")") //
                             .addParameter("q", query) //
                             .addParameter("region", "DE") //
                             .addParameter("lang", "de-DE") //
