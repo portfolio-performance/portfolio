@@ -133,9 +133,9 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
     private Label valueDaysLow;
     private Label valueVolume;
 
-    public LatestQuoteProviderPage(final EditSecurityModel model, BindingHelper bindings)
+    public LatestQuoteProviderPage(final EditSecurityModel model, EditSecurityCache cache, BindingHelper bindings)
     {
-        super(model, bindings);
+        super(model, cache, bindings);
 
         setTitle(Messages.EditWizardLatestQuoteFeedTitle);
 

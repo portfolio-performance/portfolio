@@ -58,9 +58,9 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     // whether a more recent job has already been started
     private LoadHistoricalQuotes currentJob;
 
-    public HistoricalQuoteProviderPage(final EditSecurityModel model, BindingHelper bindings)
+    public HistoricalQuoteProviderPage(final EditSecurityModel model, EditSecurityCache cache, BindingHelper bindings)
     {
-        super(model, bindings);
+        super(model, cache, bindings);
 
         setTitle(Messages.EditWizardQuoteFeedTitle);
 
