@@ -425,7 +425,7 @@
       <isin>US0231351067</isin>
       <tickerSymbol>AMZN</tickerSymbol>
       <wkn>906866</wkn>
-      <feed>YAHOO</feed>
+      <feed>PP</feed>
       <prices>
         <price t="2018-02-01" v="6950000000"/>
       </prices>
