@@ -496,16 +496,20 @@ public class SecurityListView extends AbstractFinanceView
         securities.getColumnHelper().addListener(() -> updateTitle(getDefaultTitle()));
         securities.getColumnHelper().setToolBarManager(getViewToolBarManager());
 
-        securities.addSelectionChangedListener(event -> setInformationPaneInput(
-                        ((IStructuredSelection) event.getSelection()).getFirstElement()));
-
         securities.addSelectionChangedListener(event -> {
             IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 
             if (!selection.isEmpty())
-                selectionService.setSelection(new SecuritySelection(getClient(), selection.toList()));
+            {
+                SecuritySelection s = new SecuritySelection(getClient(), selection.toList());
+                selectionService.setSelection(s);
+                setInformationPaneInput(s);
+            }
             else
+            {
                 selectionService.setSelection(null);
+                setInformationPaneInput(new SecuritySelection(getClient(), selection.toList()));
+            }
         });
 
         securities.addFilter(new ViewerFilter()
