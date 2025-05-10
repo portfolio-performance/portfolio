@@ -21,7 +21,6 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -484,7 +483,6 @@ public class SecurityListView extends AbstractFinanceView
     // top table: securities
     // //////////////////////////////////////////////////////////////
 
-    @SuppressWarnings("unchecked")
     @Override
     protected Control createBody(Composite parent)
     {
@@ -496,16 +494,13 @@ public class SecurityListView extends AbstractFinanceView
         securities.getColumnHelper().addListener(() -> updateTitle(getDefaultTitle()));
         securities.getColumnHelper().setToolBarManager(getViewToolBarManager());
 
-        securities.addSelectionChangedListener(event -> setInformationPaneInput(
-                        ((IStructuredSelection) event.getSelection()).getFirstElement()));
-
         securities.addSelectionChangedListener(event -> {
-            IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+            var selection = event.getStructuredSelection();
+            @SuppressWarnings("unchecked")
+            var securitySelection = new SecuritySelection(getClient(), selection.toList());
 
-            if (!selection.isEmpty())
-                selectionService.setSelection(new SecuritySelection(getClient(), selection.toList()));
-            else
-                selectionService.setSelection(null);
+            selectionService.setSelection(selection.isEmpty() ? null : securitySelection);
+            setInformationPaneInput(securitySelection);
         });
 
         securities.addFilter(new ViewerFilter()
