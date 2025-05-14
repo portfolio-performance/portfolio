@@ -651,6 +651,18 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         //
         // --------------------------------------------------------
         //
+        // Vorabpauschale zum Stichtag 31.12.2024 aus Depotposition xxx.01
+        // Vanguard FTSE All-World U.ETF Reg. Shs USD Acc. oN
+        // Ref. Nr. 0000012345/24012025, Buchungsdatum 24.01.2025
+        // ISIN Betrag je Anteil
+        // IE00BK5BQT80 1,718172340 EUR
+        // Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer
+        // 1,12 EUR 0,06 EUR 0,00 EUR
+        // Abwicklung über IBAN Institut Zahlungsbetrag
+        // DE54700130001234567890 FNZ Bank 1,18 EUR
+        //
+        // --------------------------------------------------------
+        //
         // Verkauf wegen Vorabpauschale 0,03 EUR mit Kursdatum 25.01.2021 aus Depotposition xxx.21
         // Mor.St.Inv.-Global Opportunity Actions Nominatives A USD o.N.
         // Ref. Nr. 000/22012021, Buchungsdatum 26.01.2021
@@ -700,15 +712,28 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .match("^.* Buchungsdatum (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                        // @formatter:off
-                        // Belastung der angefallenen Steuern in Höhe von 0,14 EUR erfolgt durch Verkauf aus Depotposition XXXXXXXXXX.05 mit Ref. Nr.
-                        // @formatter:on
-                        .section("currency", "amount") //
-                        .match("^Belastung der angefallenen Steuern in H.he von (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
-                        .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                        .oneOf( //
+                                        // @formatter:off
+                                        // Belastung der angefallenen Steuern in Höhe von 0,14 EUR erfolgt durch Verkauf aus Depotposition XXXXXXXXXX.05 mit Ref. Nr.
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .match("^Belastung der angefallenen Steuern in H.he von (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3}).*$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                        }),
+                                        // Abwicklung über IBAN Institut Zahlungsbetrag
+                                        // DE54700130001234567890 FNZ Bank 1,18 EUR
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("amount", "currency") //
+                                                        .find("^Abwicklung über IBAN Institut Zahlungsbetrag") //
+                                                        .match("^.* (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                        }))
 
                         // @formatter:off
                         // Ref. Nr. XXXXXXXX/XXXXXXXX, Buchungsdatum 21.11.2019

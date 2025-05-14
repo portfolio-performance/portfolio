@@ -5577,6 +5577,62 @@ public class EbasePDFExtractorTest
                         hasTaxes("EUR", 4.48 + 0.24 + 0.40), hasFees("EUR", 0.00))));
     }
 
+
+    @Test
+    public void testUmsatzabrechnung35()
+    {
+        EbasePDFExtractor extractor = new EbasePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Umsatzabrechnung35.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(3L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(5));
+
+        // The advance tax payment is always paid in local currency.
+        // If the security is in foreign currency, the exchange rate is missing
+        // in the document for posting.
+        // new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00BK5BQT80"), hasWkn(null), hasTicker(null), //
+                        hasName("Vanguard FTSE All-World U.ETF Reg. Shs USD Acc. oN"), //
+                        hasCurrencyCode("USD"))));
+
+        // check 1st buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-01-28T00:00"), hasShares(0.097258), //
+                        hasSource("Umsatzabrechnung35.txt"), //
+                        hasNote("Ref.-Nr.: 0400000987/27012025 | vermögenswirksame Leistungen"), //
+                        hasAmount("EUR", 13.29), hasGrossValue("EUR", 13.29), //
+                        hasForexGrossValue("USD", 13.79), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 2nd buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-02-27T00:00"), hasShares(0.096250), //
+                        hasSource("Umsatzabrechnung35.txt"), //
+                        hasNote("Ref.-Nr.: 0400017713/26022025 | vermögenswirksame Leistungen"), //
+                        hasAmount("EUR", 13.29), hasGrossValue("EUR", 13.29), //
+                        hasForexGrossValue("USD", 13.86), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+        // check 3rd buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-04-01T00:00"), hasShares(0.104955), //
+                        hasSource("Umsatzabrechnung35.txt"), //
+                        hasNote("Ref.-Nr.: 0400033849/31032025 | vermögenswirksame Leistungen"), //
+                        hasAmount("EUR", 13.29), hasGrossValue("EUR", 13.26), //
+                        hasForexGrossValue("USD", 14.26), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.03))));
+    }
+
     @Test
     public void testDepotStatement01()
     {
