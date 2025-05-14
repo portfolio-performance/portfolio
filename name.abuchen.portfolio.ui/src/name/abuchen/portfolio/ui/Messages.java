@@ -1401,6 +1401,7 @@ public class Messages extends NLS
     public static String WatchlistRename;
     public static String Website;
     public static String YearlyPerformanceHeatmapToolTip;
+    public static String ColumnCollapser;
     static
     {
         // initialize resource bundle
