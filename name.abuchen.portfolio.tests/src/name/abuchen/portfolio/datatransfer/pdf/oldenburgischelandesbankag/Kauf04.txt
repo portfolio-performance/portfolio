@@ -1,0 +1,36 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.76.1
+System: linux | x86_64 | 21.0.6+7-Ubuntu-120.04.1 | Ubuntu
+-----------------------------------------
+Oldenburg, 04.07.2024
+Es betreut Sie:
+Ihr OLB Team
+Postfach 26 05, 26016 Oldenburg 26121 Oldenburg
+Tel.: 0441 221 2210
+mail@olb.de
+Depotinhaber Zmwa BbJzkgO tbrkwtL
+Depotnummer 1234567890
+TECp bGWErKn kEvxFtT Seite 1 von 1
+fGCVeK-yiKhB-ffO. 75 Ausführung 01.07.2024
+Orderreferenz 12345678
+83506 KnUPfqR Handelsreferenz 12345678
+WERTPAPIERABRECHNUNG
+Kauf: iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N.
+Produktgruppe: ETF
+Handels- / Ausführungsplatz: Festpreisgeschäft
+Beratungsfreies Geschäft
+ISIN (WKN) Stück/ Nominale Kurswert Währung Bruttobetrag
+IE00B4L5Y983 (A0RPWH) 0,263673 101,4000 USD 24,95 EUR
+Devisenkurs EUR/ USD 1,07160 vom 02.07.2024
+Orderentgelt: 0,05 EUR
+Ausmachender Betrag: 25,00 EUR
+Verrechnungskonto Valuta
+DE12345678901234567890 04.07.2024
+Verwahrart Wertpapierrechnung Irland
+Bitte beachten Sie folgende Hinweise:
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+FNZ
+Oldenburgische Landesbank AG | Stau 15/17 | 26122 Oldenburg
+Vorsitzender des Aufsichtsrates: Axel Bartsch | Vorstand: Stefan Barth, Vorsitzender | Marc Ampaw | Aytac Aydin | Chris Eggert | Giacomo Petrobelli | Dr. Rainer Polster
+Sitz der Gesellschaft: Oldenburg (Oldb) Registergericht: Oldenburg (Oldb) HR-Nummer: HRB 3003
+Informationen zur Nutzung Ihrer Daten erhalten Sie auf www.olb.de/dsgvo und in jeder OLB-Filiale. Auf Wunsch schicken wir die Informationen auch gerne per Post zu.
