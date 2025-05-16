@@ -4,7 +4,6 @@ import static name.abuchen.portfolio.datatransfer.ExtractorUtils.checkAndSetGros
 import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -44,19 +43,19 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("Dividendengutschrift");
+        var type = new DocumentType("Dividendengutschrift");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^.*Postfach.*$");
+        var firstRelevantLine = new Block("^.*Postfach.*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -106,11 +105,11 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .match("^Devisenkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3})[\\s]{1,}(?<exchangeRate>[\\.,\\d]+)$") //
                         .match("^Dividendengutschrift (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+)\\+ [\\w]{3}$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -130,14 +129,14 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatement_BuySellTransaction()
     {
-        DocumentType type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
+        var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^(Kauf .*" //
+        var firstRelevantLine = new Block("^(Kauf .*" //
                         + "|Ansparplan .*" //
-                        + "|Fondsertrag .*"
+                        + "|Fondsertrag .*" //
                         + "|Ausgang externer Übertrag .*" //
                         + "|Verkauf .*" //
                         + "|Entgelt Verkauf .*" //
@@ -152,7 +151,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -161,7 +160,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .section("type").optional() //
                         .match("^(?<type>(Kauf" //
                                         + "|Ansparplan" //
-                                        + "|Fondsertrag"
+                                        + "|Fondsertrag" //
                                         + "|Ausgang externer Übertrag" //
                                         + "|Verkauf" //
                                         + "|Entgelt Verkauf" //
@@ -368,11 +367,11 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                                         .attributes("termCurrency", "exchangeRate", "gross", "baseCurrency") //
                                                         .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] (\\-)?[\\.,\\d]+ [\\.,\\d]+ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
@@ -391,11 +390,11 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                                         .match("^[\\.,\\d]+ (?<termCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<exchangeRate>[\\.,\\d]+) [\\.,\\d]+ [\\w]{3}$") //
                                                         .match("^Zahlungsbetrag [\\.,\\d]+ [\\w]{3}$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                                                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                                                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                                                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
@@ -459,7 +458,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | "))))
 
                         .wrap(t -> {
-                            BuySellEntryItem item = new BuySellEntryItem(t);
+                            var item = new BuySellEntryItem(t);
 
                             if (type.getCurrentContext().getBoolean("skipTransaction"))
                             {
@@ -480,12 +479,12 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatement_DividendeTransaction()
     {
-        DocumentType type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
+        var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Fondsertrag .*$", //
+        var firstRelevantLine = new Block("^Fondsertrag .*$", //
                         "^(Zahlungsbetrag nach " //
                                         + "|Zahlungsbetrag(?! in)" //
                                         + "|Die Auszahlung" //
@@ -496,7 +495,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -580,11 +579,11 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                                         .match("^.* [\\.,\\d]+ [\\.,\\d]+ [\\w]{3} (?<fxGross>[\\.,\\d]+) (?<termCurrency>[\\w]{3})$") //
                                                         .match("^Zahlungsbetrag nach W.hrungskonvertierung .* (?<exchangeRate>[\\.,\\d]+) [\\.,\\d]+ (?<baseCurrency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
@@ -599,11 +598,11 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                                         .match("^.* [\\.,\\d]+ [\\.,\\d]+ [\\w]{3} (?<fxGross>[\\.,\\d]+) [\\w]{3}$") //
                                                         .match("^Zahlungsbetrag nach W.hrungskonvertierung .* (?<exchangeRate>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})\\/(?<termCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
 
-                                                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
-                                                            Money gross = rate.convert(rate.getBaseCurrency(), fxGross);
+                                                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getBaseCurrency(), fxGross);
 
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }),
@@ -616,7 +615,7 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                                                         .attributes("baseCurrency", "termCurrency", "exchangeRate") //
                                                         .match("^[\\.,\\d]+ (?<baseCurrency>[\\w]{3}) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3} (?<exchangeRate>[\\.,\\d]+) [\\.,\\d]+ (?<termCurrency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
-                                                            ExtrExchangeRate rate = asExchangeRate(v);
+                                                            var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
                                                         }))
 
@@ -674,19 +673,19 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         // Vorabpauschale zum Stichtag 31.12.2020 aus Depotposition xxx.25
         // @formatter:on
 
-        DocumentType type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
+        var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Vorabpauschale zum Stichtag .*$");
+        var firstRelevantLine = new Block("^Vorabpauschale zum Stichtag .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
@@ -754,19 +753,19 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatement_DeliveryInOutBoundTransaction()
     {
-        DocumentType type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
+        var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
-        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
 
-        Block firstRelevantLine = new Block("^(Eingang|Ausgang) externer .bertrag .*$", "^Gegenwert der Anteile: .*$");
+        var firstRelevantLine = new Block("^(Eingang|Ausgang) externer .bertrag .*$", "^Gegenwert der Anteile: .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            var portfolioTransaction = new PortfolioTransaction();
                             portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
                             return portfolioTransaction;
                         })
@@ -847,19 +846,19 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatement_FeesWithSecurityTransaction()
     {
-        DocumentType type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
+        var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^(Entgelt|Entgeltbelastung) Verkauf .*$");
+        var firstRelevantLine = new Block("^(Entgelt|Entgeltbelastung) Verkauf .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES);
                             return accountTransaction;
                         })
@@ -922,11 +921,11 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .section("termCurrency", "baseCurrency", "exchangeRate", "gross").optional() //
                         .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] (\\-)?[\\.,\\d]+ [\\.,\\d]+ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -952,19 +951,19 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
     private void addDepotStatement_FeesWithDeliveryInOutBoundTransaction()
     {
-        DocumentType type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
+        var type = new DocumentType("(Umsatzabrechnung|Depotauszug)\\-Nr\\.");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^(Eingang|Ausgang) externer .bertrag .*$", "^Summe der belasteten Entgelte .*$");
+        var firstRelevantLine = new Block("^(Eingang|Ausgang) externer .bertrag .*$", "^Summe der belasteten Entgelte .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES);
                             return accountTransaction;
                         })
@@ -1027,11 +1026,11 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
                         .section("termCurrency", "baseCurrency", "exchangeRate", "gross").optional() //
                         .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] (\\-)?[\\.,\\d]+ [\\.,\\d]+ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+) (?<gross>[\\.,\\d]+) (?<baseCurrency>[\\w]{3})$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -1063,19 +1062,19 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        DocumentType type = new DocumentType("Kontoauszug\\-Nr\\. [\\d]+");
+        var type = new DocumentType("Kontoauszug\\-Nr\\. [\\d]+");
         this.addDocumentTyp(type);
 
         // @formatter:off
         // 06.04.2020 013015328 06.04.2020 SEPA Überweisung Gutschrift 5.000,00 EUR
         // 07.04.2020 013017353 07.04.2020 SEPA Überweisung Gutschrift 10.000,00 EUR
         // @formatter:on
-        Block depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA .berweisung Gutschrift [\\.,\\d]+ [\\w]{3}$");
+        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA .berweisung Gutschrift [\\.,\\d]+ [\\w]{3}$");
         type.addBlock(depositBlock);
         depositBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -1100,12 +1099,12 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         // 14.04.2020 123456 14.04.2020 SEPA Lastschrift Einzug 15,00 EUR
         // 21.06.2021 014852180 21.06.2021 SEPA Überweisung -1.231,37 EUR
         // @formatter:on
-        Block removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA (Lastschrift|.berweisung)( Einzug)? (\\-)?[\\.,\\d]+ [\\w]{3}$");
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} SEPA (Lastschrift|.berweisung)( Einzug)? (\\-)?[\\.,\\d]+ [\\w]{3}$");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.REMOVAL);
                             return accountTransaction;
                         })
@@ -1128,12 +1127,12 @@ public class EbasePDFExtractor extends AbstractPDFExtractor
         // @formatter:off
         // 21.06.2021 014852181 21.06.2021 Entgeltbuchung -2,50 EUR
         // @formatter:on
-        Block feeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Entgeltbuchung \\-[\\.,\\d]+ [\\w]{3}$");
+        var feeBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} Entgeltbuchung \\-[\\.,\\d]+ [\\w]{3}$");
         type.addBlock(feeBlock);
         feeBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.FEES);
                             return accountTransaction;
                         })
