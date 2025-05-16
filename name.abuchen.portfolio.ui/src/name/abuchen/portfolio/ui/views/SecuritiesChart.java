@@ -75,6 +75,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.util.chart.TimelineSeriesModel;
+import name.abuchen.portfolio.ui.util.format.AxisTickPercentNumberFormat;
 import name.abuchen.portfolio.ui.views.dataseries.ColorWheel;
 import name.abuchen.portfolio.ui.views.securitychart.SharesHeldChartSeries;
 import name.abuchen.portfolio.util.FormatHelper;
@@ -891,8 +892,10 @@ public class SecuritiesChart
 
     private void updateChart()
     {
+        boolean isSingleSecurityMode = securities.length == 1;
+
         EnumSet<ChartDetails> chartConfigPainting = chartConfig;
-        if (securities.length > 1)
+        if (!isSingleSecurityMode)
         {
             chartConfigPainting = EnumSet.of(ChartDetails.SCALING_LINEAR);
         }
@@ -915,8 +918,10 @@ public class SecuritiesChart
                 return;
             }
 
-            boolean isSingleSecurityMode = securities.length == 1;
-            // TODO: set y-axis format to % in multisecurity-mode
+            if (!isSingleSecurityMode)
+                chart.getAxisSet().getYAxis(0).getTick().setFormat(new AxisTickPercentNumberFormat("+#.##%;-#.##%")); //$NON-NLS-1$
+            else
+                chart.getAxisSet().getYAxis(0).getTick().setFormat(null);
 
             if (securities.length > 10)
             {
@@ -1008,7 +1013,7 @@ public class SecuritiesChart
                     SecurityPrice p = prices.get(ii + range.start);
                     dates[ii] = p.getDate();
                     values[ii] = isSingleSecurityMode ? p.getValue() / Values.Quote.divider()
-                                    : ((p.getValue() / Values.Quote.divider() / referenceQuote) - 1) * 100;
+                                    : ((p.getValue() / Values.Quote.divider() / referenceQuote) - 1);
                     if (showAreaRelativeToFirstQuote)
                     {
                         valuesRelative[ii] = (p.getValue() / Values.Quote.divider()) - firstQuote;
@@ -1055,7 +1060,7 @@ public class SecuritiesChart
                 Color color = isSingleSecurityMode ? colorQuote : new Color(colorWheel.next());
                 boolean enableArea = !showAreaRelativeToFirstQuote && isSingleSecurityMode;
                 configureSeriesPainter(lineSeries, dates, values, color, 2, LineStyle.SOLID,
-                                enableArea, false);
+                                enableArea, !isSingleSecurityMode);
 
                 chart.adjustRange();
 
