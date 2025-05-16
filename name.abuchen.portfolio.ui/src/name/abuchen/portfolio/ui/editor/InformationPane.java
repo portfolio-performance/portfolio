@@ -211,12 +211,7 @@ public class InformationPane
     {
         currentInput = input;
 
-        Named named = Adaptor.adapt(Named.class, input);
-        label.setText(named != null ? TextUtil.tooltip(named.getName()) : ""); //$NON-NLS-1$
-        if (named == null && input instanceof ClientFilterMenu.Item item)
-        {
-            label.setText(item.getLabel());
-        }
+        setLabelText();
 
         InformationPanePage page = (InformationPanePage) pagebook.getPage()
                         .getData(InformationPanePage.class.getName());
@@ -228,8 +223,7 @@ public class InformationPane
 
     /* package */ void onRecalculationNeeded()
     {
-        Named named = Adaptor.adapt(Named.class, currentInput);
-        label.setText(named != null ? TextUtil.tooltip(named.getName()) : ""); //$NON-NLS-1$
+        setLabelText();
 
         InformationPanePage page = (InformationPanePage) pagebook.getPage()
                         .getData(InformationPanePage.class.getName());
@@ -237,6 +231,16 @@ public class InformationPane
             page.onRecalculationNeeded();
 
         area.layout();
+    }
+
+    private void setLabelText()
+    {
+        Named named = Adaptor.adapt(Named.class, currentInput);
+        label.setText(named != null ? TextUtil.tooltip(named.getName()) : ""); //$NON-NLS-1$
+        if (named == null && currentInput instanceof ClientFilterMenu.Item item)
+        {
+            label.setText(item.getLabel());
+        }
     }
 
     /* package */ <P extends InformationPanePage> Optional<P> lookup(Class<P> type)
