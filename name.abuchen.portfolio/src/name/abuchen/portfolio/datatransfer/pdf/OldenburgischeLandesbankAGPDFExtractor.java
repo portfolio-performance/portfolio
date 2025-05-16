@@ -79,14 +79,14 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "isin", "wkn", "currency") //
                         .match("^(Stornierung )?(Kauf|Verkauf)( \\-|:) (?<name>.*)$") //
-                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
                         // DE000A0H0785 (A0H078) 0,033037 10,0350 EUR 1,47 EUR
                         // @formatter:on
                         .section("shares") //
-                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) (?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) (?<shares>[\\.,\\d]+) [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
@@ -112,7 +112,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Ausmachender Betrag: 1,48 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Ausmachender Betrag: (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Ausmachender Betrag: (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -123,8 +123,8 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Devisenkurs EUR/ USD 1,09130 vom 18.12.2023
                         // @formatter:on
                         .section("gross", "baseCurrency", "termCurrency", "exchangeRate").optional() //
-                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) [\\.,\\d]+ [\\.,\\d]+ [\\w]{3} (?<gross>[\\.,\\d]+) [\\w]{3}$") //
-                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3})\\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+).*$") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3} (?<gross>[\\.,\\d]+) [A-Z]{3}$") //
+                        .match("^Devisenkurs (?<baseCurrency>[A-Z]{3})\\/ (?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
                             var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -198,14 +198,14 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "isin", "wkn", "currency") //
                         .match("^(Stornierung )?(Aussch.ttung|Dividendengutschrift) \\– (?<name>.*)$") //
-                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
                         // DE000A0H0785 (A0H078) 71,851808 8,895903 EUR
                         // @formatter:on
                         .section("shares") //
-                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) (?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\w]{3}$") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) (?<shares>[\\.,\\d]+) [\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
@@ -219,7 +219,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Ausmachender Betrag + 7,44 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Ausmachender Betrag \\+ (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Ausmachender Betrag \\+ (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -230,8 +230,8 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Umrechnung in EUR 0,88 USD 0,84 EUR
                         // @formatter:on
                         .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross").optional() //
-                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3})\\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
-                        .match("^Umrechnung in [\\w]{3} (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+) [\\w]{3}$") //
+                        .match("^Devisenkurs (?<baseCurrency>[A-Z]{3})\\/ (?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
+                        .match("^Umrechnung in [A-Z]{3} (?<fxGross>[\\.,\\d]+) [A-Z]{3} (?<gross>[\\.,\\d]+) [A-Z]{3}$") //
                         .assign((t, v) -> {
                             var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
@@ -280,7 +280,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("isin", "wkn", "name", "currency") //
                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) (?<name>.*) [\\.,\\d]+$") //
-                        .match("^Vorabpauschale pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                        .match("^Vorabpauschale pro St.ck [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -314,7 +314,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Summe Steuern 8,81 EUR
                         // @formatter:on
                         .section("amount", "currency").optional() //
-                        .match("^Summe Steuern (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Summe Steuern (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -338,7 +338,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                                         // Alter Saldo                                       EUR                  0,00+
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^Alter Saldo.* (?<currency>[\\w]{3}).*$") //
+                                        .match("^Alter Saldo.* (?<currency>[A-Z]{3}).*$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
                                         // @formatter:off
@@ -483,7 +483,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer: 251,13 EUR
                         // @formatter:on
                         .section("tax", "currency").optional()
-                        .match("^Kapitalertrags(s)?teuer(:)? (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .match("^Kapitalertrags(s)?teuer(:)? (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -491,7 +491,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Solidaritätszuschlag: 13,81 EUR
                         // @formatter:on
                         .section("tax", "currency").optional()
-                        .match("^Solidarit.tszuschlag(:)? (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .match("^Solidarit.tszuschlag(:)? (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -499,7 +499,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Kirchensteuer: 0,00 EUR
                         // @formatter:on
                         .section("tax", "currency").optional()
-                        .match("^Kirchensteuer(:)? (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .match("^Kirchensteuer(:)? (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -511,7 +511,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Orderentgelt: 0,01 EUR
                         // @formatter:on
                         .section("fee", "currency").optional()
-                        .match("^Orderentgelt: (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .match("^Orderentgelt: (?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
