@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +20,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 import name.abuchen.portfolio.util.WebAccess;
 
 public final class PortfolioReportQuoteFeed implements QuoteFeed
@@ -63,9 +66,46 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
         LocalDate start = null;
 
         if (!security.getPrices().isEmpty())
-            start = security.getPrices().get(security.getPrices().size() - 1).getDate().plusDays(1);
+        {
+            var lastPriceDate = security.getPrices().get(security.getPrices().size() - 1).getDate();
+
+            // skip the download if
+            // a) the configuration has not changed and we therefore can assume
+            // historical prices have been provided by this feed *and*
+            // b) there cannot be a newer price available on the server
+
+            var configChanged = security.getEphemeralData().getFeedConfigurationChanged();
+            var feedUpdate = security.getEphemeralData().getFeedLastUpdate();
+            var configHasNotChanged = configChanged.isEmpty()
+                            || (feedUpdate.isPresent() && feedUpdate.get().isAfter(configChanged.get()));
+
+            if (configHasNotChanged)
+            {
+                var utcToday = ZonedDateTime.now(ZoneOffset.UTC).toLocalDate();
+
+                // End of day prices are only available the next day.
+                var expectedAvailablePrice = utcToday.minusDays(1);
+
+                // Use Xetra calendar
+                var tradeCalendar = TradeCalendarManager.getInstance("de"); //$NON-NLS-1$
+
+                while (tradeCalendar.isHoliday(expectedAvailablePrice))
+                {
+                    expectedAvailablePrice = expectedAvailablePrice.minusDays(1);
+                }
+
+                if (lastPriceDate.equals(expectedAvailablePrice))
+                {
+                    // skip update b/c server cannot have newer data
+                    return new QuoteFeedData();
+                }
+            }
+            start = lastPriceDate.plusDays(1);
+        }
         else
+        {
             start = LocalDate.of(2000, 1, 1);
+        }
 
         return getHistoricalQuotes(security, collectRawResponse, start);
     }
