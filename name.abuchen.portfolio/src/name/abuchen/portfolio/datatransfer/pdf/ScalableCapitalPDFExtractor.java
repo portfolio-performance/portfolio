@@ -110,9 +110,10 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Total 19,49 EUR
+                        // Gutschrift 472,00 EUR
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Total (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^(Total|Gutschrift) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
