@@ -174,6 +174,38 @@ public class ScalableCapitalPDFExtractorTest
     }
 
     @Test
+    public void testVerkauf02()
+    {
+        var extractor = new ScalableCapitalPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("DE000HD5ZFL9"), hasWkn(null), hasTicker(null), //
+                        hasName("Roche Hldg Long 227,26 CHF Turbo Open End HVB"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2025-05-12T09:01:04"), hasShares(200.00), //
+                        hasSource("Verkauf02.txt"), //
+                        hasNote("Ord.-Nr.: DbcK99JE4enn0td"), //
+                        hasAmount("EUR", 472.00), hasGrossValue("EUR", 472.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+
+    }
+
+    @Test
     public void testDividende01()
     {
         var extractor = new ScalableCapitalPDFExtractor(new Client());
