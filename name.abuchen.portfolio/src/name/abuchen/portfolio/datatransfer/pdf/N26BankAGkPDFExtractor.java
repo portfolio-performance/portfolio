@@ -31,19 +31,19 @@ public class N26BankAGkPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementDepositRemovalTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszug");
+        final var type = new DocumentType("Kontoauszug");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^(?!(Zinsertrag|Abgeltungssteuer|Solidarit.tszuschlag)).* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\-|\\+][\\.,\\d]+\\p{Sc}$");
+        var firstRelevantLine = new Block("^(?!(Zinsertrag|Abgeltungssteuer|Solidarit.tszuschlag)).* [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\-|\\+][\\.,\\d]+\\p{Sc}$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -75,26 +75,24 @@ public class N26BankAGkPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementInterestTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszug");
+        final var type = new DocumentType("Kontoauszug");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^Zinsen.*$", "^Gesamt \\+[\\.,\\d]+\\p{Sc}$");
+        var firstRelevantLine = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} bis [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}$", "^Gesamt \\+[\\.,\\d]+\\p{Sc}$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.INTEREST);
                             return accountTransaction;
                         })
 
                         // @formatter:off
-                        // Zinsen
-                        // Nr. 06/2024
                         // 01.06.2024 bis 30.06.2024
                         // Gebühren 0,00€
                         // Steuer
@@ -104,8 +102,6 @@ public class N26BankAGkPDFExtractor extends AbstractPDFExtractor
                         // Zinsertrag +252,16€
                         // Gesamt +252,16€
                         //
-                        // Zinsen
-                        // Nr. 12/2023
                         // 01.12.2023 bis 31.12.2023
                         // Gebühren 0,00€
                         // Abgeltungssteuer -0,14€
@@ -119,8 +115,8 @@ public class N26BankAGkPDFExtractor extends AbstractPDFExtractor
                         .match("^Gesamt \\-(?<tax>[\\.,\\d]+)(?<taxCurrency>\\p{Sc})$") //
                         .match("^Zinsertrag \\+(?<amount>[\\.,\\d]+)(?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
-                            Money tax = Money.of(asCurrencyCode(v.get("taxCurrency")), asAmount(v.get("tax")));
-                            Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                            var tax = Money.of(asCurrencyCode(v.get("taxCurrency")), asAmount(v.get("tax")));
+                            var amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
 
                             t.setDateTime(asDate(v.get("date")));
                             t.setMonetaryAmount(amount.subtract(tax));
