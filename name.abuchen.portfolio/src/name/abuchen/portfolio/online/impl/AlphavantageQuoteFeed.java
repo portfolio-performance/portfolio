@@ -109,7 +109,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
         }
 
         if (!rateLimiter.tryAcquire())
-            throw new RateLimitExceededException(Duration.ofSeconds(5),
+            throw new RateLimitExceededException(Duration.ofSeconds(10),
                             MessageFormat.format(Messages.MsgRateLimitExceeded, getName()));
 
         try
@@ -188,7 +188,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
             return QuoteFeedData.withError(new IllegalArgumentException(Messages.MsgAlphaVantageAPIKeyMissing));
 
         if (!rateLimiter.tryAcquire())
-            throw new RateLimitExceededException(Duration.ofSeconds(5),
+            throw new RateLimitExceededException(Duration.ofSeconds(10),
                             MessageFormat.format(Messages.MsgRateLimitExceeded, getName()));
 
         QuoteFeedData data = new QuoteFeedData();

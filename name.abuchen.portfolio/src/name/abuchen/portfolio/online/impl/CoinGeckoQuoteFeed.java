@@ -80,6 +80,12 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
         }
     }
 
+    private static class ResponseData
+    {
+        long days;
+        String json;
+    }
+
     public static final String ID = "COINGECKO"; //$NON-NLS-1$
     public static final String COINGECKO_COIN_ID = "COINGECKOCOINID"; //$NON-NLS-1$
 
@@ -96,6 +102,8 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     private String apiKey;
 
     private RateLimiter rateLimiter = RateLimiter.create(RATE_LIMIT_FREE);
+
+    private final PageCache<ResponseData> cache = new PageCache<>(Duration.ofMinutes(1));
 
     private List<Coin> coins;
 
@@ -121,6 +129,12 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     private boolean hasPlan()
     {
         return apiKey != null && !apiKey.isBlank();
+    }
+
+    @Override
+    public boolean mergeDownloadRequests()
+    {
+        return true;
     }
 
     @Override
@@ -233,10 +247,6 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
             return QuoteFeedData.withError(
                             new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
 
-        if (!rateLimiter.tryAcquire(Duration.ofSeconds(30)))
-            throw new RateLimitExceededException(Duration.ofSeconds(5),
-                            MessageFormat.format(Messages.MsgRateLimitExceeded, getName()));
-
         QuoteFeedData data = new QuoteFeedData();
 
         try
@@ -271,12 +281,28 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
             if (hasPlan())
                 webaccess.addHeader("x-cg-pro-api-key", this.apiKey); //$NON-NLS-1$
 
-            String json = webaccess.get();
+            ResponseData response = cache.lookup(coinGeckoId);
+
+            if (response == null || response.days < days)
+            {
+                // acquire a rate limit only in case we have a cache miss
+
+                if (!rateLimiter.tryAcquire(Duration.ofSeconds(30)))
+                    throw new RateLimitExceededException(Duration.ofSeconds(10),
+                                    MessageFormat.format(Messages.MsgRateLimitExceeded, getName()));
+
+                response = new ResponseData();
+                response.days = days;
+                response.json = webaccess.get();
+
+                if (response.json != null)
+                    cache.put(coinGeckoId, response);
+            }
 
             if (collectRawResponse)
-                data.addResponse(webaccess.getURL(), json);
+                data.addResponse(webaccess.getURL(), response.json);
 
-            JSONObject marketChartObject = (JSONObject) JSONValue.parse(json);
+            JSONObject marketChartObject = (JSONObject) JSONValue.parse(response.json);
 
             if (marketChartObject != null && marketChartObject.containsKey("prices")) //$NON-NLS-1$
             {
@@ -287,7 +313,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
         catch (WebAccessException e)
         {
             if (e.getHttpErrorCode() == HttpStatus.SC_TOO_MANY_REQUESTS)
-                throw new RateLimitExceededException(Duration.ofSeconds(5),
+                throw new RateLimitExceededException(Duration.ofSeconds(30),
                                 MessageFormat.format(Messages.MsgRateLimitExceeded, getName()));
 
             data.addError(e);
