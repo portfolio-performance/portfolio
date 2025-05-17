@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -35,8 +36,11 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.QuoteFeedException;
 import name.abuchen.portfolio.online.RateLimitExceededException;
+import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
+import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
+import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.AuthenticationRequiredDialog;
@@ -199,13 +203,32 @@ public final class UpdateQuotesJob extends AbstractClientJob
         // include historical quotes
         if (target.contains(Target.HISTORIC))
         {
-            var builtIn = securities.stream().filter(s -> PortfolioPerformanceFeed.ID.equals(s.getFeed()))
-                            .collect(toMutableList());
-            addBuiltInQuotesJobs(builtIn, dirtyable, jobs);
+            var groupedByFeed = securities.stream()
+                            .filter(security -> security.getFeed() != null && !security.getFeed().isEmpty()
+                                            && !QuoteFeed.MANUAL.equals(security.getFeed()))
+                            .collect(Collectors.groupingBy(Security::getFeed));
 
-            var others = securities.stream().filter(s -> !PortfolioPerformanceFeed.ID.equals(s.getFeed()))
-                            .collect(toMutableList());
-            addHistoricalQuotesJobs(others, dirtyable, jobs);
+            // schedule feeds as single jobs that require a rate limit
+            var scheduleSingleJobs = List.of(PortfolioPerformanceFeed.ID, PortfolioReportQuoteFeed.ID,
+                            CoinGeckoQuoteFeed.ID, AlphavantageQuoteFeed.ID);
+
+            for (var entry : groupedByFeed.entrySet())
+            {
+                var feed = Factory.getQuoteFeedProvider(entry.getKey());
+                if (feed == null)
+                    continue;
+
+                var securitiesPerFeed = entry.getValue();
+
+                if (scheduleSingleJobs.contains(feed.getId()))
+                {
+                    addSingleHistoricalQuotesJob(feed, securitiesPerFeed, dirtyable, jobs);
+                }
+                else
+                {
+                    addHistoricalQuotesJobs(feed, securitiesPerFeed, dirtyable, jobs);
+                }
+            }
         }
 
         // include latest quotes
@@ -327,7 +350,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
         };
     }
 
-    private void addHistoricalQuotesJobs(List<Security> securities, Dirtyable dirtyable, List<Job> jobs)
+    private void addHistoricalQuotesJobs(QuoteFeed feed, List<Security> securities, Dirtyable dirtyable, List<Job> jobs)
     {
         // randomize list in case LRU cache size of HTMLTableQuote feed is too
         // small; otherwise entries would be evicted in order
@@ -335,12 +358,6 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
         for (Security security : securities)
         {
-            QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
-            if (feed == null)
-                continue;
-            if (QuoteFeed.MANUAL.equals(feed.getId()))
-                continue;
-
             Job job = new Job(feed.getName() + ": " + security.getName()) //$NON-NLS-1$
             {
                 /** number of reschedules before failing permanently */
@@ -413,12 +430,11 @@ public final class UpdateQuotesJob extends AbstractClientJob
         }
     }
 
-    private void addBuiltInQuotesJobs(List<Security> securities, Dirtyable dirtyable, List<Job> jobs)
+    private void addSingleHistoricalQuotesJob(QuoteFeed feed, List<Security> securities, Dirtyable dirtyable,
+                    List<Job> jobs)
     {
         if (securities.isEmpty())
             return;
-
-        var feed = Factory.getQuoteFeed(PortfolioPerformanceFeed.class);
 
         Collections.shuffle(securities);
 
@@ -454,6 +470,17 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
                         if (!data.getErrors().isEmpty())
                             PortfolioPlugin.log(createErrorStatus(security.getName(), data.getErrors()));
+
+                        // download latest quotes if the download should be done
+                        // together (and the job includes the download of latest
+                        // quotes)
+                        if (feed.mergeDownloadRequests() && target.contains(Target.LATEST))
+                        {
+                            feed.getLatestQuote(security).ifPresent(p -> {
+                                if (security.setLatest(p))
+                                    dirtyable.markDirty();
+                            });
+                        }
                     }
                     catch (AuthenticationExpiredException e)
                     {
