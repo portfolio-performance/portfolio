@@ -350,6 +350,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
                     try
                     {
                         QuoteFeedData data = feed.getHistoricalQuotes(security, false);
+                        security.getEphemeralData().touchFeedLastUpdate();
 
                         if (security.addAllPrices(data.getPrices()))
                             dirtyable.markDirty();
@@ -426,6 +427,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
                     try
                     {
                         QuoteFeedData data = feed.getHistoricalQuotes(security, false);
+                        security.getEphemeralData().touchFeedLastUpdate();
 
                         candidates.remove(security);
 

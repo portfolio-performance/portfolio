@@ -236,13 +236,17 @@ public class EditSecurityDialog extends Dialog
         boolean hasQuotes = !security.getPrices().isEmpty();
 
         boolean feedChanged = !Objects.equals(model.getFeed(), security.getFeed());
+        boolean onlineIdChanged = !Objects.equals(model.getOnlineId(), security.getOnlineId());
         boolean tickerChanged = !Objects.equals(model.getTickerSymbol(), security.getTickerSymbol());
         boolean feedURLChanged = !Objects.equals(model.getFeedURL(), security.getFeedURL());
         boolean currencyChanged = !Objects.equals(model.getCurrencyCode(), security.getCurrencyCode());
 
-        boolean quotesCanChange = feedChanged || tickerChanged || feedURLChanged || currencyChanged;
+        boolean quotesCanChange = feedChanged || onlineIdChanged || tickerChanged || feedURLChanged || currencyChanged;
 
         model.applyChanges();
+
+        if (quotesCanChange)
+            security.getEphemeralData().touchFeedConfigurationChanged();
 
         eventBroker.post(ChangeEventConstants.Security.EDITED, new SecurityChangeEvent(model.getClient(), security));
 
