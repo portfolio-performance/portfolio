@@ -46,7 +46,7 @@ public interface QuoteFeed // NOSONAR
     /**
      * Update the latest quote of the given securities.
      */
-    default Optional<LatestSecurityPrice> getLatestQuote(Security security)
+    default Optional<LatestSecurityPrice> getLatestQuote(Security security) throws QuoteFeedException
     {
         QuoteFeedData data = getHistoricalQuotes(security, false);
 
@@ -66,13 +66,13 @@ public interface QuoteFeed // NOSONAR
      * Retrieves the historical quotes of the given security. The quote provider
      * may reduce the response to only include newly updated quotes.
      */
-    QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse);
+    QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse) throws QuoteFeedException;
 
     /**
      * Retrieves a sample of historical quotes of the given security. The list
      * of quotes may be reduced to the last 2 months or latest 100 entries.
      */
-    default QuoteFeedData previewHistoricalQuotes(Security security)
+    default QuoteFeedData previewHistoricalQuotes(Security security) throws QuoteFeedException
     {
         return getHistoricalQuotes(security, true);
     }

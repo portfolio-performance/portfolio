@@ -31,6 +31,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.QuoteFeedException;
 import name.abuchen.portfolio.online.RateLimitExceededException;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.util.WebAccess;
@@ -123,7 +124,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security) throws QuoteFeedException
     {
         QuoteFeedData data = getHistoricalQuotes(security, false, LocalDate.now());
 
@@ -141,7 +142,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse) throws QuoteFeedException
     {
         LocalDate quoteStartDate = LocalDate.of(1970, 01, 01);
 
@@ -152,7 +153,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData previewHistoricalQuotes(Security security)
+    public QuoteFeedData previewHistoricalQuotes(Security security) throws QuoteFeedException
     {
         return getHistoricalQuotes(security, true, LocalDate.now().minusMonths(2));
     }
@@ -226,6 +227,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     }
 
     private QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, LocalDate start)
+                    throws QuoteFeedException
     {
         if (security.getTickerSymbol() == null)
             return QuoteFeedData.withError(

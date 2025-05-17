@@ -6,7 +6,7 @@ import java.time.Duration;
  * Exception thrown by the quote feed provider to indicate that the rate limit
  * of the underlying has been exceeded.
  */
-public class RateLimitExceededException extends RuntimeException
+public class RateLimitExceededException extends QuoteFeedException
 {
     private static final long serialVersionUID = 1L;
 

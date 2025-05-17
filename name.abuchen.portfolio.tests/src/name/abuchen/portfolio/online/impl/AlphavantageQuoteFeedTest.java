@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.QuoteFeedException;
 
 @SuppressWarnings("nls")
 public class AlphavantageQuoteFeedTest
@@ -28,7 +29,7 @@ public class AlphavantageQuoteFeedTest
     }
 
     @Test
-    public void testNoApiKey()
+    public void testNoApiKey() throws QuoteFeedException
     {
         AlphavantageQuoteFeed feed = new AlphavantageQuoteFeed();
         Optional<LatestSecurityPrice> result = feed.getLatestQuote(security);
@@ -36,7 +37,7 @@ public class AlphavantageQuoteFeedTest
     }
 
     @Test
-    public void testGetLatestQuoteValid() throws IOException
+    public void testGetLatestQuoteValid() throws IOException, QuoteFeedException
     {
 
         // a sample response, aquired through the api

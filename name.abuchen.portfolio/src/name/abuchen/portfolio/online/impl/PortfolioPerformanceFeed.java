@@ -31,10 +31,11 @@ import name.abuchen.portfolio.oauth.AccessToken;
 import name.abuchen.portfolio.oauth.AuthenticationException;
 import name.abuchen.portfolio.oauth.OAuthClient;
 import name.abuchen.portfolio.online.AuthenticationExpiredException;
+import name.abuchen.portfolio.online.FeedConfigurationException;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.QuoteFeedException;
 import name.abuchen.portfolio.online.RateLimitExceededException;
-import name.abuchen.portfolio.online.SecurityNotSupportedException;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 import name.abuchen.portfolio.util.WebAccess;
 import name.abuchen.portfolio.util.WebAccess.WebAccessException;
@@ -110,7 +111,7 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse) throws QuoteFeedException
     {
         if (security.getTickerSymbol() == null)
         {
@@ -177,7 +178,7 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData previewHistoricalQuotes(Security security)
+    public QuoteFeedData previewHistoricalQuotes(Security security) throws QuoteFeedException
     {
         if (security.getTickerSymbol() == null)
         {
@@ -189,6 +190,7 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
     }
 
     private QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, LocalDate startDate)
+                    throws QuoteFeedException
     {
         var isSample = SAMPLE_SYMBOLS.contains(security.getTickerSymbol());
         var isAuthenticated = oauthClient != null && oauthClient.isAuthenticated();
@@ -259,7 +261,7 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
                     throw new RateLimitExceededException(Duration.ofMinutes(1),
                                     MessageFormat.format(Messages.MsgRateLimitExceeded, getName()));
                 case HttpStatus.SC_NOT_FOUND, HttpStatus.SC_FORBIDDEN:
-                    throw new SecurityNotSupportedException();
+                    throw new FeedConfigurationException();
                 default:
                     data.addError(e);
             }

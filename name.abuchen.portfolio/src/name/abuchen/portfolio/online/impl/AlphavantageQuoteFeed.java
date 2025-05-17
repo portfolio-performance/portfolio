@@ -21,6 +21,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.QuoteFeedException;
 import name.abuchen.portfolio.online.RateLimitExceededException;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.WebAccess;
@@ -93,7 +94,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security) throws QuoteFeedException
     {
         if (security.getTickerSymbol() == null)
         {
@@ -154,7 +155,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse) throws QuoteFeedException
     {
         OutputSize outputSize = OutputSize.FULL;
 
@@ -169,7 +170,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData previewHistoricalQuotes(Security security)
+    public QuoteFeedData previewHistoricalQuotes(Security security) throws QuoteFeedException
     {
         LocalDate now = LocalDate.now();
         int days = Dates.daysBetween(now.minusMonths(2), now);
@@ -177,6 +178,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
     }
 
     private QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, OutputSize outputSize)
+                    throws QuoteFeedException
     {
         if (security.getTickerSymbol() == null)
             return QuoteFeedData.withError(

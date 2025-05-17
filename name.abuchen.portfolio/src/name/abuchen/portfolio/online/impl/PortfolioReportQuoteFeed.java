@@ -3,12 +3,14 @@ package name.abuchen.portfolio.online.impl;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.hc.core5.http.HttpStatus;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -18,10 +20,14 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.FeedConfigurationException;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.QuoteFeedException;
+import name.abuchen.portfolio.online.RateLimitExceededException;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 import name.abuchen.portfolio.util.WebAccess;
+import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public final class PortfolioReportQuoteFeed implements QuoteFeed
 {
@@ -54,14 +60,14 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security) throws QuoteFeedException
     {
         List<LatestSecurityPrice> prices = getHistoricalQuotes(security, true, LocalDate.now()).getLatestPrices();
         return prices.isEmpty() ? Optional.empty() : Optional.of(prices.get(prices.size() - 1));
     }
 
     @Override
-    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse) throws QuoteFeedException
     {
         LocalDate start = null;
 
@@ -111,13 +117,14 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData previewHistoricalQuotes(Security security)
+    public QuoteFeedData previewHistoricalQuotes(Security security) throws QuoteFeedException
     {
         return getHistoricalQuotes(security, true, LocalDate.now().minusMonths(2));
     }
 
     @SuppressWarnings("unchecked")
     private QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, LocalDate start)
+                    throws QuoteFeedException
     {
         if (security.getOnlineId() == null)
         {

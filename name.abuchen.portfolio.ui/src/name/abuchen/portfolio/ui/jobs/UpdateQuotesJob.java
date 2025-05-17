@@ -31,8 +31,8 @@ import name.abuchen.portfolio.online.AuthenticationExpiredException;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.QuoteFeedException;
 import name.abuchen.portfolio.online.RateLimitExceededException;
-import name.abuchen.portfolio.online.SecurityNotSupportedException;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.ui.Messages;
@@ -302,11 +302,6 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
                     return Status.OK_STATUS;
                 }
-                catch (SecurityNotSupportedException | AuthenticationExpiredException e)
-                {
-                    PortfolioPlugin.log(e);
-                    return Status.OK_STATUS;
-                }
                 catch (RateLimitExceededException e)
                 {
                     count--;
@@ -320,6 +315,11 @@ public final class UpdateQuotesJob extends AbstractClientJob
                     {
                         return new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage());
                     }
+                }
+                catch (QuoteFeedException e)
+                {
+                    PortfolioPlugin.log(e);
+                    return Status.OK_STATUS;
                 }
             }
         };
@@ -371,11 +371,6 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
                         return Status.OK_STATUS;
                     }
-                    catch (SecurityNotSupportedException | AuthenticationExpiredException e)
-                    {
-                        PortfolioPlugin.log(e);
-                        return Status.OK_STATUS;
-                    }
                     catch (RateLimitExceededException e)
                     {
                         count--;
@@ -390,6 +385,11 @@ public final class UpdateQuotesJob extends AbstractClientJob
                             return new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage());
                         }
 
+                    }
+                    catch (QuoteFeedException e)
+                    {
+                        PortfolioPlugin.log(e);
+                        return Status.OK_STATUS;
                     }
                 }
             };
@@ -437,11 +437,6 @@ public final class UpdateQuotesJob extends AbstractClientJob
                         if (!data.getErrors().isEmpty())
                             PortfolioPlugin.log(createErrorStatus(security.getName(), data.getErrors()));
                     }
-                    catch (SecurityNotSupportedException e)
-                    {
-                        candidates.remove(security);
-                        PortfolioPlugin.log(e);
-                    }
                     catch (AuthenticationExpiredException e)
                     {
                         PortfolioPlugin.log(e);
@@ -460,6 +455,11 @@ public final class UpdateQuotesJob extends AbstractClientJob
                         {
                             return new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage());
                         }
+                    }
+                    catch (QuoteFeedException e)
+                    {
+                        candidates.remove(security);
+                        PortfolioPlugin.log(e);
                     }
                 }
 
