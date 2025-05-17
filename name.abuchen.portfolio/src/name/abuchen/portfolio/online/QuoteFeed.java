@@ -35,6 +35,11 @@ public interface QuoteFeed // NOSONAR
         return false;
     }
 
+    default int getMaxRateLimitAttempts()
+    {
+        return 3;
+    }
+
     /**
      * Returns the help URL to be shown to the user.
      */

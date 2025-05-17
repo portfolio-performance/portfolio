@@ -313,7 +313,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
         return new Job(feed.getName() + ": " + security.getName() + " " + Messages.EditWizardLatestQuoteFeedTitle) //$NON-NLS-1$ //$NON-NLS-2$
         {
             /** number of reschedules before failing permanently */
-            int count = 3;
+            int count = feed.getMaxRateLimitAttempts();
 
             @Override
             protected IStatus run(IProgressMonitor monitor)
@@ -361,7 +361,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
             Job job = new Job(feed.getName() + ": " + security.getName()) //$NON-NLS-1$
             {
                 /** number of reschedules before failing permanently */
-                int count = 3;
+                int count = feed.getMaxRateLimitAttempts();
 
                 @Override
                 protected IStatus run(IProgressMonitor monitor)
@@ -406,6 +406,8 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
                         if (count >= 0 && e.getRetryAfter().isPositive())
                         {
+                            PortfolioPlugin.log(MessageFormat.format(Messages.MsgRateLimitExceededAndRetrying,
+                                            security.getName(), count));
                             schedule(e.getRetryAfter().toMillis());
                             return Status.OK_STATUS;
                         }
@@ -443,14 +445,14 @@ public final class UpdateQuotesJob extends AbstractClientJob
             List<Security> candidates = new ArrayList<>(securities);
 
             /** number of reschedules before failing permanently */
-            int count = 3;
+            int count = feed.getMaxRateLimitAttempts();
 
             @Override
             protected IStatus run(IProgressMonitor monitor)
             {
                 while (!candidates.isEmpty())
                 {
-                    var security = candidates.getLast();
+                    var security = candidates.getFirst();
 
                     if (security.getEphemeralData().hasPermanentError())
                     {
@@ -501,6 +503,8 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
                         if (count >= 0 && e.getRetryAfter().isPositive())
                         {
+                            PortfolioPlugin.log(MessageFormat.format(Messages.MsgRateLimitExceededAndRetrying,
+                                            security.getName(), count));
                             schedule(e.getRetryAfter().toMillis());
                             return Status.OK_STATUS;
                         }

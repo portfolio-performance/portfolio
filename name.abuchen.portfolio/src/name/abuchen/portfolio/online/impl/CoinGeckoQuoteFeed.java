@@ -138,6 +138,12 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     }
 
     @Override
+    public int getMaxRateLimitAttempts()
+    {
+        return 10;
+    }
+
+    @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security) throws QuoteFeedException
     {
         QuoteFeedData data = getHistoricalQuotes(security, false, LocalDate.now());
