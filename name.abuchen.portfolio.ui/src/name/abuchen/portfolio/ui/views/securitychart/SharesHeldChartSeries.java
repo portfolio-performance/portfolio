@@ -31,10 +31,10 @@ public class SharesHeldChartSeries
     {
     }
 
-    public void configure(SecuritiesChart chart, TimelineChart timelineChart, ChartInterval chartInterval)
+    public void configure(SecuritiesChart chart, TimelineChart timelineChart, ChartInterval chartInterval,
+                    Security security)
     {
         Client client = chart.getClient();
-        Security security = chart.getSecurity();
 
         // securities w/o currency (e.g. index) cannot be bought and hence have
         // no purchase price
