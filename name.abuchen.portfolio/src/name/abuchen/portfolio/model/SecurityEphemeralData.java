@@ -8,6 +8,7 @@ public class SecurityEphemeralData
 
     private Instant feedConfigurationChanged;
     private Instant feedLastUpdate;
+    private boolean hasPermanentError = false;
 
     /**
      * Returns the last time the feed configuration was changed by the user.
@@ -27,6 +28,7 @@ public class SecurityEphemeralData
     public void touchFeedConfigurationChanged()
     {
         this.feedConfigurationChanged = Instant.now();
+        this.hasPermanentError = false;
     }
 
     /**
@@ -40,5 +42,21 @@ public class SecurityEphemeralData
     public void touchFeedLastUpdate()
     {
         this.feedLastUpdate = Instant.now();
+    }
+
+    public void setHasPermanentError()
+    {
+        this.hasPermanentError = true;
+    }
+
+    /**
+     * Returns true if the feed returned a permanent error previously. In such a
+     * case, the online request can be skipped. The flag is reset if the user
+     * changes the feed configuration. See
+     * ({@link name.abuchen.portfolio.online.FeedConfigurationException}).
+     */
+    public boolean hasPermanentError()
+    {
+        return hasPermanentError;
     }
 }

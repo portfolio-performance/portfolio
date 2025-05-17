@@ -190,6 +190,19 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
             });
 
         }
+        catch (WebAccessException e)
+        {
+            switch (e.getHttpErrorCode())
+            {
+                case HttpStatus.SC_TOO_MANY_REQUESTS:
+                    throw new RateLimitExceededException(Duration.ofMinutes(1),
+                                    MessageFormat.format(Messages.MsgRateLimitExceeded, getName()));
+                case HttpStatus.SC_NOT_FOUND:
+                    throw new FeedConfigurationException();
+                default:
+                    data.addError(e);
+            }
+        }
         catch (IOException | URISyntaxException e)
         {
             data.addError(e);

@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -29,6 +30,7 @@ import name.abuchen.portfolio.oauth.AuthenticationException;
 import name.abuchen.portfolio.oauth.OAuthClient;
 import name.abuchen.portfolio.online.AuthenticationExpiredException;
 import name.abuchen.portfolio.online.Factory;
+import name.abuchen.portfolio.online.FeedConfigurationException;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.QuoteFeedException;
@@ -347,6 +349,9 @@ public final class UpdateQuotesJob extends AbstractClientJob
                 @Override
                 protected IStatus run(IProgressMonitor monitor)
                 {
+                    if (security.getEphemeralData().hasPermanentError())
+                        return Status.OK_STATUS;
+
                     try
                     {
                         QuoteFeedData data = feed.getHistoricalQuotes(security, false);
@@ -369,6 +374,13 @@ public final class UpdateQuotesJob extends AbstractClientJob
                             });
                         }
 
+                        return Status.OK_STATUS;
+                    }
+                    catch (FeedConfigurationException e)
+                    {
+                        security.getEphemeralData().setHasPermanentError();
+                        PortfolioPlugin.log(MessageFormat.format(Messages.MsgInstrumentWithConfigurationIssue,
+                                        security.getName()), e);
                         return Status.OK_STATUS;
                     }
                     catch (RateLimitExceededException e)
@@ -424,6 +436,12 @@ public final class UpdateQuotesJob extends AbstractClientJob
                 {
                     var security = candidates.getLast();
 
+                    if (security.getEphemeralData().hasPermanentError())
+                    {
+                        candidates.remove(security);
+                        continue;
+                    }
+
                     try
                     {
                         QuoteFeedData data = feed.getHistoricalQuotes(security, false);
@@ -441,6 +459,14 @@ public final class UpdateQuotesJob extends AbstractClientJob
                     {
                         PortfolioPlugin.log(e);
                         return Status.OK_STATUS;
+                    }
+                    catch (FeedConfigurationException e)
+                    {
+                        security.getEphemeralData().setHasPermanentError();
+                        candidates.remove(security);
+
+                        PortfolioPlugin.log(MessageFormat.format(Messages.MsgInstrumentWithConfigurationIssue,
+                                        security.getName()), e);
                     }
                     catch (RateLimitExceededException e)
                     {
