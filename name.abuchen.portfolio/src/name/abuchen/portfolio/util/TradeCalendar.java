@@ -19,6 +19,11 @@ public class TradeCalendar implements Comparable<TradeCalendar>
     private final String code;
     private final String description;
 
+    /**
+     * Indicates whether this calendar can be selected in the user interface.
+     */
+    private final boolean isSelectable;
+
     private final List<HolidayType> holidayTypes = new ArrayList<>();
     private final Map<Integer, Map<LocalDate, Holiday>> cache = new HashMap<Integer, Map<LocalDate, Holiday>>()
     {
@@ -33,11 +38,17 @@ public class TradeCalendar implements Comparable<TradeCalendar>
 
     };
 
-    /* package */ TradeCalendar(String code, String description, Set<DayOfWeek> weekend)
+    /* package */ TradeCalendar(String code, String description, Set<DayOfWeek> weekend, boolean isSelectable)
     {
+        this.isSelectable = isSelectable;
         this.code = Objects.requireNonNull(code);
         this.description = Objects.requireNonNull(description);
         this.weekend = Objects.requireNonNull(weekend);
+    }
+
+    /* package */ TradeCalendar(String code, String description, Set<DayOfWeek> weekend)
+    {
+        this(code, description, weekend, true);
     }
 
     /* package */ void add(HolidayType type)
@@ -55,6 +66,11 @@ public class TradeCalendar implements Comparable<TradeCalendar>
         return description;
     }
 
+    public boolean isSelectable()
+    {
+        return isSelectable;
+    }
+
     @Override
     public String toString()
     {
@@ -70,7 +86,8 @@ public class TradeCalendar implements Comparable<TradeCalendar>
     }
 
     /**
-     * Tests whether {@code date} is a non-trading day, i.e. a holiday or weekend day.
+     * Tests whether {@code date} is a non-trading day, i.e. a holiday or
+     * weekend day.
      */
     public boolean isHoliday(LocalDate date)
     {
@@ -86,7 +103,8 @@ public class TradeCalendar implements Comparable<TradeCalendar>
     }
 
     /**
-     * @return {@code date}, if date is a trading day. Otherwise the earliest date after {@code date} that is a trading day.
+     * @return {@code date}, if date is a trading day. Otherwise the earliest
+     *         date after {@code date} that is a trading day.
      */
     public LocalDate getNextNonHoliday(LocalDate date)
     {
