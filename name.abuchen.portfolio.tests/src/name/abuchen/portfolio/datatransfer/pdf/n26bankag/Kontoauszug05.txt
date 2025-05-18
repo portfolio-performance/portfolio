@@ -1,0 +1,84 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.76.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kontoauszug Nr. 4/2025 
+01.04.2025 bis 30.04.2025
+Beschreibung Verbuchungsdatum Betrag
+Zinsertrag 01.04.2025 +15,01€
+Wertstellung 01.04.2025
+Abgeltungssteuer 01.04.2025 -3,75€
+Wertstellung 01.04.2025
+Solidaritätszuschlag 01.04.2025 -0,20€
+Wertstellung 01.04.2025
+An Hauptkonto 13.04.2025 -2.000,00€
+Wertstellung 13.04.2025
+Max Mustermann Kontotyp: Sparkonto Erstellt am
+Musterstraße 123, 01234 Musterstadt IBAN: DE99100110010123456789 06.05.2025
+BIC: NTSBDEB1XXX 4/2025
+N26 Bank SE | Voltairestraße 8, 10179 Berlin, Deutschland | Eingetragen im Handelsregister des Amtsgerichts Charlottenburg – 
+HRB 247469 B | Vorstand: Maximilian Tayenthal, Carina Kozole, Arnd Schwierholz | Vorsitzender des Aufsichtsrates: Marcus W. 
+Mosen | USt-ID: DE305957096 | Steueridentifikationsnummer: 27/002/37616 | Zuständige Aufsichtsbehörde: Bundesanstalt für 
+Finanzdienstleistungsaufsicht (BaFin), eingetragen in der Unternehmensdatenbank der BaFin unter der Nr.: 145827 | imprint@n26.
+com | https://n26.com/de-de 1/4
+Übersicht Nr. 4/2025 
+01.04.2025 bis 30.04.2025
+Beschreibung Betrag
+Dein alter Kontostand +4.309,84€
+Ausgehende Transaktionen -2.003,95€
+Steuern -3,95€
+Gebühren 0,00€
+Einkommende Transaktionen +15,01€
+Zinsertrag +15,01€
+Dein neuer Kontostand +2.320,90€
+Max Mustermann Kontotyp: Sparkonto Erstellt am
+Musterstraße 123, 01234 Musterstadt IBAN: DE99100110010123456789 06.05.2025
+BIC: NTSBDEB1XXX 4/2025
+N26 Bank SE | Voltairestraße 8, 10179 Berlin, Deutschland | Eingetragen im Handelsregister des Amtsgerichts Charlottenburg – 
+HRB 247469 B | Vorstand: Maximilian Tayenthal, Carina Kozole, Arnd Schwierholz | Vorsitzender des Aufsichtsrates: Marcus W. 
+Mosen | USt-ID: DE305957096 | Steueridentifikationsnummer: 27/002/37616 | Zuständige Aufsichtsbehörde: Bundesanstalt für 
+Finanzdienstleistungsaufsicht (BaFin), eingetragen in der Unternehmensdatenbank der BaFin unter der Nr.: 145827 | imprint@n26.
+com | https://n26.com/de-de 2/4
+Übersicht zu Gebühren und 
+Zinsen 
+Nr. 4/2025 
+01.04.2025 bis 30.04.2025
+Gebühren 0,00€
+Steuern
+Abgeltungssteuer -3,75€
+Solidaritätszuschlag -0,20€
+Gesamt -3,95€
+Zinsen
+Zinsertrag +15,01€
+Gesamt +15,01€
+Max Mustermann Kontotyp: Sparkonto Erstellt am
+Musterstraße 123, 01234 Musterstadt IBAN: DE99100110010123456789 06.05.2025
+BIC: NTSBDEB1XXX 4/2025
+N26 Bank SE | Voltairestraße 8, 10179 Berlin, Deutschland | Eingetragen im Handelsregister des Amtsgerichts Charlottenburg – 
+HRB 247469 B | Vorstand: Maximilian Tayenthal, Carina Kozole, Arnd Schwierholz | Vorsitzender des Aufsichtsrates: Marcus W. 
+Mosen | USt-ID: DE305957096 | Steueridentifikationsnummer: 27/002/37616 | Zuständige Aufsichtsbehörde: Bundesanstalt für 
+Finanzdienstleistungsaufsicht (BaFin), eingetragen in der Unternehmensdatenbank der BaFin unter der Nr.: 145827 | imprint@n26.
+com | https://n26.com/de-de 3/4
+Kontoauszug Nr. 4/2025 
+01.04.2025 bis 30.04.2025
+Anmerkung
+Unsere Allgemeinen Geschäftsbedingungen sind für unsere gesamte 
+Geschäftsverbindung mit dir gültig. Bitte melde Einwendungen immer direkt 
+nach dem Bekanntwerden. Wenn du Einwendungen nicht rechtzeitig meldest, 
+gilt dies als Zustimmung.
+Es kann zu Abweichungen zwischen deinem Kontoauszug und der Anzeige in 
+deiner App oder dem Onlinebanking kommen, da Transaktionen in Echtzeit 
+dargestellt werden, die tatsächliche Durchführung hingegen 1-2 Tage in 
+Anspruch nehmen kann. Auf dem Kontoauszug werden nur vollständig 
+durchgeführte Transaktionen abgebildet.
+Dein Guthaben ist als Einlagen nach Maßgabe des Einlagensicherungsgesetzes 
+entschädigungsfähig. Nähere Informationen kannst du dem "Informationsbogen 
+für den Einleger" auf unserer Webseite entnehmen.
+Max Mustermann Kontotyp: Sparkonto Erstellt am
+Musterstraße 123, 01234 Musterstadt IBAN: DE99100110010123456789 06.05.2025
+BIC: NTSBDEB1XXX 4/2025
+N26 Bank SE | Voltairestraße 8, 10179 Berlin, Deutschland | Eingetragen im Handelsregister des Amtsgerichts Charlottenburg – 
+HRB 247469 B | Vorstand: Maximilian Tayenthal, Carina Kozole, Arnd Schwierholz | Vorsitzender des Aufsichtsrates: Marcus W. 
+Mosen | USt-ID: DE305957096 | Steueridentifikationsnummer: 27/002/37616 | Zuständige Aufsichtsbehörde: Bundesanstalt für 
+Finanzdienstleistungsaufsicht (BaFin), eingetragen in der Unternehmensdatenbank der BaFin unter der Nr.: 145827 | imprint@n26.
+com | https://n26.com/de-de 4/4

@@ -5,7 +5,6 @@ import static name.abuchen.portfolio.util.TextUtil.concatenate;
 import static name.abuchen.portfolio.util.TextUtil.trim;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.ExtrExchangeRate;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -39,19 +38,19 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("WERTPAPIERABRECHNUNG");
+        var type = new DocumentType("WERTPAPIERABRECHNUNG");
         this.addDocumentTyp(type);
 
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<BuySellEntry>();
 
-        Block firstRelevantLine = new Block("^.*Depotnummer .*$");
+        var firstRelevantLine = new Block("^.*Depotnummer .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            BuySellEntry portfolioTransaction = new BuySellEntry();
+                            var portfolioTransaction = new BuySellEntry();
                             portfolioTransaction.setType(PortfolioTransaction.Type.BUY);
                             return portfolioTransaction;
                         })
@@ -80,14 +79,14 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "isin", "wkn", "currency") //
                         .match("^(Stornierung )?(Kauf|Verkauf)( \\-|:) (?<name>.*)$") //
-                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3}) [\\.,\\d]+ [\\w]{3}$") //
+                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3}) [\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
                         // DE000A0H0785 (A0H078) 0,033037 10,0350 EUR 1,47 EUR
                         // @formatter:on
                         .section("shares") //
-                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) (?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\w]{3} [\\.,\\d]+ [\\w]{3}$") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) (?<shares>[\\.,\\d]+) [\\.,\\d]+ [A-Z]{3} [\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
@@ -113,7 +112,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Ausmachender Betrag: 1,48 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Ausmachender Betrag: (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Ausmachender Betrag: (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -124,14 +123,14 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Devisenkurs EUR/ USD 1,09130 vom 18.12.2023
                         // @formatter:on
                         .section("gross", "baseCurrency", "termCurrency", "exchangeRate").optional() //
-                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) [\\.,\\d]+ [\\.,\\d]+ [\\w]{3} (?<gross>[\\.,\\d]+) [\\w]{3}$") //
-                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3})\\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+).*$") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) [\\.,\\d]+ [\\.,\\d]+ [A-Z]{3} (?<gross>[\\.,\\d]+) [A-Z]{3}$") //
+                        .match("^Devisenkurs (?<baseCurrency>[A-Z]{3})\\/ (?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+).*$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = rate.convert(rate.getTermCurrency(), gross);
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = rate.convert(rate.getTermCurrency(), gross);
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
@@ -152,7 +151,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setNote(concatenate(t.getNote(), trim(v.get("note")), " | Handels.-Ref.: ")))
 
                         .wrap((t, ctx) -> {
-                            BuySellEntryItem item = new BuySellEntryItem(t);
+                            var item = new BuySellEntryItem(t);
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -166,19 +165,19 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendeTransaction()
     {
-        DocumentType type = new DocumentType("(ERTRAGSAUSSCH.TTUNG|Stornierung Dividendengutschrift)");
+        var type = new DocumentType("(ERTRAGSAUSSCH.TTUNG|Stornierung Dividendengutschrift)");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^.*Depotnummer .*$");
+        var firstRelevantLine = new Block("^.*Depotnummer .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DIVIDENDS);
                             return accountTransaction;
                         })
@@ -199,14 +198,14 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "isin", "wkn", "currency") //
                         .match("^(Stornierung )?(Aussch.ttung|Dividendengutschrift) \\– (?<name>.*)$") //
-                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                        .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) [\\.,\\d]+ [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
                         // DE000A0H0785 (A0H078) 71,851808 8,895903 EUR
                         // @formatter:on
                         .section("shares") //
-                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) (?<shares>[\\.,\\d]+) [\\.,\\d]+ [\\w]{3}$") //
+                        .match("^[A-Z]{2}[A-Z0-9]{9}[0-9] \\([A-Z0-9]{6}\\) (?<shares>[\\.,\\d]+) [\\.,\\d]+ [A-Z]{3}$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         // @formatter:off
@@ -220,7 +219,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Ausmachender Betrag + 7,44 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^Ausmachender Betrag \\+ (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Ausmachender Betrag \\+ (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -231,20 +230,20 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Umrechnung in EUR 0,88 USD 0,84 EUR
                         // @formatter:on
                         .section("baseCurrency", "termCurrency", "exchangeRate", "fxGross", "gross").optional() //
-                        .match("^Devisenkurs (?<baseCurrency>[\\w]{3})\\/ (?<termCurrency>[\\w]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
-                        .match("^Umrechnung in [\\w]{3} (?<fxGross>[\\.,\\d]+) [\\w]{3} (?<gross>[\\.,\\d]+) [\\w]{3}$") //
+                        .match("^Devisenkurs (?<baseCurrency>[A-Z]{3})\\/ (?<termCurrency>[A-Z]{3}) (?<exchangeRate>[\\.,\\d]+)$") //
+                        .match("^Umrechnung in [A-Z]{3} (?<fxGross>[\\.,\\d]+) [A-Z]{3} (?<gross>[\\.,\\d]+) [A-Z]{3}$") //
                         .assign((t, v) -> {
-                            ExtrExchangeRate rate = asExchangeRate(v);
+                            var rate = asExchangeRate(v);
                             type.getCurrentContext().putType(rate);
 
-                            Money gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
-                            Money fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
+                            var gross = Money.of(rate.getBaseCurrency(), asAmount(v.get("gross")));
+                            var fxGross = Money.of(rate.getTermCurrency(), asAmount(v.get("fxGross")));
 
                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                         })
 
                         .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -258,19 +257,19 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addAdvanceTaxTransaction()
     {
-        DocumentType type = new DocumentType("VORABPAUSCHALE");
+        var type = new DocumentType("VORABPAUSCHALE");
         this.addDocumentTyp(type);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<AccountTransaction>();
 
-        Block firstRelevantLine = new Block("^.*Depotnummer .*$");
+        var firstRelevantLine = new Block("^.*Depotnummer .*$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.TAXES);
                             return accountTransaction;
                         })
@@ -281,7 +280,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("isin", "wkn", "name", "currency") //
                         .match("^(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) \\((?<wkn>[A-Z0-9]{6})\\) (?<name>.*) [\\.,\\d]+$") //
-                        .match("^Vorabpauschale pro St.ck [\\.,\\d]+ (?<currency>[\\w]{3})$") //
+                        .match("^Vorabpauschale pro St.ck [\\.,\\d]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
 
@@ -315,14 +314,14 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Summe Steuern 8,81 EUR
                         // @formatter:on
                         .section("amount", "currency").optional() //
-                        .match("^Summe Steuern (?<amount>[\\.,\\d]+) (?<currency>[\\w]{3})$") //
+                        .match("^Summe Steuern (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap(t -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (t.getCurrencyCode() != null && t.getAmount() == 0)
                                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
@@ -333,13 +332,13 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        final DocumentType type = new DocumentType("Kontoauszug", //
+        final var type = new DocumentType("Kontoauszug", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Alter Saldo                                       EUR                  0,00+
                                         // @formatter:on
                                         .section("currency") //
-                                        .match("^Alter Saldo.* (?<currency>[\\w]{3}).*$") //
+                                        .match("^Alter Saldo.* (?<currency>[A-Z]{3}).*$") //
                                         .assign((ctx, v) -> ctx.put("currency", asCurrencyCode(v.get("currency"))))
 
                                         // @formatter:off
@@ -351,7 +350,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
 
         this.addDocumentTyp(type);
 
-        Block depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.([\\d]{2})? [\\d]{2}\\.[\\d]{2}\\. "
+        var depositRemovalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.([\\d]{2})? [\\d]{2}\\.[\\d]{2}\\. "
                         + "(.* EINGANG VORBEHALTEN"
                         + "|DA\\-GUTSCHR"
                         + "|GUTSCHRIFT)"
@@ -360,7 +359,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
         depositRemovalBlock.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction accountTransaction = new AccountTransaction();
+                            var accountTransaction = new AccountTransaction();
                             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
                             return accountTransaction;
                         })
@@ -418,7 +417,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
 
     private void addNonImportableTransaction()
     {
-        final DocumentType type = new DocumentType("Steuerpflichtige Fondsfusion", //
+        final var type = new DocumentType("Steuerpflichtige Fondsfusion", //
                         documentContext -> documentContext //
                                         // @formatter:off
                                         // Vom 02.02.2024
@@ -428,16 +427,16 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                                         .assign((ctx, v) -> ctx.put("date", v.get("date"))));
         this.addDocumentTyp(type);
 
-        Transaction<PortfolioTransaction> pdfTransaction = new Transaction<>();
+        var pdfTransaction = new Transaction<PortfolioTransaction>();
 
-        Block firstRelevantLine = new Block("^Steuerpflichtige Fondsfusion$");
+        var firstRelevantLine = new Block("^Steuerpflichtige Fondsfusion$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
         pdfTransaction //
 
                         .subject(() -> {
-                            PortfolioTransaction portfolioTransaction = new PortfolioTransaction();
+                            var portfolioTransaction = new PortfolioTransaction();
                             portfolioTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
                             return portfolioTransaction;
                         })
@@ -466,7 +465,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap((t, ctx) -> {
-                            TransactionItem item = new TransactionItem(t);
+                            var item = new TransactionItem(t);
 
                             if (ctx.getString(FAILURE) != null)
                                 item.setFailureMessage(ctx.getString(FAILURE));
@@ -484,7 +483,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Kapitalertragsteuer: 251,13 EUR
                         // @formatter:on
                         .section("tax", "currency").optional()
-                        .match("^Kapitalertrags(s)?teuer(:)? (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .match("^Kapitalertrags(s)?teuer(:)? (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -492,7 +491,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Solidaritätszuschlag: 13,81 EUR
                         // @formatter:on
                         .section("tax", "currency").optional()
-                        .match("^Solidarit.tszuschlag(:)? (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .match("^Solidarit.tszuschlag(:)? (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -500,7 +499,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Kirchensteuer: 0,00 EUR
                         // @formatter:on
                         .section("tax", "currency").optional()
-                        .match("^Kirchensteuer(:)? (?<tax>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .match("^Kirchensteuer(:)? (?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -512,7 +511,7 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
                         // Orderentgelt: 0,01 EUR
                         // @formatter:on
                         .section("fee", "currency").optional()
-                        .match("^Orderentgelt: (?<fee>[\\.,\\d]+) (?<currency>[\\w]{3})$")
+                        .match("^Orderentgelt: (?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }

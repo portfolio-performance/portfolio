@@ -1,0 +1,39 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.76.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+KdtxclcyQ UkMWDpt
+oG MsaHYrEw 03H 
+33500 FQAcIO Datum 12.05.2025
+Deutschland Seite 1 / 2
+Wertpapierabrechnung 
+für Kundenauftrag 
+Typ STOP_STOP_LOSS Order DbcK99JE4enn0td 
+Ausführung 12.05.2025 09:01:04 Geschäft 008726807 
+Ausführungsplatz gettex Lagerland Deutschland
+Depot 2515033463 Verwahrart Girosammelverwahrung
+Auftrag 
+Typ Wertpapier Anzahl Kurs Betrag
+Verkauf Roche Hldg Long 227,26 CHF Turbo Open End HVB 200,00 Stk. 2,36 EUR 472,00 EUR
+DE000HD5ZFL9
+Gutschrift 472,00 EUR
+Der Betrag wird mit dem Verrechnungskonto DE31120700700754259203 (Valuta: 14.05.2025) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 1 / 2
+Wertpapierabrechnung 
+Verkauf 200,00 Stk. Roche Hldg Long 227,26 CHF Turbo Open End
+HVB 
+Ermittlung steuerrelevanter Erträge
+Typ Anmerkung Betrag
+Gewinn oder Verlust -234,00 EUR
+kfSnOWDsNVSrvlNdkm 904,41 EUR → 1.138,41 EUR 234,00 EUR
+Zu versteuern 0,00 EUR
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 2 / 2

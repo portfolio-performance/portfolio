@@ -1,0 +1,28 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.76.2
+System: linux | x86_64 | 21.0.7+2 | Flathub
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 Munich • Germany 
+brAIq zRjkI
+LpYNxJAmwIlQ 41 
+65485 gpNhJZcf Date 05.05.2025
+Germany Page 1 / 1
+Contract note 
+for savings plan order 
+Type LIMIT Order ID BZzUZDlXBK5mNIc 
+Execution 05.05.2025 12:25:16 Exchange ID 86828W28lTD45195 
+Trading venue EIX Country of custody Germany
+Securities account 2951808703 Kind of custody Collective safe custody
+Trade 
+Type Security Quantity Price Amount
+Buy Amundi Stoxx Europe 600 (Acc) 22.650225 pc. 919.45 EUR 2,788.00 EUR
+LU0908500753
+Financial transaction taxes 0.00 EUR 
+Total 2,425.00 EUR
+The amount will be settled via the clearing account DE58120700700758909091 (Value: 07.05.2025). 
+Please check the information for accuracy and report any concerns to us immediately.
+To do so, use the Support menu item in the client area. 
+Scalable Capital GmbH HRB 217778 Managing Directors: Supervisory Board: Page 
+Seitzstraße 8e Registry Court: Munich Local Court Erik Podzuweit, Florian Prucker Patrick Olson (Chairman) 
+80538 München Sales tax ID: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 1 / 1
