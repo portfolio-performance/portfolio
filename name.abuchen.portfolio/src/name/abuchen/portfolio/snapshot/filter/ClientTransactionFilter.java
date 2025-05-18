@@ -3,26 +3,26 @@ package name.abuchen.portfolio.snapshot.filter;
 import java.util.Collections;
 
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
 
 /**
  * Remove all transactions starting with the given transaction. Transactions are
  * sorted by exactly how the TradeCollector is sorting the transactions. It is
  * used to create a client that allows to calculate the moving average costs for
- * a given trade, i.e., the costs before the sale is applied.
+ * a given trade, i.e., the costs before the sale is applied. <br/>
+ * <br/>
+ * Attention: This filter processes only portfolio transactions.
  */
 public class ClientTransactionFilter implements ClientFilter
 {
     private final Security security;
-    private final Transaction transaction;
+    private final PortfolioTransaction transaction;
 
-    public ClientTransactionFilter(Security security, Transaction transaction)
+    public ClientTransactionFilter(Security security, PortfolioTransaction transaction)
     {
         this.security = security;
         this.transaction = transaction;
@@ -68,11 +68,7 @@ public class ClientTransactionFilter implements ClientFilter
         {
             var t = tx.getTransaction();
 
-            if (t instanceof AccountTransaction ta)
-            {
-                pa.internalAddTransaction(ta);
-            }
-            else if (t instanceof PortfolioTransaction tp //
+            if (t instanceof PortfolioTransaction tp //
                             && tp.getType() != PortfolioTransaction.Type.TRANSFER_IN
                             && tp.getType() != PortfolioTransaction.Type.TRANSFER_OUT)
             {
