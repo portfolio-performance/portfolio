@@ -25,6 +25,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendeTransaction();
+        addInterestTransaction();
         addDepotStatementTransaction();
     }
 
@@ -229,6 +230,52 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
         addFeesSectionsTransaction(pdfTransaction, type);
     }
 
+    private void addInterestTransaction()
+    {
+        final var type = new DocumentType("Rechnungsabschluss");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^Rechnungsabschluss$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // Gesamt 13,69 EUR
+                        // @formatter:on
+                        .section("currency", "amount") //
+                        .match("^Gesamt (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        // @formatter:off
+                        // Kontostand am 31.03.2025 726,58 EUR (Soll- & Habenzinsen berücksichtigt)
+                        // @formatter:on
+                        .section("date") //
+                        .match("^Kontostand am (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        // @formatter:off
+                        // Zeitraum 01.01.2025 - 31.03.2025
+                        // @formatter:on
+                        .section("note").optional() //
+                        .match("^Zeitraum (?<note>.*)$") //
+                        .assign((t, v) -> t.setNote(trim(v.get("note"))))
+
+                        .wrap(TransactionItem::new);
+    }
+
     private void addDepotStatementTransaction()
     {
         final var type = new DocumentType("Verrechnungskonto");
@@ -286,6 +333,27 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
     {
         transaction //
+
+                        // @formatter:off
+                        // Kapitalertragsteuer 0,00 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Kapitalertrags(s)?teuer \\-(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Solidaritätszuschlag 0,00 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Solidarit.tszuschlag \\-(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
+
+                        // @formatter:off
+                        // Kirchensteuer 0,00 EUR
+                        // @formatter:on
+                        .section("tax", "currency").optional() //
+                        .match("^Kirchensteuer \\-(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Ausländische Quellensteuer -0,01 EUR
