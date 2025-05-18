@@ -1,0 +1,38 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.76.2
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+gjpMuJ qRSc xWOfsL
+GUGgFSjiZg 48 
+09781 YjNpCjBQ Datum 12.05.2025
+Deutschland Seite 1 / 2
+Wertpapierabrechnung 
+für Kundenauftrag 
+Typ LIMIT Order SCALzcysZPDAU8W
+Ausführung 12.05.2025 09:48:14 Geschäft 12131P5C9mE20250
+Ausführungsplatz EIX Lagerland Luxemburg
+Depot ------ Verwahrart Wertpapierrechnung
+Auftrag 
+Typ Wertpapier Anzahl Kurs Betrag
+Verkauf Rio Tinto PLC 5,00 Stk. 55,73 EUR 278,65 EUR
+GB0007188757
+Gutschrift 278,65 EUR
+Der Betrag wird mit dem Verrechnungskonto DE2xxxxxxxxxx439 (Valuta: 14.05.2025) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 1 / 2
+Wertpapierabrechnung
+Verkauf 5,00 Stk. Rio Tinto PLC 
+Ermittlung steuerrelevanter Erträge
+Typ Anmerkung Betrag
+Gewinn oder Verlust 15,95 EUR
+Verlusttopf Aktien 42,92 EUR → 26,97 EUR -15,95 EUR
+Zu versteuern 0,00 EUR
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 2 / 2

@@ -25,6 +25,7 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addDividendeTransaction();
+        addDepotStatementTransaction();
     }
 
     @Override
@@ -111,9 +112,10 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Total 19,49 EUR
                         // Gutschrift 472,00 EUR
+                        // Belastung 200,00 EUR
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^(Total|Gutschrift) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^(Total|Gutschrift|Belastung) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -225,6 +227,60 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(pdfTransaction, type);
         addFeesSectionsTransaction(pdfTransaction, type);
+    }
+
+    private void addDepotStatementTransaction()
+    {
+        final var type = new DocumentType("Verrechnungskonto");
+        this.addDocumentTyp(type);
+
+        // @formatter:off
+        // 07.04.2025 07.04.2025 Überweisung +29.715,63 EUR
+        // @formatter:on
+        var depositBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Überweisung) \\+[\\.,\\d]+ [A-Z]{3}.*$");
+        type.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "note", "amount", "currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>(Überweisung)) \\+(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
+
+        // @formatter:off
+        // 03.04.2025 04.04.2025 Prime-Abonnementgebühr -4,99 EUR
+        // @formatter:on
+        var removalBlock = new Block("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} [\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (Prime\\-Abonnementgeb.hr) \\-[\\.,\\d]+ [A-Z]{3}.*$");
+        type.addBlock(removalBlock);
+        removalBlock.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.REMOVAL);
+                            return accountTransaction;
+                        })
+
+                        .section("date", "note", "amount", "currency") //
+                        .match("^[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<note>(Prime\\-Abonnementgeb.hr)) \\-(?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3}).*$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setNote(v.get("note"));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T transaction, DocumentType type)
