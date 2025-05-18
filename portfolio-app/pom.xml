@@ -379,6 +379,8 @@
 					<version>${tycho-version}</version>
 					<configuration>
 						<trimStackTrace>false</trimStackTrace>
+						<!-- disable warnings about Mockito -->
+						<argLine>-XX:+EnableDynamicAgentLoading</argLine>
 					</configuration>
 				</plugin>
 				<plugin>
