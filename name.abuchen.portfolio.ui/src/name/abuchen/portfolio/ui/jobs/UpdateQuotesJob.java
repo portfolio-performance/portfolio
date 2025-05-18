@@ -6,7 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -218,7 +218,13 @@ public final class UpdateQuotesJob extends AbstractClientJob
                 if (feed == null)
                     continue;
 
-                var securitiesPerFeed = entry.getValue();
+                // update instruments first that have not been update yet. Then
+                // instruments ordered by last update time
+
+                var securitiesPerFeed = entry.getValue().stream()
+                                .sorted(Comparator.comparing(s -> s.getEphemeralData().getFeedLastUpdate().orElse(null),
+                                                Comparator.nullsFirst(Comparator.naturalOrder())))
+                                .toList();
 
                 if (scheduleSingleJobs.contains(feed.getId()))
                 {
@@ -352,10 +358,6 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
     private void addHistoricalQuotesJobs(QuoteFeed feed, List<Security> securities, Dirtyable dirtyable, List<Job> jobs)
     {
-        // randomize list in case LRU cache size of HTMLTableQuote feed is too
-        // small; otherwise entries would be evicted in order
-        Collections.shuffle(securities);
-
         for (Security security : securities)
         {
             Job job = new Job(feed.getName() + ": " + security.getName()) //$NON-NLS-1$
@@ -437,8 +439,6 @@ public final class UpdateQuotesJob extends AbstractClientJob
     {
         if (securities.isEmpty())
             return;
-
-        Collections.shuffle(securities);
 
         Job job = new Job(feed.getName() + ": " + securities.size()) //$NON-NLS-1$
         {
