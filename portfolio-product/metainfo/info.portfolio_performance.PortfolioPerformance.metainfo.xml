@@ -37,6 +37,26 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.76.3" date="2025-05-18">
+      <description>
+        <ul>
+          <li>Improvement: PDF importer extended for: Scalable Capital, N26, Ebase, OLB</li>
+          <li>Improvement: Further optimizations in handling retrieval limits, especially with Coingecko.</li>
+          <li>Improvement: New log message when prices for securities cannot be retrieved – e.g., due to permanent errors when the server no longer recognizes the instrument.</li>
+          <li>Improvement: Prices are first loaded for securities that have not yet been retrieved in this session or whose last download is outdated.</li>
+          <li>Fix: Resolves an issue with calculating the average entry price when the currency is not Euro and dividends are recorded.</li>
+          <li>Fix: Resolves an issue where the header in the information area for grouped accounts was not updated.</li>
+          <li>Fix: Resolves an issue when creating a new file where the user's locale did not include a country, so no suggestion for the default currency could be made.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importer erweitert für: Scalable Capital, N26, Ebase, OLB</li>
+          <li xml:lang="de">Verbesserung: Weitere Optimierungen beim Umgang mit Abruflimits, insbesondere bei Coingecko.</li>
+          <li xml:lang="de">Verbesserung: Neuer Hinweis im Fehlerprotokoll, wenn Kurse für Wertpapiere nicht abgerufen werden können – z. B. bei permanenten Fehlern, wenn der Server das Wertpapier nicht (mehr) kennt.</li>
+          <li xml:lang="de">Verbesserung: Es werden zunächst Kurse von den Wertpapieren geladen, die in dieser Session entweder noch gar nicht geladen wurden oder deren Download älter ist.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem bei der Berechnung des Einstiegspreises nach dem gleitenden Durchschnitt, wenn die Währung nicht Euro ist und Dividenden erfasst sind.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem die Überschrift im Informationsbereich bei den gruppierten Konten nicht aktualisiert wurde.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, wenn eine neue Datei angelegt wurde und die Locale des Benutzers kein Land enthielt, sodass kein Vorschlag für die Standardwährung gemacht werden konnte.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.76.2" date="2025-05-09">
       <description>
         <ul>
