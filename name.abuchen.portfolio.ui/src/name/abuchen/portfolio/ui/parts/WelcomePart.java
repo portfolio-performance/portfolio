@@ -42,6 +42,7 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.RecentFilesCache;
+import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 import name.abuchen.portfolio.util.BuildInfo;
 
 @SuppressWarnings("restriction")
@@ -112,12 +113,13 @@ public class WelcomePart
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(composite);
         composite.setBackground(container.getBackground());
 
-        GridLayoutFactory.fillDefaults().numColumns(3).equalWidth(true).spacing(20, 20).applyTo(composite);
+        GridLayoutFactory.fillDefaults().numColumns(4).equalWidth(true).spacing(20, 20).applyTo(composite);
 
         var children = new Composite[] { //
                         createOpenLinks(composite), //
                         createHelpSection(composite), //
-                        createMobileAppSection(composite) //
+                        createMobileAppSection(composite), //
+                        createProviderSection(composite) //
         };
 
         for (Composite child : children)
@@ -194,6 +196,22 @@ public class WelcomePart
 
         qrcode.addHyperlinkListener(
                         IHyperlinkListener.linkActivatedAdapter(e -> linkActivated(Messages.SiteAppLandingpage)));
+
+        return section;
+    }
+
+    private Composite createProviderSection(Composite composite)
+    {
+        var section = new Composite(composite, SWT.NONE);
+        GridLayoutFactory.fillDefaults().margins(5, 5).applyTo(section);
+
+        addSectionLabel(section, Messages.SecurityTabHistoricalQuotes);
+        addLink(section, OPEN_PREFERENCES + "pp", Messages.SecurityTabHistoricalQuotes, null); //$NON-NLS-1$
+
+        var description = new StyledLabel(section, SWT.WRAP);
+        description.setText(Messages.PrefDescriptionPortfolioPerformanceID);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).grab(true, false).indent(2, 2)
+                        .applyTo(description);
 
         return section;
     }
