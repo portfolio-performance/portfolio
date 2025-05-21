@@ -36,7 +36,8 @@ public class TestUtilities
         return Arrays.asList(new String[] { "" }, new String[] { "de" }, new String[] { "es" }, new String[] { "pt" },
                         new String[] { "pt_BR" }, new String[] { "nl" }, new String[] { "fr" }, new String[] { "it" },
                         new String[] { "cs" }, new String[] { "ru" }, new String[] { "sk" }, new String[] { "pl" },
-                        new String[] { "zh" }, new String[] { "zh_TW" }, new String[] { "da" }, new String[] { "tr" });
+                        new String[] { "zh" }, new String[] { "zh_TW" }, new String[] { "da" }, new String[] { "tr" },
+                        new String[] { "vi" });
     }
 
     /**

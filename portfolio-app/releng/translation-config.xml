@@ -14,6 +14,7 @@
 		<language identifier="ru" poeditor="ru" />
 		<language identifier="sk" poeditor="sk" />
 		<language identifier="tr" poeditor="tr" />
+		<language identifier="vi" poeditor="vi" />
 		<language identifier="zh" poeditor="zh-Hans" />
 		<language identifier="zh_TW" poeditor="zh-TW" />
 	</languages>
