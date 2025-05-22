@@ -42,9 +42,15 @@ public class TransactionSearchField extends ControlContribution
         search.setMessage(Messages.LabelSearch);
         search.setSize(300, SWT.DEFAULT);
 
+        // reset filterText when user switch tab
+        search.addDisposeListener(e->{
+            filterText = null;
+            onRecalculationNeeded.accept(filterText);
+        });
+
         search.addModifyListener(e -> {
             var text = search.getText().trim();
-            if (text.length() == 0)
+            if (text.isEmpty())
             {
                 filterText = null;
                 onRecalculationNeeded.accept(filterText);
