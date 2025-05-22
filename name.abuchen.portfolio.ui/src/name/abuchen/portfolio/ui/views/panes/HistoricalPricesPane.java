@@ -50,6 +50,10 @@ import name.abuchen.portfolio.ui.views.QuotesContextMenu;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
+/**
+ * Display the historical quotes of given security, and provide operations such
+ * as adding and deleting price records, and exporting data as CSV.
+ */
 public class HistoricalPricesPane implements InformationPanePage
 {
     @Inject
@@ -108,9 +112,7 @@ public class HistoricalPricesPane implements InformationPanePage
         CopyPasteSupport.enableFor(prices);
         ShowHideColumnHelper support = new ShowHideColumnHelper(HistoricalPricesPane.class.getSimpleName(), preferences,
                         prices, layout);
-
         prices.setUseHashlookup(true);
-
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new DateLabelProvider(e -> ((SecurityPrice) e).getDate())
         {
@@ -182,6 +184,7 @@ public class HistoricalPricesPane implements InformationPanePage
         if (security != null)
         {
             manager.add(new SimpleAction(Messages.SecurityMenuAddPrice, a -> {
+
                 Dialog dialog = new SecurityPriceDialog(Display.getDefault().getActiveShell(), client, security);
 
                 if (dialog.open() != Window.OK)

@@ -178,7 +178,7 @@ public class IndicatorWidget<N> extends AbstractIndicatorWidget<N>
 
         if (isValueColored)
         {
-            indicator.setTextColor(isNegative ? Colors.theme().redForeground() : Colors.theme().greenForeground());
+            indicator.setTextColor(isNegative ? Colors.theme().negativeForeground() : Colors.theme().positiveForeground());
         }
 
     }

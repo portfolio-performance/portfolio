@@ -99,9 +99,9 @@ public final class TransactionsViewer implements ModificationListener
             Transaction tx = ((TransactionPair<?>) element).getTransaction();
 
             if (tx instanceof PortfolioTransaction t)
-                return t.getType().isLiquidation() ? Colors.theme().redForeground() : Colors.theme().greenForeground();
+                return t.getType().isLiquidation() ? Colors.theme().negativeForeground() : Colors.theme().positiveForeground();
             else if (tx instanceof AccountTransaction t)
-                return t.getType().isDebit() ? Colors.theme().redForeground() : Colors.theme().greenForeground();
+                return t.getType().isDebit() ? Colors.theme().negativeForeground() : Colors.theme().positiveForeground();
 
             throw new IllegalArgumentException("unsupported transaction type " + tx); //$NON-NLS-1$
         }

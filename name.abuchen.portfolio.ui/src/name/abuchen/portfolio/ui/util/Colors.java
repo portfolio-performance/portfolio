@@ -26,6 +26,10 @@ public final class Colors
         private Color greenBackground = Colors.GREEN;
         private Color redForeground = Colors.DARK_RED;
         private Color greenForeground = Colors.DARK_GREEN;
+
+        private Color positiveForeground = greenForeground;
+        private Color negateiveForeground = redForeground;
+
         private Color grayForeground = getColor(112, 112, 112); // 707070
         private Color hyperlink = Display.getDefault().getSystemColor(SWT.COLOR_LINK_FOREGROUND);
 
@@ -109,6 +113,26 @@ public final class Colors
             this.greenForeground = getColor(color.rgb);
         }
 
+        public Color positiveForeground()
+        {
+            return positiveForeground;
+        }
+
+        public void setPositiveForeground(RGBA color)
+        {
+            this.positiveForeground = getColor(color.rgb);
+        }
+
+        public Color negativeForeground()
+        {
+            return negateiveForeground;
+        }
+
+        public void setNegativeForeground(RGBA color)
+        {
+            this.negateiveForeground = getColor(color.rgb);
+        }
+
         public Color grayForeground()
         {
             return grayForeground;
@@ -127,6 +151,16 @@ public final class Colors
         public void setHyperlink(RGBA color)
         {
             this.hyperlink = getColor(color.rgb);
+        }
+
+        public boolean useGreenPositive()
+        {
+            Color positiveColor = positiveForeground();
+            int red = positiveColor.getRed();
+            int green = positiveColor.getGreen();
+            int blue = positiveColor.getBlue();
+            // FIXME: a simple compare
+            return green > red && green > blue;
         }
     }
 

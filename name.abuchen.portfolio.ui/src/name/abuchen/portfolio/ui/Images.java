@@ -107,8 +107,10 @@ public enum Images
     ONLINE("online.png"), //$NON-NLS-1$
     ERROR_NOTICE("error_notice.png"), //$NON-NLS-1$
 
-    RED_ARROW("red_arrow.png"), //$NON-NLS-1$
-    GREEN_ARROW("green_arrow.png"), //$NON-NLS-1$
+    RED_UP_ARROW("red_up_arrow.png"), //$NON-NLS-1$
+    RED_DOWN_ARROW("red_arrow.png"), //$NON-NLS-1$
+    GREEN_UP_ARROW("green_arrow.png"), //$NON-NLS-1$
+    GREEN_DOWN_ARROW("green_down_arrow.png"), //$NON-NLS-1$
 
     VISIBLE("visible.png"), //$NON-NLS-1$
     HIDDEN("hidden.png"), //$NON-NLS-1$

@@ -18,6 +18,7 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.StringUtils;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.views.SecuritiesChart;
@@ -58,7 +59,7 @@ public class SecurityPriceChartPane implements InformationPanePage
         chart = new SecuritiesChart(sash, client, new CurrencyConverterImpl(factory, client.getBaseCurrency()));
 
         String option = preferences.getString(SecurityPriceChartPane.class.getSimpleName());
-        if (option != null && !option.isEmpty())
+        if (StringUtils.isNotEmpty(option))
         {
             try
             {
@@ -71,6 +72,8 @@ public class SecurityPriceChartPane implements InformationPanePage
             }
         }
 
+        // Save the current time interval option to the preference store when
+        // the chart control is destroyed.
         chart.getControl().addDisposeListener(e -> preferences.setValue(SecurityPriceChartPane.class.getSimpleName(),
                         chart.getIntervalOption().name()));
 
@@ -99,6 +102,7 @@ public class SecurityPriceChartPane implements InformationPanePage
     @Override
     public void setInput(Object input)
     {
+        // Retrieve the security selected by the user, and re-render the chart.
         security = Adaptor.adapt(Security.class, input);
         chart.updateChart(client, security);
         details.setInput(security);

@@ -17,8 +17,16 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
-/* package */class CostCalculation extends Calculation
+/**
+ * CostCalculation is a class used to calculate indicators related to the cost
+ * of given security. CostCalculation traverses different types of transaction
+ * records (such as portfolio transactions, account transactions, dividend
+ * payments, etc.), and uses the FIFO method and the moving average cost method
+ * to calculate the cost, fees and taxes of holding stocks.
+ */
+class CostCalculation extends Calculation
 {
+
     public record CostCalculationResult(long sharesHeld, Money fifoCost, TrailRecord fifoCostTrail, Money netFifoCost,
                     Money movingAverageCost, Money netMovingAverageCost, Money fees, Money taxes)
     {
@@ -51,18 +59,29 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         }
     }
 
+    /**
+     * Store transaction records in FIFO order.
+     */
     private List<LineItem> fifo = new ArrayList<>();
 
     private long movingRelativeCost = 0;
+
     private long movingRelativeNetCost = 0;
+
     private long heldShares = 0;
 
     private long fees;
+
     private long taxes;
 
+    /**
+     * The caller will sequentially call the `visit` method for all transaction
+     * of a certain stock to perform the aggregation.
+     */
     @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtStart item)
     {
+        // Convert the starting valuation to the specified currency.
         Money valuation = item.getValue();
         SecurityPosition position = item.getSecurityPosition().orElseThrow(IllegalArgumentException::new);
 
@@ -75,12 +94,23 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
             trail = trail.convert(Money.of(getTermCurrency(), amount),
                             converter.getRate(item.getDateTime(), valuation.getCurrencyCode()));
 
+        // Record the relevant information into the fifo list.
         fifo.add(new LineItem(item.getOwner(), position.getShares(), amount, amount, trail));
         movingRelativeCost += amount;
         movingRelativeNetCost += amount;
         heldShares += position.getShares();
     }
 
+    /**
+     * This method handles portfolio transactions. First, it accumulates the
+     * fees and taxes in the transaction. Then, depending on the transaction
+     * type (buy, sell, transfer-in, transfer-out, etc.), it updates the fifo
+     * list, the moving average cost, and the number of held shares. For a sell
+     * operation, it deducts the corresponding stocks and amounts from the fifo
+     * list according to the FIFO principle. For a transfer-in operation, it
+     * transfers the corresponding stocks and amounts from the source owner's
+     * records to the target owner.
+     */
     @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem item, PortfolioTransaction t)
     {
@@ -91,8 +121,9 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
         switch (t.getType())
         {
-            case BUY:
-            case DELIVERY_INBOUND:
+            case BUY, DELIVERY_INBOUND:
+                // 'buy' only need to add transaction to fifo, and update
+                // movingRelativeXXX, heldShares.
                 long grossAmount = t.getMonetaryAmount(converter).getAmount();
                 long netAmount = t.getGrossValue(converter).getAmount();
 
@@ -107,12 +138,13 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                 heldShares += t.getShares();
                 break;
 
-            case SELL:
-            case DELIVERY_OUTBOUND:
+            case SELL, DELIVERY_OUTBOUND:
+                // 'sell' is more complex than 'buy', we need to traverse `fifo`
+                // list from earliest to latest, to sell the shares in order.
                 long sold = t.getShares();
 
                 long remaining = heldShares - sold;
-                if (remaining <= 0)
+                if (remaining <= 0) // Quickly check for liquidation operation
                 {
                     movingRelativeCost = 0;
                     movingRelativeNetCost = 0;
@@ -125,6 +157,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                     heldShares = remaining;
                 }
 
+                // traverse fifo to find held shares and mark them as sold
                 for (LineItem entry : fifo)
                 {
                     if (sold <= 0)
@@ -222,6 +255,10 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         }
     }
 
+    /**
+     * Accumulate or reduce the corresponding fees and taxes according to the
+     * transaction type (tax, tax refund, fee, fee refund).
+     */
     @Override
     public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem item, AccountTransaction t)
     {
@@ -268,6 +305,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
         long cost = 0;
         for (LineItem entry : fifo)
             cost += entry.grossAmount;
+
         return Money.of(getTermCurrency(), cost);
     }
 

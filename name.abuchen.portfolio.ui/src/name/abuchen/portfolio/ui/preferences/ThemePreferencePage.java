@@ -96,8 +96,10 @@ public final class ThemePreferencePage extends PreferencePage
         themeIdCombo.setContentProvider(ArrayContentProvider.getInstance());
         var availableThemes = getCSSThemes();
         themeIdCombo.setInput(availableThemes);
-        availableThemes.stream().filter(t -> t.getId().equals(currentlyConfiguredThemeId)).findAny()
-                        .ifPresent(t -> themeIdCombo.setSelection(new StructuredSelection(t)));
+        availableThemes.stream()
+            .filter(t -> t.getId().equals(currentlyConfiguredThemeId))
+            .findAny()
+            .ifPresent(t -> themeIdCombo.setSelection(new StructuredSelection(t)));
 
         ControlDecoration themeComboDecorator = new ControlDecoration(themeIdCombo.getCombo(), SWT.RIGHT);
         themeComboDecorator.setDescriptionText(Messages.MsgThemeRestartRequired);

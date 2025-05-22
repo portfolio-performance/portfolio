@@ -44,6 +44,12 @@ public class ColorsThemeCSSHandler implements ICSSPropertyHandler
                 case "green-foreground": //$NON-NLS-1$
                     theme.setGreenForeground(CSSSWTColorHelper.getRGBA(value));
                     break;
+                case "positive-foreground": //$NON-NLS-1$
+                    theme.setPositiveForeground(CSSSWTColorHelper.getRGBA(value));
+                    break;
+                case "negative-foreground": //$NON-NLS-1$
+                    theme.setNegativeForeground(CSSSWTColorHelper.getRGBA(value));
+                    break;
                 case "gray-foreground": //$NON-NLS-1$
                     theme.setGrayForeground(CSSSWTColorHelper.getRGBA(value));
                     break;

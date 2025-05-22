@@ -268,6 +268,8 @@ public interface UIConstants
     {
         String LIGHT = "name.abuchen.portfolio.light"; //$NON-NLS-1$
         String DARK = "name.abuchen.portfolio.dark"; //$NON-NLS-1$
+        String LIGHT_RPGN = "name.abuchen.portfolio.light_red_positive_green_negative"; //$NON-NLS-1$
+        String DARK_RPGN = "name.abuchen.portfolio.dark_red_positive_green_negative"; //$NON-NLS-1$
     }
 
     interface CSS // NOSONAR

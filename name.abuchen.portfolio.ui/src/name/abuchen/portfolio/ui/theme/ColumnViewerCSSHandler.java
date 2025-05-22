@@ -8,6 +8,9 @@ import org.w3c.dom.css.CSSValue;
 @SuppressWarnings("restriction")
 public class ColumnViewerCSSHandler implements ICSSPropertyHandler
 {
+    private static final String CSS_PROPERTY_LINES_VISIBLE = "swt-lines-visible"; //$NON-NLS-1$
+
+
     @Override
     public boolean applyCSSProperty(Object element, String property, CSSValue value, String pseudo, CSSEngine engine)
                     throws Exception
@@ -16,7 +19,7 @@ public class ColumnViewerCSSHandler implements ICSSPropertyHandler
         {
             switch (property)
             {
-                case "swt-lines-visible": //$NON-NLS-1$
+                case CSS_PROPERTY_LINES_VISIBLE:
                     Boolean isLinesVisible = (Boolean) engine.convert(value, Boolean.class, Display.getDefault());
                     viewer.setLinesVisible(isLinesVisible);
                     break;
@@ -34,7 +37,7 @@ public class ColumnViewerCSSHandler implements ICSSPropertyHandler
         {
             switch (property)
             {
-                case "swt-lines-visible": //$NON-NLS-1$
+                case CSS_PROPERTY_LINES_VISIBLE:
                     return String.valueOf(viewer.isLinesVisible());
                 default:
             }

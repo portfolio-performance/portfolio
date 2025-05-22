@@ -102,6 +102,12 @@
                name="gray-foreground">
          </property-name>
          <property-name
+               name="positive-foreground">
+         </property-name>
+         <property-name
+               name="negative-foreground">
+         </property-name>
+         <property-name
                name="hyperlink">
          </property-name>
       </handler>
@@ -218,6 +224,18 @@
             basestylesheeturi="css/dark_mac.css"
             id="name.abuchen.portfolio.dark"
             label="%theme.dark"
+            os="macosx">
+      </theme>
+      <theme
+            basestylesheeturi="css/light_rpgn_mac.css"
+            id="name.abuchen.portfolio.light_red_positive_green_negative"
+            label="%theme.light_rpgn"
+            os="macosx">
+      </theme>
+      <theme
+            basestylesheeturi="css/dark_rpgn_mac.css"
+            id="name.abuchen.portfolio.dark_red_positive_green_negative"
+            label="%theme.dark_rpgn"
             os="macosx">
       </theme>
       <theme

@@ -123,7 +123,7 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
                     () -> Calculation.perform(CostCalculation.class, converter, security, lineItems).getResult());
 
     /**
-     * fifo cost of shares held
+     * FIFO cost of shares held
      */
     private final LazyValue<Money> fifoCost = new LazyValue<>(() -> costCalculation.get().fifoCost());
 
@@ -133,10 +133,18 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     private final LazyValue<Money> movingAverageCost = new LazyValue<>(() -> costCalculation.get().movingAverageCost());
 
     /**
-     * market value - fifo cost of shares held
+     * market value - FIFO cost of shares held
      */
     private final LazyValue<Money> capitalGainsOnHoldings = new LazyValue<>(
                     () -> marketValue.get().subtract(costCalculation.get().fifoCost()));
+
+    /**
+     *  market value excluding fees/taxes - FIFO cost of shares held
+     */
+    private final LazyValue<Money> netCapitalGainsOnHoldings = new LazyValue<>(() -> {
+        var costResult = costCalculation.get();
+        return marketValue.get().subtract(costResult.netFifoCost());
+    });
 
     /**
      * {@link capitalGainsOnHoldings} in percent
@@ -303,6 +311,11 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         return capitalGainsOnHoldings;
     }
 
+    public LazyValue<Money> getNetCapitalGainsOnHoldings()
+    {
+        return netCapitalGainsOnHoldings;
+    }
+
     public LazyValue<Double> getCapitalGainsOnHoldingsPercent()
     {
         return capitalGainsOnHoldingsPercent;
@@ -425,6 +438,7 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     {
         return unrealizedCapitalGainsMovingAvg;
     }
+
     @Override
     public <T> T adapt(Class<T> type)
     {
