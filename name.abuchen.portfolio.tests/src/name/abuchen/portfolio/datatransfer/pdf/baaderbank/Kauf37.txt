@@ -1,0 +1,65 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.76.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+ T  00800 00 586336*
+F  +49 89 5150 2442
+service@baaderbank.de
+Seite 1/2
+Unterschleißheim
+vnWBY 06.10.2022
+dwaRj nyIisrhi
+zENMWKWHszcYXvOLHs 79 BFfsB PfFAjiOd
+Stamm-Nr.: 13947    Portfolio: 1
+02605 oZTG Mi kPoi Depot-Nr.: 2548004958
+Vorgangs-Nr.: 868490405
+Referenz-Nr.: 731255947
+Wertpapierabrechnung: Kauf
+Auftragsdatum: 06.10.2022 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 12:24:48:77
+Nominale ISIN: USU5521TAE20 WKN: A2R99N Kurs 
+USD   538,64 4,00 % 89,400160785 
+MSCI Inc. %
+DL-Notes 2019(19/29) Reg.S
+Auftraggeber: ext.Vermögensverw.
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert Umrechnungskurs USD/EUR: 0,9802 EUR 491,28
+Stückzinsen für 145 Tag(e) nächster Zinstermin: 15.11.2022 EUR 8,86
+Zu Lasten Konto 12149453 Valuta: 10.10.2022 EUR 500,14
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung:
+Handelsdatum Handelsuhrzeit
+06.10.2022 16:34:27:70
+Verwahrart: Wertpapierrechnung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 6865 MIC des Ausführungsplatzes: MUNC
+Lagerland: USA
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Bitte prüfen Sie diese Auftragsbestätigung/Abrechnung auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese 
+Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden.
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+85868393
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537
+Weihenstephaner Straße 4 F +49 89 5150 2442 Dietmar von Blücher, Sitz der Gesellschaft: Unterschleißheim
+85716 Unterschleißheim service@baaderbank.de Oliver Riedel StNr. 143/107/04009
+Deutschland www.baaderbank.de Vorsitzender des Aufsichtsrates: USt-IdNr. DE114123893
+Dr. Horst Schiessl LEI: 529900JFOPPEDUR61H13
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. WPABRECHNUNG-058.112
+Wertpapierabrechnung: Kauf
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Allgemeiner Verlustverrechnungstopf EUR xxx EUR xxx EUR xxx
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Stückzinsen negativ EUR xxx - EUR xxx
+Kapitalertragsteuer auf allgemeine Gewinne EUR xxx - EUR xxx
+Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537
+Weihenstephaner Straße 4 F +49 89 5150 2442 Dietmar von Blücher, Sitz der Gesellschaft: Unterschleißheim
+85716 Unterschleißheim service@baaderbank.de Oliver Riedel StNr. 143/107/04009
+Deutschland www.baaderbank.de Vorsitzender des Aufsichtsrates: USt-IdNr. DE114123893
+Dr. Horst Schiessl LEI: 529900JFOPPEDUR61H13
+ 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. WPABRECHNUNG-058.112
