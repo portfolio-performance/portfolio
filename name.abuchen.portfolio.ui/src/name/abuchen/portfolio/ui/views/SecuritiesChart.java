@@ -925,8 +925,7 @@ public class SecuritiesChart
 
             if (securities.length > 10)
             {
-                // TODO: introduce language key with translation
-                messagePainter.setMessage("Benchmark for more than 10 instruments not supported.");
+                messagePainter.setMessage(Messages.SecuritiesChart_MaxSecuritiesReachedForBenchmarkHint);
                 return;
             }
 

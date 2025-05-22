@@ -119,13 +119,13 @@ public class SecurityPriceChartPane implements InformationPanePage
 
         chart.updateChart(client, selectedSecurities.toArray(new Security[0]));
 
-        Security firstOrNull;
-        if (selectedSecurities.isEmpty())
-            firstOrNull = null;
+        Security singleOrNull;
+        if (selectedSecurities.size() != 1)
+            singleOrNull = null;
         else
-            firstOrNull = selectedSecurities.getFirst();
+            singleOrNull = selectedSecurities.getFirst();
 
-        details.setInput(firstOrNull);
+        details.setInput(singleOrNull);
     }
 
     @Override
