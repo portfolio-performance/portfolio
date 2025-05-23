@@ -13,6 +13,7 @@ import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.swt.SWT;
@@ -295,6 +296,7 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
 
             Job job = new LoadHistoricalQuotes(feed, exchange, cacheKey);
             job.setUser(false);
+            job.setRule(SingletonRule.getInstance());
             job.schedule(150);
         }
     }
@@ -385,5 +387,31 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
             return Status.OK_STATUS;
         }
 
+    }
+
+    private static class SingletonRule implements ISchedulingRule // NOSONAR
+    {
+        private static final SingletonRule INSTANCE = new SingletonRule();
+
+        private SingletonRule()
+        {
+        }
+
+        public static SingletonRule getInstance()
+        {
+            return INSTANCE;
+        }
+
+        @Override
+        public boolean isConflicting(ISchedulingRule rule)
+        {
+            return rule == this;
+        }
+
+        @Override
+        public boolean contains(ISchedulingRule rule)
+        {
+            return rule == this;
+        }
     }
 }
