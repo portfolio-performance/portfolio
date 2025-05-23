@@ -20,6 +20,7 @@ import org.apache.hc.core5.http.HttpStatus;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.osgi.framework.FrameworkUtil;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
@@ -230,7 +231,9 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
                             .addParameter("symbol", security.getTickerSymbol()) //
                             .addParameter("from",
                                             String.valueOf(startDate.atStartOfDay().toEpochSecond(ZoneOffset.UTC))) //
-                            .addParameter("to", String.valueOf(to));
+                            .addParameter("to", String.valueOf(to)) //
+                            .addParameter("v",
+                                            FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString());
 
             if (accessToken.isPresent())
                 webaccess.addBearer(accessToken.get().getToken());
