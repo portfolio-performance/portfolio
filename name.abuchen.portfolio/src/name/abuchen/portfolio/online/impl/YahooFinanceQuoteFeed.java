@@ -80,17 +80,46 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 price.setDate(Instant.ofEpochSecond(epoch).atZone(ZoneId.systemDefault()).toLocalDate());
             }
 
+            Optional<String> quoteCurrency = extract(json, 0, "\"currency\":\"", "\","); //$NON-NLS-1$ //$NON-NLS-2$
+
             Optional<String> value = extract(json, 0, "\"regularMarketPrice\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
             if (value.isPresent())
             {
-                Optional<String> quoteCurrency = extract(json, 0, "\"currency\":\"", "\","); //$NON-NLS-1$ //$NON-NLS-2$
                 price.setValue(convertBritishPounds(asPrice(value.get()), quoteCurrency.orElse(null),
                                 security.getCurrencyCode()));
             }
 
-            price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
-            price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
-            price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
+            Optional<String> high = extract(json, 0, "\"regularMarketDayHigh\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (high.isPresent())
+            {
+                price.setHigh(convertBritishPounds(asPrice(high.get()), quoteCurrency.orElse(null),
+                                security.getCurrencyCode()));
+            }
+            else
+            {
+                price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
+            }
+
+            Optional<String> low = extract(json, 0, "\"regularMarketDayLow\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (low.isPresent())
+            {
+                price.setLow(convertBritishPounds(asPrice(low.get()), quoteCurrency.orElse(null),
+                                security.getCurrencyCode()));
+            }
+            else
+            {
+                price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
+            }
+
+            Optional<String> volume = extract(json, 0, "\"regularMarketVolume\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (volume.isPresent())
+            {
+                price.setVolume(Long.parseLong(volume.get()));
+            }
+            else
+            {
+                price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
+            }
 
             if (price.getDate() == null || price.getValue() <= 0)
             {
@@ -260,28 +289,98 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (indicators == null)
                 throw new IOException("indicators"); //$NON-NLS-1$
 
-            JSONArray quotes = extractQuotesArray(indicators);
+            JSONObject quotes = extractQuotesObject(indicators);
 
-            int size = quotes.size();
+            JSONArray close = (JSONArray) extractCloseArray(quotes);
+            int size = close.size();
+
+            JSONArray high = null;
+            try
+            {
+                high = (JSONArray) quotes.get("high"); //$NON-NLS-1$
+            }
+            catch (NullPointerException e)
+            {
+                // Ignore
+            }
+
+            JSONArray low = null;
+            try
+            {
+                low = (JSONArray) quotes.get("low"); //$NON-NLS-1$
+            }
+            catch (NullPointerException e)
+            {
+                // Ignore
+            }
+
+            JSONArray volume = null;
+            try
+            {
+                volume = (JSONArray) quotes.get("volume"); //$NON-NLS-1$
+            }
+            catch (NullPointerException e)
+            {
+                // Ignore
+            }
 
             for (int index = 0; index < size; index++)
             {
                 Long ts = (Long) timestamp.get(index);
-                Double q = (Double) quotes.get(index);
+                Double q = (Double) close.get(index);
+                Double h = null;
+                Double l = null;
+                Long v = null;
+
+                if (high != null && !high.isEmpty())
+                    try
+                    {
+                        h = (Double) high.get(index);
+                    }
+                    catch (IndexOutOfBoundsException e)
+                    {
+                        // Ignore
+                    }
+                if (low != null && !low.isEmpty())
+                    try
+                    {
+                        l = (Double) low.get(index);
+                    }
+                    catch (IndexOutOfBoundsException e)
+                    {
+                        // Ignore
+                    }
+                if (volume != null && !volume.isEmpty())
+                    try
+                    {
+                        v = (Long) volume.get(index);
+                    }
+                    catch (IndexOutOfBoundsException e)
+                    {
+                        // Ignore
+                    }
 
                 if (ts != null && q != null && q.doubleValue() > 0)
                 {
                     LatestSecurityPrice price = new LatestSecurityPrice();
                     price.setDate(LocalDateTime.ofInstant(Instant.ofEpochSecond(ts), exchangeZoneId).toLocalDate());
 
-                    // yahoo api seesm to return floating numbers --> limit to 4
-                    // digits which seems to round it to the right value
-                    double v = Math.round(q * 10000) / 10000d;
-                    price.setValue(convertBritishPounds(Values.Quote.factorize(v), quoteCurrency, securityCurrency));
+                    price.setValue(convertBritishPounds(Values.Quote.factorize(roundQuoteValue(q)), quoteCurrency, securityCurrency));
 
-                    price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
-                    price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
-                    price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
+                    if (h != null && h.doubleValue() > 0)
+                        price.setHigh(convertBritishPounds(Values.Quote.factorize(roundQuoteValue(h)), quoteCurrency, securityCurrency));
+                    else
+                        price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
+
+                    if (l != null && l.doubleValue() > 0)
+                        price.setLow(convertBritishPounds(Values.Quote.factorize(roundQuoteValue(l)), quoteCurrency, securityCurrency));
+                    else
+                        price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
+
+                    if (v != null && v.longValue() > 0)
+                        price.setVolume(v.longValue());
+                    else
+                        price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
 
                     answer.add(price);
                 }
@@ -298,7 +397,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         return data;
     }
 
-    protected JSONArray extractQuotesArray(JSONObject indicators) throws IOException
+    protected JSONObject extractQuotesObject(JSONObject indicators) throws IOException
     {
         JSONArray quotes = (JSONArray) indicators.get("quote"); //$NON-NLS-1$
         if (quotes == null || quotes.isEmpty())
@@ -308,11 +407,23 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         if (quote == null)
             throw new IOException();
 
-        JSONArray close = (JSONArray) quote.get("close"); //$NON-NLS-1$
+        return quote;
+    }
+
+    protected JSONArray extractCloseArray(JSONObject quotes) throws IOException
+    {
+        JSONArray close = (JSONArray) quotes.get("close"); //$NON-NLS-1$
         if (close == null || close.isEmpty())
             throw new IOException("close"); //$NON-NLS-1$
 
         return close;
+    }
+
+    // Yahoo API seesms to return floating numbers --> limit to 4
+    // digits which seems to round it to the right value
+    protected double roundQuoteValue(double value)
+    {
+        return Math.round(value * 10000) / 10000d;
     }
 
     /**
