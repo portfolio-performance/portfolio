@@ -14,8 +14,8 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
  * @formatter:off
  * @implNote Importer for "Info Reports" produced by the Bison App.
  *
- * @implSpec Bison only supports EUR as currency. Therefore the extractor is always
- *           defaulting to EUR.
+ * @implSpec Bison only supports EUR as currency. 
+ *           Therefore the extractor is always defaulting to EUR.
  * @formatter:on
  */
 @SuppressWarnings("nls")
@@ -46,7 +46,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
 
         var pdfTransaction = new Transaction<BuySellEntry>();
 
-        var firstRelevantLine = new Block("^(Kauf|Verkauf|Staking Reward)[\\*]* [A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})? [\\.,\\d]+$");
+        var firstRelevantLine = new Block("^(Kauf|Verkauf)[\\*]* [A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})? [\\.,\\d]+$");
         type.addBlock(firstRelevantLine);
         firstRelevantLine.set(pdfTransaction);
 
@@ -60,7 +60,7 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
 
                         // Is type --> "Verkauf" change from BUY to SELL
                         .section("type").optional() //
-                        .match("^(?<type>(Kauf|Verkauf|Staking Reward))[\\*]* [A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})? [\\.,\\d]+$") //
+                        .match("^(?<type>(Kauf|Verkauf))[\\*]* [A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})? [\\.,\\d]+$") //
                         .assign((t, v) -> {
                             if ("Verkauf".equals(v.get("type"))) //
                                 t.setType(PortfolioTransaction.Type.SELL);
@@ -75,12 +75,9 @@ public class BisonPDFExtractor extends AbstractPDFExtractor
                         //
                         // Verkauf* ETH 0,03396843
                         // 12.06.2022 21:19 1.401,94 €/ETH + 47,62 €
-                        //
-                        // Staking Reward ETH 0,00000541
-                        // 03.02.2025 08:48 3.011,63 €/ETH + 0,02 €
                         // @formatter:on
                         .section("tickerSymbol", "shares", "date", "time", "amount", "currency") //
-                        .match("^(Kauf|Verkauf|Staking Reward)[\\*]* (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<shares>[\\.,\\d]+)$") //
+                        .match("^(Kauf|Verkauf)[\\*]* (?<tickerSymbol>[A-Z0-9]{1,5}(?:[\\-\\/][A-Z0-9]{1,5})?) (?<shares>[\\.,\\d]+)$") //
                         .match("^(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<time>[\\d]{2}:[\\d]{2}) .* (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc})$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateCryptoCurrency(v));
