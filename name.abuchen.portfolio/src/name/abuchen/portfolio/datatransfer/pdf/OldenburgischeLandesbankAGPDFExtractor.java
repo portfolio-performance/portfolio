@@ -509,9 +509,10 @@ public class OldenburgischeLandesbankAGPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Orderentgelt: 0,01 EUR
+                        // Orderentgelt: -0,05 EUR
                         // @formatter:on
                         .section("fee", "currency").optional()
-                        .match("^Orderentgelt: (?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
+                        .match("^Orderentgelt: (\\-)?(?<fee>[\\.,\\d]+) (?<currency>[A-Z]{3})$")
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 }
