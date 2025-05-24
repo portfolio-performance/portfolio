@@ -1021,14 +1021,14 @@ public class PerformanceView extends AbstractHistoricView
         TransactionPair<?> tx = (TransactionPair<?>) element;
         if (tx.getTransaction() instanceof AccountTransaction)
         {
-            return ((AccountTransaction) tx.getTransaction()).getType().isCredit() ? Colors.theme().greenForeground()
-                            : Colors.theme().redForeground();
+            return ((AccountTransaction) tx.getTransaction()).getType().isCredit() ? Colors.theme().negativeForeground()
+                            : Colors.theme().positiveForeground();
         }
         else
         {
             return ((PortfolioTransaction) tx.getTransaction()).getType().isPurchase()
-                            ? Colors.theme().greenForeground()
-                            : Colors.theme().redForeground();
+                            ? Colors.theme().positiveForeground()
+                            : Colors.theme().negativeForeground();
         }
     }
 }

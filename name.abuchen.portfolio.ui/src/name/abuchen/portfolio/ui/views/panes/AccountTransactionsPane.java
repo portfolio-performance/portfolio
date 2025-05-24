@@ -507,7 +507,7 @@ public class AccountTransactionsPane implements InformationPanePage, Modificatio
 
     private Color colorFor(AccountTransaction t)
     {
-        return t.getType().isDebit() ? Colors.theme().redForeground() : Colors.theme().greenForeground();
+        return t.getType().isDebit() ? Colors.theme().negativeForeground() : Colors.theme().positiveForeground();
     }
 
     private void hookKeyListener()

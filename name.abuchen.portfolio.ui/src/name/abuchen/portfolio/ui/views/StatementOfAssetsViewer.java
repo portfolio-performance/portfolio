@@ -570,6 +570,14 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
+        column = new Column("10", Messages.ColumnProfitLossNet, SWT.RIGHT, 80); //$NON-NLS-1$
+        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
+                        LazySecurityPerformanceRecord::getNetCapitalGainsOnHoldings, withSum()), true);
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
+        column.setVisible(false);
+        support.addColumn(column);
+
         column = new NoteColumn();
         column.getEditingSupport().addListener(new TouchClientListener(client));
         column.getSorter().wrap(ElementComparator::new);
@@ -969,6 +977,21 @@ public class StatementOfAssetsViewer
 
         column = new Column("profitLossBaseCurrency", //$NON-NLS-1$
                         Messages.ColumnProfitLoss + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnProfitLossBaseCurrency);
+        column.setGroupLabel(Messages.ColumnForeignCurrencies);
+        labelProvider = new ReportingPeriodLabelProvider(
+                        new ElementValueProvider(LazySecurityPerformanceRecord::getCapitalGainsOnHoldings, null),
+                        e -> e.isSecurity() ? e.getSecurity().getCurrencyCode()
+                                        : model.getCurrencyConverter().getTermCurrency(),
+                        false);
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
+        column.setVisible(false);
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("profitLossBaseCurrencyNet", //$NON-NLS-1$
+                        Messages.ColumnProfitLossNet + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
         column.setDescription(Messages.ColumnProfitLossBaseCurrency);
         column.setGroupLabel(Messages.ColumnForeignCurrencies);
         labelProvider = new ReportingPeriodLabelProvider(
@@ -1531,9 +1554,9 @@ public class StatementOfAssetsViewer
                 doubleValue = d;
 
             if (doubleValue < 0)
-                return Colors.theme().redForeground();
+                return Colors.theme().negativeForeground();
             else if (doubleValue > 0)
-                return Colors.theme().greenForeground();
+                return Colors.theme().positiveForeground();
             else
                 return null;
         }
@@ -1557,9 +1580,10 @@ public class StatementOfAssetsViewer
                 doubleValue = d;
 
             if (doubleValue > 0)
-                return Images.GREEN_ARROW.image();
+                return Colors.theme().useGreenPositive() ? Images.GREEN_UP_ARROW.image() : Images.RED_UP_ARROW.image();
+
             if (doubleValue < 0)
-                return Images.RED_ARROW.image();
+                return Colors.theme().useGreenPositive() ? Images.RED_DOWN_ARROW.image() : Images.GREEN_DOWN_ARROW.image();
             return null;
         }
 
