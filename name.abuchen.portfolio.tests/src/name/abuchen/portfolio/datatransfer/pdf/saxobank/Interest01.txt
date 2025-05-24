@@ -1,0 +1,30 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.76.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+NeTx tdemidpFd - 29558892
+Cash Amount Detail Report
+Reporting period: 01-Mai-2025 - 01-Mai-2025
+Generated at: 05-Mai-2025 09:58:22 09:58:22 (GMT+01)
+HiwQ FhnHwjTAh
+DQJKjYRg 70h 18
+03-999 ZfZcmuoP
+Poland
+Saxo Bank / Philip Heymans Alle 15 / 2900 Hellerup / Denmark qvFk wLPqHOGJe Reporting period
+/ Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: USD 01-Mai-2025 - 01-Mai-2025
+Page 1 of 2 Account(s): USD 210012ylvQ Generated at: 05-Mai-2025
+Cash Amount Details, USD
+Reporting period
+01-Mai-2025 to 01-Mai-2025
+Cash amount
+Event Interest Amount 3,32 USD
+Interest 3,32 USD
+Conversion Rate 1,000000
+Booked Amount
+Booking amount ID Posting Date Amount Conversion Rate
+USD
+Interest 43681798738 01-Mai-2025 3,32 USD 1,000000 3,32
+Net Amount - - 3,32 USD 1,000000 3,32
+Saxo Bank / Philip Heymans Alle 15 / 2900 Hellerup / Denmark xxx xxx Reporting period
+/ Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: USD 01-Mai-2025 - 01-Mai-2025
+Page 2 of 2 Account(s): USD 923974INET Generated at: 05-Mai-2025
