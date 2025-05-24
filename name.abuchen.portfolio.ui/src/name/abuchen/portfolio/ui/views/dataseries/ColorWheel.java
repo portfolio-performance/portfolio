@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 import org.eclipse.swt.graphics.RGB;
 
-/* package */class ColorWheel implements Iterator<RGB>
+public class ColorWheel implements Iterator<RGB>
 {
     private static final float HUE = 262.3f;
     private static final float SATURATION = 0.464f;
@@ -13,7 +13,7 @@ import org.eclipse.swt.graphics.RGB;
     private int index;
     private float[][] hsbColors;
 
-    /* package */ ColorWheel(int size)
+    public ColorWheel(int size)
     {
         hsbColors = new float[size][];
         float step = 360.0f / (float) size;

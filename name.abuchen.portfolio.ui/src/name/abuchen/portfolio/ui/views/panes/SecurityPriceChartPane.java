@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views.panes;
 
+import java.util.ArrayList;
+
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
@@ -17,6 +19,7 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
@@ -39,7 +42,7 @@ public class SecurityPriceChartPane implements InformationPanePage
     @Inject
     private IStylingEngine stylingEngine;
 
-    private Security security;
+    private Object securitySelection;
     private SecuritiesChart chart;
     private SecurityDetailsViewer details;
 
@@ -99,15 +102,36 @@ public class SecurityPriceChartPane implements InformationPanePage
     @Override
     public void setInput(Object input)
     {
-        security = Adaptor.adapt(Security.class, input);
-        chart.updateChart(client, security);
-        details.setInput(security);
+        // because SecurityPriceChartPane currently has different types parents
+        // with different security selection methods, we need to check both and
+        // map to multiple security selection
+        SecuritySelection selection = Adaptor.adapt(SecuritySelection.class, input);
+        if (selection == null)
+        {
+            Security singleSecuritySelection = Adaptor.adapt(Security.class, input);
+            if (singleSecuritySelection != null)
+                selection = new SecuritySelection(client, singleSecuritySelection);
+            else
+                selection = new SecuritySelection(client, new ArrayList<>());
+        }
+
+        var selectedSecurities = selection.getSecurities();
+
+        chart.updateChart(client, selectedSecurities.toArray(new Security[0]));
+
+        Security singleOrNull;
+        if (selectedSecurities.size() != 1)
+            singleOrNull = null;
+        else
+            singleOrNull = selectedSecurities.getFirst();
+
+        details.setInput(singleOrNull);
     }
 
     @Override
     public void onRecalculationNeeded()
     {
-        if (security != null)
-            setInput(security);
+        if (securitySelection != null)
+            setInput(securitySelection);
     }
 }
