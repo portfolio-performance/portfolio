@@ -44,6 +44,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
         addDepositStatementTransaction();
         addInterestStatementTransaction_Format01();
         addInterestStatementTransaction_Format02();
+        addInterestStatementTransaction_Format03();
         addFeeStatementTransaction();
         addNonImportableTransaction();
     }
@@ -2109,6 +2110,36 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                             t.setNote(trim(v.get("note")));
                                                         }),
                                         // @formatter:off
+                                        // 01 feb Transacción con
+                                        // LA MARMOTTE 20,00 € 47.269,99 €
+                                        // 2025 tarjeta
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("date", "year", "note", "amount", "currency", "amountAfter", "currencyAfter") //
+                                                        .match("^(?<date>[\\d]{2} [\\p{L}]{3,4}([\\.]{1})?)[\\s]Transacci.n con.*$") //
+                                                        .match("^(?<note>.*) (?<amount>[\\.,\\d]+) (?<currency>\\p{Sc}) (?<amountAfter>[\\.,\\d]+) (?<currencyAfter>\\p{Sc})$") //
+                                                        .match("^(?<year>[\\d]{4}).*$") //
+                                                        .assign((t, v) -> {
+                                                            var context = type.getCurrentContext();
+                                                            var amountAfter = Money.of(asCurrencyCode(v.get("currencyAfter")), asAmount(v.get("amountAfter")));
+
+                                                            var accountAmountTransactionHelper = context.getType(AccountAmountTransactionHelper.class).orElseGet(AccountAmountTransactionHelper::new);
+                                                            var item = accountAmountTransactionHelper.findItem(v.getStartLineNumber(), amountAfter);
+
+                                                            if (item.isPresent())
+                                                            {
+                                                                var amountBefore = Money.of(item.get().currency, item.get().amount);
+
+                                                                if (amountBefore.isGreaterThan(amountAfter))
+                                                                    t.setType(AccountTransaction.Type.REMOVAL);
+                                                            }
+
+                                                            t.setDateTime(asDate(v.get("date") + " " + v.get("year")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setNote(trim(v.get("note")));
+                                                        }),
+                                        // @formatter:off
                                         // 20 may Transacción BACKBLAZE INC, 7,38 $, exchange rate: 0,9227642, ECB rate: 0,9221689414, markup:
                                         // 2024 con tarjeta 0,06454984 % 6,81 € 8.204,96 €
                                         // @formatter:on
@@ -3477,7 +3508,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         + "|RESOCONTO INTERESSI MATURATI" //
                         + "|INTEREST INVOICE" //
                         + "|RAPPORT D.INT.R.TS)", //
-                        "Besteuerungsgrundlage",
+                        "Besteuerungsgrundlage", //
                         documentContext -> documentContext //
                                         .oneOf(
                                                         // @formatter:off
@@ -3490,7 +3521,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         section -> section //
                                                                         .attributes("date") //
                                                                         .find("IBAN (BUCHUNGSDATUM|DATA EMISSIONE|BOOKING DATE|DATE) (GUTSCHRIFT NACH STEUERN|GESAMT|TOTALE|TOTAL|D.EFFET TOTAL)") //
-                                                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                                        .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) [\\.,\\d]+ [A-Z]{3}$") //
                                                                         .assign((ctx, v) -> ctx.put("date", v.get("date"))),
                                                         // @formatter:off
                                                         // IBAN DATE D'EFFET TOTAL
@@ -3499,7 +3530,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         section -> section //
                                                                         .attributes("date") //
                                                                         .find("IBAN DATE D.EFFET TOTAL") //
-                                                                        .match("^.* (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\.,\\d]+ [A-Z]{3}$") //
+                                                                        .match("^.*(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) [\\.,\\d]+ [A-Z]{3}$") //
                                                                         .assign((ctx, v) -> ctx.put("date", v.get("date")))));
 
         this.addDocumentTyp(type);
@@ -3525,8 +3556,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency") //
-                                                        .find("IBAN .*") //
-                                                        .match("^.* (?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .find("IBAN.*") //
+                                                        .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -3538,8 +3569,8 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("date", "amount", "currency") //
-                                                        .find("IBAN .*") //
-                                                        .match("^.* (?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                                                        .find("IBAN.*") //
+                                                        .match("^.*(?<date>[\\d]{2}\\/[\\d]{2}\\/[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setDateTime(asDate(v.get("date")));
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -3547,6 +3578,44 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         }))
 
                         .wrap(TransactionItem::new);
+    }
+
+    private void addInterestStatementTransaction_Format03()
+    {
+        final var type = new DocumentType("ZINSZAHLUNG");
+        this.addDocumentTyp(type);
+
+        var pdfTransaction = new Transaction<AccountTransaction>();
+
+        var firstRelevantLine = new Block("^ZINSZAHLUNG$");
+        type.addBlock(firstRelevantLine);
+        firstRelevantLine.set(pdfTransaction);
+
+        pdfTransaction //
+
+                        .subject(() -> {
+                            var accountTransaction = new AccountTransaction();
+                            accountTransaction.setType(AccountTransaction.Type.INTEREST);
+                            return accountTransaction;
+                        })
+
+                        // @formatter:off
+                        // VERRECHNUNGSKONTO DATUM DER ZAHLUNG BETRAG
+                        // DE38100236450440361202 07.03.2025 97.32 EUR
+                        // @formatter:on
+                        .section("date", "amount", "currency") //
+                        .find("VERRECHNUNGSKONTO.*") //
+                        .match("^.*(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]{4}) (?<amount>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(pdfTransaction, type);
+        addFeesSectionsTransaction(pdfTransaction, type);
     }
 
     private void addFeeStatementTransaction()
@@ -4587,7 +4656,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     private static class AccountAmountTransactionHelper
     {
-        private List<AccountAmountTransactionItem> items = new ArrayList<>();
+        private final List<AccountAmountTransactionItem> items = new ArrayList<>();
 
         // Finds an AccountAmountTransactionItem in the list that has a line
         // number less than or equal to the specified line
