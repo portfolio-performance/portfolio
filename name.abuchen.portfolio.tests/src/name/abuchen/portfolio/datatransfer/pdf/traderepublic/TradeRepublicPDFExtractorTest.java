@@ -4270,6 +4270,37 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testTransaccionesDeCuenta06()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TransaccionesDeCuenta06.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(3L));
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionAlternativeDocumentRequired, //
+                        interest(hasDate("2025-02-01"), hasAmount("EUR", 115.90), //
+                                        hasSource("TransaccionesDeCuenta06.txt"), hasNote(null)))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-02-01"), hasAmount("EUR", 20.00), //
+                        hasSource("TransaccionesDeCuenta06.txt"), hasNote("LA MARMOTTE"))));
+
+        // assert transaction
+        assertThat(results, hasItem(removal(hasDate("2025-02-01"), hasAmount("EUR", 49.50), //
+                        hasSource("TransaccionesDeCuenta06.txt"), hasNote("R A S L"))));
+    }
+
+    @Test
     public void testAccountStatementSummary01()
     {
         var extractor = new TradeRepublicPDFExtractor(new Client());
@@ -9465,6 +9496,31 @@ public class TradeRepublicPDFExtractorTest
                         hasNote(null), //
                         hasAmount("EUR", 66.10), hasGrossValue("EUR", 89.78), //
                         hasTaxes("EUR", 22.45 + 1.23), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testZinsabrechnung09()
+    {
+        var extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Zinsabrechnung09.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2025-03-07T00:00"), //
+                        hasSource("Zinsabrechnung09.txt"), //
+                        hasNote(null), //
+                        hasAmount("EUR", 97.32), hasGrossValue("EUR", 135.14), //
+                        hasTaxes("EUR", 33.04 + 2.97 + 1.81), hasFees("EUR", 0.00))));
     }
 
     @Test
