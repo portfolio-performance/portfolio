@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf.saxobank;
 
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -16,6 +17,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTaxes;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasTicker;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasWkn;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.purchase;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.security;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
@@ -352,6 +354,37 @@ public class SaxoBankPDFExtractorTest
     }
 
     @Test
+    public void testSecurityBuy01()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US26923G8226"), hasWkn(null), hasTicker("PFFA"), //
+                        hasName("Virtus Infracap US Preferred Stock ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-04-09T19:47:57"), hasShares(49.00), //
+                        hasSource("Buy01.txt"), //
+                        hasNote("Order ID 5276831204 | Trade ID 6236413100"), //
+                        hasAmount("USD", 981.98), hasGrossValue("USD", 980.98), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 1.00))));
+    }
+
+    @Test
     public void testCashTransfer01()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
@@ -370,6 +403,93 @@ public class SaxoBankPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-11-28"), hasAmount("CHF", 4600.00), //
                         hasSource("CashTransfer01.txt"), hasNote("39482097030"))));
+    }
+
+    @Test
+    public void testDividende01()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US09248X1000"), hasWkn(null), hasTicker("BBN"), //
+                        hasName("BlackRock Taxable Municipal Bond Trust"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-04-30T00:00"), hasShares(604.00), //
+                        hasSource("Dividende01.txt"), //
+                        hasNote("Event Id 9369584"), //
+                        hasAmount("USD", 47.69), hasGrossValue("USD", 56.11), //
+                        hasTaxes("USD", 8.42), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testDividende02()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US72201B1017"), hasWkn(null), hasTicker("PTY"), //
+                        hasName("PIMCO Corporate & Income Opportunity Fund"), //
+                        hasCurrencyCode("USD"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-05-01T00:00"), hasShares(69.00), //
+                        hasSource("Dividende02.txt"), //
+                        hasNote("Event Id 9369517"), //
+                        hasAmount("USD", 6.97), hasGrossValue("USD", 8.20), //
+                        hasTaxes("USD", 1.23), hasFees("USD", 0.00))));
+    }
+
+    @Test
+    public void testInterest01()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Interest01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "USD");
+
+        // check interest transaction
+        assertThat(results, hasItem(interest( //
+                        hasDate("2025-05-01T00:00"), //
+                        hasSource("Interest01.txt"), //
+                        hasNote(null), //
+                        hasAmount("USD", 3.32), hasGrossValue("USD", 3.32), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 0.00))));
     }
 
     @Test
