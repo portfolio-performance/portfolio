@@ -125,6 +125,7 @@ public class Messages extends NLS
     public static String IssueTransactionMissingCurrencyCode;
     public static String IssueTransactionWithoutDate;
     public static String LabelAssetAllocation;
+    public static String LabelCloseBrowserWindowAndGoBackToApplication;
     public static String LabelCreditSuisseHTMLTable;
     public static String LabelCryptocurrency;
     public static String LabelDefaultReferenceAccountName;
@@ -155,6 +156,8 @@ public class Messages extends NLS
     public static String LabelJointPortfolio;
     public static String LabelJPYGBBY10Y;
     public static String LabelJPYLIBOR3M;
+    public static String LabelLoginSuccessful;
+    public static String LabelLoginToRetrieveHistoricalPrices;
     public static String LabelNameReferenceAccountRecovered;
     public static String LabelNoCurrency;
     public static String LabelNoCurrencyDescription;
@@ -232,7 +235,6 @@ public class Messages extends NLS
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;
     public static String MsgAlphaVantageAPIKeyMissing;
-    public static String MsgAlphaVantageRateLimitExceeded;
     public static String MsgCheckConfiguredAndCalculatedGrossValueDoNotMatch;
     public static String MsgCheckDividendsMustHaveASecurity;
     public static String MsgCheckGrossValueUnitForexMismatch;
@@ -249,7 +251,6 @@ public class Messages extends NLS
     public static String MsgCheckUnitForexMismatch;
     public static String MsgCheckUnitForexNotValid;
     public static String MsgCheckUnsupportedCurrency;
-    public static String MsgCoinGeckoRateLimitExceeded;
     public static String MsgDeltaWithoutAssets;
     public static String MsgErrorTransactionAlternativeDocumentRequired;
     public static String MsgErrorBaseAndTermCurrencyAreEqualWithInvalidExchangeRate;
@@ -310,11 +311,22 @@ public class Messages extends NLS
     public static String MsgNotANumber;
     public static String MsgNotAPortfolioFile;
     public static String MsgPasswordMissing;
+    public static String MsgRateLimitExceeded;
     public static String MsgReadingFile;
     public static String MsgUnexpectedHeader;
     public static String MsgUnexpectedValue;
     public static String MsgUnsupportedVersionClientFiled;
     public static String MsgXMLFormatInvalid;
+    public static String OAuthAuthenticationFailedDueToStateMismatch;
+    public static String OAuthCallbackServerNotRunning;
+    public static String OAuthCallbackServerStarted;
+    public static String OAuthErrorGeneratingPKCE;
+    public static String OAuthFailedToRequestAccessToken;
+    public static String OAuthFailedToStartCallbackServer;
+    public static String OAuthNotAuthenticated;
+    public static String OAuthNotConfigured;
+    public static String OAuthOngoingAuthentication;
+    public static String OAuthPortInUse;
     public static String PDFdbMsgCannotDetermineFileType;
     public static String PDFMsgExtracingFiles;
     public static String PDFMsgFileNotSupported;

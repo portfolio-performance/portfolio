@@ -47,6 +47,7 @@
 		<unit id="org.eclipse.babel.nls_eclipse_zh_TW.feature.group" version="4.26.0.v20230220105658"/>
 		<unit id="org.eclipse.babel.nls_eclipse_da.feature.group" version="4.26.0.v20230220105658"/>
 		<unit id="org.eclipse.babel.nls_eclipse_tr.feature.group" version="4.26.0.v20230220105658"/>
+		<unit id="org.eclipse.babel.nls_eclipse_vi.feature.group" version="4.26.0.v20230220105658"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/swtchart/releases/1.0.0/repository"/>
@@ -126,15 +127,15 @@
 	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Apache Commons" missingManifest="generate" type="Maven">
 		<dependencies>
 			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-csv</artifactId>
-				<version>1.12.0</version>
-				<type>jar</type>
-			</dependency>
-			<dependency>
 				<groupId>commons-logging</groupId>
 				<artifactId>commons-logging</artifactId>
 				<version>1.3.4</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-csv</artifactId>
+				<version>1.12.0</version>
 				<type>jar</type>
 			</dependency>
 		</dependencies>
@@ -330,9 +331,41 @@
 	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="io.github.java-diff-utils" missingManifest="generate" type="Maven">
 		<dependencies>
 			<dependency>
-			    <groupId>io.github.java-diff-utils</groupId>
-			    <artifactId>java-diff-utils</artifactId>
-			    <version>4.15</version>
+				<groupId>io.github.java-diff-utils</groupId>
+				<artifactId>java-diff-utils</artifactId>
+				<version>4.15</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Java JWT" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>com.auth0</groupId>
+				<artifactId>java-jwt</artifactId>
+				<version>4.5.0</version>
+				<type>jar</type>
+			</dependency>
+		</dependencies>
+	</location>
+	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Jackson FasterXML" missingManifest="generate" type="Maven">
+		<dependencies>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>2.18.2</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>2.18.2</version>
+				<type>jar</type>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>2.18.2</version>
 				<type>jar</type>
 			</dependency>
 		</dependencies>

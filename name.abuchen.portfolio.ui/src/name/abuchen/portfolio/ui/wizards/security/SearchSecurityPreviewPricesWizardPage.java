@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.QuoteFeedException;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.MarketIdentifierCodes;
 import name.abuchen.portfolio.ui.Messages;
@@ -110,26 +111,35 @@ public class SearchSecurityPreviewPricesWizardPage extends WizardPage
                             progressMonitor.beginTask(
                                             MessageFormat.format(Messages.JobMsgSamplingHistoricalQuotes, exchange), 1);
 
-                            var previewData = feed.previewHistoricalQuotes(instrument);
+                            QuoteFeedData previewData;
+                            try
+                            {
+                                previewData = feed.previewHistoricalQuotes(instrument);
+                            }
+                            catch (QuoteFeedException e)
+                            {
+                                previewData = QuoteFeedData.withError(e);
+                            }
 
                             progressMonitor.worked(1);
 
+                            var feedData = previewData;
                             Display.getDefault().asyncExec(() -> {
-                                cache.put(selectedItem, previewData);
+                                cache.put(selectedItem, feedData);
 
                                 tableSampleData.getTable().setData(selectedItem);
 
                                 // check for an error message in the response
                                 // object if no prices are returned
-                                if (previewData.getLatestPrices().isEmpty() && !previewData.getErrors().isEmpty())
+                                if (feedData.getLatestPrices().isEmpty() && !feedData.getErrors().isEmpty())
                                 {
-                                    String[] messages = previewData.getErrors().stream().map(e -> e.getMessage())
-                                                    .toList().toArray(new String[0]);
+                                    String[] messages = feedData.getErrors().stream().map(e -> e.getMessage()).toList()
+                                                    .toArray(new String[0]);
                                     tableSampleData.setMessages(messages);
                                 }
                                 else
                                 {
-                                    tableSampleData.setInput(previewData.getLatestPrices());
+                                    tableSampleData.setInput(feedData.getLatestPrices());
                                 }
                             });
 

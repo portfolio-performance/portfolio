@@ -1,0 +1,45 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.76.0
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+oLRu zlKKQsWjj - 30070662
+Corporate Action Detail Report
+Reporting period: 01-Mai-2025 - 01-Mai-2025
+Generated at: 05-Mai-2025 09:56:51 09:56:51 (GMT+01)
+PBjG uFsKlFRtH
+FKzBoWJI 70o 60
+03-821 Warszawa
+Poland
+Saxo Bank / Philip Heymans Alle 15 / 2900 Hellerup / Denmark xpnc FGdAacmRr Reporting period
+/ Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: USD 01-Mai-2025 - 01-Mai-2025
+Page 1 of 3 Account(s): USD 923974INET Generated at: 05-Mai-2025
+Corporate Action Detail, USD
+Reporting period
+01-Mai-2025 to 01-Mai-2025
+Corporate Action
+Event Cash dividend Eligible quantity 69
+Description PIMCO Corporate & Income Opportunity Fund Dividend per share 0,12 USD
+Symbol PTY:xnys Conversion Rate 1,000000
+ISIN US72201B1017 Corporate Actions - Cash Dividends 8,20 USD
+Corporate Actions - Withholding Tax -1,23 USD
+Corporate Actions - Withholding Tax (%) 15%
+Transaction description Event Id 9369517
+Saxo Bank / Philip Heymans Alle 15 / 2900 Hellerup / Denmark Dirk Ackermann Reporting period
+/ Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: USD 01-Mai-2025 - 01-Mai-2025
+Page 2 of 3 Account(s): USD 923974INET Generated at: 05-Mai-2025
+Corporate Action Detail, USD
+Reporting period
+01-Mai-2025 to 01-Mai-2025
+Amount Booked Amount
+Booking amount ID Ex date Record Date Posting Date Pay Date Conversion Rate
+USD USD
+Corporate Actions -
+43680606823 11-Apr-2025 11-Apr-2025 02-Apr-2025 01-Mai-2025 8,20 1,000000 8,20
+Cash Dividends
+Corporate Actions -
+43680606700 11-Apr-2025 11-Apr-2025 02-Apr-2025 01-Mai-2025 -1,23 1,000000 -1,23
+Withholding Tax
+Net Amount - - - - - 6,97 1,000000 6,97
+Saxo Bank / Philip Heymans Alle 15 / 2900 Hellerup / Denmark lXPv eSAXxKjIq Reporting period
+/ Phone No.: +45 39 77 40 00 / Fax No.: +45 39 77 42 00 / Email: info@saxobank.com Currency: USD 01-Mai-2025 - 01-Mai-2025
+Page 3 of 3 Account(s): USD 923974INET Generated at: 05-Mai-2025

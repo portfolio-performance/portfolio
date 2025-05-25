@@ -22,6 +22,8 @@ import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
+import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
 @SuppressWarnings("nls")
 public class CSVSecurityExtractorTest
@@ -57,6 +59,7 @@ public class CSVSecurityExtractorTest
         assertThat(security.getName(), is("SAP SE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(security.getNote(), is("Notiz"));
+        assertThat(security.getFeed(), is(YahooFinanceQuoteFeed.ID));
     }
 
     @Test
@@ -67,6 +70,7 @@ public class CSVSecurityExtractorTest
         security.setWkn("716460");
         security.setTickerSymbol("SAP.DE");
         security.setNote("Notiz");
+        security.setFeed(AlphavantageQuoteFeed.ID);
 
         Client client = new Client();
         client.addSecurity(security);
@@ -86,6 +90,7 @@ public class CSVSecurityExtractorTest
 
         assertThat(errors, empty());
         assertThat(results, empty());
+        assertThat(security.getFeed(), is(AlphavantageQuoteFeed.ID));
     }
 
     @Test
@@ -119,6 +124,7 @@ public class CSVSecurityExtractorTest
         assertThat(security.getName(), is(MessageFormat.format(Messages.CSVImportedSecurityLabel, "DE0007164600")));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertNull(security.getNote());
+        assertNull(security.getFeed());
     }
 
     @Test
@@ -152,6 +158,7 @@ public class CSVSecurityExtractorTest
         assertThat(security.getName(), is(MessageFormat.format(Messages.CSVImportedSecurityLabel, "716460")));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertNull(security.getNote());
+        assertNull(security.getFeed());
     }
 
     @Test
@@ -185,6 +192,7 @@ public class CSVSecurityExtractorTest
         assertThat(security.getName(), is(MessageFormat.format(Messages.CSVImportedSecurityLabel, "SAP.DE")));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertNull(security.getNote());
+        assertThat(security.getFeed(), is(YahooFinanceQuoteFeed.ID));
     }
 
     @Test
@@ -218,6 +226,7 @@ public class CSVSecurityExtractorTest
         assertThat(security.getName(), is("SAP SE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertNull(security.getNote());
+        assertNull(security.getFeed());
     }
 
     @Test
@@ -258,6 +267,7 @@ public class CSVSecurityExtractorTest
         assertThat(security.getName(), is("SAP SE"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(security.getNote(), is("Notiz"));
+        assertThat(security.getFeed(), is(YahooFinanceQuoteFeed.ID));
     }
 
     @Test

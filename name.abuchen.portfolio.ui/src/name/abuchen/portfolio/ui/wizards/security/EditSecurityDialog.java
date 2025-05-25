@@ -51,6 +51,7 @@ public class EditSecurityDialog extends Dialog
     private Label errorMessage;
 
     private final EditSecurityModel model;
+    private final EditSecurityCache cache;
     private final BindingHelper bindings;
 
     private boolean showQuoteConfigurationInitially = false;
@@ -61,6 +62,7 @@ public class EditSecurityDialog extends Dialog
         super(parentShell);
 
         this.model = new EditSecurityModel(client, security);
+        this.cache = new EditSecurityCache();
         this.bindings = new BindingHelper(model)
         {
             @Override
@@ -197,8 +199,8 @@ public class EditSecurityDialog extends Dialog
         addPage(new SecurityMasterDataPage(model, bindings), Images.SECURITY.image());
         addPage(new AttributesPage(model, bindings), null);
         addPage(new SecurityTaxonomyPage(model, bindings), null);
-        addPage(new HistoricalQuoteProviderPage(model, bindings), null);
-        addPage(new LatestQuoteProviderPage(model, bindings), null);
+        addPage(new HistoricalQuoteProviderPage(model, cache, bindings), null);
+        addPage(new LatestQuoteProviderPage(model, cache, bindings), null);
 
         tabFolder.setSelection(showQuoteConfigurationInitially ? 3 : 0);
 
@@ -234,13 +236,17 @@ public class EditSecurityDialog extends Dialog
         boolean hasQuotes = !security.getPrices().isEmpty();
 
         boolean feedChanged = !Objects.equals(model.getFeed(), security.getFeed());
+        boolean onlineIdChanged = !Objects.equals(model.getOnlineId(), security.getOnlineId());
         boolean tickerChanged = !Objects.equals(model.getTickerSymbol(), security.getTickerSymbol());
         boolean feedURLChanged = !Objects.equals(model.getFeedURL(), security.getFeedURL());
         boolean currencyChanged = !Objects.equals(model.getCurrencyCode(), security.getCurrencyCode());
 
-        boolean quotesCanChange = feedChanged || tickerChanged || feedURLChanged || currencyChanged;
+        boolean quotesCanChange = feedChanged || onlineIdChanged || tickerChanged || feedURLChanged || currencyChanged;
 
         model.applyChanges();
+
+        if (quotesCanChange)
+            security.getEphemeralData().touchFeedConfigurationChanged();
 
         eventBroker.post(ChangeEventConstants.Security.EDITED, new SecurityChangeEvent(model.getClient(), security));
 

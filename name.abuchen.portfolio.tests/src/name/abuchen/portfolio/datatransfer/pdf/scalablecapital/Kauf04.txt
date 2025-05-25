@@ -1,0 +1,27 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.76.2
+System: macosx | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+xxxxxx xxxxxx
+xxxxxx xxxxxx 
+xxxxxx xxxxxx Datum 16.05.2025
+Deutschland Seite 1 / 1
+Wertpapierabrechnung 
+für Sparplanausführung 
+Typ LIMIT Order 000000000000000 
+Ausführung 16.05.2025 13:33:40 Geschäft 000000000000000 
+Ausführungsplatz EIX Lagerland Deutschland
+Depot 0000000000 Verwahrart Girosammelverwahrung
+Auftrag 
+Typ Wertpapier Anzahl Kurs Betrag
+Kauf Boerse Stuttgart EUWAX Gold II 2,166255 Stk. 92,3252 EUR 200,00 EUR
+DE000EWG2LD7
+Belastung 200,00 EUR
+Der Betrag wird mit dem Verrechnungskonto DE65120700700755089299 (Valuta: 20.05.2025) verrechnet. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 1 / 1

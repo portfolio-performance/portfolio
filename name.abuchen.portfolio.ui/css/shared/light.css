@@ -84,6 +84,7 @@ CTabItem:selected {
 CustomColors {
 	default-foreground: black;
 	default-background: white;
+	chip-background: #E0E0E0;
 	warning-background: #FEDF6B;
 	red-background: #FE2B05;
 	green-background: #02F500;

@@ -1,0 +1,25 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.75.1
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TcfULpj-TcfULpj MNfTDuuA-MNfTDuuA
+Overzicht transacties en rekeninguittreksels voor klantnummer 3682692
+13/03/2025
+EUR-REKENING - 138
+Borderel 019564655 Market order
+MESI
+Uitvoeringsdatum : 13/03/2025 Uitvoeringstijdstip : 10:33:16 Valutadatum : 17/03/2025
+Uw Aankoop van 395 COLRUYT GROUP NV (BR) aan 38,32 EUR 15.136,40 EUR
+Makelaarsloon 22,71 EUR
+Makelaarsloon KBC 37,84 EUR
+Beurstaks 52,98 EUR
+Netto debit -15.249,93 EUR
+Wettelijke fiscale informatie Basisbedrag beurstaks 15.136,40 EUR
+Beurstaks 0,35% 52,98 EUR
+Waardecode BE0974256852
+Heb je nog vragen ? Gelieve je te richten tot uw vermogensbeheerder
+TcfULpj-TcfULpj MNfTDuuA-MNfTDuuA Pagina 1
+6_3_6_4_02_3__________________________________________________________________________________
+KBC BANK NV Documentreferte: 241
+Havenlaan 2, 1080 Brussels, Belgium VAT BE 0462.920.226
+Account N° BE77 4096 5474 0142 - BIC KREDBEBB

@@ -1,0 +1,137 @@
+<client>
+  <version>66</version>
+  <baseCurrency>CAD</baseCurrency>
+  <securities>
+    <security>
+      <uuid>fd8301d3-0bd2-40f2-8b59-ce94d455937e</uuid>
+      <name>TELUS CORPORATION</name>
+      <currencyCode>CAD</currencyCode>
+      <tickerSymbol>T.TO</tickerSymbol>
+      <feed>YAHOO</feed>
+      <prices/>
+      <latest t="2025-05-16" v="2207000000">
+        <high>-1</high>
+        <low>-1</low>
+        <volume>-1</volume>
+      </latest>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+      <updatedAt>2025-05-18T12:49:55.773285Z</updatedAt>
+    </security>
+  </securities>
+  <watchlists/>
+  <accounts>
+    <account>
+      <uuid>9c072d0d-8724-4106-bd4f-92782fde4fe3</uuid>
+      <name>Mein Konto</name>
+      <currencyCode>CAD</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <uuid>081e9d78-193e-49ea-abea-b770015d5d8c</uuid>
+          <date>2023-08-23T00:00</date>
+          <currencyCode>CAD</currencyCode>
+          <amount>999444</amount>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>04bb5a8f-8758-486c-8dab-b0a7359ee60a</uuid>
+              <name>Mein Depot</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <uuid>b7a022ce-f7b9-4e43-80a7-f5a6895a5eb2</uuid>
+                  <date>2023-08-23T00:00</date>
+                  <currencyCode>CAD</currencyCode>
+                  <amount>999444</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>43700000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="CAD" amount="999"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2025-05-18T12:52:05.209289Z</updatedAt>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction>
+                  <uuid>feaaf4ad-e1f6-4613-b66c-cbc2c5756b31</uuid>
+                  <date>2023-10-16T00:00</date>
+                  <currencyCode>CAD</currencyCode>
+                  <amount>995361</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <uuid>b6ade102-f972-4026-9451-aed9b25e0c6e</uuid>
+                      <date>2023-10-16T00:00</date>
+                      <currencyCode>CAD</currencyCode>
+                      <amount>995361</amount>
+                      <security reference="../../../../../../../../../../../securities/security"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <updatedAt>2025-05-18T12:52:58.627299Z</updatedAt>
+                      <type>SELL</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>43700000000</shares>
+                  <units>
+                    <unit type="FEE">
+                      <amount currency="CAD" amount="999"/>
+                    </unit>
+                  </units>
+                  <updatedAt>2025-05-18T12:52:58.627313Z</updatedAt>
+                  <type>SELL</type>
+                </portfolio-transaction>
+              </transactions>
+              <attributes>
+                <map/>
+              </attributes>
+              <updatedAt>2025-05-18T12:48:32.710169Z</updatedAt>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <updatedAt>2025-05-18T12:52:05.209082Z</updatedAt>
+          <type>BUY</type>
+        </account-transaction>
+        <account-transaction>
+          <uuid>28110a2e-ba1d-4084-bc28-c7547e859a7b</uuid>
+          <date>2023-10-02T00:00</date>
+          <currencyCode>CAD</currencyCode>
+          <amount>15889</amount>
+          <security reference="../../../../../securities/security"/>
+          <shares>43700000000</shares>
+          <updatedAt>2025-05-18T12:52:32.947396Z</updatedAt>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+        <account-transaction reference="../account-transaction/crossEntry/portfolio/transactions/portfolio-transaction[2]/crossEntry/accountTransaction"/>
+      </transactions>
+      <attributes>
+        <map/>
+      </attributes>
+      <updatedAt>2025-05-18T12:51:15.753818Z</updatedAt>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio reference="../../accounts/account/transactions/account-transaction/crossEntry/portfolio"/>
+  </portfolios>
+  <plans/>
+  <taxonomies/>
+  <dashboards/>
+  <properties/>
+  <settings>
+    <bookmarks/>
+    <attributeTypes/>
+    <configurationSets/>
+  </settings>
+</client>

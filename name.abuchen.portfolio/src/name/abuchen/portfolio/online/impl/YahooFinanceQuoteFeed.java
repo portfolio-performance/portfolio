@@ -19,6 +19,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -58,6 +59,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     public String rpcLatestQuote(Security security) throws IOException
     {
         return new WebAccess("query1.finance.yahoo.com", "/v8/finance/chart/" + security.getTickerSymbol())
+                        .addUserAgent("Mozilla/5.0 (" + ThreadLocalRandom.current().nextInt(100000, 999999) + ")") //
                         .addParameter("lang", "en-US").addParameter("region", "US")
                         .addParameter("corsDomain", "finance.yahoo.com").get();
     }
@@ -177,7 +179,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         int days = Dates.daysBetween(startDate, LocalDate.now());
 
         // "max" only returns a sample of quotes
-        String range = "10y"; //$NON-NLS-1$
+        String range = "30y"; //$NON-NLS-1$
 
         if (days < 25)
             range = "1mo"; //$NON-NLS-1$
@@ -191,8 +193,13 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             range = "2y"; //$NON-NLS-1$
         else if (days < 1500)
             range = "5y"; //$NON-NLS-1$
+        else if (days < 3000)
+            range = "10y"; //$NON-NLS-1$
+        else if (days < 6000)
+            range = "20y"; //$NON-NLS-1$
 
         return new WebAccess("query1.finance.yahoo.com", "/v8/finance/chart/" + security.getTickerSymbol()) //
+                        .addUserAgent("Mozilla/5.0 (" + ThreadLocalRandom.current().nextInt(100000, 999999) + ")") //
                         .addParameter("range", range) //
                         .addParameter("interval", "1d").get();
 
@@ -318,7 +325,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         {
             if ("GBP".equals(quoteCurrency) && "GBX".equals(securityCurrency)) //$NON-NLS-1$ //$NON-NLS-2$
                 return price * 100;
-            if ("GBX".equals(quoteCurrency) && "GBP".equals(securityCurrency)) //$NON-NLS-1$ //$NON-NLS-2$
+            if ("GBp".equals(quoteCurrency) && "GBP".equals(securityCurrency)) //$NON-NLS-1$ //$NON-NLS-2$
                 return price / 100;
         }
         return price;

@@ -1,0 +1,125 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.76.0
+System: macosx | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Scalable Capital GmbH • Seitzstraße 8e • 80538 München • Deutschland 
+fiBpFwF sWjYJcL
+qLvoBiw 2 
+41956 XEqEhmmvANXH Datum 05.05.2025
+Deutschland Seite 1 / 5
+Kontoauszug 
+Zeitraum 01.04.2025 - 30.04.2025 
+Auszug Nr. 5904974618 
+Verrechnungskonto DE33120700500753148614 (DEUTDEFFXXX)
+Kontostand am 01.04.2025 27,98 EUR 
+Kontostand am 30.04.2025 13,76 EUR 
+Buchung Wertstellung Beschreibung Betrag 
+01.04.2025 31.03.2025 Erhaltene Zinsen +13,69 EUR 
+02.04.2025 04.04.2025 Verkauf eines Finanzinstruments +7.842,90 EUR 
+390,00 Stk. Amundi Leveraged MSCI USA Daily (Acc) (FR0010755611) 
+03.04.2025 04.04.2025 Prime-Abonnementgebühr -4,99 EUR 
+07.04.2025 07.04.2025 Überweisung +29.715,63 EUR 
+07.04.2025 09.04.2025 Kauf eines Finanzinstruments -5.981,46 EUR 
+386,00 Stk. Amundi Leveraged MSCI USA Daily (Acc) (FR0010755611) 
+07.04.2025 09.04.2025 Kauf eines Finanzinstruments -9.969,59 EUR 
+298,00 Stk. Xtrackers MSCI World Quality ESG (Acc) (IE0003NQ0IY5) 
+07.04.2025 09.04.2025 Kauf eines Finanzinstruments -9.939,01 EUR 
+639,00 Stk. Amundi Leveraged MSCI USA Daily (Acc) (FR0010755611) 
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 1 / 5
+Kontoauszug 
+Zeitraum 01.04.2025 - 30.04.2025
+Buchung Wertstellung Beschreibung Betrag 
+07.04.2025 09.04.2025 Kauf eines Finanzinstruments -5.966,56 EUR 
+178,00 Stk. Xtrackers MSCI World Quality ESG (Acc) (IE0003NQ0IY5) 
+07.04.2025 09.04.2025 Kauf eines Finanzinstruments -3.207,24 EUR 
+72,00 Stk. Invesco Nasdaq-100 ESG (Acc) (IE000COQKPO9) 
+07.04.2025 09.04.2025 Kauf eines Finanzinstruments -2.492,00 EUR 
+56,00 Stk. Invesco Nasdaq-100 ESG (Acc) (IE000COQKPO9) 
+09.04.2025 09.04.2025 Überweisung +2.000,00 EUR 
+08.04.2025 10.04.2025 Verkauf eines Finanzinstruments +15.448,96 EUR 
+956,00 Stk. Amundi Leveraged MSCI USA Daily (Acc) (FR0010755611) 
+08.04.2025 10.04.2025 Verkauf eines Finanzinstruments +5.847,68 EUR 
+128,00 Stk. Invesco Nasdaq-100 ESG (Acc) (IE000COQKPO9) 
+08.04.2025 10.04.2025 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene -1,40 EUR 
+08.04.2025 10.04.2025 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer -25,63 EUR 
+08.04.2025 10.04.2025 Verkauf eines Finanzinstruments +16.122,12 EUR 
+476,00 Stk. Xtrackers MSCI World Quality ESG (Acc) (IE0003NQ0IY5) 
+08.04.2025 10.04.2025 Kauf eines Finanzinstruments -20.009,30 EUR 
+1.218,00 Stk. Amundi Leveraged MSCI USA Daily (Acc) (FR0010755611) 
+08.04.2025 10.04.2025 Kauf eines Finanzinstruments -11.983,14 EUR 
+351,00 Stk. Xtrackers MSCI World Quality ESG (Acc) (IE0003NQ0IY5) 
+08.04.2025 10.04.2025 Kauf eines Finanzinstruments -6.502,92 EUR 
+141,00 Stk. Invesco Nasdaq-100 ESG (Acc) (IE000COQKPO9) 
+08.04.2025 10.04.2025 Abgezogener oder erstatteter Solidaritätszuschlag auf Kundenebene +1,40 EUR 
+08.04.2025 10.04.2025 Verkauf eines Finanzinstruments +11.828,70 EUR 
+351,00 Stk. Xtrackers MSCI World Quality ESG (Acc) (IE0003NQ0IY5) 
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 2 / 5
+Kontoauszug 
+Zeitraum 01.04.2025 - 30.04.2025
+Buchung Wertstellung Beschreibung Betrag 
+08.04.2025 10.04.2025 Auf Kundenebene einbehaltene oder erstattete Kapitalertragssteuer +25,63 EUR 
+08.04.2025 10.04.2025 Verkauf eines Finanzinstruments +6.410,57 EUR 
+141,00 Stk. Invesco Nasdaq-100 ESG (Acc) (IE000COQKPO9) 
+08.04.2025 10.04.2025 Verkauf eines Finanzinstruments +19.553,77 EUR 
+1.218,00 Stk. Amundi Leveraged MSCI USA Daily (Acc) (FR0010755611) 
+08.04.2025 10.04.2025 Verkauf eines Finanzinstruments +1.117,80 EUR 
+69,00 Stk. Amundi Leveraged MSCI USA Daily (Acc) (FR0010755611) 
+09.04.2025 11.04.2025 Kauf eines Finanzinstruments -37.781,11 EUR 
+2.453,00 Stk. Amundi Leveraged MSCI USA Daily (Acc) (FR0010755611) 
+09.04.2025 11.04.2025 Verkauf eines Finanzinstruments +36.834,25 EUR 
+2.453,00 Stk. Amundi Leveraged MSCI USA Daily (Acc) (FR0010755611) 
+09.04.2025 11.04.2025 Kauf eines Finanzinstruments -36.867,60 EUR 
+2.310,00 Stk. Amundi Leveraged MSCI USA Daily (Acc) (FR0010755611) 
+09.04.2025 11.04.2025 Kauf eines Finanzinstruments -962,17 EUR 
+54,00 Stk. Amundi Leveraged MSCI USA Daily (Acc) (FR0010755611) 
+09.04.2025 11.04.2025 Kauf eines Finanzinstruments -1.068,00 EUR 
+60,00 Stk. Amundi Leveraged MSCI USA Daily (Acc) (FR0010755611) 
+14.04.2025 14.04.2025 Überweisung +1.200,00 EUR 
+11.04.2025 15.04.2025 Verkauf eines Finanzinstruments +38.299,20 EUR 
+2.424,00 Stk. Amundi Leveraged MSCI USA Daily (Acc) (FR0010755611) 
+11.04.2025 15.04.2025 Kauf eines Finanzinstruments -38.288,70 EUR 
+2.349,00 Stk. Amundi Leveraged MSCI USA Daily (Acc) (FR0010755611) 
+11.04.2025 15.04.2025 Kauf eines Finanzinstruments -16,74 EUR 
+1,00 Stk. Amundi Leveraged MSCI USA Daily (Acc) (FR0010755611) 
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 3 / 5
+Kontoauszug 
+Zeitraum 01.04.2025 - 30.04.2025
+Buchung Wertstellung Beschreibung Betrag 
+11.04.2025 15.04.2025 Handelsgebühr -0,99 EUR 
+14.04.2025 16.04.2025 Kauf eines Finanzinstruments -487,50 EUR 
+3,00 Stk. Ies Holdings (US44951W1062) 
+14.04.2025 16.04.2025 Kauf eines Finanzinstruments -706,78 EUR 
+42,00 Stk. Amundi Leveraged MSCI USA Daily (Acc) (FR0010755611) 
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 4 / 5
+Kontoauszug 
+Zeitraum 01.04.2025 - 30.04.2025
+Verteilung Ihrer Einlagen 
+zum Wertstellungsdatum 30.04.2025 
+Absolut 
+Deutsche Bank AG 13,76 EUR 
+Kontostand 13,76 EUR 
+Guthaben, das aktuell nicht für Wertpapiergeschäfte verwendet wird (Trading), wird auf Partnerbanken und qualifizierte
+Geldmarktfonds verteilt. Guthaben bei den Partnerbanken sind jeweils bis 100.000 € je Kunde und je Bank durch die gesetzliche
+Einlagensicherung geschützt. Guthaben bei Geldmarktfonds unterliegen ohne Begrenzung den strengen Schutzstandards des
+WpHG und der EU-Vorgaben für Anlegerschutz (OGAW). Mehr Informationen finden Sie unter https://de.scalable.capital/
+dokumente-information 
+Sofern Sie Credit nutzen, beträgt der Zinssatz für die eingeräumte Kontoüberziehung 3,49 %. Für eine Kontoüberziehung außerhalb der Credit-Nutzung fällt ein Zinssatz
+von 4,49 % an. 
+Bitte überprüfen Sie die Informationen auf Richtigkeit und melden Sie etwaige Einwände unverzüglich bei uns.
+Verwenden Sie dafür den Menüpunkt Support im Kundenbereich. 
+Scalable Capital GmbH HRB 217778 Geschäftsführer: Aufsichtsrat: Seite 
+Seitzstraße 8e Amtsgericht München Erik Podzuweit, Florian Prucker Patrick Olson (Vorsitzender) 
+80538 München USt.-Id. Nr.: DE300434774 Martin Krebs, Dirk Franzmeyer, Dirk
+Urmoneit 5 / 5

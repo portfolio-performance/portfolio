@@ -85,6 +85,9 @@ public class Messages extends NLS
     public static String ClientEditorLabelReports;
     public static String ClientEditorLabelReturnsVolatility;
     public static String ClientEditorPerformanceCalculation;
+    public static String CmdLogin;
+    public static String CmdLogout;
+    public static String CmdNotNow;
     public static String ColumnAbsolutePerformance;
     public static String ColumnAbsolutePerformance_Description;
     public static String ColumnAbsolutePerformance_MenuLabel;
@@ -488,14 +491,14 @@ public class Messages extends NLS
     public static String IntroNewAndNoteworthyText;
     public static String IntroNewFile;
     public static String IntroNewFileText;
-    public static String IntroOpenFAQ;
-    public static String IntroOpenFAQText;
     public static String IntroOpenFile;
     public static String IntroOpenFileText;
     public static String IntroOpenForum;
     public static String IntroOpenForumText;
     public static String IntroOpenHowtos;
     public static String IntroOpenHowtosText;
+    public static String IntroOpenManual;
+    public static String IntroOpenManualText;
     public static String IntroOpenSample;
     public static String IntroOpenSampleText;
     public static String InvestmentPlanAutoCreationJob;
@@ -557,6 +560,7 @@ public class Messages extends NLS
     public static String LabelAllTransactions;
     public static String LabelAspect;
     public static String LabelAssetChart;
+    public static String LabelAuthenticationRequiredToRetrieveHistoricalPrices;
     public static String LabelAutomaticDarkLightTheme;
     public static String LabelAvailableAttributes;
     public static String LabelAverageHoldingPeriod;
@@ -636,6 +640,8 @@ public class Messages extends NLS
     public static String LabelCoinGeckoCoinIdHint;
     public static String LabelCollapse;
     public static String LabelCollapseAll;
+    public static String LabelColonSeparated;
+    public static String LabelColorBy;
     public static String LabelColorSchema;
     public static String LabelColumns;
     public static String LabelColumnsInReverseOrder;
@@ -763,6 +769,7 @@ public class Messages extends NLS
     public static String LabelMissingQuotes;
     public static String LabelMissingQuotes_Decsription;
     public static String LabelMobileApp;
+    public static String LabelMore;
     public static String LabelNamePlusCopy;
     public static String LabelNet;
     public static String LabelNewClassification;
@@ -866,6 +873,7 @@ public class Messages extends NLS
     public static String LabelSemiVolatility;
     public static String LabelSettings;
     public static String LabelSharpeRatio;
+    public static String LabelShowHeadline;
     public static String LabelShowOnlyOneYear;
     public static String LabelShowRawResponse;
     public static String LabelSmallerSize;
@@ -916,6 +924,7 @@ public class Messages extends NLS
     public static String LabelUpdatesAvailable;
     public static String LabelUseExistingSecurity;
     public static String LabelUseGrossValue;
+    public static String LabelUser;
     public static String LabelUsingDashboardDefaultReportingPeriod;
     public static String LabelValueInboundDelivery;
     public static String LabelValueOutboundDelivery;
@@ -1081,6 +1090,7 @@ public class Messages extends NLS
     public static String MsgIncorrectTotal;
     public static String MsgInfoChangingCurrencyNotPossible;
     public static String MsgInfoRetiredSecurities;
+    public static String MsgInstrumentWithConfigurationIssue;
     public static String MsgInvalidImage;
     public static String MsgInvalidImageDetail;
     public static String MsgJavaVersionTooOldForLetsEncrypt;
@@ -1101,6 +1111,7 @@ public class Messages extends NLS
     public static String MsgPortfolioMustBeDifferent;
     public static String MsgPortfolioToMissing;
     public static String MsgPreviousStockSplit;
+    public static String MsgRateLimitExceededAndRetrying;
     public static String MsgRestartRequired;
     public static String MsgSecurityHasNoQuotes;
     public static String MsgThemeRestartRequired;
@@ -1176,6 +1187,7 @@ public class Messages extends NLS
     public static String PrefDescriptionFinnhub;
     public static String PrefDescriptionLeeway;
     public static String PrefDescriptionMyDividends24;
+    public static String PrefDescriptionPortfolioPerformanceID;
     public static String PrefDescriptionPortfolioReport;
     public static String PrefDescriptionProxy;
     public static String PrefDescriptionQuandl;
@@ -1237,6 +1249,7 @@ public class Messages extends NLS
     public static String PresetsPrefPageTitle;
     public static String RebalanceAmbiguousTooltip;
     public static String RebalanceInexactTooltip;
+    public static String RebalancingChartActualVsTarget;
     public static String SearchSecurityWizardPageSymbolAlreadyExistsInfo;
     public static String SecuritiesChart_NoDataMessage_NoHoldings;
     public static String SecuritiesChart_NoDataMessage_NoPrices;
@@ -1329,6 +1342,9 @@ public class Messages extends NLS
     public static String SecurityTabTransactions;
     public static String SharpeRatioRisklessIRR;
     public static String SiteAppLandingpage;
+    public static String SiteForum;
+    public static String SiteHowTo;
+    public static String SiteManual;
     public static String SiteNewAndNoteworthy;
     public static String SplitWizardDefinitionDescription;
     public static String SplitWizardDefinitionTitle;

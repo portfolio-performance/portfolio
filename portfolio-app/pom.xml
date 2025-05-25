@@ -5,7 +5,7 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.75.2-SNAPSHOT</version>
+	<version>0.76.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
@@ -213,6 +213,11 @@
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.cocoa.macosx.aarch64.nl_vi</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
 							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_it</id>
 							<removeAll />
 						</filter>
@@ -288,6 +293,11 @@
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
+							<id>org.eclipse.equinox.launcher.gtk.linux.aarch64.nl_vi</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
 							<id>org.eclipse.e4.ui.swt.gtk.nl_it</id>
 							<removeAll />
 						</filter>
@@ -341,6 +351,11 @@
 							<id>org.eclipse.e4.ui.swt.gtk.nl_tr</id>
 							<removeAll />
 						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.e4.ui.swt.gtk.nl_vi</id>
+							<removeAll />
+						</filter>
 					</filters>
 				</configuration>
 			</plugin>
@@ -379,6 +394,8 @@
 					<version>${tycho-version}</version>
 					<configuration>
 						<trimStackTrace>false</trimStackTrace>
+						<!-- disable warnings about Mockito -->
+						<argLine>-XX:+EnableDynamicAgentLoading</argLine>
 					</configuration>
 				</plugin>
 				<plugin>

@@ -132,6 +132,7 @@ public class SearchSecurityWizardPage extends WizardPage
             chip.setData(currency);
             chip.setText(currency.getCurrencyCode());
             chip.setPushedStateBackground(Colors.EQUITY);
+            chip.setChipsBackground(Colors.theme().chipBackground());
             chip.addListener(SWT.Selection, listener);
         }
 
@@ -142,6 +143,7 @@ public class SearchSecurityWizardPage extends WizardPage
             chip.setData(type);
             chip.setText(type);
             chip.setPushedStateBackground(Colors.ICON_ORANGE);
+            chip.setChipsBackground(Colors.theme().chipBackground());
             chip.addListener(SWT.Selection, listener);
         }
     }

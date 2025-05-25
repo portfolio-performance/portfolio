@@ -88,6 +88,7 @@ public class TradeCalendarManager
 {
     private static String defaultCalendarCode = "default"; //$NON-NLS-1$
 
+    public static final String MINIMAL_CALENDAR_CODE = "minimum"; //$NON-NLS-1$
     public static final String TARGET2_CALENDAR_CODE = "TARGET2"; //$NON-NLS-1$
     public static final String FIRST_OF_THE_MONTH_CODE = "first-of-the-month"; //$NON-NLS-1$
 
@@ -97,7 +98,15 @@ public class TradeCalendarManager
 
     static
     {
-        TradeCalendar tc = new TradeCalendar("default", Messages.LabelTradeCalendarDefault, STANDARD_WEEKEND); //$NON-NLS-1$
+        TradeCalendar tc = new TradeCalendar(MINIMAL_CALENDAR_CODE, Messages.LabelTradeCalendarDefault,
+                        STANDARD_WEEKEND, false);
+        tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
+        tc.add(easter(GOOD_FRIDAY, -2));
+        tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
+        tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
+        CACHE.put(tc.getCode(), tc);
+
+        tc = new TradeCalendar("default", Messages.LabelTradeCalendarDefault, STANDARD_WEEKEND); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
@@ -369,7 +378,7 @@ public class TradeCalendarManager
 
     public static Stream<TradeCalendar> getAvailableCalendar()
     {
-        return CACHE.values().stream();
+        return CACHE.values().stream().filter(c -> c.isSelectable());
     }
 
     public static void setDefaultCalendarCode(String defaultCalendarCode)

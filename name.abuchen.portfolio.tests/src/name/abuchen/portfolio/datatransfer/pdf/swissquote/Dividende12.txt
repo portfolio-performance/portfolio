@@ -1,0 +1,33 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.76.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 542897 - TRADING
+IBAN: CH5808778945654231500
+Herrn Max Meier
+Hochstrasse 18
+CH-7000 Chur
+Gland, 14.05.2025
+Dividende Unsere Referenz: 847092627 
+Im Hinblick auf folgenden Titel:
+Titel
+Bezeichnung Anzahl
+INVESTOR ORD ISIN: SE0015811955 175
+NKN: 111465893
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben: 
+Kontonummer 54231500
+Ausführungsdatum 08.05.2025
+Valutadatum 14.05.2025
+Anzahl 175
+Dividende pro Aktie SEK 3.75 
+Bezeichnung Währung
+Betrag SEK 656.25
+Quellensteuer 30.00% (SE) SEK 196.88
+Wechselkurs 0.08462
+Total CHF 38.87
+Quellensteuer beinhaltet erstattungsfähige Steuern (Steuerrückbehalt Rückforderbar 15% (SE)) : CHF 8.33
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland  Formular ohne Unterschrift | SE&O.
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+CHE-116.310.079 MwSt

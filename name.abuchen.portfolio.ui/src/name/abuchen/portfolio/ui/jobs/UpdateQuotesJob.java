@@ -4,13 +4,16 @@ import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -19,16 +22,28 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobGroup;
+import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.oauth.AccessToken;
+import name.abuchen.portfolio.oauth.AuthenticationException;
+import name.abuchen.portfolio.oauth.OAuthClient;
+import name.abuchen.portfolio.online.AuthenticationExpiredException;
 import name.abuchen.portfolio.online.Factory;
+import name.abuchen.portfolio.online.FeedConfigurationException;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.QuoteFeedException;
+import name.abuchen.portfolio.online.RateLimitExceededException;
+import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
+import name.abuchen.portfolio.online.impl.CoinGeckoQuoteFeed;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
+import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
+import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.util.RateLimitExceededException;
+import name.abuchen.portfolio.ui.dialogs.AuthenticationRequiredDialog;
 import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
 public final class UpdateQuotesJob extends AbstractClientJob
@@ -111,8 +126,10 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
     }
 
+    private final OAuthClient oauthClient = OAuthClient.INSTANCE;
+
     private final Set<Target> target;
-    private Predicate<Security> filter;
+    private final Predicate<Security> filter;
     private long repeatPeriod;
 
     public UpdateQuotesJob(Client client, Set<Target> target)
@@ -151,12 +168,74 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
         List<Security> securities = getClient().getSecurities().stream().filter(filter).collect(toMutableList());
 
+        Optional<AccessToken> accessToken = Optional.empty();
+
+        // try to get the access token
+        try
+        {
+            if (oauthClient.isAuthenticated())
+                accessToken = oauthClient.getAPIAccessToken();
+        }
+        catch (AuthenticationException e)
+        {
+            PortfolioPlugin.log(e);
+            // unable to refresh access token --> user needs to re-authenticate
+        }
+
+        if (accessToken.isEmpty())
+        {
+            // check if any of the jobs need an authenticated user
+
+            var feed = Factory.getQuoteFeed(PortfolioPerformanceFeed.class);
+            var feedNeedsUser = feed.requiresAuthentication(securities);
+
+            if (feedNeedsUser)
+            {
+                // inform the user but go ahead with the remaining updates
+                Display.getDefault().asyncExec(
+                                () -> AuthenticationRequiredDialog.open(Display.getDefault().getActiveShell()));
+            }
+        }
+
         Dirtyable dirtyable = new Dirtyable(getClient());
         List<Job> jobs = new ArrayList<>();
 
         // include historical quotes
         if (target.contains(Target.HISTORIC))
-            addHistoricalQuotesJobs(securities, dirtyable, jobs);
+        {
+            var groupedByFeed = securities.stream()
+                            .filter(security -> security.getFeed() != null && !security.getFeed().isEmpty()
+                                            && !QuoteFeed.MANUAL.equals(security.getFeed()))
+                            .collect(Collectors.groupingBy(Security::getFeed));
+
+            // schedule feeds as single jobs that require a rate limit
+            var scheduleSingleJobs = List.of(PortfolioPerformanceFeed.ID, PortfolioReportQuoteFeed.ID,
+                            CoinGeckoQuoteFeed.ID, AlphavantageQuoteFeed.ID);
+
+            for (var entry : groupedByFeed.entrySet())
+            {
+                var feed = Factory.getQuoteFeedProvider(entry.getKey());
+                if (feed == null)
+                    continue;
+
+                // update instruments first that have not been update yet. Then
+                // instruments ordered by last update time
+
+                var securitiesPerFeed = entry.getValue().stream()
+                                .sorted(Comparator.comparing(s -> s.getEphemeralData().getFeedLastUpdate().orElse(null),
+                                                Comparator.nullsFirst(Comparator.naturalOrder())))
+                                .toList();
+
+                if (scheduleSingleJobs.contains(feed.getId()))
+                {
+                    addSingleHistoricalQuotesJob(feed, securitiesPerFeed, dirtyable, jobs);
+                }
+                else
+                {
+                    addHistoricalQuotesJobs(feed, securitiesPerFeed, dirtyable, jobs);
+                }
+            }
+        }
 
         // include latest quotes
         if (target.contains(Target.LATEST))
@@ -239,6 +318,9 @@ public final class UpdateQuotesJob extends AbstractClientJob
     {
         return new Job(feed.getName() + ": " + security.getName() + " " + Messages.EditWizardLatestQuoteFeedTitle) //$NON-NLS-1$ //$NON-NLS-2$
         {
+            /** number of reschedules before failing permanently */
+            int count = feed.getMaxRateLimitAttempts();
+
             @Override
             protected IStatus run(IProgressMonitor monitor)
             {
@@ -253,35 +335,46 @@ public final class UpdateQuotesJob extends AbstractClientJob
                 }
                 catch (RateLimitExceededException e)
                 {
-                    schedule(2000);
+                    count--;
+
+                    if (count >= 0 && e.getRetryAfter().isPositive())
+                    {
+                        schedule(e.getRetryAfter().toMillis());
+                        return Status.OK_STATUS;
+                    }
+                    else
+                    {
+                        return new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage());
+                    }
+                }
+                catch (QuoteFeedException e)
+                {
+                    PortfolioPlugin.log(e);
                     return Status.OK_STATUS;
                 }
             }
         };
     }
 
-    private void addHistoricalQuotesJobs(List<Security> securities, Dirtyable dirtyable, List<Job> jobs)
+    private void addHistoricalQuotesJobs(QuoteFeed feed, List<Security> securities, Dirtyable dirtyable, List<Job> jobs)
     {
-        // randomize list in case LRU cache size of HTMLTableQuote feed is too
-        // small; otherwise entries would be evicted in order
-        Collections.shuffle(securities);
-
         for (Security security : securities)
         {
-            QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
-            if (feed == null)
-                continue;
-            if (QuoteFeed.MANUAL.equals(feed.getId()))
-                continue;
-
             Job job = new Job(feed.getName() + ": " + security.getName()) //$NON-NLS-1$
             {
+                /** number of reschedules before failing permanently */
+                int count = feed.getMaxRateLimitAttempts();
+
                 @Override
                 protected IStatus run(IProgressMonitor monitor)
                 {
+                    if (security.getEphemeralData().hasPermanentError())
+                        return Status.OK_STATUS;
+
                     try
                     {
                         QuoteFeedData data = feed.getHistoricalQuotes(security, false);
+                        security.getEphemeralData().touchFeedLastUpdate();
 
                         if (security.addAllPrices(data.getPrices()))
                             dirtyable.markDirty();
@@ -302,9 +395,33 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
                         return Status.OK_STATUS;
                     }
+                    catch (FeedConfigurationException e)
+                    {
+                        security.getEphemeralData().setHasPermanentError();
+                        PortfolioPlugin.log(MessageFormat.format(Messages.MsgInstrumentWithConfigurationIssue,
+                                        security.getName()), e);
+                        return Status.OK_STATUS;
+                    }
                     catch (RateLimitExceededException e)
                     {
-                        schedule(2000);
+                        count--;
+
+                        if (count >= 0 && e.getRetryAfter().isPositive())
+                        {
+                            PortfolioPlugin.log(MessageFormat.format(Messages.MsgRateLimitExceededAndRetrying,
+                                            security.getName(), count));
+                            schedule(e.getRetryAfter().toMillis());
+                            return Status.OK_STATUS;
+                        }
+                        else
+                        {
+                            return new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage());
+                        }
+
+                    }
+                    catch (QuoteFeedException e)
+                    {
+                        PortfolioPlugin.log(e);
                         return Status.OK_STATUS;
                     }
                 }
@@ -315,6 +432,99 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
             jobs.add(job);
         }
+    }
+
+    private void addSingleHistoricalQuotesJob(QuoteFeed feed, List<Security> securities, Dirtyable dirtyable,
+                    List<Job> jobs)
+    {
+        if (securities.isEmpty())
+            return;
+
+        Job job = new Job(feed.getName() + ": " + securities.size()) //$NON-NLS-1$
+        {
+            List<Security> candidates = new ArrayList<>(securities);
+
+            /** number of reschedules before failing permanently */
+            int count = feed.getMaxRateLimitAttempts();
+
+            @Override
+            protected IStatus run(IProgressMonitor monitor)
+            {
+                while (!candidates.isEmpty())
+                {
+                    var security = candidates.getFirst();
+
+                    if (security.getEphemeralData().hasPermanentError())
+                    {
+                        candidates.remove(security);
+                        continue;
+                    }
+
+                    try
+                    {
+                        QuoteFeedData data = feed.getHistoricalQuotes(security, false);
+                        security.getEphemeralData().touchFeedLastUpdate();
+
+                        candidates.remove(security);
+
+                        if (security.addAllPrices(data.getPrices()))
+                            dirtyable.markDirty();
+
+                        if (!data.getErrors().isEmpty())
+                            PortfolioPlugin.log(createErrorStatus(security.getName(), data.getErrors()));
+
+                        // download latest quotes if the download should be done
+                        // together (and the job includes the download of latest
+                        // quotes)
+                        if (feed.mergeDownloadRequests() && target.contains(Target.LATEST))
+                        {
+                            feed.getLatestQuote(security).ifPresent(p -> {
+                                if (security.setLatest(p))
+                                    dirtyable.markDirty();
+                            });
+                        }
+                    }
+                    catch (AuthenticationExpiredException e)
+                    {
+                        PortfolioPlugin.log(e);
+                        return Status.OK_STATUS;
+                    }
+                    catch (FeedConfigurationException e)
+                    {
+                        security.getEphemeralData().setHasPermanentError();
+                        candidates.remove(security);
+
+                        PortfolioPlugin.log(MessageFormat.format(Messages.MsgInstrumentWithConfigurationIssue,
+                                        security.getName()), e);
+                    }
+                    catch (RateLimitExceededException e)
+                    {
+                        count--;
+
+                        if (count >= 0 && e.getRetryAfter().isPositive())
+                        {
+                            PortfolioPlugin.log(MessageFormat.format(Messages.MsgRateLimitExceededAndRetrying,
+                                            security.getName(), count));
+                            schedule(e.getRetryAfter().toMillis());
+                            return Status.OK_STATUS;
+                        }
+                        else
+                        {
+                            return new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage());
+                        }
+                    }
+                    catch (QuoteFeedException e)
+                    {
+                        candidates.remove(security);
+                        PortfolioPlugin.log(e);
+                    }
+                }
+
+                return Status.OK_STATUS;
+            }
+        };
+
+        jobs.add(job);
     }
 
     private IStatus createErrorStatus(String label, List<Exception> exceptions)

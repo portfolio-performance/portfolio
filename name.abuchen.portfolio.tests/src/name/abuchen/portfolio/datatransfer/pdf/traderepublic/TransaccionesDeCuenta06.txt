@@ -1,0 +1,49 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.76.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  BRUNNENSTRASSE 19-21  10119 BERLIN
+CaDPv XQXcO KwJkDs PÁGINA 1 de 5
+pYytRE BoF de la UaQiOk 627 - dG 5, 86032 FECHA 01 feb 2025 - 31 mar 2025
+ILcZgibkw, ES IBAN DE1234567890123456789012
+BIC CITIDEFF
+RESUMEN DE ESTADO DE CUENTA
+PRODUCTO BALANCE INICIAL ENTRADA DE DINERO SALIDA DE DINERO BALANCE FINAL
+Cuenta de valores 47.174,09 € 9.559,33 € 6.731,07 € 50.002,35 €
+TRANSACCIONES DE CUENTA
+ENTRADA DE SALIDA DE 
+FECHA TIPO DESCRIPCIÓN BALANCE
+DINERO DINERO
+01 feb Pago de 
+Your interest payment 115,90 € 47.289,99 €
+2025 intereses
+01 feb Transacción con 
+LA MARMOTTE 20,00 € 47.269,99 €
+2025 tarjeta
+01 feb Transacción con 
+R A S L 49,50 € 47.220,49 €
+2025 tarjeta
+
+HSBC 50.002,35 €
+Trade Republic Bank GmbH www.traderepublic.com Domicilio social de la empresa: Berlin Directores
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin ID-IVA DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Creado en 12 may 2025 Página 4 de 5
+NOTAS SOBRE EL EXTRACTO DE CUENTA
+Por favor, compruebe su extracto de cuenta, cualquier objeción deberá ser planteada inmediatamente. Tenga en cuenta que el saldo de la cuenta 
+indicado no tiene en cuenta la fecha de valor de las reservas o transacciones individuales, es decir, el importe indicado no se corresponde 
+necesariamente con el saldo de la cuenta relevante para el cálculo de los intereses. Se considerará que el extracto de cuenta periódico ha sido aprobado 
+si no se presentan objeciones en un plazo de 6 semanas. El envío puntual al equipo de auditoría interna de Trade Republic es suficiente para cumplir el 
+plazo. En relación con los contratos subyacentes, este extracto de cuenta se considera una factura bajo la Ley alemana del IVA (UStG) de acuerdo con el 
+número de cuenta indicado. Los saldos mantenidos en bancos custodios están protegidos hasta 100.000 € por el sistema de protección de depósitos del 
+banco custodio. Las acciones de fondos del mercado monetario cualificados (QMMF) están protegidas en el improbable caso de insolvencia de Trade 
+Republic. Puede encontrar más información sobre la protección de sus fondos en [https://support.traderepublic.com/en-de/3070-How-is-my-money-
+protected].
+Trade Republic Bank GmbH www.traderepublic.com Domicilio social de la empresa: Berlin Directores
+Brunnenstraße 19-21 AG Charlottenburg HRB 244347 B Andreas Torner
+10119 Berlin ID-IVA DE307510626 Gernot Mittendorfer
+Christian Hecker
+Thomas Pischke
+Creado en 12 may 2025 Página 5 de 5

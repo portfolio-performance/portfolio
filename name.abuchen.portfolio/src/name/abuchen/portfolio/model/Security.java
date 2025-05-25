@@ -93,6 +93,12 @@ public final class Security implements Attributable, InvestmentVehicle
 
     private boolean isRetired = false;
 
+    /**
+     * Stores ephemeral data related to the current session that is not
+     * persisted.
+     */
+    private transient SecurityEphemeralData data; // NOSONAR
+
     private Instant updatedAt;
 
     @Deprecated
@@ -861,6 +867,13 @@ public final class Security implements Attributable, InvestmentVehicle
         }
 
         return false;
+    }
+
+    public SecurityEphemeralData getEphemeralData()
+    {
+        if (data == null)
+            data = new SecurityEphemeralData();
+        return data;
     }
 
     public Instant getUpdatedAt()

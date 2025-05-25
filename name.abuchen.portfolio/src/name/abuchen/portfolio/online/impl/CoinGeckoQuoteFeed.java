@@ -31,8 +31,9 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.online.QuoteFeedException;
+import name.abuchen.portfolio.online.RateLimitExceededException;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
-import name.abuchen.portfolio.util.RateLimitExceededException;
 import name.abuchen.portfolio.util.WebAccess;
 import name.abuchen.portfolio.util.WebAccess.WebAccessException;
 
@@ -79,6 +80,12 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
         }
     }
 
+    private static class ResponseData
+    {
+        long days;
+        String json;
+    }
+
     public static final String ID = "COINGECKO"; //$NON-NLS-1$
     public static final String COINGECKO_COIN_ID = "COINGECKOCOINID"; //$NON-NLS-1$
 
@@ -95,6 +102,8 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     private String apiKey;
 
     private RateLimiter rateLimiter = RateLimiter.create(RATE_LIMIT_FREE);
+
+    private final PageCache<ResponseData> cache = new PageCache<>(Duration.ofMinutes(1));
 
     private List<Coin> coins;
 
@@ -123,7 +132,19 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
+    public boolean mergeDownloadRequests()
+    {
+        return true;
+    }
+
+    @Override
+    public int getMaxRateLimitAttempts()
+    {
+        return 10;
+    }
+
+    @Override
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security) throws QuoteFeedException
     {
         QuoteFeedData data = getHistoricalQuotes(security, false, LocalDate.now());
 
@@ -141,7 +162,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse) throws QuoteFeedException
     {
         LocalDate quoteStartDate = LocalDate.of(1970, 01, 01);
 
@@ -152,7 +173,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData previewHistoricalQuotes(Security security)
+    public QuoteFeedData previewHistoricalQuotes(Security security) throws QuoteFeedException
     {
         return getHistoricalQuotes(security, true, LocalDate.now().minusMonths(2));
     }
@@ -226,13 +247,11 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
     }
 
     private QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, LocalDate start)
+                    throws QuoteFeedException
     {
         if (security.getTickerSymbol() == null)
             return QuoteFeedData.withError(
                             new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
-
-        if (!rateLimiter.tryAcquire(Duration.ofSeconds(30)))
-            throw new RateLimitExceededException(Messages.MsgCoinGeckoRateLimitExceeded);
 
         QuoteFeedData data = new QuoteFeedData();
 
@@ -268,12 +287,28 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
             if (hasPlan())
                 webaccess.addHeader("x-cg-pro-api-key", this.apiKey); //$NON-NLS-1$
 
-            String json = webaccess.get();
+            ResponseData response = cache.lookup(coinGeckoId);
+
+            if (response == null || response.days < days)
+            {
+                // acquire a rate limit only in case we have a cache miss
+
+                if (!rateLimiter.tryAcquire(Duration.ofSeconds(30)))
+                    throw new RateLimitExceededException(Duration.ofSeconds(10),
+                                    MessageFormat.format(Messages.MsgRateLimitExceeded, getName()));
+
+                response = new ResponseData();
+                response.days = days;
+                response.json = webaccess.get();
+
+                if (response.json != null)
+                    cache.put(coinGeckoId, response);
+            }
 
             if (collectRawResponse)
-                data.addResponse(webaccess.getURL(), json);
+                data.addResponse(webaccess.getURL(), response.json);
 
-            JSONObject marketChartObject = (JSONObject) JSONValue.parse(json);
+            JSONObject marketChartObject = (JSONObject) JSONValue.parse(response.json);
 
             if (marketChartObject != null && marketChartObject.containsKey("prices")) //$NON-NLS-1$
             {
@@ -284,7 +319,8 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
         catch (WebAccessException e)
         {
             if (e.getHttpErrorCode() == HttpStatus.SC_TOO_MANY_REQUESTS)
-                throw new RateLimitExceededException(Messages.MsgCoinGeckoRateLimitExceeded);
+                throw new RateLimitExceededException(Duration.ofSeconds(30),
+                                MessageFormat.format(Messages.MsgRateLimitExceeded, getName()));
 
             data.addError(e);
         }

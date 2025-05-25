@@ -2,6 +2,9 @@ package name.abuchen.portfolio.ui.wizards.security;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -20,6 +23,36 @@ public class SearchSecurityWizardDialog extends WizardDialog // NOSONAR
     public SearchSecurityWizardDialog(Shell parentShell, Client client)
     {
         super(parentShell, new SearchSecurityWizard(client));
+    }
+
+    @Override
+    protected void configureShell(Shell newShell)
+    {
+        super.configureShell(newShell);
+
+        // issue: if the dialog is resized smaller than the initial content, the
+        // wizard is not propagating resize events to the content because of the
+        // PageContainerFillLayout. Therefore an embedded scrollable control is
+        // never triggered to show scroll bars.
+
+        // workaround: prevent the user from resizing the dialog smaller than
+        // the initial size
+
+        newShell.addControlListener(new ControlAdapter()
+        {
+            boolean initialized = false;
+
+            @Override
+            public void controlResized(ControlEvent e)
+            {
+                if (!initialized)
+                {
+                    Point size = newShell.getSize();
+                    newShell.setMinimumSize(size);
+                    initialized = true;
+                }
+            }
+        });
     }
 
     @Override

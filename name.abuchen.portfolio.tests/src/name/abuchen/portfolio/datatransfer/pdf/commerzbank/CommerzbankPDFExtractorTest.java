@@ -2400,6 +2400,258 @@ public class CommerzbankPDFExtractorTest
     }
 
     @Test
+    public void testDividende11()
+    {
+        var extractor = new CommerzbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0038863350"), hasWkn("A0Q4DC"), hasTicker(null), //
+                        hasName("N e s t l é S . A . N a m e n s - A k t i e n S F - , 1 0"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-04-24T00:00"), hasShares(126.00), //
+                        hasSource("Dividende11.txt"), //
+                        hasNote("Ref.-Nr.: 1C7ZBW0NK88007D4"), //
+                        hasAmount("EUR", 407.92), hasGrossValue("EUR", 407.92), //
+                        hasForexGrossValue("CHF", 384.30), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende11WithSecurityInEUR()
+    {
+        var security = new Security("N e s t l é S . A . N a m e n s - A k t i e n S F - , 1 0", "EUR");
+        security.setIsin("CH0038863350");
+        security.setWkn("A0Q4DC");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new CommerzbankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende11.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-04-24T00:00"), hasShares(126.00), //
+                        hasSource("Dividende11.txt"), //
+                        hasNote("Ref.-Nr.: 1C7ZBW0NK88007D4"), //
+                        hasAmount("EUR", 407.92), hasGrossValue("EUR", 407.92), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testSteuerbehandlungVonDividende11()
+    {
+        var extractor = new CommerzbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende11.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0038863350"), hasWkn("A0Q4DC"), hasTicker(null), //
+                        hasName("NESTLE NAM. SF-,10"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check taxes transaction
+        assertThat(results, hasItem(taxes( //
+                        hasDate("2025-04-24T00:00"), hasShares(126.00), //
+                        hasSource("SteuerbehandlungVonDividende11.txt"), //
+                        hasNote("Ref.-Nr.: 1C7ZBW0NQ14714E9"), //
+                        hasAmount("EUR", 185.81), hasGrossValue("EUR", 185.81), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende11MitSteuerbehandlungVonDividende11()
+    {
+        var extractor = new CommerzbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Dividende11.txt", "SteuerbehandlungVonDividende11.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0038863350"), hasWkn("A0Q4DC"), hasTicker(null), //
+                        hasName("N e s t l é S . A . N a m e n s - A k t i e n S F - , 1 0"), //
+                        hasCurrencyCode("CHF"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-04-24T00:00"), hasShares(126.00), //
+                        hasSource("Dividende11.txt; SteuerbehandlungVonDividende11.txt"), //
+                        hasNote("Ref.-Nr.: 1C7ZBW0NK88007D4 | Ref.-Nr.: 1C7ZBW0NQ14714E9"), //
+                        hasAmount("EUR", 222.11), hasGrossValue("EUR", 407.92), //
+                        hasForexGrossValue("CHF", 384.30), //
+                        hasTaxes("EUR", 185.81), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende11MitSteuerbehandlungVonDividende11WithSecurityInEUR()
+    {
+        var security = new Security("N e s t l é S . A . N a m e n s - A k t i e n S F - , 1 0", "EUR");
+        security.setIsin("CH0038863350");
+        security.setWkn("A0Q4DC");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new CommerzbankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Dividende11.txt", "SteuerbehandlungVonDividende11.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-04-24T00:00"), hasShares(126.00), //
+                        hasSource("Dividende11.txt; SteuerbehandlungVonDividende11.txt"), //
+                        hasNote("Ref.-Nr.: 1C7ZBW0NK88007D4 | Ref.-Nr.: 1C7ZBW0NQ14714E9"), //
+                        hasAmount("EUR", 222.11), hasGrossValue("EUR", 407.92), //
+                        hasTaxes("EUR", 185.81), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testDividende11MitSteuerbehandlungVonDividende11_SourceFilesReversed()
+    {
+        var extractor = new CommerzbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende11.txt", "Dividende11.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("CH0038863350"), hasWkn("A0Q4DC"), hasTicker(null), //
+                        hasName("NESTLE NAM. SF-,10"), //
+                        hasCurrencyCode("EUR"))));
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-04-24T00:00"), hasShares(126.00), //
+                        hasSource("Dividende11.txt; SteuerbehandlungVonDividende11.txt"), //
+                        hasNote("Ref.-Nr.: 1C7ZBW0NK88007D4 | Ref.-Nr.: 1C7ZBW0NQ14714E9"), //
+                        hasAmount("EUR", 222.11), hasGrossValue("EUR", 407.92), //
+                        hasTaxes("EUR", 185.81), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testDividende11MitSteuerbehandlungVonDividende11WithSecurityInEUR_SourceFilesReversed()
+    {
+        var security = new Security("NESTLE NAM. SF-,10", "EUR");
+        security.setIsin("CH0038863350");
+        security.setWkn("A0Q4DC");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new CommerzbankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "SteuerbehandlungVonDividende11.txt", "Dividende11.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-04-24T00:00"), hasShares(126.00), //
+                        hasSource("Dividende11.txt; SteuerbehandlungVonDividende11.txt"), //
+                        hasNote("Ref.-Nr.: 1C7ZBW0NK88007D4 | Ref.-Nr.: 1C7ZBW0NQ14714E9"), //
+                        hasAmount("EUR", 222.11), hasGrossValue("EUR", 407.92), //
+                        hasTaxes("EUR", 185.81), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("EUR");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testSteuermitteilungOhneDividende01()
     {
         var extractor = new CommerzbankPDFExtractor(new Client());

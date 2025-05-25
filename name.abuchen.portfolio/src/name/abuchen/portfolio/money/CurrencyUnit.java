@@ -77,6 +77,9 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
 
     public static CurrencyUnit getDefaultInstance()
     {
+        if (Locale.getDefault().getCountry().isEmpty())
+            return CurrencyUnit.getInstance(EUR);
+
         var defaultCurrencyISO4217 = java.util.Currency.getInstance(Locale.getDefault());
         if (defaultCurrencyISO4217 == null || defaultCurrencyISO4217.getCurrencyCode() == null)
             return CurrencyUnit.getInstance(EUR);
@@ -93,6 +96,20 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
         for (CurrencyUnit unit : CACHE.values())
         {
             if (currencySymbol.equals(unit.getCurrencySymbol()))
+                return unit;
+        }
+
+        return null;
+    }
+
+    public static CurrencyUnit getInstanceByDisplayName(String displayName)
+    {
+        if (displayName == null)
+            return null;
+
+        for (CurrencyUnit unit : CACHE.values())
+        {
+            if (displayName.equalsIgnoreCase(unit.getDisplayName()))
                 return unit;
         }
 

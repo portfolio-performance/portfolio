@@ -36,7 +36,7 @@ public class TradeCollector
      * processed before transfers (for example if the users purchases and then
      * transfers on the same day).
      */
-    private static final class ByDateAndType implements Comparator<TransactionPair<?>>, Serializable
+    public static final class ByDateAndType implements Comparator<TransactionPair<?>>, Serializable
     {
         private static final long serialVersionUID = 1L;
 
@@ -123,13 +123,11 @@ public class TradeCollector
             Type type = t.getType();
             switch (type)
             {
-                case BUY:
-                case DELIVERY_INBOUND:
+                case BUY, DELIVERY_INBOUND:
                     openTransactions.computeIfAbsent(portfolio, p -> new ArrayList<>()).add(pair);
                     break;
 
-                case SELL:
-                case DELIVERY_OUTBOUND:
+                case SELL, DELIVERY_OUTBOUND:
                     trades.add(createNewTradeFromSell(openTransactions, pair));
                     break;
 
@@ -165,7 +163,7 @@ public class TradeCollector
             trades.add(newTrade);
         }
 
-        trades.forEach(t -> t.calculate(converter));
+        trades.forEach(t -> t.calculate(client, converter));
 
         return trades;
     }
@@ -299,7 +297,7 @@ public class TradeCollector
         PortfolioTransaction t = entry.getPortfolioTransaction();
 
         BuySellEntry copy = new BuySellEntry();
-        copy.setPortfolio(entry.getPortfolio());
+        copy.setPortfolio(portfolio);
         copy.setAccount(entry.getAccount());
 
         copy.setDate(t.getDateTime());

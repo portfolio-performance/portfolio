@@ -13,6 +13,7 @@ import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.swt.SWT;
@@ -37,6 +38,7 @@ import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
 import name.abuchen.portfolio.online.impl.KrakenQuoteFeed;
 import name.abuchen.portfolio.online.impl.LeewayQuoteFeed;
 import name.abuchen.portfolio.online.impl.MFAPIQuoteFeed;
+import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.online.impl.TwelveDataQuoteFeed;
@@ -57,9 +59,9 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     // whether a more recent job has already been started
     private LoadHistoricalQuotes currentJob;
 
-    public HistoricalQuoteProviderPage(final EditSecurityModel model, BindingHelper bindings)
+    public HistoricalQuoteProviderPage(final EditSecurityModel model, EditSecurityCache cache, BindingHelper bindings)
     {
-        super(model, bindings);
+        super(model, cache, bindings);
 
         setTitle(Messages.EditWizardQuoteFeedTitle);
 
@@ -213,6 +215,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     {
         if (exchange != null)
             return getFeed() + exchange.getId();
+        else if (PortfolioPerformanceFeed.ID.equals(getFeed()))
+            return PortfolioPerformanceFeed.ID + getModel().getTickerSymbol();
         else if (PortfolioReportQuoteFeed.ID.equals(getFeed()))
             return PortfolioReportQuoteFeed.ID + getModel().getCurrencyCode();
         else if (AlphavantageQuoteFeed.ID.equals(getFeed()))
@@ -291,7 +295,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
             showRawResponse.setEnabled(false);
 
             Job job = new LoadHistoricalQuotes(feed, exchange, cacheKey);
-            job.setUser(true);
+            job.setUser(false);
+            job.setRule(SingletonRule.getInstance());
             job.schedule(150);
         }
     }
@@ -382,5 +387,31 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
             return Status.OK_STATUS;
         }
 
+    }
+
+    private static class SingletonRule implements ISchedulingRule // NOSONAR
+    {
+        private static final SingletonRule INSTANCE = new SingletonRule();
+
+        private SingletonRule()
+        {
+        }
+
+        public static SingletonRule getInstance()
+        {
+            return INSTANCE;
+        }
+
+        @Override
+        public boolean isConflicting(ISchedulingRule rule)
+        {
+            return rule == this;
+        }
+
+        @Override
+        public boolean contains(ISchedulingRule rule)
+        {
+            return rule == this;
+        }
     }
 }

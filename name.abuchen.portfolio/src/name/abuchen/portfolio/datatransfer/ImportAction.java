@@ -14,11 +14,11 @@ public interface ImportAction
 {
     public interface Context
     {
-        Account getAccount();
+        Account getAccount(String currencyCode);
 
         Portfolio getPortfolio();
 
-        Account getSecondaryAccount();
+        Account getSecondaryAccount(String currencyCode);
 
         Portfolio getSecondaryPortfolio();
     }

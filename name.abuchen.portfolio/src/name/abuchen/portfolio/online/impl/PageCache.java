@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.online.impl;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -19,7 +20,8 @@ import java.util.Map;
     }
 
     private static final int CACHE_SIZE = 50;
-    private static final long EXPIRATION_TIME = 5L * 60L * 1000L; // 5 minutes
+
+    private final long expirationTime;
 
     private HashMap<String, PageEntry<T>> map = new LinkedHashMap<String, PageEntry<T>>()
     {
@@ -31,6 +33,16 @@ import java.util.Map;
             return size() >= CACHE_SIZE;
         }
     };
+
+    public PageCache()
+    {
+        this.expirationTime = Duration.ofMinutes(5).toMillis();
+    }
+
+    public PageCache(Duration expirationTime)
+    {
+        this.expirationTime = expirationTime.toMillis();
+    }
 
     /**
      * Returns a cached list of security prices for a given URL.
@@ -44,7 +56,7 @@ import java.util.Map;
         if (entry == null)
             return null; // NOSONAR
 
-        if (entry.ts < System.currentTimeMillis() - EXPIRATION_TIME)
+        if (entry.ts < System.currentTimeMillis() - expirationTime)
         {
             map.remove(url);
             return null; // NOSONAR
@@ -59,7 +71,7 @@ import java.util.Map;
     {
         map.put(url, new PageEntry<>(prices));
     }
-    
+
     public synchronized void computeIfAbsent(String url, T prices)
     {
         map.computeIfAbsent(url, key -> new PageEntry<>(prices));

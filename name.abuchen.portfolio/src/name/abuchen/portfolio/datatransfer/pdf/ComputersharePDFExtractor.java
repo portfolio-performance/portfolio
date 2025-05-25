@@ -11,6 +11,7 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -120,9 +121,9 @@ public class ComputersharePDFExtractor extends AbstractPDFExtractor
                                         .documentContext(TICKERSYMBOL, WKN) //
                                         .match("^(?<date>[\\d]{2} [\\w]{3} [\\d]{4}) Purchase (?<amount>[\\.,\\d]+) (?<fee>[\\.,\\d]+) (?<netAmount>[\\.,\\d]+) (?<grantDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvGrant>[\\.,\\d]+) (?<purchaseDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvPurchase>[\\.,\\d]+) (?<sharePrice>[\\.,\\d]+) (?<shares>[\\.,\\d]+) (?<totalShares>[\\.,\\d]+).*") //
                                         .assign((t, v) -> {
-                                            v.put("currency", "USD");
+                                            v.put("currency", CurrencyUnit.USD);
                                             t.setDate(asDate(v.get("date")));
-                                            t.setCurrencyCode(asCurrencyCode("USD"));
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setShares(asShares(v.get("shares")));
                                             t.setSecurity(getOrCreateSecurity(v));
@@ -133,9 +134,9 @@ public class ComputersharePDFExtractor extends AbstractPDFExtractor
                                         .documentContext(TICKERSYMBOL, WKN) //
                                         .match("^(?<date>[\\d]{2} [\\w]{3} [\\d]{4}) Purchase (?<amount>[\\.,\\d]+) (?<netAmount>[\\.,\\d]+) (?<grantDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvGrant>[\\.,\\d]+) (?<purchaseDate>[\\d]{2} [\\w]{3} [\\d]{4}) (?<fmvPurchase>[\\.,\\d]+) (?<sharePrice>[\\.,\\d]+) (?<shares>[\\.,\\d]+) (?<totalShares>[\\.,\\d]+).*") //
                                         .assign((t, v) -> {
-                                            v.put("currency", "USD");
+                                            v.put("currency", CurrencyUnit.USD);
                                             t.setDate(asDate(v.get("date")));
-                                            t.setCurrencyCode(v.get("currency"));
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
                                             t.setShares(asShares(v.get("shares")));
                                             t.setSecurity(getOrCreateSecurity(v));
