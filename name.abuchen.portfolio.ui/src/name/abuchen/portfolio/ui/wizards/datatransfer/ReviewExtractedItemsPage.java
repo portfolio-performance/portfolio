@@ -185,13 +185,13 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     }
 
     @Override
-    public Account getAccount()
+    public Account getAccount(String currency)
     {
         return (Account) ((IStructuredSelection) primaryAccount.getSelection()).getFirstElement();
     }
 
     @Override
-    public Account getSecondaryAccount()
+    public Account getSecondaryAccount(String currency)
     {
         return (Account) ((IStructuredSelection) secondaryAccount.getSelection()).getFirstElement();
     }

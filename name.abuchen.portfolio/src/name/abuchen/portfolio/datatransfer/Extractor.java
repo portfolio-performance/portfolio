@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer;
 import static name.abuchen.portfolio.util.CollectorsUtil.toMutableList;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -275,7 +276,12 @@ public interface Extractor
             {
                 Account account = getAccountPrimary();
                 if (account == null)
-                    account = context.getAccount();
+                    account = context.getAccount(at.getCurrencyCode());
+                if (account == null)
+                    return new Status(Status.Code.ERROR,
+                                    MessageFormat.format(Messages.MsgCheckTransactionCurrencyDoesNotMatchAccount,
+                                                    at.getCurrencyCode(), "?")); //$NON-NLS-1$
+
                 return action.process(at, account);
             }
             else if (transaction instanceof PortfolioTransaction pt)
@@ -283,6 +289,10 @@ public interface Extractor
                 Portfolio portfolio = getPortfolioPrimary();
                 if (portfolio == null)
                     portfolio = context.getPortfolio();
+                if (portfolio == null)
+                    return new Status(Status.Code.ERROR, MessageFormat.format(Messages.CSVImportMissingField,
+                                    Messages.CSVColumn_PortfolioName));
+
                 return action.process(pt, portfolio);
             }
             else
@@ -360,11 +370,18 @@ public interface Extractor
         {
             Account account = getAccountPrimary();
             if (account == null)
-                account = context.getAccount();
+                account = context.getAccount(entry.getAccountTransaction().getCurrencyCode());
+            if (account == null)
+                return new Status(Status.Code.ERROR,
+                                MessageFormat.format(Messages.MsgCheckTransactionCurrencyDoesNotMatchAccount,
+                                                entry.getAccountTransaction().getCurrencyCode(), "?")); //$NON-NLS-1$
 
             Portfolio portfolio = getPortfolioPrimary();
             if (portfolio == null)
                 portfolio = context.getPortfolio();
+            if (portfolio == null)
+                return new Status(Status.Code.ERROR,
+                                MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_PortfolioName));
 
             Status status = action.process(entry, account, portfolio);
 
@@ -442,11 +459,19 @@ public interface Extractor
         {
             Account account = getAccountPrimary();
             if (account == null)
-                account = context.getAccount();
+                account = context.getAccount(entry.getSourceTransaction().getCurrencyCode());
+            if (account == null)
+                return new Status(Status.Code.ERROR,
+                                MessageFormat.format(Messages.MsgCheckTransactionCurrencyDoesNotMatchAccount,
+                                                entry.getSourceTransaction().getCurrencyCode(), "?")); //$NON-NLS-1$
 
             Account accountSecondary = getAccountSecondary();
             if (accountSecondary == null)
-                accountSecondary = context.getSecondaryAccount();
+                accountSecondary = context.getSecondaryAccount(entry.getTargetTransaction().getCurrencyCode());
+            if (accountSecondary == null)
+                return new Status(Status.Code.ERROR,
+                                MessageFormat.format(Messages.MsgCheckTransactionCurrencyDoesNotMatchAccount,
+                                                entry.getTargetTransaction().getCurrencyCode(), "?")); //$NON-NLS-1$
 
             if (isOutbound)
                 return action.process(entry, account, accountSecondary);
@@ -524,10 +549,16 @@ public interface Extractor
             Portfolio portfolio = getPortfolioPrimary();
             if (portfolio == null)
                 portfolio = context.getPortfolio();
+            if (portfolio == null)
+                return new Status(Status.Code.ERROR,
+                                MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_PortfolioName));
 
             Portfolio portfolioSecondary = getPortfolioSecondary();
             if (portfolioSecondary == null)
                 portfolioSecondary = context.getSecondaryPortfolio();
+            if (portfolioSecondary == null)
+                return new Status(Status.Code.ERROR, MessageFormat.format(Messages.CSVImportMissingField,
+                                Messages.CSVColumn_PortfolioName2nd));
 
             return action.process(entry, portfolio, portfolioSecondary);
         }

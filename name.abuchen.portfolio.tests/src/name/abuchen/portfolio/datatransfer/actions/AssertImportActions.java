@@ -1,14 +1,11 @@
 package name.abuchen.portfolio.datatransfer.actions;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.nullValue;
 
-import java.text.MessageFormat;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.ImportAction;
@@ -19,25 +16,32 @@ public class AssertImportActions
 {
     private static class TestContext implements ImportAction.Context
     {
-        private Account account;
+        private Map<String, Account> currency2account = new HashMap<>();
+        private Map<String, Account> currency2secondaryAccount = new HashMap<>();
+
         private Portfolio portfolio;
-        private Account secondaryAccount;
         private Portfolio secondaryPortfolio;
 
-        public TestContext(String currency)
+        public TestContext(String... currency)
         {
-            this.account = new Account();
-            this.account.setCurrencyCode(currency);
+            for (String c : currency)
+            {
+                Account account = new Account();
+                account.setCurrencyCode(c);
+                this.currency2account.put(c, account);
+
+                Account secondaryAccount = new Account();
+                secondaryAccount.setCurrencyCode(c);
+                this.currency2secondaryAccount.put(c, secondaryAccount);
+            }
             this.portfolio = new Portfolio();
-            this.secondaryAccount = new Account();
-            this.secondaryAccount.setCurrencyCode(currency);
             this.secondaryPortfolio = new Portfolio();
         }
 
         @Override
-        public Account getAccount()
+        public Account getAccount(String currency)
         {
-            return account;
+            return currency2account.get(currency);
         }
 
         @Override
@@ -47,9 +51,9 @@ public class AssertImportActions
         }
 
         @Override
-        public Account getSecondaryAccount()
+        public Account getSecondaryAccount(String currency)
         {
-            return secondaryAccount;
+            return currency2secondaryAccount.get(currency);
         }
 
         @Override
@@ -66,8 +70,7 @@ public class AssertImportActions
 
     public void check(List<Extractor.Item> items, String... currencyCode)
     {
-        var contexts = Arrays.asList(currencyCode).stream()
-                        .collect(Collectors.toMap((c) -> c, (c) -> new TestContext(c)));
+        var context = new TestContext(currencyCode);
 
         for (Extractor.Item item : items)
         {
@@ -75,21 +78,6 @@ public class AssertImportActions
             // as the transactions most likely has further errors
             if (item.isFailure())
                 continue;
-
-            // items that have no amount (e.g. a security) are checked against a
-            // pseudo currency for the account to make sure that no attempt is
-            // made to import into an account
-            ImportAction.Context context;
-            if (item.getAmount() == null)
-            {
-                context = new TestContext("XYZ"); //$NON-NLS-1$
-            }
-            else
-            {
-                context = contexts.get(item.getAmount().getCurrencyCode());
-                assertThat(MessageFormat.format("No account available for currency ''{0}''", //$NON-NLS-1$
-                                item.getAmount().getCurrencyCode()), context, is(not(nullValue())));
-            }
 
             for (ImportAction action : actions)
             {
