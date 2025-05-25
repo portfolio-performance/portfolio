@@ -38,6 +38,7 @@ import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.ExtractorUtils;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -181,6 +182,7 @@ public class IBFlexStatementExtractor implements Extractor
     {
         // Asset category keys
         private static final String ASSETKEY_STOCK = "STK";
+        private static final String ASSETKEY_CASH = "CASH";
         private static final String ASSETKEY_FUND = "FUND";
         private static final String ASSETKEY_OPTION = "OPT";
         private static final String ASSETKEY_CERTIFICATE = "IOPT";
@@ -358,6 +360,106 @@ public class IBFlexStatementExtractor implements Extractor
                 return new TransactionItem(accountTransaction);
             else
                 return null;
+        };
+
+        /**
+         * Constructs a AccountTransferItem based on the information provided in the XML element.
+         */
+        private Function<Element, Item> buildCashTransaction = element -> {
+            AccountTransferEntry cashTransaction = new AccountTransferEntry();
+
+            // Check if the asset category is supported
+            if (!Arrays.asList(ASSETKEY_CASH).contains(element.getAttribute("assetCategory")))
+                return null;
+
+            // Check if the level of detail is supported
+            String lod = element.getAttribute("levelOfDetail");
+            if (lod.contains("ASSET_SUMMARY")
+                            || lod.contains("SYMBOL_SUMMARY")
+                            || lod.contains("ORDER"))
+                return null;
+
+            // @formatter:off
+            // If possible, set "tradeDate" with "tradeTime" as the correct
+            // trading date of the transaction.
+            //
+            // If "tradeTime" is not present, then check if "tradeDate" and "dateTime" are the same date,
+            // then set "dateTime" as the trading day.
+            // @formatter:on
+            if (element.hasAttribute("tradeDate"))
+            {
+                if (element.hasAttribute("tradeTime"))
+                {
+                    cashTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime")));
+                }
+                else if (element.hasAttribute("dateTime"))
+                {
+                    if (element.getAttribute("tradeDate").equals(element.getAttribute("dateTime").substring(0, 8)))
+                    {
+                        cashTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate"), element.getAttribute("dateTime").substring(9, 15)));
+                    }
+                    else
+                    {
+                        cashTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate")));
+                    }
+                }
+                else
+                {
+                    cashTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate")));
+                }
+            }
+
+            // Ensure all required attributes are present
+            if (!element.hasAttribute("symbol") || 
+                !element.hasAttribute("tradeMoney") || 
+                !element.hasAttribute("quantity"))
+            {
+                return null;
+            }
+
+            // Split the symbol into source and target currency (e.g. EUR.USD)
+            // where USD is the currency paid and EUR is the currency bought
+            String symbol = element.getAttribute("symbol");
+            String[] parts = symbol.split("\\.");
+            if (parts.length != 2)
+                return null;
+
+            String sourceCurrency = parts[1];
+            String targetCurrency = parts[0];
+            String sourceAmount = element.getAttribute("tradeMoney");
+            String targetAmount = element.getAttribute("quantity");
+
+            // Set the amounts
+            Money source = Money.of(sourceCurrency, asAmount(sourceAmount));
+            Money target = Money.of(targetCurrency, asAmount(targetAmount));
+
+            // Since this is a cash transaction, we don't need to convert the amounts currencies
+            // therefore we skip setAmount()
+            cashTransaction.getSourceTransaction().setMonetaryAmount(source);
+            cashTransaction.getTargetTransaction().setMonetaryAmount(target);
+
+            BigDecimal exachangeRate = asExchangeRate(element.getAttribute("tradePrice"));
+            cashTransaction.getSourceTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE, source, target, exachangeRate));
+
+            // Set fees
+            Money fees = Money.of(asCurrencyCode(element.getAttribute("ibCommissionCurrency")), asAmount(element.getAttribute("ibCommission")));
+            Unit feeUnit = new Unit(Unit.Type.FEE, fees);
+            if (fees.getCurrencyCode().equals(cashTransaction.getSourceTransaction().getCurrencyCode()))
+                cashTransaction.getSourceTransaction().addUnit(feeUnit);
+            else
+                cashTransaction.getTargetTransaction().addUnit(feeUnit);
+
+            // Set taxes
+            Money taxes = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("taxes")));
+            Unit taxUnit = new Unit(Unit.Type.TAX, taxes);
+            if (taxes.getCurrencyCode().equals(cashTransaction.getSourceTransaction().getCurrencyCode()))
+                cashTransaction.getSourceTransaction().addUnit(taxUnit);
+            else
+                cashTransaction.getTargetTransaction().addUnit(taxUnit);
+
+            AccountTransferItem item = new AccountTransferItem(cashTransaction, true);
+
+            return item;
         };
 
         /**
@@ -761,6 +863,9 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Process all Trades
             importModelObjects("Trade", buildPortfolioTransaction);
+
+            // Process all cash related trades
+            importModelObjects("Trade", buildCashTransaction);
 
             // Process all CashTransaction
             importModelObjects("CashTransaction", buildAccountTransaction);
