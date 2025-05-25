@@ -1,0 +1,28 @@
+PDFBox Version: 3.0.3 != 1.8.17
+Portfolio Performance Version: 0.76.0
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+
+sWyFIqPG-UlMRnoh Rnoh-sWyFIqPG
+Overzicht transacties en rekeninguittreksels voor klantnummer 4278729
+05/08/2024
+EUR-REKENING - 107
+Borderel 036075923 Limit order
+05/08/2024 09:05:43 Valuta 07/08/2024 XETA
+Uw Verkoop van 1.670 SIEMENS ENERGY AG NA ON (FR) aan 22,74 EUR 37.975,80 EUR
+Makelaarsloon 56,96 EUR
+Makelaarsloon KBC 94,94 EUR
+Beurstaks 132,92 EUR
+Netto credit 37.690,98 EUR
+Wettelijke fiscale informatie Basisbedrag beurstaks 37.975,80 EUR
+Beurstaks 0,35% 132,92 EUR
+Waardecode DE000ENER6Y0
+Rekeninguittreksel Nr 65 Vorig Saldo: 2.027,35 EUR
+05/08/2024 Bewaarloon Valuta 05/08/2024 -179,48 EUR
+Nieuw Saldo 1.847,87 EUR
+Dit deposito komt in aanmerking voor depositobescherming. Meer info: www.kbc.be/depositobescherming
+Heb je nog vragen ? Gelieve je te richten tot uw vermogensbeheerder
+sWyFIqPG-UlMRnoh Rnoh-sWyFIqPG Pagina 1
+4_7_0_5_55_1__________________________________________________________________________________
+KBC BANK NV Documentreferte: 189
+Havenlaan 2, 1080 Brussels, Belgium VAT BE 0462.920.226
+Account N° BE77 4096 5474 0142 - BIC KREDBEBB
