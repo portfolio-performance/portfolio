@@ -84,7 +84,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .match("^[\\.'\\d]+ [\\.'\\d]+ (?<currency>[\\w]{3}) [\\.'\\d]+$") //
+                                                        .match("^[\\.'\\d]+ [\\.'\\d]+ (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // Bezeichnung Anzahl Kontraktwährung Preis
@@ -93,7 +93,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "currency") //
                                                         .find("Bezeichnung Anzahl Kontraktw.hrung Preis")
-                                                        .match("^(?<name>.*) [\\.'\\d]+ (?<currency>[\\w]{3}) [\\.'\\d]+$") //
+                                                        .match("^(?<name>.*) [\\.'\\d]+ (?<currency>[A-Z]{3}) [\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         .oneOf( //
@@ -102,7 +102,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("shares") //
-                                                        .match("^(?<shares>[\\.'\\d]+) [\\.'\\d]+ [\\w]{3} [\\.'\\d]+$") //
+                                                        .match("^(?<shares>[\\.'\\d]+) [\\.'\\d]+ [A-Z]{3} [\\.'\\d]+$") //
                                                         .assign((t, v) -> t.setShares(asShares(v.get("shares")))),
                                         // @formatter:off
                                         // Bezeichnung Anzahl Kontraktwährung Preis
@@ -112,7 +112,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("multiplicator", "shares") //
-                                                        .match("^.* (?<shares>[\\.'\\d]+) [\\w]{3} [\\.'\\d]+$") //
+                                                        .match("^.* (?<shares>[\\.'\\d]+) [A-Z]{3} [\\.'\\d]+$") //
                                                         .match("^[\\.'\\d]+ (?<multiplicator>[\\.'\\d]+) [\\.'\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
                                                         .assign((t, v) -> {
                                                             var shares = new BigDecimal(v.get("shares"));
@@ -158,7 +158,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^(Zu Ihren (Lasten|Gunsten)|Total (gutgeschrieben|belastet)) (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                                                        .match("^(Zu Ihren (Lasten|Gunsten)|Total (gutgeschrieben|belastet)) (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -168,7 +168,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^To your debit (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                                                        .match("^To your debit (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -180,9 +180,9 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // CHF 5'305.45
                         // @formatter:on
                         .section("fxCurrency", "fxGross", "exchangeRate", "currency", "gross").optional() //
-                        .match("^Total (?<fxCurrency>[\\w]{3}) (?<fxGross>[\\.'\\d]+)$") //
+                        .match("^Total (?<fxCurrency>[A-Z]{3}) (?<fxGross>[\\.'\\d]+)$") //
                         .match("^Wechselkurs (?<exchangeRate>[\\.'\\d]+)$") //
-                        .match("^(?<currency>[\\w]{3}) (?<gross>[\\.'\\d]+)$") //
+                        .match("^(?<currency>[A-Z]{3}) (?<gross>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             var exchangeRate = asExchangeRate(v.get("exchangeRate"));
                             if (t.getPortfolioTransaction().getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency"))))
@@ -292,7 +292,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // Total USD 1'285.61
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                        .match("^Total (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -338,7 +338,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .match("^(Dividende|Kapitalgewinn) [\\.'\\d]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^(Dividende|Kapitalgewinn) [\\.'\\d]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // SIMPLIFY BITCOIN STGY INC ETF ISIN: US82889N6739
@@ -347,7 +347,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^(?<name>.*) ISIN: (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
-                                                        .match("^Dividende pro Aktie (?<currency>[\\w]{3}) [\\.'\\d]+.*$") //
+                                                        .match("^Dividende pro Aktie (?<currency>[A-Z]{3}) [\\.'\\d]+.*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
@@ -370,7 +370,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+) [\\w]{3} [\\.'\\d]+.*$") //
+                                                        .match("^Total (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+) [A-Z]{3} [\\.'\\d]+.*$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -380,7 +380,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+).*$") //
+                                                        .match("^Total (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+).*$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -388,13 +388,32 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
                         .optionalOneOf( //
                                         // @formatter:off
+                                        // Betrag SEK 656.25
+                                        // Wechselkurs 0.08462
+                                        // Total CHF 38.87
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("termCurrency", "fxGross", "exchangeRate", "baseCurrency") //
+                                                        .match("^Betrag (?<baseCurrency>[A-Z]{3}) (?<fxGross>[\\.'\\d]+)$") //
+                                                        .match("^Wechselkurs (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^Total (?<termCurrency>[A-Z]{3}) [\\.'\\d]+.*$") //
+                                                        .assign((t, v) -> {
+                                                            var rate = asExchangeRate(v);
+                                                            type.getCurrentContext().putType(rate);
+
+                                                            var fxGross = Money.of(rate.getBaseCurrency(), asAmount(v.get("fxGross")));
+                                                            var gross = rate.convert(rate.getTermCurrency(), fxGross);
+
+                                                            checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
+                                                        }),
+                                        // @formatter:off
                                         // Betrag USD 28.10 CHF 25.28
                                         // Wechselkurs USD / CHF : 0.89959
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross") //
-                                                        .match("^Betrag [\\w]{3} (?<gross>[\\.'\\d]+) [\\w]{3} [\\.'\\d]+.*$") //
-                                                        .match("^Wechselkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) : (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^Betrag [A-Z]{3} (?<gross>[\\.'\\d]+) [A-Z]{3} [\\.'\\d]+.*$") //
+                                                        .match("^Wechselkurs (?<baseCurrency>[A-Z]{3}) \\/ (?<termCurrency>[A-Z]{3}) : (?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -410,8 +429,8 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("baseCurrency", "termCurrency", "exchangeRate", "gross") //
-                                                        .match("^Betrag [\\w]{3} (?<gross>[\\.'\\d]+)$") //
-                                                        .match("^Wechselkurs (?<baseCurrency>[\\w]{3}) \\/ (?<termCurrency>[\\w]{3}) : (?<exchangeRate>[\\.,\\d]+).*$") //
+                                                        .match("^Betrag [A-Z]{3} (?<gross>[\\.'\\d]+)$") //
+                                                        .match("^Wechselkurs (?<baseCurrency>[A-Z]{3}) \\/ (?<termCurrency>[A-Z]{3}) : (?<exchangeRate>[\\.,\\d]+).*$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -487,7 +506,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Total (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                                                        .match("^Total (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -497,7 +516,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("currency", "amount") //
-                                                        .match("^Betrag belastet (?<currency>[\\w]{3}) (?<amount>[\\.'\\d]+)$") //
+                                                        .match("^Betrag belastet (?<currency>[A-Z]{3}) (?<amount>[\\.'\\d]+)$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -551,7 +570,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // Total 1.36 0.00 1.36 0.00 1.36
                         // @formatter:on
                         .section("currency", "amount") //
-                        .match("^IBAN : .* W.hrung : (?<currency>[\\w]{3})$") //
+                        .match("^IBAN : .* W.hrung : (?<currency>[A-Z]{3})$") //
                         .match("^Total .* (?<amount>[\\.'\\d]+)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -572,10 +591,10 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
 
     private void addAccountStatementTransaction()
     {
-        var baseCurrencyRange = new Block("^KONTOAUSZUG in (?<baseCurrency>[\\w]{3})$") //
+        var baseCurrencyRange = new Block("^KONTOAUSZUG in (?<baseCurrency>[A-Z]{3})$") //
                         .asRange(section -> section //
                                         .attributes("baseCurrency") //
-                                        .match("^KONTOAUSZUG in (?<baseCurrency>[\\w]{3})$"));
+                                        .match("^KONTOAUSZUG in (?<baseCurrency>[A-Z]{3})$"));
 
         final var type = new DocumentType("KONTOAUSZUG", baseCurrencyRange);
         this.addDocumentTyp(type);
@@ -674,7 +693,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "currency") //
                         .find("Bezeichnung Anzahl Kontraktw.hrung Preis")
-                        .match("^(?<name>.*) [\\.'\\d]+ (?<currency>[\\w]{3}) \\-$") //
+                        .match("^(?<name>.*) [\\.'\\d]+ (?<currency>[A-Z]{3}) \\-$") //
                         .assign((t, v) -> {
                             v.getTransactionContext().put(FAILURE, Messages.MsgErrorTransactionTypeNotSupported);
 
@@ -691,7 +710,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // 100 100 447 05.04.2024 International Securities
                         // @formatter:on
                         .section("multiplicator", "shares") //
-                        .match("^.* (?<shares>[\\.'\\d]+) [\\w]{3} \\-$") //
+                        .match("^.* (?<shares>[\\.'\\d]+) [A-Z]{3} \\-$") //
                         .match("^[\\.'\\d]+ (?<multiplicator>[\\.'\\d]+) [\\.'\\d]+ [\\d]{2}\\.[\\d]{2}\\.[\\d]{4}.*$") //
                         .assign((t, v) -> {
                             var shares = new BigDecimal(v.get("shares"));
@@ -736,7 +755,7 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // Abgabe (Eidg. Stempelsteuer) USD 4.75
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Abgabe \\(Eidg\\. Stempelsteuer\\) (?<currency>[\\w]{3}) (?<tax>[\\.'\\d]+).*$") //
+                        .match("^Abgabe \\(Eidg\\. Stempelsteuer\\) (?<currency>[A-Z]{3}) (?<tax>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
@@ -744,28 +763,28 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // Quellensteuer 15.00% (US) USD 4.22 CHF 3.80
                         // @formatter:on
                         .section("currency", "withHoldingTax").optional() //
-                        .match("^Quellensteuer [\\.'\\d]+% \\(.*\\)( [\\w]{3} [\\.'\\d]+)? (?<currency>[\\w]{3}) (?<withHoldingTax>[\\.'\\d]+).*$") //
+                        .match("^Quellensteuer [\\.'\\d]+% \\(.*\\)( [A-Z]{3} [\\.'\\d]+)? (?<currency>[A-Z]{3}) (?<withHoldingTax>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Zusätzlicher Steuerrückbehalt 15% USD 4.20
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Zus.tzlicher Steuerr.ckbehalt [\\.'\\d]+% (?<currency>[\\w]{3}) (?<tax>[\\.'\\d]+).*$") //
+                        .match("^Zus.tzlicher Steuerr.ckbehalt [\\.'\\d]+% (?<currency>[A-Z]{3}) (?<tax>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Verrechnungssteuer 35% (CH) CHF 63.88
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Verrechnungssteuer [\\.'\\d]+% \\(.*\\) (?<currency>[\\w]{3}) (?<tax>[\\.'\\d]+).*$") //
+                        .match("^Verrechnungssteuer [\\.'\\d]+% \\(.*\\) (?<currency>[A-Z]{3}) (?<tax>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Tax (Federal stamp duty) CHF 0.60
                         // @formatter:on
                         .section("currency", "tax").optional() //
-                        .match("^Tax \\(Federal stamp duty\\) (?<currency>[\\w]{3}) (?<tax>[\\.'\\d]+).*$") //
+                        .match("^Tax \\(Federal stamp duty\\) (?<currency>[A-Z]{3}) (?<tax>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -777,28 +796,28 @@ public class SwissquotePDFExtractor extends AbstractPDFExtractor
                         // Kommission Swissquote Bank AG USD 0.85
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Kommission Swissquote Bank AG (?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+).*$") //
+                        .match("^Kommission Swissquote Bank AG (?<currency>[A-Z]{3}) (?<fee>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Börsengebühren CHF 1.00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^B.rsengeb.hren (?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+).*$") //
+                        .match("^B.rsengeb.hren (?<currency>[A-Z]{3}) (?<fee>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Kommission CHF 1.00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Kommission (?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+).*$") //
+                        .match("^Kommission (?<currency>[A-Z]{3}) (?<fee>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
                         // Stock exchange fee CHF 2.00
                         // @formatter:on
                         .section("currency", "fee").optional() //
-                        .match("^Stock exchange fee (?<currency>[\\w]{3}) (?<fee>[\\.'\\d]+).*$") //
+                        .match("^Stock exchange fee (?<currency>[A-Z]{3}) (?<fee>[\\.'\\d]+).*$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
