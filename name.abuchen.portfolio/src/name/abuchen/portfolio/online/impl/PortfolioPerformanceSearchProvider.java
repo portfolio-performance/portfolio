@@ -19,7 +19,6 @@ import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityProperty;
-import name.abuchen.portfolio.oauth.OAuthClient;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.util.WebAccess;
@@ -223,11 +222,10 @@ public class PortfolioPerformanceSearchProvider implements SecuritySearchProvide
     @Override
     public List<ResultItem> search(String query) throws IOException
     {
-        // add an authentication check to enable feature only for beta users
-        return OAuthClient.INSTANCE.isAuthenticated() ? internalSearch("q", query) : Collections.emptyList(); //$NON-NLS-1$
+        return internalSearch("q", query); //$NON-NLS-1$
     }
 
-    List<ResultItem> internalSearch(String parameter, String query) throws IOException
+    /* package */ List<ResultItem> internalSearch(String parameter, String query) throws IOException
     {
         try
         {
