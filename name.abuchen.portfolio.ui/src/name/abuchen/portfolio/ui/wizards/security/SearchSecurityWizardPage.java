@@ -3,11 +3,16 @@ package name.abuchen.portfolio.ui.wizards.security;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.wizard.WizardPage;
@@ -15,11 +20,14 @@ import org.eclipse.nebula.widgets.chips.Chips;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -31,6 +39,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.swt.PaginatedTable;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -42,6 +51,7 @@ public class SearchSecurityWizardPage extends WizardPage
 
     private PaginatedTable table;
     private List<ResultItem> rawResults;
+    private Map<String, Boolean> rawSources = new HashMap<>();
 
     private Set<CurrencyUnit> filterByCurrency = new HashSet<>();
     private Set<String> filterByType = new HashSet<>();
@@ -99,8 +109,12 @@ public class SearchSecurityWizardPage extends WizardPage
 
     private void addFilterBar(Composite container)
     {
-        var chips = new Composite(container, SWT.NONE);
-        GridDataFactory.fillDefaults().span(2, 1).applyTo(chips);
+        var filterBar = new Composite(container, SWT.NONE);
+        GridDataFactory.fillDefaults().span(2, 1).applyTo(filterBar);
+
+        GridLayoutFactory.fillDefaults().numColumns(3).applyTo(filterBar);
+
+        var chips = new Composite(filterBar, SWT.NONE);
         chips.setLayout(new RowLayout(SWT.HORIZONTAL));
 
         final Listener listener = event -> {
@@ -146,6 +160,42 @@ public class SearchSecurityWizardPage extends WizardPage
             chip.setChipsBackground(Colors.theme().chipBackground());
             chip.addListener(SWT.Selection, listener);
         }
+
+        var spacer = new Label(filterBar, SWT.NONE);
+        GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(spacer);
+
+        var buttons = new Composite(filterBar, SWT.NONE);
+        buttons.setLayout(new RowLayout(SWT.HORIZONTAL));
+
+        Button button = new Button(buttons, SWT.PUSH);
+        button.setText(Messages.LabelQuoteFeedProvider + " ▼"); //$NON-NLS-1$
+
+        MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+        menuMgr.setRemoveAllWhenShown(true);
+        menuMgr.addMenuListener(manager -> {
+            for (String source : rawSources.keySet().stream().sorted().toList())
+            {
+                var item = new SimpleAction(source, SWT.CHECK, a -> {
+                    rawSources.put(source, !rawSources.get(source));
+                    if (rawResults != null)
+                        setSearchResults(rawResults);
+                });
+                item.setChecked(rawSources.get(source));
+                manager.add(item);
+            }
+        });
+
+        Menu contextMenu = menuMgr.createContextMenu(button);
+        button.addDisposeListener(e -> {
+            if (!contextMenu.isDisposed())
+                contextMenu.dispose();
+        });
+
+        button.addListener(SWT.Selection, e -> {
+            Point location = button.toDisplay(0, button.getSize().y);
+            contextMenu.setLocation(location);
+            contextMenu.setVisible(true);
+        });
     }
 
     private void setSearchResults(List<ResultItem> elements)
@@ -314,13 +364,21 @@ public class SearchSecurityWizardPage extends WizardPage
 
     private List<ResultItem> doFilter(List<ResultItem> elements)
     {
-        if (filterByCurrency.isEmpty() && filterByType.isEmpty())
+        var skippedProvider = rawSources.entrySet().stream() //
+                        .filter(entry -> !entry.getValue()) //
+                        .map(Map.Entry::getKey) //
+                        .collect(Collectors.toSet());
+
+        if (skippedProvider.isEmpty() && filterByCurrency.isEmpty() && filterByType.isEmpty())
             return elements;
 
         var filtered = new ArrayList<ResultItem>();
 
         for (ResultItem item : elements)
         {
+            if (skippedProvider.contains(item.getSource()))
+                continue;
+
             var foundCurrency = filterByCurrency.isEmpty();
             for (CurrencyUnit currency : filterByCurrency)
             {
@@ -386,9 +444,20 @@ public class SearchSecurityWizardPage extends WizardPage
                     progressMonitor.worked(1);
                 }
 
+                var sources = result.stream() //
+                                .map(ResultItem::getSource) //
+                                .filter(Objects::nonNull).distinct()
+                                .collect(Collectors.toMap(source -> source, source -> true));
+
+                // keep unchecked sources to remember the user decision
+                rawSources.entrySet().stream() //
+                                .filter(entry -> !entry.getValue())
+                                .forEach(entry -> sources.put(entry.getKey(), false));
+
                 Display.getDefault().asyncExec(() -> {
                     model.clearSelectedItem();
                     this.rawResults = result;
+                    this.rawSources = sources;
                     setSearchResults(result);
 
                     if (!errors.isEmpty())
