@@ -878,19 +878,19 @@ public class QuirinBankAGPDFExtractor extends AbstractPDFExtractor
         // Gesamtbetrag: 2,50 EUR (KEST: -0,44 EUR, SOLI: -0,02 EUR)
         // Ref.: 467260165
         // @formatter:on
-        var feeBlock04 = new Block("^[\\d]+ Bestand.*, .* [\\.,\\d]+[\\s]{1,}[A-Z]{3}.*$");
+        var feeBlock04 = new Block("^[\\d]+ Bestandsprovision, .* [\\.,\\d]+[\\s]{1,}[A-Z]{3}.*$");
         type.addBlock(feeBlock04);
         feeBlock04.setMaxSize(5);
         feeBlock04.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             var accountTransaction = new AccountTransaction();
-                            accountTransaction.setType(AccountTransaction.Type.FEES);
+                            accountTransaction.setType(AccountTransaction.Type.FEES_REFUND);
                             return accountTransaction;
                         })
 
                         .section("note1", "note2", "date", "amount", "currency", "note3", "note4") //
-                        .match("^[\\d]+ (?<note1>Bestand.*), "
+                        .match("^[\\d]+ (?<note1>Bestandsprovision), "
                                         + "(?<note2>.*), "
                                         + "[\\d]{2}\\.[\\d]{2}\\.[\\d]{4} "
                                         + "(?<date>[\\d]{2}\\.[\\d]{2}\\.[\\d]+) "
