@@ -3,17 +3,21 @@ package name.abuchen.portfolio.online.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mockStatic;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.text.ParseException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import com.jayway.jsonpath.Configuration;
@@ -409,7 +413,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object, Optional.empty());
+        LocalDate date = feed.extractDate(object, Optional.empty(), Optional.empty());
 
         assertEquals(LocalDate.of(2020, 4, 06), date);
     }
@@ -422,7 +426,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object, Optional.empty());
+        LocalDate date = feed.extractDate(object, Optional.empty(), Optional.empty());
 
         assertEquals(LocalDate.of(2020, 4, 06), date);
     }
@@ -435,7 +439,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object, Optional.empty());
+        LocalDate date = feed.extractDate(object, Optional.empty(), Optional.empty());
 
         assertEquals(LocalDate.of(2020, 4, 06), date);
     }
@@ -448,7 +452,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object, Optional.empty());
+        LocalDate date = feed.extractDate(object, Optional.empty(), Optional.empty());
 
         assertEquals(LocalDate.of(2020, 4, 06), date);
     }
@@ -461,7 +465,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object, Optional.of("yyyyMMdd"));
+        LocalDate date = feed.extractDate(object, Optional.of("yyyyMMdd"), Optional.empty());
 
         assertEquals(LocalDate.of(2021, 3, 13), date);
     }
@@ -474,11 +478,232 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object, Optional.of("dd.MM.yyyy"));
+        LocalDate date = feed.extractDate(object, Optional.of("dd.MM.yyyy"), Optional.empty());
 
         assertEquals(LocalDate.of(2021, 3, 14), date);
     }
 
+    @Test
+    public void testDateExtractionISODateFormat()
+    {
+        String json = "{\"data\":[{\"date\":2011-12-03,\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+        LocalDate date = feed.extractDate(object, Optional.empty(), Optional.empty());
+
+        assertEquals(LocalDate.of(2011, 12, 3), date);
+    }
+
+    @Test
+    public void testDateExtractionISODateOffsetFormat()
+    {
+        String json = "{\"data\":[{\"date\":\"2011-12-03+01:00\",\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+        LocalDate date = feed.extractDate(object, Optional.empty(), Optional.empty());
+
+        assertEquals(LocalDate.of(2011, 12, 3), date);
+    }
+
+    @Test
+    public void testDateExtractionISODateTimeFormat()
+    {
+        String json = "{\"data\":[{\"date\":\"2011-12-03T10:15:30\",\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+        LocalDate date = feed.extractDate(object, Optional.empty(), Optional.empty());
+
+        assertEquals(LocalDate.of(2011, 12, 3), date);
+    }
+
+    @Test
+    public void testDateExtractionISODateTimeOffsetFormat()
+    {
+        String json = "{\"data\":[{\"date\":\"2011-12-03T10:15:30+01:00\",\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+        LocalDate date = feed.extractDate(object, Optional.empty(), Optional.empty());
+
+        assertEquals(LocalDate.of(2011, 12, 3), date);
+    }
+
+    @Test
+    public void testDateExtractionISODateTimeZoneFormat()
+    {
+        String json = "{\"data\":[{\"date\":\"2011-12-03T10:15:30+01:00[Europe/Berlin]\",\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+        LocalDate date = feed.extractDate(object, Optional.empty(), Optional.empty());
+
+        assertEquals(LocalDate.of(2011, 12, 3), date);
+    }
+
+    @Test
+    public void testDateExtractionCustomDateTimeFormat()
+    {
+        String json = "{\"data\":[{\"date\":\"2011-12-03 10:15:30\",\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+        LocalDate date = feed.extractDate(object, Optional.of("yyyy-MM-dd HH:mm:ss"), Optional.empty());
+
+        assertEquals(LocalDate.of(2011, 12, 3), date);
+    }
+
+    @Test
+    public void testDateExtractionCustomDateTimeOffsetFormat()
+    {
+        String json = "{\"data\":[{\"date\":\"2011-12-03 10:15:30 -13:00\",\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+        LocalDate date = feed.extractDate(object, Optional.of("yyyy-MM-dd HH:mm:ss VV"), Optional.empty());
+
+        assertEquals(LocalDate.of(2011, 12, 3), date);
+    }
+
+    @Test
+    public void testDateExtractionISODateFormatWithTimezoneOffset()
+    {
+        String json = "{\"data\":[{\"date\":\"2011-12-03\",\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+        LocalDate date = feed.extractDate(object, Optional.empty(), Optional.of("+01:00"));
+
+        assertEquals(LocalDate.of(2011, 12, 4), date);
+    }
+
+    @Test
+    public void testDateExtractionISODateOffsetFormatWithTimezoneOffset()
+    {
+        String json = "{\"data\":[{\"date\":\"2011-12-03-01:00\",\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+        LocalDate date = feed.extractDate(object, Optional.empty(), Optional.of("+01:00"));
+
+        assertEquals(LocalDate.of(2011, 12, 4), date);
+    }
+
+    @Test
+    public void testDateExtractionISODateTimeFormatWithTimezoneOffset()
+    {
+        String json = "{\"data\":[{\"date\":\"2011-12-03T10:15:30\",\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+        LocalDate date = feed.extractDate(object, Optional.empty(), Optional.of("-10:16"));
+
+        assertEquals(LocalDate.of(2011, 12, 2), date);
+    }
+
+    @Test
+    public void testDateExtractionCustomDateTimeFormatWithTimezoneOffset()
+    {
+        String json = "{\"data\":[{\"date\":\"2011-12-03 10:15:30\",\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+        LocalDate date = feed.extractDate(object, Optional.of("yyyy-MM-dd HH:mm:ss"), Optional.of("-10:16"));
+
+        assertEquals(LocalDate.of(2011, 12, 2), date);
+    }
+
+    @Test
+    public void testDateExtractionIsoDateTimeFormatWithTimezone()
+    {
+        // Date is in seconds from epoch
+        String json = "{\"data\":[{\"date\":2011-12-03T22:45:00,\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+
+        // During standard time
+        try (MockedStatic<Instant> mockedInstant = mockStatic(Instant.class, CALLS_REAL_METHODS))
+        {
+            Instant fixedInstant = Instant.parse("2024-01-01T12:00:00Z");
+            mockedInstant.when(Instant::now).thenReturn(fixedInstant);
+
+            LocalDate date = feed.extractDate(object, Optional.empty(), Optional.of("Europe/Berlin"));
+
+            assertEquals(LocalDate.of(2011, 12, 3), date);
+        }
+
+        // During daylight saving time
+        try (MockedStatic<Instant> mockedInstant = mockStatic(Instant.class, CALLS_REAL_METHODS))
+        {
+            Instant fixedInstant = Instant.parse("2024-06-01T12:00:00Z");
+            mockedInstant.when(Instant::now).thenReturn(fixedInstant);
+
+            LocalDate date = feed.extractDate(object, Optional.empty(), Optional.of("Europe/Berlin"));
+
+            assertEquals(LocalDate.of(2011, 12, 4), date);
+        }
+    }
+
+    @Test
+    public void testDateExtractionSeconds()
+    {
+        // Date is in seconds from epoch
+        String json = "{\"data\":[{\"date\":1322907330,\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+        LocalDate date = feed.extractDate(object, Optional.empty(), Optional.empty());
+
+        assertEquals(LocalDate.of(2011, 12, 3), date);
+    }
+
+    @Test
+    public void testDateExtractionSecondsWithTimezoneOffset()
+    {
+        // Date is in seconds from epoch
+        String json = "{\"data\":[{\"date\":1322907330,\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+        LocalDate date = feed.extractDate(object, Optional.empty(), Optional.of("-10:16"));
+
+        assertEquals(LocalDate.of(2011, 12, 2), date);
+    }
+
+    @Test
+    public void testDateExtractionSecondsWithTimezone()
+    {
+        // Date is in seconds from epoch
+        String json = "{\"data\":[{\"date\":1322952300,\"close\":\"123.00\"}],\"info\":\"Json Feed for APPLE ORD\"}";
+        GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
+
+        Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
+
+        // During standard time
+        try (MockedStatic<Instant> mockedInstant = mockStatic(Instant.class, CALLS_REAL_METHODS))
+        {
+            Instant fixedInstant = Instant.parse("2024-01-01T12:00:00Z");
+            mockedInstant.when(Instant::now).thenReturn(fixedInstant);
+
+            LocalDate date = feed.extractDate(object, Optional.empty(), Optional.of("Europe/Berlin"));
+
+            assertEquals(LocalDate.of(2011, 12, 3), date);
+        }
+
+        // During daylight saving time
+        try (MockedStatic<Instant> mockedInstant = mockStatic(Instant.class, CALLS_REAL_METHODS))
+        {
+            Instant fixedInstant = Instant.parse("2024-06-01T12:00:00Z");
+            mockedInstant.when(Instant::now).thenReturn(fixedInstant);
+
+            LocalDate date = feed.extractDate(object, Optional.empty(), Optional.of("Europe/Berlin"));
+
+            assertEquals(LocalDate.of(2011, 12, 4), date);
+        }
+    }
 
     @Test
     public void testDateExtractionInvalid()
@@ -488,7 +713,7 @@ public class GenericJSONQuoteFeedTest
         GenericJSONQuoteFeed feed = new GenericJSONQuoteFeed();
 
         Object object = this.readJson(json, security, GenericJSONQuoteFeed.DATE_PROPERTY_NAME_HISTORIC);
-        LocalDate date = feed.extractDate(object, Optional.empty());
+        LocalDate date = feed.extractDate(object, Optional.empty(), Optional.empty());
 
         assertNull(date);
     }
