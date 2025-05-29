@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.check;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.deposit;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.dividend;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.fee;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.feeRefund;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasAmount;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasCurrencyCode;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasDate;
@@ -1708,12 +1709,12 @@ public class QuirinPrivatbankAGPDFExtractorTest
                         hasSource("Depotauszug07.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 464710285"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-03-31"), hasAmount("EUR", 2.04), //
+        assertThat(results, hasItem(feeRefund(hasDate("2024-03-31"), hasAmount("EUR", 2.04), //
                         hasSource("Depotauszug07.txt"),
                         hasNote("Bestandsprovision LU1274520086 01.01.2024 - 31.03.2024 | Ref.-Nr.: 467260165"))));
 
         // assert transaction
-        assertThat(results, hasItem(fee(hasDate("2024-03-31"), hasAmount("EUR", 3.17), //
+        assertThat(results, hasItem(feeRefund(hasDate("2024-03-31"), hasAmount("EUR", 3.17), //
                         hasSource("Depotauszug07.txt"),
                         hasNote("Bestandsprovision LU1233758587 01.01.2024 - 31.03.2024 | Ref.-Nr.: 467260166"))));
 
@@ -1791,5 +1792,41 @@ public class QuirinPrivatbankAGPDFExtractorTest
         // assert transaction
         assertThat(results, hasItem(removal(hasDate("2014-03-09"), hasAmount("EUR", 1198.98), //
                         hasSource("Depotauszug09.txt"), hasNote("Überweisungsauftrag | Ref.-Nr.: UI-0385701357"))));
+    }
+
+    @Test
+    public void testDepotauszug10()
+    {
+        var extractor = new QuirinBankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Depotauszug10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(4L));
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(taxRefund(hasDate("2025-01-02"), hasAmount("EUR", 60.16), //
+                        hasSource("Depotauszug10.txt"), hasNote("Steueroptimierung | Ref.-Nr.: 551694863"))));
+
+        // assert transaction
+        assertThat(results, hasItem(feeRefund(hasDate("2024-12-31"), hasAmount("EUR", 2.31), //
+                        hasSource("Depotauszug10.txt"),
+                        hasNote("Bestandsprovision LU1274520086 01.10.2024 - 31.12.2024 | Ref.-Nr.: 554023678"))));
+
+        // assert transaction
+        assertThat(results, hasItem(feeRefund(hasDate("2024-12-31"), hasAmount("EUR", 6.96), //
+                        hasSource("Depotauszug10.txt"),
+                        hasNote("Bestandsprovision LU1233758587 01.10.2024 - 31.12.2024 | Ref.-Nr.: 554023693"))));
+
+      // assert transaction
+      assertThat(results, hasItem(fee(hasDate("2025-01-31"), hasAmount("EUR", 507.98), //
+                      hasSource("Depotauszug10.txt"), hasNote("Vermögensverwaltungshonorar | Ref.-Nr.: 563214268"))));
+
     }
 }
