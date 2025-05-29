@@ -1242,9 +1242,9 @@ public final class SecuritiesTable implements ModificationListener
                 return null;
 
             if (value.doubleValue() < 0)
-                return Colors.theme().redForeground();
+                return Colors.theme().negativeForeground();
             else if (value.doubleValue() > 0)
-                return Colors.theme().greenForeground();
+                return Colors.theme().positiveForeground();
             else
                 return null;
         }
@@ -1329,9 +1329,9 @@ public final class SecuritiesTable implements ModificationListener
                 return null;
 
             if (value.doubleValue() > 0)
-                return Images.GREEN_ARROW.image();
+                return Colors.theme().useGreenPositive()?Images.GREEN_UP_ARROW.image():Images.RED_UP_ARROW.image();
             if (value.doubleValue() < 0)
-                return Images.RED_ARROW.image();
+                return Colors.theme().useGreenPositive()?Images.RED_DOWN_ARROW.image():Images.GREEN_DOWN_ARROW.image();
             return null;
         }
     }

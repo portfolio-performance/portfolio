@@ -1,3 +1,4 @@
+
 target
 workspace
 .metadata/*
@@ -9,3 +10,8 @@ workspace
 *.iws
 *.iml
 *.ipr
+.sonarlint/
+/.runtime-*
+/META-INF/
+/plugin.xml
+/runtime-*

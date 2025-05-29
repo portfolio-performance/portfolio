@@ -165,8 +165,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 TaxonomyNode node = (TaxonomyNode) element;
                 if (node.getTarget() == null)
                     return null;
-                return node.getActual().isGreaterOrEqualTo(node.getTarget()) ? Colors.theme().greenForeground()
-                                : Colors.theme().redForeground();
+                return node.getActual().isGreaterOrEqualTo(node.getTarget()) ? Colors.theme().positiveForeground()
+                                : Colors.theme().negativeForeground();
             }
         });
         support.addColumn(column);
@@ -197,8 +197,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 TaxonomyNode node = (TaxonomyNode) element;
                 if (node.getTarget() == null)
                     return null;
-                return calculateRelativeDelta(node) >= 0 ? Colors.theme().greenForeground()
-                                : Colors.theme().redForeground();
+                return calculateRelativeDelta(node) >= 0 ? Colors.theme().positiveForeground()
+                                : Colors.theme().negativeForeground();
             }
 
             private double calculateRelativeDelta(TaxonomyNode node)
@@ -233,8 +233,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 TaxonomyNode node = (TaxonomyNode) element;
                 if (node.getTarget() == null)
                     return null;
-                return node.getActual().isGreaterOrEqualTo(node.getTarget()) ? Colors.theme().greenForeground()
-                                : Colors.theme().redForeground();
+                return node.getActual().isGreaterOrEqualTo(node.getTarget()) ? Colors.theme().positiveForeground()
+                                : Colors.theme().negativeForeground();
             }
         });
         support.addColumn(column);
@@ -284,8 +284,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 if (value == null)
                     return null;
                 else
-                    return Double.compare(value, 0d) < 0 ? Colors.theme().redForeground()
-                                    : Colors.theme().greenForeground();
+                    return Double.compare(value, 0d) < 0 ? Colors.theme().negativeForeground()
+                                    : Colors.theme().positiveForeground();
             }
         });
         column.setVisible(false);

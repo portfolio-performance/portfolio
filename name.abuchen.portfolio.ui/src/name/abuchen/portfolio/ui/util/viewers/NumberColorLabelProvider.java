@@ -35,7 +35,7 @@ public final class NumberColorLabelProvider<N extends Number> extends ColumnLabe
         if (value == null || value.doubleValue() == 0)
             return null;
 
-        return value.doubleValue() >= 0 ? Colors.theme().greenForeground() : Colors.theme().redForeground();
+        return value.doubleValue() >= 0 ? Colors.theme().positiveForeground() : Colors.theme().negativeForeground();
     }
 
     @Override
@@ -45,7 +45,10 @@ public final class NumberColorLabelProvider<N extends Number> extends ColumnLabe
         if (value == null || value.doubleValue() == 0)
             return null;
 
-        return value.doubleValue() >= 0 ? Images.GREEN_ARROW.image() : Images.RED_ARROW.image();
+        if (value.doubleValue() >= 0)
+            return Colors.theme().useGreenPositive() ? Images.GREEN_UP_ARROW.image() : Images.RED_UP_ARROW.image();
+        else
+            return Colors.theme().useGreenPositive() ? Images.RED_DOWN_ARROW.image() : Images.GREEN_DOWN_ARROW.image();
     }
 
     @Override

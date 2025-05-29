@@ -1,0 +1,12 @@
+
+@import url("platform:/plugin/name.abuchen.portfolio.ui/css/dark_mac.css");
+
+SecuritiesChart {
+	purchase-event-color: #ff6060;
+	sale-event-color: #60ff60;
+}
+
+CustomColors {
+	positive-foreground: #ff6060;
+	negative-foreground: #60ff60;
+}

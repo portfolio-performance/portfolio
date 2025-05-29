@@ -5,8 +5,11 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -60,7 +63,12 @@ public class YahooFinanceQuoteFeedTest
 
         LatestSecurityPrice price = feed.getLatestQuote(security).get();
 
-        assertThat(price.getDate(), is(LocalDate.of(2023, 7, 13)));
+        final ZoneId utcZoneId = ZoneId.of("Z");
+        final Instant instant = Instant.ofEpochSecond(1689278404);
+        assertThat(instant.atZone(utcZoneId), is(ZonedDateTime.of(2023, 7, 13, 20, 0, 4, 0, utcZoneId)));
+
+        final LocalDate expectedDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+        assertThat(price.getDate(), is(expectedDate));
         assertThat(price.getHigh(), is(LatestSecurityPrice.NOT_AVAILABLE));
         assertThat(price.getLow(), is(LatestSecurityPrice.NOT_AVAILABLE));
         assertThat(price.getValue(), is(Values.Quote.factorize(190.54)));

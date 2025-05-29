@@ -35,7 +35,7 @@ public final class MoneyColorLabelProvider extends ColumnLabelProvider
         if (money == null || money.isZero())
             return null;
 
-        return money.getAmount() >= 0 ? Colors.theme().greenForeground() : Colors.theme().redForeground();
+        return money.getAmount() >= 0 ? Colors.theme().positiveForeground() : Colors.theme().negativeForeground();
     }
 
     @Override
@@ -45,7 +45,10 @@ public final class MoneyColorLabelProvider extends ColumnLabelProvider
         if (money == null || money.isZero())
             return null;
 
-        return money.getAmount() >= 0 ? Images.GREEN_ARROW.image() : Images.RED_ARROW.image();
+        if (money.getAmount() >= 0)
+            return Colors.theme().useGreenPositive() ? Images.GREEN_UP_ARROW.image() : Images.RED_UP_ARROW.image();
+        else
+            return Colors.theme().useGreenPositive() ? Images.RED_DOWN_ARROW.image() : Images.GREEN_DOWN_ARROW.image();
     }
 
     @Override
@@ -57,4 +60,5 @@ public final class MoneyColorLabelProvider extends ColumnLabelProvider
 
         return Values.Money.format(money, client.getBaseCurrency());
     }
+
 }
