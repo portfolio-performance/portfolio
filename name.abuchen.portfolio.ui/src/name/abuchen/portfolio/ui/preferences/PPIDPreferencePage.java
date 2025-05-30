@@ -1,9 +1,7 @@
 package name.abuchen.portfolio.ui.preferences;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -27,6 +25,7 @@ import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.ui.util.OAuthHelper;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 
 public class PPIDPreferencePage extends PreferencePage
@@ -108,7 +107,7 @@ public class PPIDPreferencePage extends PreferencePage
                 {
                     if (oauthClient.isAuthenticated())
                     {
-                        run(() -> {
+                        OAuthHelper.run(() -> {
                             oauthClient.signOut();
                             return null;
                         }, (var o) -> triggerUpdate());
@@ -142,7 +141,7 @@ public class PPIDPreferencePage extends PreferencePage
 
         if (!isLoading && isAuthenticated)
         {
-            run(oauthClient::getAPIAccessToken, this::updateUserAndPlan);
+            OAuthHelper.run(oauthClient::getAPIAccessToken, this::updateUserAndPlan);
         }
         else
         {
@@ -164,27 +163,5 @@ public class PPIDPreferencePage extends PreferencePage
         {
             user.setText(EMPTY_USER_TEXT);
         }
-    }
-
-    @FunctionalInterface
-    public interface AccessTokenRunnable<T>
-    {
-        T get() throws AuthenticationException;
-    }
-
-    private <T> void run(AccessTokenRunnable<T> supplier, Consumer<T> consumer)
-    {
-        Job.createSystem("Asynchronously retrieve token", monitor -> { //$NON-NLS-1$
-            try
-            {
-                var result = supplier.get();
-                Display.getDefault().asyncExec(() -> consumer.accept(result));
-            }
-            catch (AuthenticationException e)
-            {
-                Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(),
-                                Messages.LabelError, e.getMessage()));
-            }
-        }).schedule();
     }
 }

@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.util;
 
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -20,7 +19,6 @@ import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.preferences.PPIDPreferencePage.AccessTokenRunnable;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 
@@ -72,9 +70,10 @@ public class LoginButton
                     {
                         if (oauthClient.isAuthenticated())
                         {
-                            run(() -> {
+                            OAuthHelper.run(() -> {
                                 oauthClient.signOut();
                                 return null;
+                            }, result -> {
                             });
                         }
                         else
@@ -93,21 +92,6 @@ public class LoginButton
                 case IDialogConstants.CLOSE_ID -> close();
                 default -> super.buttonPressed(buttonId);
             }
-        }
-
-        private static <T> void run(AccessTokenRunnable<T> supplier)
-        {
-            Job.createSystem("Asynchronously retrieve token", monitor -> { //$NON-NLS-1$
-                try
-                {
-                    supplier.get();
-                }
-                catch (AuthenticationException e)
-                {
-                    Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(),
-                                    Messages.LabelError, e.getMessage()));
-                }
-            }).schedule();
         }
     }
 
