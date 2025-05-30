@@ -31,10 +31,12 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.oauth.OAuthClient;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.MarketIdentifierCodes;
+import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -60,10 +62,10 @@ public class SearchSecurityWizardPage extends WizardPage
     public SearchSecurityWizardPage(SearchSecurityDataModel model)
     {
         super(PAGE_ID);
+        this.model = model;
+
         setTitle(Messages.SecurityMenuAddNewSecurity);
         setPageComplete(false);
-
-        this.model = model;
     }
 
     @Override
@@ -198,7 +200,25 @@ public class SearchSecurityWizardPage extends WizardPage
             contextMenu.setVisible(true);
         });
 
-        LoginButton.create(buttons);
+        // trigger setPageComplete to add or remove the error message
+        LoginButton.create(buttons, () -> setPageComplete(isPageComplete()));
+    }
+
+    @Override
+    public void setPageComplete(boolean complete)
+    {
+        super.setPageComplete(complete);
+
+        var selectedItem = model.getSelectedItem();
+        if (selectedItem != null && PortfolioPerformanceFeed.ID.equals(selectedItem.getFeedId())
+                        && !OAuthClient.INSTANCE.isAuthenticated())
+        {
+            setErrorMessage(Messages.MsgHistoricalPricesRequireSignIn);
+        }
+        else
+        {
+            setErrorMessage(null);
+        }
     }
 
     private void setSearchResults(List<ResultItem> elements)

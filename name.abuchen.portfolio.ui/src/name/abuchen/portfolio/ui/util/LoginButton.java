@@ -117,6 +117,11 @@ public class LoginButton
 
     public static Button create(Composite parent)
     {
+        return create(parent, null);
+    }
+
+    public static Button create(Composite parent, Runnable listener)
+    {
         var oauthClient = OAuthClient.INSTANCE;
 
         var action = new Button(parent, SWT.NONE);
@@ -124,6 +129,7 @@ public class LoginButton
         action.setText(oauthClient.isAuthenticated() ? Messages.CmdLogout : Messages.CmdLogin);
 
         Runnable updateListener = () -> Display.getDefault().asyncExec(() -> {
+            listener.run();
             action.setEnabled(!oauthClient.isAuthenticationOngoing());
             action.setText(oauthClient.isAuthenticated() ? Messages.CmdLogout : Messages.CmdLogin);
         });
