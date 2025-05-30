@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.text.MessageFormat;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -11,6 +13,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.oauth.AuthenticationException;
@@ -19,6 +22,7 @@ import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.PortfolioPerformanceFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 
@@ -47,8 +51,24 @@ public class LoginButton
             GridLayoutFactory.fillDefaults().numColumns(1).extendedMargins(10, 10, 10, 10).applyTo(container);
 
             var description = new StyledLabel(container, SWT.WRAP);
-            GridDataFactory.swtDefaults().hint(500, SWT.DEFAULT).applyTo(description);
+            GridDataFactory.swtDefaults().hint(600, SWT.DEFAULT).applyTo(description);
             description.setText(Messages.PrefDescriptionPortfolioPerformanceID);
+
+            if (oauthClient.isAuthenticated())
+            {
+                var label = new Label(container, SWT.CENTER);
+                label.setData(UIConstants.CSS.CLASS_NAME, UIConstants.CSS.HEADING1);
+                GridDataFactory.swtDefaults().hint(600, SWT.DEFAULT).applyTo(label);
+                label.setText(""); //$NON-NLS-1$
+
+                OAuthHelper.run(oauthClient::getAPIAccessToken, accessToken -> {
+                    if (accessToken.isPresent())
+                    {
+                        var claims = accessToken.get().getClaims();
+                        label.setText(MessageFormat.format(Messages.MsgSignedInAs, claims.getEmail()));
+                    }
+                });
+            }
 
             return container;
         }

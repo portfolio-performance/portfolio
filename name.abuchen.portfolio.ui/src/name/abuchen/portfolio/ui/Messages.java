@@ -1114,6 +1114,7 @@ public class Messages extends NLS
     public static String MsgRateLimitExceededAndRetrying;
     public static String MsgRestartRequired;
     public static String MsgSecurityHasNoQuotes;
+    public static String MsgSignedInAs;
     public static String MsgThemeRestartRequired;
     public static String MsgUpdatedXEntries;
     public static String MsgUpdateNewInVersionX;
