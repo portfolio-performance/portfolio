@@ -387,6 +387,8 @@ public class SecuritiesChart
 
     private static final String PREF_KEY = "security-chart-details"; //$NON-NLS-1$
 
+    private static final int MAX_SECURITIES_BENCHMARK = 10;
+
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d LLL"); //$NON-NLS-1$
 
     private Composite container;
@@ -923,9 +925,11 @@ public class SecuritiesChart
             else
                 chart.getAxisSet().getYAxis(0).getTick().setFormat(null);
 
-            if (securities.length > 10)
+            if (securities.length > MAX_SECURITIES_BENCHMARK)
             {
-                messagePainter.setMessage(Messages.SecuritiesChart_MaxSecuritiesReachedForBenchmarkHint);
+                messagePainter.setMessage(
+                                MessageFormat.format(Messages.SecuritiesChart_MaxSecuritiesReachedForBenchmarkHint,
+                                                MAX_SECURITIES_BENCHMARK));
                 return;
             }
 
