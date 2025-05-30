@@ -39,6 +39,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.LoginButton;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.swt.PaginatedTable;
 import name.abuchen.portfolio.util.TextUtil;
@@ -196,6 +197,8 @@ public class SearchSecurityWizardPage extends WizardPage
             contextMenu.setLocation(location);
             contextMenu.setVisible(true);
         });
+
+        LoginButton.create(buttons);
     }
 
     private void setSearchResults(List<ResultItem> elements)

@@ -127,8 +127,12 @@ public class OAuthClient // NOSONAR
         }
         catch (IOException e)
         {
+            ongoingAuthentication.completeExceptionally(e);
             throw new AuthenticationException(Messages.OAuthFailedToStartCallbackServer, e);
         }
+
+        // inform on ongoing authentication
+        informListeners();
 
         @SuppressWarnings("nls")
         String authzUrl = config.baseUrl + config.authEndpoint //
@@ -162,7 +166,7 @@ public class OAuthClient // NOSONAR
                 ongoingAuthentication.cancel(true);
                 informListeners();
             }
-        }, 2, TimeUnit.MINUTES);
+        }, 1, TimeUnit.MINUTES);
 
     }
 
@@ -172,7 +176,8 @@ public class OAuthClient // NOSONAR
 
         if (!state.equals(authorizationCode.getState()))
         {
-            ongoingAuthentication.completeExceptionally(new AuthenticationException(Messages.OAuthAuthenticationFailedDueToStateMismatch));
+            ongoingAuthentication.completeExceptionally(
+                            new AuthenticationException(Messages.OAuthAuthenticationFailedDueToStateMismatch));
             return;
         }
 
@@ -190,9 +195,8 @@ public class OAuthClient // NOSONAR
         }
         catch (IOException e)
         {
-            ongoingAuthentication
-                            .completeExceptionally(
-                                            new AuthenticationException(Messages.OAuthFailedToRequestAccessToken, e));
+            ongoingAuthentication.completeExceptionally(
+                            new AuthenticationException(Messages.OAuthFailedToRequestAccessToken, e));
         }
     }
 
