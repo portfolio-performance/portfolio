@@ -170,7 +170,7 @@ public class TradeCalendarManager
         tc.add(fixed(INDIGENOUS_PEOPLE, Month.JUNE, 20));
         tc.add(fixed(SAINT_PETER_PAUL, Month.JUNE, 29));
         tc.add(fixed(VIRGIN_OF_CARMEN, Month.JULY, 16));
-        tc.add(fixed(ASCENSION_DAY, Month.AUGUST, 15));
+        tc.add(fixed(ASSUMPTION_DAY, Month.AUGUST, 15));
         tc.add(fixed(CHILE, Month.SEPTEMBER, 18));
         tc.add(fixed(CHILE_ARMY, Month.SEPTEMBER, 19));
         tc.add(fixed(CHILE_EXTRA, Month.SEPTEMBER, 20));
