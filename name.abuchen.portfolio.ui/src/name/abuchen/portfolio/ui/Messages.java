@@ -1084,6 +1084,7 @@ public class Messages extends NLS
     public static String MsgHintNoAttributesConfigured;
     public static String MsgHintNoEvents;
     public static String MsgHintUseOutboundDeliveryForZeroTotal;
+    public static String MsgHistoricalPricesRequireSignIn;
     public static String MsgIncorrectConvertedSubTotal;
     public static String MsgIncorrectSubTotal;
     public static String MsgIncorrectTotal;
