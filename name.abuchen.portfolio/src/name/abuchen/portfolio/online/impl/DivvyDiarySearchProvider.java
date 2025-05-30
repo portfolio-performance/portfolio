@@ -360,6 +360,12 @@ public class DivvyDiarySearchProvider implements SecuritySearchProvider
             return NAME;
         }
 
+        @Override
+        public String getFeedId()
+        {
+            return null;
+        }
+
         @SuppressWarnings("nls")
         @Override
         public String toString()

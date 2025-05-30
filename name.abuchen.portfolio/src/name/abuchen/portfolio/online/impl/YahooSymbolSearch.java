@@ -114,6 +114,12 @@ import name.abuchen.portfolio.util.WebAccess.WebAccessException;
         }
 
         @Override
+        public String getFeedId()
+        {
+            return YahooFinanceQuoteFeed.ID;
+        }
+
+        @Override
         public Security create(Client client)
         {
             var security = new Security(name, client.getBaseCurrency());

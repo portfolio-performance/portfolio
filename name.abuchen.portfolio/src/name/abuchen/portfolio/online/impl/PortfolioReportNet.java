@@ -164,6 +164,12 @@ public class PortfolioReportNet
         {
             return "Porfolio Report"; //$NON-NLS-1$
         }
+
+        @Override
+        public String getFeedId()
+        {
+            return PortfolioReportQuoteFeed.ID;
+        }
     }
 
     private static final String PROPERTY_SECURITY_TYPE = "securityType"; //$NON-NLS-1$

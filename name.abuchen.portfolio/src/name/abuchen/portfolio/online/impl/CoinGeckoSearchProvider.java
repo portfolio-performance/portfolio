@@ -73,6 +73,12 @@ public class CoinGeckoSearchProvider implements SecuritySearchProvider
         }
 
         @Override
+        public String getFeedId()
+        {
+            return CoinGeckoQuoteFeed.ID;
+        }
+
+        @Override
         public Security create(Client client)
         {
             Security security = new Security(coin.getName(), client.getBaseCurrency());

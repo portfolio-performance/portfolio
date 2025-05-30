@@ -99,6 +99,12 @@ public class FinnhubSearchProvider implements SecuritySearchProvider
         }
 
         @Override
+        public String getFeedId()
+        {
+            return FinnhubQuoteFeed.ID;
+        }
+
+        @Override
         public Security create(Client client)
         {
             Security security = new Security(description, client.getBaseCurrency());

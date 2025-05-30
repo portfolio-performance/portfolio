@@ -44,6 +44,13 @@ public interface SecuritySearchProvider
 
         String getSource();
 
+        /**
+         * Returns the ID of the feed that provides historical prices for the
+         * instrument. Returns null, if no feed will be configured (for example
+         * in the case of DivvyDiary search provider).
+         */
+        String getFeedId();
+
         default String getCurrencyCode()
         {
             return null;

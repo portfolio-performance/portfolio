@@ -147,6 +147,12 @@ public class PortfolioPerformanceSearchProvider implements SecuritySearchProvide
         }
 
         @Override
+        public String getFeedId()
+        {
+            return provider;
+        }
+
+        @Override
         public List<ResultItem> getMarkets()
         {
             return markets;

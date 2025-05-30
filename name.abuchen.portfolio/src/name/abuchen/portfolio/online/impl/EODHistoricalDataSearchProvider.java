@@ -225,6 +225,12 @@ public class EODHistoricalDataSearchProvider implements SecuritySearchProvider
             return NAME;
         }
 
+        @Override
+        public String getFeedId()
+        {
+            return EODHistoricalDataQuoteFeed.ID;
+        }
+
         @SuppressWarnings("nls")
         @Override
         public String toString()

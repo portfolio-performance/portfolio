@@ -128,6 +128,12 @@ public class TwelveDataSearchProvider implements SecuritySearchProvider
         }
 
         @Override
+        public String getFeedId()
+        {
+            return TwelveDataQuoteFeed.ID;
+        }
+
+        @Override
         public boolean hasPrices()
         {
             return true;

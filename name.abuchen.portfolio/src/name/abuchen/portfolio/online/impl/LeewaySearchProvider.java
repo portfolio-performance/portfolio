@@ -139,6 +139,12 @@ public class LeewaySearchProvider implements SecuritySearchProvider
         }
 
         @Override
+        public String getFeedId()
+        {
+            return LeewayQuoteFeed.ID;
+        }
+
+        @Override
         public boolean hasPrices()
         {
             return true;
