@@ -15,6 +15,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
 
 public class ChartPane implements InformationPanePage
 {
@@ -70,7 +71,7 @@ public class ChartPane implements InformationPanePage
     {
         var security = Adaptor.adapt(Security.class, input);
 
-        if (security != null)
+        if (security != null || input instanceof SecuritySelection)
         {
             securityChartPane.setInput(input);
             layout.topControl = securityChartControl;

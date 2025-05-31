@@ -29,6 +29,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.DateSelectionDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
@@ -217,8 +218,16 @@ public class StatementOfAssetsView extends AbstractFinanceView
         hookContextMenu(assetViewer.getTableViewer().getControl(),
                         manager -> assetViewer.hookMenuListener(manager, StatementOfAssetsView.this));
 
-        assetViewer.getTableViewer().addSelectionChangedListener(
-                        e -> setInformationPaneInput(e.getStructuredSelection().getFirstElement()));
+        assetViewer.getTableViewer().addSelectionChangedListener(e -> {
+            var selection = e.getStructuredSelection();
+
+            // test for a single selection because it might be a cash account or
+            // taxonomy classification
+            if (selection.size() == 1)
+                setInformationPaneInput(selection.getFirstElement());
+            else
+                setInformationPaneInput(SecuritySelection.from(getClient(), selection));
+        });
 
         notifyModelUpdated();
 
