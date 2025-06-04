@@ -54,7 +54,6 @@ public class ModenaEstoniaPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:off
                                         // 2025-03-14 07:00:00 Vault signup bonus €1.42
                                         // 2025-03-21 21:59:09 Vault campaign bonus €50.00
-                                        // 2025-05-01 08:00:10 Vault accrued revenue €0.61
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("type") //
@@ -65,10 +64,7 @@ public class ModenaEstoniaPDFExtractor extends AbstractPDFExtractor
                                                                         + ").*$") //
                                                         .assign((t, v) -> {
                                                             if ("Vault signup bonus".equals(v.get("type")) //
-                                                                            || "Vault campaign bonus"
-                                                                                            .equals(v.get("type"))
-                                                                            || "Vault accrued revenue"
-                                                                                            .equals(v.get("type")))
+                                                                            || "Vault campaign bonus".equals(v.get("type")))
                                                                 t.setType(AccountTransaction.Type.DEPOSIT);
                                                         }),
                                         // @formatter:off

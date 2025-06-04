@@ -103,7 +103,7 @@ public class ModenaEstoniaPDFExtractorTest
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
-        assertThat(results, hasItem(deposit(hasDate("2025-05-01T08:00:10"), hasAmount("EUR", 0.61), //
+        assertThat(results, hasItem(interest(hasDate("2025-05-01T08:00:10"), hasAmount("EUR", 0.61), //
                         hasSource("Kontoauszug03.txt"), hasNote("Vault accrued revenue"))));
     }
 }
