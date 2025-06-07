@@ -268,6 +268,43 @@ public class BoursoBankPDFExtractorTest
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
     }
+    
+
+    @Test
+    public void testCompteAchat07()
+    {
+        var security = new Security("NVIDIA", CurrencyUnit.EUR);
+        security.setIsin("US67066G1040");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new BoursoBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "AChat07.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2024-06-10T18:05:46"), hasShares(18.00), //
+                        hasSource("AChat07.txt"), //
+                        hasNote("non spécifié | Référence : 09R240610U2204"), //
+                        hasAmount("EUR", 2052.28), hasGrossValue("EUR", 2045.33), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 6.95), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
 
     @Test
     public void testCompteVente01()
@@ -360,6 +397,37 @@ public class BoursoBankPDFExtractorTest
                         hasNote("Référence : 203314830732"), //
                         hasAmount("EUR", 2003.12), hasGrossValue("EUR", 2003.12), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testCompteVente04()
+    {
+        var extractor = new BoursoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Vente04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US46625H1005"), hasWkn(null), hasTicker(null), //
+                        hasName("JPMORGAN CHASE"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-11-07T16:22:40"), hasShares(10.00), //
+                        hasSource("Vente04.txt"), //
+                        hasNote("à cours limite | Référence : 09R241107U2540"), //
+                        hasAmount("EUR", 2215.40), hasGrossValue("EUR", 2222.35), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 6.95))));
     }
 
     @Test

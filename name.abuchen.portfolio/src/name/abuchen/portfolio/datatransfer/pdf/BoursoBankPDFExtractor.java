@@ -180,7 +180,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                                         .attributes("fxGross", "termCurrency", "exchangeRate", "baseCurrency") //
                                                         .find("Montant transaction brut.*") //
                                                         .match("^(?<fxGross>[\\d\\s]+,[\\d]{2}) (?<termCurrency>[\\w]{3}) .*$") //
-                                                        .match("^Contrevalorisation en .* (?<exchangeRate>[\\.,\\d]+) [\\d\\s]+,[\\d]{2} (?<baseCurrency>[\\w]{3})$") //
+                                                        .match("^Contrevalorisation en [\\w]+ (?<exchangeRate>[\\.,\\d]+) [\\d\\s]+,[\\d]{2} (?<baseCurrency>[\\w]{3})$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
