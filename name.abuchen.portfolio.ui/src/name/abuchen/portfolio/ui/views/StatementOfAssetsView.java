@@ -39,6 +39,7 @@ import name.abuchen.portfolio.ui.views.panes.ChartPane;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesDataQualityPane;
 import name.abuchen.portfolio.ui.views.panes.HistoricalPricesPane;
 import name.abuchen.portfolio.ui.views.panes.InformationPanePage;
+import name.abuchen.portfolio.ui.views.panes.AbsolutePerformancePane;
 import name.abuchen.portfolio.ui.views.panes.SecurityEventsPane;
 import name.abuchen.portfolio.ui.views.panes.TradesPane;
 import name.abuchen.portfolio.ui.views.panes.TransactionsPane;
@@ -244,6 +245,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
         pages.add(make(TradesPane.class));
         pages.add(make(SecurityEventsPane.class));
         pages.add(make(HistoricalPricesDataQualityPane.class));
+        pages.add(make(AbsolutePerformancePane.class));
     }
 
     @Override
