@@ -287,7 +287,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
             if (hasPlan())
                 webaccess.addHeader("x-cg-pro-api-key", this.apiKey); //$NON-NLS-1$
 
-            ResponseData response = cache.lookup(coinGeckoId);
+            ResponseData response = cache.lookup(coinGeckoId + security.getCurrencyCode());
 
             if (response == null || response.days < days)
             {
@@ -302,7 +302,7 @@ public class CoinGeckoQuoteFeed implements QuoteFeed
                 response.json = webaccess.get();
 
                 if (response.json != null)
-                    cache.put(coinGeckoId, response);
+                    cache.put(coinGeckoId + security.getCurrencyCode(), response);
             }
 
             if (collectRawResponse)
