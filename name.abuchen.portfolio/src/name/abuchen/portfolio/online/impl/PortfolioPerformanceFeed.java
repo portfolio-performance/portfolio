@@ -137,12 +137,18 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
 
             if (configHasNotChanged)
             {
-                var utcToday = ZonedDateTime.now(ZoneOffset.UTC).toLocalDate();
+                var utcNow = ZonedDateTime.now(ZoneOffset.UTC);
+                var utcToday = utcNow.toLocalDate();
+
+                // Check if symbol ends with ".TG" (Tradegate) and if it's after
+                // 16:00 UTC
+                var isTradegate = security.getTickerSymbol().endsWith(".TG"); //$NON-NLS-1$
+                var after16UTC = utcNow.getHour() > 15;
 
                 // For EU equities, it will be available only the next day.
                 // For US equities, a couple hours after market closing at 22:00
                 // UTC.
-                var expectedAvailablePrice = utcToday.minusDays(1);
+                var expectedAvailablePrice = (isTradegate && after16UTC) ? utcToday : utcToday.minusDays(1);
 
                 // For the time being, use a minimal calendar (weekends,
                 // christmas, new year). We can possibly switch to
