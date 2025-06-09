@@ -461,6 +461,37 @@ public class Direkt1822BankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf04()
+    {
+        var extractor = new Direkt1822BankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("LU0225880524"), hasWkn("A0F426"), hasTicker(null), //
+                        hasName("DWS ESG EURO MONEY MARKET FUND INHABER-ANTEILE O.N."), //
+                        hasCurrencyCode("EUR"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(sale( //
+                        hasDate("2024-12-10T00:00"), hasShares(20.00), //
+                        hasSource("Verkauf04.txt"), //
+                        hasNote("Auftragsnummer 123456/99.00"), //
+                        hasAmount("EUR", 2034.92), hasGrossValue("EUR", 2037.80), //
+                        hasTaxes("EUR", 2.73 + 0.15), hasFees("EUR", 0.00))));
+    }
+
+    @Test
     public void testDividende01()
     {
         var extractor = new Direkt1822BankPDFExtractor(new Client());

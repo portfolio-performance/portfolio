@@ -539,30 +539,32 @@ public class Direkt1822BankPDFExtractor extends AbstractPDFExtractor
 
                         // @formatter:off
                         // Kapitalertragsteuer 25 % auf 93,63 EUR 23,41- EUR
+                        // Kapitalertragsteuer 25,00% auf 10,90 EUR 2,73- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Kapitalertrags(s)?teuer [\\.,\\d]+ % .* (?<tax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
+                        .match("^Kapitalertrags(s)?teuer [\\.,\\d]+.* (?<tax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Solidaritätszuschlag 5,5 % auf 23,41 EUR 1,28- EUR
+                        // Solidaritätszuschlag 5,50% auf 2,73 EUR 0,15- EUR
                         // @formatter:on
                         .section("tax", "currency").optional() //
-                        .match("^Solidarit.tszuschlag [\\.,\\d]+ .* (?<tax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
+                        .match("^Solidarit.tszuschlag [\\.,\\d]+.* (?<tax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processTaxEntries(t, v, type))
 
                         // @formatter:off
                         // Einbehaltene Quellensteuer 15 % auf 5,22 USD 0,66- EUR
                         // @formatter:on
                         .section("withHoldingTax", "currency").optional() //
-                        .match("^Einbehaltene Quellensteuer [\\.,\\d]+ .* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
+                        .match("^Einbehaltene Quellensteuer [\\.,\\d]+.* (?<withHoldingTax>[\\.,\\d]+)\\- (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
 
                         // @formatter:off
                         // Anrechenbare Quellensteuer 15 % auf 4,38 EUR 0,66 EUR
                         // @formatter:on
                         .section("creditableWithHoldingTax", "currency").optional() //
-                        .match("^Anrechenbare Quellensteuer [\\.,\\d]+ .* (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .match("^Anrechenbare Quellensteuer [\\.,\\d]+.* (?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
