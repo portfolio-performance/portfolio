@@ -51,7 +51,6 @@ import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.CoinGeckoSearchProvider;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet;
-import name.abuchen.portfolio.online.impl.PortfolioReportNetSearchProvider;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -174,9 +173,6 @@ public class NewDomainElementHandler
             });
 
             var allCryptos = new ArrayList<ResultItem>();
-
-            // add Portfolio Report cryptos
-            allCryptos.addAll(Factory.getSearchProvider(PortfolioReportNetSearchProvider.class).getCoins());
 
             // add Coingecko unless the crypto already exists. Because the
             // symbol is not unique, we compare symbol and name

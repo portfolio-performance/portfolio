@@ -1,12 +1,9 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.osgi.framework.FrameworkUtil;
@@ -181,21 +178,6 @@ public class PortfolioReportNet
 
     private static final String HOST = "api.portfolio-report.net"; //$NON-NLS-1$
 
-    public List<ResultItem> search(String query, String type) throws IOException
-    {
-        var version = FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString();
-
-        WebAccess webAccess = new WebAccess(HOST, "/v1/securities/search") //$NON-NLS-1$
-                        .addUserAgent("PortfolioPerformance/" + version); //$NON-NLS-1$
-
-        webAccess.addParameter("q", query); //$NON-NLS-1$
-
-        if (type != null)
-            webAccess.addParameter(PROPERTY_SECURITY_TYPE, type);
-
-        return readItems(webAccess.get());
-    }
-
     public Optional<ResultItem> getUpdatedValues(String onlineId) throws IOException
     {
         var version = FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString();
@@ -214,19 +196,6 @@ public class PortfolioReportNet
             onlineItem = Optional.of(OnlineItem.from(response));
 
         return onlineItem;
-    }
-
-    private List<ResultItem> readItems(String html)
-    {
-        List<ResultItem> onlineItems = new ArrayList<>();
-        JSONArray response = (JSONArray) JSONValue.parse(html);
-        if (response != null)
-        {
-            for (int ii = 0; ii < response.size(); ii++)
-                onlineItems.add(OnlineItem.from((JSONObject) response.get(ii)));
-        }
-
-        return onlineItems;
     }
 
     public static boolean updateWith(Security security, ResultItem item)
