@@ -375,8 +375,6 @@ public enum WidgetFactory
                                     }) //
                                     .build()),
 
-    WEBSITE(Messages.Website, Messages.LabelCommon, BrowserWidget::new),
-
     DISTANCE_TO_ATH(Messages.SecurityListFilterDistanceFromAth, Messages.LabelCommon, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
@@ -413,6 +411,8 @@ public enum WidgetFactory
                                                                         .getDate()));
                                     }) //
                                     .build()),
+
+    WEBSITE(Messages.Website, Messages.LabelCommon, BrowserWidget::new),
 
     REBALANCING_TARGET_CHART(
                     MessageFormat.format(Messages.LabelColonSeparated, Messages.LabelTaxonomies,
