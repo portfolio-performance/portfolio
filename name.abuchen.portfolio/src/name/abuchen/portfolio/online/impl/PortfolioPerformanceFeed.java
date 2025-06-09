@@ -20,6 +20,7 @@ import org.apache.hc.core5.http.HttpStatus;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.osgi.framework.FrameworkUtil;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
@@ -231,8 +232,11 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
 
             var to = LocalDate.now().atStartOfDay(ZoneOffset.UTC).toEpochSecond();
 
+            var version = FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString();
+
             @SuppressWarnings("nls")
             WebAccess webaccess = new WebAccess(ENDPOINT, isSample ? PATH_PREFIX_SAMPLE + PATH_HISTORIC : PATH_HISTORIC) //
+                            .addUserAgent("PortfolioPerformance/" + version) //$NON-NLS-1$
                             .addParameter("symbol", security.getTickerSymbol()) //
                             .addParameter("from",
                                             String.valueOf(startDate.atStartOfDay().toEpochSecond(ZoneOffset.UTC))) //
