@@ -37,6 +37,14 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.77.1" date="2025-06-09">
+      <description>
+        <ul>
+          <li>Fix: Resolved an issue where transactions were not shown in the information section of the security list.</li>
+          <li xml:lang="de">Fix: Ein Problem wurde behoben, bei dem Buchungen im Informationsbereich der Wertpapierliste nicht angezeigt wurden.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.77.0" date="2025-06-09">
       <description>
         <ul>
