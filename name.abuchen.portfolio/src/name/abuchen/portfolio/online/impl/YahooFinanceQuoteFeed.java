@@ -19,7 +19,6 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -37,6 +36,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.util.Dates;
+import name.abuchen.portfolio.util.OnlineHelper;
 import name.abuchen.portfolio.util.WebAccess;
 
 public class YahooFinanceQuoteFeed implements QuoteFeed
@@ -59,7 +59,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     public String rpcLatestQuote(Security security) throws IOException
     {
         return new WebAccess("query1.finance.yahoo.com", "/v8/finance/chart/" + security.getTickerSymbol())
-                        .addUserAgent("Mozilla/5.0 (" + ThreadLocalRandom.current().nextInt(100000, 999999) + ")") //
+                        .addUserAgent(OnlineHelper.getYahooFinanceUserAgent()) //
                         .addParameter("lang", "en-US").addParameter("region", "US")
                         .addParameter("corsDomain", "finance.yahoo.com").get();
     }
@@ -199,7 +199,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             range = "20y"; //$NON-NLS-1$
 
         return new WebAccess("query1.finance.yahoo.com", "/v8/finance/chart/" + security.getTickerSymbol()) //
-                        .addUserAgent("Mozilla/5.0 (" + ThreadLocalRandom.current().nextInt(100000, 999999) + ")") //
+                        .addUserAgent(OnlineHelper.getYahooFinanceUserAgent()) //
                         .addParameter("range", range) //
                         .addParameter("interval", "1d").get();
 

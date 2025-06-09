@@ -92,8 +92,11 @@ public class GenericJSONQuoteFeed implements QuoteFeed
 
     public String getJson(String url) throws IOException, URISyntaxException
     {
-        return new WebAccess(url).addUserAgent(OnlineHelper.getUserAgent()).addHeader("Accept", "application/json") //$NON-NLS-1$ //$NON-NLS-2$
-                        .get();
+        var userAgent = url.contains("finance.yahoo.com") //$NON-NLS-1$
+                        ? OnlineHelper.getYahooFinanceUserAgent()
+                        : OnlineHelper.getUserAgent();
+
+        return new WebAccess(url).addUserAgent(userAgent).addHeader("Accept", "application/json").get(); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     private QuoteFeedData getHistoricalQuotes(Security security, String feedURL, boolean collectRawResponse,
