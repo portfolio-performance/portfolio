@@ -131,6 +131,7 @@ public class PDFImportAssistant
         extractors.add(new UnicreditPDFExtractor(client));
         extractors.add(new VanguardGroupEuropePDFExtractor(client));
         extractors.add(new VBankAGPDFExtractor(client));
+        extractors.add(new VDKBankNVPDFExtractor(client));
         extractors.add(new VZVermoegenszentrumAGPDFExtractor(client));
         extractors.add(new WealthsimpleInvestmentsIncPDFExtractor(client));
         extractors.add(new WirBankPDFExtractor(client));
