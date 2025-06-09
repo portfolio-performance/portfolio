@@ -66,6 +66,7 @@ public final class PortfolioPerformanceFeed implements QuoteFeed
                     "AMZN", // Amazon
                     "NVD.F", // Nvidia
                     "MBG.DE", // Mercedes Benz
+                    "DTG.DE", // Daimler Truck Holding
                     "IQQY.DE", // iShares Core MSCI Europe UCITS ETF EUR (Dist)
                     "SXRS.DE", // iShares Diversified Commodity Swap UCITS ETF
                     "EUNH.DE", // iShares Core Euro Government Bond UCITS ETF

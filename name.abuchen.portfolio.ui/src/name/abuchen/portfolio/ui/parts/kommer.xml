@@ -82,13 +82,12 @@
     </security>
     <security>
       <uuid>c770a389-0a84-442c-ad85-2a58c3066924</uuid>
-      <onlineId>100f790cef024940acd607409be21252</onlineId>
       <name>iShares Core MSCI Europe UCITS ETF EUR (Dist)</name>
       <currencyCode>EUR</currencyCode>
       <isin>IE00B1YZSC51</isin>
-      <tickerSymbol>IQQY</tickerSymbol>
+      <tickerSymbol>IQQY.DE</tickerSymbol>
       <wkn>A0MZWQ</wkn>
-      <feed>PORTFOLIO-REPORT</feed>
+      <feed>PP</feed>
       <prices>
         <price t="2018-12-28" v="2106000000"/>
       </prices>
@@ -125,20 +124,17 @@
         </map>
       </attributes>
       <events/>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;firstPriceDate&quot;:{&quot;year&quot;:2007,&quot;month&quot;:11,&quot;day&quot;:27},&quot;lastPriceDate&quot;:{&quot;year&quot;:2021,&quot;month&quot;:1,&quot;day&quot;:8}}]</property>
       <isRetired>false</isRetired>
       <updatedAt>2024-02-16T07:17:00.710442Z</updatedAt>
     </security>
     <security>
       <uuid>daab10fd-c3fb-4430-a368-0ce0cdf551c8</uuid>
-      <onlineId>81f61e43cac64c7496ff2680dcb48447</onlineId>
       <name>iShares MSCI North America UCITS ETF</name>
       <currencyCode>EUR</currencyCode>
       <isin>IE00B14X4M10</isin>
-      <tickerSymbol>IQQN</tickerSymbol>
+      <tickerSymbol>IQQN.DE</tickerSymbol>
       <wkn>A0J201</wkn>
-      <feed>PORTFOLIO-REPORT</feed>
+      <feed>PP</feed>
       <prices>
         <price t="2018-12-28" v="4081500000"/>
       </prices>
@@ -175,20 +171,17 @@
         </map>
       </attributes>
       <events/>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;firstPriceDate&quot;:{&quot;year&quot;:2006,&quot;month&quot;:9,&quot;day&quot;:8},&quot;lastPriceDate&quot;:{&quot;year&quot;:2021,&quot;month&quot;:1,&quot;day&quot;:8}}]</property>
       <isRetired>false</isRetired>
       <updatedAt>2024-02-16T07:17:00.710442Z</updatedAt>
     </security>
     <security>
       <uuid>ff0a2b77-9749-45b0-8333-cb1d9787812c</uuid>
-      <onlineId>fa3c40e09ccb4d8e83bcaf7c4ccfc3b3</onlineId>
       <name>Lyxor MSCI Pacific UCITS ETF</name>
       <currencyCode>EUR</currencyCode>
       <isin>LU0392495023</isin>
-      <tickerSymbol>X014</tickerSymbol>
+      <tickerSymbol>X014.DE</tickerSymbol>
       <wkn>ETF114</wkn>
-      <feed>PORTFOLIO-REPORT</feed>
+      <feed>PP</feed>
       <prices>
         <price t="2018-12-28" v="4696000000"/>
       </prices>
@@ -225,20 +218,17 @@
         </map>
       </attributes>
       <events/>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;firstPriceDate&quot;:{&quot;year&quot;:2008,&quot;month&quot;:12,&quot;day&quot;:18},&quot;lastPriceDate&quot;:{&quot;year&quot;:2021,&quot;month&quot;:1,&quot;day&quot;:8}}]</property>
       <isRetired>false</isRetired>
       <updatedAt>2024-02-16T07:17:00.710442Z</updatedAt>
     </security>
     <security>
       <uuid>47094920-535c-4508-9a92-80c01933f567</uuid>
-      <onlineId>4d1267ed495e43a987b098cf1d08620d</onlineId>
       <name>iShares MSCI EM UCITS ETF (Dist)</name>
       <currencyCode>EUR</currencyCode>
       <isin>IE00B0M63177</isin>
-      <tickerSymbol>IQQE</tickerSymbol>
+      <tickerSymbol>IQQE.DE</tickerSymbol>
       <wkn>A0HGWC</wkn>
-      <feed>PORTFOLIO-REPORT</feed>
+      <feed>PP</feed>
       <prices>
         <price t="2018-12-28" v="3264200000"/>
       </prices>
@@ -275,20 +265,17 @@
         </map>
       </attributes>
       <events/>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;firstPriceDate&quot;:{&quot;year&quot;:2006,&quot;month&quot;:2,&quot;day&quot;:24},&quot;lastPriceDate&quot;:{&quot;year&quot;:2021,&quot;month&quot;:1,&quot;day&quot;:8}}]</property>
       <isRetired>false</isRetired>
       <updatedAt>2024-02-16T07:17:00.710442Z</updatedAt>
     </security>
     <security>
       <uuid>99b9419f-8c70-422e-8e8e-05eadb4507ec</uuid>
-      <onlineId>2f7bfe1c795641919877be47a1611310</onlineId>
       <name>iShares Core Euro Government Bond UCITS ETF (Dist)</name>
       <currencyCode>EUR</currencyCode>
       <isin>IE00B4WXJJ64</isin>
-      <tickerSymbol>EUNH</tickerSymbol>
+      <tickerSymbol>EUNH.DE</tickerSymbol>
       <wkn>A0RL83</wkn>
-      <feed>PORTFOLIO-REPORT</feed>
+      <feed>PP</feed>
       <prices>
         <price t="2018-12-19" v="12265500000"/>
       </prices>
@@ -325,20 +312,17 @@
         </map>
       </attributes>
       <events/>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;firstPriceDate&quot;:{&quot;year&quot;:2009,&quot;month&quot;:10,&quot;day&quot;:21},&quot;lastPriceDate&quot;:{&quot;year&quot;:2021,&quot;month&quot;:1,&quot;day&quot;:7}}]</property>
       <isRetired>false</isRetired>
       <updatedAt>2024-02-16T07:17:00.710443Z</updatedAt>
     </security>
     <security>
       <uuid>97000a3b-0a3d-4779-ad6c-1234bfea5e72</uuid>
-      <onlineId>85b6f316a0004215ba7884d2ac4bbcec</onlineId>
       <name>iShares Diversified Commodity Swap UCITS ETF</name>
       <currencyCode>EUR</currencyCode>
       <isin>IE00BDFL4P12</isin>
-      <tickerSymbol>SXRS</tickerSymbol>
+      <tickerSymbol>SXRS.DE</tickerSymbol>
       <wkn>A2DK6R</wkn>
-      <feed>PORTFOLIO-REPORT</feed>
+      <feed>PP</feed>
       <prices>
         <price t="2019-01-08" v="422500000"/>
       </prices>
@@ -375,8 +359,6 @@
         </map>
       </attributes>
       <events/>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;firstPriceDate&quot;:{&quot;year&quot;:2009,&quot;month&quot;:11,&quot;day&quot;:25},&quot;lastPriceDate&quot;:{&quot;year&quot;:2021,&quot;month&quot;:1,&quot;day&quot;:8}}]</property>
       <isRetired>false</isRetired>
       <updatedAt>2024-02-16T07:17:00.710443Z</updatedAt>
     </security>
@@ -406,7 +388,7 @@
       <name>Bitcoin</name>
       <currencyCode>EUR</currencyCode>
       <tickerSymbol>BTC</tickerSymbol>
-      <feed>PORTFOLIO-REPORT</feed>
+      <feed>COINGECKO</feed>
       <prices>
         <price t="2013-04-27" v="10318620000"/>
       </prices>
@@ -415,6 +397,7 @@
         <map/>
       </attributes>
       <events/>
+      <property type="FEED" name="COINGECKOCOINID">bitcoin</property>
       <isRetired>false</isRetired>
       <updatedAt>2024-02-16T07:19:57.696737Z</updatedAt>
     </security>
@@ -439,20 +422,17 @@
           <details>20:1</details>
         </event>
       </events>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;symbol&quot;:&quot;AMZ&quot;,&quot;firstPriceDate&quot;:&quot;2000-01-03&quot;,&quot;lastPriceDate&quot;:&quot;2024-05-21&quot;}]</property>
       <isRetired>false</isRetired>
       <updatedAt>2024-05-21T21:05:08.690262Z</updatedAt>
     </security>
     <security>
       <uuid>15b10f6f-15a9-4129-83cb-a99dc43d9fa7</uuid>
-      <onlineId>d88b08bfc1ea4f288d8124de2819c3a5</onlineId>
       <name>Mercedes Benz Group AG (former Daimler)</name>
       <currencyCode>EUR</currencyCode>
       <isin>DE0007100000</isin>
-      <tickerSymbol>MBG</tickerSymbol>
+      <tickerSymbol>MBG.DE</tickerSymbol>
       <wkn>710000</wkn>
-      <feed>PORTFOLIO-REPORT</feed>
+      <feed>PP</feed>
       <prices>
         <price t="2022-02-01" v="7016000000"/>
       </prices>
@@ -465,20 +445,17 @@
         <map/>
       </attributes>
       <events/>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;symbol&quot;:&quot;MBG&quot;,&quot;firstPriceDate&quot;:&quot;2000-01-03&quot;,&quot;lastPriceDate&quot;:&quot;2024-05-21&quot;}]</property>
       <isRetired>false</isRetired>
       <updatedAt>2024-05-21T21:21:38.985174Z</updatedAt>
     </security>
     <security>
       <uuid>5638b182-da36-49ee-94c1-5f059cc0129a</uuid>
-      <onlineId>681d11e45dee4b099d79925aebd5bbc4</onlineId>
       <name>Daimler Truck Holding AG</name>
       <currencyCode>EUR</currencyCode>
       <isin>DE000DTR0CK8</isin>
-      <tickerSymbol>DTG</tickerSymbol>
+      <tickerSymbol>DTG.DE</tickerSymbol>
       <wkn>DTR0CK</wkn>
-      <feed>PORTFOLIO-REPORT</feed>
+      <feed>PP</feed>
       <prices>
         <price t="2022-02-01" v="3229000000"/>
       </prices>
@@ -486,20 +463,17 @@
         <map/>
       </attributes>
       <events/>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;symbol&quot;:&quot;DTG&quot;,&quot;firstPriceDate&quot;:&quot;2021-12-10&quot;,&quot;lastPriceDate&quot;:&quot;2024-05-21&quot;}]</property>
       <isRetired>false</isRetired>
       <updatedAt>2024-05-21T21:28:58.267969Z</updatedAt>
     </security>
     <security>
       <uuid>22100879-5a9f-4873-a376-8383ed635627</uuid>
-      <onlineId>0e899bc7ae184d7580ab068bf51f32c4</onlineId>
       <name>NVIDIA Corp.</name>
       <currencyCode>EUR</currencyCode>
       <isin>US67066G1040</isin>
-      <tickerSymbol>NVD</tickerSymbol>
+      <tickerSymbol>NVD.F</tickerSymbol>
       <wkn>918422</wkn>
-      <feed>PORTFOLIO-REPORT</feed>
+      <feed>PP</feed>
       <prices>
         <price t="2022-02-01" v="21760000000"/>
       </prices>
@@ -507,8 +481,6 @@
         <map/>
       </attributes>
       <events/>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKET">XETR</property>
-      <property type="FEED" name="PORTFOLIO-REPORT-MARKETS">[{&quot;marketCode&quot;:&quot;XETR&quot;,&quot;currencyCode&quot;:&quot;EUR&quot;,&quot;symbol&quot;:&quot;NVD&quot;,&quot;firstPriceDate&quot;:&quot;2000-02-02&quot;,&quot;lastPriceDate&quot;:&quot;2024-05-21&quot;}]</property>
       <isRetired>false</isRetired>
       <updatedAt>2024-05-21T21:30:50.444690Z</updatedAt>
     </security>
