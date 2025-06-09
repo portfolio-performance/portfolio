@@ -73,7 +73,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "currency", "isin") //
                                                         .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\,\\d\\s]+ (?<name>.*)$") //
-                                                        .match("^Cours demand. : [\\,\\d\\s]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^Cours demand. : [\\,\\d\\s]+ (?<currency>[A-Z]{3})$") //
                                                         .match("^Code ISIN : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) .*$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
@@ -83,7 +83,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\,\\d\\s]+ (?<name>.*)$") //
-                                                        .match("^Code ISIN : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valeur liquidative : [\\,\\d\\s]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^Code ISIN : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Valeur liquidative : [\\,\\d\\s]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // 29/09/2023 42 AM.PEA MSCI EM.MKTS UC.ETF FCP Référence : 493029272303
@@ -92,7 +92,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\,\\d\\s]+ (?<name>.*) R.f.rence : .*$") //
-                                                        .match("^Code ISIN : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Cours ex.cu.. : [\\,\\d\\s]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^Code ISIN : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Cours ex.cu.. : [\\,\\d\\s]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))),
                                         // @formatter:off
                                         // 08/01/2024 7 AM.MSCI WORLD UCITS ETF EUR C
@@ -101,7 +101,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("name", "isin", "currency") //
                                                         .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\,\\d\\s]+ (?<name>.*)$") //
-                                                        .match("^Code ISIN : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Cours ex.cu.. : [\\,\\d\\s]+ (?<currency>[\\w]{3})$") //
+                                                        .match("^Code ISIN : (?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]) Cours ex.cu.. : [\\,\\d\\s]+ (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v))))
 
                         // @formatter:off
@@ -138,7 +138,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("amount", "currency") //
                                                         .find("Montant .*")
-                                                        .match("^(?<amount>[\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3})$") //
+                                                        .match("^(?<amount>[\\d\\s]+,[\\d]{2}) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -150,7 +150,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("amount", "currency") //
                                                         .find("Montant .*")
-                                                        .match("^[\\d\\s]+,[\\d]{2} [\\w]{3} [\\d\\s]+,[\\d]{2} [\\w]{3} (?<amount>[\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3})$") //
+                                                        .match("^[\\d\\s]+,[\\d]{2} [A-Z]{3} [\\d\\s]+,[\\d]{2} [A-Z]{3} (?<amount>[\\d\\s]+,[\\d]{2}) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -162,7 +162,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("amount", "currency") //
                                                         .find("Montant .*")
-                                                        .match("^[\\d\\s]+,[\\d]{2} [\\w]{3} [\\d\\s]+,[\\d]{2} [\\w]{3} [\\d\\s]+,[\\d]{2} [\\w]{3} (?<amount>[\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3})$") //
+                                                        .match("^[\\d\\s]+,[\\d]{2} [A-Z]{3} [\\d\\s]+,[\\d]{2} [A-Z]{3} [\\d\\s]+,[\\d]{2} [A-Z]{3} (?<amount>[\\d\\s]+,[\\d]{2}) (?<currency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
@@ -179,8 +179,8 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                         section -> section //
                                                         .attributes("fxGross", "termCurrency", "exchangeRate", "baseCurrency") //
                                                         .find("Montant transaction brut.*") //
-                                                        .match("^(?<fxGross>[\\d\\s]+,[\\d]{2}) (?<termCurrency>[\\w]{3}) .*$") //
-                                                        .match("^Contrevalorisation en .* (?<exchangeRate>[\\.,\\d]+) [\\d\\s]+,[\\d]{2} (?<baseCurrency>[\\w]{3})$") //
+                                                        .match("^(?<fxGross>[\\d\\s]+,[\\d]{2}) (?<termCurrency>[A-Z]{3}) .*$") //
+                                                        .match("^Contrevalorisation en [\\w]+ (?<exchangeRate>[\\.,\\d]+) [\\d\\s]+,[\\d]{2} (?<baseCurrency>[A-Z]{3})$") //
                                                         .assign((t, v) -> {
                                                             var rate = asExchangeRate(v);
                                                             type.getCurrentContext().putType(rate);
@@ -204,7 +204,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                                         // @formatter:on
                                         section -> section //
                                                         .attributes("note") //
-                                                        .match("^.*Type d.ordre : (?<note>.* [\\,\\d\\s]+ [\\w]{3})$")
+                                                        .match("^.*Type d.ordre : (?<note>.* [\\,\\d\\s]+ [A-Z]{3})$")
                                                         .assign((t, v) -> t.setNote(trim(v.get("note")))))
 
                         // @formatter:off
@@ -245,7 +245,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("name", "isin", "currency") //
                         .match("^[\\d]{2}\\/[\\d]{2}\\/[\\d]{4} [\\,\\d\\s]+ (?<name>.*) \\((?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9])\\).*$") //
-                        .match("^COUPONS : NETS FISCAUX [\\,\\d\\s]+ (?<currency>[\\w]{3})$") //
+                        .match("^COUPONS : NETS FISCAUX [\\,\\d\\s]+ (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         // @formatter:off
@@ -266,7 +266,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         // COUPONS : NETS FISCAUX  28,24 EUR
                         // @formatter:on
                         .section("amount", "currency") //
-                        .match("^COUPONS : NETS FISCAUX (?<amount>[\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3})$") //
+                        .match("^COUPONS : NETS FISCAUX (?<amount>[\\d\\s]+,[\\d]{2}) (?<currency>[A-Z]{3})$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -288,7 +288,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("currency", "tax").optional() //
                         .find("Revenus.*")
-                        .match("^TOTAL (?<currency>[\\w]{3}) [\\,\\d\\s]+ (?<tax>[\\,\\d\\s]+) [\\,\\d\\s]+ [\\,\\d\\s]+ [\\,\\d\\s]+$") //
+                        .match("^TOTAL (?<currency>[A-Z]{3}) [\\,\\d\\s]+ (?<tax>[\\,\\d\\s]+) [\\,\\d\\s]+ [\\,\\d\\s]+ [\\,\\d\\s]+$") //
                         .assign((t, v) -> processTaxEntries(t, v, type));
     }
 
@@ -302,7 +302,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("fee", "currency").optional() //
                         .find("Montant.*")
-                        .match("^[\\d\\s]+,[\\d]{2} [\\w]{3} (?<fee>[\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3}) [\\d\\s]+,[\\d]{2} [\\w]{3}$") //
+                        .match("^[\\d\\s]+,[\\d]{2} [A-Z]{3} (?<fee>[\\d\\s]+,[\\d]{2}) (?<currency>[A-Z]{3}) [\\d\\s]+,[\\d]{2} [A-Z]{3}$") //
                         .assign((t, v) -> processFeeEntries(t, v, type))
 
                         // @formatter:off
@@ -311,7 +311,7 @@ public class BoursoBankPDFExtractor extends AbstractPDFExtractor
                         // @formatter:on
                         .section("fee", "currency").optional() //
                         .find("Commission Frais divers.*")
-                        .match("^(?<fee>[\\d\\s]+,[\\d]{2}) (?<currency>[\\w]{3}) [\\d\\s]+,[\\d]{2} [\\w]{3} [\\d\\s]+,[\\d]{2} [\\w]{3}$") //
+                        .match("^(?<fee>[\\d\\s]+,[\\d]{2}) (?<currency>[A-Z]{3}) [\\d\\s]+,[\\d]{2} [A-Z]{3} [\\d\\s]+,[\\d]{2} [A-Z]{3}$") //
                         .assign((t, v) -> processFeeEntries(t, v, type));
     }
 
