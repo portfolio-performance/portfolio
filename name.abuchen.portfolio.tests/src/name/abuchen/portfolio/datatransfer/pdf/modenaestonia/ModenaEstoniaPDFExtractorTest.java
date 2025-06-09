@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasNote;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.hasSource;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interest;
 import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.interestCharge;
+import static name.abuchen.portfolio.datatransfer.ExtractorMatchers.withFailureMessage;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countAccountTransactions;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countBuySell;
 import static name.abuchen.portfolio.datatransfer.ExtractorTestUtilities.countSecurities;
@@ -20,6 +21,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.ModenaEstoniaPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
@@ -98,12 +100,21 @@ public class ModenaEstoniaPDFExtractorTest
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
-        assertThat(countAccountTransactions(results), is(1L));
-        assertThat(results.size(), is(1));
+        assertThat(countAccountTransactions(results), is(2L));
+        assertThat(results.size(), is(2));
         new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(interest(hasDate("2025-05-01T08:00:10"), hasAmount("EUR", 0.61), //
                         hasSource("Kontoauszug03.txt"), hasNote("Vault accrued revenue"))));
+
+        // assert transaction
+        assertThat(results, hasItem(withFailureMessage( //
+                        Messages.MsgErrorTransactionTypeNotSupported, //
+                        interestCharge( //
+                                        hasDate("2025-05-12T07:30:56"), //
+                                        hasSource("Kontoauszug03.txt"), //
+                                        hasNote("Debt claims buyback"), //
+                                        hasAmount("EUR", 0.00)))));
     }
 }
