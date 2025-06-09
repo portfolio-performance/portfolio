@@ -1,0 +1,29 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.76.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+vdk bank nv
+Keizer Karelstraat 15 | 9000 Gent | T 09 267 32 11 | vdk@vdk.be | vdk.be
+BTW BE 0400.067.788 RPR GENT | FSMA 020230 A | IBAN BE65 8900 0005 5096 | BIC VDSPBE91
+Overzicht transactie voor rekening 748-9395594-39 op 03/04/2025
+ 
+Borderelreferentie: 2025.000123456789 Orderreferentie: 297671
+ 
+ 
+Uitvoering op: 03/04/2025 om 12:45:20
+Afrekendatum: 07/04/2025
+Plaats van uitvoering: Euronext BXL
+Type order: Limiet order
+Datum order: 03/04/2025
+ISIN: BE0974320526
+ 
+Je verkoop van: Umicore NV
+Aantal delen: 100
+Koers: 8,7 EUR
+ 
+Totaal bedrag: 870,00 EUR
+Makelaarsloon: 9,92 EUR
+Vaste kosten: 4,96 EUR
+Beurstaks (0,35%): 3,05 EUR
+Netto bedrag: 852,07 EUR
+Netto afrekening op BE17 1131 0380 5536 door storting van: 852,07 EUR
