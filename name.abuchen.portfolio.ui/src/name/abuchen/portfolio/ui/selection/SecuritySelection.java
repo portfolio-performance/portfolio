@@ -7,11 +7,12 @@ import java.util.Objects;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 
+import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 
-public class SecuritySelection
+public class SecuritySelection implements Adaptable
 {
     private final Client client;
     private final List<Security> securities;
@@ -54,5 +55,14 @@ public class SecuritySelection
     public List<Security> getSecurities()
     {
         return securities;
+    }
+
+    @Override
+    public <T> T adapt(Class<T> type)
+    {
+        if (type == Security.class && !securities.isEmpty())
+            return type.cast(securities.getFirst());
+        else
+            return null;
     }
 }

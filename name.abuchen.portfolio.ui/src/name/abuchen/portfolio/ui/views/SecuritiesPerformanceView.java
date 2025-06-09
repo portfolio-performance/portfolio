@@ -779,7 +779,11 @@ public class SecuritiesPerformanceView extends AbstractFinanceView implements Re
 
         records.addSelectionChangedListener(event -> {
             var selection = event.getStructuredSelection();
-            setInformationPaneInput(SecuritySelection.from(getClient(), selection));
+
+            if (selection.size() == 1)
+                setInformationPaneInput(selection.getFirstElement());
+            else
+                setInformationPaneInput(SecuritySelection.from(getClient(), selection));
         });
 
         records.addSelectionChangedListener(event -> {
