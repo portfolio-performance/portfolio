@@ -40,7 +40,6 @@ import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 import name.abuchen.portfolio.online.impl.CoinGeckoSearchProvider;
-import name.abuchen.portfolio.online.impl.PortfolioReportNetSearchProvider;
 
 public abstract class AbstractPDFExtractor implements Extractor
 {
@@ -239,8 +238,7 @@ public abstract class AbstractPDFExtractor implements Extractor
     @VisibleForTesting
     protected List<SecuritySearchProvider> lookupCryptoProvider()
     {
-        return List.of(Factory.getSearchProvider(PortfolioReportNetSearchProvider.class),
-                        Factory.getSearchProvider(CoinGeckoSearchProvider.class));
+        return List.of(Factory.getSearchProvider(CoinGeckoSearchProvider.class));
     }
 
     private Security getOrCreateSecurity(Map<String, String> values, Supplier<Security> factory)

@@ -85,4 +85,25 @@ public class ModenaEstoniaPDFExtractorTest
         assertThat(results, hasItem(interestCharge(hasDate("2025-04-17T07:00:16"), hasAmount("EUR", 0.63), //
                         hasSource("Kontoauszug02.txt"), hasNote("Debt claims buyback"))));
     }
+
+    @Test
+    public void testKontoauszug03()
+    {
+        var extractor = new ModenaEstoniaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kontoauszug03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // assert transaction
+        assertThat(results, hasItem(interest(hasDate("2025-05-01T08:00:10"), hasAmount("EUR", 0.61), //
+                        hasSource("Kontoauszug03.txt"), hasNote("Vault accrued revenue"))));
+    }
 }

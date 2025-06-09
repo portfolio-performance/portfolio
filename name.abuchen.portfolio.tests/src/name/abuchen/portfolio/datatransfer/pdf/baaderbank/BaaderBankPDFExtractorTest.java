@@ -66,7 +66,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
@@ -95,7 +94,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -104,7 +103,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("911950"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShs DL Corp Bond UCITS ETF Registered Shares o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -119,13 +118,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 1234567"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(208.95))));
+                        is(Money.of("EUR", Values.Amount.factorize(208.95))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(208.74))));
+                        is(Money.of("EUR", Values.Amount.factorize(208.74))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.21))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.21))));
     }
 
     @Test
@@ -139,7 +138,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -148,7 +147,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A1C22M"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("HSBC S&P 500 UCITS ETF Bearer Shares (Dt. Zert.) o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -163,13 +162,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 1234567"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1551.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1551.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1549.45))));
+                        is(Money.of("EUR", Values.Amount.factorize(1549.45))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.55))));
+                        is(Money.of("EUR", Values.Amount.factorize(1.55))));
     }
 
     @Test
@@ -183,7 +182,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -192,7 +191,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("DBX0F1"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Xtr.FTSE Devel.Europ.R.Estate Inhaber-Anteile 1C o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -207,13 +206,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 123456789"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(87.30))));
+                        is(Money.of("EUR", Values.Amount.factorize(87.30))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(87.30))));
+                        is(Money.of("EUR", Values.Amount.factorize(87.30))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -227,7 +226,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -236,7 +235,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("DBX0MB"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Xtr.II USD Emerging Markets Bd Inhaber-Anteile 2D USD o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -251,13 +250,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 12999999"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(28.18))));
+                        is(Money.of("EUR", Values.Amount.factorize(28.18))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(28.18))));
+                        is(Money.of("EUR", Values.Amount.factorize(28.18))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -271,7 +270,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -280,7 +279,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A1JX53"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vanguard S&P 500 UCITS ETF Registered Shares USD o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -295,13 +294,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 3814982"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1030.25))));
+                        is(Money.of("EUR", Values.Amount.factorize(1030.25))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1030.25))));
+                        is(Money.of("EUR", Values.Amount.factorize(1030.25))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -315,7 +314,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -324,7 +323,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A2ANA3"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Red Electrica Corporacion S.A. Acciones Port. EO -,50"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -339,13 +338,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: x"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(985.12))));
+                        is(Money.of("EUR", Values.Amount.factorize(985.12))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(983.15))));
+                        is(Money.of("EUR", Values.Amount.factorize(983.15))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.97))));
+                        is(Money.of("EUR", Values.Amount.factorize(1.97))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -359,7 +358,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -368,7 +367,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("891624"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SoftBank Group Corp. Registered Shares o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -383,13 +382,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 137111111"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(519.03))));
+                        is(Money.of("EUR", Values.Amount.factorize(519.03))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(519.03))));
+                        is(Money.of("EUR", Values.Amount.factorize(519.03))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -403,7 +402,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -412,7 +411,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("884625"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("LTC Properties Inc. Registered Shares DL -,01"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -427,13 +426,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 13924926"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(513.60))));
+                        is(Money.of("EUR", Values.Amount.factorize(513.60))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(513.60))));
+                        is(Money.of("EUR", Values.Amount.factorize(513.60))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -447,7 +446,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -456,7 +455,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("LYX0Q0"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Lyxor Index-L.Co.St.EO 600(DR) Actions Nom.UCITS ETF Acc oN"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -471,13 +470,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 11111111"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(18.57))));
+                        is(Money.of("EUR", Values.Amount.factorize(18.57))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(18.57))));
+                        is(Money.of("EUR", Values.Amount.factorize(18.57))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -491,7 +490,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -500,7 +499,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A3H3MG"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Enapter AG junge Inhaber-Aktien o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -515,13 +514,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: yyyyyyy | Verhältnis: 1 : 1"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1012.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1012.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1012.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1012.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -535,7 +534,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -544,7 +543,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A0RPWH"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -559,13 +558,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaction No.: 65879250"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(199.93))));
+                        is(Money.of("EUR", Values.Amount.factorize(199.93))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(199.93))));
+                        is(Money.of("EUR", Values.Amount.factorize(199.93))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -579,7 +578,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -588,7 +587,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A12C65"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Diversified Royalty Corp. Registered Shares o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -603,13 +602,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 94196810"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2440.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(2440.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2440.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(2440.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -623,7 +622,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -632,7 +631,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A2JR0G"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("HANetf-EMQQ Em.Mkts Int.+Ecom. Reg.Shs EUR Acc. o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -647,13 +646,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaction No.: 204751222"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(94.05))));
+                        is(Money.of("EUR", Values.Amount.factorize(94.05))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(94.05))));
+                        is(Money.of("EUR", Values.Amount.factorize(94.05))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -667,7 +666,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -676,7 +675,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("865985"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Apple Inc. Registered Shares o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -691,13 +690,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 12350123"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(878.04))));
+                        is(Money.of("EUR", Values.Amount.factorize(878.04))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(878.04))));
+                        is(Money.of("EUR", Values.Amount.factorize(878.04))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -711,7 +710,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -720,7 +719,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A12HUS"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("WisdomTree E.Mkts SC Div.U.ETF Registered Shares o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -735,13 +734,12 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 156968932"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.99))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.99))));
+                        is(Money.of("EUR", Values.Amount.factorize(4.99))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(4.99))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -755,7 +753,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -764,7 +762,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A14M2J"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Medtronic PLC Registered Shares DL -,0001"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -779,13 +777,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 164499999"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.96))));
+                        is(Money.of("EUR", Values.Amount.factorize(24.96))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.96))));
+                        is(Money.of("EUR", Values.Amount.factorize(24.96))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -799,7 +797,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -808,7 +806,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A1JX53"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vanguard S&P 500 UCITS ETF Registered Shares USD Dis.oN"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -823,13 +821,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 4712"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -843,7 +841,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -852,7 +850,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("850663"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Coca-Cola Co., The Registered Shares DL -,25"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -867,13 +865,12 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 184899171"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.38))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.38))));
+                        is(Money.of("EUR", Values.Amount.factorize(1.38))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.38))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -887,7 +884,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -896,7 +893,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A0F5UH"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -911,13 +908,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 184697063"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(50.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -931,7 +928,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -940,7 +937,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A0WMPJ"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("AIXTRON SE Namens-Aktien o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -955,13 +952,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.:"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1539.50))));
+                        is(Money.of("EUR", Values.Amount.factorize(1539.50))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1539.50))));
+                        is(Money.of("EUR", Values.Amount.factorize(1539.50))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -975,7 +972,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -984,7 +981,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("893579"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Waste Management Inc. Registered Shares DL -,01"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -999,13 +996,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 184714818"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.94))));
+                        is(Money.of("EUR", Values.Amount.factorize(14.94))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.94))));
+                        is(Money.of("EUR", Values.Amount.factorize(14.94))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1019,7 +1016,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1028,7 +1025,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A14TU4"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Kraft Heinz Co., The Registered Shares DL -,01"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1043,13 +1040,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 00000000"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(357.60))));
+                        is(Money.of("EUR", Values.Amount.factorize(357.60))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(357.60))));
+                        is(Money.of("EUR", Values.Amount.factorize(357.60))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1066,7 +1063,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1097,7 +1094,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1128,7 +1125,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1159,7 +1156,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1190,7 +1187,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1203,14 +1200,15 @@ public class BaaderBankPDFExtractorTest
                         hasDate("2023-06-14T08:48:32"), hasShares(52.22), //
                         hasSource("Kauf27.txt"), //
                         hasNote("Vorgangs-Nr.: 123456"), //
-                        hasAmount("EUR", 91.89), hasGrossValue("EUR", 91.77), hasForexGrossValue("HKD", 775.88), //
+                        hasAmount("EUR", 91.89), hasGrossValue("EUR", 91.77), //
+                        hasForexGrossValue("HKD", 775.88), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.12))));
     }
 
     @Test
     public void testWertpapierKauf27WithSecurityInEUR()
     {
-        var security = new Security("Great Eagle Holdings Ltd. Registered Shares HD -,50", CurrencyUnit.EUR);
+        var security = new Security("Great Eagle Holdings Ltd. Registered Shares HD -,50", "EUR");
         security.setIsin("BMG4069C1486");
         security.setWkn("879151");
 
@@ -1228,7 +1226,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -1258,7 +1256,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1289,7 +1287,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1310,7 +1308,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf29WithSecurityInEUR()
     {
-        var security = new Security("BKW AG Namens-Aktien SF 2,50", CurrencyUnit.EUR);
+        var security = new Security("BKW AG Namens-Aktien SF 2,50", "EUR");
         security.setIsin("CH0130293662");
         security.setWkn("A1JLZG");
 
@@ -1328,7 +1326,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -1358,7 +1356,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1389,7 +1387,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1410,7 +1408,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf31WithSecurityInEUR()
     {
-        var security = new Security("Mexiko DL-Medium-Term Notes 2004(34)", CurrencyUnit.EUR);
+        var security = new Security("Mexiko DL-Medium-Term Notes 2004(34)", "EUR");
         security.setIsin("US91086QAS75");
         security.setWkn("A0DDHM");
 
@@ -1428,7 +1426,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -1458,7 +1456,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1479,7 +1477,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf32WithSecurityInEUR()
     {
-        var security = new Security("On Holding AG Namens-Aktien A SF-,01", CurrencyUnit.EUR);
+        var security = new Security("On Holding AG Namens-Aktien A SF-,01", "EUR");
         security.setIsin("CH1134540470");
         security.setWkn("A3C20K");
 
@@ -1497,7 +1495,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(purchase( //
@@ -1527,7 +1525,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1558,7 +1556,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1589,7 +1587,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1620,7 +1618,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -1638,6 +1636,74 @@ public class BaaderBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf37()
+    {
+        var extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf37.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("USU5521TAE20"), hasWkn("A2R99N"), hasTicker(null), //
+                        hasName("MSCI Inc. DL-Notes 2019(19/29) Reg.S"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-10-06T16:34:27"), hasShares(5.3864), //
+                        hasSource("Kauf37.txt"), //
+                        hasNote("Vorgangs-Nr.: 868490405 | Stückzinsen für 145 Tag(e): 8,86 EUR"), //
+                        hasAmount("EUR", 500.14), hasGrossValue("EUR", 500.14), //
+                        hasForexGrossValue("USD", 490.24), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf37WithSecurityInEUR()
+    {
+        var security = new Security("MSCI Inc. DL-Notes 2019(19/29) Reg.S", "EUR");
+        security.setIsin("USU5521TAE20");
+        security.setWkn("A2R99N");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new BaaderBankPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf37.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2022-10-06T16:34:27"), hasShares(5.3864), //
+                        hasSource("Kauf37.txt"), //
+                        hasNote("Vorgangs-Nr.: 868490405 | Stückzinsen für 145 Tag(e): 8,86 EUR"), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         var extractor = new BaaderBankPDFExtractor(new Client());
@@ -1648,7 +1714,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1657,7 +1723,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A0X97T"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS-ETF-UBS-ETF MSCI Pa.(ExJ.) Inhaber-Anteile A o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1672,13 +1738,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 1234567"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(75.92))));
+                        is(Money.of("EUR", Values.Amount.factorize(75.92))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(76.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(76.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.08))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.08))));
     }
 
     @Test
@@ -1692,7 +1758,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1701,7 +1767,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("911950"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShs DL Corp Bond UCITS ETF Registered Shares o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1716,13 +1782,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 01234567"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1161.60))));
+                        is(Money.of("EUR", Values.Amount.factorize(1161.60))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1161.60))));
+                        is(Money.of("EUR", Values.Amount.factorize(1161.60))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1736,7 +1802,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1745,7 +1811,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A0X97T"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("UBS-ETF-UBS-ETF MSCI PXJ U.ETF Inhaber-Anteile (USD) A-dis oN"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1760,13 +1826,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 3800004"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(226.68))));
+                        is(Money.of("EUR", Values.Amount.factorize(226.68))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(226.68))));
+                        is(Money.of("EUR", Values.Amount.factorize(226.68))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1780,7 +1846,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1789,7 +1855,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A0TGJ5"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VARTA AG Inhaber-Aktien o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1804,13 +1870,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 01234567"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(809.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(809.00))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(809.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(809.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1824,7 +1890,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1833,7 +1899,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A1JRLJ"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Expedia Group Inc. Registered Shares DL-,0001"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1848,13 +1914,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 22222222"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1454.56))));
+                        is(Money.of("EUR", Values.Amount.factorize(1454.56))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1600.80))));
+                        is(Money.of("EUR", Values.Amount.factorize(1600.80))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(127.73 + 11.49 + 7.02))));
+                        is(Money.of("EUR", Values.Amount.factorize(127.73 + 11.49 + 7.02))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1868,7 +1934,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1892,13 +1958,12 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 11111111"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.60))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.85))));
+                        is(Money.of("EUR", Values.Amount.factorize(8.60))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(8.85))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.23 + 0.01 + 0.01))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.23 + 0.01 + 0.01))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var grossValueUnit = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
@@ -1908,7 +1973,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf06WithSecurityInEUR()
     {
-        var security = new Security("MTY Food Group Inc. Registered Shares o.N.", CurrencyUnit.EUR);
+        var security = new Security("MTY Food Group Inc. Registered Shares o.N.", "EUR");
         security.setIsin("CA55378N1078");
         security.setWkn("120504");
 
@@ -1923,7 +1988,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1938,17 +2003,16 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 11111111"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.60))));
-        assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.85))));
+                        is(Money.of("EUR", Values.Amount.factorize(8.60))));
+        assertThat(entry.getPortfolioTransaction().getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(8.85))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.23 + 0.01 + 0.01))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.23 + 0.01 + 0.01))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(entry, account, entry.getPortfolio());
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -1964,7 +2028,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1973,7 +2037,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A2PZ0R"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Raytheon Technologies Corp. Registered Shares DL -,01"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -1988,13 +2052,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 11 | Spitzenregulierung"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.03))));
+                        is(Money.of("EUR", Values.Amount.factorize(14.03))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.03))));
+                        is(Money.of("EUR", Values.Amount.factorize(14.03))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2008,7 +2072,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2017,7 +2081,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("TT410K"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("HSBC Trinkaus & Burkhardt AG Call 14.06.23 S&P500 5000"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -2032,13 +2096,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 11111111"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(562.40))));
+                        is(Money.of("EUR", Values.Amount.factorize(562.40))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(562.40))));
+                        is(Money.of("EUR", Values.Amount.factorize(562.40))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2052,7 +2116,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2061,7 +2125,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A2PHCF"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShs V-MSCI W.En.Sec.U.ETF Reg. Shs USD Dis. oN"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -2076,13 +2140,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaction No.: 204751222"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(329.36))));
+                        is(Money.of("EUR", Values.Amount.factorize(329.36))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(329.36))));
+                        is(Money.of("EUR", Values.Amount.factorize(329.36))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2096,7 +2160,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2105,7 +2169,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("LYX0CB"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Lyxor MSCI NE ESG Fil.DR UETF Actions au Port.Dist o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -2120,13 +2184,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Transaction No.: 204751222"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(106.59))));
+                        is(Money.of("EUR", Values.Amount.factorize(106.59))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(106.59))));
+                        is(Money.of("EUR", Values.Amount.factorize(106.59))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2140,7 +2204,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2149,7 +2213,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A12DB1"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("L&G-L&G R.Gbl Robot.Autom.UETF Registered Shares o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -2164,13 +2228,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 156268888"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2093.43))));
+                        is(Money.of("EUR", Values.Amount.factorize(2093.43))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2093.43))));
+                        is(Money.of("EUR", Values.Amount.factorize(2093.43))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2184,7 +2248,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2193,7 +2257,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A2DWAW"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShsIV-NASDAQ US Biotech.U.ETF Registered Shares USD Acc.o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -2208,13 +2272,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 12345768"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(945.38))));
+                        is(Money.of("EUR", Values.Amount.factorize(945.38))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(945.38))));
+                        is(Money.of("EUR", Values.Amount.factorize(945.38))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2228,7 +2292,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2237,7 +2301,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A143JM"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vanguard USD Corporate B.U.ETF Registered Shares USD Dis.oN"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -2252,13 +2316,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 12345768"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(180.82))));
+                        is(Money.of("EUR", Values.Amount.factorize(180.82))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(180.82))));
+                        is(Money.of("EUR", Values.Amount.factorize(180.82))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2272,7 +2336,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2281,7 +2345,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A2PLDF"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("VanEck Vid eSports UC. ETF Reg. Shares A USD Acc. o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -2296,13 +2360,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 123456"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(635.51))));
+                        is(Money.of("EUR", Values.Amount.factorize(635.51))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(635.51))));
+                        is(Money.of("EUR", Values.Amount.factorize(635.51))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2316,7 +2380,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2325,7 +2389,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A2ANH0"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShsIV-Automation&Robot.U.ETF Registered Shares o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -2340,13 +2404,13 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getNote(), is("Vorgangs-Nr.: 123456"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1602.45))));
+                        is(Money.of("EUR", Values.Amount.factorize(1602.45))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1602.45))));
+                        is(Money.of("EUR", Values.Amount.factorize(1602.45))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2363,7 +2427,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2394,7 +2458,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2425,7 +2489,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2456,7 +2520,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2477,7 +2541,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf19WithSecurityInEUR()
     {
-        var security = new Security("Mirati Therapeutics Inc. Registered Shares DL -,01", CurrencyUnit.EUR);
+        var security = new Security("Mirati Therapeutics Inc. Registered Shares DL -,01", "EUR");
         security.setIsin("US60468T1051");
         security.setWkn("A1W1XV");
 
@@ -2495,7 +2559,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check buy sell transaction
         assertThat(results, hasItem(sale( //
@@ -2525,7 +2589,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2556,7 +2620,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2587,7 +2651,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2616,7 +2680,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2646,7 +2710,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2655,11 +2719,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A14QBZ"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("SPDR S+P US Con.Sta.Sel.S.UETF"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check tax transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
 
@@ -2668,14 +2732,10 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Vorabpauschale01.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: yyyyyyy | Zahlungszeitraum: 01.01.2020 - 31.12.2020"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.04))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.04))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.04))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.04))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2692,7 +2752,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2725,7 +2785,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2758,7 +2818,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -2786,7 +2846,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2795,11 +2855,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("859386"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Publicis Groupe S.A."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -2808,14 +2868,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 5555555"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(68.22))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(114.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(68.22))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(114.00))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.60 + 1.22 + 0.75 + 30.21))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(13.60 + 1.22 + 0.75 + 30.21))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2829,7 +2886,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2838,11 +2895,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("593393"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShares Core DAX UCITS ETF DE Inhaber-Anteile"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check dividends tax transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
@@ -2851,14 +2908,10 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 123456"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.24))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.24))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1.24))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.24))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -2872,7 +2925,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2881,11 +2934,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A0NECU"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iShsII-J.P.M.$ EM Bond U.ETF Registered Shares o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -2894,23 +2947,20 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 123456"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.08))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.44))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(3.08))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(3.44))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.32 + 0.02 + 0.02))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.32 + 0.02 + 0.02))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(3.94))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(3.94))));
     }
 
     @Test
     public void testDividende03WithSecurityInEUR()
     {
-        var security = new Security("iShsII-J.P.M.$ EM Bond U.ETF Registered Shares o.N.", CurrencyUnit.EUR);
+        var security = new Security("iShsII-J.P.M.$ EM Bond U.ETF Registered Shares o.N.", "EUR");
         security.setIsin("IE00B2NPKV68");
         security.setWkn("A0NECU");
 
@@ -2925,11 +2975,11 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -2938,18 +2988,15 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 123456"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.08))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.44))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(3.08))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(3.44))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.32 + 0.02 + 0.02))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.32 + 0.02 + 0.02))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -2965,7 +3012,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -2974,11 +3021,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A14KRD"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Deutsche Konsum REIT-AG"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -2987,14 +3034,10 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 1111111"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.00))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(14.00))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(14.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -3008,7 +3051,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3017,11 +3060,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A0F602"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Mastercard Inc."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3030,23 +3073,19 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 1111111111"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.84))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.11))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.10 + 0.17))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.84))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.11))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.10 + 0.17))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.20))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(1.20))));
     }
 
     @Test
     public void testDividende05WithSecurityInEUR()
     {
-        var security = new Security("Mastercard Inc.", CurrencyUnit.EUR);
+        var security = new Security("Mastercard Inc.", "EUR");
         security.setIsin("US57636Q1040");
         security.setWkn("A0F602");
 
@@ -3061,11 +3100,11 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3074,18 +3113,14 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 1111111111"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.84))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.11))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.10 + 0.17))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.84))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(1.11))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.10 + 0.17))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -3101,7 +3136,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3110,11 +3145,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A0X8Y3"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Main Street Capital Corp."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3123,23 +3158,20 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 1111111"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.23))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.36))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(3.23))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(4.36))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.41 + 0.03 + 0.03 + 0.66))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.41 + 0.03 + 0.03 + 0.66))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4.72))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(4.72))));
     }
 
     @Test
     public void testDividende06WithSecurityInEUR()
     {
-        var security = new Security("Main Street Capital Corp.", CurrencyUnit.EUR);
+        var security = new Security("Main Street Capital Corp.", "EUR");
         security.setIsin("US56035L1044");
         security.setWkn("A0X8Y3");
 
@@ -3154,11 +3186,11 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3167,18 +3199,15 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 1111111"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.23))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.36))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(3.23))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(4.36))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.41 + 0.03 + 0.03 + 0.66))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.41 + 0.03 + 0.03 + 0.66))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -3194,7 +3223,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3203,11 +3232,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A1J5SB"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("W.P. Carey Inc."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3216,23 +3245,20 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 5555555"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.98))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.40))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.98))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(13.40))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.34 + 0.07 + 2.01))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1.34 + 0.07 + 2.01))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(14.56))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(14.56))));
     }
 
     @Test
     public void testDividende07WithSecurityInEUR()
     {
-        var security = new Security("W.P. Carey Inc.", CurrencyUnit.EUR);
+        var security = new Security("W.P. Carey Inc.", "EUR");
         security.setIsin("US92936U1097");
         security.setWkn("A1J5SB");
 
@@ -3247,11 +3273,11 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3260,18 +3286,15 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende07.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 5555555"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.98))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.40))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.98))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(13.40))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.34 + 0.07 + 2.01))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1.34 + 0.07 + 2.01))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -3287,7 +3310,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3296,11 +3319,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A2G9LL"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Deutsche Industrie REIT-AG"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3309,14 +3332,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende08.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 5566777"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.72))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.88))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10.72))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(14.88))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.64 + 0.32 + 0.20))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(3.64 + 0.32 + 0.20))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -3334,7 +3354,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3343,11 +3363,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("555750"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Deutsche Telekom AG"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3356,14 +3376,10 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende09.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 222222"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(46.20))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(46.20))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(46.20))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(46.20))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -3377,7 +3393,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3386,11 +3402,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A2PQDR"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("F.UC.-Fid.Em.Mkt.Qual.In.U.ETF Reg. Shs USD Dis. oN"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3399,23 +3415,19 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende10.txt"));
         assertThat(transaction.getNote(), is("Transaction No.: 204751222"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.20))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.20))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.20))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.20))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.22))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(0.22))));
     }
 
     @Test
     public void testDividende10WithSecurityInEUR()
     {
-        var security = new Security("F.UC.-Fid.Em.Mkt.Qual.In.U.ETF Reg. Shs USD Dis. oN", CurrencyUnit.EUR);
+        var security = new Security("F.UC.-Fid.Em.Mkt.Qual.In.U.ETF Reg. Shs USD Dis. oN", "EUR");
         security.setIsin("IE00BYSX4739");
         security.setWkn("A2PQDR");
 
@@ -3430,11 +3442,11 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3443,18 +3455,14 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende10.txt"));
         assertThat(transaction.getNote(), is("Transaction No.: 204751222"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.20))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.20))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.20))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.20))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -3470,7 +3478,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3479,11 +3487,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A0H074"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("iSh.DJ Asia Pa.S.D.50 U.ETF DE"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3492,14 +3500,10 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende11.txt"));
         assertThat(transaction.getNote(), is("Transaction No.: 204751222"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.06))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.06))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.06))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.06))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -3513,7 +3517,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3522,11 +3526,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("850501"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Bristol-Myers Squibb Co."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3535,23 +3539,20 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende12.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 11111111"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.57))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.67))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(11.57))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(15.67))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.52 + 0.14 + 0.08 + 2.36))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1.52 + 0.14 + 0.08 + 2.36))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(17.10))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(17.10))));
     }
 
     @Test
     public void testDividende12WithSecurityInEUR()
     {
-        var security = new Security("Bristol-Myers Squibb Co.", CurrencyUnit.EUR);
+        var security = new Security("Bristol-Myers Squibb Co.", "EUR");
         security.setIsin("US1101221083");
         security.setWkn("850501");
 
@@ -3566,11 +3567,11 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3579,18 +3580,15 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende12.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 11111111"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.57))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(15.67))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(11.57))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(15.67))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.52 + 0.14 + 0.08 + 2.36))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(1.52 + 0.14 + 0.08 + 2.36))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -3606,7 +3604,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3615,11 +3613,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A2PSR2"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("BioNTech SE Nam.-Akt.(sp.ADRs)1/o.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3628,23 +3626,19 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende13.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.00))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(30.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.00 + 1.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(17.00))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(30.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(10.00 + 1.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(2.00))));
 
         var grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(30.00))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(30.00))));
     }
 
     @Test
     public void testDividende13WithSecurityInEUR()
     {
-        var security = new Security("BioNTech SE Nam.-Akt.(sp.ADRs)1/o.N.", CurrencyUnit.EUR);
+        var security = new Security("BioNTech SE Nam.-Akt.(sp.ADRs)1/o.N.", "EUR");
         security.setIsin("US09075V1026");
         security.setWkn("A2PSR2");
 
@@ -3659,11 +3653,11 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3672,18 +3666,14 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende13.txt"));
         assertNull(transaction.getNote());
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.00))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(30.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.00 + 1.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(17.00))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(30.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(10.00 + 1.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(2.00))));
 
         var c = new CheckCurrenciesAction();
         var account = new Account();
-        account.setCurrencyCode(CurrencyUnit.EUR);
+        account.setCurrencyCode("EUR");
         var s = c.process(transaction, account);
         assertThat(s, is(Status.OK_STATUS));
     }
@@ -3699,7 +3689,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -3708,11 +3698,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("555750"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Deutsche Telekom AG"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security.getCurrencyCode(), is("EUR"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -3721,14 +3711,10 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende14.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 00000000"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.54))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.54))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.54))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(9.54))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -3745,7 +3731,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3766,7 +3752,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende15WithSecurityInEUR()
     {
-        var security = new Security("Apple Inc.", CurrencyUnit.EUR);
+        var security = new Security("Apple Inc.", "EUR");
         security.setIsin("US0378331005");
         security.setWkn("865985");
 
@@ -3784,7 +3770,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -3796,7 +3782,7 @@ public class BaaderBankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -3816,7 +3802,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3837,7 +3823,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende16WithSecurityInEUR()
     {
-        var security = new Security("Apple Inc.", CurrencyUnit.EUR);
+        var security = new Security("Apple Inc.", "EUR");
         security.setIsin("US0378331005");
         security.setWkn("865985");
 
@@ -3855,7 +3841,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -3867,7 +3853,7 @@ public class BaaderBankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -3887,7 +3873,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3907,7 +3893,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende17WithSecurityInEUR()
     {
-        var security = new Security("Apple Inc.", CurrencyUnit.EUR);
+        var security = new Security("Apple Inc.", "EUR");
         security.setIsin("US0378331005");
         security.setWkn("865985");
 
@@ -3925,7 +3911,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -3938,7 +3924,7 @@ public class BaaderBankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.USD);
+                            account.setCurrencyCode("USD");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -3958,7 +3944,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -3978,7 +3964,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende18WithSecurityInEUR()
     {
-        var security = new Security("Microsoft Corp.", CurrencyUnit.EUR);
+        var security = new Security("Microsoft Corp.", "EUR");
         security.setIsin("US5949181045");
         security.setWkn("870747");
 
@@ -3996,7 +3982,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -4009,7 +3995,7 @@ public class BaaderBankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.USD);
+                            account.setCurrencyCode("USD");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -4029,7 +4015,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4049,7 +4035,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende19WithSecurityInEUR()
     {
-        var security = new Security("iShsII-Gl.Clean Energy U.ETF Registered Shares o.N.", CurrencyUnit.EUR);
+        var security = new Security("iShsII-Gl.Clean Energy U.ETF Registered Shares o.N.", "EUR");
         security.setIsin("IE00B1XNHC34");
         security.setWkn("A0MW0M");
 
@@ -4067,7 +4053,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -4080,7 +4066,7 @@ public class BaaderBankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.USD);
+                            account.setCurrencyCode("USD");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -4100,7 +4086,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4120,7 +4106,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende20WithSecurityInEUR()
     {
-        var security = new Security("Blackrock Inc.", CurrencyUnit.EUR);
+        var security = new Security("Blackrock Inc.", "EUR");
         security.setIsin("US09247X1019");
         security.setWkn("928193");
 
@@ -4138,7 +4124,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -4151,7 +4137,7 @@ public class BaaderBankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.USD);
+                            account.setCurrencyCode("USD");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -4171,7 +4157,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4191,7 +4177,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende21WithSecurityInEUR()
     {
-        var security = new Security("Realty Income Corp.", CurrencyUnit.EUR);
+        var security = new Security("Realty Income Corp.", "EUR");
         security.setIsin("US7561091049");
         security.setWkn("899744");
 
@@ -4209,7 +4195,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -4222,7 +4208,7 @@ public class BaaderBankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.USD);
+                            account.setCurrencyCode("USD");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -4242,7 +4228,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4262,7 +4248,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende22WithSecurityInEUR()
     {
-        var security = new Security("Panama, Republik DL-Bonds 2006(34-36)", CurrencyUnit.EUR);
+        var security = new Security("Panama, Republik DL-Bonds 2006(34-36)", "EUR");
         security.setIsin("US698299AW45");
         security.setWkn("A0GMJZ");
 
@@ -4280,7 +4266,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -4293,7 +4279,7 @@ public class BaaderBankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.USD);
+                            account.setCurrencyCode("USD");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -4313,7 +4299,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4334,7 +4320,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende23WithSecurityInEUR()
     {
-        var security = new Security("W.P. Carey Inc.", CurrencyUnit.EUR);
+        var security = new Security("W.P. Carey Inc.", "EUR");
         security.setIsin("US92936U1097");
         security.setWkn("A1J5SB");
 
@@ -4352,7 +4338,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -4364,7 +4350,7 @@ public class BaaderBankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -4384,7 +4370,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4415,7 +4401,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4435,7 +4421,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende25WithSecurityInEUR()
     {
-        var security = new Security("Panama, Republik DL-Bonds 2006(34-36)", CurrencyUnit.EUR);
+        var security = new Security("Panama, Republik DL-Bonds 2006(34-36)", "EUR");
         security.setIsin("US698299AW45");
         security.setWkn("A1JA0GMJZSB");
 
@@ -4453,7 +4439,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -4466,7 +4452,7 @@ public class BaaderBankPDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.USD);
+                            account.setCurrencyCode("USD");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -4507,7 +4493,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividende26WithSecurityInEUR()
     {
-        var security = new Security("Daikin Industries Ltd.", CurrencyUnit.EUR);
+        var security = new Security("Daikin Industries Ltd.", "EUR");
         security.setIsin("JP3481800005");
         security.setWkn("857771");
 
@@ -4557,7 +4543,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4586,7 +4572,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -4595,7 +4581,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security.getWkn(), is("A0N9JF"));
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Starwood Property Trust Inc."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check cancellation (Storno) transaction
         var cancellation = (TransactionItem) results.stream() //
@@ -4606,23 +4592,24 @@ public class BaaderBankPDFExtractorTest
         assertThat(((AccountTransaction) cancellation.getSubject()).getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(cancellation.getFailureMessage(), is(Messages.MsgErrorOrderCancellationUnsupported));
 
-        assertThat(((Transaction) cancellation.getSubject()).getDateTime(), is(LocalDateTime.parse("2021-10-18T00:00")));
+        assertThat(((Transaction) cancellation.getSubject()).getDateTime(),
+                        is(LocalDateTime.parse("2021-10-18T00:00")));
         assertThat(((Transaction) cancellation.getSubject()).getShares(), is(Values.Share.factorize(250)));
         assertThat(((Transaction) cancellation.getSubject()).getSource(), is("DividendeStorno02.txt"));
         assertThat(((Transaction) cancellation.getSubject()).getNote(), is("Vorgangs-Nr.: 6662228"));
 
         assertThat(((Transaction) cancellation.getSubject()).getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(76.34))));
+                        is(Money.of("EUR", Values.Amount.factorize(76.34))));
         assertThat(((Transaction) cancellation.getSubject()).getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(103.45))));
+                        is(Money.of("EUR", Values.Amount.factorize(103.45))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.11 + 0.92 + 0.56 + 15.52))));
+                        is(Money.of("EUR", Values.Amount.factorize(10.11 + 0.92 + 0.56 + 15.52))));
         assertThat(((Transaction) cancellation.getSubject()).getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+                        is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         var grossValueUnit = ((Transaction) cancellation.getSubject()).getUnit(Unit.Type.GROSS_VALUE)
                         .orElseThrow(IllegalArgumentException::new);
-        assertThat(grossValueUnit.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(120.00))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(120.00))));
     }
 
     @Test
@@ -4632,15 +4619,14 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno03.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DividendeStorno03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(1L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4655,14 +4641,15 @@ public class BaaderBankPDFExtractorTest
                                         hasDate("2022-10-14T00:00"), hasShares(5.683), //
                                         hasSource("DividendeStorno03.txt"), //
                                         hasNote("Vorgangs-Nr.: 2546"), //
-                                        hasAmount("EUR", 1.14), hasGrossValue("EUR", 1.34), hasForexGrossValue("USD", 1.32), //
+                                        hasAmount("EUR", 1.14), hasGrossValue("EUR", 1.34),
+                                        hasForexGrossValue("USD", 1.32), //
                                         hasTaxes("EUR", 0.20), hasFees("EUR", 0.00)))));
     }
 
     @Test
     public void testDividendeStorno03WithSecurityInEUR()
     {
-        var security = new Security("Realty Income Corp.", CurrencyUnit.EUR);
+        var security = new Security("Realty Income Corp.", "EUR");
         security.setIsin("US7561091049");
         security.setWkn("899744");
 
@@ -4680,7 +4667,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check cancellation (Storno) transaction
         assertThat(results, hasItem(withFailureMessage( //
@@ -4694,7 +4681,7 @@ public class BaaderBankPDFExtractorTest
                                         check(tx -> {
                                             var c = new CheckCurrenciesAction();
                                             var account = new Account();
-                                            account.setCurrencyCode(CurrencyUnit.EUR);
+                                            account.setCurrencyCode("EUR");
                                             var s = c.process((AccountTransaction) tx, account);
                                             assertThat(s, is(Status.OK_STATUS));
                                         })))));
@@ -4714,7 +4701,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4737,8 +4724,7 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testDividendeStorno04WithSecurityInEUR()
     {
-        var security = new Security("Essential Properties Real.Tr.",
-                        CurrencyUnit.EUR);
+        var security = new Security("Essential Properties Real.Tr.", "EUR");
         security.setIsin("US29670E1073");
         security.setWkn("A2JN57");
 
@@ -4756,7 +4742,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check cancellation (Storno) transaction
         assertThat(results, hasItem(withFailureMessage( //
@@ -4770,7 +4756,7 @@ public class BaaderBankPDFExtractorTest
                                         check(tx -> {
                                             var c = new CheckCurrenciesAction();
                                             var account = new Account();
-                                            account.setCurrencyCode(CurrencyUnit.EUR);
+                                            account.setCurrencyCode("EUR");
                                             var s = c.process((AccountTransaction) tx, account);
                                             assertThat(s, is(Status.OK_STATUS));
                                         })))));
@@ -4790,7 +4776,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -4821,11 +4807,11 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check tax refund transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
@@ -4833,14 +4819,10 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Steuerausgleichsrechnung01.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 12345"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.01))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.01))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(9.01))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(9.01))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -4855,11 +4837,11 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check tax refund transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
@@ -4867,14 +4849,10 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Steuerausgleichsrechnung02.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 11111"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.06))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(29.06))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(29.06))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(29.06))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -4889,11 +4867,11 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check tax refund transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
 
@@ -4901,14 +4879,10 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getSource(), is("Steuerausgleichsrechnung03.txt"));
         assertThat(transaction.getNote(), is("Vorgangs-Nr.: 1234567"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.69))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.69))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.69))));
+        assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.69))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -4918,14 +4892,15 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung04.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung04.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check tax refund transaction
         assertThat(results, hasItem(taxRefund( //
@@ -4943,14 +4918,15 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung05.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Steuerausgleichsrechnung05.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check taxes transaction
         assertThat(results, hasItem(taxes( //
@@ -4972,7 +4948,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(results.size(), is(1));
         assertThat(errors, empty());
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -4984,7 +4960,7 @@ public class BaaderBankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-04-12T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10000.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(10000.00))));
         assertThat(transaction.getSource(), is("Periodenauszug01.txt"));
         assertThat(transaction.getNote(), is("Lastschrift aktiv"));
     }
@@ -5000,7 +4976,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(results.size(), is(3));
         assertThat(errors, empty());
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -5012,7 +4988,7 @@ public class BaaderBankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-07-06T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.97))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(6.97))));
         assertThat(transaction.getSource(), is("Periodenauszug02.txt"));
         assertThat(transaction.getNote(), is("Lastschrift aktiv"));
 
@@ -5022,7 +4998,7 @@ public class BaaderBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-08-22T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2000.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2000.00))));
         assertThat(transaction.getSource(), is("Periodenauszug02.txt"));
         assertThat(transaction.getNote(), is("SEPA-Ueberweisung"));
 
@@ -5032,7 +5008,7 @@ public class BaaderBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-07-10T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.56))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(2.56))));
         assertThat(transaction.getSource(), is("Periodenauszug02.txt"));
         assertThat(transaction.getNote(), is("Transaktionskostenpauschale o. MwSt."));
     }
@@ -5048,7 +5024,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(results.size(), is(1));
         assertThat(errors, empty());
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -5060,7 +5036,7 @@ public class BaaderBankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-05-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(100.00))));
         assertThat(transaction.getSource(), is("Periodenauszug03.txt"));
         assertThat(transaction.getNote(), is("Lastschrift aktiv"));
     }
@@ -5076,7 +5052,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(results.size(), is(3));
         assertThat(errors, empty());
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -5088,7 +5064,7 @@ public class BaaderBankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(transaction.getSource(), is("Periodenauszug04.txt"));
         assertThat(transaction.getNote(), is("Credit SEPA"));
 
@@ -5098,7 +5074,7 @@ public class BaaderBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1.00))));
         assertThat(transaction.getSource(), is("Periodenauszug04.txt"));
         assertThat(transaction.getNote(), is("Direct Debit"));
 
@@ -5108,7 +5084,7 @@ public class BaaderBankPDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-02-28T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(transaction.getSource(), is("Periodenauszug04.txt"));
         assertThat(transaction.getNote(), is("Credit SEPA"));
     }
@@ -5124,7 +5100,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(results.size(), is(1));
         assertThat(errors, empty());
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -5136,7 +5112,7 @@ public class BaaderBankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-05-03T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.99))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.99))));
         assertThat(transaction.getSource(), is("Periodenauszug05.txt"));
         assertThat(transaction.getNote(), is("Ordergebühr | Ref.-Nr.: SCAL4Pm2ZTfDF4c"));
     }
@@ -5148,15 +5124,14 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug06.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug06.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(3L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2021-12-21"), hasAmount("EUR", 100.00), //
@@ -5178,15 +5153,14 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug07.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug07.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(3L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-10-03"), hasAmount("EUR", 200.00), //
@@ -5208,15 +5182,14 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug08.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug08.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-10-31"), hasAmount("EUR", 356.29), //
@@ -5230,15 +5203,14 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug09.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug09.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(7L));
         assertThat(results.size(), is(7));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2020-11-02"), hasAmount("EUR", 25.00), //
@@ -5276,8 +5248,7 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug10.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug10.txt"), errors);
 
         // Check if the results list is not empty
         assertTrue(results.isEmpty());
@@ -5293,7 +5264,8 @@ public class BaaderBankPDFExtractorTest
 
         // Check the error message of the first error
         var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
-                        "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH / Traders Place GmbH & Co. KGaA", "Periodenauszug10.txt");
+                        "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH / Traders Place GmbH & Co. KGaA",
+                        "Periodenauszug10.txt");
         assertEquals(expectedErrorMessage, firstError.getMessage());
     }
 
@@ -5304,15 +5276,14 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug11.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug11.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(2L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-07-05"), hasAmount("EUR", 28240.00), //
@@ -5330,15 +5301,14 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug12.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug12.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2023-12-27"), hasAmount("EUR", 164.78), //
@@ -5352,15 +5322,14 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug13.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug13.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(5L));
         assertThat(results.size(), is(5));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2024-12-19"), hasAmount("EUR", 105.00), //
@@ -5395,15 +5364,14 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug14.txt"),
-                        errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Periodenauszug14.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(3L));
         assertThat(results.size(), is(3));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // assert transaction
         assertThat(results, hasItem(deposit(hasDate("2025-01-09"), hasAmount("EUR", 100.00), //
@@ -5433,7 +5401,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(0));
         assertTrue(results.isEmpty());
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // Check if at least one error is present
         assertTrue(!errors.isEmpty());
@@ -5446,7 +5414,8 @@ public class BaaderBankPDFExtractorTest
 
         // Check the error message of the first error
         var expectedErrorMessage = MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType,
-                        "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH / Traders Place GmbH & Co. KGaA", "Periodenauszug15.txt");
+                        "Baader Bank AG / Scalable Capital Vermögensverwaltung GmbH / Traders Place GmbH & Co. KGaA",
+                        "Periodenauszug15.txt");
         assertEquals(expectedErrorMessage, firstError.getMessage());
     }
 
@@ -5461,7 +5430,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(results.size(), is(1));
         assertThat(errors, empty());
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -5473,7 +5442,7 @@ public class BaaderBankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-12-11T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(20.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(20.00))));
         assertThat(transaction.getSource(), is("Tageskontoauszug01.txt"));
         assertThat(transaction.getNote(), is("Gutschrift"));
     }
@@ -5489,7 +5458,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -5501,9 +5470,10 @@ public class BaaderBankPDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-08-02T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.48))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(6.48))));
         assertThat(transaction.getSource(), is("Rechnung01.txt"));
-        assertThat(transaction.getNote(), is("Rechnungsnr.: 2017071234567 | Abrechnungszeitraum 01.07.2017 - 31.07.2017"));
+        assertThat(transaction.getNote(),
+                        is("Rechnungsnr.: 2017071234567 | Abrechnungszeitraum 01.07.2017 - 31.07.2017"));
     }
 
     @Test
@@ -5520,7 +5490,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check interest transaction
         assertThat(results, hasItem(interest( //
@@ -5538,14 +5508,15 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StatementofInterestandCharges01.txt"), errors);
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "StatementofInterestandCharges01.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(0L));
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check interest transaction
         assertThat(results, hasItem(interest( //
@@ -5567,7 +5538,7 @@ public class BaaderBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(4));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         var security1 = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -5576,7 +5547,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(security1.getWkn(), is("A3H3MF"));
         assertNull(security1.getTickerSymbol());
         assertThat(security1.getName(), is("Enapter AG Inhaber-Bezugsrechte"));
-        assertThat(security1.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security1.getCurrencyCode(), is("EUR"));
 
         var security2 = results.stream().filter(SecurityItem.class::isInstance).skip(1).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
@@ -5584,11 +5555,11 @@ public class BaaderBankPDFExtractorTest
         assertThat(security2.getWkn(), is("A3H3MG"));
         assertNull(security2.getTickerSymbol());
         assertThat(security2.getName(), is("Enapter AG junge Inhaber-Aktien o.N."));
-        assertThat(security2.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(security2.getCurrencyCode(), is("EUR"));
 
         // check delivery outbound (Auslieferung) transaction
-        var entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
@@ -5597,14 +5568,10 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getSource(), is("Einbuchung01.txt"));
         assertNull(entry.getNote());
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
 
         // check delivery inbound (Einlieferung) transaction
         entry = (PortfolioTransaction) results.stream().filter(TransactionItem.class::isInstance).skip(1).findFirst()
@@ -5617,14 +5584,10 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getSource(), is("Einbuchung01.txt"));
         assertThat(entry.getNote(), is("Bezugsverhältnis: 16 : 1"));
 
-        assertThat(entry.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(132.00))));
-        assertThat(entry.getGrossValue(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(132.00))));
-        assertThat(entry.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
-        assertThat(entry.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(132.00))));
+        assertThat(entry.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(132.00))));
+        assertThat(entry.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(0.00))));
+        assertThat(entry.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -5641,7 +5604,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5674,7 +5637,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5707,7 +5670,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5740,7 +5703,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5773,7 +5736,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5806,7 +5769,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5839,7 +5802,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -5872,7 +5835,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //

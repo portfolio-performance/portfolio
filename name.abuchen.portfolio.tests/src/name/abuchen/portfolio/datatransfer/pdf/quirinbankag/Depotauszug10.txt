@@ -1,0 +1,106 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.76.3
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Kontoauszug
+Konto 3607641020 EUR
+IBAN DE67101106006314265222
+wKIZHTbc, IPAPcOwPH
+Vermögensverwaltungskonto in EUR
+Datum 31.01.2025
+Herrn Auszug-Nr 1
+nFbrpZVQH EZMiGmHd Seite 1 von 2
+MSko-VhsfmvZCkp-Ijf 4
+62909 Rggt Betreuer vCnZ sGBtH
+Telefon +49 (0) 0863 13988-13
+E-Mail jens.jugel@quirinprivatbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Steueroptimierung 02.01.2025 02.01.2025 60,16 EUR
+Ref.: 551694863
+6314265222 Bestandsprovision, 01.10.2024 - 31.12.2024, 16.01.2025 31.12.2024 2,31 EUR
+LU1274520086 RCGF.-R.QI GL.DE.C.EQ.IEO
+Gesamtbetrag: 2,83 EUR (KEST: -0,50 EUR, SOLI: -0,02 EUR)
+Ref.: 554023678
+6314265222 Bestandsprovision, 01.10.2024 - 31.12.2024, 16.01.2025 31.12.2024 6,96 EUR
+LU1233758587 RCGF.-.R.QI EM.CO.EQ.IEEO
+Gesamtbetrag: 8,54 EUR (KEST: -1,50 EUR, SOLI: -0,08 EUR)
+Ref.: 554023693
+Thesaurierung, Ref.: 557786429 24.01.2025 02.01.2025 -200,20 EUR
+Vang.Inv.S.-Global Stk.Ind.Fd Reg.Shs EUR Acc o.N.
+IE00B03HD191, ST 1.645,069
+KEST: EUR -189,77, SOLI: EUR -10,43
+Thesaurierung, Ref.: 557794194 24.01.2025 02.01.2025 -45,64 EUR
+Rob.C.Gr.Fds-R.QI Gl.De.Co.Eq. Actions Nom. I EUR o.N.
+LU1274520086, ST 91,1668
+KEST: EUR -43,27, SOLI: EUR -2,37
+Thesaurierung, Ref.: 557849822 24.01.2025 02.01.2025 -200,20 EUR
+InvescoMI MSCI World ETF Registered Shares Acc o.N
+IE00B60SX394, ST 766,6823
+KEST: EUR -189,77, SOLI: EUR -10,43
+Thesaurierung, Ref.: 558428333 24.01.2025 02.01.2025 -52,40 EUR
+SPDR Bl.1-3Y.Eu.Go.Bd U.ETF Registered Shares o.N.
+IE00B6YX5F63, ST 318,52
+KEST: EUR -49,67, SOLI: EUR -2,73
+Thesaurierung, Ref.: 558778401 24.01.2025 02.01.2025 -6,41 EUR
+AIS-Amundi EUR F.R.Corp.Bd ESG Nam.-Ant.UCITS ETF DR-EUR
+C oN
+LU1681041114, ST 87,7672
+KEST: EUR -6,08, SOLI: EUR -0,33
+Thesaurierung, Ref.: 559609470 24.01.2025 02.01.2025 -141,98 EUR
+Xtr.(IE)MSCI World Value Registered Shares 1C USD o.N.
+IE00BL25JM42, ST 1.429,5971
+KEST: EUR -134,58, SOLI: EUR -7,40
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 87277739 / 20250201 17:48:01
+Kontoauszug
+Konto 0867078564 EUR
+IBAN DE67101106006314265222
+QpYIJVKR, QvANPiFap
+Vermögensverwaltungskonto in EUR
+Datum 31.01.2025
+Herrn Auszug-Nr 1
+nwfAgmPVH nDdQKgDa Seite 2 von 2
+sZzc-YGsDeCMKQU-AHl 4
+71711 zkVn BJfkigqp Wbud hrXze
+Telefon +49 (0) 5782 64666-13
+E-Mail jens.jugel@quirinprivatbank.de
+Buchungshinweise Buchungsdatum Valuta Umsatz
+Thesaurierung, Ref.: 559227626 27.01.2025 02.01.2025 -12,31 EUR
+SPDR MSCI Emer.Mkts Sm.Cap ETF Registered Shares o.N.
+IE00B48X4842, ST 43,0035
+KEST: EUR -11,67, SOLI: EUR -0,64
+Thesaurierung, Ref.: 559351476 27.01.2025 02.01.2025 -59,93 EUR
+iShsIII-MSCI Wld Sm.Ca.UCI.ETF Registered Shares USD(Acc)o.N.
+IE00BF4RFH31, ST 3.197,6858
+KEST: EUR -56,81, SOLI: EUR -3,12
+Thesaurierung, Ref.: 559732387 27.01.2025 02.01.2025 -57,77 EUR
+MUL Amundi EUR GovBond 1-3Y UCITS ETF Inh.Anteile Acc
+LU1650487413, ST 196,7106
+KEST: EUR -54,76, SOLI: EUR -3,01
+Erträgnisabrechnung, Ref.: 556853447 29.01.2025 29.01.2025 34,92 EUR
+Vanguard EUR Euroz.Gov.B.U.ETF Registered Shares EUR Dis.oN
+IE00BZ163H91, ST 805,2646
+KEST: EUR -11,86, SOLI: EUR -0,65
+Vermögensverwaltungshonorar 6314265222, 01.01.2025 - 31.01.2025 31.01.2025 31.01.2025 -507,98 EUR
+Bemessungsgrundlage 598.100,30 EUR
+Betrag inkl. USt: -507,98 EUR (Netto: -426,87 EUR, USt: -81,11
+EUR), enthaltener Transaktionskostenanteil: 233,67 EUR
+Ref.: 563214268
+letzter Auszug 31.12.2024 alter Saldo 6.233,90 EUR
+Umsatz -1.180,47 EUR
+Limit (in Währung) 0,00 neuer Saldo 5.053,43 EUR
+Sollzins in % p.a. 0,00
+Überziehungszins in % p.a. 0,00
+Dieser Kontoauszug gilt gleichzeitig als Saldenmitteilung. Etwaige Einwendungen gegen den Kontoauszug sind unverzüglich zu erheben;
+ist der Kontoauszug zusätzlich als Rechnungsabschluss bezeichnet, gilt der Abschlusssaldo als genehmigt, wenn ihm nicht innerhalb von
+sechs Wochen nach Zugang schriftlich widersprochen wird. Zur Fristwahrung genügt die rechtzeitige Absendung.
+Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig. Nähere Informationen können dem
+"Informationsbogen für den Einleger" entnommen werden.
+Quirin Privatbank AG
+Postfach 311105 | 10641 Berlin T +49 (0)30 890 21-300 Handelsregister: Vorstand: Karl Matthäus Schmidt
+Kurfürstendamm 119 | 10711 Berlin F +49 (0)30 890 21-301 Berlin Charlottenburg, HRB 87859 Johannes Eismann
+www.quirinprivatbank.de info@quirinprivatbank.de USt-IdNr.: DE195661729 Aufsichtsratsvorsitzender: Holger Timm
+KTO_AUSZ / 87277739 / 20250201 17:48:01

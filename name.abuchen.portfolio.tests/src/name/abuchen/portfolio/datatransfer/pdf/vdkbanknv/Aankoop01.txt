@@ -1,0 +1,30 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.76.3
+System: win32 | x86_64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+vdk bank nv
+Keizer Karelstraat 15 | 9000 Gent | T 09 267 32 11 | vdk@vdk.be | vdk.be
+BTW BE 0400.067.788 RPR GENT | FSMA 020230 A | IBAN BE65 8900 0005 5096 | BIC VDSPBE91
+Overzicht transactie voor rekening 742-7257949-88 op 21/04/2025
+ 
+Borderelreferentie: 2025.000123456789 Orderreferentie: 395693
+ 
+ 
+Uitvoering op: 21/04/2025 om 19:44:00
+Afrekendatum: 22/04/2025
+Plaats van uitvoering: Knight
+Type order: Limiet order
+Datum order: 21/04/2025
+ISIN: US0138721065
+ 
+Je aankoop van: Alcoa Corp
+Aantal delen: 100
+Koers: 22,9856 USD
+ 
+Totaal bedrag: 2.298,56 USD
+Makelaarsloon: 35,31 USD
+Vaste kosten: 5,65 USD
+Beurstaks (0,35%): 8,04 USD
+Netto bedrag: 2.347,56 USD
+Wisselkoers USD/EUR 1,146626
+Netto afrekening op BE12 7740 1745 3286 door afhaling van: -2.047,36 EUR

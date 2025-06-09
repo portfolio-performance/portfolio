@@ -206,6 +206,76 @@ public class OldenburgischeLandesbankAGPDFExtractorTest
                         hasSource("Kauf04.txt"), //
                         hasNote("Ord.-Ref.: 12345678 | Handels.-Ref.: 12345678"), //
                         hasAmount("EUR", 25.00), hasGrossValue("EUR", 24.95), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.05), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
+    public void testWertpapierKauf05()
+    {
+        var extractor = new OldenburgischeLandesbankAGPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "EUR");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("IE00B4L5Y983"), hasWkn("A0RPWH"), hasTicker(null), //
+                        hasName("iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N."), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-05-06T18:12:12"), hasShares(0.261293), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote("Ord.-Ref.: 5867856 | Handels.-Ref.: 5749054"), //
+                        hasAmount("EUR", 25.00), hasGrossValue("EUR", 24.95), //
+                        hasForexGrossValue("USD", 28.30), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.05))));
+    }
+
+    @Test
+    public void testWertpapierKauf05WithSecurityInEUR()
+    {
+        var security = new Security("iShsIII-Core MSCI World U.ETF Registered Shs USD (Acc) o.N.", "EUR");
+        security.setIsin("IE00B4L5Y983");
+        security.setWkn("A0RPWH");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new OldenburgischeLandesbankAGPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf05.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "EUR");
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-05-06T18:12:12"), hasShares(0.261293), //
+                        hasSource("Kauf05.txt"), //
+                        hasNote("Ord.-Ref.: 5867856 | Handels.-Ref.: 5749054"), //
+                        hasAmount("EUR", 25.00), hasGrossValue("EUR", 24.95), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.05), //
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var s = c.process((PortfolioTransaction) tx, new Portfolio());

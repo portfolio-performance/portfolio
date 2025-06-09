@@ -33,10 +33,10 @@ A: 1822direkt Tagesgeldkonto, IBAN DE22384900000023774324
 Referenzkonto: DE27482900000028462832 Umsätze vom 01.10.2024 bis 31.10.2024
 Buchung Vorgang Auftraggeber / Empfänger Umsatz
 Wertstellung Kto. Auftraggeber/Empfänger Verwendungszweck
-Anfangssaldo vom 01.10.2024 +0,00 *
-17.10.2024 Gutschrift Überw. Max Mustermann +1.000,00
+Anfangssaldo vom 01.10.2024 +0,00 €*
+17.10.2024 Gutschrift Überw. Max Mustermann +1.000,00€
 17.10.2024 DE27482900000028462832 TG1
-Endsaldo vom 31.10.2024 +1.000,00 *
+Endsaldo vom 31.10.2024 +1.000,00 *
 * Der angegebene Kontostand berücksichtigt nicht die Wertstellung der einzelnen Buchungen. Dies bedeutet, dass
 der genannte Betrag nicht dem für die Zinsberechnungmaßgeblichen Kontostand entsprechen muss und bei Verfü-
 gungen möglicherweise Zinsen für die Inanspruchnahme einer eingeräumten oder geduldeten Kontoüberziehung

@@ -1,0 +1,59 @@
+PDFBox Version: 3.0.3
+Portfolio Performance Version: 0.76.2
+System: macosx | aarch64 | 21.0.5+11-LTS | Azul Systems, Inc.
+-----------------------------------------
+Postfach · 60608 Frankfurt am Main Seite 1 von 2
+Depotnummer 0123456789
+Kundennummer 0123456
+Max Mustermann
+Auftragsnummer 123456/99.00
+Herrn Datum 10.12.2024
+Max Mustermann Ihr Berater 1822direkt
+Musterstraße 123 Telefon 069 94170-0
+01234 Musterstadt Rechnungsnummer W01234-0000123456/24
+Umsatzsteuer-ID DE114104095
+Wertpapier Abrechnung Rücknahme Investmentfonds
+Auftrag vom 09.12.2024 22:13:25 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 20 DWS ESG EURO MONEY MARKET FUND LU0225880524 (A0F426)
+INHABER-ANTEILE O.N.
+Handels-/Ausführungsplatz Außerbörslich
+Schlusstag 10.12.2024 Auftraggeber Mustermann, Max
+Ausführungskurs 101,89 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverwahrung Sammelurkunde
+Kurswert 2.037,80 EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn 10,90 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 10,90 EUR
+Steuerberechnung
+Kapitalertragsteuer 25,00% auf 10,90 EUR 2,73- EUR
+Solidaritätszuschlag 5,50% auf 2,73 EUR 0,15- EUR
+Ausmachender Betrag 2.034,92 EUR
+Den Gegenwert buchen wir mit Valuta 12.12.2024 zu Gunsten des Kontos 0123456789
+(IBAN DE99 5005 0201 0123 4567 89), BLZ 50050201 (BIC HELADEF1822).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+0123.01234567.0001234OR01
+Seite 2 von 2
+Depotnummer 0123456789
+Kundennummer 0123456
+Auftragsnummer 123456/99.00
+Datum 10.12.2024
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2024 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 392,06
+Verkauf 0,00 0,00 0,00 0,00 10,90
+Nachher 0,00 0,00 0,00 0,00 402,96
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös Teilfrei- ant. Ergebnis
+stellung
+Kauf 1234567890 08.10.2024 Stück 10,0000 1.013,30- 1.018,90 0,00 5,60 (D)
+Kauf 1234567891 10.10.2024 Stück 10,0000 1.013,60- 1.018,90 0,00 5,30 (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 10,90
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0123.01234567.0001234OR01

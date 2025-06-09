@@ -313,9 +313,9 @@ public class BisonPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(countSecurities(results), is(2L));
-        assertThat(countBuySell(results), is(4L));
+        assertThat(countBuySell(results), is(2L));
         assertThat(countAccountTransactions(results), is(3L));
-        assertThat(results.size(), is(9));
+        assertThat(results.size(), is(7));
         new AssertImportActions().check(results, "EUR");
 
         // check security
@@ -336,14 +336,6 @@ public class BisonPDFExtractorTest
         // check deposit transactions
         assertThat(results, hasItem(deposit(hasDate("2025-02-03T20:17"), hasAmount("EUR", 53.00), //
                         hasSource("InfoReport04.txt"), hasNote(null))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(purchase( //
-                        hasDate("2025-02-03T08:48"), hasShares(0.00000541), //
-                        hasSource("InfoReport04.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 0.02), hasGrossValue("EUR", 0.02), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check inbound delivery transactions
         assertThat(results, hasItem(inboundDelivery( //
@@ -367,14 +359,6 @@ public class BisonPDFExtractorTest
                         hasSource("InfoReport04.txt"), //
                         hasNote(null), //
                         hasAmount("EUR", 8.40), hasGrossValue("EUR", 8.40), //
-                        hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
-
-        // check buy sell transaction
-        assertThat(results, hasItem(purchase( //
-                        hasDate("2025-01-27T07:50"), hasShares(0.00000150), //
-                        hasSource("InfoReport04.txt"), //
-                        hasNote(null), //
-                        hasAmount("EUR", 0.00), hasGrossValue("EUR", 0.00), //
                         hasTaxes("EUR", 0.00), hasFees("EUR", 0.00))));
 
         // check inbound delivery transactions

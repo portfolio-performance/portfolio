@@ -57,7 +57,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
@@ -88,7 +87,7 @@ public class SwissquotePDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -97,7 +96,7 @@ public class SwissquotePDFExtractorTest
         assertNull(security.getWkn());
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("APPLE ORD"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check buy sell transaction
         var entry = (BuySellEntry) results.stream().filter(BuySellEntryItem.class::isInstance).findFirst()
@@ -112,13 +111,13 @@ public class SwissquotePDFExtractorTest
         assertThat(entry.getNote(), is("Referenz: 32484929"));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2900.60))));
+                        is(Money.of("USD", Values.Amount.factorize(2900.60))));
         assertThat(entry.getPortfolioTransaction().getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2895.00))));
+                        is(Money.of("USD", Values.Amount.factorize(2895.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(4.75))));
+                        is(Money.of("USD", Values.Amount.factorize(4.75))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.85))));
+                        is(Money.of("USD", Values.Amount.factorize(0.85))));
     }
 
     @Test
@@ -792,7 +791,7 @@ public class SwissquotePDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -823,7 +822,7 @@ public class SwissquotePDFExtractorTest
         assertThat(countBuySell(results), is(1L));
         assertThat(countAccountTransactions(results), is(0L));
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         assertThat(results, hasItem(security( //
@@ -855,7 +854,7 @@ public class SwissquotePDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -864,11 +863,11 @@ public class SwissquotePDFExtractorTest
         assertNull(security.getWkn());
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("HARVEST CAPITAL CREDIT ORD"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -877,14 +876,10 @@ public class SwissquotePDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende01.txt"));
         assertThat(transaction.getNote(), is("Referenz: 32484929"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(19.60))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(28.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(8.40))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(19.60))));
+        assertThat(transaction.getGrossValue(), is(Money.of("USD", Values.Amount.factorize(28.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("USD", Values.Amount.factorize(8.40))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("USD", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -907,7 +902,7 @@ public class SwissquotePDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -920,7 +915,7 @@ public class SwissquotePDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.USD);
+                            account.setCurrencyCode("USD");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -951,8 +946,8 @@ public class SwissquotePDFExtractorTest
         assertThat(security.getCurrencyCode(), is("CHF"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -961,14 +956,10 @@ public class SwissquotePDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende02.txt"));
         assertThat(transaction.getNote(), is("Referenz: 32484929"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(118.62))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(182.50))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(63.88))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(118.62))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(182.50))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(63.88))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -984,7 +975,7 @@ public class SwissquotePDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -993,11 +984,11 @@ public class SwissquotePDFExtractorTest
         assertNull(security.getWkn());
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vanguard All World ETF Dist"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -1006,14 +997,10 @@ public class SwissquotePDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende03.txt"));
         assertThat(transaction.getNote(), is("Referenz: 222443221"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(13.52))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(13.52))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(13.52))));
+        assertThat(transaction.getGrossValue(), is(Money.of("USD", Values.Amount.factorize(13.52))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("USD", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("USD", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1036,7 +1023,7 @@ public class SwissquotePDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -1049,7 +1036,7 @@ public class SwissquotePDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.USD);
+                            account.setCurrencyCode("USD");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -1080,8 +1067,8 @@ public class SwissquotePDFExtractorTest
         assertThat(security.getCurrencyCode(), is("CHF"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -1090,14 +1077,10 @@ public class SwissquotePDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende04.txt"));
         assertThat(transaction.getNote(), is("Referenz: 32484929"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(107.10))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(107.10))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(107.10))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(107.10))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1125,8 +1108,8 @@ public class SwissquotePDFExtractorTest
         assertThat(security.getCurrencyCode(), is("CHF"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -1135,14 +1118,10 @@ public class SwissquotePDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende05.txt"));
         assertThat(transaction.getNote(), is("Referenz: 312345678"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(25.03))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(38.51))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(13.48))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(25.03))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(38.51))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(13.48))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1158,7 +1137,7 @@ public class SwissquotePDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check security
         var security = results.stream().filter(SecurityItem.class::isInstance).findFirst()
@@ -1167,11 +1146,11 @@ public class SwissquotePDFExtractorTest
         assertNull(security.getWkn());
         assertNull(security.getTickerSymbol());
         assertThat(security.getName(), is("Vanguard AllWrld Div ETF Dist"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getCurrencyCode(), is("USD"));
 
         // check dividends transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
@@ -1180,14 +1159,10 @@ public class SwissquotePDFExtractorTest
         assertThat(transaction.getSource(), is("Dividende06.txt"));
         assertThat(transaction.getNote(), is("Referenz: 123456789"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.46))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.46))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(1.46))));
+        assertThat(transaction.getGrossValue(), is(Money.of("USD", Values.Amount.factorize(1.46))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("USD", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("USD", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1210,7 +1185,7 @@ public class SwissquotePDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.USD);
+        new AssertImportActions().check(results, "USD");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -1223,7 +1198,7 @@ public class SwissquotePDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.USD);
+                            account.setCurrencyCode("USD");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -1280,7 +1255,7 @@ public class SwissquotePDFExtractorTest
         assertThat(countBuySell(results), is(0L));
         assertThat(countAccountTransactions(results), is(1L));
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check dividends transaction
         assertThat(results, hasItem(dividend( //
@@ -1293,7 +1268,7 @@ public class SwissquotePDFExtractorTest
                         check(tx -> {
                             var c = new CheckCurrenciesAction();
                             var account = new Account();
-                            account.setCurrencyCode(CurrencyUnit.EUR);
+                            account.setCurrencyCode("EUR");
                             var s = c.process((AccountTransaction) tx, account);
                             assertThat(s, is(Status.OK_STATUS));
                         }))));
@@ -1579,6 +1554,76 @@ public class SwissquotePDFExtractorTest
     }
 
     @Test
+    public void testDividende12()
+    {
+        var extractor = new SwissquotePDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("SE0015811955"), hasWkn(null), hasTicker(null), //
+                        hasName("INVESTOR ORD"), //
+                        hasCurrencyCode("SEK"))));
+
+        // check dividend transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-05-14T00:00"), hasShares(175.00), //
+                        hasSource("Dividende12.txt"), //
+                        hasNote("Referenz: 847092627"), //
+                        hasAmount("CHF", 38.87), hasGrossValue("CHF", 55.53), //
+                        hasForexGrossValue("SEK", 656.25), //
+                        hasTaxes("CHF", 16.66), hasFees("CHF", 0.00))));
+    }
+
+    @Test
+    public void testDividende12WithSecurityInCHF()
+    {
+        var security = new Security("INVESTOR ORD", "CHF");
+        security.setIsin("SE0015811955");
+
+        var client = new Client();
+        client.addSecurity(security);
+
+        var extractor = new SwissquotePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Dividende12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(0L));
+        assertThat(countAccountTransactions(results), is(1L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        // check dividends transaction
+        assertThat(results, hasItem(dividend( //
+                        hasDate("2025-05-14T00:00"), hasShares(175.00), //
+                        hasSource("Dividende12.txt"), //
+                        hasNote("Referenz: 847092627"), //
+                        hasAmount("CHF", 38.87), hasGrossValue("CHF", 55.53), //
+                        hasTaxes("CHF", 16.66), hasFees("CHF", 0.00), //
+                        check(tx -> {
+                            var c = new CheckCurrenciesAction();
+                            var account = new Account();
+                            account.setCurrencyCode("CHF");
+                            var s = c.process((AccountTransaction) tx, account);
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testZahlungsverkehr01()
     {
         var extractor = new SwissquotePDFExtractor(new Client());
@@ -1589,7 +1634,7 @@ public class SwissquotePDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -1601,7 +1646,7 @@ public class SwissquotePDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-10-27T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(1000.00))));
         assertThat(transaction.getSource(), is("Zahlungsverkehr01.txt"));
         assertThat(transaction.getNote(), is("Referenz: 312345678"));
     }
@@ -1617,7 +1662,7 @@ public class SwissquotePDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -1629,7 +1674,7 @@ public class SwissquotePDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-27T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(250.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(250.00))));
         assertThat(transaction.getSource(), is("Zahlungsverkehr02.txt"));
         assertThat(transaction.getNote(), is("Referenz: 123456789"));
     }
@@ -1645,7 +1690,7 @@ public class SwissquotePDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -1657,7 +1702,7 @@ public class SwissquotePDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(11.00))));
         assertThat(transaction.getSource(), is("Zahlungsverkehr03.txt"));
         assertThat(transaction.getNote(), is("Referenz: 123456789"));
     }
@@ -1673,7 +1718,7 @@ public class SwissquotePDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
+        new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -1685,7 +1730,7 @@ public class SwissquotePDFExtractorTest
         var transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2023-01-04T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(605.66))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(605.66))));
         assertThat(transaction.getSource(), is("Zahlungsverkehr04.txt"));
         assertThat(transaction.getNote(), is("Referenz: 567891234"));
     }
@@ -1706,8 +1751,8 @@ public class SwissquotePDFExtractorTest
         new AssertImportActions().check(results, "CHF");
 
         // check fee transaction
-        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance)
-                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
+        var transaction = (AccountTransaction) results.stream().filter(TransactionItem.class::isInstance).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
 
@@ -1715,14 +1760,10 @@ public class SwissquotePDFExtractorTest
         assertThat(transaction.getSource(), is("Zahlungsverkehr05.txt"));
         assertThat(transaction.getNote(), is("Referenz: 32484929 | Depotgebühren"));
 
-        assertThat(transaction.getMonetaryAmount(),
-                        is(Money.of("CHF", Values.Amount.factorize(28.55))));
-        assertThat(transaction.getGrossValue(),
-                        is(Money.of("CHF", Values.Amount.factorize(28.55))));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
-        assertThat(transaction.getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(28.55))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(28.55))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("CHF", Values.Amount.factorize(0.00))));
     }
 
     @Test
@@ -1737,7 +1778,7 @@ public class SwissquotePDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
         // We have three currency transactions
-        // new AssertImportActions().check(results, CurrencyUnit.EUR);
+        // new AssertImportActions().check(results, "EUR");
 
         // check transaction
         var iter = results.stream().filter(TransactionItem.class::isInstance).iterator();
@@ -1759,7 +1800,7 @@ public class SwissquotePDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.07))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(0.07))));
         assertThat(transaction.getSource(), is("Zinsabrechnung01.txt"));
         assertThat(transaction.getNote(), is("Zinsabrechnung 05.09.2022 - 31.12.2022"));
 
@@ -1769,7 +1810,7 @@ public class SwissquotePDFExtractorTest
         transaction = (AccountTransaction) item.getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2022-12-30T00:00")));
-        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.59))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", Values.Amount.factorize(0.59))));
         assertThat(transaction.getSource(), is("Zinsabrechnung01.txt"));
         assertThat(transaction.getNote(), is("Zinsabrechnung 05.09.2022 - 31.12.2022"));
     }
