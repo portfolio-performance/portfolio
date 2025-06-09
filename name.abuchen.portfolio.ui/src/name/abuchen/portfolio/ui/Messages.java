@@ -783,6 +783,7 @@ public class Messages extends NLS
     public static String LabelNormalSize;
     public static String LabelNotAvailable;
     public static String LabelNumberDataSeries;
+    public static String LabelNumberOfCandidates;
     public static String LabelOneOfX;
     public static String LabelOnlyLinkToPortfolioReport;
     public static String LabelOpenTrade;

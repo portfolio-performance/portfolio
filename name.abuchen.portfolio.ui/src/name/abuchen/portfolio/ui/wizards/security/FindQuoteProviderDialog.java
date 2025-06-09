@@ -453,9 +453,8 @@ public class FindQuoteProviderDialog extends TitleAreaDialog
                 var selectedAction = ((SecurityItem) e).selectedAction;
 
                 return selectedAction != null ? selectedAction.getText()
-                                : MessageFormat.format("{0,choice,0#|1#1 candidate|1<{0} candidates}", //$NON-NLS-1$
-                                                ((SecurityItem) e).actions.stream().filter(a -> !a.isEnabled())
-                                                                .count());
+                                : MessageFormat.format(Messages.LabelNumberOfCandidates, ((SecurityItem) e).actions
+                                                .stream().filter(a -> !a.isEnabled()).count());
             }
 
             @Override
