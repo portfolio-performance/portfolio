@@ -37,6 +37,34 @@
     <keyword>investment</keyword>
   </keywords>
   <releases>
+    <release version="0.77.0" date="2025-06-09">
+      <description>
+        <ul>
+          <li>New: Compare price of different securities in a single chart.</li>
+          <li>New: Widgets for current drawdown and all-time high of your total portfolio.</li>
+          <li>New: Portfolio Performance is now available in Vietnamese.</li>
+          <li>Improvement: Searching amounts under 'All Transactions' is now easier thanks to better handling of decimal separators.</li>
+          <li>Improvement: More stable handling of the new built-in price provider.</li>
+          <li>Improvement: You can now filter search results by price provider.</li>
+          <li>Improvement: Imported transactions are now matched more reliably to the correct accounts and portfolios, even with different currencies.</li>
+          <li>Improvement: IBFlex now imports transfers in different currencies as well.</li>
+          <li>Improvement: PDF importers updated for 1822direkt, VDK Bank, Scalable Capital, Boursobank, Moderna Estonia, Quirin, Swissquote, KBC Group, Bison, OLB, Saxo Bank, Trade Republic, and Baader Bank.</li>
+          <li>Fix: Fixed an issue where CoinGecko prices for the same cryptocurrency were mixed across different fiat currencies.</li>
+          <li>Fix: Corrected a holiday name in the Chilean trading calendar.</li>
+          <li xml:lang="de">Neu: Kurse verschiedener Wertpapiere in einem Diagramm vergleichen.</li>
+          <li xml:lang="de">Neu: Widgets für den aktuellen Drawdown und den Allzeithöchststand des Gesamtportfolios.</li>
+          <li xml:lang="de">Neu: Portfolio Performance ist jetzt auf Vietnamesisch verfügbar.</li>
+          <li xml:lang="de">Verbesserung: Beträge unter 'Alle Buchungen' lassen sich dank besserer Erkennung von Dezimaltrennzeichen einfacher finden.</li>
+          <li xml:lang="de">Verbesserung: Stabilere Handhabung des neuen integrierten Kurslieferanten.</li>
+          <li xml:lang="de">Verbesserung: Suchergebnisse lassen sich jetzt nach Kurslieferant filtern.</li>
+          <li xml:lang="de">Verbesserung: Beim Import werden verschiedene Währungen besser den passenden Konten und Depots zugeordnet.</li>
+          <li xml:lang="de">Verbesserung: IBFlex erkennt jetzt auch Umbuchungen in unterschiedlichen Währungen.</li>
+          <li xml:lang="de">Verbesserung: PDF-Importe aktualisiert für 1822direkt, VDK Bank, Scalable Capital, Boursobank, Moderna Estonia, Quirin, Swissquote, KBC Group, Bison, OLB, Saxo Bank, Trade Republic und Baader Bank.</li>
+          <li xml:lang="de">Fix: Behebt ein Problem, bei dem Kurse derselben Kryptowährung von CoinGecko über verschiedene Fiatwährungen vermischt wurden.</li>
+          <li xml:lang="de">Fix: Feiertag im chilenischen Handelskalender korrekt benannt.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.76.3" date="2025-05-18">
       <description>
         <ul>
