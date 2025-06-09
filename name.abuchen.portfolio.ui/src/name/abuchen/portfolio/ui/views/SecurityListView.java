@@ -496,11 +496,13 @@ public class SecurityListView extends AbstractFinanceView
 
         securities.addSelectionChangedListener(event -> {
             var selection = event.getStructuredSelection();
-            @SuppressWarnings("unchecked")
-            var securitySelection = new SecuritySelection(getClient(), selection.toList());
-
+            var securitySelection = SecuritySelection.from(getClient(), selection);
             selectionService.setSelection(selection.isEmpty() ? null : securitySelection);
-            setInformationPaneInput(securitySelection);
+
+            if (selection.size() == 1)
+                setInformationPaneInput(selection.getFirstElement());
+            else
+                setInformationPaneInput(securitySelection);
         });
 
         securities.addFilter(new ViewerFilter()
