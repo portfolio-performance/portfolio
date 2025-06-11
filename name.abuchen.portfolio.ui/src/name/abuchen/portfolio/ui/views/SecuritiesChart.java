@@ -861,6 +861,12 @@ public class SecuritiesChart
     {
         this.client = client;
         this.securities = securities;
+
+        // update the tooltip format: for single security we show quotes, for
+        // multiple securities we show percentages
+        chart.getToolTip().setDefaultValueFormat(securities.length <= 1 ? new DecimalFormat(Values.Quote.pattern())
+                        : new DecimalFormat(Values.Percent2.pattern()));
+
         updateChart();
     }
 
