@@ -385,6 +385,37 @@ public class SaxoBankPDFExtractorTest
     }
 
     @Test
+    public void testSecurityBuy02()
+    {
+        var extractor = new SaxoBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        var results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Buy02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "USD");
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US26923G8226"), hasWkn(null), hasTicker("PFFA"), //
+                        hasName("Virtus Infracap US Preferred Stock ETF"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-04-09T19:47:57"), hasShares(49.00), //
+                        hasSource("Buy02.txt"), //
+                        hasNote("Order ID 5276831204 | Trade ID 6236413100"), //
+                        hasAmount("USD", 981.98), hasGrossValue("USD", 980.98), //
+                        hasTaxes("USD", 0.00), hasFees("USD", 1.00))));
+    }
+
+    @Test
     public void testCashTransfer01()
     {
         var extractor = new SaxoBankPDFExtractor(new Client());
