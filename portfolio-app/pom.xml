@@ -394,7 +394,7 @@
 					<configuration>
 						<trimStackTrace>false</trimStackTrace>
 						<!-- disable warnings about Mockito -->
-						<argLine>-XX:+EnableDynamicAgentLoading</argLine>
+						<argLine>-XX:+EnableDynamicAgentLoading -Djdk.xml.elementAttributeLimit=0</argLine>
 					</configuration>
 				</plugin>
 				<plugin>
