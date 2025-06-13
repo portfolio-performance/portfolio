@@ -70,6 +70,9 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_EbXUwAtwEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.ib" label="%command.import.xml.ib" tooltip="%command.import.xml.ib.tooltip" command="_QQsCcLCxEeefXq-wtldCQQ"/>
           <children xsi:type="menu:MenuSeparator" xmi:id="_gNzZUPr7EeS4ucTlYYYvbw" elementId="name.abuchen.portfolio.bootstrap.menuseparator.2"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_C1cmoLptEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.ui.menu.file.import.create-text" label="%command.import.pdf.create-text" tooltip="%command.import.pdf.create-text.tooltip" command="_Jw7yELptEeSHOs-ah25CLg"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_wc3M8M8uEe-ZgKOG6pCmYQ" elementId="name.abuchen.portfolio.ui.menu.file.import.create-text" label="%command.import.pdf.create-diff" tooltip="" command="_0BsloM8uEe-ZgKOG6pCmYQ">
+            <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_6PYP4M8uEe-ZgKOG6pCmYQ" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.preferences.ExperimentalFeaturesEnabledExpression"/>
+          </children>
         </children>
         <children xsi:type="menu:Menu" xmi:id="_XO3VoNzYEeyUBtACSRat_Q" elementId="name.abuchen.portfolio.bootstrap.menu.commandexportname" label="%command.export.name" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/export_file.png">
           <children xsi:type="menu:HandledMenuItem" xmi:id="_QviD8BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.export" label="%command.csv" tooltip="" command="_lcgCQBfWEeOders_POVQHQ"/>
@@ -207,6 +210,7 @@
   <handlers xmi:id="_pXfGIBJeEe6zcsTRWurRkg" elementId="name.abuchen.portfolio.ui.handler.newDomainElement" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.NewDomainElementHandler" command="_bzKa8BJdEe6zcsTRWurRkg"/>
   <handlers xmi:id="_WsrrsOIWEe6pEIPYaDGzWA" elementId="name.abuchen.portfolio.ui.handler.restoresourceattribute" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.tools.RestoreSourceAttributeHandler" command="_FunoEOIWEe6pEIPYaDGzWA"/>
   <handlers xmi:id="_In2tQGJCEe-2EbXDPkYHbQ" elementId="name.abuchen.portfolio.ui.handler.focussearch" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.FocusSearchBarHandler" command="_Ca3mkGJCEe-2EbXDPkYHbQ"/>
+  <handlers xmi:id="_C5Rd4M8vEe-ZgKOG6pCmYQ" elementId="name.abuchen.portfolio.ui.handler.import.pdf.create-diff" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.CreateDiffFromPDFHandler" command="_0BsloM8uEe-ZgKOG6pCmYQ"/>
   <handlers xmi:id="_aeDVIEzWEfCcpO9Ays2KhA" elementId="name.abuchen.portfolio.ui.handlers.tools.migratePortfolioReportHandler" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.tools.MigratePortfolioReportHandler" command="_gfBZEEzWEfCcpO9Ays2KhA"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4RjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
@@ -313,6 +317,7 @@
   </commands>
   <commands xmi:id="_FunoEOIWEe6pEIPYaDGzWA" elementId="name.abuchen.portfolio.ui.command.restoresourceattribute" commandName="restoresourceattribute"/>
   <commands xmi:id="_Ca3mkGJCEe-2EbXDPkYHbQ" elementId="name.abuchen.portfolio.ui.command.focussearch" commandName="focussearch"/>
+  <commands xmi:id="_0BsloM8uEe-ZgKOG6pCmYQ" elementId="name.abuchen.portfolio.ui.command.import.pdf.create-diff" commandName="importCommand.pdf.create-diff"/>
   <commands xmi:id="_gfBZEEzWEfCcpO9Ays2KhA" elementId="name.abuchen.portfolio.ui.command.tools.MigratePortfolioReportHandler" commandName="migratePortfolioReportHandler"/>
   <addons xmi:id="_4SwvYLOQEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.addon.proxy" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>

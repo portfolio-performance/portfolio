@@ -4,6 +4,7 @@ import jakarta.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -32,7 +33,6 @@ import name.abuchen.portfolio.ui.preferences.GeneralPreferencePage;
 import name.abuchen.portfolio.ui.preferences.LanguagePreferencePage;
 import name.abuchen.portfolio.ui.preferences.LeewayPreferencePage;
 import name.abuchen.portfolio.ui.preferences.MyDividends24PreferencePage;
-import name.abuchen.portfolio.ui.preferences.PPIDPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresentationPreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresetsPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ProxyPreferencePage;
@@ -40,6 +40,7 @@ import name.abuchen.portfolio.ui.preferences.QuandlPreferencePage;
 import name.abuchen.portfolio.ui.preferences.ThemePreferencePage;
 import name.abuchen.portfolio.ui.preferences.TwelveDataPreferencePage;
 import name.abuchen.portfolio.ui.preferences.UpdatePreferencePage;
+import name.abuchen.portfolio.ui.preferences.PPIDPreferencePage;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
 
 @SuppressWarnings("restriction")
@@ -62,6 +63,7 @@ public class OpenPreferenceDialogHandler
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
                     @Named(IServiceConstants.ACTIVE_PART) MPart part,
+                    @Preference(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES) boolean enableExperimentalFeatures,
                     @Optional @Named(UIConstants.Parameter.PAGE) String page, //
                     IThemeEngine themeEngine)
     {
