@@ -27,9 +27,6 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage
         PreferenceDialogUtil.createNoteComposite(getFieldEditorParent().getFont(), getFieldEditorParent(),
                         Messages.PrefLabelNote, Messages.PrefNoteStoreSettingsNextToFile);
 
-        addField(new BooleanFieldEditor(UIConstants.Preferences.ENABLE_EXPERIMENTAL_FEATURES, //
-                        Messages.PrefLabelEnableExperimentalFeatures, getFieldEditorParent()));
-
         addField(new BooleanFieldEditor(UIConstants.Preferences.ENABLE_SWTCHART_PIECHARTS, //
                         Messages.PrefLabelUseSWTChartLibrary, getFieldEditorParent()));
 

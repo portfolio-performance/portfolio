@@ -29,7 +29,7 @@ public interface UIConstants
             String SAVED = "file/saved"; //$NON-NLS-1$
             String REMOVED = "file/removed"; //$NON-NLS-1$
         }
-        
+
         interface RecentFiles // NOSONAR
         {
             String UPDATED = "recent/updated"; //$NON-NLS-1$
@@ -148,7 +148,7 @@ public interface UIConstants
         String ALWAYS_DISPLAY_CURRENCY_CODE = "ALWAYS_DISPLAY_CURRENCY_CODE"; //$NON-NLS-1$
 
         /**
-         * Add "p.a." to annualized return rates 
+         * Add "p.a." to annualized return rates
          */
         String DISPLAY_PER_ANNUM = "DISPLAY_PER_ANNUM"; //$NON-NLS-1$
 
@@ -185,6 +185,12 @@ public interface UIConstants
         String ENABLE_EXPERIMENTAL_FEATURES = "ENABLE_EXPERIMENTAL_FEATURES"; //$NON-NLS-1$
 
         /**
+         * Comma-separated list of experimental features that are enabled. Used
+         * instead of a single global ENABLE_EXPERIMENTAL_FEATURES flag.
+         */
+        String EXPERIMENTS = "EXPERIMENTS"; //$NON-NLS-1$
+
+        /**
          * Preference key used in 2023 to indicate whether the survey is active.
          * Do not reuse!
          */
@@ -203,7 +209,7 @@ public interface UIConstants
         String LEEWAY_API_KEY = "LEEWAY_API_KEY"; //$NON-NLS-1$
 
         String TWELVEDATA_API_KEY = "TWELVEDATA_API_KEY"; //$NON-NLS-1$
-        
+
         String DIVVYDIARY_API_KEY = "DIVVYDIARY_API_KEY"; //$NON-NLS-1$
 
         String MYDIVIDENDS24_API_KEY = "MYDIVIDENDS24_API_KEY"; //$NON-NLS-1$
@@ -276,7 +282,7 @@ public interface UIConstants
     {
         String CLASS_NAME = "org.eclipse.e4.ui.css.CssClassName"; //$NON-NLS-1$
         String DISABLE_CSS_STYLING = "org.eclipse.e4.ui.css.disabled"; //$NON-NLS-1$
-        
+
         String HEADING1 = "heading1"; //$NON-NLS-1$
         String HEADING2 = "heading2"; //$NON-NLS-1$
         String KPI = "kpi"; //$NON-NLS-1$

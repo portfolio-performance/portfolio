@@ -1237,6 +1237,7 @@ public class Messages extends NLS
     public static String PrefTitleDemoAPIKey;
     public static String PrefTitleDivvyDiary;
     public static String PrefTitleEODHistoricalData;
+    public static String PrefTitleExperimentalFeatures;
     public static String PrefTitleFinnhub;
     public static String PrefTitleFormatting;
     public static String PrefTitleGeneral;
