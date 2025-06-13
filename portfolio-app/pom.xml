@@ -28,7 +28,6 @@
 
 	<modules>
 		<module>../portfolio-target-definition</module>
-		<module>../name.abuchen.portfolio.pdfbox1</module>
 		<module>../name.abuchen.portfolio.pdfbox3</module>
 		<module>../name.abuchen.portfolio</module>
 		<module>../name.abuchen.portfolio.junit</module>

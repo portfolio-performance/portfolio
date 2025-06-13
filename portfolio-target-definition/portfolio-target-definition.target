@@ -25,12 +25,12 @@
 		<unit id="slf4j.api" version="2.0.16"/>
 		<unit id="slf4j.api.source" version="2.0.16"/>
 	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/nebula/archive/releases/3.1.1/"/>
 		<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.5.0.202402011804"/>
 		<unit id="org.eclipse.nebula.widgets.chips.feature.feature.group" version="1.0.0.202402011804"/>
 	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+	<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/technology/babel/update-site/R0.20.0/2022-12/"/>
 		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.26.0.v20230220105658"/>
 		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.26.0.v20230220105658"/>
@@ -64,46 +64,24 @@
 		<unit id="org.osgi.service.component.annotations" version="1.5.1.202212101352"/>
 		<unit id="org.eclipse.osgi.services" version="3.12.100.v20240327-0645"/>
 	</location>
-	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Apache PDFBox 1.8" missingManifest="generate" type="Maven">
-		<dependencies>
-			<dependency>
-				<groupId>org.apache.pdfbox</groupId>
-				<artifactId>fontbox</artifactId>
-				<version>1.8.17</version>
-				<type>jar</type>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.pdfbox</groupId>
-				<artifactId>jempbox</artifactId>
-				<version>1.8.17</version>
-				<type>jar</type>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.pdfbox</groupId>
-				<artifactId>pdfbox</artifactId>
-				<version>1.8.17</version>
-				<type>jar</type>
-			</dependency>
-		</dependencies>
-	</location>
 	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="Apache PDFBox 3.x" missingManifest="generate" type="Maven">
 		<dependencies>
 			<dependency>
 				<groupId>org.apache.pdfbox</groupId>
 				<artifactId>fontbox</artifactId>
-				<version>3.0.3</version>
+				<version>3.0.5</version>
 				<type>jar</type>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.pdfbox</groupId>
 				<artifactId>pdfbox-io</artifactId>
-				<version>3.0.3</version>
+				<version>3.0.5</version>
 				<type>jar</type>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.pdfbox</groupId>
 				<artifactId>pdfbox</artifactId>
-				<version>3.0.3</version>
+				<version>3.0.5</version>
 				<type>jar</type>
 			</dependency>
 		</dependencies>
@@ -324,16 +302,6 @@
 				<groupId>org.ow2.asm</groupId>
 				<artifactId>asm</artifactId>
 				<version>9.7.1</version>
-				<type>jar</type>
-			</dependency>
-		</dependencies>
-	</location>
-	<location includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" label="io.github.java-diff-utils" missingManifest="generate" type="Maven">
-		<dependencies>
-			<dependency>
-				<groupId>io.github.java-diff-utils</groupId>
-				<artifactId>java-diff-utils</artifactId>
-				<version>4.15</version>
 				<type>jar</type>
 			</dependency>
 		</dependencies>

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Scanner;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.pdfbox1.PDFBox1Adapter;
 import name.abuchen.portfolio.pdfbox3.PDFBox3Adapter;
 
 public class PDFInputFile extends Extractor.InputFile
@@ -66,14 +65,6 @@ public class PDFInputFile extends Extractor.InputFile
     public void convertPDFtoText() throws IOException
     {
         var adapter = new PDFBox3Adapter();
-
-        text = sanitize(adapter.convertToText(getFile()));
-        version = adapter.getPDFBoxVersion();
-    }
-
-    public void convertLegacyPDFtoText() throws IOException
-    {
-        var adapter = new PDFBox1Adapter();
 
         text = sanitize(adapter.convertToText(getFile()));
         version = adapter.getPDFBoxVersion();
