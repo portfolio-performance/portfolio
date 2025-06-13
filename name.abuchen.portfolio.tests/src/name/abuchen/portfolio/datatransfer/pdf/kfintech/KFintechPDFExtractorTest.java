@@ -303,4 +303,64 @@ public class KFintechPDFExtractorTest
                         hasTaxes("INR", 0), hasFees("INR", 0))));
     }
 
+    @Test
+    public void testConsolidatedAccountStatement02()
+    {
+        KFintechPDFExtractor extractor = new KFintechPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "consolidated_account_statement02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(11L));
+        assertThat(countBuySell(results), is(476L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(487));
+        new AssertImportActions().check(results, "INR");
+
+        // Mirae Asset Aggressive Hybrid Fund
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("INF769K01DE6"), //
+                        hasName("Mirae Asset Aggressive Hybrid Fund (formerly Mirae Asset Hybrid-Equity Fund ) - Regular Plan"), //
+                        hasCurrencyCode("INR"))));
+
+        var transactions = results.stream().filter(
+                        item -> item.getSecurity() != null && "INF769K01DE6".equals(item.getSecurity().getIsin()))
+                        .toList();
+
+        assertThat(transactions, hasItem(purchase( //
+                        hasDate("2018-08-23"), hasShares(6967.67), //
+                        hasAmount("INR", 100000), hasGrossValue("INR", 100000), //
+                        hasTaxes("INR", 0), hasFees("INR", 0))));
+
+        assertThat(transactions, hasItem(purchase( //
+                        hasDate("2018-08-29"), hasShares(415.139), //
+                        hasAmount("INR", 6000), hasGrossValue("INR", 6000), //
+                        hasTaxes("INR", 0), hasFees("INR", 0))));
+
+        assertThat(transactions, hasItem(purchase( //
+                        hasDate("2018-10-24"), hasShares(453.378), //
+                        hasAmount("INR", 6000), hasGrossValue("INR", 6000), //
+                        hasTaxes("INR", 0), hasFees("INR", 0))));
+
+        // NIPPON INDIA RETIREMENT FUND
+
+        assertThat(results, hasItem(security( //
+                        hasIsin("INF204KA1B64"), //
+                        hasName("NIPPON INDIA RETIREMENT FUND - WEALTH CREATION SCHEME - GROWTH PLAN"), //
+                        hasCurrencyCode("INR"))));
+
+        transactions = results.stream().filter(
+                        item -> item.getSecurity() != null && "INF204KA1B64".equals(item.getSecurity().getIsin()))
+                        .toList();
+
+        assertThat(transactions, hasItem(purchase( //
+                        hasDate("2016-06-23"), hasShares(2504.659), //
+                        hasAmount("INR", 25000), hasGrossValue("INR", 25000), //
+                        hasTaxes("INR", 0), hasFees("INR", 0))));
+
+    }
 }
