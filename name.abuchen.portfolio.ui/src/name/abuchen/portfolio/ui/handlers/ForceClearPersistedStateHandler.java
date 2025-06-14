@@ -33,7 +33,7 @@ public class ForceClearPersistedStateHandler
             preferences.putBoolean("model.forceClearPersistedState", true); //$NON-NLS-1$
             preferences.flush();
 
-            MessageDialog.openInformation(shell, Messages.LabelInfo, Messages.MsgRestartRequired);
+            MessageDialog.openInformation(shell, Messages.LabelInfo, Messages.MsgRestartRequiredAfterGUIReset);
 
         }
         catch (BackingStoreException e)
