@@ -28,7 +28,12 @@ public class YahooFinanceQuoteFeedTest
 {
     private String getHistoricalYahooQuotes()
     {
-        return getHistoricalYahooQuotes("response_yahoo_historical.txt");
+        return getHistoricalYahooQuotes("response_yahoo_historical01.txt");
+    }
+
+    private String getHistoricalYahooQuotesHighLowVolume()
+    {
+        return getHistoricalYahooQuotes("response_yahoo_historical02.txt");
     }
 
     private String getHistoricalYahooQuotesAX()
@@ -93,9 +98,6 @@ public class YahooFinanceQuoteFeedTest
     {
         String rawQuotes = getHistoricalYahooQuotes();
 
-        Security security = new Security();
-        security.setTickerSymbol("DAI.DE");
-
         YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed();
         QuoteFeedData data = feed.extractQuotes(rawQuotes);
         List<LatestSecurityPrice> prices = data.getLatestPrices();
@@ -119,12 +121,36 @@ public class YahooFinanceQuoteFeedTest
     }
 
     @Test
+    public void testParsingHistoricalQuotesHighLowVolume()
+    {
+        String rawQuotes = getHistoricalYahooQuotesHighLowVolume();
+
+        YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed();
+        QuoteFeedData data = feed.extractQuotes(rawQuotes);
+        List<LatestSecurityPrice> prices = data.getLatestPrices();
+        Collections.sort(prices, new SecurityPrice.ByDate());
+
+        assertThat(prices.size(), is(124));
+
+        LatestSecurityPrice price = new LatestSecurityPrice(LocalDate.of(2017, Month.NOVEMBER, 27), //
+                        Values.Quote.factorize(188.55), //
+                        Values.Quote.factorize(191.15), //
+                        Values.Quote.factorize(188.2), //
+                        375228);
+        assertThat(prices.get(0), equalTo(price));
+
+        price = new LatestSecurityPrice(LocalDate.of(2018, Month.MAY, 25), //
+                        Values.Quote.factorize(188.3), //
+                        Values.Quote.factorize(189.8), //
+                        Values.Quote.factorize(187.05), //
+                        553716);
+        assertThat(prices.get(prices.size() - 1), equalTo(price));
+    }
+
+    @Test
     public void testParsingAustralianTimezoneQuotes()
     {
         String rawQuotes = getHistoricalYahooQuotesAX();
-
-        Security security = new Security();
-        security.setTickerSymbol("ALL.AX");
 
         YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed();
         QuoteFeedData data = feed.extractQuotes(rawQuotes);
@@ -141,9 +167,6 @@ public class YahooFinanceQuoteFeedTest
     public void testParsingHistoricalAdjustedCloseQuotes() throws IOException
     {
         String rawQuotes = getHistoricalYahooQuotes();
-
-        Security security = new Security();
-        security.setTickerSymbol("DAI.DE");
 
         YahooFinanceAdjustedCloseQuoteFeed feed = new YahooFinanceAdjustedCloseQuoteFeed();
         QuoteFeedData data = feed.extractQuotes(rawQuotes);
@@ -164,6 +187,33 @@ public class YahooFinanceQuoteFeedTest
                         LatestSecurityPrice.NOT_AVAILABLE, //
                         LatestSecurityPrice.NOT_AVAILABLE, //
                         LatestSecurityPrice.NOT_AVAILABLE);
+        assertThat(prices.get(prices.size() - 1), equalTo(price));
+    }
+
+    @Test
+    public void testParsingHistoricalAdjustedCloseQuotesHighLowVolume() throws IOException
+    {
+        String rawQuotes = getHistoricalYahooQuotesHighLowVolume();
+
+        YahooFinanceAdjustedCloseQuoteFeed feed = new YahooFinanceAdjustedCloseQuoteFeed();
+        QuoteFeedData data = feed.extractQuotes(rawQuotes);
+        List<LatestSecurityPrice> prices = data.getLatestPrices();
+        Collections.sort(prices, new SecurityPrice.ByDate());
+
+        assertThat(prices.size(), is(124));
+
+        LatestSecurityPrice price = new LatestSecurityPrice(LocalDate.of(2017, Month.NOVEMBER, 27), //
+                        Values.Quote.factorize(141.2556), //
+                        Values.Quote.factorize(191.15), //
+                        Values.Quote.factorize(188.2), //
+                        375228);
+        assertThat(prices.get(0), equalTo(price));
+
+        price = new LatestSecurityPrice(LocalDate.of(2018, Month.MAY, 25), //
+                        Values.Quote.factorize(147.4873), //
+                        Values.Quote.factorize(189.8), //
+                        Values.Quote.factorize(187.05), //
+                        553716);
         assertThat(prices.get(prices.size() - 1), equalTo(price));
     }
 
