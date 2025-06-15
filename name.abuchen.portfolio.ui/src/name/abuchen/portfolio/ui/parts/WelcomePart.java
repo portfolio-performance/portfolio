@@ -13,6 +13,7 @@ import org.eclipse.core.commands.Parameterization;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -25,6 +26,7 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -105,6 +107,19 @@ public class WelcomePart
         FormDataFactory.startingWith(image) //
                         .thenRight(title, 30).top(new FormAttachment(image, 0, SWT.TOP)) //
                         .thenBelow(version);
+
+        if (Platform.OS_LINUX.equals(Platform.getOS()) && System.getenv("WAYLAND_DISPLAY") != null) //$NON-NLS-1$
+        {
+            var info = new StyledLabel(composite, SWT.WRAP);
+            info.setText(Messages.MsgWarningWayland);
+
+            FormData data = new FormData();
+            data.left = new FormAttachment(title, 100);
+            data.top = new FormAttachment(image, 0, SWT.TOP);
+            data.width = 300;
+            info.setLayoutData(data);
+        }
+
     }
 
     private void createContent(Composite container)
