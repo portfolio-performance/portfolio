@@ -119,6 +119,15 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
      */
     private final LazyValue<SecurityPrice> quote = new LazyValue<>(() -> security.getSecurityPrice(interval.getEnd()));
 
+    /**
+     * Quote in term currency, i.e., the reporting currency used to calculate
+     * the record.
+     */
+    private final LazyValue<Quote> quoteInTermCurrency = new LazyValue<>(() -> {
+        var price = quote.get();
+        return converter.convert(price.getDate(), Quote.of(security.getCurrencyCode(), price.getValue()));
+    });
+
     private final LazyValue<CostCalculationResult> costCalculation = new LazyValue<>(
                     () -> Calculation.perform(CostCalculation.class, converter, security, lineItems).getResult());
 
@@ -224,8 +233,8 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
                     () -> capitalGains.get().getUnrealizedCapitalGains());
 
     private final LazyValue<CapitalGainsCalculationMovingAverage> capitalGainsMovingAvg = new LazyValue<>(
-                    () -> Calculation
-                    .perform(CapitalGainsCalculationMovingAverage.class, converter, security, lineItems));
+                    () -> Calculation.perform(CapitalGainsCalculationMovingAverage.class, converter, security,
+                                    lineItems));
 
     private final LazyValue<CapitalGainsRecord> realizedCapitalGainsMovingAvg = new LazyValue<>(
                     () -> capitalGainsMovingAvg.get().getRealizedCapitalGains());
@@ -281,6 +290,11 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     public LazyValue<Quote> getQuote()
     {
         return new LazyValue<>(() -> Quote.of(security.getCurrencyCode(), quote.get().getValue()));
+    }
+
+    public LazyValue<Quote> getQuoteInTermCurrency()
+    {
+        return quoteInTermCurrency;
     }
 
     public LazyValue<SecurityPrice> getLatestSecurityPrice()
@@ -425,6 +439,7 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     {
         return unrealizedCapitalGainsMovingAvg;
     }
+
     @Override
     public <T> T adapt(Class<T> type)
     {

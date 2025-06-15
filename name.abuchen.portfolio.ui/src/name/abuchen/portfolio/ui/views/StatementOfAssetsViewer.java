@@ -914,6 +914,57 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
+        column = new Column("quoteReportingCurrency", Messages.ColumnQuote + Messages.BaseCurrencyCue, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setGroupLabel(Messages.ColumnForeignCurrencies);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Element element = (Element) e;
+                if (!element.isSecurity())
+                    return null;
+
+                Security security = element.getSecurity();
+                var price = element.getSecurityPosition().getPrice();
+                var converter = model.getCurrencyConverter();
+
+                if (converter.getTermCurrency().equals(security.getCurrencyCode()))
+                {
+                    return Values.Quote.format(security.getCurrencyCode(), price.getValue(), client.getBaseCurrency());
+                }
+                else
+                {
+                    var converted = converter.convert(price.getDate(),
+                                    Quote.of(security.getCurrencyCode(), price.getValue()));
+                    return Values.CalculatedQuote.format(converted.getCurrencyCode(), converted.getAmount(),
+                                    client.getBaseCurrency());
+                }
+            }
+        });
+        column.setComparator(new ElementComparator(new AttributeComparator(e -> {
+            Element element = (Element) e;
+            if (!element.isSecurity())
+                return null;
+
+            Security security = element.getSecurity();
+            var price = element.getSecurityPosition().getPrice();
+            var converter = model.getCurrencyConverter();
+
+            if (converter.getTermCurrency().equals(security.getCurrencyCode()))
+            {
+                return Money.of(element.getSecurity().getCurrencyCode(), price.getValue());
+            }
+            else
+            {
+                var converted = converter.convert(price.getDate(),
+                                Quote.of(security.getCurrencyCode(), price.getValue()));
+                return Money.of(converted.getCurrencyCode(), converted.getAmount());
+            }
+        })));
+        column.setVisible(false);
+        support.addColumn(column);
+
         column = new Column("marketValueBaseCurrency", //$NON-NLS-1$
                         Messages.ColumnMarketValue + Messages.BaseCurrencyCue, SWT.RIGHT, 80);
         column.setDescription(Messages.ColumnMarketValueBaseCurrency);
