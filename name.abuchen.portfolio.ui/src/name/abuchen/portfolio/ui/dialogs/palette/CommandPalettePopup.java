@@ -12,6 +12,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.DialogSettings;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -316,11 +317,7 @@ public class CommandPalettePopup extends PopupDialog
     @Override
     protected IDialogSettings getDialogSettings()
     {
-        final IDialogSettings settings = PortfolioPlugin.getDefault().getDialogSettings();
-        IDialogSettings result = settings.getSection("command-palette"); //$NON-NLS-1$
-        if (result == null)
-            result = settings.addNewSection("command-palette"); //$NON-NLS-1$
-        return result;
+        return DialogSettings.getOrCreateSection(PortfolioPlugin.getDefault().getDialogSettings(), "command-palette"); //$NON-NLS-1$
     }
 
     @Override

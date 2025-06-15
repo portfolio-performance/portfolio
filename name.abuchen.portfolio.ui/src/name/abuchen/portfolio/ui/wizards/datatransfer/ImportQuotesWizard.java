@@ -9,6 +9,7 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ImportQuotesWizard extends Wizard
@@ -21,6 +22,7 @@ public class ImportQuotesWizard extends Wizard
     public ImportQuotesWizard(Security security)
     {
         this.security = security;
+        setDialogSettings(PortfolioPlugin.getDefault().getDialogSettings());
     }
 
     @Override

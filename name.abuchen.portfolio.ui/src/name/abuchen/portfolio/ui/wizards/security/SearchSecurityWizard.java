@@ -6,6 +6,7 @@ import org.eclipse.swt.graphics.Image;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 public class SearchSecurityWizard extends Wizard
 {
@@ -16,6 +17,7 @@ public class SearchSecurityWizard extends Wizard
         this.model = new SearchSecurityDataModel(client);
 
         this.setNeedsProgressMonitor(true);
+        setDialogSettings(PortfolioPlugin.getDefault().getDialogSettings());
     }
 
     @Override

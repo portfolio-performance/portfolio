@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.Image;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class StockSplitWizard extends Wizard
@@ -18,6 +19,8 @@ public class StockSplitWizard extends Wizard
     {
         this.model = new StockSplitModel(client, security);
         this.stylingEngine = stylingEngine;
+        
+        setDialogSettings(PortfolioPlugin.getDefault().getDialogSettings());
     }
 
     @Override
