@@ -46,6 +46,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
@@ -417,8 +418,9 @@ public class IBFlexStatementExtractor implements Extractor
                 return null;
             }
 
-            // Split the symbol into source and target currency (e.g. EUR.USD)
-            // where USD is the currency paid and EUR is the currency bought
+            // Split the symbol into "source" and "target" currency (e.g. EUR.USD)
+            // where USD is the currency paid and EUR is the currency bought. We
+            // may need to swap what's source and what't target below.
             String symbol = element.getAttribute("symbol");
             String[] parts = symbol.split("\\.");
             if (parts.length != 2)
@@ -428,6 +430,20 @@ public class IBFlexStatementExtractor implements Extractor
             String targetCurrency = parts[0];
             String sourceAmount = element.getAttribute("tradeMoney");
             String targetAmount = element.getAttribute("quantity");
+            BigDecimal exachangeRate = asExchangeRate(element.getAttribute("tradePrice"));
+            // If "quantity" is negative, then we're dealing with pair like
+            // USD.CAD, exchanging USD to CAD, or maybe EUR.USD, exchanging
+            // EUR to USD.
+            if (targetAmount.startsWith("-"))
+            {
+                var t1 = sourceAmount;
+                sourceAmount = targetAmount;
+                targetAmount = t1;
+                var t2 = sourceCurrency;
+                sourceCurrency = targetCurrency;
+                targetCurrency = t2;
+                exachangeRate = ExchangeRate.inverse(exachangeRate);
+            }
 
             // Set the amounts
             Money source = Money.of(sourceCurrency, asAmount(sourceAmount));
@@ -438,7 +454,6 @@ public class IBFlexStatementExtractor implements Extractor
             cashTransaction.getSourceTransaction().setMonetaryAmount(source);
             cashTransaction.getTargetTransaction().setMonetaryAmount(target);
 
-            BigDecimal exachangeRate = asExchangeRate(element.getAttribute("tradePrice"));
             cashTransaction.getSourceTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE, source, target, exachangeRate));
 
             // Set fees
