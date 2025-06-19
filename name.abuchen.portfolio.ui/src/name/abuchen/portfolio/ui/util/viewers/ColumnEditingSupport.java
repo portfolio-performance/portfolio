@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerEditor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.model.Client;
@@ -110,8 +111,13 @@ public abstract class ColumnEditingSupport
             @Override
             protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event)
             {
+                // activate on double-click only if MOD3 (usually the Alt key)
+                // is *not* pressed because pressing MOD3 copies cell content to
+                // the clipboard (see CopyPasteSupport)
+                if (event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION)
+                    return !(event.sourceEvent instanceof MouseEvent mouseEvent && mouseEvent.stateMask == SWT.MOD3);
+
                 return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
-                                || event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
                                 || (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED
                                                 && event.keyCode == SWT.CR)
                                 || event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;

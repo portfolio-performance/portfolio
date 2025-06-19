@@ -9,6 +9,9 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
@@ -37,6 +40,13 @@ public class CopyPasteSupport
             if (e.stateMask == SWT.MOD1 && e.keyCode == 'c' && table.getSelectionCount() > 0)
             {
                 copyRowsToClipboard(viewer, table);
+            }
+        }));
+
+        table.addMouseListener(MouseListener.mouseDoubleClickAdapter(e -> {
+            if (e.stateMask == SWT.MOD3)
+            {
+                copyCellToClipboard(viewer, e);
             }
         }));
     }
@@ -97,6 +107,13 @@ public class CopyPasteSupport
                 copyRowsToClipboard(viewer, tree);
             }
         }));
+
+        tree.addMouseListener(MouseListener.mouseDoubleClickAdapter(e -> {
+            if (e.stateMask == SWT.MOD3)
+            {
+                copyCellToClipboard(viewer, e);
+            }
+        }));
     }
 
     private static void copyRowsToClipboard(TreeViewer viewer, Tree tree)
@@ -137,6 +154,34 @@ public class CopyPasteSupport
         Clipboard clipboard = new Clipboard(Display.getDefault());
         clipboard.setContents(new Object[] { result.toString() }, new Transfer[] { TextTransfer.getInstance() });
         clipboard.dispose();
+    }
+
+    private static void copyCellToClipboard(ColumnViewer viewer, MouseEvent event)
+    {
+        // get the clicked cell
+        var cell = viewer.getCell(new Point(event.x, event.y));
+        if (cell == null)
+            return;
+
+        String text;
+
+        var labelProvider = viewer.getLabelProvider(cell.getColumnIndex());
+        if (labelProvider instanceof SharesLabelProvider sharesLabelProvider)
+        {
+            Long value = sharesLabelProvider.getValue(cell.getElement());
+            text = value != null ? Values.Share.format(value) : ""; //$NON-NLS-1$
+        }
+        else
+        {
+            text = cell.getText();
+        }
+
+        if (text != null && !text.isEmpty())
+        {
+            var clipboard = new Clipboard(Display.getCurrent());
+            clipboard.setContents(new Object[] { text }, new Transfer[] { TextTransfer.getInstance() });
+            clipboard.dispose();
+        }
     }
 
     private static SharesLabelProvider[] getSharesLabelProvider(ColumnViewer viewer, int columnCount)
