@@ -102,6 +102,7 @@ public final class TaxonomyModel
     private boolean orderByTaxonomyInStackChart = false;
     private String expansionStateDefinition;
     private String expansionStateRebalancing;
+    private String coloringStrategy;
     private boolean showGroupHeadingInTreeMap = false;
     private String colorSchemaInTreeMap;
 
@@ -301,6 +302,16 @@ public final class TaxonomyModel
     public void setExpansionStateRebalancing(String expansionStateRebalancing)
     {
         this.expansionStateRebalancing = expansionStateRebalancing;
+    }
+    
+    public void setColoringStrategy(String coloringStrategy)
+    {
+        this.coloringStrategy = coloringStrategy;
+    }
+    
+    public String getColoringStrategy()
+    {
+        return coloringStrategy;
     }
 
     public boolean doShowGroupHeadingInTreeMap()

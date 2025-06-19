@@ -33,6 +33,7 @@ import de.engehausen.treemap.IWeightedTreeModel;
 import de.engehausen.treemap.impl.RectangleImpl;
 import de.engehausen.treemap.impl.SquarifiedLayout;
 import de.engehausen.treemap.swt.TreeMap;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.LabelOnly;
@@ -190,6 +191,8 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNodeRenderer.Performance
         }
     }
 
+    private static final String COLORING_STRATEGY_TTWROR = "ttwror:"; //$NON-NLS-1$
+
     private final IStylingEngine stylingEngine;
     private final AbstractFinanceView view;
     private XTreeMap treeMap;
@@ -208,6 +211,8 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNodeRenderer.Performance
         this.stylingEngine = stylingEngine;
         this.view = view;
 
+        // first configure the color schema so that it is available when setting
+        // up the coloring strategy
         String schema = model.getColorSchemaInTreeMap();
         if (schema != null && !schema.isBlank())
         {
@@ -219,6 +224,20 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNodeRenderer.Performance
             {
                 // ignore unknown color schema
             }
+        }
+
+        // setup coloring strategy
+
+        // as we support only "by classification" (the default) and "by ttwror",
+        // the preference must be of value "ttwror:<reporting period code>"
+
+        var coloringStrategy = model.getColoringStrategy();
+        if (coloringStrategy != null && coloringStrategy.startsWith(COLORING_STRATEGY_TTWROR))
+        {
+            ReportingPeriod.tryFrom(coloringStrategy.substring(COLORING_STRATEGY_TTWROR.length())).ifPresent(period -> {
+                selectedRenderer = new PerformanceNodeRenderer(model, renderer.resources, period);
+                selectedRenderer.setColorSchema(colorSchema);
+            });
         }
     }
 
@@ -245,6 +264,7 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNodeRenderer.Performance
         manager.add(new LabelOnly(Messages.LabelColorBy));
 
         Action action = new SimpleAction(Messages.ColumnTaxonomy, a -> {
+            getModel().setColoringStrategy(""); //$NON-NLS-1$
             selectedRenderer = null;
             treeMap.recolor();
         });
@@ -253,11 +273,12 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNodeRenderer.Performance
 
         manager.add(new LabelOnly(Messages.LabelTTWROR));
 
-        // display this first 10 elements in the menu directly
+        // display the first 10 elements in the menu directly
         var limit = 10;
         var reportingPeriods = view.getPart().getClientInput().getReportingPeriods();
         reportingPeriods.stream().limit(limit).forEach(period -> {
             Action byPeriod = new SimpleAction(period.toString(), a -> {
+                getModel().setColoringStrategy(COLORING_STRATEGY_TTWROR + period.getCode());
                 selectedRenderer = new PerformanceNodeRenderer(getModel(), getRenderer().resources, period);
                 selectedRenderer.setColorSchema(colorSchema);
                 treeMap.recolor();
@@ -272,6 +293,7 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNodeRenderer.Performance
             manager.add(subMenu);
             reportingPeriods.stream().skip(limit).forEach(period -> {
                 Action byPeriod = new SimpleAction(period.toString(), a -> {
+                    getModel().setColoringStrategy(COLORING_STRATEGY_TTWROR + period.getCode());
                     selectedRenderer = new PerformanceNodeRenderer(getModel(), getRenderer().resources, period);
                     selectedRenderer.setColorSchema(colorSchema);
                     treeMap.recolor();

@@ -130,6 +130,8 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     private String expansionStateDefinition;
     /** preference key: node expansion state in rebalancing viewer */
     private String expansionStateReblancing;
+    /** preference key: coloring strategy in the tree map */
+    private String identifierColoringStrategy;
     /** preference key: show group heading in the tree map */
     private String identifierGroupHeading;
     /** preference key: color schema used in the tree map */
@@ -195,6 +197,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         this.expansionStateReblancing = TaxonomyView.class.getSimpleName() + "-EXPANSION-REBALANCE-" //$NON-NLS-1$
                         + taxonomy.getId();
 
+        this.identifierColoringStrategy = TaxonomyView.class.getSimpleName() + "-COLORINGSTRATEGY-" + taxonomy.getId(); //$NON-NLS-1$
         this.identifierGroupHeading = TaxonomyView.class.getSimpleName() + "-GROUPHEADING-" //$NON-NLS-1$
                         + taxonomy.getId();
         this.identifierColorSchema = TaxonomyView.class.getSimpleName() + "-COLORSCHEMA-" //$NON-NLS-1$
@@ -206,6 +209,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         this.model.setOrderByTaxonomyInStackChart(preferences.getBoolean(identifierOrderByTaxonomy));
         this.model.setExpansionStateDefinition(preferences.getString(expansionStateDefinition));
         this.model.setExpansionStateRebalancing(preferences.getString(expansionStateReblancing));
+        this.model.setColoringStrategy(preferences.getString(identifierColoringStrategy));
         this.model.setShowGroupHeadingInTreeMap(preferences.getBoolean(identifierGroupHeading));
         this.model.setColorSchemaInTreeMap(preferences.getString(identifierColorSchema));
 
@@ -238,6 +242,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         preferences.setValue(identifierOrderByTaxonomy, model.isOrderByTaxonomyInStackChart());
         preferences.setValue(expansionStateDefinition, model.getExpansionStateDefinition());
         preferences.setValue(expansionStateReblancing, model.getExpansionStateRebalancing());
+        preferences.setValue(identifierColoringStrategy, model.getColoringStrategy());
         preferences.setValue(identifierGroupHeading, model.doShowGroupHeadingInTreeMap());
         preferences.setValue(identifierColorSchema, model.getColorSchemaInTreeMap());
 
