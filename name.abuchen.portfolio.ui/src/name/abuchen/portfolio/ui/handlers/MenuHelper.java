@@ -11,13 +11,13 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 
-/* package */class MenuHelper
+public class MenuHelper
 {
     private MenuHelper()
     {
     }
 
-    /* package */static boolean isClientPartActive(MPart part)
+    public static boolean isClientPartActive(MPart part)
     {
         // issue: on unity desktop, the enablement of menu items is only checked
         // once at the start. Therefore we always enable all menu items
@@ -33,7 +33,7 @@ import name.abuchen.portfolio.ui.editor.PortfolioPart;
                         && portfolioPart.getClient() != null;
     }
 
-    /* package */static Optional<PortfolioPart> getActivePortfolioPart(MPart part, boolean showWarning)
+    public static Optional<PortfolioPart> getActivePortfolioPart(MPart part, boolean showWarning)
     {
         if (part == null || !(part.getObject() instanceof PortfolioPart)
                         || ((PortfolioPart) part.getObject()).getClient() == null)
@@ -51,22 +51,22 @@ import name.abuchen.portfolio.ui.editor.PortfolioPart;
         return Optional.of((PortfolioPart) part.getObject());
     }
 
-    /* package */static Optional<Client> getActiveClient(MPart part)
+    public static Optional<Client> getActiveClient(MPart part)
     {
         return getActiveClientInput(part).map(ClientInput::getClient);
     }
 
-    /* package */static Optional<Client> getActiveClient(MPart part, boolean showWarning)
+    public static Optional<Client> getActiveClient(MPart part, boolean showWarning)
     {
         return getActiveClientInput(part, showWarning).map(ClientInput::getClient);
     }
 
-    /* package */static Optional<ClientInput> getActiveClientInput(MPart part)
+    public static Optional<ClientInput> getActiveClientInput(MPart part)
     {
         return getActiveClientInput(part, true);
     }
 
-    /* package */static Optional<ClientInput> getActiveClientInput(MPart part, boolean showWarning)
+    public static Optional<ClientInput> getActiveClientInput(MPart part, boolean showWarning)
     {
         return getActivePortfolioPart(part, showWarning).map(PortfolioPart::getClientInput);
     }

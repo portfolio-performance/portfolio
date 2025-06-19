@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.handlers;
+package name.abuchen.portfolio.ui.handlers.tools;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -23,6 +23,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.editor.ClientInputFactory;
+import name.abuchen.portfolio.ui.handlers.MenuHelper;
 
 public class RestoreSourceAttributeHandler
 {

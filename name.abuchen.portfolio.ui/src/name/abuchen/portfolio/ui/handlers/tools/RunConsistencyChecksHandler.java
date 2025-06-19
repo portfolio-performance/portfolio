@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.handlers;
+package name.abuchen.portfolio.ui.handlers.tools;
 
 import jakarta.inject.Named;
 
@@ -8,6 +8,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.ui.handlers.MenuHelper;
 import name.abuchen.portfolio.ui.jobs.ConsistencyChecksJob;
 
 public class RunConsistencyChecksHandler
