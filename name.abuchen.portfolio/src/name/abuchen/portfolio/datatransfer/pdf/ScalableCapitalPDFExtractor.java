@@ -225,6 +225,8 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                                                             checkAndSetGrossUnit(gross, fxGross, t, type.getCurrentContext());
                                                         }))
 
+                        .conclude(ExtractorUtils.fixGrossValueA())
+
                         .wrap(TransactionItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction, type);
@@ -359,9 +361,16 @@ public class ScalableCapitalPDFExtractor extends AbstractPDFExtractor
                         // @formatter:off
                         // Ausländische Quellensteuer -0,01 EUR
                         // @formatter:on
-                        .section("tax", "currency").optional() //
-                        .match("^Ausl.ndische Quellensteuer \\-(?<tax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
-                        .assign((t, v) -> processTaxEntries(t, v, type));
+                        .section("withHoldingTax", "currency").optional() //
+                        .match("^Ausl.ndische Quellensteuer \\-(?<withHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "withHoldingTax", type))
+
+                        // @formatter:off
+                        // Verrechnung anrechenbarer Quellensteuer -0,12 EUR
+                        // @formatter:on
+                        .section("creditableWithHoldingTax", "currency").optional() //
+                        .match("^Verrechnung anrechenbarer Quellensteuer \\-(?<creditableWithHoldingTax>[\\.,\\d]+) (?<currency>[A-Z]{3})$") //
+                        .assign((t, v) -> processWithHoldingTaxEntries(t, v, "creditableWithHoldingTax", type));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T transaction, DocumentType type)
