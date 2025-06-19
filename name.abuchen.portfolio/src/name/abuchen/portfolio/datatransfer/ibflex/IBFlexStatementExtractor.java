@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -204,7 +205,7 @@ public class IBFlexStatementExtractor implements Extractor
          * @param element The XML element containing account information.
          * @return Always returns null, as the focus is on updating the currency information.
          */
-        private Function<Element, Item> buildAccountInformation = element -> {
+        private Consumer<Element> buildAccountInformation = element -> {
             String currency = asCurrencyCode(element.getAttribute("currency"));
             if (currency != null && !currency.isEmpty())
             {
@@ -212,13 +213,12 @@ public class IBFlexStatementExtractor implements Extractor
                 if (currencyUnit != null)
                     accountCurrency = currency;
             }
-            return null;
         };
 
         /**
          * Constructs an AccountTransactionItem based on the information provided in the XML element.
          */
-        private Function<Element, Item> buildAccountTransaction = element -> {
+        private Consumer<Element> buildAccountTransaction = element -> {
             AccountTransaction accountTransaction = new AccountTransaction();
 
             // @formatter:off
@@ -358,27 +358,25 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Transactions without an account-id will not be imported.
             if (!"-".equals(element.getAttribute("accountId")))
-                return new TransactionItem(accountTransaction);
-            else
-                return null;
+                results.add(new TransactionItem(accountTransaction));
         };
 
         /**
          * Constructs a AccountTransferItem based on the information provided in the XML element.
          */
-        private Function<Element, Item> buildCashTransaction = element -> {
+        private Consumer<Element> buildCashTransaction = element -> {
             AccountTransferEntry cashTransaction = new AccountTransferEntry();
 
             // Check if the asset category is supported
-            if (!Arrays.asList(ASSETKEY_CASH).contains(element.getAttribute("assetCategory")))
-                return null;
+            if (!ASSETKEY_CASH.equals(element.getAttribute("assetCategory")))
+                return;
 
             // Check if the level of detail is supported
             String lod = element.getAttribute("levelOfDetail");
             if (lod.contains("ASSET_SUMMARY")
                             || lod.contains("SYMBOL_SUMMARY")
                             || lod.contains("ORDER"))
-                return null;
+                return;
 
             // @formatter:off
             // If possible, set "tradeDate" with "tradeTime" as the correct
@@ -409,13 +407,32 @@ public class IBFlexStatementExtractor implements Extractor
                     cashTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate")));
                 }
             }
+            
+            // get the transaction type
+            String tType = element.getAttribute("buySell");
+            boolean isSell;
+            switch (tType)
+            {
+                case "SELL":
+                    isSell = true;
+                    break;
+                case "BUY":
+                    isSell = false;
+                    break;
+                case "BUY (Ca.)", "SELL (Ca.)":
+                    // cancellations are not supported at the moment
+                    return;
+                default:
+                    // unknown type. Do nothing.
+                    return;
+            }
 
             // Ensure all required attributes are present
             if (!element.hasAttribute("symbol") || 
                 !element.hasAttribute("tradeMoney") || 
                 !element.hasAttribute("quantity"))
             {
-                return null;
+                return;
             }
 
             // Split the symbol into "source" and "target" currency (e.g. EUR.USD)
@@ -424,27 +441,18 @@ public class IBFlexStatementExtractor implements Extractor
             String symbol = element.getAttribute("symbol");
             String[] parts = symbol.split("\\.");
             if (parts.length != 2)
-                return null;
+                return;
 
-            String sourceCurrency = parts[1];
-            String targetCurrency = parts[0];
-            String sourceAmount = element.getAttribute("tradeMoney");
-            String targetAmount = element.getAttribute("quantity");
-            BigDecimal exachangeRate = asExchangeRate(element.getAttribute("tradePrice"));
-            // If "quantity" is negative, then we're dealing with pair like
-            // USD.CAD, exchanging USD to CAD, or maybe EUR.USD, exchanging
-            // EUR to USD.
-            if (targetAmount.startsWith("-"))
-            {
-                var t1 = sourceAmount;
-                sourceAmount = targetAmount;
-                targetAmount = t1;
-                var t2 = sourceCurrency;
-                sourceCurrency = targetCurrency;
-                targetCurrency = t2;
-                exachangeRate = ExchangeRate.inverse(exachangeRate);
-            }
-
+            String sourceCurrency = isSell ? parts[0] : parts[1];
+            String targetCurrency = isSell ? parts[1] : parts[0];
+            
+            String sourceAmount = element.getAttribute(isSell ? "quantity" : "tradeMoney");
+            String targetAmount = element.getAttribute(isSell ? "tradeMoney" : "quantity");
+            
+            BigDecimal exchangeRate = asExchangeRate(element.getAttribute("tradePrice"));
+            if (isSell)
+                exchangeRate = ExchangeRate.inverse(exchangeRate);
+            
             // Set the amounts
             Money source = Money.of(sourceCurrency, asAmount(sourceAmount));
             Money target = Money.of(targetCurrency, asAmount(targetAmount));
@@ -454,33 +462,59 @@ public class IBFlexStatementExtractor implements Extractor
             cashTransaction.getSourceTransaction().setMonetaryAmount(source);
             cashTransaction.getTargetTransaction().setMonetaryAmount(target);
 
-            cashTransaction.getSourceTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE, source, target, exachangeRate));
+            cashTransaction.getSourceTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE, source, target, exchangeRate));
 
-            // Set fees
-            Money fees = Money.of(asCurrencyCode(element.getAttribute("ibCommissionCurrency")), asAmount(element.getAttribute("ibCommission")));
-            Unit feeUnit = new Unit(Unit.Type.FEE, fees);
-            if (fees.getCurrencyCode().equals(cashTransaction.getSourceTransaction().getCurrencyCode()))
-                cashTransaction.getSourceTransaction().addUnit(feeUnit);
-            else
-                cashTransaction.getTargetTransaction().addUnit(feeUnit);
+            // set note
+            
+            // add Trade-ID note if available
+            if (!element.getAttribute("tradeID").isEmpty() && !"N/A".equals(element.getAttribute("tradeID")))
+                cashTransaction.setNote(concatenate("Trade-ID: ", element.getAttribute("tradeID"), ""));
 
-            // Set taxes
-            Money taxes = Money.of(asCurrencyCode(element.getAttribute("currency")), asAmount(element.getAttribute("taxes")));
-            Unit taxUnit = new Unit(Unit.Type.TAX, taxes);
-            if (taxes.getCurrencyCode().equals(cashTransaction.getSourceTransaction().getCurrencyCode()))
-                cashTransaction.getSourceTransaction().addUnit(taxUnit);
-            else
-                cashTransaction.getTargetTransaction().addUnit(taxUnit);
+            // add Transaction-ID note if available
+            if (!element.getAttribute("transactionID").isEmpty() && !"N/A".equals(element.getAttribute("transactionID")))
+                cashTransaction.setNote(concatenate(cashTransaction.getNote(), "Transaction-ID: " + element.getAttribute("transactionID"), " | "));
+            
+            results.add(new AccountTransferItem(cashTransaction, true));
+            
+            // check fees
+            
+            Money fees = Money.of(asCurrencyCode(element.getAttribute("ibCommissionCurrency")), //
+                            asAmount(element.getAttribute("ibCommission")));
+            if (!fees.isZero())
+            {
+                AccountTransaction feesTransaction = new AccountTransaction();
+                feesTransaction.setType(AccountTransaction.Type.FEES);
+                feesTransaction.setDateTime(cashTransaction.getSourceTransaction().getDateTime());
+                feesTransaction.setMonetaryAmount(fees);
+                feesTransaction.setNote(MessageFormat.format("Commission paid for {0}",
+                                cashTransaction.getNote() != null ? cashTransaction.getNote()
+                                                : Messages.LabelTransferAccount));
 
-            AccountTransferItem item = new AccountTransferItem(cashTransaction, true);
+                results.add(new TransactionItem(feesTransaction));
+            }
+            
+            // check taxes
+            
+            Money taxes = Money.of(asCurrencyCode(element.getAttribute("currency")), //
+                            asAmount(element.getAttribute("taxes")));
+            if (!taxes.isZero())
+            {
+                AccountTransaction taxesTransaction = new AccountTransaction();
+                taxesTransaction.setType(AccountTransaction.Type.TAXES);
+                taxesTransaction.setDateTime(cashTransaction.getSourceTransaction().getDateTime());
+                taxesTransaction.setMonetaryAmount(taxes);
+                taxesTransaction.setNote(MessageFormat.format("Taxes paid for {0}",
+                                cashTransaction.getNote() != null ? cashTransaction.getNote()
+                                                : Messages.LabelTransferAccount));
 
-            return item;
+                results.add(new TransactionItem(taxesTransaction));
+            }
         };
 
         /**
          * Constructs a BuySellEntryItem based on the information provided in the XML element.
          */
-        private Function<Element, Item> buildPortfolioTransaction = element -> {
+        private Consumer<Element> buildPortfolioTransaction = element -> {
             BuySellEntry portfolioTransaction = new BuySellEntry();
 
             // Check if the asset category is supported
@@ -490,14 +524,14 @@ public class IBFlexStatementExtractor implements Extractor
                             ASSETKEY_CERTIFICATE, //
                             ASSETKEY_FUTURE_OPTION, //
                             ASSETKEY_WARRANTS).contains(element.getAttribute("assetCategory")))
-                return null;
+                return;
 
             // Check if the level of detail is supported
             String lod = element.getAttribute("levelOfDetail");
             if (lod.contains("ASSET_SUMMARY")
                             || lod.contains("SYMBOL_SUMMARY")
                             || lod.contains("ORDER"))
-                return null;
+                return;
 
             // Set transaction type
             String tType = element.getAttribute("buySell");
@@ -611,21 +645,19 @@ public class IBFlexStatementExtractor implements Extractor
             if (portfolioTransaction.getPortfolioTransaction().getCurrencyCode() != null && portfolioTransaction.getPortfolioTransaction().getAmount() == 0)
             {
                 item.setFailureMessage(Messages.MsgErrorTransactionTypeNotSupported);
-                return item;
             }
             else if (Messages.MsgErrorOrderCancellationUnsupported.equals(portfolioTransaction.getPortfolioTransaction().getNote()))
             {
                 item.setFailureMessage(Messages.MsgErrorOrderCancellationUnsupported);
-                return item;
             }
-
-            return item;
+            
+            results.add(item);
         };
 
         /**
          * Constructs a Corporate Transaction Item based on the information provided in the XML element.
          */
-        private Function<Element, Item> buildCorporateTransaction = element -> {
+        private Consumer<Element> buildCorporateTransaction = element -> {
             Money proceeds = Money.of(asCurrencyCode(element.getAttribute("currency")), Values.Amount.factorize(Double.parseDouble(element.getAttribute("proceeds"))));
 
             if (!proceeds.isZero())
@@ -648,7 +680,7 @@ public class IBFlexStatementExtractor implements Extractor
 
                 portfolioTransaction.setMonetaryAmount(proceeds);
 
-                return new BuySellEntryItem(portfolioTransaction);
+                results.add(new BuySellEntryItem(portfolioTransaction));
 
             }
             else
@@ -672,14 +704,14 @@ public class IBFlexStatementExtractor implements Extractor
 
                 portfolioTransaction.setMonetaryAmount(proceeds);
 
-                return new TransactionItem(portfolioTransaction);
+                results.add(new TransactionItem(portfolioTransaction));
             }
         };
 
         /**
          * Constructs a Sales Tax Transaction Item based on the information provided in the XML element.
          */
-        private Function<Element, Item> buildSalesTaxTransaction = element -> {
+        private Consumer<Element> buildSalesTaxTransaction = element -> {
             AccountTransaction accountTransaction = new AccountTransaction();
 
             // Set transaction type
@@ -709,9 +741,7 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Transactions without an account-id will not be imported.
             if (!"-".equals(element.getAttribute("accountId")))
-                return new TransactionItem(accountTransaction);
-            else
-                return null;
+                results.add(new TransactionItem(accountTransaction));
         };
 
         /**
@@ -836,7 +866,7 @@ public class IBFlexStatementExtractor implements Extractor
          * @param handleNodeFunction  The function to handle each XML element node and convert it to an Item.
          * @formatter:on
          */
-        private void importModelObjects(String type, Function<Element, Item> handleNodeFunction)
+        private void importModelObjects(String type, Consumer<Element> handleNodeFunction)
         {
             NodeList nList = document.getElementsByTagName(type);
             for (int temp = 0; temp < nList.getLength(); temp++)
@@ -847,11 +877,7 @@ public class IBFlexStatementExtractor implements Extractor
                 {
                     try
                     {
-                        Item item = handleNodeFunction.apply((Element) nNode);
-                        if (item != null)
-                        {
-                            results.add(item);
-                        }
+                        handleNodeFunction.accept((Element) nNode);
                     }
                     catch (Exception e)
                     {
