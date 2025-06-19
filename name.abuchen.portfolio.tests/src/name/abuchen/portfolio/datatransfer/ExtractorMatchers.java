@@ -12,11 +12,13 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
+import name.abuchen.portfolio.datatransfer.Extractor.AccountTransferItem;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.PortfolioTransferItem;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -231,6 +233,28 @@ public class ExtractorMatchers
     public static Matcher<Extractor.Item> feeRefund(Matcher<Transaction>... properties)
     {
         return new AccountTransactionMatcher("fee refund", AccountTransaction.Type.FEES_REFUND, properties); //$NON-NLS-1$
+    }
+
+    @SafeVarargs
+    public static Matcher<Extractor.Item> inboundCash(Matcher<Transaction>... properties)
+    {
+        return new ExtractorItemMatcher<Transaction>("cash transfer", //$NON-NLS-1$
+                        item -> item instanceof AccountTransferItem transfer //
+                                        && transfer.getSubject() instanceof AccountTransferEntry entry
+                                                        ? entry.getTargetTransaction()
+                                                        : null, //
+                        properties);
+    }
+
+    @SafeVarargs
+    public static Matcher<Extractor.Item> outboundCash(Matcher<Transaction>... properties)
+    {
+        return new ExtractorItemMatcher<Transaction>("cash transfer", //$NON-NLS-1$
+                        item -> item instanceof AccountTransferItem transfer //
+                                        && transfer.getSubject() instanceof AccountTransferEntry entry
+                                                        ? entry.getSourceTransaction()
+                                                        : null, //
+                        properties);
     }
 
     @SafeVarargs
