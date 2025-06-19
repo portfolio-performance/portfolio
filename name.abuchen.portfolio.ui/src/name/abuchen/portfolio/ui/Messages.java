@@ -599,8 +599,6 @@ public class Messages extends NLS
     public static String LabelChartDetailMarkerHighLow;
     public static String LabelChartDetailMarkerInvestments;
     public static String LabelChartDetailMarkerLow;
-    public static String LabelChartDetailMarkerPurchaseFIFO;
-    public static String LabelChartDetailMarkerPurchaseMovingAverage;
     public static String LabelChartDetailMarkerPurchasePeriodNo;
     public static String LabelChartDetailMovingAverage;
     public static String LabelChartDetailMovingAverage_100days;
@@ -941,6 +939,7 @@ public class Messages extends NLS
     public static String LabelVolatility;
     public static String LabelWatchlist;
     public static String LabelWithoutClassification;
+    public static String LabelWithQualifier;
     public static String LabelXDays;
     public static String LabelYear;
     public static String LabelYearlyHeatmap;
