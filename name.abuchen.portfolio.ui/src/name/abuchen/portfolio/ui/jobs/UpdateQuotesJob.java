@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -384,8 +385,14 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
                         // download latest quotes if the download should be done
                         // together (and the job includes the download of latest
-                        // quotes)
-                        if (feed.mergeDownloadRequests() && target.contains(Target.LATEST))
+                        // quotes and the latest feed configuration is the same
+                        // feed)
+
+                        String feedId = security.getLatestFeed();
+                        if (feedId == null)
+                            feedId = security.getFeed();
+                        if (feed.mergeDownloadRequests() && target.contains(Target.LATEST)
+                                        && Objects.equals(feedId, feed.getId()))
                         {
                             feed.getLatestQuote(security).ifPresent(p -> {
                                 if (security.setLatest(p))
@@ -475,8 +482,14 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
                         // download latest quotes if the download should be done
                         // together (and the job includes the download of latest
-                        // quotes)
-                        if (feed.mergeDownloadRequests() && target.contains(Target.LATEST))
+                        // quotes and the latest feed configuration is the same
+                        // feed)
+
+                        String feedId = security.getLatestFeed();
+                        if (feedId == null)
+                            feedId = security.getFeed();
+                        if (feed.mergeDownloadRequests() && target.contains(Target.LATEST)
+                                        && Objects.equals(feedId, feed.getId()))
                         {
                             feed.getLatestQuote(security).ifPresent(p -> {
                                 if (security.setLatest(p))
