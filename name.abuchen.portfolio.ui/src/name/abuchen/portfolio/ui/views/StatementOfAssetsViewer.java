@@ -565,9 +565,28 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new Column("9", Messages.ColumnProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.ColumnProfitLoss);
+        column.setMenuLabel(Messages.ColumnProfitLoss + " (" + Messages.LabelCapitalGainsMethodFIFO + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setDescription(Messages.ColumnUnrealizedCapitalGains_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.ColumnProfitLoss_Description);
+
         labelProvider = new ReportingPeriodLabelProvider(
                         new ElementValueProvider(LazySecurityPerformanceRecord::getCapitalGainsOnHoldings, withSum()),
                         true);
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("pl-moving-avg", //$NON-NLS-1$
+                        Messages.ColumnProfitLoss + " (" + Messages.LabelCapitalGainsMethodMovingAverageAbbr + ")", //$NON-NLS-1$ //$NON-NLS-2$
+                        SWT.RIGHT, 80);
+        column.setGroupLabel(Messages.ColumnProfitLoss);
+        column.setMenuLabel(Messages.ColumnProfitLoss + " (" + Messages.LabelCapitalGainsMethodMovingAverage + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        column.setDescription(Messages.ColumnUnrealizedCapitalGainsMA_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.ColumnProfitLoss_Description);
+        labelProvider = new ReportingPeriodLabelProvider(new ElementValueProvider(
+                        LazySecurityPerformanceRecord::getCapitalGainsOnHoldingsMovingAverage, withSum()), true);
         column.setLabelProvider(labelProvider);
         column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
