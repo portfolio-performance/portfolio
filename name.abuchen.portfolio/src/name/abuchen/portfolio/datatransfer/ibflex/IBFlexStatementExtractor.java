@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -378,35 +379,7 @@ public class IBFlexStatementExtractor implements Extractor
                             || lod.contains("ORDER"))
                 return;
 
-            // @formatter:off
-            // If possible, set "tradeDate" with "tradeTime" as the correct
-            // trading date of the transaction.
-            //
-            // If "tradeTime" is not present, then check if "tradeDate" and "dateTime" are the same date,
-            // then set "dateTime" as the trading day.
-            // @formatter:on
-            if (element.hasAttribute("tradeDate"))
-            {
-                if (element.hasAttribute("tradeTime"))
-                {
-                    cashTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime")));
-                }
-                else if (element.hasAttribute("dateTime"))
-                {
-                    if (element.getAttribute("tradeDate").equals(element.getAttribute("dateTime").substring(0, 8)))
-                    {
-                        cashTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate"), element.getAttribute("dateTime").substring(9, 15)));
-                    }
-                    else
-                    {
-                        cashTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate")));
-                    }
-                }
-                else
-                {
-                    cashTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate")));
-                }
-            }
+            cashTransaction.setDate(extractDate(element));
             
             // get the transaction type
             String tType = element.getAttribute("buySell");
@@ -465,14 +438,7 @@ public class IBFlexStatementExtractor implements Extractor
             cashTransaction.getSourceTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE, source, target, exchangeRate));
 
             // set note
-            
-            // add Trade-ID note if available
-            if (!element.getAttribute("tradeID").isEmpty() && !"N/A".equals(element.getAttribute("tradeID")))
-                cashTransaction.setNote(concatenate("Trade-ID: ", element.getAttribute("tradeID"), ""));
-
-            // add Transaction-ID note if available
-            if (!element.getAttribute("transactionID").isEmpty() && !"N/A".equals(element.getAttribute("transactionID")))
-                cashTransaction.setNote(concatenate(cashTransaction.getNote(), "Transaction-ID: " + element.getAttribute("transactionID"), " | "));
+            cashTransaction.setNote(extractNote(element));
             
             results.add(new AccountTransferItem(cashTransaction, true));
             
@@ -554,36 +520,8 @@ public class IBFlexStatementExtractor implements Extractor
                 default:
                     throw new IllegalArgumentException("unsupported transaction type '" + tType + "'");
             }
-
-            // @formatter:off
-            // If possible, set "tradeDate" with "tradeTime" as the correct
-            // trading date of the transaction.
-            //
-            // If "tradeTime" is not present, then check if "tradeDate" and "dateTime" are the same date,
-            // then set "dateTime" as the trading day.
-            // @formatter:on
-            if (element.hasAttribute("tradeDate"))
-            {
-                if (element.hasAttribute("tradeTime"))
-                {
-                    portfolioTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime")));
-                }
-                else if (element.hasAttribute("dateTime"))
-                {
-                    if (element.getAttribute("tradeDate").equals(element.getAttribute("dateTime").substring(0, 8)))
-                    {
-                        portfolioTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate"), element.getAttribute("dateTime").substring(9, 15)));
-                    }
-                    else
-                    {
-                        portfolioTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate")));
-                    }
-                }
-                else
-                {
-                    portfolioTransaction.setDate(ExtractorUtils.asDate(element.getAttribute("tradeDate")));
-                }
-            }
+            
+            portfolioTransaction.setDate(extractDate(element));
 
             // @formatter:off
             // Set amount and check if the element contains the "netCash"
@@ -625,17 +563,7 @@ public class IBFlexStatementExtractor implements Extractor
             // Set note
             if (portfolioTransaction.getNote() == null || !portfolioTransaction.getNote().equals(Messages.MsgErrorOrderCancellationUnsupported))
             {
-                // Add Trade-ID note if available
-                if (!element.getAttribute("tradeID").isEmpty() && !"N/A".equals(element.getAttribute("tradeID")))
-                {
-                    portfolioTransaction.setNote(concatenate("Trade-ID: ", element.getAttribute("tradeID"), ""));
-                }
-
-                // Add Transaction-ID note if available
-                if (!element.getAttribute("transactionID").isEmpty() && !"N/A".equals(element.getAttribute("transactionID")))
-                {
-                    portfolioTransaction.setNote(concatenate(portfolioTransaction.getNote(), "Transaction-ID: " + element.getAttribute("transactionID"), " | "));
-                }
+                portfolioTransaction.setNote(extractNote(element));
             }
 
             ExtractorUtils.fixGrossValueBuySell().accept(portfolioTransaction);
@@ -849,6 +777,69 @@ public class IBFlexStatementExtractor implements Extractor
                     transaction.addUnit(grossValue);
                 }
             }
+        }
+
+        /**
+         * Extract the date from the transaction.
+         * <p/>
+         * If possible, set "tradeDate" with "tradeTime" as the correct trading
+         * date of the transaction.
+         * <p/>
+         * If "tradeTime" is not present, then check if "tradeDate" and
+         * "dateTime" are the same date, then set "dateTime" as the trading day.
+         * 
+         * @return the extracted date or null if not available
+         */
+        private LocalDateTime extractDate(Element element)
+        {
+            if (!element.hasAttribute("tradeDate"))
+                return null;
+
+            if (element.hasAttribute("tradeTime"))
+            {
+                return ExtractorUtils.asDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime"));
+            }
+            else if (element.hasAttribute("dateTime"))
+            {
+                if (element.getAttribute("tradeDate").equals(element.getAttribute("dateTime").substring(0, 8)))
+                {
+                    return ExtractorUtils.asDate(element.getAttribute("tradeDate"),
+                                    element.getAttribute("dateTime").substring(9, 15));
+                }
+                else
+                {
+                    return ExtractorUtils.asDate(element.getAttribute("tradeDate"));
+                }
+            }
+            else
+            {
+                return ExtractorUtils.asDate(element.getAttribute("tradeDate"));
+            }
+        }
+        
+        /**
+         * Extract the trade and transaction ids as note.
+         */
+        private String extractNote(Element element)
+        {
+            StringBuilder note = new StringBuilder();
+
+            // Add Trade-ID note if available
+            if (!element.getAttribute("tradeID").isEmpty() && !"N/A".equals(element.getAttribute("tradeID")))
+            {
+                note.append("Trade-ID: ").append(element.getAttribute("tradeID"));
+            }
+
+            // Add Transaction-ID note if available
+            if (!element.getAttribute("transactionID").isEmpty()
+                            && !"N/A".equals(element.getAttribute("transactionID")))
+            {
+                if (note.length() > 0)
+                    note.append(" | ");
+                note.append("Transaction-ID: ").append(element.getAttribute("transactionID"));
+            }
+
+            return note.length() > 0 ? note.toString() : null;
         }
 
         /**
