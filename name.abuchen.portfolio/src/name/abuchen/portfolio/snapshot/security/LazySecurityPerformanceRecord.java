@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import java.lang.ref.WeakReference;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -50,12 +51,43 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     }
 
     /**
+     * The lazy weak value computes the value only when needed but also keeps
+     * only a weak reference to it.
+     */
+    private static final class LazyWeakValue<V>
+    {
+        private WeakReference<V> reference = new WeakReference<>(null);
+        private final Supplier<V> computeFunction;
+
+        public LazyWeakValue(Supplier<V> computeFunction)
+        {
+            this.computeFunction = computeFunction;
+        }
+
+        public V get()
+        {
+            var answer = reference.get();
+            if (answer != null)
+                return answer;
+
+            answer = computeFunction.get();
+            reference = new WeakReference<>(answer);
+
+            return answer;
+        }
+    }
+
+    /**
      * internal rate of return of security {@link #calculateIRR()}
      */
     private final LazyValue<Double> irr = new LazyValue<>(
                     () -> Calculation.perform(IRRCalculation.class, converter, security, lineItems).getIRR());
 
-    private final LazyValue<PerformanceIndex> performanceIndex = new LazyValue<>(
+    /**
+     * weak reference to the performance index, because it can consume a lot of
+     * memory in particular for large intervals
+     */
+    private final LazyWeakValue<PerformanceIndex> performanceIndex = new LazyWeakValue<>(
                     () -> PerformanceIndex.forInvestment(client, converter, security, interval, new ArrayList<>()));
 
     /**
