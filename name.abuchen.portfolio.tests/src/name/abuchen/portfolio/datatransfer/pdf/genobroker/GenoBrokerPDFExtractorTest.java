@@ -185,6 +185,73 @@ public class GenoBrokerPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf04()
+    {
+        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(1L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        assertThat(results, hasItem(security( //
+                        hasIsin("US75062E1064"), hasWkn("A2JDMF"), hasTicker(null), //
+                        hasName("RAFAEL HOLDINGS INC. REGISTERED SH. CLASS B DL -,01"), //
+                        hasCurrencyCode("USD"))));
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-06-10T15:33"), hasShares(2000), //
+                        hasSource("Kauf04.txt"), //
+                        hasNote("Auftragsnummer: 625571/30.00 | Limit billigst"), //
+                        hasAmount("EUR", 4222.17), hasGrossValue("EUR", 4156.80), //
+                        hasForexGrossValue("USD", 4740.00), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 9.95 + 21.65 + 8.77 + 25.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf04WithSecurityInEUR()
+    {
+        Security security = new Security("Rafael Holdings Inc", CurrencyUnit.EUR);
+        security.setIsin("US75062E1064");
+
+        Client client = new Client();
+        client.addSecurity(security);
+
+        GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(countSecurities(results), is(0L));
+        assertThat(countBuySell(results), is(1L));
+        assertThat(countAccountTransactions(results), is(0L));
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        assertThat(results, hasItem(purchase( //
+                        hasDate("2025-06-10T15:33"), hasShares(2000), //
+                        hasSource("Kauf04.txt"), //
+                        hasNote("Auftragsnummer: 625571/30.00 | Limit billigst"), //
+                        hasAmount("EUR", 4222.17), hasGrossValue("EUR", 4156.80), //
+                        hasTaxes("EUR", 0.00), hasFees("EUR", 9.95 + 21.65 + 8.77 + 25.00), check(tx -> {
+                            CheckCurrenciesAction c = new CheckCurrenciesAction();
+                            Status s = c.process((PortfolioTransaction) tx, new Portfolio());
+                            assertThat(s, is(Status.OK_STATUS));
+                        }))));
+    }
+
+    @Test
     public void testWertpapierVerkauf01()
     {
         GenoBrokerPDFExtractor extractor = new GenoBrokerPDFExtractor(new Client());
