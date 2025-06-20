@@ -48,17 +48,17 @@ public class TradeCollector6Test
         assertThat(firstTrade.getStart(), is(LocalDateTime.parse("2022-01-01T00:00")));
         assertThat(firstTrade.getEnd().isPresent(), is(false));
 
-        // 200*15-520-1000 = 1480
+        // 200*15 - 520-1000 = 1480
         assertThat(firstTrade.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1480.00))));
         assertThat(firstTrade.getProfitLossMovingAverage(), is(firstTrade.getProfitLoss()));
 
-        // 200*15-520-10-10-1000 = 1500
+        // 200*15 - (520-10-10)-1000 = 1500
         assertThat(firstTrade.getGrossProfitLoss(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1500.00))));
         assertThat(firstTrade.getGrossProfitLossMovingAverage(), is(firstTrade.getGrossProfitLoss()));
     }
 
     @Test
-    public void testTradesProtitAndGrossProfitFIFOAndMovingAverage() throws TradeCollectorException
+    public void testTradesProfitAndGrossProfitFIFOAndMovingAverage() throws TradeCollectorException
     {
         Client client = new Client();
 
