@@ -572,6 +572,10 @@ public class PortfolioPart implements ClientInputListener
 
         underConstruction.createViewControl(book, hideInformationPane);
 
+        // register a dispose listener when the view is destroyed to also
+        // destroy the context
+        underConstruction.getControl().addDisposeListener(e -> viewContext.dispose());
+
         // explicitly style control after creation because on Windows the styles
         // are not always applied immediately
         stylingEngine.style(underConstruction.getControl());
