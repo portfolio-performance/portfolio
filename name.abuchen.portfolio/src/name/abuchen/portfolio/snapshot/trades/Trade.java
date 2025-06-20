@@ -37,15 +37,20 @@ public class Trade implements Adaptable
 
     private List<TransactionPair<PortfolioTransaction>> transactions = new ArrayList<>();
 
+    // FIFO entry value including the paid fees and taxes on purchases.
     private Money entryValue;
-    private Money entryGrossValue;
+    // FIFO entry value not including the paid fees and taxes on purchases.
+    private Money entryValueNet;
     private Money exitValue;
     private Money exitGrossValue;
     private long holdingPeriod;
     private double irr;
 
+    // MovingAverage entry value including the paid fees and taxes on purchases.
     private LazyValue<Money> entryValueMovingAverage;
-    private LazyValue<Money> entryGrossValueMovingAverage;
+    // MovingAverage entry value not including the paid fees and taxes on
+    // purchases.
+    private LazyValue<Money> entryValueMovingAverageNet;
 
     public Trade(Security security, Portfolio portfolio, long shares)
     {
@@ -56,13 +61,18 @@ public class Trade implements Adaptable
 
     /* package */ void calculate(Client client, CurrencyConverter converter)
     {
+        // for Purchases, PortfolioTransaction.getMonetaryAmount() returns the
+        // gross purchase cost (after / with the purchases fees or taxes added)
         this.entryValue = transactions.stream() //
                         .filter(t -> t.getTransaction().getType().isPurchase())
                         .map(t -> t.getTransaction().getMonetaryAmount()
                                         .with(converter.at(t.getTransaction().getDateTime())))
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
-        this.entryGrossValue = transactions.stream() //
+        // for Purchases, PortfolioTransaction.getGrossValue() actually returns
+        // the net purchase cost (before / without the purchases fees or taxes
+        // addition)
+        this.entryValueNet = transactions.stream() //
                         .filter(t -> t.getTransaction().getType().isPurchase())
                         .map(t -> t.getTransaction().getGrossValue()
                                         .with(converter.at(t.getTransaction().getDateTime())))
@@ -70,12 +80,18 @@ public class Trade implements Adaptable
 
         if (end != null)
         {
+            // for Sales, PortfolioTransaction.getMonetaryAmount() returns the
+            // net purchase cost (after / with the purchases fees or taxes
+            // deduced)
             this.exitValue = transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isLiquidation())
                             .map(t -> t.getTransaction().getMonetaryAmount()
                                             .with(converter.at(t.getTransaction().getDateTime())))
                             .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
+            // for Sales, PortfolioTransaction.getGrossValue() returns the gross
+            // purchase cost (before / without the purchases fees or taxes
+            // deduction)
             this.exitGrossValue = transactions.stream() //
                             .filter(t -> t.getTransaction().getType().isLiquidation())
                             .map(t -> t.getTransaction().getGrossValue()
@@ -118,7 +134,7 @@ public class Trade implements Adaptable
         calculateIRR(converter);
 
         this.entryValueMovingAverage = new LazyValue<>(() -> getMovingAverageCost(client, converter, true));
-        this.entryGrossValueMovingAverage = new LazyValue<>(() -> getMovingAverageCost(client, converter, false));
+        this.entryValueMovingAverageNet = new LazyValue<>(() -> getMovingAverageCost(client, converter, false));
     }
 
     private void calculateIRR(CurrencyConverter converter)
@@ -231,14 +247,14 @@ public class Trade implements Adaptable
     {
         if (exitGrossValue == null)
             return null;
-        return exitGrossValue.subtract(entryGrossValue);
+        return exitGrossValue.subtract(entryValueNet);
     }
 
     public Money getGrossProfitLossMovingAverage()
     {
         if (exitGrossValue == null)
             return null;
-        return exitGrossValue.subtract(entryGrossValueMovingAverage.get());
+        return exitGrossValue.subtract(entryValueMovingAverageNet.get());
     }
 
     public long getHoldingPeriod()
@@ -280,7 +296,7 @@ public class Trade implements Adaptable
     }
 
     /**
-     * @brief Check if the trade made a gross gross
+     * @brief Check if the trade made a gross loss
      * @return True if the trade result in a gross loss
      */
     public boolean isGrossLoss()
@@ -334,7 +350,7 @@ public class Trade implements Adaptable
         // sold
 
         var totalCosts = withFeesAndTaxes ? r.get().getMovingAverageCost().get()
-                        : r.get().getMovingAverageGrossCost().get();
+                        : r.get().getMovingAverageCostNet().get();
         var totalShares = r.get().getSharesHeld().get();
 
         var cost = BigDecimal.valueOf(shares / (double) totalShares) //

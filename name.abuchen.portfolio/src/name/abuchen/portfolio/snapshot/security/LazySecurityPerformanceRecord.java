@@ -144,7 +144,7 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
     /**
      * moving average cost of shares held without fees or taxes
      */
-    private final LazyValue<Money> movingAverageGrossCost = new LazyValue<>(
+    private final LazyValue<Money> movingAverageNetCost = new LazyValue<>(
                     () -> costCalculation.get().netMovingAverageCost());
 
     /**
@@ -318,9 +318,9 @@ public final class LazySecurityPerformanceRecord extends BaseSecurityPerformance
         return movingAverageCost;
     }
 
-    public LazyValue<Money> getMovingAverageGrossCost()
+    public LazyValue<Money> getMovingAverageCostNet()
     {
-        return movingAverageGrossCost;
+        return movingAverageNetCost;
     }
 
     public LazyValue<Money> getCapitalGainsOnHoldings()
